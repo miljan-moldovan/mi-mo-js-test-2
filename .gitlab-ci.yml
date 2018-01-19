@@ -1,0 +1,17 @@
+stages:
+  - build
+  - archive
+
+build_project:
+  stage: build
+  script:
+    - pod install
+  tags:
+    - iOS
+
+archive_project:
+  stage: archive
+  script:
+    - pod install
+  tags:
+    - iOS
