@@ -5,6 +5,7 @@ stages:
 build_project:
   stage: build
   script:
+    - cd ./ios
     - pod install
   tags:
     - iOS
@@ -12,6 +13,7 @@ build_project:
 archive_project:
   stage: archive
   script:
+    - cd ./ios
     - pod install
   tags:
     - iOS
