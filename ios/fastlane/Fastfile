@@ -1,0 +1,38 @@
+# More documentation about how to customize your build
+# can be found here:
+# https://docs.fastlane.tools
+fastlane_version "2.68.0"
+
+# This value helps us track success metrics for Fastfiles
+# we automatically generate. Feel free to remove this line
+# once you get things running smoothly!
+generated_fastfile_id "64397ce9-b147-420b-8a55-ecd6e0ed8b19"
+
+default_platform :ios
+
+# Fastfile actions accept additional configuration, but
+# don't worry, fastlane will prompt you for required
+# info which you can add here later
+lane :beta do
+  # cocoapods
+  # increment_build_number
+  enable_automatic_code_signing
+  
+  # build your iOS app
+  gym(
+    scheme: "salon-ultimate",
+    export_method: "development",
+    export_xcargs: "-allowProvisioningUpdates"
+  )
+
+  # upload to Beta by Crashlytics
+  crashlytics(
+    # keys for organization: ByteriX
+    api_token: "57ed7a29664d211a062ac7a41c806fc3aeec24f2",
+    build_secret: "069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc"
+  )
+
+  # slack(
+  #   slack_url: "https://hooks.slack.com/services/IDS"
+  # )
+end
