@@ -1,6 +1,7 @@
 stages:
   - build
   - archive
+  - beta
 
 build_project:
   stage: build
@@ -23,8 +24,11 @@ archive_project:
     - iOS
     
 beta:on-schedule:
+  stage: beta
   only:
     - schedules
+  tags:
+    - iOS
   script:
     - brew install fastlane
     - fastlane beta
