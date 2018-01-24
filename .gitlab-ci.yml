@@ -4,6 +4,8 @@ stages:
 
 build_project:
   stage: build
+  except:
+    - schedules
   script:
     - cd ./ios
     - pod install
@@ -12,8 +14,17 @@ build_project:
 
 archive_project:
   stage: archive
+  except:
+    - schedules
   script:
     - cd ./ios
     - pod install
   tags:
     - iOS
+    
+beta:on-schedule:
+  only:
+    - schedules
+  script:
+    - brew install fastlane
+    - fastlane beta

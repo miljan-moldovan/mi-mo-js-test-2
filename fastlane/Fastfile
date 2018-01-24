@@ -14,12 +14,19 @@ default_platform :ios
 # don't worry, fastlane will prompt you for required
 # info which you can add here later
 lane :beta do
-  # cocoapods
-  # increment_build_number
-  enable_automatic_code_signing
+  #sh("pod", "update", "yoga")
+  
+  cocoapods(
+    podfile: "./ios/Podfile"
+  )
+  
+  enable_automatic_code_signing(
+    path: "./ios/salon-ultimate.xcodeproj"
+  )
   
   # build your iOS app
   gym(
+    workspace: "./ios/salon-ultimate.xcworkspace",
     scheme: "salon-ultimate",
     export_method: "development",
     export_xcargs: "-allowProvisioningUpdates"
@@ -27,9 +34,11 @@ lane :beta do
 
   # upload to Beta by Crashlytics
   crashlytics(
-    # keys for organization: ByteriX
+    ipa_path: "./ios/salon-ultimate.ipa",
     api_token: "57ed7a29664d211a062ac7a41c806fc3aeec24f2",
-    build_secret: "069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc"
+    build_secret: "069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc",
+    groups: "mobiledevs",
+    notifications: true
   )
 
   # slack(
