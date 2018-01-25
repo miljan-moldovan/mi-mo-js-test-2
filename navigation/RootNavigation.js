@@ -1,9 +1,8 @@
-import { Notifications } from 'expo';
+// @flow
 import React from 'react';
+import { View, Image } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
-
-import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import LoginScreen from './../screens/LoginScreen';
 import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
@@ -15,6 +14,7 @@ import ClientsScreen from './../screens/ClientsScreen';
 import ScorecardScreen from './../screens/ScorecardScreen';
 
 import SideMenu from './../components/SideMenu';
+import SideMenuItem from '../components/SideMenuItem';
 
 
 const LoginStackNavigator = StackNavigator(
@@ -35,10 +35,77 @@ const LoginStackNavigator = StackNavigator(
   }
 );
 
+
+const QueueStackNavigator = StackNavigator(
+  {
+    Main: {
+      screen: QueueScreen,
+    },
+  },
+  {
+
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: 'transparent',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0
+      },
+      headerTitle: 'Queue',
+      headerTintColor: 'white',
+      drawerLabel: (props) => (
+        <SideMenuItem
+          {...props}
+          title="Queue"
+          icon={require('../assets/images/sidemenu/icon_queue_menu.png')} />
+      ),
+    },
+  }
+);
+// const QueueNavigator = (props) => (
+//   <View style={{ flex: 1 }}>
+//     <Image
+//       style={{
+//         position: 'absolute',
+//         width: '100%',
+//         height: '100%',
+//         resizeMode: 'cover'
+//       }}
+//       source={require('../assets/images/login/blue.png')} />
+//     <QueueStackNavigator />
+//   </View>
+// );
+class QueueNavigator extends React.Component {
+  static navigationOptions = {
+    drawerLabel: (props) => (
+      <SideMenuItem
+        {...props}
+        title="Queue"
+        icon={require('../assets/images/sidemenu/icon_queue_menu.png')} />
+    ),
+  };
+  render() {
+    return (
+      <View style={{ flex: 1 }}>
+        <Image
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            resizeMode: 'cover'
+          }}
+          source={require('../assets/images/login/blue.png')} />
+        <QueueStackNavigator />
+      </View>
+    );
+  }
+}
+
 const RootDrawerNavigator = DrawerNavigator(
   {
     Sales: { screen: SalesScreen },
-    Queue: { screen: QueueScreen },
+    Queue: { screen: QueueNavigator },
     Appointments: { screen: AppointmentsScreen },
     Clients: { screen: ClientsScreen },
     Scorecard: { screen: ScorecardScreen },
@@ -63,14 +130,6 @@ const RootDrawerNavigator = DrawerNavigator(
 );
 
 class RootNavigator extends React.Component {
-  componentDidMount() {
-    this._notificationSubscription = this._registerForPushNotifications();
-  }
-
-  componentWillUnmount() {
-    this._notificationSubscription && this._notificationSubscription.remove();
-  }
-
   render() {
     const { loggedIn, useFingerprintId, fingerprintAuthenticationTime} = this.props.auth;
 
@@ -85,21 +144,6 @@ class RootNavigator extends React.Component {
     else
       return <LoginStackNavigator />
   }
-
-  _registerForPushNotifications() {
-    // Send our push token over to our backend so we can receive notifications
-    // You can comment the following line out if you want to stop receiving
-    // a notification every time you open the app. Check out the source
-    // for this function in api/registerForPushNotificationsAsync.js
-    registerForPushNotificationsAsync();
-
-    // Watch for incoming notifications
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
-  }
-
-  _handleNotification = ({ origin, data }) => {
-    console.log(`Push notification ${origin} with data: ${JSON.stringify(data)}`);
-  };
 }
 
 const mapStateToProps = (state, ownProps) => {

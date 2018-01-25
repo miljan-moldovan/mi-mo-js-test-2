@@ -1,17 +1,36 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
-import { AppLoading, Asset, Font } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import RootNavigation from './navigation/RootNavigation';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
+
+import React, { Component } from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  AsyncStorage,
+  StatusBar,
+  ActivityIndicator
+} from 'react-native';
 
 import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 
+import RootNavigation from './navigation/RootNavigation';
 import store from './store';
 
-export default class App extends React.Component {
+const instructions = Platform.select({
+  ios: 'Press Cmd+R to reload,\n' +
+    'Cmd+D or shake for dev menu',
+  android: 'Double tap R on your keyboard to reload,\n' +
+    'Shake or press menu button for dev menu',
+});
+
+export default class App extends Component<{}> {
   state = {
-    isLoadingComplete: false,
+    isLoadingComplete: true,
     storeIsReady: false
   };
 
@@ -25,17 +44,12 @@ export default class App extends React.Component {
       () => { this.setState({ storeIsReady: true }); console.log('storeIsReady!') }
     ); // .purge(); use to prevent log in
   }
-
   render() {
-    if ((!this.state.isLoadingComplete || !this.state.storeIsReady) && !this.props.skipLoadingScreen) {
-      return (
-        <AppLoading
-          startAsync={this._loadResourcesAsync}
-          onError={this._handleLoadingError}
-          onFinish={this._handleFinishLoading}
-        />
-      );
-    } else {
+    // if (!this.state.isLoadingComplete || !this.state.storeIsReady) {
+    //   return (
+    //     <ActivityIndicator />
+    //   );
+    // } else {
       return (
         <Provider store={store}>
           <View style={styles.container}>
@@ -45,44 +59,35 @@ export default class App extends React.Component {
           </View>
         </Provider>
       );
-    }
+    // }
+    // return (
+    //   <View style={styles.container}>
+    //     <Text style={styles.welcome}>
+    //       Welcome to React Native!
+    //     </Text>
+    //     <Text style={styles.instructions}>
+    //       To get started, edit App.js
+    //     </Text>
+    //     <Text style={styles.instructions}>
+    //       {instructions}
+    //     </Text>
+    //   </View>
+    // );
   }
-
-  _loadResourcesAsync = async () => {
-    return Promise.all([
-      Asset.loadAsync([
-        require('./assets/images/login/url_icon.png'),
-        require('./assets/images/login/blue.png'),
-        require('./assets/images/login/icon_profile.png'),
-        require('./assets/images/login/icon_lock.png'),
-      ]),
-      Font.loadAsync({
-        // This is the font that we are using for our tab bar
-        ...Ionicons.font,
-        'OpenSans-Regular': require('./assets/fonts/OpenSans-Regular.ttf'),
-        'OpenSans-Bold': require('./assets/fonts/OpenSans-Bold.ttf'),
-      }),
-    ]);
-  };
-
-  _handleLoadingError = error => {
-    // In this case, you might want to report the error to your error
-    // reporting service, for example Sentry
-    console.warn(error);
-  };
-
-  _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
-  };
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
   },
 });

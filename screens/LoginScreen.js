@@ -15,7 +15,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 import { Form, Item, Input, Button, Label } from 'native-base';
-import { Fingerprint } from 'expo';
+// import { Fingerprint } from 'expo';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 
@@ -32,11 +32,11 @@ class LoginScreen extends React.Component {
   }
   async componentWillMount() {
     // check if device has a fingerprint sensor.
-    const hasFingerprintHardware = await Fingerprint.hasHardwareAsync();
+    const hasFingerprintHardware = false; // await Fingerprint.hasHardwareAsync();
     let hasFingerprint = false;
     if (hasFingerprintHardware) {
       // check if the user has saved fingerprints in the device
-      hasFingerprint = await Fingerprint.isEnrolledAsync();
+      // hasFingerprint = await Fingerprint.isEnrolledAsync();
     }
     this.setState({ hasFingerprint });
   }
@@ -49,29 +49,29 @@ class LoginScreen extends React.Component {
   }
 
   _handleFingerprintPress = async () => {
-    if (Platform.OS === 'android') {
-      // TO DO present Android specific UI
-    }
-    console.log('_handleFingerprintPress');
-    const { success, error } = await Fingerprint.authenticateAsync();
-    let message;
-    if (success) {
-      message = 'Fingerprint successfully authenticated';
-      this.props.updateFingerprintValidationTime();
-    } else if (this.state.hasFingerprint) {
-      message = 'Error authenticating fingerprint. Reason: '+error;
-    } else {
-      message = 'Fingerprint authentication is not available on this device.';
-    }
-
-    Alert.alert(
-      'Fingerprint authentication',
-      message,
-      [
-        {text: 'OK', onPress: () => console.log('OK Pressed')},
-      ],
-      { cancelable: false }
-    );
+    // if (Platform.OS === 'android') {
+    //   // TO DO present Android specific UI
+    // }
+    // console.log('_handleFingerprintPress');
+    // const { success, error } = await Fingerprint.authenticateAsync();
+    // let message;
+    // if (success) {
+    //   message = 'Fingerprint successfully authenticated';
+    //   this.props.updateFingerprintValidationTime();
+    // } else if (this.state.hasFingerprint) {
+    //   message = 'Error authenticating fingerprint. Reason: '+error;
+    // } else {
+    //   message = 'Fingerprint authentication is not available on this device.';
+    // }
+    //
+    // Alert.alert(
+    //   'Fingerprint authentication',
+    //   message,
+    //   [
+    //     {text: 'OK', onPress: () => console.log('OK Pressed')},
+    //   ],
+    //   { cancelable: false }
+    // );
   }
   _handleUsernameChange = (username: string) => this.setState({ username });
   _handlePasswordChange = (password: string) => this.setState({ password });
@@ -147,6 +147,7 @@ class LoginScreen extends React.Component {
 
   render() {
     const { loggedIn } = this.props.auth;
+    console.log('LoginScreen.render');
     return (
       <View style={styles.container}>
         <Image
@@ -195,7 +196,7 @@ class LoginScreen extends React.Component {
             }
 
             <View>
-              <Text style={styles.bodyText}>Forgot your Password? <Text style={styles.bodyLink} onPress={this._handleForgotPasswordPress}>We'll Help</Text></Text>
+              <Text style={styles.bodyText}>Forgot your Password?... <Text style={styles.bodyLink} onPress={this._handleForgotPasswordPress}>We'll Help</Text></Text>
             </View>
 
             <Button rounded bordered style={styles.touchIdButton} onPress={this._handleFingerprintPress}>

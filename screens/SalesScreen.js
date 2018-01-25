@@ -32,6 +32,7 @@ class SalesScreen extends React.Component {
   }
 
   render() {
+    console.log('SalesScreen.render');
     return (
       <View style={styles.container}>
         <Image

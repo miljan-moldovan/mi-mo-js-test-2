@@ -12,7 +12,6 @@ import {
   Modal
 } from 'react-native';
 import { Form, Item, Input, Button, Label } from 'native-base';
-import { Fingerprint } from 'expo';
 
 
 export default class ForgotPasswordScreen extends React.Component {
