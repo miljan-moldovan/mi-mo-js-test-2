@@ -23,6 +23,7 @@ import * as actions from '../actions/login.js';
 
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
+import FloatingButton from '../components/FloatingButton';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -139,6 +140,9 @@ class QueueScreen extends React.Component {
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
         />
+        <FloatingButton>
+          <Text style={styles.textWalkInBtn}>WALK IN</Text>
+        </FloatingButton>
       </View>
     );
   }
@@ -208,5 +212,13 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'OpenSans-Regular',
     color: 'rgba(181,60,60,1)'
+  },
+  textWalkInBtn:{
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'OpenSans-Regular',
+    textAlign: 'center',
+    lineHeight: 15
   }
 });

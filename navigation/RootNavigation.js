@@ -104,8 +104,8 @@ class QueueNavigator extends React.Component {
 
 const RootDrawerNavigator = DrawerNavigator(
   {
-    Sales: { screen: SalesScreen },
     Queue: { screen: QueueNavigator },
+    Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentsScreen },
     Clients: { screen: ClientsScreen },
     Scorecard: { screen: ScorecardScreen },
