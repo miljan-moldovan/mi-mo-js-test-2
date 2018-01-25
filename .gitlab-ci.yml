@@ -30,5 +30,4 @@ beta:on-schedule:
   tags:
     - iOS
   script:
-    - brew install fastlane
     - fastlane beta
