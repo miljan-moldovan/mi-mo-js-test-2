@@ -16,6 +16,8 @@ default_platform :ios
 lane :beta do
   sh("npm", "install")
   
+  sh("cd ../ios && pod update yoga")
+  
   cocoapods(
     podfile: "./ios/Podfile"
   )
