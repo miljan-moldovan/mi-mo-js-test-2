@@ -126,6 +126,10 @@ class QueueScreen extends React.Component {
     this.setState({ index })
   };
 
+  _handleWalkInPress = () => {
+    this.props.navigation.navigate('WalkIn');
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -140,7 +144,7 @@ class QueueScreen extends React.Component {
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
         />
-        <FloatingButton>
+        <FloatingButton handlePress={this._handleWalkInPress}>
           <Text style={styles.textWalkInBtn}>WALK IN</Text>
         </FloatingButton>
       </View>
@@ -152,13 +156,13 @@ export default connect(null, actions)(QueueScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#333'
   },
   backgroundImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
+    top: 0
   },
   itemContainer: {
     width: '100%',
@@ -219,6 +223,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'OpenSans-Regular',
     textAlign: 'center',
-    lineHeight: 15
+    lineHeight: 16,
+    paddingTop: 5,
+    paddingLeft: 20,
+    paddingRight: 20
   }
 });

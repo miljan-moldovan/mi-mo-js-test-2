@@ -1,20 +1,9 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
-
-class FloatingButton extends React.Component {
-  render() {
-    return (
-      <View style={styles.root}>
-        <TouchableOpacity style={styles.buttonContainer} onPress={()=>console.log('Do not touch me you prevert')}>
-          {this.props.children}
-        </TouchableOpacity>
-      </View>
-      );
-  }
-}
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
-  root:{
+  root: {
     position: 'absolute',
     right: 18,
     bottom: 38,
@@ -28,13 +17,29 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  buttonContainer:{
+  buttonContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
     overflow: 'hidden',
   },
 });
 
-export default FloatingButton;
+const floatingButton = props => (
+  <View style={styles.root}>
+    <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
+      {props.children}
+    </TouchableOpacity>
+  </View>
+);
+
+floatingButton.propTypes = {
+  handlePress: PropTypes.func.isRequired,
+  children: PropTypes.element,
+};
+
+floatingButton.defaultProps = {
+  children: null,
+};
+
+export default floatingButton;
