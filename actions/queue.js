@@ -1,3 +1,6 @@
+// @flow
+// queue constants from webend redux
+
 import axios from 'axios';
 import {
   QUEUE,
@@ -18,18 +21,22 @@ import {
   GROUP_LEAD_UPDATE,
   UNCOMBINE,
   UPDATE_GROUPS
-} from 'redux/constants';
+} from './constants';
+
+const queueData = require('./queue.json');
 
 export const receiveQueue = () => (dispatch) => {
+  console.log('receiveQueue');
   dispatch({type: QUEUE});
+  dispatch({type: QUEUE_RECEIVED, data: queueData.data});
   //axios.get('http://192.168.1.134:4000/api/queue')
-  axios.get('queue.json')
-    .then(({data}) => {
-      dispatch({type: QUEUE_RECEIVED, data: data.data});
-    })
-    .catch((error) => {
-      dispatch({type: QUEUE_FAILED, error});
-    });
+  // axios.get('queue.json')
+  //   .then(({data}) => {
+  //     dispatch({type: QUEUE_RECEIVED, data: data.data});
+  //   })
+  //   .catch((error) => {
+  //     dispatch({type: QUEUE_FAILED, error});
+  //   });
 }
 
 export function checkInClient(id) {
