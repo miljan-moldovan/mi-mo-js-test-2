@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, Image, StyleSheet, ImageBackground } from 'react-native';
+import { View, Image, StyleSheet, Text, ImageBackground } from 'react-native';
 import { StackNavigator, DrawerNavigator, Header } from 'react-navigation';
 import { connect } from 'react-redux';
 
@@ -16,7 +16,8 @@ import ScorecardScreen from './../screens/ScorecardScreen';
 import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
-import WalkinHeader from '../components/WalkinHeader';
+import HeaderMiddle from '../components/HeaderMiddle';
+import SearchBar from '../components/searchBar';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -40,8 +41,39 @@ const LoginStackNavigator = StackNavigator(
   },
 );
 
+const clientSearchTitle = ()=>{
+  const styles = StyleSheet.create({
+    title: {
+      fontFamily: 'OpenSans-Regular',
+      color: '#fff',
+      fontSize: 20,
+
+    },
+    estText: {
+      fontFamily: 'OpenSans-Regular',
+      color: '#fff',
+      fontSize: 12,
+    },
+    estTextBold: {
+      fontFamily: 'OpenSans-Bold',
+    },
+  });
+
+  return (
+    <Text style={styles.title}>Client Search</Text>
+  );
+};
+
 const QueueStackNavigator = StackNavigator(
   {
+    ClientsSearch: {
+      screen: ClientsSearchScreen,
+      navigationOptions: props => ({
+        headerTitle: 'Client Search',
+        HeaderLeft: 'Back',
+        header: () => <ImageHeader {...props} searchBar={SearchBar} />,
+      }),
+    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -52,7 +84,7 @@ const QueueStackNavigator = StackNavigator(
       screen: WalkInScreen,
       title: 'Walin',
       navigationOptions: props => ({
-        headerTitle: WalkinHeader({ ...props, title: 'Walkin' }),
+        headerTitle: HeaderMiddle({ ...props, title: 'Walkin' }),
         headerLeft: HeaderLeftText({ handlePress: () => props.navigation.goBack() }),
       }),
     },
@@ -122,7 +154,6 @@ const QueueStackNavigator = StackNavigator(
 const RootDrawerNavigator = DrawerNavigator(
   {
     Queue: { screen: QueueStackNavigator },
-    ClientsSearch: { screen: ClientsSearchScreen },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentsScreen },
     Clients: { screen: ClientsScreen },

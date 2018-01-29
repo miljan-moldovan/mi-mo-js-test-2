@@ -19,7 +19,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 import SideMenuItem from '../components/SideMenuItem';
 import ClientList from '../components/clientList';
-import SearchBar from '../components/searchBar';
+//import SearchBar from '../components/searchBar';
 import ImageWrapper from '../components/imageWrapper';
 import WordHighlighter from '../components/wordHighlighter';
 
@@ -93,12 +93,12 @@ class ClientsSearchScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
+        {/* <Image
           style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')} />
-        <View style={styles.phoneToolBar}>
-        </View>
-        <View style={styles.clientsHeader}>
+          source={require('../assets/images/login/blue.png')} /> */}
+        {/* <View style={styles.phoneToolBar}>
+        </View> */}
+        {/* <View style={styles.clientsHeader}>
           <View style={styles.clientsHeaderTopSection}>
             <View style={styles.backIconContainer}>
               <TouchableHighlight
@@ -126,7 +126,7 @@ class ClientsSearchScreen extends React.Component {
           <View style={styles.clientsBarBottomSection}>
             <SearchBar showCancel={true} placeholder='' searchIconPosition='left' style={styles.seachBar} onChangeText={(searchText) => {this._filterClients(searchText)}}/>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.clientsList}>
           { (this.state.filteredClients.length > 0 || this.state.showWalkIn) &&
@@ -228,10 +228,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     backgroundImage: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover'
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover'
     },
     title: {
         color: 'white',

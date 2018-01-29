@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import { Image, Text, TextInput, TouchableHighlight, View, StyleSheet } from "react-native";
+import React, { Component } from 'react';
+import { Image, Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-native';
 
 export default class SearchBar extends Component {
-  state = {
-    isVisible: null,
-    placeholder: ''
-  }
-
   constructor(props) {
     super(props);
     this.searchText = '';
     this.state = {placeholder: props.placeholder};
   }
 
-  setNativeProps(nativeProps) {
-    this._root.setNativeProps(nativeProps);
+  state = {
+    isVisible: null,
+    placeholder: '',
   }
 
   componentWillMount() {
     this.setState({isVisible: this.props.isVisible})
+  }
+
+  setNativeProps(nativeProps) {
+    this._root.setNativeProps(nativeProps);
   }
 
   render() {

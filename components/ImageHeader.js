@@ -10,14 +10,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const ImageHeader = props => (
+const ImageHeader = props => {
+  console.log("TEST",props)
+  return (
   <View style={styles.container}>
     <Image
       style={StyleSheet.absoluteFillObject}
       source={backgroundImage}
     />
     <Header {...props} />
+    {props.searchBar ? <props.searchBar
+      showCancel={true}
+       placeholder=''
+        searchIconPosition='left'
+      /> : null}
   </View>
-);
+)};
 
 export default ImageHeader;
