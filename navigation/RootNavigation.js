@@ -11,6 +11,7 @@ import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
+import ClientsSearchScreen from './../screens/ClientsSearchScreen';
 import ScorecardScreen from './../screens/ScorecardScreen';
 import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
 import HeaderLeftText from '../components/HeaderLeftText';
@@ -121,6 +122,7 @@ const QueueStackNavigator = StackNavigator(
 const RootDrawerNavigator = DrawerNavigator(
   {
     Queue: { screen: QueueStackNavigator },
+    ClientsSearch: { screen: ClientsSearchScreen },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentsScreen },
     Clients: { screen: ClientsScreen },
