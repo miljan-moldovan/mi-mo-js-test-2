@@ -133,7 +133,10 @@ class ClientList extends React.Component {
           onPress={() => {
            this.listRef.scrollToIndexPath({ section: row, row: 0 });
             this.clients[row].selected = true;
-            this.clients[this.selectedIndex].selected = false;
+            if(this.clients[this.selectedIndex]){
+              this.clients[this.selectedIndex].selected = false;
+            }
+
             this.selectedIndex = row;
             this.indexes.reloadData();
           }}
@@ -163,8 +166,13 @@ class ClientList extends React.Component {
     }
 
     onSectionChange(section:number){
-      this.clients[this.selectedIndex].selected = false;
+
       this.clients[section].selected = true;
+      
+      if(this.clients[this.selectedIndex]){
+        this.clients[this.selectedIndex].selected = false;
+      }
+
       this.selectedIndex = section;
       this.indexes.reloadData();
       let bFind = false;

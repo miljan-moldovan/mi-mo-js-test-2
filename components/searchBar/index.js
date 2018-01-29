@@ -9,6 +9,7 @@ export default class SearchBar extends Component {
 
   constructor(props) {
     super(props);
+    this.searchText = '';
     this.state = {placeholder: props.placeholder};
   }
 
@@ -33,15 +34,34 @@ export default class SearchBar extends Component {
                 placeholder={this.state.placeholder}
                 placeholderTextColor='rgba(255,255,255, 0.6)'
                 onChangeText={(searchText) => {
-                    this.setState({searchText});
+                    this.searchText = searchText;
                     if(this.props.onChangeText) this.props.onChangeText(searchText);
                   }
                 }
-                value={this.state.searchText}
+                value={this.searchText}
               />
               {this.props.searchIconPosition === 'right' &&
                 <Image style={styles.searchIconRight} source={require('../../assets/images/clientsSearch/icon_search_w.png')} />
               }
+
+
+              <View style={styles.crossIconContainer}>
+                {this.searchText.length > 0 &&
+
+                  <TouchableHighlight
+                    style={styles.crossIconButton}
+                    underlayColor="transparent"
+                    onPress={
+                      () => {
+                        this.searchText = '';
+                        if(this.props.onChangeText) this.props.onChangeText('');
+                      }
+                    }>
+                    <Image style={styles.crossIcon} source={require('../../assets/images/clientsSearch/icon_cross.png')} />
+                  </TouchableHighlight>
+
+                }
+              </View>
             </View>
           </View>
           {this.props.showCancel &&
@@ -51,7 +71,7 @@ export default class SearchBar extends Component {
                 underlayColor="transparent"
                 onPress={
                   () => {
-                    this.setState({searchText:''});
+                    this.searchText = '';
                     if(this.props.onChangeText) this.props.onChangeText('');
                   }
                 }>
@@ -91,7 +111,7 @@ const styles = StyleSheet.create({
   },
   searchBarInput:{
     height: 30,
-    flex: 8,
+    flex: 7,
     borderColor: 'transparent',
     color: 'white',
     marginLeft: 20
@@ -117,4 +137,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'transparent'
   },
+  crossIcon:{
+    width: 16,
+    height: 16,
+    marginRight: 10,
+    paddingTop: 1
+  },
+  crossIconButton:{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  crossIconContainer:{
+    flex: 0.5
+  }
 })

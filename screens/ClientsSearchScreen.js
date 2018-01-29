@@ -129,7 +129,7 @@ class ClientsSearchScreen extends React.Component {
         </View>
 
         <View style={styles.clientsList}>
-          {this.state.filteredClients.length > 0 &&
+          { (this.state.filteredClients.length > 0 || this.state.showWalkIn) &&
             <View style={styles.topSearchBar}>
                 <Text style={styles.topSearchBarText}>TOP SEARCH MATCHES</Text>
              </View>}
@@ -158,7 +158,12 @@ class ClientsSearchScreen extends React.Component {
              </View>
            }
 
-           <ClientList boldWords={this.state.searchText} clients={this.state.filteredClients} style={styles.clientListContainer}/>
+           { (this.state.filteredClients.length > 0 || !this.state.showWalkIn ) &&
+
+             <ClientList boldWords={this.state.searchText} clients={this.state.filteredClients} style={styles.clientListContainer}/>
+
+           }
+
         </View>
 
       </View>

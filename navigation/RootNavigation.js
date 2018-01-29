@@ -11,6 +11,7 @@ import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
+import ClientsSearchScreen from './../screens/ClientsSearchScreen';
 import ScorecardScreen from './../screens/ScorecardScreen';
 
 import SideMenu from './../components/SideMenu';
@@ -104,6 +105,7 @@ class QueueNavigator extends React.Component {
 
 const RootDrawerNavigator = DrawerNavigator(
   {
+    ClientsSearch: { screen: ClientsSearchScreen },
     Sales: { screen: SalesScreen },
     Queue: { screen: QueueNavigator },
     Appointments: { screen: AppointmentsScreen },
