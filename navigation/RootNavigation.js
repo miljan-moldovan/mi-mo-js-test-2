@@ -15,6 +15,7 @@ import ScorecardScreen from './../screens/ScorecardScreen';
 import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
+import WalkinHeader from '../components/WalkinHeader';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -50,7 +51,7 @@ const QueueStackNavigator = StackNavigator(
       screen: WalkInScreen,
       title: 'Walin',
       navigationOptions: props => ({
-        headerTitle: 'Walkin',
+        headerTitle: WalkinHeader({ ...props, title: 'Walkin' }),
         headerLeft: HeaderLeftText({ handlePress: () => props.navigation.goBack() }),
       }),
     },
