@@ -44,10 +44,14 @@ class ClientsSearchScreen extends React.Component {
   }
 
 
-  componentWillMount(){
-
+  componentWillMount() {
+    this.props.navigation.setParams({ onChangeText: searchText => this._filterClients(searchText) })
     this.setState({filteredClients: this.state.clients});
 
+  }
+
+  componentWillUpdate(){
+    console.log('update',this.props.navigation)
   }
 
   _filterClients(searchText){
@@ -91,6 +95,7 @@ class ClientsSearchScreen extends React.Component {
   };
 
   render() {
+    console.log('qqq',this.props.navigation)
     return (
       <View style={styles.container}>
         {/* <Image

@@ -68,10 +68,24 @@ const QueueStackNavigator = StackNavigator(
   {
     ClientsSearch: {
       screen: ClientsSearchScreen,
-      navigationOptions: props => ({
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0
+        },
         headerTitle: 'Client Search',
-        HeaderLeft: 'Back',
-        header: () => <ImageHeader {...props} searchBar={SearchBar} />,
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder=""
+                showCancel={true}
+                searchIconPosition='left'
+              />)}
+          />),
       }),
     },
     Main: {
@@ -96,7 +110,6 @@ const QueueStackNavigator = StackNavigator(
         backgroundColor: 'transparent',
       },
       header: props => <ImageHeader {...props} />,
-      headerMode: 'none',
       headerTitleStyle: {
         fontFamily: 'OpenSans-Regular',
         fontSize: 20,

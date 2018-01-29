@@ -9,22 +9,21 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
+const ImageHeader = (props) => {
+  const { searchBar, ...headerProps } = props;
+  const searchParams = props.navigation.state.params ? { onChangeText:props.navigation.state.params.onChangeText } : null;
 
-const ImageHeader = props => {
-  console.log("TEST",props)
+    console.log('test', searchParams,headerProps)
   return (
-  <View style={styles.container}>
-    <Image
-      style={StyleSheet.absoluteFillObject}
-      source={backgroundImage}
-    />
-    <Header {...props} />
-    {props.searchBar ? <props.searchBar
-      showCancel={true}
-       placeholder=''
-        searchIconPosition='left'
-      /> : null}
-  </View>
-)};
+    <View style={styles.container}>
+      <Image
+        style={StyleSheet.absoluteFillObject}
+        source={backgroundImage}
+      />
+      <Header {...headerProps} />
+      {props.searchBar ? props.searchBar(searchParams) : null }
+    </View>
+  );
+};
 
 export default ImageHeader;
