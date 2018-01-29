@@ -1,27 +1,28 @@
 stages:
   - build
-  - archive
   - beta
+  # - archive
 
 build_project:
   stage: build
   except:
     - schedules
   script:
-    - cd ./ios
-    - pod install
+    - npm install
+    - cd ./ios && pod install
+    - xcodebuild -workspace SalonUltimateRN.xcworkspace -scheme SalonUltimateRN -allowProvisioningUpdates build 
   tags:
     - iOS
 
-archive_project:
-  stage: archive
-  except:
-    - schedules
-  script:
-    - cd ./ios
-    - pod install
-  tags:
-    - iOS
+# archive_project:
+#   stage: archive
+#   except:
+#     - schedules
+#   script:
+#     - cd ./ios
+#     - pod install
+#   tags:
+#     - iOS
     
 beta:on-schedule:
   stage: beta
