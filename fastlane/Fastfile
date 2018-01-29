@@ -16,27 +16,25 @@ default_platform :ios
 lane :beta do
   sh("npm", "install")
   
-  sh("cd ../ios && pod update yoga")
-  
   cocoapods(
     podfile: "./ios/Podfile"
   )
   
   enable_automatic_code_signing(
-    path: "./ios/salon-ultimate.xcodeproj"
+    path: "./ios/SalonUltimateRN.xcodeproj"
   )
   
   # build your iOS app
   gym(
-    workspace: "./ios/salon-ultimate.xcworkspace",
-    scheme: "salon-ultimate",
+    workspace: "./ios/SalonUltimateRN.xcworkspace",
+    scheme: "SalonUltimateRN",
     export_method: "development",
     export_xcargs: "-allowProvisioningUpdates"
   )
 
   # upload to Beta by Crashlytics
   crashlytics(
-    ipa_path: "./ios/salon-ultimate.ipa",
+    ipa_path: "./SalonUltimateRN.ipa",
     api_token: "57ed7a29664d211a062ac7a41c806fc3aeec24f2",
     build_secret: "069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc",
     groups: "mobiledevs",

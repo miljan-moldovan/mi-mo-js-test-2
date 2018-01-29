@@ -716,10 +716,12 @@
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = FMPG38UD6Y;
+						ProvisioningStyle = Automatic;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = FMPG38UD6Y;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -1269,6 +1271,7 @@
 			baseConfigurationReference = 4CF4B2181BF81C4AA75496A1 /* Pods-SalonUltimateRNTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1291,6 +1294,7 @@
 			baseConfigurationReference = 7FFE3B4710D3873E0555F5B5 /* Pods-SalonUltimateRNTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				INFOPLIST_FILE = SalonUltimateRNTests/Info.plist;
@@ -1310,6 +1314,7 @@
 			baseConfigurationReference = 23B2DBD2D22FE5783C4C68F0 /* Pods-SalonUltimateRN.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = FMPG38UD6Y;
@@ -1331,6 +1336,7 @@
 			baseConfigurationReference = 8F4EC2570D5E715816704A20 /* Pods-SalonUltimateRN.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				INFOPLIST_FILE = SalonUltimateRN/Info.plist;
