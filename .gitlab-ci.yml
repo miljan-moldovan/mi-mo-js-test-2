@@ -10,6 +10,7 @@ build_project:
   script:
     - npm install
     - cd ./ios && pod install
+    - cd ./ios && xcodebuild -workspace SalonUltimateRN.xcworkspace -scheme SalonUltimateRN build 
   tags:
     - iOS
 
