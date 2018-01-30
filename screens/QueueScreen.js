@@ -14,6 +14,7 @@ import {
   RefreshControl,
   Animated,
   Dimensions,
+  TextInput
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -24,6 +25,7 @@ import * as actions from '../actions/queue.js';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 import FloatingButton from '../components/FloatingButton';
+import CustomModal from '../components/CustomModal';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -49,6 +51,7 @@ class QueueScreen extends React.Component {
       { key: SERVICED, title: 'BEING SERVICED' },
     ],
     index: 0,
+    isWalkOutVisible: false
   }
   componentWillMount() {
     this.props.receiveQueue();
@@ -110,6 +113,16 @@ class QueueScreen extends React.Component {
     navigate('WalkIn', { estimatedTime: 12 });
   }
 
+  _handleWalkOutPress = () => {
+    console.log('walk out!');
+    this.setState({ isWalkOutVisible: true })
+  }
+
+  _closeWalkOut = () => {
+    console.log('walk out!');
+    this.setState({ isWalkOutVisible: false })
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -129,6 +142,27 @@ class QueueScreen extends React.Component {
         <FloatingButton handlePress={this._handleWalkInPress}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
         </FloatingButton>
+        <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
+          <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
+        </FloatingButton>
+        <CustomModal isVisible={this.state.isWalkOutVisible} closeModal={this._closeWalkOut}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalImageContainer}>
+              <Image style={styles.modalImage}  source={require('../assets/images/walkoutModal/icon_walkout.png')} />
+            </View>
+            <Text style={styles.modalText}>Walk-out reason:
+              <Text style={styles.modalTextBold}>Other</Text>
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+            <TextInput
+              multiline
+              placeholder="Please insert other reasons"
+              placeholderColor="#0A274A"
+              style={{height: 120,borderColor: 'rgba(10,39,74,0.2)', borderWidth: 1, marginTop: 20, flex: 1, marginLeft:20,marginRight:20}}
+            />
+          </View>
+          </View>
+        </CustomModal>
       </View>
     );
   }
@@ -167,5 +201,36 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     marginTop: 5,
+  },
+  walkOutRoot: {
+    bottom: 138,
+  },
+  modalContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalImageContainer: {
+    height: 100,
+    width: 100,
+    backgroundColor: '#67A3C7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    paddingRight: 8,
+    marginBottom: 20,
+  },
+  modalImage: {
+    height: 27,
+    overflow: 'visible',
+  },
+  modalText: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 22,
+    color: '#3D3C3B',
+  },
+  modalTextBold: {
+    fontFamily: 'OpenSans-Bold',
+    fontSize: 22,
+    color: '#3D3C3B',
   },
 });
