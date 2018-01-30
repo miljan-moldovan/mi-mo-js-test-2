@@ -1,3 +1,4 @@
+// queue constants from webend redux
 export const QUEUE = 'QUEUE';
 export const QUEUE_RECEIVED = 'QUEUE_RECEIVED';
 export const QUEUE_FAILED = 'QUEUE_FAILED';

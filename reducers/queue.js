@@ -1,4 +1,4 @@
-import * as helpers from 'helpers';
+import * as helpers from './helpers';
 
 import {
   QUEUE,
@@ -19,7 +19,7 @@ import {
   GROUP_LEAD_UPDATE,
   UNCOMBINE,
   UPDATE_GROUPS
-} from 'redux/constants';
+} from '../actions/constants';
 
 const initialState = {
   loading: false,
@@ -37,6 +37,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
   const {type, data, error} = action;
+  console.log('***** queue.reducer', type, data, error);
 
   switch(type) {
     case QUEUE:
@@ -101,7 +102,7 @@ export default (state = initialState, action) => {
         }
         return item;
       });
-      
+
       return {
         ...state,
         waitingQueue: itemsCheckedIn
