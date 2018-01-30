@@ -127,7 +127,7 @@ class QueueScreen extends React.Component {
           swipeEnabled={false}
         />
         <FloatingButton handlePress={this._handleWalkInPress}>
-          <Text style={styles.textWalkInBtn}>WALK IN</Text>
+          <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
         </FloatingButton>
       </View>
     );
@@ -158,6 +158,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'OpenSans-Regular',
     fontSize: 14,
-    paddingBottom: 6
-  }
+    paddingBottom: 6,
+  },
+  textWalkInBtn: {
+    color: '#fff',
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '600',
+    marginTop: 5,
+  },
 });
