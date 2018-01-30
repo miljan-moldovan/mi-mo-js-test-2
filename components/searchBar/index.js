@@ -43,17 +43,16 @@ export default class SearchBar extends Component {
 
 
             <View style={styles.crossIconContainer}>
-              {this.searchText.length > 0 &&
+              {this.state.searchText.length > 0 &&
 
                 <TouchableHighlight
                   style={styles.crossIconButton}
                   underlayColor="transparent"
                   onPress={
                     () => {
-                      this.searchText = '';
-                      if(this.props.onChangeText) this.props.onChangeText('');
-                    }
-                  }>
+                      this.handleChange('');
+                    }}
+                >
                   <Image style={styles.crossIcon} source={require('../../assets/images/clientsSearch/icon_cross.png')} />
                 </TouchableHighlight>
 
@@ -61,22 +60,22 @@ export default class SearchBar extends Component {
             </View>
           </View>
         </View>
-          {this.props.showCancel &&
-              <View>
-                <TouchableHighlight
-                  style={styles.cancelSearchContainer}
-                  underlayColor="transparent"
-                  onPress={
-                    () => {
-                      this.searchText = '';
-                      if(this.props.onChangeText) this.props.onChangeText('');
-                    }
-                  }>
-                  <Text style={styles.cancelSearch}>Cancel</Text>
-                </TouchableHighlight>
-              </View>
+        {this.props.showCancel &&
+          <View style={styles.cancelContainer}>
+            <TouchableHighlight
+              style={styles.cancelSearchContainer}
+              underlayColor="transparent"
+              onPress={
+                () => {
+                  this.handleChange('');
+                }
+              }
+            >
+              <Text style={styles.cancelSearch}>Cancel</Text>
+            </TouchableHighlight>
+          </View>
           }
-        </View>
+      </View>
     );
   }
 }
@@ -99,6 +98,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     alignItems: 'center',
     height: 30,
+    flex: 4,
   },
   searchIconRight: {
     width: 13,
@@ -126,33 +126,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelSearchContainer:{
-    marginVertical: 15,
-    marginHorizontal: 5,
+  cancelSearchContainer: {
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  cancelSearch:{
+  cancelSearch: {
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'OpenSans-Regular',
-    marginVertical: 20,
     alignSelf: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
-  crossIcon:{
+  crossIcon: {
     width: 16,
     height: 16,
     marginRight: 15,
-    paddingTop: 1
+    paddingTop: 1,
   },
-  crossIconButton:{
+  crossIconButton: {
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  crossIconContainer:{
-    flex: 0.5
-  }
-})
+  cancelContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
