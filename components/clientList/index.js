@@ -1,4 +1,3 @@
-
 import React from "react";
 import {   View,
   Text,
@@ -168,7 +167,7 @@ class ClientList extends React.Component {
     onSectionChange(section:number){
 
       this.clients[section].selected = true;
-      
+
       if(this.clients[this.selectedIndex]){
         this.clients[this.selectedIndex].selected = false;
       }
