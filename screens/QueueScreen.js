@@ -13,7 +13,7 @@ import {
   FlatList,
   RefreshControl,
   Animated,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -23,6 +23,7 @@ import * as actions from '../actions/queue.js';
 
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
+import FloatingButton from '../components/FloatingButton';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -33,11 +34,12 @@ const initialLayout = {
 
 class QueueScreen extends React.Component {
   static navigationOptions = {
-    drawerLabel: (props) => (
+    drawerLabel: props => (
       <SideMenuItem
         {...props}
         title="Queue"
-        icon={require('../assets/images/sidemenu/icon_queue_menu.png')} />
+        icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
+      />
     ),
   };
   state = {
@@ -52,7 +54,7 @@ class QueueScreen extends React.Component {
     this.props.receiveQueue();
   }
   _onRefresh = () => {
-    this.setState({refreshing: true});
+    this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
 
@@ -96,21 +98,27 @@ class QueueScreen extends React.Component {
         return (
           <Queue data={this.props.serviceQueue} />
         );
-      }
+    }
   }
   _handleIndexChange = (index) => {
     console.log('_handleIndexChange ', index);
-    this.setState({ index })
+    this.setState({ index });
   };
+
+  _handleWalkInPress = () => {
+    const { navigate } = this.props.navigation;
+    navigate('WalkIn', { estimatedTime: 12 });
+  }
 
   render() {
     return (
       <View style={styles.container}>
         <Image
           style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')} />
+          source={require('../assets/images/login/blue.png')}
+        />
         <TabViewAnimated
-          style={{flex: 1, marginTop: 100}}
+          style={{ flex: 1, marginTop: 100 }}
           navigationState={this.state}
           renderScene={this._renderScene}
           renderHeader={this._renderBar}
@@ -118,6 +126,9 @@ class QueueScreen extends React.Component {
           initialLayout={initialLayout}
           swipeEnabled={false}
         />
+        <FloatingButton handlePress={this._handleWalkInPress}>
+          <Text style={styles.textWalkInBtn}>WALK IN</Text>
+        </FloatingButton>
       </View>
     );
   }
@@ -135,13 +146,13 @@ export default connect(mapStateToProps, actions)(QueueScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#333'
   },
   backgroundImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
+    top: 0,
   },
   tabLabel: {
     color: 'white',
