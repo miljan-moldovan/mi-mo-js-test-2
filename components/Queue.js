@@ -12,18 +12,16 @@ import {
   Modal,
   FlatList,
   RefreshControl,
-  TouchableHighlight
+  TouchableHighlight,
+  LayoutAnimation
 } from 'react-native';
-
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import Swipeable from 'react-native-swipeable';
 
-import * as actions from '../actions/login.js';
-
+import * as actions from '../actions/queue';
 import SideMenuItem from '../components/SideMenuItem';
-
-const queueData = require('./queue.json');
+import { QueueButton, QueueButtonTypes } from './QueueButton';
 
 class Queue extends React.Component {
   state = {
@@ -35,53 +33,120 @@ class Queue extends React.Component {
     // emulate refresh call
     setTimeout(()=>this.setState({refreshing: false}), 1000);
   }
-  leftContent = <Text>Pull to activate</Text>;
-
-  rightButtons = [
-    <TouchableHighlight><Text>Button 1</Text></TouchableHighlight>,
-    <TouchableHighlight><Text>Button 2</Text></TouchableHighlight>
-  ];
-
-  _renderItem = ({ item, index }) => {
-    // return (
-    //   <Swipeable leftContent={this.leftContent} rightButtons={this.rightButtons}>
-    //     <Text>My swipeable content</Text>
-    //   </Swipeable>
-    // );
-    // /*
+  getButtonsForItem = (item) => {
+    const { noShow, returnLater, clientReturned, service, walkout, checkin,
+      uncheckin, undoFinish, rebook, checkout, notesFormulas,
+      toWaiting, finishService } = QueueButtonTypes;
+    const { queueId } = item;
+    let left, right;
+    if (!item.serviced) {
+      if (!item.checked_in) {
+        left = [
+          <QueueButton type={noShow} left/>
+        ];
+        right = [
+          <QueueButton type={checkin} onPress={()=>{ LayoutAnimation.spring(); this.props.checkInClient(queueId) }} right/>,
+          <QueueButton type={service} onPress={()=>{ LayoutAnimation.spring(); this.props.startService(queueId) }} right/>
+        ];
+      } else {
+        left = [
+          <QueueButton type={returnLater} onPress={()=>{ LayoutAnimation.spring(); this.props.returnLater(queueId)}} left/>,
+          <QueueButton type={walkout} onPress={()=>{ LayoutAnimation.spring(); this.props.walkOut(queueId)}} left/>
+        ];
+        right = [
+          <QueueButton type={uncheckin} right/>,
+          <QueueButton type={service} onPress={()=>{ LayoutAnimation.spring(); this.props.startService(queueId)}} right/>
+        ];
+      }
+    } else {
+      if (item.finishService) {
+        left = [
+          <QueueButton type={undoFinish} left/>
+        ];
+        right = [
+          <QueueButton type={rebook} right/>,
+          <QueueButton type={checkout} right/>
+        ];
+      } else {
+        left = [
+          <QueueButton type={notesFormulas} left/>,
+          <QueueButton type={toWaiting} onPress={()=>{ LayoutAnimation.spring(); this.props.toWaiting(queueId)}} left/>
+        ];
+        right = [
+          <QueueButton type={finishService} onPress={()=>{ LayoutAnimation.spring(); this.props.finishService(queueId)}} right/>,
+          <QueueButton type={checkout} right/>
+        ];
+      }
+    }
+    return { left, right };
+  }
+  getLabelForItem = (item) => {
+    switch (item.status) {
+      case 7:
+        return (
+          <View style={styles.waitingTime}>
+            <Text style={styles.waitingTimeTextTop}>FINISHED</Text>
+          </View>
+        )
+      case 5:
+        return (
+          <View style={styles.waitingTime}>
+            <Text style={styles.waitingTimeTextTop}>RETURNING</Text>
+          </View>
+        );
+      case 1:
+        return (
+          <View style={styles.waitingTime}>
+            <Text style={styles.waitingTimeTextTop}>NOT ARRIVED</Text>
+          </View>
+        );
+      default:
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <View style={styles.waitingTime}>
+              <Text style={styles.waitingTimeTextTop}>Waiting</Text>
+              <Text style={styles.waitingTimeTextMid}>{item.processTime}</Text>
+              <Text style={styles.waitingTimeTextBottom}>min</Text>
+            </View>
+            <View style={styles.waitingTime}>
+              <Text style={styles.waitingTimeTextTop}>Est. Wait</Text>
+              <Text style={styles.waitingTimeTextMid}>{item.estimatedTime}</Text>
+              <Text style={styles.waitingTimeTextBottom}>min</Text>
+            </View>
+          </View>
+        );
+    }
+  }
+  renderItem = ({ item, index }) => {
+    const buttons = this.getButtonsForItem(item);
+    const label = this.getLabelForItem(item);
     return (
-      <View style={styles.itemContainer} key={item.queueId}>
-        <View style={styles.itemSummary}>
-          <Text style={styles.clientName}>{item.client.name} {item.client.lastName}</Text>
-          <Text style={styles.serviceName}>
-            {item.services[0].description}
-            {item.services.length > 1 ? '(+'+(item.services.length - 1)+')' : null}
-            &nbsp;with {item.employees[0].name} {item.employees[0].lastName}
-          </Text>
-          <Text style={styles.serviceTimeContainer}>at <Text style={styles.serviceTime}>{item.start_time}</Text></Text>
+      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
+        <View style={styles.itemContainer}>
+          <View style={styles.itemSummary}>
+            <Text style={styles.clientName}>{item.client.name} {item.client.lastName}</Text>
+            <Text style={styles.serviceName}>
+              {item.services[0].description}
+              {item.services.length > 1 ? '(+'+(item.services.length - 1)+')' : null}
+              &nbsp;with {item.employees[0].name} {item.employees[0].lastName}
+            </Text>
+            <Text style={styles.serviceTimeContainer}>at <Text style={styles.serviceTime}>{item.start_time}</Text></Text>
+          </View>
+          {label}
         </View>
-        <View style={styles.waitingTime}>
-          <Text style={styles.waitingTimeTextTop}>Waiting</Text>
-          <Text style={styles.waitingTimeTextMid}>30</Text>
-          <Text style={styles.waitingTimeTextBottom}>min</Text>
-        </View>
-        <View style={styles.waitingTime}>
-          <Text style={styles.waitingTimeTextTop}>Est. Wait</Text>
-          <Text style={styles.waitingTimeTextMid}>30</Text>
-          <Text style={styles.waitingTimeTextBottom}>min</Text>
-        </View>
-      </View>
+      </Swipeable>
     );
-    
+
   }
   _keyExtractor = (item, index) => item.queueId;
 
   render() {
+    console.log('queue.data: ', this.props.data);
     return (
       <View style={styles.container}>
         <FlatList
-          renderItem={this._renderItem}
-          data={queueData.data}
+          renderItem={this.renderItem}
+          data={this.props.data}
           keyExtractor={this._keyExtractor}
           refreshControl={
             <RefreshControl
@@ -102,14 +167,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#333'
   },
   itemContainer: {
-    width: '100%',
+    // width: '100%',
     height: 104,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(29,29,38,1)',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+
+
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   itemSummary: {
     marginLeft: 20,
@@ -153,5 +222,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'OpenSans-Regular',
     color: 'rgba(181,60,60,1)'
-  }
+  },
+  listItem: {
+    height: 75,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
 });

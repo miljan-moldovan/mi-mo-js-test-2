@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "moment": "^2.20.1",
     "native-base": "^2.3.7",
     "prop-types": "15.6.0",
     "react": "16.2.0",
