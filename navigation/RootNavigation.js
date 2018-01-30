@@ -19,6 +19,7 @@ import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import SearchBar from '../components/searchBar';
 import ProvidersScreen from '../screens/ProvidersScreen';
+import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -42,7 +43,7 @@ const LoginStackNavigator = StackNavigator(
   },
 );
 
-const clientSearchTitle = ()=>{
+const clientSearchTitle = () => {
   const styles = StyleSheet.create({
     title: {
       fontFamily: 'OpenSans-Regular',
@@ -67,28 +68,13 @@ const clientSearchTitle = ()=>{
 
 const QueueStackNavigator = StackNavigator(
   {
-    Providers: {
-      screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => props.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{  color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold'}}>Select Provider</Text>, subTitle: <Text style={{color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            {...rootProps}
-          />),
-      }),
-    },
 
     ClientsSearch: {
       screen: ClientsSearchScreen,
       navigationOptions: rootProps => ({
         headerStyle: {
           backgroundColor: 'transparent',
-          borderBottomWidth: 0
+          borderBottomWidth: 0,
         },
         headerTitle: 'Client Search',
         header: props => (
@@ -99,12 +85,44 @@ const QueueStackNavigator = StackNavigator(
               <SearchBar
                 {...searchProps}
                 placeHolder=""
-                showCancel={true}
-                searchIconPosition='left'
+                showCancel
+                searchIconPosition="left"
               />)}
           />),
       }),
     },
+    ChangeProvider: {
+      screen: ChangeProviderScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Change Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Service Queue</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+          />),
+      }),
+    },
+
+    Providers: {
+      screen: ProvidersScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Select Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+          />),
+      }),
+    },
+
 
     Main: {
       screen: QueueScreen,

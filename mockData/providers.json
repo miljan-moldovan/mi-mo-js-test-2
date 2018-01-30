@@ -5,83 +5,107 @@
 		"middleName": null,
 		"name": "Debora",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 115,
 		"lastName": "Rashid",
 		"middleName": null,
 		"name": "Gabriella",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 120,
 		"lastName": "King",
 		"middleName": "L",
 		"name": "Amanda",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 89,
 		"lastName": "Hensley",
 		"middleName": null,
 		"name": "Samantha",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 106,
 		"lastName": "Otero",
 		"middleName": null,
 		"name": "Debora",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 116,
 		"lastName": "Rashid",
 		"middleName": null,
 		"name": "Gabriella",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 121,
 		"lastName": "King",
 		"middleName": "L",
 		"name": "Amanda",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 90,
 		"lastName": "Hensley",
 		"middleName": null,
 		"name": "Samantha",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 107,
 		"lastName": "Otero",
 		"middleName": null,
 		"name": "Debora",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12, 
+		"minutes": 23
 	}, {
 		"id": 117,
 		"lastName": "Rashid",
 		"middleName": null,
 		"name": "Gabriella",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 122,
 		"lastName": "King",
 		"middleName": "L",
 		"name": "Amanda",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}, {
 		"id": 91,
 		"lastName": "Hensley",
 		"middleName": null,
 		"name": "Samantha",
 		"imagePath": "https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742",
-		"storeId": 1
+		"storeId": 1,
+		"price": 12,
+		"minutes": 23
 	}]
 }
