@@ -18,6 +18,7 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import SearchBar from '../components/searchBar';
+import ProvidersScreen from '../screens/ProvidersScreen';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -66,6 +67,22 @@ const clientSearchTitle = ()=>{
 
 const QueueStackNavigator = StackNavigator(
   {
+    Providers: {
+      screen: ProvidersScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => props.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{  color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold'}}>Select Provider</Text>, subTitle: <Text style={{color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+          />),
+      }),
+    },
+
     ClientsSearch: {
       screen: ClientsSearchScreen,
       navigationOptions: rootProps => ({
@@ -88,6 +105,7 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
+
     Main: {
       screen: QueueScreen,
       navigationOptions: {

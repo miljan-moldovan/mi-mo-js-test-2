@@ -80,24 +80,6 @@ class ProvidersScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')} />
-        <View style={styles.phoneToolBar}>
-        </View>
-        <View style={styles.providersHeader}>
-          <View style={styles.providersHeaderTopSection}>
-            <View style={styles.cancelIconContainer}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </View>
-            <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>Select Provider</Text>
-              <Text style={styles.headerSubTitle}>Walkin Service - 3 of 4</Text>
-            </View>
-            <View style={styles.newProviderContainer}>
-            </View>
-          </View>
-        </View>
         <View style={styles.providerListContainer}>
         <TouchableHighlight
             style={styles.firstAvailableButton}
@@ -108,7 +90,6 @@ class ProvidersScreen extends React.Component {
                  <View style={styles.firstAvailable}>
                   <Text style={styles.firstAvailableText}>FA</Text>
                  </View>
-
                </View>
                <View style={styles.providerData}>
                 <Text style={styles.providerName}>First Available</Text>
@@ -279,13 +260,13 @@ const styles = StyleSheet.create({
     providerPrice: {
         color: '#3D3C3B',
         fontSize: 12,
-        fontFamily: 'OpenSans-Regular',
+        fontFamily: 'OpenSans-Light',
         backgroundColor: 'transparent'
     },
     providerWaiting: {
         color: '#3D3C3B',
         fontSize: 10,
-        fontFamily: 'OpenSans-Regular',
+        fontFamily: 'OpenSans-Light',
         backgroundColor: 'transparent'
     },
     providerMinutes: {
@@ -297,7 +278,7 @@ const styles = StyleSheet.create({
     providerMin: {
         color: '#3D3C3B',
         fontSize: 10,
-        fontFamily: 'OpenSans-Regular',
+        fontFamily: 'OpenSans-Light',
         backgroundColor: 'transparent'
     },
     firstAvailableText: {
