@@ -19,7 +19,7 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import * as actions from '../actions/login.js';
+import * as actions from '../actions/queue.js';
 
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
@@ -45,62 +45,44 @@ class QueueScreen extends React.Component {
   state = {
     refreshing: false,
     routes: [
-      { key: WAITING, title: 'Schedule/Waiting' },
-      { key: SERVICED, title: 'Being Serviced' },
+      { key: WAITING, title: 'SCHEDULE/WAITING' },
+      { key: SERVICED, title: 'BEING SERVICED' },
     ],
     index: 0,
+  }
+  componentWillMount() {
+    this.props.receiveQueue();
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
-    setTimeout(() => this.setState({ refreshing: false }), 1000);
+
+    setTimeout(()=>this.setState({refreshing: false}), 1000);
   }
-  _renderItem = ({ item, index }) => (
-    <View style={styles.itemContainer} key={item.queueId}>
-      <View style={styles.itemSummary}>
-        <Text style={styles.clientName}>{item.client.name} {item.client.lastName}</Text>
-        <Text style={styles.serviceName}>
-          {item.services[0].description}
-          {item.services.length > 1 ? `(+${item.services.length - 1})` : null}
-            &nbsp;with {item.employees[0].name} {item.employees[0].lastName}
-        </Text>
-        <Text style={styles.serviceTimeContainer}>at <Text style={styles.serviceTime}>{item.start_time}</Text></Text>
-      </View>
-      <View style={styles.waitingTime}>
-        <Text style={styles.waitingTimeTextTop}>Waiting</Text>
-        <Text style={styles.waitingTimeTextMid}>30</Text>
-        <Text style={styles.waitingTimeTextBottom}>min</Text>
-      </View>
-      <View style={styles.waitingTime}>
-        <Text style={styles.waitingTimeTextTop}>Est. Wait</Text>
-        <Text style={styles.waitingTimeTextMid}>30</Text>
-        <Text style={styles.waitingTimeTextBottom}>min</Text>
-      </View>
-    </View>
-  )
 
   _renderLabel = ({ position, navigationState }) => ({ route, index }) => {
-    const inputRange = navigationState.routes.map((x, i) => i);
-    const outputRange = inputRange.map(inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc'));
-    const color = position.interpolate({
-      inputRange,
-      outputRange,
-    });
+    // const inputRange = navigationState.routes.map((x, i) => i);
+    // const outputRange = inputRange.map(
+    //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
+    // );
+    // const color = position.interpolate({
+    //   inputRange,
+    //   outputRange,
+    // });
     return (
-      <Animated.Text>
+      <Text style={styles.tabLabel}>
         {route.title}
-      </Animated.Text>
+      </Text>
     );
   };
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle={{ backgroundColor: 'transparent' }}
-      labelStyle={{ color: 'white' }}
-      style={{ backgroundColor: 'transparent' }}
-
+      tabStyle = {{ backgroundColor : 'transparent' }}
+      style = {{ backgroundColor: 'transparent' }}
       renderLabel={this._renderLabel(props)}
+      indicatorStyle = {{ backgroundColor: '#80BBDF', height: 6 }}
     />
   )
 
@@ -110,11 +92,11 @@ class QueueScreen extends React.Component {
     switch (route.key) {
       case WAITING:
         return (
-          <Queue />
+          <Queue data={this.props.waitingQueue} />
         );
       case SERVICED:
         return (
-          <Queue />
+          <Queue data={this.props.serviceQueue} />
         );
     }
   }
@@ -142,15 +124,24 @@ class QueueScreen extends React.Component {
           renderHeader={this._renderBar}
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
+          swipeEnabled={false}
         />
         <FloatingButton handlePress={this._handleWalkInPress}>
-          <Text style={styles.textWalkInBtn}>WALK IN</Text>
+          <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
         </FloatingButton>
       </View>
     );
   }
 }
-export default connect(null, actions)(QueueScreen);
+const mapStateToProps = (state, ownProps) => {
+  console.log('QueueScreen-map', state);
+  return {
+    waitingQueue: state.queue.waitingQueue,
+    serviceQueue: state.queue.serviceQueue
+  }
+}
+export default connect(mapStateToProps, actions)(QueueScreen);
+
 
 const styles = StyleSheet.create({
   container: {
@@ -163,68 +154,18 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     top: 0,
   },
-  itemContainer: {
-    width: '100%',
-    height: 104,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(29,29,38,1)',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  itemSummary: {
-    marginLeft: 20,
-    marginRight: 'auto',
-    paddingRight: 10,
-    flex: 1,
-  },
-  clientName: {
-    fontSize: 19,
-    fontFamily: 'OpenSans-Bold',
-    color: 'rgba(17,20,21,1)',
-  },
-  serviceName: {
-    fontSize: 12,
+  tabLabel: {
+    color: 'white',
     fontFamily: 'OpenSans-Regular',
-    color: '#999',
-  },
-  serviceTimeContainer: {
-    fontSize: 12,
-    fontFamily: 'OpenSans-Regular',
-    color: 'rgba(29,29,38,1)',
-  },
-  serviceTime: {
-    fontFamily: 'OpenSans-Bold',
-  },
-  waitingTime: {
-    marginRight: 15,
-    alignItems: 'center',
-  },
-  waitingTimeTextTop: {
-    fontSize: 10,
-    fontFamily: 'OpenSans-Regular',
-    color: '#999',
-  },
-  waitingTimeTextMid: {
-    fontSize: 24,
-    fontFamily: 'OpenSans-Regular',
-    color: 'rgba(181,60,60,1)',
-  },
-  waitingTimeTextBottom: {
-    fontSize: 10,
-    fontFamily: 'OpenSans-Regular',
-    color: 'rgba(181,60,60,1)',
+    fontSize: 14,
+    paddingBottom: 6,
   },
   textWalkInBtn: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
     fontFamily: 'OpenSans-Regular',
+    fontSize: 14,
     textAlign: 'center',
-    lineHeight: 16,
-    paddingTop: 5,
-    paddingLeft: 20,
-    paddingRight: 20,
+    fontWeight: '600',
+    marginTop: 5,
   },
 });
