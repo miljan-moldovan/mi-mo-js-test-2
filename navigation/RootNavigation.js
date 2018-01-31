@@ -46,84 +46,12 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
-
-    ClientsSearch: {
-      screen: ClientsSearchScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                      fontFamily: 'OpenSans-Regular',
-                      color: '#fff',
-                      fontSize: 20,
-                    }}
-            >
-                    Search Clients
-            </Text>),
-        }),
-        headerLeft: HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              }}
-            >
-              <Image
-                style={{
-                  width: 15,
-                  height: 15,
-                }}
-                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
-              />
-              <Text style={{
-                color: '#FFFFFF',
-                fontSize: 16,
-                fontFamily: 'OpenSans-Bold',
-                backgroundColor: 'transparent',
-                }}
-              >Back
-              </Text>
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          handlePress: () => console.log('pressed right header button'),
-          button: (
-            <Text style={{
-              color: '#FFFFFF',
-              fontSize: 16,
-              width: 50,
-              fontFamily: 'OpenSans-Bold',
-              backgroundColor: 'transparent',
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}
-            >New Client
-            </Text>),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            {...rootProps}
-            searchBar={searchProps => (
-              <SearchBar
-                {...searchProps}
-                placeHolder=""
-                showCancel
-                searchIconPosition="left"
-              />)}
-          />),
-      }),
+    Main: {
+      screen: QueueScreen,
+      navigationOptions: {
+        headerTitle: 'Queue',
+      },
     },
-
     Providers: {
       screen: ProvidersScreen,
       navigationOptions: rootProps => ({
@@ -152,13 +80,6 @@ const QueueStackNavigator = StackNavigator(
             {...props}
           />),
       }),
-    },
-
-    Main: {
-      screen: QueueScreen,
-      navigationOptions: {
-        headerTitle: 'Queue',
-      },
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -200,6 +121,82 @@ const QueueStackNavigator = StackNavigator(
     },
 
 
+    ClientsSearch: {
+      screen: ClientsSearchScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: HeaderMiddle({
+          title: (
+            <Text
+              style={{
+                          fontFamily: 'OpenSans-Regular',
+                          color: '#fff',
+                          fontSize: 20,
+                        }}
+            >
+                        Search Clients
+            </Text>),
+        }),
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Image
+                style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+              />
+              <Text style={{
+                    color: '#FFFFFF',
+                    fontSize: 16,
+                    fontFamily: 'OpenSans-Bold',
+                    backgroundColor: 'transparent',
+                    }}
+              >Back
+              </Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => console.log('pressed right header button'),
+          button: (
+            <Text style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  width: 50,
+                  fontFamily: 'OpenSans-Bold',
+                  backgroundColor: 'transparent',
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}
+            >New Client
+            </Text>),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder=""
+                showCancel
+                searchIconPosition="left"
+              />)}
+          />),
+      }),
+    },
   },
   {
 
