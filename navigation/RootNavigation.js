@@ -44,6 +44,12 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
+    Main: {
+      screen: QueueScreen,
+      navigationOptions: {
+        headerTitle: 'Queue',
+      },
+    },
     Providers: {
       screen: ProvidersScreen,
       navigationOptions: rootProps => ({
@@ -58,12 +64,6 @@ const QueueStackNavigator = StackNavigator(
             {...rootProps}
           />),
       }),
-    },
-    Main: {
-      screen: QueueScreen,
-      navigationOptions: {
-        headerTitle: 'Queue',
-      },
     },
     WalkIn: {
       screen: WalkInScreen,
