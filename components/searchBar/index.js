@@ -5,7 +5,7 @@ export default class SearchBar extends Component {
   constructor(props) {
     super(props);
     this.searchText = '';
-    this.state = {placeholder: props.placeholder};
+    this.state = { placeholder: props.placeholder };
   }
 
   state = {
@@ -14,12 +14,12 @@ export default class SearchBar extends Component {
   }
 
   componentWillMount() {
-    this.setState({isVisible: this.props.isVisible, searchText: ''})
+    this.setState({ isVisible: this.props.isVisible, searchText: '' });
   }
 
-  handleChange= searchText => {
-      this.setState({searchText});
-      if(this.props.onChangeText) this.props.onChangeText(searchText);
+  handleChange= (searchText) => {
+    this.setState({ searchText });
+    if (this.props.onChangeText) this.props.onChangeText(searchText);
   }
 
   render() {
@@ -33,7 +33,7 @@ export default class SearchBar extends Component {
             <TextInput
               style={styles.searchBarInput}
               placeholder={this.state.placeholder}
-              placeholderTextColor='rgba(255,255,255, 0.6)'
+              placeholderTextColor="rgba(255,255,255, 0.6)"
               onChangeText={this.handleChange}
               value={this.state.searchText}
             />
