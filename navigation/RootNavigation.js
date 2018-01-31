@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
-import { View, Image, StyleSheet, ImageBackground } from 'react-native';
-import { StackNavigator, DrawerNavigator, Header } from 'react-navigation';
+import { Text } from 'react-native';
+import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 
 import LoginScreen from './../screens/LoginScreen';
@@ -11,11 +11,13 @@ import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
+import ClientsSearchScreen from './../screens/ClientsSearchScreen';
 import ScorecardScreen from './../screens/ScorecardScreen';
 import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
-import WalkinHeader from '../components/WalkinHeader';
+import HeaderMiddle from '../components/HeaderMiddle';
+import SearchBar from '../components/searchBar';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -49,11 +51,62 @@ const QueueStackNavigator = StackNavigator(
     },
     WalkIn: {
       screen: WalkInScreen,
-      title: 'Walin',
-      navigationOptions: props => ({
-        headerTitle: WalkinHeader({ ...props, title: 'Walkin' }),
-        headerLeft: HeaderLeftText({ handlePress: () => props.navigation.goBack() }),
+      navigationOptions: rootProps => ({
+        headerTitle: HeaderMiddle({
+          title: (
+            <Text
+              style={{
+                fontFamily: 'OpenSans-Regular',
+                color: '#fff',
+                fontSize: 20,
+              }}
+            >
+              Walkin
+            </Text>),
+          subTitle: (
+            <Text
+              style={{
+                fontFamily: 'OpenSans-Regular',
+                color: '#fff',
+                fontSize: 12,
+              }}
+            >
+              Est wait time
+              <Text style={{
+                fontFamily: 'OpenSans-Bold',
+              }}
+              >
+                { ` ${rootProps.navigation.state.params.estimatedTime} min` }
+              </Text>
+            </Text>
+          ),
+        }),
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
       }),
+    },
+    ClientsSearch: {
+      screen: ClientsSearchScreen,
+      navigationOptions: {
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: 'Client Search',
+        header: props => (
+          <ImageHeader
+            {...props}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder=""
+                showCancel
+                searchIconPosition="left"
+              />)}
+          />),
+      },
     },
   },
   {
@@ -63,7 +116,6 @@ const QueueStackNavigator = StackNavigator(
         backgroundColor: 'transparent',
       },
       header: props => <ImageHeader {...props} />,
-      headerMode: 'none',
       headerTitleStyle: {
         fontFamily: 'OpenSans-Regular',
         fontSize: 20,
@@ -79,44 +131,6 @@ const QueueStackNavigator = StackNavigator(
     },
   },
 );
-// const QueueNavigator = (props) => (
-//   <View style={{ flex: 1 }}>
-//     <Image
-//       style={{
-//         position: 'absolute',
-//         width: '100%',
-//         height: '100%',
-//         resizeMode: 'cover'
-//       }}
-//       source={require('../assets/images/login/blue.png')} />
-//     <QueueStackNavigator />
-//   </View>
-// );
-// class QueueNavigator extends React.Component {
-//   static navigationOptions = {
-//     drawerLabel: (props) => (
-//       <SideMenuItem
-//         {...props}
-//         title="Queue"
-//         icon={require('../assets/images/sidemenu/icon_queue_menu.png')} />
-//     ),
-//   };
-//   render() {
-//     return (
-//       <View style={{ flex: 1,backgroundColor:'red' }}>
-//         <Image
-//           style={{
-//             position: 'absolute',
-//             width: '100%',
-//             height: '100%',
-//             resizeMode: 'cover'
-//           }}
-//           source={require('../assets/images/login/blue.png')} />
-//         <QueueStackNavigator />
-//       </View>
-//     );
-//   }
-// }
 
 const RootDrawerNavigator = DrawerNavigator(
   {
