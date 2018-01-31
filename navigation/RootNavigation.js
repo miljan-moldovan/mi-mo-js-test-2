@@ -221,12 +221,113 @@ const QueueStackNavigator = StackNavigator(
   },
 );
 
+
+const ClientsStackNavigator = StackNavigator(
+  {
+    Clients: {
+      screen: ClientsScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: HeaderMiddle({
+          title: (
+            <Text
+              style={{
+                          fontFamily: 'OpenSans-Regular',
+                          color: '#fff',
+                          fontSize: 20,
+                        }}
+            >
+                        Clients
+            </Text>),
+        }),
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Image
+                style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+              />
+              <Text style={{
+                    color: '#FFFFFF',
+                    fontSize: 16,
+                    fontFamily: 'OpenSans-Bold',
+                    backgroundColor: 'transparent',
+                    }}
+              >Back
+              </Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => console.log('pressed right header button'),
+          button: (
+            <Text style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  width: 50,
+                  fontFamily: 'OpenSans-Bold',
+                  backgroundColor: 'transparent',
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}
+            >New Client
+            </Text>),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder="Search by name, phone or email"
+                searchIconPosition="right"
+              />)}
+          />),
+      }),
+    },
+  },
+  {
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: 'transparent',
+      },
+      header: props => <ImageHeader {...props} />,
+      headerTitleStyle: {
+        fontFamily: 'OpenSans-Regular',
+        fontSize: 20,
+        color: '#fff',
+      },
+      drawerLabel: props => (
+        <SideMenuItem
+          {...props}
+          title="Queue"
+          icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
+        />
+      ),
+    },
+  },
+);
+
 const RootDrawerNavigator = DrawerNavigator(
   {
     Queue: { screen: QueueStackNavigator },
+    Clients: { screen: ClientsStackNavigator },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentsScreen },
-    Clients: { screen: ClientsScreen },
     Scorecard: { screen: ScorecardScreen },
   },
   {
