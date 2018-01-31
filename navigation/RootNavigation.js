@@ -82,7 +82,6 @@ const QueueStackNavigator = StackNavigator(
           ),
         }),
         headerLeft: HeaderLeftText({
-          ...rootProps,
           handlePress: () => rootProps.navigation.goBack(),
         }),
       }),

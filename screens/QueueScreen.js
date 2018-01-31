@@ -14,7 +14,6 @@ import {
   RefreshControl,
   Animated,
   Dimensions,
-  TextInput
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -26,6 +25,7 @@ import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 import FloatingButton from '../components/FloatingButton';
 import CustomModal from '../components/CustomModal';
+import SalonTextInput from '../components/SalonTextInput';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -51,7 +51,8 @@ class QueueScreen extends React.Component {
       { key: SERVICED, title: 'BEING SERVICED' },
     ],
     index: 0,
-    isWalkOutVisible: false
+    isWalkoutVisible: false,
+    walkoutText: ''
   }
   componentWillMount() {
     this.props.receiveQueue();
@@ -114,14 +115,16 @@ class QueueScreen extends React.Component {
   }
 
   _handleWalkOutPress = () => {
-    console.log('walk out!');
-    this.setState({ isWalkOutVisible: true })
+    this.setState({ isWalkoutVisible: true });
   }
 
   _closeWalkOut = () => {
-    console.log('walk out!');
-    this.setState({ isWalkOutVisible: false })
+    this.setState({ isWalkoutVisible: false });
   }
+
+  _handleWalkOutTextChange = (ev) => {
+    this.setState({ walkoutText: ev.nativeEvent.text });
+  };
 
   render() {
     return (
@@ -145,22 +148,33 @@ class QueueScreen extends React.Component {
         <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
         </FloatingButton>
-        <CustomModal isVisible={this.state.isWalkOutVisible} closeModal={this._closeWalkOut}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalImageContainer}>
-              <Image style={styles.modalImage}  source={require('../assets/images/walkoutModal/icon_walkout.png')} />
+        <CustomModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
+          <View style={styles.walkoutContainer}>
+            <View style={styles.walkoutImageContainer}>
+              <Image style={styles.walkoutImage}  source={require('../assets/images/walkoutModal/icon_walkout.png')} />
             </View>
-            <Text style={styles.modalText}>Walk-out reason:
-              <Text style={styles.modalTextBold}>Other</Text>
+            <Text style={styles.walkoutText}>Walk-out reason:
+              <Text style={styles.walkoutTextBold}>Other</Text>
             </Text>
-            <View style={{flexDirection: 'row'}}>
-            <TextInput
-              multiline
-              placeholder="Please insert other reasons"
-              placeholderColor="#0A274A"
-              style={{height: 120,borderColor: 'rgba(10,39,74,0.2)', borderWidth: 1, marginTop: 20, flex: 1, marginLeft:20,marginRight:20}}
-            />
-          </View>
+            <View style={styles.walkoutTextContainer}>
+              <SalonTextInput
+                multiline
+                placeholder="Please insert other reasons"
+                placeholderColor="#0A274A"
+                style={styles.walkoutInput}
+                placeholderStyle={styles.walkoutPlaceholder}
+                text={this.state.walkoutText}
+                onChange={this._handleWalkOutTextChange}
+              />
+            </View>
+            <View style={styles.walkoutButtonContainer}>
+              <TouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
+                <Text style={styles.walkoutTextCancel}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
+                <Text style={styles.walkoutTextOk}>Ok</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </CustomModal>
       </View>
@@ -205,11 +219,11 @@ const styles = StyleSheet.create({
   walkOutRoot: {
     bottom: 138,
   },
-  modalContainer: {
+  walkoutContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modalImageContainer: {
+  walkoutImageContainer: {
     height: 100,
     width: 100,
     backgroundColor: '#67A3C7',
@@ -219,18 +233,78 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     marginBottom: 20,
   },
-  modalImage: {
+  walkoutImage: {
     height: 27,
     overflow: 'visible',
   },
-  modalText: {
+  walkoutText: {
     fontFamily: 'OpenSans-Regular',
     fontSize: 22,
     color: '#3D3C3B',
   },
-  modalTextBold: {
+  walkoutTextBold: {
     fontFamily: 'OpenSans-Bold',
     fontSize: 22,
     color: '#3D3C3B',
+  },
+  walkoutInput: {
+    color: '#3D3C3B',
+    height: 120,
+    borderColor: 'rgba(10,39,74,0.2)',
+    borderWidth: 1,
+    marginTop: 20,
+    flex: 1,
+    marginLeft: 20,
+    marginRight: 20,
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 16,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  walkoutPlaceholder: {
+    fontStyle: 'italic',
+  },
+  walkoutTextContainer: {
+    flexDirection: 'row',
+  },
+  walkoutButtonContainer: {
+    flexDirection: 'row',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 20,
+  },
+  walkoutButtonOk: {
+    backgroundColor: '#67A3C7',
+    flex: 1,
+    height: 60,
+    borderRadius: 80,
+    marginLeft: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#67A3C7',
+  },
+  walkoutButtonCancel: {
+    backgroundColor: '#fff',
+    flex: 1,
+    height: 60,
+    borderRadius: 80,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#67A3C7',
+  },
+  walkoutTextOk: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'OpenSans-Regular',
+  },
+  walkoutTextCancel: {
+    color: '#67A3C7',
+    fontSize: 18,
+    fontFamily: 'OpenSans-Regular',
   },
 });
