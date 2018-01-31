@@ -101,14 +101,12 @@ const styles = StyleSheet.create({
   },
   newClientButton: {
     borderRadius: 30,
-    height: '100%',
-    width: '100%',
     flexDirection: 'column',
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    // width: 200,
-    // height: 50,
+    width: 200,
+    height: 50,
   },
   newClient: {
     color: '#3078A4',
@@ -129,13 +127,13 @@ class ClientList extends React.Component {
       super(props);
 
       const clients = props.clients.sort(this.compareByName);
-      this.clients = this.clients(clients);
+      this.clients = this.prepareClients(clients);
       this.state = { clients, boldWords: props.boldWords };
     }
 
     componentWillReceiveProps(nextProps) {
       const clients = nextProps.clients.sort(this.compareByName);
-      this.clients = this.clients(clients);
+      this.clients = this.prepareClients(clients);
       this.setState({ clients, boldWords: nextProps.boldWords });
       this.listRef.reloadData();
       this.indexes.reloadData();
@@ -154,7 +152,7 @@ class ClientList extends React.Component {
       return null;
     }
 
-    clients(clients) {
+    prepareClients(clients) {
       const dataSource = [];
 
       for (let i = 0; i < clients.length; i += 1) {

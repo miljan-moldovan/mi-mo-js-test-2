@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { Text } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 
@@ -17,6 +17,7 @@ import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
+import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
 import ProvidersScreen from '../screens/ProvidersScreen';
 import ChangeProviderScreen from '../screens/ChangeProviderScreen';
@@ -45,6 +46,114 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
+
+    ClientsSearch: {
+      screen: ClientsSearchScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: HeaderMiddle({
+          title: (
+            <Text
+              style={{
+                      fontFamily: 'OpenSans-Regular',
+                      color: '#fff',
+                      fontSize: 20,
+                    }}
+            >
+                    Search Clients
+            </Text>),
+        }),
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              }}
+            >
+              <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                }}
+                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+              />
+              <Text style={{
+                color: '#FFFFFF',
+                fontSize: 16,
+                fontFamily: 'OpenSans-Bold',
+                backgroundColor: 'transparent',
+                }}
+              >Back
+              </Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => console.log('pressed right header button'),
+          button: (
+            <Text style={{
+              color: '#FFFFFF',
+              fontSize: 16,
+              width: 50,
+              fontFamily: 'OpenSans-Bold',
+              backgroundColor: 'transparent',
+              alignSelf: 'center',
+              alignItems: 'center',
+            }}
+            >New Client
+            </Text>),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder=""
+                showCancel
+                searchIconPosition="left"
+              />)}
+          />),
+      }),
+    },
+
+    Providers: {
+      screen: ProvidersScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Select Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+          />),
+      }),
+    },
+
+    ChangeProvider: {
+      screen: ChangeProviderScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Change Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Service Queue</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+          />),
+      }),
+    },
+
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -89,66 +198,8 @@ const QueueStackNavigator = StackNavigator(
         }),
       }),
     },
-    ClientsSearch: {
-      screen: ClientsSearchScreen,
-      navigationOptions: {
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: 'Client Search',
-        header: props => (
-          <ImageHeader
-            {...props}
-            searchBar={searchProps => (
-              <SearchBar
-                {...searchProps}
-                placeHolder=""
-                showCancel
-                searchIconPosition="left"
-              />)}
-          />),
-      },
-    },
-    ChangeProvider: {
-      screen: ChangeProviderScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Change Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Service Queue</Text> }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            {...rootProps}
-          />),
-      }),
-    },
-
-    Providers: {
-      screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Select Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            {...rootProps}
-          />),
-      }),
-    },
 
 
-    Main: {
-      screen: QueueScreen,
-      navigationOptions: {
-        headerTitle: 'Queue',
-      },
-    },
   },
   {
 

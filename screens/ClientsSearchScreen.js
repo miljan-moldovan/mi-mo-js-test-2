@@ -210,6 +210,7 @@ class ClientsSearchScreen extends React.Component {
   }
 
   componentWillMount() {
+    console.log('dfsdf');
     this.props.navigation.setParams({
       onChangeText: searchText => this.filterClients(searchText),
     });
@@ -217,6 +218,7 @@ class ClientsSearchScreen extends React.Component {
   }
 
   filterClients(searchText) {
+    console.log('searchText: ', searchText);
     if (searchText.length === 0) {
       this.setState({ filteredClients: this.state.clients, searchText, showWalkIn: false });
     } else {
