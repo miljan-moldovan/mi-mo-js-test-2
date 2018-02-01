@@ -18,11 +18,37 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import SearchBar from '../components/searchBar';
+import PromotionsScreen from '../screens/PromotionsScreen';
 import ProvidersScreen from '../screens/ProvidersScreen';
-
+import ServicesScreen from '../screens/ServicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
 
+import WalkInSteps from '../constants/WalkInSteps';
+
+const walkInHeader = rootProps => HeaderMiddle({
+  title: (
+    <Text
+      style={{
+        fontFamily: 'OpenSans-Regular',
+        color: '#fff',
+        fontSize: 20,
+      }}
+    >
+      {`${WalkInSteps[rootProps.navigation.state.params.currentStep]}`}
+    </Text>
+  ),
+  subTitle: (
+    <Text
+      style={{
+        fontFamily: 'OpenSans-Regular',
+        color: '#fff',
+        fontSize: 12,
+      }}
+    >{`Walkin Service - ${rootProps.navigation.state.params.currentStep} of 4`}
+    </Text>
+  ),
+});
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -49,21 +75,6 @@ const QueueStackNavigator = StackNavigator(
       navigationOptions: {
         headerTitle: 'Queue',
       },
-    },
-    Providers: {
-      screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => props.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{  color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold'}}>Select Provider</Text>, subTitle: <Text style={{color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            {...rootProps}
-          />),
-      }),
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -103,7 +114,38 @@ const QueueStackNavigator = StackNavigator(
         }),
       }),
     },
-
+    Services: {
+      screen: ServicesScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: walkInHeader(rootProps),
+      }),
+    },
+    Providers: {
+      screen: ProvidersScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: walkInHeader(rootProps),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+          />),
+      }),
+    },
+    Promotions: {
+      screen: PromotionsScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: walkInHeader(rootProps),
+        header: props => (
+          <ImageHeader
+            {...props}
+            {...rootProps}
+          />),
+      }),
+    },
     ClientsSearch: {
       screen: ClientsSearchScreen,
       navigationOptions: {

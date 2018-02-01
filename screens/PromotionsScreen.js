@@ -1,26 +1,18 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   FlatList,
-  SectionList,
   TouchableHighlight,
-  TextInput
 } from 'react-native';
-
-import { Button } from 'native-base';
 import { connect } from 'react-redux';
-import SideMenuItem from '../components/SideMenuItem';
-import SearchBar from '../components/SearchBar';
-import CustomModal from '../components/CustomModal';
 
-export default class PromotionsScreen extends React.Component {
+import SideMenuItem from '../components/SideMenuItem';
+
+
+class PromotionsScreen extends React.Component {
   static navigationOptions = {
     drawerLabel: (props) => (
       <SideMenuItem
@@ -150,104 +142,31 @@ export default class PromotionsScreen extends React.Component {
   }
 
   renderList() {
-      return (
-        <View style={{flex: 1, alignSelf: "stretch", backgroundColor: "white"}}>
-          <View style={styles.sectionNavigate}>
-              <Text style={[styles.listText, {fontFamily: "OpenSans-Bold"}]}>No Promotion</Text>
-          </View>
-          <FlatList
-            style={{flex: 1, alignSelf: "stretch", backgroundColor: "white"}}
-            data={this.state.activeData}
-            renderItem={this._renderItem}
-            // keyExtractor={this._keyExtractor}
-          />
+    return (
+      <View style={{flex: 1, alignSelf: "stretch", backgroundColor: "white"}}>
+        <View style={styles.sectionNavigate}>
+            <Text style={[styles.listText, {fontFamily: "OpenSans-Bold"}]}>No Promotion</Text>
         </View>
-      );
+        <FlatList
+          style={{flex: 1, alignSelf: "stretch", backgroundColor: "white"}}
+          data={this.state.activeData}
+          renderItem={this._renderItem}
+        />
+      </View>
+    );
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')} />
-        <View style={styles.headerRow}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Select Promotion</Text>
-            <Text style={styles.subTitle}>Walkin Service - 4 of 4</Text>
-          </View>
-        </View>
-        <View style={styles.headerRow}>
-          <View style={{flex: 1, flexDirection: "row"}}>
-            <SearchBar showCancel={false} placeholder='Search by name or promo code' searchIconPosition='right' style={styles.seachBar} onChangeText={(searchText) => {this._filterServices(searchText)}}/>
-          </View>
-        </View>
-        <View style={styles.searchContainer}>
-
-        </View>
         <View style={styles.listContainer}>
           {this.renderList()}
         </View>
-        <CustomModal
-          isVisible={this.state.modalVisible}
-          closeButton={false}
-          closeModal={()=> {this.setState({modalVisible: false})}}
-        >
-          <View style={{alignSelf:"stretch", alignItems: "center", justifyContent: "center"}}>
-            <Image style={{height: 99, width: 99, margin: 25}} source={require('../assets/images/clubCardModal/icon_clubcard.png')} />
-
-          </View>
-          <View style={{flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-            <Text style={{color: "#0A274A", fontSize: 22, fontFamily: "OpenSans-Bold", marginBottom: 8}}>Scan Club Card</Text>
-            <Text style={{color: "#0A274A", fontSize: 15}}>Please enter the card number</Text>
-          </View>
-          <View style={{paddingHorizontal: 30, marginVertical: 20, alignSelf: "stretch"}}>
-            <TextInput
-              style={{height: 50, paddingHorizontal: 13, marginVertical: 15, paddingVertical: 11, borderColor: 'rgba(10,39,74,0.2)', borderWidth: 1}}
-              onChangeText={(text) => this.setState({text})}
-              value={"Whatever"}
-            />
-          </View>
-          <View style={{flexDirection: "row", justifyContent: "space-around", paddingHorizontal: 0}}>
-            <TouchableHighlight
-              style={{
-                width: 140,
-                height: 60,
-                backgroundColor: "white",
-                borderColor: "#67A3C7",
-                borderWidth: 1,
-                borderRadius: 30,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <View><Text style={{color: "#67A3C7", fontSize: 18}}>Cancel</Text></View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={{
-                width: 140,
-                height: 60,
-                backgroundColor: "#67A3C7",
-                borderColor: "#67A3C7",
-                borderWidth: 1,
-                borderRadius: 30,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <View><Text style={{color: "white", fontSize: 18}}>Ok</Text></View>
-            </TouchableHighlight>
-          </View>
-        </CustomModal>
       </View>
     );
   }
 }
-// export default connect(null, )(ServicesScreen);
-
-const modalStyles = StyleSheet.create({
-  
-});
+export default connect(null)(PromotionsScreen);
 
 const styles = StyleSheet.create({
   container: {

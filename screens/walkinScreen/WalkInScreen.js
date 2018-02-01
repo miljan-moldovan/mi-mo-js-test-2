@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 
 import rightArrow from '../../assets/images/walkinScreen/icon_arrow_right_xs.png';
 import serchImage from '../../assets/images/walkinScreen/icon_search_w.png';
@@ -88,18 +88,39 @@ class WalkInScreen extends Component {
           <Text style={styles.textInput}>Phone</Text>
         </View>
         {this.renderTitle('SERVICE')}
-        <View style={styles.listItemContainer}>
+        <TouchableOpacity
+          style={styles.listItemContainer}
+          onPress={() => {
+            const { navigate } = this.props.navigation;
+
+            navigate('Services', { currentStep: 1 });
+          }}
+        >
           <Text style={styles.textInput}>Service</Text>
           <Image source={rightArrow} />
-        </View>
-        <View style={styles.listItemContainer}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.listItemContainer}
+          onPress={() => {
+            const { navigate } = this.props.navigation;
+
+            navigate('Providers');
+          }}
+        >
           <Text style={styles.textInput}>Provider</Text>
           <Image source={rightArrow} />
-        </View>
-        <View style={styles.listItemContainer}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.listItemContainer}
+          onPress={() => {
+            const { navigate } = this.props.navigation;
+
+            navigate('Promotions');
+          }}
+        >
           <Text style={styles.textInput}>Promo</Text>
           <Image source={rightArrow} />
-        </View>
+        </TouchableOpacity>
         <View style={styles.btnContainer}>
           <Text style={styles.textBtn}>ADD TO QUEUE</Text>
         </View>

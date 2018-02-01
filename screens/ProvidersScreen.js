@@ -57,7 +57,15 @@ class ProvidersScreen extends React.Component {
           <TouchableHighlight
               style={styles.provider}
               underlayColor="transparent"
-              onPress={() => {}}>
+              onPress={() => {
+                const {navigate} = this.props.navigation;
+                const {params} = this.props.navigation.state;
+debugger //eslint-disable-line
+                this.props.navigation.setParams({
+                  currentStep: 4,
+                });
+                navigate('Promotions');
+              }}>
               <View style={{flex: 1, flexDirection: 'row'}}>
                  <View style={styles.providerImageContainer}>
                    <View style={styles.providerRound}>

@@ -58,10 +58,10 @@ class QueueScreen extends React.Component {
     // FIXME this._refreshData();
     // emulate refresh call
 
-    setTimeout(()=>this.setState({refreshing: false}), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 1000);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, index }) => {
+  _renderLabel = ({ position, navigationState }) => ({ route, index }) =>
     // const inputRange = navigationState.routes.map((x, i) => i);
     // const outputRange = inputRange.map(
     //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
@@ -70,19 +70,19 @@ class QueueScreen extends React.Component {
     //   inputRange,
     //   outputRange,
     // });
-    return (
+    (
       <Text style={styles.tabLabel}>
         {route.title}
       </Text>
-    );
-  };
+    )
+  ;
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle = {{ backgroundColor : 'transparent' }}
-      style = {{ backgroundColor: 'transparent' }}
+      tabStyle={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: 'transparent' }}
       renderLabel={this._renderLabel(props)}
-      indicatorStyle = {{ backgroundColor: '#80BBDF', height: 6 }}
+      indicatorStyle={{ backgroundColor: '#80BBDF', height: 6 }}
     />
   )
 
@@ -98,6 +98,8 @@ class QueueScreen extends React.Component {
         return (
           <Queue data={this.props.serviceQueue} />
         );
+      default:
+        return route;
     }
   }
   _handleIndexChange = (index) => {
@@ -133,13 +135,10 @@ class QueueScreen extends React.Component {
     );
   }
 }
-const mapStateToProps = (state, ownProps) => {
-  console.log('QueueScreen-map', state);
-  return {
-    waitingQueue: state.queue.waitingQueue,
-    serviceQueue: state.queue.serviceQueue
-  }
-}
+const mapStateToProps = (state, ownProps) => ({
+  waitingQueue: state.queue.waitingQueue,
+  serviceQueue: state.queue.serviceQueue,
+});
 export default connect(mapStateToProps, actions)(QueueScreen);
 
 
