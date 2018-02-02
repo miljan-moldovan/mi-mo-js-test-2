@@ -24,6 +24,14 @@ lane :beta do
     path: "./ios/SalonUltimateRN.xcodeproj"
   )
   
+  ci_job_id = ENV['CI_JOB_ID']
+  if ci_job_id
+    increment_build_number(
+      build_number: ci_job_id,
+      xcodeproj: "./ios/SalonUltimateRN.xcodeproj"
+    )
+  end
+  
   # build your iOS app
   gym(
     workspace: "./ios/SalonUltimateRN.xcworkspace",
