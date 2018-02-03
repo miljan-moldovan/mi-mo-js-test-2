@@ -13,42 +13,18 @@ import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
 import ClientsSearchScreen from './../screens/ClientsSearchScreen';
 import ScorecardScreen from './../screens/ScorecardScreen';
-import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
+import WalkInScreen from '../screens/walkinScreen';
+import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
+import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import SearchBar from '../components/searchBar';
 import PromotionsScreen from '../screens/PromotionsScreen';
-import ProvidersScreen from '../screens/ProvidersScreen';
-import ServicesScreen from '../screens/ServicesScreen';
+import ProvidersScreen from '../screens/providersScreen';
+import ServicesScreen from '../screens/servicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
-
-import WalkInSteps from '../constants/WalkInSteps';
-
-const walkInHeader = rootProps => HeaderMiddle({
-  title: (
-    <Text
-      style={{
-        fontFamily: 'OpenSans-Regular',
-        color: '#fff',
-        fontSize: 20,
-      }}
-    >
-      {`${WalkInSteps[rootProps.navigation.state.params.currentStep]}`}
-    </Text>
-  ),
-  subTitle: (
-    <Text
-      style={{
-        fontFamily: 'OpenSans-Regular',
-        color: '#fff',
-        fontSize: 12,
-      }}
-    >{`Walkin Service - ${rootProps.navigation.state.params.currentStep} of 4`}
-    </Text>
-  ),
-});
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -79,35 +55,7 @@ const QueueStackNavigator = StackNavigator(
     WalkIn: {
       screen: WalkInScreen,
       navigationOptions: rootProps => ({
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 20,
-              }}
-            >
-              Walkin
-            </Text>),
-          subTitle: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 12,
-              }}
-            >
-              Est wait time
-              <Text style={{
-                fontFamily: 'OpenSans-Bold',
-              }}
-              >
-                { ` ${rootProps.navigation.state.params.estimatedTime} min` }
-              </Text>
-            </Text>
-          ),
-        }),
+        headerTitle: <WalkInHeader rootProps={rootProps} />,
         headerLeft: HeaderLeftText({
           ...rootProps,
           handlePress: () => rootProps.navigation.goBack(),
@@ -117,7 +65,7 @@ const QueueStackNavigator = StackNavigator(
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
-        headerTitle: walkInHeader(rootProps),
+        headerTitle: <WalkInStepHeader rootProps={rootProps} />,
       }),
     },
     Providers: {
@@ -127,7 +75,7 @@ const QueueStackNavigator = StackNavigator(
         headerStyle: {
           backgroundColor: 'transparent',
         },
-        headerTitle: walkInHeader(rootProps),
+        headerTitle: <WalkInStepHeader rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
@@ -138,7 +86,7 @@ const QueueStackNavigator = StackNavigator(
     Promotions: {
       screen: PromotionsScreen,
       navigationOptions: rootProps => ({
-        headerTitle: walkInHeader(rootProps),
+        headerTitle: <WalkInStepHeader rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
@@ -234,9 +182,10 @@ class RootNavigator extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  console.log('RootNavigator-map');
+  console.log('RootNavigator-map', state, ownProps);
   return {
     auth: state.auth,
+    walkInState: state.walkInReducer,
   };
 };
 

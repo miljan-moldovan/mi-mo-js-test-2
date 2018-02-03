@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import {
   Image,
@@ -8,50 +7,9 @@ import {
   View,
   FlatList,
 } from 'react-native';
+import SideMenuItem from '../../components/SideMenuItem';
 
-import { connect } from 'react-redux';
-import SideMenuItem from '../components/SideMenuItem';
-import WalkInSteps from '../constants/WalkInSteps';
-
-const services = {
-  data: [{
-    id: 1,
-    name: 'Adult',
-    services: [{
-      id: 4,
-      name: 'Service 1',
-      duration: 20,
-    }, {
-      id: 5,
-      name: 'Service 2',
-      duration: 10,
-    }],
-  }, {
-    id: 2,
-    name: 'Kid',
-    services: [{
-      id: 6,
-      name: 'Service 1',
-      duration: 20,
-    }, {
-      id: 7,
-      name: 'Service 2',
-      duration: 10,
-    }],
-  }, {
-    id: 3,
-    name: 'None',
-    services: [{
-      id: 8,
-      name: 'Service 1',
-      duration: 20,
-    }, {
-      id: 9,
-      name: 'Service 2',
-      duration: 10,
-    }],
-  }],
-};
+const services = require('../../mockData/services.json');
 
 const styles = StyleSheet.create({
   container: {
@@ -168,7 +126,7 @@ class ServicesScreen extends React.Component {
       <SideMenuItem
         {...props}
         title="Services"
-        icon={require('../assets/images/sidemenu/icon_sales_menu.png')}
+        icon={require('../../assets/images/sidemenu/icon_sales_menu.png')}
       />
     ),
   };
@@ -256,15 +214,14 @@ class ServicesScreen extends React.Component {
     return matches;
   }
 
-  _renderItem = ({ item, index }) => {
-    const { data, key } = item;
+  _renderItem = ({ item }) => {
+    const { data } = item;
 
     return (
       <TouchableOpacity
         style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
-        onPress={(e) => {
+        onPress={() => {
           const { navigate } = this.props.navigation;
-          const { params } = this.props.navigation.state;
 
           if (this.hasMappedChildren(data)) {
             this.setState({
@@ -273,9 +230,10 @@ class ServicesScreen extends React.Component {
               parentList: data,
             });
 
-            this.props.navigation.setParams({ currentStep: 2 });
+            this.props.walkInActions.setCurrentStep(2);
           } else {
-            navigate('Providers', { currentStep: 3, selectedService: data.id });
+            this.props.walkInActions.setCurrentStep(3);
+            navigate('Providers');
           }
           this.setState({ activeListItem: data.id });
         }}
@@ -292,7 +250,7 @@ class ServicesScreen extends React.Component {
               { data.duration !== undefined && <Text style={styles.durationText}>{data.duration}m</Text>}
             </View>
             { this.hasMappedChildren(data) ? (
-              <Image style={styles.caretIcon} source={require('../assets/images/icons/icon_caret_right.png')} />
+              <Image style={styles.caretIcon} source={require('../../assets/images/icons/icon_caret_right.png')} />
               ) : null }
           </View>
         </View>
@@ -320,7 +278,7 @@ class ServicesScreen extends React.Component {
                 flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
                 }}
               >
-                <Image style={[styles.caretIcon, { alignSelf: 'center', marginRight: 5 }]} source={require('../assets/images/icons/icon_caret_left.png')} />
+                <Image style={[styles.caretIcon, { alignSelf: 'center', marginRight: 5 }]} source={require('../../assets/images/icons/icon_caret_left.png')} />
                 <Text style={{
                   fontFamily: 'OpenSans-SemiBold', fontSize: 13, alignSelf: 'center', lineHeight: 25,
                   }}
@@ -357,5 +315,4 @@ class ServicesScreen extends React.Component {
     );
   }
 }
-export default connect(null)(ServicesScreen);
-
+export default ServicesScreen;

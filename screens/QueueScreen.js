@@ -18,9 +18,10 @@ import {
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import * as actions from '../actions/queue.js';
-
+import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 import FloatingButton from '../components/FloatingButton';
@@ -51,7 +52,8 @@ class QueueScreen extends React.Component {
     index: 0,
   }
   componentWillMount() {
-    this.props.receiveQueue();
+    this.props.actions.receiveQueue();
+    console.log('walkin reducer', this.props);
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -87,8 +89,6 @@ class QueueScreen extends React.Component {
   )
 
   _renderScene = ({ route }) => {
-    console.log('_renderScene', route);
-
     switch (route.key) {
       case WAITING:
         return (
@@ -109,7 +109,9 @@ class QueueScreen extends React.Component {
 
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
-    navigate('WalkIn', { estimatedTime: 12 });
+
+    this.props.walkInActions.setEstimatedTime(17);
+    navigate('WalkIn');
   }
 
   render() {
@@ -138,8 +140,14 @@ class QueueScreen extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
   serviceQueue: state.queue.serviceQueue,
+  walkInState: state.walkInReducer.walkInState,
 });
-export default connect(mapStateToProps, actions)(QueueScreen);
+
+const mapActionsToProps = dispatch => ({
+  actions: bindActionCreators({ ...actions }, dispatch),
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+});
+export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
 
 
 const styles = StyleSheet.create({

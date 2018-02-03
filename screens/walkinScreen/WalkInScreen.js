@@ -64,7 +64,9 @@ const styles = StyleSheet.create({
 
 class WalkInScreen extends Component {
   componentWillMount() {
-    console.log('test');
+  }
+
+  componentDidMount() {
   }
 
   renderTitle = title => (
@@ -72,6 +74,115 @@ class WalkInScreen extends Component {
       <Text style={styles.title}>{title}</Text>
     </View>
   )
+
+  renderServiceButton = () => {
+    if (this.props.walkInState.selectedService !== null) {
+      return (
+        <TouchableOpacity
+          style={styles.listItemContainer}
+          onPress={() => {
+          const { navigate } = this.props.navigation;
+
+          this.props.walkInActions.setCurrentStep(1);
+          navigate('Services');
+        }}
+        >
+          <View style={{ flexDirection: 'column' }}>
+            <Text style={styles.textInput}>{this.props.walkInState.selectedService.name}</Text>
+            <Text style={styles.subTitle}>{this.props.walkInState.selectedService.duration}min</Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.servicePrice}>$39</Text>
+            <Image source={rightArrow} />
+          </View>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.listItemContainer}
+        onPress={() => {
+          const { navigate } = this.props.navigation;
+
+          this.props.walkInActions.setCurrentStep(1);
+          navigate('Services');
+        }}
+      >
+        <Text style={styles.textInput}>Service: {this.props.walkInState.selectedService}</Text>
+        <Image source={rightArrow} />
+      </TouchableOpacity>
+    );
+  }
+
+  handlePressService = () => {
+    const { navigate } = this.props.navigation;
+
+    this.props.walkInActions.setCurrentStep(3);
+    navigate('Providers');
+  }
+
+  renderProviderButton = () => {
+    if (this.props.walkInState.selectedProvider !== null) {
+      return (
+        <TouchableOpacity
+          style={styles.listItemContainer}
+          onPress={this.handlePressService}
+        >
+          <Text style={styles.textInput}>Provider</Text>
+          <Image source={rightArrow} />
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.listItemContainer}
+        onPress={this.handlePressProvider}
+      >
+        <Text style={styles.textInput}>Provider</Text>
+        <Image source={rightArrow} />
+      </TouchableOpacity>
+    );
+  }
+
+  handlePressProvider = () => {
+    const { navigate } = this.props.navigation;
+
+    this.props.walkInActions.setCurrentStep(3);
+    navigate('Providers');
+  }
+
+  renderPromoButton = () => {
+    if (this.props.walkInState.selectedPromo !== null) {
+      return (
+        <TouchableOpacity
+          style={styles.listItemContainer}
+          onPress={this.handlePressPromo}
+        >
+          <Text style={styles.textInput}>Promo</Text>
+          <Image source={rightArrow} />
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.listItemContainer}
+        onPress={this.handlePressPromo}
+      >
+        <Text style={styles.textInput}>Promo</Text>
+        <Image source={rightArrow} />
+      </TouchableOpacity>
+    );
+  }
+
+  handlePressPromo = () => {
+    const { navigate } = this.props.navigation;
+
+    this.props.walkInActions.setCurrentStep(4);
+    navigate('Promotions');
+  }
 
   render() {
     return (
@@ -88,39 +199,9 @@ class WalkInScreen extends Component {
           <Text style={styles.textInput}>Phone</Text>
         </View>
         {this.renderTitle('SERVICE')}
-        <TouchableOpacity
-          style={styles.listItemContainer}
-          onPress={() => {
-            const { navigate } = this.props.navigation;
-
-            navigate('Services', { currentStep: 1 });
-          }}
-        >
-          <Text style={styles.textInput}>Service</Text>
-          <Image source={rightArrow} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.listItemContainer}
-          onPress={() => {
-            const { navigate } = this.props.navigation;
-
-            navigate('Providers');
-          }}
-        >
-          <Text style={styles.textInput}>Provider</Text>
-          <Image source={rightArrow} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.listItemContainer}
-          onPress={() => {
-            const { navigate } = this.props.navigation;
-
-            navigate('Promotions');
-          }}
-        >
-          <Text style={styles.textInput}>Promo</Text>
-          <Image source={rightArrow} />
-        </TouchableOpacity>
+        {this.renderServiceButton()}
+        {this.renderProviderButton()}
+        {this.renderPromoButton()}
         <View style={styles.btnContainer}>
           <Text style={styles.textBtn}>ADD TO QUEUE</Text>
         </View>
