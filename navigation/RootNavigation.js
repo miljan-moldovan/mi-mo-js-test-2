@@ -9,6 +9,9 @@ import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
+import QueueDetailScreen from './../screens/QueueDetailScreen';
+import PromotionsScreen from './../screens/PromotionsScreen';
+import ServicesScreen from './../screens/ServicesScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
 import ClientsSearchScreen from './../screens/ClientsSearchScreen';
@@ -18,7 +21,7 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
-import SearchBar from '../components/searchBar';
+import SearchBar from '../components/SearchBar';
 import ProvidersScreen from '../screens/ProvidersScreen';
 import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 
@@ -50,6 +53,33 @@ const QueueStackNavigator = StackNavigator(
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
+      },
+    },
+    QueueDetail: {
+      screen: QueueDetailScreen,
+      navigationOptions: {
+        headerTitle: 'Diane Lory',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
+      },
+    },
+    Service: {
+      screen: ServicesScreen,
+      navigationOptions: {
+        headerTitle: 'Service',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
+      },
+    },
+    Promotions: {
+      screen: PromotionsScreen,
+      navigationOptions: {
+        headerTitle: 'Promotions',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
       },
     },
     Providers: {

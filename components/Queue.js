@@ -21,11 +21,15 @@ import Swipeable from 'react-native-swipeable';
 
 import * as actions from '../actions/queue';
 import SideMenuItem from '../components/SideMenuItem';
+import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 
 class Queue extends React.Component {
   state = {
-    refreshing: false
+    refreshing: false,
+    notificationVisible: false,
+    notificationType: '',
+    notificationItem: {},
   }
   _onRefresh = () => {
     this.setState({refreshing: true});
@@ -45,8 +49,17 @@ class Queue extends React.Component {
           <QueueButton type={noShow} left/>
         ];
         right = [
-          <QueueButton type={checkin} onPress={()=>{ LayoutAnimation.spring(); this.props.checkInClient(queueId) }} right/>,
-          <QueueButton type={service} onPress={()=>{ LayoutAnimation.spring(); this.props.startService(queueId) }} right/>
+          <QueueButton type={checkin} right
+            onPress={()=>{
+              LayoutAnimation.spring();
+              this.props.checkInClient(queueId);
+              }} />,
+          <QueueButton type={service} right
+            onPress={()=>{
+              LayoutAnimation.spring();
+              this.props.startService(queueId);
+              this.showNotification(item, 'service')
+            }} />
         ];
       } else {
         left = [
@@ -55,7 +68,11 @@ class Queue extends React.Component {
         ];
         right = [
           <QueueButton type={uncheckin} right/>,
-          <QueueButton type={service} onPress={()=>{ LayoutAnimation.spring(); this.props.startService(queueId)}} right/>
+          <QueueButton type={service} onPress={()=>{
+            LayoutAnimation.spring();
+            this.props.startService(queueId);
+            this.showNotification(item, 'service')
+          }} right/>
         ];
       }
     } else {
@@ -122,7 +139,7 @@ class Queue extends React.Component {
     const label = this.getLabelForItem(item);
     return (
       <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
-        <View style={styles.itemContainer}>
+        <TouchableOpacity style={styles.itemContainer} onPress={()=>this.props.navigation.navigate('QueueDetail', { item })}>
           <View style={styles.itemSummary}>
             <Text style={styles.clientName}>{item.client.name} {item.client.lastName}</Text>
             <Text style={styles.serviceName}>
@@ -133,15 +150,51 @@ class Queue extends React.Component {
             <Text style={styles.serviceTimeContainer}>at <Text style={styles.serviceTime}>{item.start_time}</Text></Text>
           </View>
           {label}
-        </View>
+        </TouchableOpacity>
       </Swipeable>
     );
-
+  }
+  showNotification = (item, type) => {
+    console.log('showNotification', type);
+    this.setState({
+      notificationVisible: true,
+      notificationType: type,
+      notificationItem: item
+    });
+  }
+  onDismissNotification = () => {
+    console.log('onDismissNotification');
+    this.setState({ notificationVisible: false });
+  }
+  renderNotification = () => {
+    const { notificationType, notificationItem,
+            notificationVisible } = this.state;
+    console.log('renderNotification - notificationVisible', notificationVisible);
+    let notificationColor, notificationButton, notificationText;
+    switch (notificationType) {
+      case 'service':
+        const client = notificationItem.client || {};
+        notificationText = (<Text>Started service for <Text style={{fontFamily: 'OpenSans-Bold'}}>{client.name +' '+ client.lastName}</Text></Text>);
+        notificationColor = '#ccc';
+        notificationButton = <NotificationBannerButton title="UNDO" />
+        break;
+      default: ''
+    }
+    return (
+      <NotificationBanner
+        backgroundColor={notificationColor}
+        visible={notificationVisible}
+        button={notificationButton}
+        onDismiss={this.onDismissNotification}>
+        <Text>{notificationText}</Text>
+      </NotificationBanner>
+    )
   }
   _keyExtractor = (item, index) => item.queueId;
 
   render() {
     console.log('queue.data: ', this.props.data);
+
     return (
       <View style={styles.container}>
         <FlatList
@@ -155,6 +208,7 @@ class Queue extends React.Component {
             />
           }
         />
+        {this.renderNotification()}
       </View>
     );
   }
@@ -175,8 +229,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'white',
-
-
     alignItems: 'center',
     justifyContent: 'center'
   },
