@@ -19,7 +19,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifndef DEBUG
   [Fabric with:@[[Crashlytics class]]];
+#endif
 
   NSURL *jsCodeLocation;
 
