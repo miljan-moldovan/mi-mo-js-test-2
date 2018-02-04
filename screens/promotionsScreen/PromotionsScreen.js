@@ -7,11 +7,10 @@ import {
   FlatList,
   TouchableHighlight,
 } from 'react-native';
-import { connect } from 'react-redux';
 
-import SideMenuItem from '../components/SideMenuItem';
+import SideMenuItem from '../../components/SideMenuItem';
 
-const promotions = require('../mockData/promotions.json');
+const promotions = require('../../mockData/promotions.json');
 
 const styles = StyleSheet.create({
   container: {
@@ -134,7 +133,7 @@ class PromotionsScreen extends React.Component {
       <SideMenuItem
         {...props}
         title="Promotions"
-        icon={require('../assets/images/sidemenu/icon_sales_menu.png')}
+        icon={require('../../assets/images/sidemenu/icon_sales_menu.png')}
       />
     ),
   };
@@ -222,22 +221,26 @@ class PromotionsScreen extends React.Component {
     return matches;
   }
 
-  _renderItem = ({ item, index }) => {
-    const { data, key } = item;
+  handlePressItem = (data) => {
+    if (this.hasMappedChildren(data)) {
+      this.setState({
+        activeData: data.children,
+      });
+    } else {
+      const { navigate } = this.props.navigation;
+
+      this.props.walkInActions.selectPromotion(data);
+      navigate('WalkIn');
+    }
+  }
+
+  _renderItem = ({ item }) => {
+    const { data } = item;
 
     return (
       <TouchableHighlight
         style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
-        onPress={(e) => {
-          if (this.hasMappedChildren(data)) {
-            this.setState({
-              activeData: data.children,
-            });
-          } else {
-            const { navigate } = this.props.navigation;
-            navigate('WalkIn', { testData: 'truuu' });
-          }
-        }}
+        onPress={this.handlePressItem(data)}
         underlayColor="#ffffff"
         activeOpacity={2}
       >
@@ -284,5 +287,5 @@ class PromotionsScreen extends React.Component {
     );
   }
 }
-export default connect(null)(PromotionsScreen);
+export default PromotionsScreen;
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
-
+import { bindActionCreators } from 'redux';
 import LoginScreen from './../screens/LoginScreen';
 import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
@@ -20,11 +20,13 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import SearchBar from '../components/searchBar';
-import PromotionsScreen from '../screens/PromotionsScreen';
+import PromotionsScreen from '../screens/promotionsScreen';
 import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
+
+import walkInActions from '../actions/walkIn';
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -65,7 +67,7 @@ const QueueStackNavigator = StackNavigator(
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader rootProps={rootProps} />,
+        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
       }),
     },
     Providers: {
@@ -75,7 +77,7 @@ const QueueStackNavigator = StackNavigator(
         headerStyle: {
           backgroundColor: 'transparent',
         },
-        headerTitle: <WalkInStepHeader rootProps={rootProps} />,
+        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
@@ -86,7 +88,7 @@ const QueueStackNavigator = StackNavigator(
     Promotions: {
       screen: PromotionsScreen,
       navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader rootProps={rootProps} />,
+        headerTitle: <WalkInStepHeader dataName="selectedPromotion" rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
@@ -172,7 +174,6 @@ class RootNavigator extends React.Component {
 
     const fingerprintTimeout = 60 * 2;
     const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
-    console.log('RootNavigator.render', loggedIn, useFingerprintId, new Date(fingerprintAuthenticationTime), new Date(fingerprintExpireTime), new Date());
 
     // if user is logged in AND fingerprint identification is NOT enabled
     if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) { return <RootDrawerNavigator />; }
@@ -181,12 +182,11 @@ class RootNavigator extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  console.log('RootNavigator-map', state, ownProps);
-  return {
-    auth: state.auth,
-    walkInState: state.walkInReducer,
-  };
-};
-
-export default connect(mapStateToProps, null)(RootNavigator);
+const mapStateToProps = state => ({
+  auth: state.auth,
+  walkInState: state.walkInReducer,
+});
+const mapActionsToProps = dispatch => ({
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+});
+export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);

@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 
 import rightArrow from '../../assets/images/walkinScreen/icon_arrow_right_xs.png';
 import serchImage from '../../assets/images/walkinScreen/icon_search_w.png';
+import ImageWrapper from '../../components/imageWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,6 +61,53 @@ const styles = StyleSheet.create({
   searchImage: {
     tintColor: '#231F20',
   },
+  serviceDuration: {
+    flex: 0,
+    fontSize: 12,
+    opacity: 0.6,
+  },
+  servicePrice: {
+    color: '#B2AFAA',
+    fontSize: 16,
+    lineHeight: 18,
+    marginRight: 10,
+    fontFamily: 'OpenSans-SemiBold',
+  },
+  subTitle: {
+    fontFamily: 'OpenSans-SemiBold',
+    fontSize: 12,
+    color: '#000000',
+    opacity: 0.4,
+    marginBottom: 5,
+  },
+  providerImageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  providerRound: {
+    flex: 1 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  providerImage: {
+    borderRadius: 15,
+    height: 30,
+    width: 30,
+  },
+  providerData: {
+    marginLeft: 15,
+    flex: 2,
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  providerName: {
+    color: '#1D1D26',
+    fontSize: 16,
+    fontFamily: 'OpenSans-Regular',
+    backgroundColor: 'transparent',
+  },
 });
 
 class WalkInScreen extends Component {
@@ -73,7 +121,7 @@ class WalkInScreen extends Component {
     <View style={styles.titleContainer}>
       <Text style={styles.title}>{title}</Text>
     </View>
-  )
+  );
 
   renderServiceButton = () => {
     if (this.props.walkInState.selectedService !== null) {
@@ -89,7 +137,7 @@ class WalkInScreen extends Component {
         >
           <View style={{ flexDirection: 'column' }}>
             <Text style={styles.textInput}>{this.props.walkInState.selectedService.name}</Text>
-            <Text style={styles.subTitle}>{this.props.walkInState.selectedService.duration}min</Text>
+            <Text style={styles.serviceDuration}>{this.props.walkInState.selectedService.duration}min</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.servicePrice}>$39</Text>
@@ -109,7 +157,7 @@ class WalkInScreen extends Component {
           navigate('Services');
         }}
       >
-        <Text style={styles.textInput}>Service: {this.props.walkInState.selectedService}</Text>
+        <Text style={styles.textInput}>Service</Text>
         <Image source={rightArrow} />
       </TouchableOpacity>
     );
@@ -122,6 +170,7 @@ class WalkInScreen extends Component {
     navigate('Providers');
   }
 
+
   renderProviderButton = () => {
     if (this.props.walkInState.selectedProvider !== null) {
       return (
@@ -129,7 +178,20 @@ class WalkInScreen extends Component {
           style={styles.listItemContainer}
           onPress={this.handlePressService}
         >
-          <Text style={styles.textInput}>Provider</Text>
+          <View style={{ flex: 1, flexDirection: 'column' }}>
+            <Text style={styles.subTitle}>PROVIDER</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={styles.providerImageContainer}>
+                <View style={styles.providerRound}>
+                  <ImageWrapper imageStyle={styles.providerImage} image={{ uri: this.props.walkInState.selectedProvider.imagePath }} />
+                </View>
+              </View>
+              <View style={styles.providerData}>
+                <Text style={styles.providerName}>{this.props.walkInState.selectedProvider.name}</Text>
+              </View>
+
+            </View>
+          </View>
           <Image source={rightArrow} />
         </TouchableOpacity>
       );
@@ -154,13 +216,18 @@ class WalkInScreen extends Component {
   }
 
   renderPromoButton = () => {
-    if (this.props.walkInState.selectedPromo !== null) {
+    const { selectedPromo } = this.props.walkInState;
+
+    if (selectedPromo) {
       return (
         <TouchableOpacity
           style={styles.listItemContainer}
           onPress={this.handlePressPromo}
         >
-          <Text style={styles.textInput}>Promo</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.subTitle}>PROMO</Text>
+            <Text style={styles.textInput}>{selectedPromo.name}</Text>
+          </View>
           <Image source={rightArrow} />
         </TouchableOpacity>
       );

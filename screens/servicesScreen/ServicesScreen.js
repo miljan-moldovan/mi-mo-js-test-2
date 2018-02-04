@@ -233,6 +233,7 @@ class ServicesScreen extends React.Component {
             this.props.walkInActions.setCurrentStep(2);
           } else {
             this.props.walkInActions.setCurrentStep(3);
+            this.props.walkInActions.selectService(data);
             navigate('Providers');
           }
           this.setState({ activeListItem: data.id });

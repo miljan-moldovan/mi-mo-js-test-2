@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import HeaderMiddle from '../../../components/HeaderMiddle';
 import WalkInSteps from '../../../constants/WalkInSteps';
+import walkInActions from '../../../actions/walkIn';
 
 const WalkInStepHeader = props => HeaderMiddle({
   title: (
@@ -13,7 +16,9 @@ const WalkInStepHeader = props => HeaderMiddle({
           fontSize: 20,
         }}
     >
-      {`${WalkInSteps[props.walkInState.currentStep]}`}
+      {props.walkInState[props.dataName]
+        ? `${WalkInSteps.update[props.walkInState.currentStep]}`
+        : `${WalkInSteps.new[props.walkInState.currentStep]}`}
     </Text>
   ),
   subTitle: (
@@ -31,5 +36,8 @@ const WalkInStepHeader = props => HeaderMiddle({
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
 });
-export default connect(mapStateToProps)(WalkInStepHeader);
+const mapActionsToProps = dispatch => ({
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+});
+export default connect(mapStateToProps, mapActionsToProps)(WalkInStepHeader);
 
