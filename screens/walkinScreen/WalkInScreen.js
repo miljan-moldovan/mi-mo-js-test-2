@@ -128,12 +128,7 @@ class WalkInScreen extends Component {
       return (
         <TouchableOpacity
           style={styles.listItemContainer}
-          onPress={() => {
-          const { navigate } = this.props.navigation;
-
-          this.props.walkInActions.setCurrentStep(1);
-          navigate('Services');
-        }}
+          onPress={this.handlePressService}
         >
           <View style={{ flexDirection: 'column' }}>
             <Text style={styles.textInput}>{this.props.walkInState.selectedService.name}</Text>
@@ -165,18 +160,22 @@ class WalkInScreen extends Component {
 
   handlePressService = () => {
     const { navigate } = this.props.navigation;
-
+    const { selectedService } = this.props.walkInState;
     this.props.walkInActions.setCurrentStep(3);
-    navigate('Providers');
-  }
 
+    if (selectedService) {
+      navigate('Services', { actionType: 'update' });
+    } else {
+      navigate('Services');
+    }
+  }
 
   renderProviderButton = () => {
     if (this.props.walkInState.selectedProvider !== null) {
       return (
         <TouchableOpacity
           style={styles.listItemContainer}
-          onPress={this.handlePressService}
+          onPress={this.handlePressProvider}
         >
           <View style={{ flex: 1, flexDirection: 'column' }}>
             <Text style={styles.subTitle}>PROVIDER</Text>
@@ -210,23 +209,28 @@ class WalkInScreen extends Component {
 
   handlePressProvider = () => {
     const { navigate } = this.props.navigation;
+    const { selectedProvider } = this.props.walkInState;
 
     this.props.walkInActions.setCurrentStep(3);
-    navigate('Providers');
+    if (selectedProvider) {
+      navigate('Providers', { actionType: 'update' });
+    } else {
+      navigate('Providers');
+    }
   }
 
   renderPromoButton = () => {
-    const { selectedPromo } = this.props.walkInState;
+    const { selectedPromotion } = this.props.walkInState;
 
-    if (selectedPromo) {
+    if (selectedPromotion) {
       return (
         <TouchableOpacity
           style={styles.listItemContainer}
           onPress={this.handlePressPromo}
         >
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'column' }}>
             <Text style={styles.subTitle}>PROMO</Text>
-            <Text style={styles.textInput}>{selectedPromo.name}</Text>
+            <Text style={styles.textInput}>{selectedPromotion.name}</Text>
           </View>
           <Image source={rightArrow} />
         </TouchableOpacity>
@@ -246,9 +250,14 @@ class WalkInScreen extends Component {
 
   handlePressPromo = () => {
     const { navigate } = this.props.navigation;
+    const { selectedPromotion } = this.props.walkInState;
 
     this.props.walkInActions.setCurrentStep(4);
-    navigate('Promotions');
+    if (selectedPromotion) {
+      navigate('Promotions', { actionType: 'update' });
+    } else {
+      navigate('Promotions');
+    }
   }
 
   render() {

@@ -145,7 +145,7 @@ class ServicesScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.setState({ activeData: this.mapData(services.data) });
+    this.setState({ activeData: services });
   }
 
   mapData(data, parent = false) {
@@ -214,50 +214,52 @@ class ServicesScreen extends React.Component {
     return matches;
   }
 
-  _renderItem = ({ item }) => {
-    const { data } = item;
+  _renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={item.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
+      onPress={() => {
+        const { navigate } = this.props.navigation;
+        const {params} = this.props.navigation.state;
+        if (this.hasMappedChildren(item)) {
+          this.setState({
+            prevData: this.state.activeData,
+            activeData: item.services,
+            parentList: item,
+          });
 
-    return (
-      <TouchableOpacity
-        style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
-        onPress={() => {
-          const { navigate } = this.props.navigation;
-
-          if (this.hasMappedChildren(data)) {
-            this.setState({
-              prevData: this.state.activeData,
-              activeData: data.children,
-              parentList: data,
-            });
-
-            this.props.walkInActions.setCurrentStep(2);
+          this.props.walkInActions.setCurrentStep(2);
+        } else {
+          this.props.walkInActions.selectService(item);
+          
+          if(params !== undefined && params.actionType === 'update') {
+            navigate('WalkIn');
           } else {
             this.props.walkInActions.setCurrentStep(3);
-            this.props.walkInActions.selectService(data);
             navigate('Providers');
           }
-          this.setState({ activeListItem: data.id });
-        }}
-        underlayColor="#ffffff"
-        activeOpacity={2}
-      >
-        <View>
-          <View style={{
-            flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
-            }}
-          >
-            <View style={{ flex: 1, flexDirection: 'column' }}>
-              <Text style={data.id === this.state.activeListItem ? [styles.listText, { fontFamily: 'OpenSans-Bold' }] : styles.listText}>{data.name}</Text>
-              { data.duration !== undefined && <Text style={styles.durationText}>{data.duration}m</Text>}
-            </View>
-            { this.hasMappedChildren(data) ? (
-              <Image style={styles.caretIcon} source={require('../../assets/images/icons/icon_caret_right.png')} />
-              ) : null }
+        }
+        this.setState({ activeListItem: item.id });
+      }}
+      key={index}
+      underlayColor="#ffffff"
+      activeOpacity={2}
+    >
+      <View>
+        <View style={{
+          flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
+          }}
+        >
+          <View style={{ flex: 1, flexDirection: 'column' }}>
+            <Text style={item.id === this.state.activeListItem ? [styles.listText, { fontFamily: 'OpenSans-Bold' }] : styles.listText}>{item.name}</Text>
+            { item.duration !== undefined && <Text style={styles.durationText}>{item.duration}m</Text>}
           </View>
+          { item.services !== undefined ? (
+            <Image style={styles.caretIcon} source={require('../../assets/images/icons/icon_caret_right.png')} />
+            ) : null }
         </View>
-      </TouchableOpacity>
-    );
-  }
+      </View>
+    </TouchableOpacity>
+  );
 
   renderList() {
     if (this.state.parentList !== null) {

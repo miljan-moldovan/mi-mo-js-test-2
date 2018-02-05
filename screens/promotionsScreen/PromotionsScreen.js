@@ -8,8 +8,6 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-import SideMenuItem from '../../components/SideMenuItem';
-
 const promotions = require('../../mockData/promotions.json');
 
 const styles = StyleSheet.create({
@@ -126,46 +124,26 @@ const styles = StyleSheet.create({
   },
 });
 
-
 class PromotionsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Promotions"
-        icon={require('../../assets/images/sidemenu/icon_sales_menu.png')}
-      />
-    ),
-  };
-
   constructor(props) {
     super(props);
 
     this._renderItem = this._renderItem.bind(this);
-
     this.state = {
-      activeData: null,
+      activeData: promotions,
       storedData: null,
     };
   }
 
-  componentWillMount() {
-    this.setState({ activeData: this.mapData(promotions) });
+  componentDidMount() {
   }
 
-  mapData(data, parent = false) {
+  mapData(data) {
     return data.map((item) => {
       const mapped = {
         data: item,
         key: item.id,
-        // renderItem: this._renderItem,
       };
-
-      for (key in item) {
-        if (typeof item[key] === 'object') {
-          mapped.data.children = this.mapData(item[key]);
-        }
-      }
 
       return mapped;
     });
@@ -221,46 +199,36 @@ class PromotionsScreen extends React.Component {
     return matches;
   }
 
-  handlePressItem = (data) => {
-    if (this.hasMappedChildren(data)) {
-      this.setState({
-        activeData: data.children,
-      });
-    } else {
-      const { navigate } = this.props.navigation;
+  _renderItem = ({ item: { data, key } }) => (
+    <TouchableHighlight
+      style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
+      onPress={() => {
+        const { navigate } = this.props.navigation;
 
-      this.props.walkInActions.selectPromotion(data);
-      navigate('WalkIn');
-    }
-  }
-
-  _renderItem = ({ item }) => {
-    const { data } = item;
-
-    return (
-      <TouchableHighlight
-        style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
-        onPress={this.handlePressItem(data)}
-        underlayColor="#ffffff"
-        activeOpacity={2}
-      >
-        <View>
-          <View style={{
-            flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
-            }}
-          >
-            <View style={{ flex: 1, flexDirection: 'column' }}>
-              { data.promoCode !== undefined && <Text style={styles.superTitle}>{data.promoCode}</Text>}
-              <Text style={data.id === this.state.activeListItem ? [styles.listText, { fontFamily: 'OpenSans-Bold' }] : styles.listText}>{data.name}</Text>
-            </View>
-            <View style={{ alignSelf: 'center', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={styles.discountText}>{data.discount}%</Text>
-            </View>
+        this.props.walkInActions.selectPromotion(data);
+        navigate('WalkIn');
+      }}
+      key={key}
+      underlayColor="#ffffff"
+      activeOpacity={2}
+    >
+      <View>
+        <View style={{
+          flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
+          }}
+        >
+          <View style={{ flex: 1, flexDirection: 'column' }}>
+            { data.promoCode !== undefined && <Text style={styles.superTitle}>{data.promoCode}</Text>}
+            <Text style={data.id === this.state.activeListItem ? [styles.listText, { fontFamily: 'OpenSans-Bold' }] : styles.listText}>{data.name}</Text>
+          </View>
+          <View style={{ alignSelf: 'center', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={styles.discountText}>{data.discount}%</Text>
           </View>
         </View>
-      </TouchableHighlight>
-    );
-  }
+      </View>
+    </TouchableHighlight>
+  );
+
 
   renderList() {
     return (

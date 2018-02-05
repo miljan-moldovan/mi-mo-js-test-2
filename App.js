@@ -12,7 +12,7 @@ import {
   View,
   AsyncStorage,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 
 import { Provider } from 'react-redux';
@@ -31,7 +31,7 @@ const instructions = Platform.select({
 export default class App extends Component<{}> {
   state = {
     isLoadingComplete: true,
-    storeIsReady: false
+    storeIsReady: false,
   };
 
   componentWillMount() {
@@ -39,9 +39,10 @@ export default class App extends Component<{}> {
       store,
       {
         storage: AsyncStorage,
+        blacklist: ['walkInReducer'],
         // whitelist: ['auth']
       },
-      () => { this.setState({ storeIsReady: true }); console.log('storeIsReady!') }
+      () => { this.setState({ storeIsReady: true }); console.log('storeIsReady!'); },
     ); // .purge(); use to prevent log in
   }
   render() {
@@ -50,15 +51,15 @@ export default class App extends Component<{}> {
     //     <ActivityIndicator />
     //   );
     // } else {
-      return (
-        <Provider store={store}>
-          <View style={styles.container}>
+    return (
+      <Provider store={store}>
+        <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
             {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
             <RootNavigation />
           </View>
-        </Provider>
-      );
+      </Provider>
+    );
     // }
     // return (
     //   <View style={styles.container}>

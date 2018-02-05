@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Text } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -16,9 +16,10 @@ const WalkInStepHeader = props => HeaderMiddle({
           fontSize: 20,
         }}
     >
-      {props.walkInState[props.dataName]
-        ? `${WalkInSteps.update[props.walkInState.currentStep]}`
-        : `${WalkInSteps.new[props.walkInState.currentStep]}`}
+      {props.rootProps.navigation.state.params !== undefined &&
+          props.rootProps.navigation.state.params.actionType === 'update'
+            ? `${WalkInSteps.update[props.walkInState.currentStep]}`
+            : `${WalkInSteps.new[props.walkInState.currentStep]}`}
     </Text>
   ),
   subTitle: (
@@ -28,7 +29,10 @@ const WalkInStepHeader = props => HeaderMiddle({
           color: '#fff',
           fontSize: 12,
         }}
-    >{`Walkin Service - ${props.walkInState.currentStep} of 4`}
+    >{props.rootProps.navigation.state.params !== undefined &&
+      props.rootProps.navigation.state.params.actionType === 'update'
+         ? 'WalkIn Service'
+         : `Walkin Service - ${props.walkInState.currentStep} of 4`}
     </Text>
   ),
 });

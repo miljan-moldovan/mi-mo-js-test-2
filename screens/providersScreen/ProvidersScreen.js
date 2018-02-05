@@ -55,10 +55,16 @@ class ProvidersScreen extends React.Component {
         underlayColor="transparent"
         onPress={() => {
           const { navigate } = this.props.navigation;
+          const { params } = this.props.navigation.state;
 
-          this.props.walkInActions.setCurrentStep(4);
           this.props.walkInActions.selectProvider(provider);
-          navigate('Promotions');
+
+          if (params !== undefined && params.actionType === 'update') {
+            navigate('WalkIn');
+          } else {
+            this.props.walkInActions.setCurrentStep(4);
+            navigate('Promotions');
+          }
         }}
       >
         <View style={{ flex: 1, flexDirection: 'row' }}>
