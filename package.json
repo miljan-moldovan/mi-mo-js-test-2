@@ -14,7 +14,7 @@
     "prop-types": "15.6.0",
     "react": "16.2.0",
     "react-native": "0.52.1",
-    "react-native-largelist": "1.2.5",
+    "react-native-largelist": "^1.2.5",
     "react-native-modal": "^5.0.0",
     "react-native-swipeable": "^0.6.0",
     "react-native-touch-id": "^4.0.0",
