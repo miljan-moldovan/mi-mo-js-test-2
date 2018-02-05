@@ -9,8 +9,8 @@ const store = createStore(
   {},
   compose(
     applyMiddleware(thunk),
-    autoRehydrate()
-  )
+    autoRehydrate(),
+  ),
 );
 
 export default store;

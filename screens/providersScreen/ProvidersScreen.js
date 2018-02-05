@@ -1,4 +1,5 @@
 // @flow
+
 import React from 'react';
 import {
   StyleSheet,
@@ -6,13 +7,12 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux';
-import * as actions from '../actions/providers';
-import SideMenuItem from '../components/SideMenuItem';
+// import * as actions from '../actions/provider';
+import SideMenuItem from '../../components/SideMenuItem';
 
-import ProviderList from '../components/providerList';
+import ProviderList from '../../components/providerList';
 
-const mockDataProviders = require('../mockData/providers.json');
-
+const mockDataProviders = require('../../mockData/providers.json');
 
 const styles = StyleSheet.create({
   container: {
@@ -22,10 +22,9 @@ const styles = StyleSheet.create({
   },
 });
 
+const iconAppointMenu = require('../../assets/images/sidemenu/icon_appoint_menu.png');
 
-const iconAppointMenu = require('../assets/images/sidemenu/icon_appoint_menu.png');
-
-class ProvidersScreen extends React.Component {
+class ProviderScreen extends React.Component {
   static navigationOptions = {
     drawerLabel: props => (
       <SideMenuItem
@@ -48,9 +47,9 @@ class ProvidersScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ProviderList providers={this.state.providers} />
+        <ProviderList {...this.props} selectable providers={this.state.providers} />
       </View>
     );
   }
 }
-export default connect(null, actions)(ProvidersScreen);
+export default ProviderScreen;

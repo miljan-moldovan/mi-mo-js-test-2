@@ -18,9 +18,10 @@ import {
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import * as actions from '../actions/queue.js';
-
+import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 import FloatingButton from '../components/FloatingButton';
@@ -51,17 +52,18 @@ class QueueScreen extends React.Component {
     index: 0,
   }
   componentWillMount() {
-    this.props.receiveQueue();
+    this.props.actions.receiveQueue();
+    console.log('walkin reducer', this.props);
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
 
-    setTimeout(()=>this.setState({refreshing: false}), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 1000);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, index }) => {
+  _renderLabel = ({ position, navigationState }) => ({ route, index }) =>
     // const inputRange = navigationState.routes.map((x, i) => i);
     // const outputRange = inputRange.map(
     //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
@@ -70,25 +72,23 @@ class QueueScreen extends React.Component {
     //   inputRange,
     //   outputRange,
     // });
-    return (
+    (
       <Text style={styles.tabLabel}>
         {route.title}
       </Text>
-    );
-  };
+    )
+  ;
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle = {{ backgroundColor : 'transparent' }}
-      style = {{ backgroundColor: 'transparent' }}
+      tabStyle={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: 'transparent' }}
       renderLabel={this._renderLabel(props)}
-      indicatorStyle = {{ backgroundColor: '#80BBDF', height: 6 }}
+      indicatorStyle={{ backgroundColor: '#80BBDF', height: 6 }}
     />
   )
 
   _renderScene = ({ route }) => {
-    console.log('_renderScene', route);
-
     switch (route.key) {
       case WAITING:
         return (
@@ -98,6 +98,8 @@ class QueueScreen extends React.Component {
         return (
           <Queue data={this.props.serviceQueue} />
         );
+      default:
+        return route;
     }
   }
   _handleIndexChange = (index) => {
@@ -107,7 +109,9 @@ class QueueScreen extends React.Component {
 
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
-    navigate('WalkIn', { estimatedTime: 12 });
+
+    this.props.walkInActions.setEstimatedTime(17);
+    navigate('WalkIn');
   }
 
   render() {
@@ -133,14 +137,17 @@ class QueueScreen extends React.Component {
     );
   }
 }
-const mapStateToProps = (state, ownProps) => {
-  console.log('QueueScreen-map', state);
-  return {
-    waitingQueue: state.queue.waitingQueue,
-    serviceQueue: state.queue.serviceQueue
-  }
-}
-export default connect(mapStateToProps, actions)(QueueScreen);
+const mapStateToProps = (state, ownProps) => ({
+  waitingQueue: state.queue.waitingQueue,
+  serviceQueue: state.queue.serviceQueue,
+  walkInState: state.walkInReducer.walkInState,
+});
+
+const mapActionsToProps = dispatch => ({
+  actions: bindActionCreators({ ...actions }, dispatch),
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+});
+export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
 
 
 const styles = StyleSheet.create({
