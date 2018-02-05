@@ -18,15 +18,41 @@ import {
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
-
+import HeaderRight from '../components/HeaderRight';
 import * as actions from '../actions/queue.js';
 
 class QueueDetailScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    console.log('QueueDetailScreen.navOptions', navigation.state.params);
+    const { name, lastName } = navigation.state.params.item.client;
+    return {
+      headerTitle: `${name} ${lastName}`,
+      headerTintColor: 'white',
+      headerBackTitleStyle: styles.headerButton,
+      headerRight:
+      <HeaderRight button={(
+        <Text style={styles.headerButton}>Save</Text>
+      )}
+        handlePress={navigation.state.params.save} />
+    };
+  };
+
   state = {
     refreshing: false,
+    item: {}
   }
   componentWillMount() {
-    this.props.receiveQueue();
+    this.setState({
+      item: this.props.navigation.state.params.item
+    });
+  }
+  componentDidMount() {
+    const { navigation } = this.props;
+    // We can only set the function after the component has been initialized
+    navigation.setParams({ save: () => {
+      this.props.saveQueueItem(this.state.item);
+      navigation.goBack();
+    }});
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -35,20 +61,57 @@ class QueueDetailScreen extends React.Component {
     setTimeout(()=>this.setState({refreshing: false}), 1000);
   }
   _handleDeletePress = () => {
-
+    this.props.deleteQueueItem(this.state.item.queueId);
+    this.props.navigation.goBack();
   }
   _handleServicePress = () => {
-    this.props.navigation.navigate('Service');
+    this.props.navigation.navigate('Service', {
+      dismissOnSelect: true,
+      onServiceChange: this._handleServiceChange
+    });
+  }
+  _handleServiceChange = (service) => {
+    console.log('QueueDetail._handleServiceChange', service);
+    this.setState({
+      item: {
+        ...this.state.item,
+        services: [ { id: service.id, description: service.name } ]
+      }
+    });
   }
   _handleProviderPress = () => {
-    this.props.navigation.navigate('ChangeProvider');
+    this.props.navigation.navigate('ChangeProvider', {
+      dismissOnSelect: true,
+      onProviderChange: this._handleProviderChange
+     });
+  }
+  _handleProviderChange = (provider) => {
+    this.setState({
+      item: {
+        ...this.state.item,
+        employees: [ provider ]
+      }
+    });
   }
   _handlePromoPress = () => {
-    this.props.navigation.navigate('Promotions');
+    this.props.navigation.navigate('Promotions', {
+      dismissOnSelect: true,
+      onPromotionChange: this._handlePromoChange
+     });
+  }
+  _handlePromoChange = (promotion) => {
+    console.log('QueueDetailScreen._handlePromoChange', promotion);
+    this.setState({
+      item: {
+        ...this.state.item,
+        promotion
+      }
+    });
   }
   render() {
-    const { item } = this.props.navigation.state.params;
+    const { item } = this.state;
     const employee = item.employees[0].name+' '+item.employees[0].lastName;
+    const promotion = item.promotion;
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.itemContainer} onPress={this._handleServicePress}>
@@ -72,9 +135,9 @@ class QueueDetailScreen extends React.Component {
         <TouchableOpacity style={styles.itemContainer} onPress={this._handlePromoPress}>
           <View>
             <Text style={styles.providerLabel}>PROMO CODE</Text>
-            <Text style={styles.promoCode}>FirstCustomer</Text>
+            <Text style={styles.promoCode}>{ promotion ? promotion.name.substring(0,30) : 'None'}</Text>
           </View>
-          <Text style={styles.promoDiscount}>-$5</Text>
+          <Text style={styles.promoDiscount}>{ promotion ? ('-$'+ promotion.discount) : '' }</Text>
         </TouchableOpacity>
 
         <Button rounded bordered style={styles.deleteButton} onPress={this._handleDeletePress}>
@@ -181,4 +244,9 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     padding: 20
   },
+  headerButton: {
+    fontSize: 16,
+    fontFamily: 'OpenSans-Regular',
+    color: 'white'
+  }
 });

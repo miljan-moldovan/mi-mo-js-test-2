@@ -44,11 +44,17 @@ class ChangeProviderScreen extends React.Component {
   state = {
 
   }
-
+  _handleOnChangeProvider = (provider) => {
+    const { onProviderChange, dismissOnSelect } = this.props.navigation.state.params;
+    if (onProviderChange)
+      onProviderChange(provider);
+    if (dismissOnSelect)
+      this.props.navigation.goBack();
+  }
   render() {
     return (
       <View style={styles.container}>
-        <ProviderList selectable providers={this.state.providers} />
+        <ProviderList selectable providers={this.state.providers} onChangeProvider={this._handleOnChangeProvider}/>
       </View>
     );
   }

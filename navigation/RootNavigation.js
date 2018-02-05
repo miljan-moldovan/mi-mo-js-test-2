@@ -57,12 +57,6 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueDetail: {
       screen: QueueDetailScreen,
-      navigationOptions: {
-        headerTitle: 'Diane Lory',
-        headerBackTitleStyle: {
-          color: 'white'
-        }
-      },
     },
     Service: {
       screen: ServicesScreen,
