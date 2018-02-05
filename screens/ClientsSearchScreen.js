@@ -13,9 +13,10 @@ import * as actions from '../actions/clientsSearch';
 import SideMenuItem from '../components/SideMenuItem';
 import ClientList from '../components/clientList';
 import WordHighlighter from '../components/wordHighlighter';
+import ClientSearchListItem from '../components/clientList/items/clientSearchListItem';
+
 
 const mockDataClients = require('../mockData/clients.json');
-
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -200,6 +201,29 @@ class ClientsSearchScreen extends React.Component {
     ),
   };
 
+  static flexFilter(list, info) {
+    let matchesFilter = [];
+    const matches = [];
+
+    matchesFilter = function match(item) {
+      let count = 0;
+      for (let n = 0; n < info.length; n += 1) {
+        if (item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+          count += 1;
+        }
+      }
+      return count > 0;
+    };
+
+    for (let i = 0; i < list.length; i += 1) {
+      if (matchesFilter(list[i])) {
+        matches.push(list[i]);
+      }
+    }
+
+    return matches;
+  }
+
   constructor(props) {
     super(props);
     this.state = { clients: mockDataClients, searchText: '', showWalkIn: false };
@@ -210,7 +234,6 @@ class ClientsSearchScreen extends React.Component {
   }
 
   componentWillMount() {
-    console.log('dfsdf');
     this.props.navigation.setParams({
       onChangeText: searchText => this.filterClients(searchText),
     });
@@ -218,7 +241,6 @@ class ClientsSearchScreen extends React.Component {
   }
 
   filterClients(searchText) {
-    console.log('searchText: ', searchText);
     if (searchText.length === 0) {
       this.setState({ filteredClients: this.state.clients, searchText, showWalkIn: false });
     } else {
@@ -226,35 +248,12 @@ class ClientsSearchScreen extends React.Component {
         { Field: 'name', Values: [searchText.toLowerCase()] },
         { Field: 'email', Values: [searchText.toLowerCase()] },
       ];
-      const filtered = this.flexFilter(this.state.clients, criteria);
+      const filtered = ClientsSearchScreen.flexFilter(this.state.clients, criteria);
 
-      const filterWalkin = this.flexFilter([{ name: 'Walkin', email: 'Walkin' }], criteria);
+      const filterWalkin = ClientsSearchScreen.flexFilter([{ name: 'Walkin', email: 'Walkin' }], criteria);
 
       this.setState({ filteredClients: filtered, searchText, showWalkIn: filterWalkin.length > 0 });
     }
-  }
-
-  flexFilter(list, info) {
-    let matchesFilter,
-      matches = [];
-
-    matchesFilter = function (item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n++) {
-        if (item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
-          count++;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i++) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
   }
 
   render() {
@@ -300,6 +299,7 @@ class ClientsSearchScreen extends React.Component {
           { (this.state.filteredClients.length > 0 || !this.state.showWalkIn) &&
 
           <ClientList
+            listItem={ClientSearchListItem}
             boldWords={this.state.searchText}
             clients={this.state.filteredClients}
             style={styles.clientListContainer}

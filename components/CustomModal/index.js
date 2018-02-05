@@ -1,35 +1,7 @@
-import React, { Component } from "react"
-import { Text, TouchableHighlight, View } from "react-native"
-import Modal from "react-native-modal"
+import Modal from 'react-native-modal';
+import React, { Component } from 'react';
+import { View } from 'react-native';
 
-export default class CustomModal extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isVisible: null,
-    }
-  }
-
-  componentWillMount() {
-    this.setState({isVisible: this.props.isVisible});
-  }
-
-  render() {
-    return (
-        <Modal
-          style={{...this.props.style , ...styles.container}}
-          isVisible={this.state.isVisible}
-          onBackdropPress={this.props.closeModal ? this.props.closeModal : null}
-          {...this.props}
-        >
-          <View style={styles.content}>
-            { this.props.children }
-          </View>
-        </Modal>
-    );
-  }
-}
 
 const styles = {
   container: {
@@ -47,7 +19,7 @@ const styles = {
   },
   content: {
     backgroundColor: 'white',
-    alignSelf: "stretch",
+    alignSelf: 'stretch',
     paddingTop: 20,
     paddingBottom: 20,
     borderRadius: 4,
@@ -55,31 +27,60 @@ const styles = {
   },
   bottom: {
     borderTopWidth: 0.5,
-    borderTopColor: "#95989A",
+    borderTopColor: '#95989A',
     alignSelf: 'flex-end',
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 20,
-    width: '100%'
+    width: '100%',
   },
   subtitle: {
     fontSize: 17,
-    color: "#4D90FE",
-    textAlign: "center",
-    marginBottom: 15
+    color: '#4D90FE',
+    textAlign: 'center',
+    marginBottom: 15,
   },
-  iconClose:{
-    color:"#4D90FE",
+  iconClose: {
+    color: '#4D90FE',
     fontSize: 30,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
-  closeButton:{
-    position: "absolute",
+  closeButton: {
+    position: 'absolute',
     width: 30,
     height: 30,
     zIndex: 100,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     top: 10,
     right: 10,
+  },
+};
+
+export default class CustomModal extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isVisible: null,
+    };
+  }
+
+  componentWillMount() {
+    this.setState({ isVisible: this.props.isVisible });
+  }
+
+  render() {
+    return (
+      <Modal
+        style={[this.props.style, styles.container]}
+        isVisible={this.state.isVisible}
+        onBackdropPress={this.props.closeModal ? this.props.closeModal : null}
+        {...this.props}
+      >
+        <View style={[styles.content, this.props.contentStyle]}>
+          { this.props.children }
+        </View>
+      </Modal>
+    );
   }
 }

@@ -9,25 +9,25 @@ const styles = StyleSheet.create({
 });
 
 
-const headerLateral = (props) => {
-  console.log('headerLateral', props);
+const HeaderLateral = (props) => {
+  const handlePress = props.params ?
+    props.params.handlePress : null;
 
-  props.handlePress();
   return (
-    <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
+    <TouchableOpacity style={styles.buttonContainer} onPress={handlePress}>
       {props.button}
     </TouchableOpacity>
   );
 };
 
 
-headerLateral.propTypes = {
+HeaderLateral.propTypes = {
   handlePress: PropTypes.func,
   button: PropTypes.element.isRequired,
 };
 
-headerLateral.defaultProps = {
+HeaderLateral.defaultProps = {
   handlePress: null,
 };
 
-export default headerLateral;
+export default HeaderLateral;

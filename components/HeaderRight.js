@@ -9,7 +9,8 @@ const styles = StyleSheet.create({
 });
 
 const headerRight = props => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
+  console.log('headerRight', props);
+ return  <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
     {props.button}
   </TouchableOpacity>
 );

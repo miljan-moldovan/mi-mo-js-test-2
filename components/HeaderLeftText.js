@@ -11,11 +11,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const headerLeftText = props => (
-  <TouchableOpacity onPress={props.handlePress}>
+const headerLeftText = (props) => {
+  console.log('headerLeftText', props);
+  return (<TouchableOpacity onPress={props.handlePress}>
     <Text style={styles.text}>Cancel</Text>
-  </TouchableOpacity>
-);
+  </TouchableOpacity>);
+};
 
 headerLeftText.propTypes = {
   handlePress: PropTypes.func,

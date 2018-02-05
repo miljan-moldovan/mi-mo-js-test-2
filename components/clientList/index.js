@@ -5,7 +5,6 @@ import { View,
   StyleSheet } from 'react-native';
 import { LargeList } from 'react-native-largelist';
 import { connect } from 'react-redux';
-import ClientListItem from './clientListItem';
 
 
 const styles = StyleSheet.create({
@@ -45,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 10,
   },
   letterList: {
-    flex: 1,
+    flex: 0.6,
     backgroundColor: '#FFF',
   },
   list: {
@@ -61,24 +60,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   topBar: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'column',
     backgroundColor: '#EFEFEF',
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-  topBarText: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 12,
-    fontFamily: 'OpenSans-Bold',
-    backgroundColor: 'transparent',
-  },
+  // topBarText: {
+  //   color: '#1D1D26',
+  //   fontSize: 12,
+  //   marginLeft: 12,
+  //   fontFamily: 'OpenSans-Bold',
+  //   backgroundColor: 'transparent',
+  // },
   foundLetter: {
     color: '#67A3C7',
     fontSize: 12,
     marginTop: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     fontFamily: 'OpenSans-Bold',
     backgroundColor: 'transparent',
   },
@@ -123,66 +122,49 @@ class ClientList extends React.Component {
     listRef: LargeList;
     indexes: LargeList;
 
+
     constructor(props) {
       super(props);
+      const clients = props.clients;
 
-      const clients = props.clients.sort(this.compareByName);
-      this.clients = this.prepareClients(clients);
-      this.state = { clients, boldWords: props.boldWords };
+      this.state = {
+        clients,
+        boldWords: props.boldWords,
+        listItem: props.listItem,
+        headerItem: props.headerItem,
+      };
     }
 
+    state:{
+      clients:[]
+    };
+
     componentWillReceiveProps(nextProps) {
-      const clients = nextProps.clients.sort(this.compareByName);
-      this.clients = this.prepareClients(clients);
-      this.setState({ clients, boldWords: nextProps.boldWords });
+      const clients = nextProps.clients;
+      this.setState({
+        clients,
+        boldWords: nextProps.boldWords,
+        listItem: nextProps.listItem,
+        headerItem: nextProps.headerItem,
+      });
       this.listRef.reloadData();
       this.indexes.reloadData();
     }
 
-    compareByName(a, b) {
-      if (a.name < b.name) { return -1; }
-      if (a.name > b.name) { return 1; }
-      return 0;
-    }
-
-    getByValue(arr, value) {
-      for (let i = 0, iLen = arr.length; i < iLen; i++) {
-        if (arr[i].header == value) return arr[i];
-      }
-      return null;
-    }
-
-    prepareClients(clients) {
-      const dataSource = [];
-
-      for (let i = 0; i < clients.length; i += 1) {
-        const client = clients[i];
-
-        const result = this.getByValue(dataSource, client.name.substring(0, 1).toUpperCase());
-
-        if (result) {
-          result.list.push(client);
-        } else {
-          dataSource.push({ list: [client], header: client.name.substring(0, 1).toUpperCase() });
-        }
-      }
-
-      return dataSource;
-    }
 
     getNumberOfSections() {
-      return this.clients.length;
+      return this.state.clients.length;
     }
 
     getNumberOfRowsInSection(section) {
-      return this.clients[section].list.length;
+      return this.state.clients[section].list.length;
     }
 
     onSectionChange(section:number) {
-      this.clients[section].selected = true;
+      this.state.clients[section].selected = true;
 
-      if (this.clients[this.selectedIndex]) {
-        this.clients[this.selectedIndex].selected = false;
+      if (this.state.clients[this.selectedIndex]) {
+        this.state.clients[this.selectedIndex].selected = false;
       }
 
       this.selectedIndex = section;
@@ -200,33 +182,38 @@ class ClientList extends React.Component {
 
 
     renderItem(section: number, row: number) {
-      const client = this.clients[section].list[row];
+      const client = this.state.clients[section].list[row];
 
       return (
         <View style={styles.lineItemCointainer}>
-          <ClientListItem boldWords={this.state.boldWords} client={client} />
+          {React.createElement(this.state.listItem, { boldWords: this.state.boldWords, client })}
         </View>
       );
     }
 
     renderSection(section: number) {
+      //  <Text style={styles.topBarText}>{this.state.clients[section].header}</Text>
+
       return (
         <View style={styles.topBar}>
-          <Text style={styles.topBarText}>{this.clients[section].header}</Text>
+          {React.createElement(
+            this.state.headerItem,
+            { headerData: this.state.clients[section] },
+          )}
         </View>
       );
     }
 
     renderIndexes(section: number, row: number) {
-      const selected = this.clients[row].selected;
+      const selected = this.state.clients[row].selected;
       return (
         <TouchableHighlight
           underlayColor="transparent"
           onPress={() => {
                this.listRef.scrollToIndexPath({ section: row, row: 0 });
-                this.clients[row].selected = true;
-                if (this.clients[this.selectedIndex]) {
-                  this.clients[this.selectedIndex].selected = false;
+                this.state.clients[row].selected = true;
+                if (this.state.clients[this.selectedIndex]) {
+                  this.state.clients[this.selectedIndex].selected = false;
                 }
 
                 this.selectedIndex = row;
@@ -234,7 +221,7 @@ class ClientList extends React.Component {
               }}
         >
           <Text style={styles.foundLetter}>
-            {this.clients[row].header}
+            {this.state.clients[row].header.substring(0, 1)}
           </Text>
         </TouchableHighlight>
       );
@@ -244,23 +231,23 @@ class ClientList extends React.Component {
         <View style={styles.container}>
           {this.getNumberOfSections() === 0 &&
 
-            <View style={styles.noResultsContainer}>
+          <View style={styles.noResultsContainer}>
 
-              <View style={styles.noResultsView}>
+            <View style={styles.noResultsView}>
 
-                <Text style={styles.noResults}>NO RESULTS</Text>
+              <Text style={styles.noResults}>NO RESULTS</Text>
 
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  onPress={() => {}}
-                  style={styles.newClientButton}
-                >
-                  <Text style={styles.newClient}>
+              <TouchableHighlight
+                underlayColor="transparent"
+                onPress={() => {}}
+                style={styles.newClientButton}
+              >
+                <Text style={styles.newClient}>
                     CREATE NEW CLIENT
-                  </Text>
-                </TouchableHighlight>
-              </View>
+                </Text>
+              </TouchableHighlight>
             </View>
+          </View>
           }
 
           <LargeList
@@ -269,7 +256,7 @@ class ClientList extends React.Component {
             numberOfSections={() => this.getNumberOfSections()}
             numberOfRowsInSection={section => this.getNumberOfRowsInSection(section)}
             heightForSection={() => 36}
-            renderSection={(section) => { this.renderSection(section); }}
+            renderSection={section => this.renderSection(section)}
             heightForCell={() => 96}
             renderCell={(section, row) => this.renderItem(section, row)}
             renderItemSeparator={() => <View style={styles.itemSeparator} />}
@@ -278,7 +265,7 @@ class ClientList extends React.Component {
           <LargeList
             style={styles.letterList}
             ref={ref => (this.indexes = ref)}
-            numberOfRowsInSection={() => this.clients.length}
+            numberOfRowsInSection={() => this.state.clients.length}
             heightForCell={() => 22}
             renderCell={(section, row) => this.renderIndexes(section, row)}
             showsVerticalScrollIndicator={false}
