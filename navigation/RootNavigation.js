@@ -9,6 +9,9 @@ import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
+import QueueDetailScreen from './../screens/QueueDetailScreen';
+import PromotionsScreen from './../screens/PromotionsScreen';
+import ServicesScreen from './../screens/ServicesScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
 import ClientsSearchScreen from './../screens/ClientsSearchScreen';
@@ -51,6 +54,27 @@ const QueueStackNavigator = StackNavigator(
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
+      },
+    },
+    QueueDetail: {
+      screen: QueueDetailScreen,
+    },
+    Service: {
+      screen: ServicesScreen,
+      navigationOptions: {
+        headerTitle: 'Service',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
+      },
+    },
+    Promotions: {
+      screen: PromotionsScreen,
+      navigationOptions: {
+        headerTitle: 'Promotions',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
       },
     },
     Providers: {

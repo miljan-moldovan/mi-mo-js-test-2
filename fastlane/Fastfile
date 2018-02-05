@@ -24,6 +24,14 @@ lane :beta do
     path: "./ios/SalonUltimateRN.xcodeproj"
   )
   
+  ci_job_id = ENV['CI_JOB_ID']
+  if ci_job_id
+    increment_build_number(
+      build_number: 2,
+      xcodeproj: "./ios/SalonUltimateRN.xcodeproj"
+    )
+  end
+  
   # build your iOS app
   gym(
     workspace: "./ios/SalonUltimateRN.xcworkspace",
@@ -41,7 +49,8 @@ lane :beta do
     notifications: true
   )
 
-  # slack(
-  #   slack_url: "https://hooks.slack.com/services/IDS"
-  # )
+  slack(
+    slack_url: "https://hooks.slack.com/services/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", #su_mobileapp
+    message: "Available new build of iOS POS <https://betas.to/8giUbXFH|install>",
+  )
 end
