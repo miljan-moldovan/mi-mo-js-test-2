@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import AvatarWrapper from '../../avatarWrapper';
+// import AvatarWrapper from '../../avatarWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,15 +33,15 @@ const styles = StyleSheet.create({
 const PreferredProviderHeader = props => (
 
   <View style={styles.container}>
-    <View style={styles.avatarContainer}>
-      <AvatarWrapper
-        key={props.headerData.preferredProvider.id}
-        wrapperStyle={styles.avatar}
-        width={44}
-        image={props.headerData.preferredProvider.avatar}
-      />
+    {/* <View style={styles.avatarContainer}>
+    <AvatarWrapper
+      key={props.headerData.preferredProvider.id}
+      wrapperStyle={styles.avatar}
+      width={44}
+      image={props.headerData.preferredProvider.avatar}
+    />
 
-    </View>
+  </View> */}
 
     <Text style={styles.text}>{props.headerData.preferredProvider.name}</Text>
 

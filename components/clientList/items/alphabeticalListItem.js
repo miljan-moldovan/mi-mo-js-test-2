@@ -149,7 +149,7 @@ class AlphabeticalListItem extends React.PureComponent {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View key={`${this.state.client.id}`} style={styles.container}>
 
         <View style={styles.pointerContainer}>
           {this.state.client.nextAppointment && <View style={styles.pointer} />}

@@ -2,10 +2,12 @@ import React from 'react';
 import { View,
   Text,
   TouchableHighlight,
+  Dimensions,
   StyleSheet } from 'react-native';
 import { LargeList } from 'react-native-largelist';
 import { connect } from 'react-redux';
 
+const window = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -115,6 +117,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'center',
   },
+
+  hiddenContainer: {
+    top: window.height,
+    bottom: -window.height,
+    flex: 0,
+  },
 });
 
 class ClientList extends React.Component {
@@ -132,11 +140,13 @@ class ClientList extends React.Component {
         boldWords: props.boldWords,
         listItem: props.listItem,
         headerItem: props.headerItem,
+        showLateralList: props.showLateralList,
       };
     }
 
     state:{
-      clients:[]
+      clients:[],
+      showLateralList: true
     };
 
     componentWillReceiveProps(nextProps) {
@@ -146,9 +156,12 @@ class ClientList extends React.Component {
         boldWords: nextProps.boldWords,
         listItem: nextProps.listItem,
         headerItem: nextProps.headerItem,
+        showLateralList: nextProps.showLateralList,
       });
       this.listRef.reloadData();
-      this.indexes.reloadData();
+      if (nextProps.showLateralList) {
+        this.indexes.reloadData();
+      }
     }
 
 
@@ -185,7 +198,7 @@ class ClientList extends React.Component {
       const client = this.state.clients[section].list[row];
 
       return (
-        <View style={styles.lineItemCointainer}>
+        <View key={client.id} style={styles.lineItemCointainer}>
           {React.createElement(this.state.listItem, { boldWords: this.state.boldWords, client })}
         </View>
       );
@@ -195,7 +208,7 @@ class ClientList extends React.Component {
       //  <Text style={styles.topBarText}>{this.state.clients[section].header}</Text>
 
       return (
-        <View style={styles.topBar}>
+        <View key={section} style={styles.topBar}>
           {React.createElement(
             this.state.headerItem,
             { headerData: this.state.clients[section] },
@@ -208,6 +221,7 @@ class ClientList extends React.Component {
       const selected = this.state.clients[row].selected;
       return (
         <TouchableHighlight
+          key={`${section}_${row}`}
           underlayColor="transparent"
           onPress={() => {
                this.listRef.scrollToIndexPath({ section: row, row: 0 });
@@ -263,7 +277,7 @@ class ClientList extends React.Component {
             onSectionDidHangOnTop={section => this.onSectionChange(section)}
           />
           <LargeList
-            style={styles.letterList}
+            style={[styles.letterList, this.state.showLateralList ? null : styles.hiddenContainer]}
             ref={ref => (this.indexes = ref)}
             numberOfRowsInSection={() => this.state.clients.length}
             heightForCell={() => 22}

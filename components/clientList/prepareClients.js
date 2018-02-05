@@ -41,55 +41,67 @@ class PrepareClients {
 
 
   static applyFilter(clients, filters) {
+    let showLateralList = true;
+
     if (filters.length > 0) {
-      let filteredClients = [];
+      let prepared = [];
       let headerItem = AlphabeticalHeader;
       let listItem = AlphabeticalListItem;
 
       for (let i = 0; i < filters.length; i += 1) {
         const filter = filters[i];
 
-        console.log(filter);
-
         if (filter.type === 'sort' && filter.id === 1) {
           // Alphabetical order: A-Z
-          filteredClients = clients.sort(PrepareClients.compareByName);
-          filteredClients = PrepareClients.prepareClientsAlphabetical(filteredClients);
+          prepared = clients.sort(PrepareClients.compareByName);
+          prepared = PrepareClients.prepareClientsAlphabetical(prepared);
           headerItem = AlphabeticalHeader;
           listItem = AlphabeticalListItem;
+          showLateralList = true;
         } else if (filter.type === 'sort' && filter.id === 2) {
           // Prefered Service Provider
-          // filteredClients = clients.sort(PrepareClients.compareByName);
-          filteredClients = PrepareClients.prepareClientsPreferredProvider(clients);
+          // prepared = clients.sort(PrepareClients.compareByName);
+          prepared = PrepareClients.prepareClientsPreferredProvider(clients);
           headerItem = PreferredProviderHeader;
           listItem = PreferredProviderClientListItem;
+          showLateralList = true;
         } else if (filter.type === 'sort' && filter.id === 3) {
           // Last Visit
-          // filteredClients = clients.sort(PrepareClients.compareByName);
-          filteredClients = PrepareClients.prepareClientsLastVisit(clients);
+          // prepared = clients.sort(PrepareClients.compareByName);
+          prepared = PrepareClients.prepareClientsLastVisit(clients);
           headerItem = LastVisitHeader;
           listItem = LastVisitClientListItem;
+          showLateralList = false;
         } else if (filter.type === 'sort' && filter.id === 4) {
           // Upcoming Appointments
-          // filteredClients = clients.sort(PrepareClients.compareByName);
-          filteredClients = PrepareClients.prepareClientsUpcomingAppointments(clients);
+          // prepared = clients.sort(PrepareClients.compareByName);
+          prepared = PrepareClients.prepareClientsUpcomingAppointments(clients);
           headerItem = UpcomingAppointmentsHeader;
           listItem = UpcomingAppointmentsClientListItem;
+          showLateralList = false;
         } else if (filter.type === 'sort' && filter.id === 5) {
           // Membership
-          // filteredClients = clients.sort(PrepareClients.compareByName);
-          filteredClients = PrepareClients.prepareClientsMembership(clients);
+          // prepared = clients.sort(PrepareClients.compareByName);
+          prepared = PrepareClients.prepareClientsMembership(clients);
           headerItem = MembershipHeader;
           listItem = MembershipClientListItem;
+          showLateralList = true;
         }
       }
 
-      return { clients: filteredClients, listItem, headerItem };
+      return {
+        clients, prepared, listItem, headerItem, showLateralList,
+      };
     }
+
+    const prepared = clients.sort(PrepareClients.compareByName);
+
     return {
-      clients: clients.sort(PrepareClients.compareByName),
+      clients,
+      prepared,
       listItem: AlphabeticalListItem,
       headerItem: AlphabeticalHeader,
+      showLateralList,
     };
   }
 
@@ -129,11 +141,11 @@ class PrepareClients {
       if (result) {
         result.list.push(client);
       } else {
-        dataSource.push({ list: [client], header: client.preferredProvider.name, preferredProvider: client.preferredProvider });
+        dataSource.push({
+          list: [client], header: client.preferredProvider.name, preferredProvider: client.preferredProvider,
+        });
       }
     }
-
-    console.log(dataSource);
     return dataSource;
   }
 
@@ -155,7 +167,6 @@ class PrepareClients {
       }
     }
 
-    console.log(dataSource);
     return dataSource;
   }
 
@@ -175,7 +186,9 @@ class PrepareClients {
       if (result) {
         result.list.push(client);
       } else {
-        dataSource.push({ list: [client], header: date, nextAppointment: client.nextAppointment });
+        dataSource.push({
+          list: [client], header: date, nextAppointment: client.nextAppointment,
+        });
       }
     }
 
@@ -197,7 +210,9 @@ class PrepareClients {
       if (result) {
         result.list.push(client);
       } else {
-        dataSource.push({ list: [client], header: date, lastAppointment: client.lastAppointment });
+        dataSource.push({
+          list: [client], header: date, lastAppointment: client.lastAppointment,
+        });
       }
     }
 
@@ -211,7 +226,7 @@ class PrepareClients {
     matchesFilter = function match(item) {
       let count = 0;
       for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
           count += 1;
         }
       }

@@ -1,30 +1,35 @@
 // @flow
 import React from 'react';
-import { View, Image, Text } from 'react-native';
+import { Image, View, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
-
+import { bindActionCreators } from 'redux';
 import LoginScreen from './../screens/LoginScreen';
 import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
-import ClientsScreen from './../screens/ClientsScreen';
-import ClientsSearchScreen from './../screens/ClientsSearchScreen';
+import ClientsScreen from './../screens/clientsScreen';
+import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
+
 import ScorecardScreen from './../screens/ScorecardScreen';
-import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
+import WalkInScreen from '../screens/walkinScreen';
+import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
+import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
-import ProvidersScreen from '../screens/ProvidersScreen';
-import ChangeProviderScreen from '../screens/ChangeProviderScreen';
-
+import PromotionsScreen from '../screens/promotionsScreen';
+import ProvidersScreen from '../screens/providersScreen';
+import ServicesScreen from '../screens/servicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
 
+import walkInActions from '../actions/walkIn';
+import clientsActions from '../actions/clients';
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -46,87 +51,27 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
-    ClientsSearch: {
-      screen: ClientsSearchScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                          fontFamily: 'OpenSans-Regular',
-                          color: '#fff',
-                          fontSize: 20,
-                        }}
-            >
-                        Search Clients
-            </Text>),
-        }),
-        // headerLeft: HeaderLateral({
-        //   handlePress: () => rootProps.navigation.goBack(),
-        //   button: (
-        //     <View style={{
-        //           flex: 1,
-        //           flexDirection: 'row',
-        //           alignItems: 'center',
-        //           justifyContent: 'center',
-        //           }}
-        //     >
-        //       <Image
-        //         style={{
-        //               width: 15,
-        //               height: 15,
-        //             }}
-        //         source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
-        //       />
-        //       <Text style={{
-        //             color: '#FFFFFF',
-        //             fontSize: 16,
-        //             fontFamily: 'OpenSans-Bold',
-        //             backgroundColor: 'transparent',
-        //             }}
-        //       >Back
-        //       </Text>
-        //     </View>
-        //   ),
-        // }),
-        // headerRight: HeaderLateral({
-        //   handlePress: () => console.log('pressed right header button'),
-        //   button: (
-        //     <Text style={{
-        //           color: '#FFFFFF',
-        //           fontSize: 16,
-        //           width: 50,
-        //           fontFamily: 'OpenSans-Bold',
-        //           backgroundColor: 'transparent',
-        //           alignSelf: 'center',
-        //           alignItems: 'center',
-        //         }}
-        //     >New Client
-        //     </Text>),
-        // }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-            searchBar={searchProps => (
-              <SearchBar
-                {...searchProps}
-                placeholder=""
-                showCancel
-                searchIconPosition="left"
-              />)}
-          />),
-      }),
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    WalkIn: {
+      screen: WalkInScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <WalkInHeader rootProps={rootProps} />,
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
+      }),
+    },
+    Services: {
+      screen: ServicesScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
+      }),
     },
     Providers: {
       screen: ProvidersScreen,
@@ -135,68 +80,46 @@ const QueueStackNavigator = StackNavigator(
         headerStyle: {
           backgroundColor: 'transparent',
         },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Select Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
+        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
+            {...rootProps}
           />),
       }),
     },
-
-    ChangeProvider: {
-      screen: ChangeProviderScreen,
+    Promotions: {
+      screen: PromotionsScreen,
       navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Change Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Service Queue</Text> }),
+        headerTitle: <WalkInStepHeader dataName="selectedPromotion" rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
+            {...rootProps}
           />),
       }),
     },
-    WalkIn: {
-      screen: WalkInScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 20,
-              }}
-            >
-              Walkin
-            </Text>),
-          subTitle: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 12,
-              }}
-            >
-              Est wait time
-              <Text style={{
-                fontFamily: 'OpenSans-Bold',
-              }}
-              >
-                { ` ${rootProps.navigation.state.params.estimatedTime} min` }
-              </Text>
-            </Text>
-          ),
-        }),
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-      }),
-    },
-
-
+    // ClientsSearch: {
+    //   screen: ClientsSearchScreen,
+    //   navigationOptions: {
+    //     headerStyle: {
+    //       backgroundColor: 'transparent',
+    //       borderBottomWidth: 0,
+    //     },
+    //     headerTitle: 'Client Search',
+    //     header: props => (
+    //       <ImageHeader
+    //         {...props}
+    //         searchBar={searchProps => (
+    //           <SearchBar
+    //             {...searchProps}
+    //             placeHolder=""
+    //             showCancel
+    //             searchIconPosition="left"
+    //           />)}
+    //       />),
+    //   },
+    // },
   },
   {
 
@@ -231,52 +154,29 @@ const ClientsStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 20,
-              }}
+        headerTitle: <ClientsHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
             >
-              Clients
-            </Text>),
+              <Image
+                style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                source={require('../assets/images/clients/icon_menu.png')}
+              />
+            </View>
+          ),
         }),
-        subTitle: (
-          <Text
-            style={{
-              fontFamily: 'OpenSans-Regular',
-              color: '#fff',
-              fontSize: 12,
-            }}
-          >
-          3000 clients
-          </Text>
-
-        ),
-        // headerLeft: HeaderLateral({
-        // //  handlePress: () => rootProps.navigation.goBack(),
-        //   button: (
-        //     <View style={{
-        //           flex: 1,
-        //           flexDirection: 'row',
-        //           alignItems: 'center',
-        //           justifyContent: 'center',
-        //           }}
-        //     >
-        //       <Image
-        //         style={{
-        //               width: 15,
-        //               height: 15,
-        //             }}
-        //         source={require('../assets/images/clients/icon_menu.png')}
-        //       />
-        //     </View>
-        //   ),
-        // }),
         headerRight: HeaderLateral({
-          // handlePress: () => rootProps.params.handlePress(),
+          handlePress: () => rootProps.params.handlePress(),
           params: rootProps.navigation.state.params,
           button:
   <View style={{
@@ -333,8 +233,8 @@ const ClientsStackNavigator = StackNavigator(
 
 const RootDrawerNavigator = DrawerNavigator(
   {
-    Clients: { screen: ClientsStackNavigator },
     Queue: { screen: QueueStackNavigator },
+    Clients: { screen: ClientsStackNavigator },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentsScreen },
     Scorecard: { screen: ScorecardScreen },
@@ -364,7 +264,6 @@ class RootNavigator extends React.Component {
 
     const fingerprintTimeout = 60 * 2;
     const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
-    console.log('RootNavigator.render', loggedIn, useFingerprintId, new Date(fingerprintAuthenticationTime), new Date(fingerprintExpireTime), new Date());
 
     // if user is logged in AND fingerprint identification is NOT enabled
     if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) { return <RootDrawerNavigator />; }
@@ -373,11 +272,14 @@ class RootNavigator extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  console.log('RootNavigator-map');
-  return {
-    auth: state.auth,
-  };
-};
+const mapStateToProps = state => ({
+  auth: state.auth,
+  walkInState: state.walkInReducer,
+  clientsState: state.clientsReducer,
+});
+const mapActionsToProps = dispatch => ({
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
 
-export default connect(mapStateToProps, null)(RootNavigator);
+});
+export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);
