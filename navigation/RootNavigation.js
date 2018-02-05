@@ -47,12 +47,6 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
-    NewClient: {
-      screen: NewClientScreen,
-      navigationOptions: {
-        headerTitle: 'Create New Client',
-      },
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -126,8 +120,6 @@ const QueueStackNavigator = StackNavigator(
         }),
       }),
     },
-
-
     ClientsSearch: {
       screen: ClientsSearchScreen,
       navigationOptions: rootProps => ({
@@ -204,12 +196,22 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: {
+        headerTitle: 'Create New Client',
+        headerLeft: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Cancel</Text>,
+        headerRight: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Save</Text>,
+      },
+    },
   },
   {
 
     navigationOptions: {
       headerStyle: {
         backgroundColor: 'transparent',
+        paddingLeft: 10,
+        paddingRight: 10
       },
       header: props => <ImageHeader {...props} />,
       headerTitleStyle: {

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import Picker from 'react-native-picker';
+import { StyleSheet, View, Text } from 'react-native';
 
+import SalonPicker from '../components/SalonPicker';
 import SalonMaterialTextInput from '../components/SalonMaterialTextInput';
+import SalonBtnSelect from '../components/SalonBtnSelect';
 
 const monthes = ['Month', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'Octobre', 'November', 'December'];
 
@@ -26,12 +27,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f3f4',
     paddingLeft: 20,
     paddingRight: 20,
+    justifyContent: 'flex-end',
   },
   firstNameInput: {
     flex: 3,
   },
   middleInput: {
     flex: 1,
+  },
+  titleText: {
+    fontFamily: 'OpenSans-Bold',
+    fontSize: 12,
+    color: '#1D1D26',
+    marginBottom: 8,
   },
 });
 
@@ -44,31 +52,12 @@ class newClientScreen extends Component {
     };
   }
 
-  showSexPicker =() => {
-    Picker.init({
-      pickerData: sexes,
-      selectedValue: [this.state.sex],
-      pickerTitleText: 'Select sex',
-      pickerFontSize: 18,
-      pickerToolBarFontSize: 18,
-      onPickerConfirm: (pickedValue) => {
-        this.setState({ sex: pickedValue });
-      },
-    });
-    Picker.show();
+  handleSexChange = (sex) => {
+    this.setState({ sex: sex[0] });
   }
 
-  showBirthMontPicker =() => {
-    Picker.init({
-      pickerData: monthes,
-      selectedValue: [this.state.birthMonth],
-      pickerFontSize: 18,
-      pickerToolBarFontSize: 18,
-      onPickerConfirm: (pickedValue) => {
-        this.setState({ birthMonth: pickedValue });
-      },
-    });
-    Picker.show();
+  handleMonthChange = (birthMonth) => {
+    this.setState({ birthMonth: birthMonth[0] });
   }
 
   render() {
@@ -82,21 +71,36 @@ class newClientScreen extends Component {
           <SalonMaterialTextInput title="Last Name" />
         </View>
         <View style={styles.inputRow} >
-          <TouchableOpacity onPress={this.showSexPicker} style={{flex:1}}>
-            <Text>{this.state.sex}</Text>
-          </TouchableOpacity>
+          <SalonPicker
+            dataSource={sexes}
+            selectedValue={this.state.sex}
+            title="Sex"
+            onPickerConfirm={this.handleSexChange}
+          />
         </View>
         <View style={styles.inputRow} >
-          <TouchableOpacity onPress={this.showBirthMontPicker} style={{flex:1}}>
-            <Text>{this.state.birthMonth}</Text>
-          </TouchableOpacity>
+          <SalonPicker
+            dataSource={monthes}
+            selectedValue={this.state.birthMonth}
+            title="Birth Month"
+            onPickerConfirm={this.handleMonthChange}
+          />
         </View>
-        <View style={styles.inputRow} />
-        <View style={styles.inputRow} />
-        <View style={styles.inputRow} />
-        <View style={styles.inputRow} />
-        <View style={styles.titleRow} />
-        <View style={styles.inputRow} />
+        <View style={styles.inputRow} >
+          <SalonMaterialTextInput title="Email" />
+        </View>
+        <View style={styles.inputRow} >
+          <SalonMaterialTextInput title="Cell-phone" />
+        </View>
+        <View style={styles.inputRow} >
+          <SalonMaterialTextInput title="Zip Code" />
+        </View>
+        <View style={styles.titleRow} >
+          <Text style={styles.titleText}>REFERRED BY:</Text>
+        </View>
+        <View style={styles.inputRow} >
+          <SalonBtnSelect selectedValue="Paul Simon" onPress={() => {}} title="Customer" />
+        </View>
       </View>
     );
   }
