@@ -6,6 +6,8 @@ import {
   QUEUE,
   QUEUE_RECEIVED,
   QUEUE_FAILED,
+  QUEUE_DELETE_ITEM,
+  QUEUE_UPDATE_ITEM,
   CLIENT_CHECKED_IN,
   CLIENT_RETURNED_LATER,
   CLIENT_WALKED_OUT,
@@ -37,6 +39,18 @@ export const receiveQueue = () => (dispatch) => {
   //   .catch((error) => {
   //     dispatch({type: QUEUE_FAILED, error});
   //   });
+}
+export function deleteQueueItem(id) {
+  return {
+    type: QUEUE_DELETE_ITEM,
+    data: {id}
+  }
+}
+export function saveQueueItem(queueItem) {
+  return {
+    type: QUEUE_UPDATE_ITEM,
+    data: {queueItem}
+  }
 }
 
 export function checkInClient(id) {
