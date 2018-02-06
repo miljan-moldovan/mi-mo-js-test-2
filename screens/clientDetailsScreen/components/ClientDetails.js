@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet, Text, Image, TouchableOpacity, Switch } from 'react-native';
 
-import SalonMaterialTextInput from '../components/SalonMaterialTextInput';
-import SalonPicker from '../components/SalonPicker';
-import SalonBtnSelect from '../components/SalonBtnSelect';
-import SalonFlatPicker from '../components/SalonFlatPicker';
-import FloatingButton from '../components/FloatingButton';
-import plusIcon from '../assets/images/clientDetails/icon_plus_small.png';
-import removeIcon from '../assets/images/clientDetails/icon_close_w.png';
-import sendIcon from '../assets/images/clientDetails/send_sms.png';
-import callIcon from '../assets/images/clientDetails/call.png';
+import SalonMaterialTextInput from '../../../components/SalonMaterialTextInput';
+import SalonPicker from '../../../components/SalonPicker';
+import SalonBtnSelect from '../../../components/SalonBtnSelect';
+import SalonFlatPicker from '../../../components/SalonFlatPicker';
+import FloatingButton from '../../../components/FloatingButton';
+import plusIcon from '../../../assets/images/clientDetails/icon_plus_small.png';
+import removeIcon from '../../../assets/images/clientDetails/icon_close_w.png';
+import sendIcon from '../../../assets/images/clientDetails/send_sms.png';
+import callIcon from '../../../assets/images/clientDetails/call.png';
 
 const confirmations = ['Email', 'SMS'];
 
@@ -17,7 +17,7 @@ const monthes = ['Month', 'January', 'February', 'March', 'April', 'May', 'June'
 
 const genderes = ['Male', 'Female', 'Unspecified'];
 
-const referredType = ['Customer', 'Other']
+const referredType = ['Customer', 'Other'];
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
 });
 
-class ClientDetailsScreen extends Component {
+class ClientDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -274,4 +274,4 @@ class ClientDetailsScreen extends Component {
   }
 }
 
-export default ClientDetailsScreen;
+export default ClientDetails;

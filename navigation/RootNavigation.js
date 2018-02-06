@@ -10,8 +10,6 @@ import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
-import PromotionsScreen from './../screens/PromotionsScreen';
-import ServicesScreen from './../screens/ServicesScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
 import ClientsSearchScreen from './../screens/ClientsSearchScreen';
@@ -24,7 +22,7 @@ import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
-import ProvidersScreen from '../screens/ProvidersScreen';
+import ProvidersScreen from '../screens/providersScreen';
 import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
@@ -70,14 +68,6 @@ const QueueStackNavigator = StackNavigator(
     QueueDetail: {
       screen: QueueDetailScreen,
     },
-    Promotions: {
-      screen: PromotionsScreen,
-      navigationOptions: {
-        headerTitle: 'Promotions',
-        headerBackTitleStyle: {
-          color: 'white'
-        }
-      },
     WalkIn: {
       screen: WalkInScreen,
       navigationOptions: rootProps => ({
@@ -199,18 +189,17 @@ const QueueStackNavigator = StackNavigator(
       screen: NewClientScreen,
       navigationOptions: {
         headerTitle: 'Create New Client',
-        headerLeft: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Cancel</Text>,
-        headerRight: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Save</Text>,
+        headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
+        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
       },
     },
   },
   {
-
     navigationOptions: {
       headerStyle: {
         backgroundColor: 'transparent',
         paddingLeft: 10,
-        paddingRight: 10
+        paddingRight: 10,
       },
       header: props => <ImageHeader {...props} />,
       headerTitleStyle: {
