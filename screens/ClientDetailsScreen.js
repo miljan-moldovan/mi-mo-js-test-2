@@ -8,6 +8,8 @@ import SalonFlatPicker from '../components/SalonFlatPicker';
 import FloatingButton from '../components/FloatingButton';
 import plusIcon from '../assets/images/clientDetails/icon_plus_small.png';
 import removeIcon from '../assets/images/clientDetails/icon_close_w.png';
+import sendIcon from '../assets/images/clientDetails/send_sms.png';
+import callIcon from '../assets/images/clientDetails/call.png';
 
 const confirmations = ['Email', 'SMS'];
 
@@ -36,6 +38,14 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  btnRow: {
+    height: 100,
+    paddingLeft: 20,
+    paddingRight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   titleText: {
     fontFamily: 'OpenSans-Bold',
@@ -111,6 +121,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     height: 146,
+  },
+  btnStyle: {
+    position: 'relative',
+    bottom: 0,
+    right: 0,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#fff',
+  },
+  btnText: {
+    fontSize: 11,
+    color: '#7A7681',
+    fontFamily: 'OpenSans-Regular',
+    paddingTop: 5,
+  },
+  btnContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -214,10 +243,31 @@ class ClientDetailsScreen extends Component {
             <Text style={styles.deleteText}>Delete Client</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.row}>
-          <FloatingButton/>
-          <FloatingButton/>
-          <FloatingButton/>
+        <View style={styles.btnRow}>
+          <View style={styles.btnContainer}>
+            <FloatingButton handlePress={() => {}} rootStyle={styles.btnStyle}>
+              <Image source={callIcon} />
+            </FloatingButton>
+            <Text style={styles.btnText}>CALL</Text>
+          </View>
+          <View style={styles.btnContainer}>
+            <FloatingButton handlePress={() => {}} rootStyle={styles.btnStyle}>
+              <Image source={sendIcon} />
+            </FloatingButton>
+            <Text style={styles.btnText}>SEND SMS</Text>
+          </View>
+          <View style={styles.btnContainer}>
+            <FloatingButton handlePress={() => {}} rootStyle={styles.btnStyle}>
+              <Image source={callIcon} />
+            </FloatingButton>
+            <Text style={styles.btnText}>EMAIL</Text>
+          </View>
+          <View style={styles.btnContainer}>
+            <FloatingButton handlePress={() => {}} rootStyle={styles.btnStyle}>
+              <Image source={sendIcon} />
+            </FloatingButton>
+            <Text style={styles.btnText}>NEW APPT.</Text>
+          </View>
         </View>
       </ScrollView>
     );
