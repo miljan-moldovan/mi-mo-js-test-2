@@ -10,17 +10,13 @@ const initialLayout = {
   width: Dimensions.get('window').width,
 };
 
-const FirstRoute = () => <View style={[styles.container, { backgroundColor: '#ff4081' }]} />;
-const SecondRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
-const ThirdRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
-
 export default class ClientDescriptionScreen extends Component {
   state = {
     index: 0,
     routes: [
       { key: '0', title: 'Details' },
       { key: '1', title: 'Notes' },
-      { key: '2', title: 'History' },
+      { key: '5', title: 'HISTORY' },
     ],
   };
 
@@ -44,8 +40,8 @@ export default class ClientDescriptionScreen extends Component {
 
   _renderScene = SceneMap({
     0: ClientNotes,
-    1: SecondRoute,
-    2: ClientHistory,
+    1: ClientNotes,
+    5: ClientHistory,
   });
 
   render() {
