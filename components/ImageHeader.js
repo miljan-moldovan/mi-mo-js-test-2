@@ -11,9 +11,9 @@ const styles = StyleSheet.create({
 });
 const ImageHeader = (props) => {
   const { searchBar, ...headerProps } = props;
-  const searchParams = props.navigation.state.params ? { onChangeText:props.navigation.state.params.onChangeText } : null;
+  const searchParams = props.params ?
+    { onChangeText: props.params.onChangeText } : null;
 
-    console.log('test', searchParams,headerProps)
   return (
     <View style={styles.container}>
       <Image

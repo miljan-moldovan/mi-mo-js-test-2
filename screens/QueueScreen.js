@@ -23,6 +23,7 @@ import * as actions from '../actions/queue.js';
 
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
+
 import FloatingButton from '../components/FloatingButton';
 import CustomModal from '../components/CustomModal';
 import SalonTextInput from '../components/SalonTextInput';
@@ -83,8 +84,8 @@ class QueueScreen extends React.Component {
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle = {{ backgroundColor : 'transparent' }}
-      style = {{ backgroundColor: 'transparent' }}
+      tabStyle = {{ backgroundColor : 'transparent', height: 50 }}
+      style = {{ backgroundColor: 'transparent', height: 50 }}
       renderLabel={this._renderLabel(props)}
       indicatorStyle = {{ backgroundColor: '#80BBDF', height: 6 }}
     />
@@ -92,15 +93,14 @@ class QueueScreen extends React.Component {
 
   _renderScene = ({ route }) => {
     console.log('_renderScene', route);
-
     switch (route.key) {
       case WAITING:
         return (
-          <Queue data={this.props.waitingQueue} />
+          <Queue data={this.props.waitingQueue} navigation={this.props.navigation} />
         );
       case SERVICED:
         return (
-          <Queue data={this.props.serviceQueue} />
+          <Queue data={this.props.serviceQueue} navigation={this.props.navigation} />
         );
     }
   }
@@ -133,8 +133,9 @@ class QueueScreen extends React.Component {
           style={styles.backgroundImage}
           source={require('../assets/images/login/blue.png')}
         />
+
         <TabViewAnimated
-          style={{ flex: 1, marginTop: 100 }}
+          style={{ flex: 1, marginTop: 10 }}
           navigationState={this.state}
           renderScene={this._renderScene}
           renderHeader={this._renderBar}

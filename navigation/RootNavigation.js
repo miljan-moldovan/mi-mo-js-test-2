@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { Text } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 
@@ -9,6 +9,9 @@ import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
+import QueueDetailScreen from './../screens/QueueDetailScreen';
+import PromotionsScreen from './../screens/PromotionsScreen';
+import ServicesScreen from './../screens/ServicesScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
 import ClientsSearchScreen from './../screens/ClientsSearchScreen';
@@ -17,7 +20,12 @@ import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
+import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
+import ProvidersScreen from '../screens/ProvidersScreen';
+import ChangeProviderScreen from '../screens/ChangeProviderScreen';
+import NewClientScreen from '../screens/NewClientScreen';
+import ClientDetailsScreen from '../screens/ClientDetailsScreen';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -43,11 +51,67 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
+    ClientDetails: {
+      screen: ClientDetailsScreen,
+      navigationOptions: {
+        headerTitle: 'Details',
+      },
+    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    QueueDetail: {
+      screen: QueueDetailScreen,
+    },
+    Service: {
+      screen: ServicesScreen,
+      navigationOptions: {
+        headerTitle: 'Service',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
+      },
+    },
+    Promotions: {
+      screen: PromotionsScreen,
+      navigationOptions: {
+        headerTitle: 'Promotions',
+        headerBackTitleStyle: {
+          color: 'white'
+        }
+      },
+    },
+    Providers: {
+      screen: ProvidersScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Select Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+          />),
+      }),
+    },
+
+    ChangeProvider: {
+      screen: ChangeProviderScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Change Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Service Queue</Text> }),
+        header: props => (
+          <ImageHeader
+            {...props}
+          />),
+      }),
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -88,15 +152,70 @@ const QueueStackNavigator = StackNavigator(
     },
     ClientsSearch: {
       screen: ClientsSearchScreen,
-      navigationOptions: {
+      navigationOptions: rootProps => ({
         headerStyle: {
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: 'Client Search',
+        headerTitle: HeaderMiddle({
+          title: (
+            <Text
+              style={{
+                          fontFamily: 'OpenSans-Regular',
+                          color: '#fff',
+                          fontSize: 20,
+                        }}
+            >
+                        Search Clients
+            </Text>),
+        }),
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Image
+                style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+              />
+              <Text style={{
+                    color: '#FFFFFF',
+                    fontSize: 16,
+                    fontFamily: 'OpenSans-Bold',
+                    backgroundColor: 'transparent',
+                    }}
+              >Back
+              </Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => console.log('pressed right header button'),
+          button: (
+            <Text style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  width: 50,
+                  fontFamily: 'OpenSans-Bold',
+                  backgroundColor: 'transparent',
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}
+            >New Client
+            </Text>),
+        }),
         header: props => (
           <ImageHeader
             {...props}
+            {...rootProps}
             searchBar={searchProps => (
               <SearchBar
                 {...searchProps}
@@ -105,11 +224,122 @@ const QueueStackNavigator = StackNavigator(
                 searchIconPosition="left"
               />)}
           />),
+      }),
+    },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: {
+        headerTitle: 'Create New Client',
+        headerLeft: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Cancel</Text>,
+        headerRight: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Save</Text>,
       },
     },
   },
   {
 
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: 'transparent',
+        paddingLeft: 10,
+        paddingRight: 10
+      },
+      header: props => <ImageHeader {...props} />,
+      headerTitleStyle: {
+        fontFamily: 'OpenSans-Regular',
+        fontSize: 20,
+        color: '#fff',
+      },
+      drawerLabel: props => (
+        <SideMenuItem
+          {...props}
+          title="Queue"
+          icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
+        />
+      ),
+    },
+  },
+);
+
+
+const ClientsStackNavigator = StackNavigator(
+  {
+    Clients: {
+      screen: ClientsScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: HeaderMiddle({
+          title: (
+            <Text
+              style={{
+                          fontFamily: 'OpenSans-Regular',
+                          color: '#fff',
+                          fontSize: 20,
+                        }}
+            >
+                        Clients
+            </Text>),
+        }),
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Image
+                style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+              />
+              <Text style={{
+                    color: '#FFFFFF',
+                    fontSize: 16,
+                    fontFamily: 'OpenSans-Bold',
+                    backgroundColor: 'transparent',
+                    }}
+              >Back
+              </Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => console.log('pressed right header button'),
+          button: (
+            <Text style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  width: 50,
+                  fontFamily: 'OpenSans-Bold',
+                  backgroundColor: 'transparent',
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}
+            >New Client
+            </Text>),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder="Search by name, phone or email"
+                searchIconPosition="right"
+              />)}
+          />),
+      }),
+    },
+  },
+  {
     navigationOptions: {
       headerStyle: {
         backgroundColor: 'transparent',
@@ -134,9 +364,9 @@ const QueueStackNavigator = StackNavigator(
 const RootDrawerNavigator = DrawerNavigator(
   {
     Queue: { screen: QueueStackNavigator },
+    Clients: { screen: ClientsStackNavigator },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentsScreen },
-    Clients: { screen: ClientsScreen },
     Scorecard: { screen: ScorecardScreen },
   },
   {

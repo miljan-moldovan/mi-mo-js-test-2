@@ -2,6 +2,8 @@
 export const QUEUE = 'QUEUE';
 export const QUEUE_RECEIVED = 'QUEUE_RECEIVED';
 export const QUEUE_FAILED = 'QUEUE_FAILED';
+export const QUEUE_UPDATE_ITEM = 'QUEUE_UPDATE_ITEM';
+export const QUEUE_DELETE_ITEM = 'QUEUE_DELETE_ITEM';
 
 export const EMPLOYEES = 'EMPLOYEES';
 export const EMPLOYEES_RECEIVED = 'EMPLOYEES_RECEIVED';

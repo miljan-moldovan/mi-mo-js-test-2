@@ -17,7 +17,7 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import SideMenuItem from '../components/SideMenuItem';
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../components/searchBar';
 import CustomModal from '../components/CustomModal';
 
 export default class PromotionsScreen extends React.Component {
@@ -41,7 +41,7 @@ export default class PromotionsScreen extends React.Component {
       modalVisible: true,
     }
   }
-  
+
   componentWillMount() {
     this.setState({activeData: this.mapData(promotions)});
   }
@@ -81,20 +81,20 @@ export default class PromotionsScreen extends React.Component {
      }else{
        var criteria = [
          { Field: "name", Values: [searchText.toLowerCase()] },
-         { Field: "promoCode", Values: [searchText.toLowerCase()] },         
+         { Field: "promoCode", Values: [searchText.toLowerCase()] },
        ];
 
         const toStore = this.state.storedData === null ? this.state.activeData : this.state.storedData;
 
-        var filtered = this.flexFilter(toStore, criteria);       
-  
+        var filtered = this.flexFilter(toStore, criteria);
+
        this.setState({storedData: toStore, searchText: searchText, activeData: filtered});
      }
    }
-  
+
    flexFilter(list, info) {
      var matchesFilter, matches = [];
-  
+
      matchesFilter = function(item) {
        let count = 0;
        for (var n = 0; n < info.length; n++) {
@@ -104,15 +104,23 @@ export default class PromotionsScreen extends React.Component {
        }
        return count > 0;
      }
-  
+
      for (var i = 0; i < list.length; i++) {
        if (matchesFilter(list[i])) {
          matches.push(list[i]);
        }
      }
-  
+
      return matches;
   };
+  _handleOnChangePromotion = (promotion) => {
+    console.log('promotion', promotion);
+    const { onPromotionChange, dismissOnSelect } = this.props.navigation.state.params;
+    if (onPromotionChange)
+      onPromotionChange(promotion);
+    if (dismissOnSelect)
+      this.props.navigation.goBack();
+  }
 
   _renderItem = ({item, index}) => {
     const { data, key } = item;
@@ -129,7 +137,10 @@ export default class PromotionsScreen extends React.Component {
               currentStep: this.state.currentStep + 1,
             });
           }
-          this.setState({activeListItem: data.id});
+          this.setState({
+            activeListItem: data.id
+            },
+            () => this._handleOnChangePromotion(data));
         }}
         underlayColor="#ffffff"
         activeOpacity={2}
@@ -137,7 +148,7 @@ export default class PromotionsScreen extends React.Component {
         <View>
           <View style={{flex: 1, alignItems: "center", justifyContent: "center", flexDirection: "row"}}>
             <View style={{flex: 1, flexDirection: "column"}}>
-              { data.promoCode !== undefined && <Text style={styles.superTitle}>{data.promoCode}</Text>}             
+              { data.promoCode !== undefined && <Text style={styles.superTitle}>{data.promoCode}</Text>}
               <Text style={data.id === this.state.activeListItem ? [styles.listText, {fontFamily: "OpenSans-Bold"}] : styles.listText}>{data.name}</Text>
             </View>
             <View style={{alignSelf: "center", alignItems: "center", justifyContent: "center"}}>
@@ -246,7 +257,7 @@ export default class PromotionsScreen extends React.Component {
 // export default connect(null, )(ServicesScreen);
 
 const modalStyles = StyleSheet.create({
-  
+
 });
 
 const styles = StyleSheet.create({
@@ -290,7 +301,7 @@ const styles = StyleSheet.create({
   },
   discountText: {
     fontSize: 18,
-    color: "rgba(29,29,38,.35)",    
+    color: "rgba(29,29,38,.35)",
   },
   seachBar:{
     flexDirection: 'row',

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { Form, Item, Input, Button, Label } from 'native-base';
 // import { Fingerprint } from 'expo';
+import TouchID from 'react-native-touch-id';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 
@@ -30,25 +31,33 @@ class LoginScreen extends React.Component {
     fingerprintModalVisible: false,
     fingerprintRequestAndroidVisible: false
   }
-  async componentWillMount() {
-    // check if device has a fingerprint sensor.
-    const hasFingerprintHardware = false; // await Fingerprint.hasHardwareAsync();
-    let hasFingerprint = false;
-    if (hasFingerprintHardware) {
-      // check if the user has saved fingerprints in the device
-      // hasFingerprint = await Fingerprint.isEnrolledAsync();
-    }
-    this.setState({ hasFingerprint });
+  componentWillMount() {
+    TouchID.isSupported()
+      .then(biometryType => {
+        // Success code
+        if (biometryType === 'FaceID' || biometryType === 'TouchID') {
+            console.log('Biometry is supported. ', biometryType);
+            this.setState({ hasFingerprint: true });
+        } else {
+            this.setState({ hasFingerprint: false });
+        }
+      })
+      .catch(error => {
+        // Failure code
+        console.log(error);
+        this.setState({ hasFingerprint: false });
+      });
+
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     console.log('componentDidMount', this.props.auth.loggedIn, this.props.auth.useFingerprintId, this.props.auth.fingerprintAuthenticationTime);
     if (this.props.auth.loggedIn && this.props.auth.useFingerprintId) {
       this._handleFingerprintPress();
     }
   }
 
-  _handleFingerprintPress = async () => {
+  _handleFingerprintPress = () => {
     // if (Platform.OS === 'android') {
     //   // TO DO present Android specific UI
     // }
@@ -72,6 +81,21 @@ class LoginScreen extends React.Component {
     //   ],
     //   { cancelable: false }
     // );
+    //config is optional to be passed in on Android
+    const optionalConfigObject = {
+      title: "Authentication Required",
+      color: "#e00606"
+    }
+
+    TouchID.authenticate('to demo this react-native component', optionalConfigObject)
+      .then(success => {
+        Alert.alert('Biometry successfully authenticated');
+
+        this.props.updateFingerprintValidationTime();
+      })
+      .catch(error => {
+        Alert.alert('Error authenticating fingerprint');
+      });
   }
   _handleUsernameChange = (username: string) => this.setState({ username });
   _handlePasswordChange = (password: string) => this.setState({ password });
@@ -162,14 +186,18 @@ class LoginScreen extends React.Component {
             <Image
               source={require('../assets/images/login/logo-simple.png')}
               style={styles.logo} />
-            <View style={styles.inputContainer}>
-              <Image source={require('../assets/images/login/url_icon.png')} style={styles.inputIcon} />
-              <Item floatingLabel style={styles.item}>
-                <Label style={{ color:'white', fontFamily: 'OpenSans-Regular' }}>URL</Label>
-                <Input style={styles.input} disabled={loggedIn} autoCorrect={false} blurOnSubmit={true} autoCapitalize="none" onChangeText={this._handleURLChange} />
-              </Item>
-            </View>
 
+            {loggedIn && <Text style={styles.bodyText}>You are already logged in. To proceed, please confirm using your fingerprint.</Text>}
+            {!loggedIn &&
+              <View style={styles.inputContainer}>
+                <Image source={require('../assets/images/login/url_icon.png')} style={styles.inputIcon} />
+                <Item floatingLabel style={styles.item}>
+                  <Label style={{ color:'white', fontFamily: 'OpenSans-Regular' }}>URL</Label>
+                  <Input style={styles.input} disabled={loggedIn} autoCorrect={false} blurOnSubmit={true} autoCapitalize="none" onChangeText={this._handleURLChange} />
+                </Item>
+              </View>
+            }
+            {!loggedIn &&
             <View style={styles.inputContainer}>
               <Image source={require('../assets/images/login/icon_profile.png')} style={styles.inputIcon} />
               <Item floatingLabel style={styles.item}>
@@ -177,7 +205,7 @@ class LoginScreen extends React.Component {
                 <Input style={styles.input} disabled={loggedIn} autoCorrect={false} blurOnSubmit={true} autoCapitalize="none" onChangeText={this._handleUsernameChange}  />
               </Item>
             </View>
-            { loggedIn && <Text style={styles.bodyText}>You are already logged in. To proceed, please confirm using your fingerprint.</Text>}
+            }
             { !loggedIn &&
               <View style={styles.inputContainer}>
                 <Image source={require('../assets/images/login/icon_lock.png')} style={styles.inputIcon} />
