@@ -186,7 +186,6 @@ class WalkInScreen extends Component {
               <View style={styles.providerData}>
                 <Text style={styles.providerName}>{this.props.walkInState.selectedProvider.name}</Text>
               </View>
-
             </View>
           </View>
           <Image source={rightArrow} />

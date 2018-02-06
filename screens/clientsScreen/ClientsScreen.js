@@ -374,7 +374,7 @@ class ClientsScreen extends React.Component {
           isVisible={this.props.clientsState.showFilterModal}
           closeModal={() => this.hideFilterModal()}
         >
-          <SectionList
+          {[<SectionList
             scrollEnabled={false}
             style={styles.filterModalList}
             renderItem={({ item }) => this.renderModalLine(item)}
@@ -389,7 +389,7 @@ class ClientsScreen extends React.Component {
                   title: '',
               },
             ]}
-          />
+          />]}
 
 
         </CustomModal>

@@ -1,9 +1,9 @@
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 import Modal from 'react-native-modal';
-import React, { Component } from 'react';
-import { View } from 'react-native';
 
-
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -54,33 +54,31 @@ const styles = {
     top: 10,
     right: 10,
   },
+});
+
+const CustomModal = props => (
+  <View style={{ flex: 1 }}>
+    <Modal
+      isVisible={props.isVisible}
+      style={[props.style, styles.container]}
+    >
+      <View style={[styles.content, props.contentStyle]}>
+        { props.children }
+      </View>
+    </Modal>
+  </View>
+);
+
+CustomModal.propTypes = {
+  isVisible: PropTypes.bool.isRequired,
+  children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+  contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
 };
 
-export default class CustomModal extends Component {
-  constructor(props) {
-    super(props);
+CustomModal.defaultProps = {
+  style: { flex: 1 },
+  contentStyle: { },
+};
 
-    this.state = {
-      isVisible: null,
-    };
-  }
-
-  componentWillMount() {
-    this.setState({ isVisible: this.props.isVisible });
-  }
-
-  render() {
-    return (
-      <Modal
-        style={[this.props.style, styles.container]}
-        isVisible={this.state.isVisible}
-        onBackdropPress={this.props.closeModal ? this.props.closeModal : null}
-        {...this.props}
-      >
-        <View style={[styles.content, this.props.contentStyle]}>
-          { this.props.children }
-        </View>
-      </Modal>
-    );
-  }
-}
+export default CustomModal;

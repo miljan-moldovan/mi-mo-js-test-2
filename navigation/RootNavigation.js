@@ -30,8 +30,10 @@ import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
-
+import ClientDetailsScreen from '../screens/clientDetailsScreen';
 import walkInActions from '../actions/walkIn';
+import ClientDescriptionScreen from '../screens/clientDetailsScreen/ClientDetailsScreen';
+
 import clientsActions from '../actions/clients';
 import clientsSearchActions from '../actions/clientsSearch';
 
@@ -56,7 +58,7 @@ const LoginStackNavigator = StackNavigator(
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
-      screen: QueueScreen,
+      screen: ClientDetailsScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
@@ -88,7 +90,6 @@ const QueueStackNavigator = StackNavigator(
         header: props => (
           <ImageHeader
             {...props}
-            {...rootProps}
           />),
       }),
     },
@@ -162,16 +163,14 @@ const QueueStackNavigator = StackNavigator(
             searchBar={searchProps => (
               <SearchBar
                 {...searchProps}
-                placeHolder=""
-                showCancel
-                searchIconPosition="left"
+                placeHolder="Search by name, phone or email"
+                searchIconPosition="right"
               />)}
           />),
       }),
     },
   },
   {
-
     navigationOptions: {
       headerStyle: {
         backgroundColor: 'transparent',
@@ -309,15 +308,16 @@ const RootDrawerNavigator = DrawerNavigator(
 
 class RootNavigator extends React.Component {
   render() {
-    const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
+    // const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
 
-    const fingerprintTimeout = 60 * 2;
-    const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
+    // const fingerprintTimeout = 60 * 2;
+    // const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
 
-    // if user is logged in AND fingerprint identification is NOT enabled
-    if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) { return <RootDrawerNavigator />; }
-    // else redirect to login screen so the user can authenticate (user/pass or touchID)
-    return <LoginStackNavigator />;
+    // // if user is logged in AND fingerprint identification is NOT enabled
+    // if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) { return <RootDrawerNavigator />; }
+    // // else redirect to login screen so the user can authenticate (user/pass or touchID)
+    // return <LoginStackNavigator />;
+    return <RootDrawerNavigator />;
   }
 }
 

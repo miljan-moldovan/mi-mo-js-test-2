@@ -13,7 +13,7 @@ import {
   FlatList,
   RefreshControl,
   TouchableHighlight,
-  LayoutAnimation
+  LayoutAnimation,
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -25,41 +25,43 @@ import { QueueButton, QueueButtonTypes } from './QueueButton';
 
 class Queue extends React.Component {
   state = {
-    refreshing: false
+    refreshing: false,
   }
   _onRefresh = () => {
-    this.setState({refreshing: true});
+    this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
-    setTimeout(()=>this.setState({refreshing: false}), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 1000);
   }
   getButtonsForItem = (item) => {
-    const { noShow, returnLater, clientReturned, service, walkout, checkin,
+    const {
+ noShow, returnLater, clientReturned, service, walkout, checkin,
       uncheckin, undoFinish, rebook, checkout, notesFormulas,
-      toWaiting, finishService } = QueueButtonTypes;
+      toWaiting, finishService 
+} = QueueButtonTypes;
     const { queueId } = item;
-    let left, right;
+    let left, 
+right;
     if (!item.serviced) {
       if (!item.checked_in) {
         left = [
-          <QueueButton type={noShow} left/>
+          <QueueButton type={noShow} left />,
         ];
         right = [
-          <QueueButton type={checkin} onPress={()=>{ LayoutAnimation.spring(); this.props.checkInClient(queueId) }} right/>,
-          <QueueButton type={service} onPress={()=>{ LayoutAnimation.spring(); this.props.startService(queueId) }} right/>
+          <QueueButton type={checkin} onPress={() => { LayoutAnimation.spring(); this.props.checkInClient(queueId); }} right />,
+          <QueueButton type={service} onPress={() => { LayoutAnimation.spring(); this.props.startService(queueId); }} right />,
         ];
       } else {
         left = [
-          <QueueButton type={returnLater} onPress={()=>{ LayoutAnimation.spring(); this.props.returnLater(queueId)}} left/>,
-          <QueueButton type={walkout} onPress={()=>{ LayoutAnimation.spring(); this.props.walkOut(queueId)}} left/>
+          <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId) ;}} left />,
+          <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId) ;}} left />,
         ];
         right = [
-          <QueueButton type={uncheckin} right/>,
-          <QueueButton type={service} onPress={()=>{ LayoutAnimation.spring(); this.props.startService(queueId)}} right/>
+          <QueueButton type={uncheckin} right />,
+          <QueueButton type={service} onPress={() => { LayoutAnimation.spring(); this.props.startService(queueId); }} right />,
         ];
       }
-    } else {
-      if (item.finishService) {
+    } else if (item.finishService) {
         left = [
           <QueueButton type={undoFinish} left/>
         ];
@@ -77,7 +79,6 @@ class Queue extends React.Component {
           <QueueButton type={checkout} right/>
         ];
       }
-    }
     return { left, right };
   }
   getLabelForItem = (item) => {
@@ -87,7 +88,7 @@ class Queue extends React.Component {
           <View style={styles.waitingTime}>
             <Text style={styles.waitingTimeTextTop}>FINISHED</Text>
           </View>
-        )
+        );
       case 5:
         return (
           <View style={styles.waitingTime}>
@@ -102,7 +103,7 @@ class Queue extends React.Component {
         );
       default:
         return (
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <View style={styles.waitingTime}>
               <Text style={styles.waitingTimeTextTop}>Waiting</Text>
               <Text style={styles.waitingTimeTextMid}>{item.processTime}</Text>
@@ -127,7 +128,7 @@ class Queue extends React.Component {
             <Text style={styles.clientName}>{item.client.name} {item.client.lastName}</Text>
             <Text style={styles.serviceName}>
               {item.services[0].description}
-              {item.services.length > 1 ? '(+'+(item.services.length - 1)+')' : null}
+              {item.services.length > 1 ? `(+${item.services.length - 1})` : null}
               &nbsp;with {item.employees[0].name} {item.employees[0].lastName}
             </Text>
             <Text style={styles.serviceTimeContainer}>at <Text style={styles.serviceTime}>{item.start_time}</Text></Text>
@@ -136,12 +137,10 @@ class Queue extends React.Component {
         </View>
       </Swipeable>
     );
-
   }
   _keyExtractor = (item, index) => item.queueId;
 
   render() {
-    console.log('queue.data: ', this.props.data);
     return (
       <View style={styles.container}>
         <FlatList
@@ -164,7 +163,7 @@ export default connect(null, actions)(Queue);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#333'
+    backgroundColor: '#333',
   },
   itemContainer: {
     // width: '100%',
@@ -178,54 +177,54 @@ const styles = StyleSheet.create({
 
 
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   itemSummary: {
     marginLeft: 20,
     marginRight: 'auto',
     paddingRight: 10,
-    flex: 1
+    flex: 1,
   },
   clientName: {
     fontSize: 19,
     fontFamily: 'OpenSans-Bold',
-    color: 'rgba(17,20,21,1)'
+    color: 'rgba(17,20,21,1)',
   },
   serviceName: {
     fontSize: 12,
     fontFamily: 'OpenSans-Regular',
-    color: '#999'
+    color: '#999',
   },
   serviceTimeContainer: {
     fontSize: 12,
     fontFamily: 'OpenSans-Regular',
-    color: 'rgba(29,29,38,1)'
+    color: 'rgba(29,29,38,1)',
   },
   serviceTime: {
     fontFamily: 'OpenSans-Bold',
   },
   waitingTime: {
     marginRight: 15,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   waitingTimeTextTop: {
     fontSize: 10,
     fontFamily: 'OpenSans-Regular',
-    color: '#999'
+    color: '#999',
   },
   waitingTimeTextMid: {
     fontSize: 24,
     fontFamily: 'OpenSans-Regular',
-    color: 'rgba(181,60,60,1)'
+    color: 'rgba(181,60,60,1)',
   },
   waitingTimeTextBottom: {
     fontSize: 10,
     fontFamily: 'OpenSans-Regular',
-    color: 'rgba(181,60,60,1)'
+    color: 'rgba(181,60,60,1)',
   },
   listItem: {
     height: 75,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 });

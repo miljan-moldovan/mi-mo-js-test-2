@@ -53,7 +53,6 @@ class QueueScreen extends React.Component {
   }
   componentWillMount() {
     this.props.actions.receiveQueue();
-    console.log('walkin reducer', this.props);
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -102,6 +101,7 @@ class QueueScreen extends React.Component {
         return route;
     }
   }
+
   _handleIndexChange = (index) => {
     console.log('_handleIndexChange ', index);
     this.setState({ index });
