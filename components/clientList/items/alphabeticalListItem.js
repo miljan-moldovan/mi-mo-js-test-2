@@ -3,6 +3,7 @@ import React from 'react';
 import {
   View,
   StyleSheet,
+  TouchableHighlight,
   Text,
 } from 'react-native';
 import Moment from 'moment';
@@ -126,6 +127,7 @@ class AlphabeticalListItem extends React.PureComponent {
     this.state = {
       client: props.client,
       boldWords: props.boldWords,
+      onPress: props.onPress,
     };
   }
 
@@ -136,6 +138,7 @@ class AlphabeticalListItem extends React.PureComponent {
     this.setState({
       client: nextProps.client,
       boldWords: nextProps.boldWords,
+      onPress: nextProps.onPress,
     });
   }
 
@@ -149,68 +152,74 @@ class AlphabeticalListItem extends React.PureComponent {
 
   render() {
     return (
-      <View key={`${this.state.client.id}`} style={styles.container}>
+      <TouchableHighlight
+        style={styles.container}
+        underlayColor="transparent"
+        onPress={() => { this.state.onPress(this.state.client.name); }}
+      >
+        <View key={`${this.state.client.id}`} style={styles.container}>
 
-        <View style={styles.pointerContainer}>
-          {this.state.client.nextAppointment && <View style={styles.pointer} />}
-        </View>
+          <View style={styles.pointerContainer}>
+            {this.state.client.nextAppointment && <View style={styles.pointer} />}
+          </View>
 
-        <View style={styles.avatarContainer}>
-          {
-            this.state.client.avatar &&
-            <AvatarWrapper
-              key={this.state.client.id}
-              wrapperStyle={styles.avatar}
-              width={44}
-              image={this.state.client.avatar}
-            />
-          }
-        </View>
+          <View style={styles.avatarContainer}>
+            {
+              this.state.client.avatar &&
+              <AvatarWrapper
+                key={this.state.client.id}
+                wrapperStyle={styles.avatar}
+                width={44}
+                image={this.state.client.avatar}
+              />
+            }
+          </View>
 
-        <View style={styles.dataContainer}>
+          <View style={styles.dataContainer}>
 
-          <View style={styles.upperDataContainer}>
+            <View style={styles.upperDataContainer}>
 
-            <WordHighlighter
-              highlight={this.state.boldWords}
-              highlightStyle={styles.highlightStyle}
-              style={this.state.client.nextAppointment ? styles.clientNameAppoint : styles.clientName}
-            >
-              {this.state.client.name}
-            </WordHighlighter>
+              <WordHighlighter
+                highlight={this.state.boldWords}
+                highlightStyle={styles.highlightStyle}
+                style={this.state.client.nextAppointment ? styles.clientNameAppoint : styles.clientName}
+              >
+                {this.state.client.name}
+              </WordHighlighter>
 
-            {this.isBirthday(this.state.client.dob) &&
+              {this.isBirthday(this.state.client.dob) &&
               <View style={styles.clientBirthday}>
                 <Text style={styles.clientBirthdayText}>Birthday this month</Text>
               </View>
-            }
+              }
 
-          </View>
+            </View>
 
-          <View style={styles.bottomDataContainer}>
-            {!this.state.client.nextAppointment && !this.state.client.lastAppointment &&
+            <View style={styles.bottomDataContainer}>
+              {!this.state.client.nextAppointment && !this.state.client.lastAppointment &&
               <Text style={styles.clientEmail}>Never had an Appointment</Text>
-            }
-            {!this.state.client.nextAppointment && this.state.client.lastAppointment &&
+              }
+              {!this.state.client.nextAppointment && this.state.client.lastAppointment &&
               <Text style={styles.clientEmail}>Last Appoint.: {this.state.client.lastAppointment.date} at {this.state.client.lastAppointment.address}</Text>
-            }
-            {this.state.client.nextAppointment &&
+              }
+              {this.state.client.nextAppointment &&
               <Text style={styles.clientEmail}>Next Appoint.: {this.state.client.nextAppointment.date} | {this.state.client.nextAppointment.date} at {this.state.client.nextAppointment.address}</Text>
-            }
+              }
+            </View>
           </View>
-        </View>
 
-        <View style={styles.daysContainer}>
-          {this.state.client.nextAppointment &&
+          <View style={styles.daysContainer}>
+            {this.state.client.nextAppointment &&
             <View style={styles.daysContainer}>
               <Text style={styles.daysCount}>{this.getDaysUntilNexApp(this.state.client.nextAppointment.date)}</Text>
               <Text style={styles.daysMessage}>days</Text>
               <Text style={styles.daysMessageBottom}>Till next Appoint.</Text>
             </View>
-            }
-        </View>
+              }
+          </View>
 
-      </View>
+        </View>
+      </TouchableHighlight>
     );
   }
 }

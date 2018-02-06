@@ -2,7 +2,7 @@ export const SET_CLIENTS = 'clientsSearch/SET_CLIENTS';
 export const SET_PREPARED_CLIENTS = 'clientsSearch/SET_PREPARED_CLIENTS';
 export const SET_SEARCH_TEXT = 'clientsSearch/SET_SEARCH_TEXT';
 export const SET_SHOW_WALKIN = 'clientsSearch/SET_SHOW_WALKIN';
-export const SET_FILTERED_CLIENTS = 'clients/SET_FILTERED_CLIENTS';
+export const SET_FILTERED_CLIENTS = 'clientsSearch/SET_FILTERED_CLIENTS';
 
 
 function setPreparedClients(prepared) {

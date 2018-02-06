@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   View,
+  TouchableHighlight,
   StyleSheet,
 } from 'react-native';
 
@@ -52,6 +53,7 @@ class ClientSearchListItem extends React.PureComponent {
     this.state = {
       client: props.client,
       boldWords: props.boldWords,
+      onPress: props.onPress,
     };
   }
 
@@ -62,13 +64,20 @@ class ClientSearchListItem extends React.PureComponent {
     this.setState({
       client: nextProps.client,
       boldWords: nextProps.boldWords,
+      onPress: nextProps.onPress,
     });
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        {
+      <TouchableHighlight
+        style={styles.container}
+        underlayColor="transparent"
+        onPress={() => { this.state.onPress(this.state.client.name); }}
+      >
+        <View style={styles.container}>
+
+          {
         this.state.client.avatar &&
         <AvatarWrapper
           key={this.state.client.id}
@@ -78,25 +87,27 @@ class ClientSearchListItem extends React.PureComponent {
         />
       }
 
-        <View style={styles.dataContainer}>
+          <View style={styles.dataContainer}>
 
-          <WordHighlighter
-            highlight={this.state.boldWords}
-            highlightStyle={styles.highlightStyle}
-            style={styles.clientName}
-          >
-            {this.state.client.name}
-          </WordHighlighter>
+            <WordHighlighter
+              highlight={this.state.boldWords}
+              highlightStyle={styles.highlightStyle}
+              style={styles.clientName}
+            >
+              {this.state.client.name}
+            </WordHighlighter>
 
-          <WordHighlighter
-            highlight={this.state.boldWords}
-            highlightStyle={styles.highlightStyle}
-            style={styles.clientEmail}
-          >
-            {this.state.client.email}
-          </WordHighlighter>
+            <WordHighlighter
+              highlight={this.state.boldWords}
+              highlightStyle={styles.highlightStyle}
+              style={styles.clientEmail}
+            >
+              {this.state.client.email}
+            </WordHighlighter>
+          </View>
+
         </View>
-      </View>
+      </TouchableHighlight>
     );
   }
 }

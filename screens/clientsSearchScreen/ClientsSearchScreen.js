@@ -309,6 +309,7 @@ class ClientsSearchScreen extends React.Component {
               style={styles.clientListContainer}
               clients={this.props.clientsSearchState.prepared}
               showLateralList
+              onPressItem={(text) => { alert(text); }}
             />
 
            }

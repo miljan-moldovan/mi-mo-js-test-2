@@ -397,6 +397,7 @@ class ClientsScreen extends React.Component {
 
         <View style={styles.clientsList}>
 
+          { this.props.clientsState.prepared.length > 0 &&
 
           <ClientList
             listItem={this.props.clientsState.listItem}
@@ -405,8 +406,9 @@ class ClientsScreen extends React.Component {
             clients={this.props.clientsState.prepared}
             style={styles.clientListContainer}
             showLateralList={this.props.clientsState.showLateralList}
+            onPressItem={(text) => { alert(text); }}
           />
-
+        }
 
         </View>
         <FloatingButton handlePress={this.handleNewClientPress}>

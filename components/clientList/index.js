@@ -6,6 +6,8 @@ import { View,
   StyleSheet } from 'react-native';
 import { LargeList } from 'react-native-largelist';
 import { connect } from 'react-redux';
+import AlphabeticalHeader from './headers/alphabeticalHeader';
+import AlphabeticalListItem from './items/alphabeticalListItem';
 
 const window = Dimensions.get('window');
 
@@ -141,6 +143,7 @@ class ClientList extends React.Component {
         listItem: props.listItem,
         headerItem: props.headerItem,
         showLateralList: props.showLateralList,
+        onPressItem: props.onPressItem,
       };
     }
 
@@ -157,6 +160,7 @@ class ClientList extends React.Component {
         listItem: nextProps.listItem,
         headerItem: nextProps.headerItem,
         showLateralList: nextProps.showLateralList,
+        onPressItem: nextProps.onPressItem,
       });
       this.listRef.reloadData();
       if (nextProps.showLateralList) {
@@ -197,20 +201,32 @@ class ClientList extends React.Component {
     renderItem(section: number, row: number) {
       const client = this.state.clients[section].list[row];
 
+
+      let listItem = this.state.listItem;
+      if (Object.keys(listItem).length === 0) {
+        listItem = AlphabeticalListItem;
+      }
+
       return (
         <View key={client.id} style={styles.lineItemCointainer}>
-          {React.createElement(this.state.listItem, { boldWords: this.state.boldWords, client })}
+          {React.createElement(listItem, {
+              boldWords: this.state.boldWords,
+              client,
+              onPress: this.state.onPressItem,
+              })}
         </View>
       );
     }
 
     renderSection(section: number) {
-      //  <Text style={styles.topBarText}>{this.state.clients[section].header}</Text>
-
+      let headerItem = this.state.headerItem;
+      if (Object.keys(headerItem).length === 0) {
+        headerItem = AlphabeticalHeader;
+      }
       return (
         <View key={section} style={styles.topBar}>
           {React.createElement(
-            this.state.headerItem,
+            headerItem,
             { headerData: this.state.clients[section] },
           )}
         </View>
