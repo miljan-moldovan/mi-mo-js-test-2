@@ -4,14 +4,11 @@ import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
 import ClientAttributes from './components/ClientAttributes';
 import ClientNotes from './components/ClientNotes';
-<<<<<<< HEAD
 import ClientHistory from './components/ClientHistory';
 import ClientCards from './components/ClientCards';
 import ClientBalances from './components/ClientBalances';
-=======
 import ClientFormulas from './components/ClientFormulas';
 import ClientDetails from './components/ClientDetails';
->>>>>>> NW-77_clients_details
 
 const initialLayout = {
   height: 0,

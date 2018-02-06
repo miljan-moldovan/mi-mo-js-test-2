@@ -27,7 +27,6 @@ import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
 import ProvidersScreen from '../screens/providersScreen';
-import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
@@ -35,7 +34,6 @@ import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
 import ClientDetailsScreen from '../screens/clientDetailsScreen';
 import walkInActions from '../actions/walkIn';
-import ClientDescriptionScreen from '../screens/clientDetailsScreen/ClientDetailsScreen';
 
 import clientsActions from '../actions/clients';
 import clientsSearchActions from '../actions/clientsSearch';
