@@ -46,8 +46,8 @@ export default class ClientDescriptionScreen extends Component {
     0: ClientNotes,
     1: ClientNotes,
     4: ClientCards,
-    5: ClientBalances,
-    8: ClientHistory,
+    5: ClientHistory,
+    8: ClientBalances,
   });
 
   render() {
