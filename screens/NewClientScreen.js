@@ -7,7 +7,7 @@ import SalonBtnSelect from '../components/SalonBtnSelect';
 
 const monthes = ['Month', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'Octobre', 'November', 'December'];
 
-const sexes = ['Sex', 'Male', 'Female'];
+const genderes = ['Sex', 'Male', 'Female'];
 
 const styles = StyleSheet.create({
   container: {
@@ -73,8 +73,8 @@ class newClientScreen extends Component {
         <View style={styles.inputRow} >
           <SalonPicker
             dataSource={sexes}
-            selectedValue={this.state.sex}
-            title="Sex"
+            selectedValue={this.state.genderes}
+            title="Gender"
             onPickerConfirm={this.handleSexChange}
           />
         </View>

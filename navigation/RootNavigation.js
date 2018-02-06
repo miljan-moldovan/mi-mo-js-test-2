@@ -25,6 +25,7 @@ import SearchBar from '../components/searchBar';
 import ProvidersScreen from '../screens/ProvidersScreen';
 import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 import NewClientScreen from '../screens/NewClientScreen';
+import ClientDetailsScreen from '../screens/ClientDetailsScreen';
 
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
@@ -50,6 +51,12 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
+    ClientDetails: {
+      screen: ClientDetailsScreen,
+      navigationOptions: {
+        headerTitle: 'Details',
+      },
+    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
