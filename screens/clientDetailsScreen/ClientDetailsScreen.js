@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
+import ClientAttributes from './components/ClientAttributes';
 import ClientNotes from './components/ClientNotes';
 import ClientFormulas from './components/ClientFormulas';
 
@@ -19,6 +20,7 @@ export default class ClientDescriptionScreen extends Component {
       { key: '0', title: 'Details' },
       { key: '1', title: 'Notes' },
       { key: '2', title: 'Formulas' },
+      { key: '3', title: 'Attributes' },
     ],
   };
 
@@ -44,6 +46,7 @@ export default class ClientDescriptionScreen extends Component {
     0: SecondRoute,
     1: ClientNotes,
     2: ClientFormulas,
+    3: ClientAttributes,
   });
 
   render() {
@@ -71,6 +74,7 @@ export default class ClientDescriptionScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#80BBDF',
   },
   backgroundImage: {
     position: 'absolute',

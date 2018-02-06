@@ -14,7 +14,7 @@ import Button from '../../../components/Button';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#80BBDF',
     flexDirection: 'column',
   },
   header: {
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const notes = require('../../../mockData/clientDetails/notes.json');
+// const notes = require('../../../mockData/clientDetails/notes.json');
 
 export default class ClientNotes extends Component {
   constructor(props) {
@@ -74,7 +74,7 @@ export default class ClientNotes extends Component {
   }
 
   componentWillMount() {
-    this.setState({ activeData: notes });
+    // this.setState({ activeData: notes });
   }
   render() {
     return (

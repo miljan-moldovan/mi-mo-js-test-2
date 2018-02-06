@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import {
   View,
-  ScrollView,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  FlatList,
+  Switch,
 } from 'react-native';
 
 import Button from '../../../components/Button';
@@ -14,7 +12,7 @@ import Button from '../../../components/Button';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#80BBDF',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'column',
   },
   header: {
@@ -60,6 +58,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
     justifyContent: 'flex-start',
   },
+  switchItem: {
+    paddingVertical: 20,
+    paddingHorizontal: 27,
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,.2)',
+  },
+  switchLabel: {
+    color: '#1D1D26',
+    fontSize: 18,
+
+  },
 });
 
 // const notes = require('../../../mockData/clientDetails/notes.json');
@@ -69,7 +81,8 @@ export default class ClientNotes extends Component {
     super(props);
 
     this.state = {
-      activeData: [],
+      premiumSwitch: false,
+      vipSwitch: true,
     };
   }
 
@@ -79,34 +92,40 @@ export default class ClientNotes extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>NOTES</Text>
+        <View>
           <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => console.log('pressed filter btn')}
+            style={styles.switchItem}
+            onPress={() => {
+              this.setState({ premiumSwitch: !this.state.premiumSwitch });
+            }}
           >
-            <Text style={styles.filterBtnText}>FILTER</Text>
-            <Image style={{ marginLeft: 5, height: 20, width: 20 }} source={require('../../../assets/images/icons/icon_filter.png')} />
+            <Text style={styles.switchLabel}>Premium</Text>
+            <Switch
+              value={this.state.premiumSwitch}
+              onChange={() => {
+                const { switches } = this.state;
+                this.setState({ premiumSwitch: !this.state.premiumSwitch });
+              }}
+            />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.switchItem}
+            onPress={() => {
+              this.setState({ vipSwitch: !this.state.vipSwitch });
+            }}
+          >
+            <Text style={styles.switchLabel}>VIP</Text>
+            <Switch
+              value={this.state.vipSwitch}
+              onChange={() => {
+                this.setState({ vipSwitch: !this.state.vipSwitch });
+              }}
+            />
+          </TouchableOpacity>
+          <View style={{ marginTop: 20 }}>
+            <Button type="light" text="Modify Attributes List" onPress={null} />
+          </View>
         </View>
-        <ScrollView>
-          <FlatList
-            data={this.state.activeData}
-            renderItem={({item, index}) => {
-              return (
-              <View key={index} style={styles.noteContainer}>
-                <Text style={styles.noteMeta}>
-                    By <Text style={styles.textBold}>{item.name}</Text> at {item.date} - {item.time}
-                </Text>
-                <Text>{item.text}</Text>
-                <View style={styles.noteFooter}>
-                  <Button type="small" text="Queue" onPress={() => console.log('thangs')} />
-                </View>
-              </View>
-            )}}
-          />
-          <Button type="light" text="+ Add Note" onPress={null} />
-        </ScrollView>
       </View>
     );
   }
