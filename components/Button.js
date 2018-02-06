@@ -33,6 +33,17 @@ const styles = {
     },
     text: { color: 'white', fontSize: 18 },
   }),
+  small: StyleSheet.create({
+    button: {
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 30,
+      borderWidth: 1,
+      backgroundColor: '#67A3C7',
+      borderColor: '#67A3C7',
+    },
+    text: { color: 'white', fontSize: 12 },
+  }),
 };
 
 const Button = props => (

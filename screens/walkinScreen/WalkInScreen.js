@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 
 import rightArrow from '../../assets/images/walkinScreen/icon_arrow_right_xs.png';
 import serchImage from '../../assets/images/walkinScreen/icon_search_w.png';
-import ImageWrapper from '../../components/imageWrapper';
+import AvatarWrapper from '../../components/avatarWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -181,14 +181,11 @@ class WalkInScreen extends Component {
             <Text style={styles.subTitle}>PROVIDER</Text>
             <View style={{ flexDirection: 'row' }}>
               <View style={styles.providerImageContainer}>
-                <View style={styles.providerRound}>
-                  <ImageWrapper imageStyle={styles.providerImage} image={{ uri: this.props.walkInState.selectedProvider.imagePath }} />
-                </View>
+                <AvatarWrapper width={44} wrapperStyle={styles.providerRound} image={this.props.walkInState.selectedProvider.imagePath} />
               </View>
               <View style={styles.providerData}>
                 <Text style={styles.providerName}>{this.props.walkInState.selectedProvider.name}</Text>
               </View>
-
             </View>
           </View>
           <Image source={rightArrow} />

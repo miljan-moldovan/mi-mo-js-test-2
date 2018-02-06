@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { LargeList } from 'react-native-largelist';
 import SideMenuItem from '../../components/SideMenuItem';
-import ImageWrapper from '../../components/imageWrapper';
+import AvatarWrapper from '../../components/avatarWrapper';
 
 
 const mockDataProviders = require('../../mockData/providers.json');
@@ -70,7 +70,7 @@ class ProvidersScreen extends React.Component {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={styles.providerImageContainer}>
             <View style={styles.providerRound}>
-              <ImageWrapper imageStyle={styles.providerImage} image={{ uri: provider.imagePath }} />
+              <AvatarWrapper wrapperStyle={styles.providerImage} image={provider.imagePath} />
             </View>
           </View>
           <View style={styles.providerData}>
@@ -126,7 +126,7 @@ class ProvidersScreen extends React.Component {
                 }}
               >
                 <Text>Empty</Text>
-              </View>)}
+               </View>)}
             renderItemSeparator={() => <View style={styles.itemSeparator} />}
           />
         </View>
