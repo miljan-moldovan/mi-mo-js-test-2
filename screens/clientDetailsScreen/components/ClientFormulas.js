@@ -80,7 +80,7 @@ export default class ClientNotes extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>NOTES</Text>
+          <Text style={styles.headerTitle}>FORMULAS</Text>
           <TouchableOpacity
             style={styles.filterButton}
             onPress={() => console.log('pressed filter btn')}
@@ -96,16 +96,16 @@ export default class ClientNotes extends Component {
               return (
               <View key={index} style={styles.noteContainer}>
                 <Text style={styles.noteMeta}>
-                    By <Text style={styles.textBold}>{item.name}</Text> at {item.date} - {item.time}
+                    By {item.name} at {item.date}
                 </Text>
                 <Text>{item.text}</Text>
                 <View style={styles.noteFooter}>
-                  <Button type="small" text="Queue" onPress={() => console.log('thangs')} />
+                  <Button type="small" text="Hair" onPress={() => console.log('thangs')} />
                 </View>
               </View>
             )}}
           />
-          <Button type="light" text="+ Add Note" onPress={null} />
+          <Button type="light" text="+ ADD FORMULA" onPress={null} />
         </ScrollView>
       </View>
     );

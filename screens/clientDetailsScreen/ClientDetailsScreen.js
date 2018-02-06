@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
 import ClientNotes from './components/ClientNotes';
+import ClientFormulas from './components/ClientFormulas';
 
 const initialLayout = {
   height: 0,
   width: Dimensions.get('window').width,
 };
 
-const FirstRoute = () => <View style={[styles.container, { backgroundColor: '#ff4081' }]} />;
 const SecondRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
 
 export default class ClientDescriptionScreen extends Component {
@@ -18,6 +18,7 @@ export default class ClientDescriptionScreen extends Component {
     routes: [
       { key: '0', title: 'Details' },
       { key: '1', title: 'Notes' },
+      { key: '2', title: 'Formulas' },
     ],
   };
 
@@ -40,8 +41,9 @@ export default class ClientDescriptionScreen extends Component {
   );
 
   _renderScene = SceneMap({
-    0: ClientNotes,
-    1: SecondRoute,
+    0: SecondRoute,
+    1: ClientNotes,
+    2: ClientFormulas,
   });
 
   render() {
