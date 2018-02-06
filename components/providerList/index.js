@@ -166,6 +166,7 @@ class ProviderList extends React.Component {
       refresh: true,
     });
   }
+  _keyExtractor = (item, index) => item.id;
 
   renderItem(elem) {
     const provider = elem.item;
@@ -192,6 +193,8 @@ class ProviderList extends React.Component {
             this.setState({
               refresh: true,
               firstAvailableSelected: false,
+            }, () => {
+              if (this.props.onChangeProvider) { this.props.onChangeProvider(provider); }
             });
 
             const { navigate } = this.props.navigation;
@@ -284,6 +287,7 @@ class ProviderList extends React.Component {
           style={styles.providersList}
           data={this.state.providers}
           extraData={this.state.refresh}
+          keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />
       </View>

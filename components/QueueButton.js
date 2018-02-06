@@ -50,7 +50,7 @@ export const QueueButtonTypes = {
   service: {
     title: 'Service',
     image: require('../assets/images/queue/service-icon.png'),
-    color: '#68A3C5'
+    color: '#68A3C5',
   },
   walkout: {
     title: 'Walk Out',

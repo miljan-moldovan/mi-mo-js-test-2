@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 });
 
 const floatingButton = props => (
-  <View style={styles.root}>
+  <View style={[styles.root, props.rootStyle]}>
     <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
       {props.children}
     </TouchableOpacity>
@@ -36,10 +36,15 @@ const floatingButton = props => (
 floatingButton.propTypes = {
   handlePress: PropTypes.func.isRequired,
   children: PropTypes.element,
+  rootStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.number,
+  ]),
 };
 
 floatingButton.defaultProps = {
   children: null,
+  rootStyle: null,
 };
 
 export default floatingButton;
