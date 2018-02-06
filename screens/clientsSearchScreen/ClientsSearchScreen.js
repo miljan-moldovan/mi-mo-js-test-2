@@ -8,15 +8,15 @@ import {
   Image,
 } from 'react-native';
 
-import { connect } from 'react-redux';
-import * as actions from '../actions/clientsSearch';
-import SideMenuItem from '../components/SideMenuItem';
-import ClientList from '../components/clientList';
-import WordHighlighter from '../components/wordHighlighter';
-import ClientSearchListItem from '../components/clientList/items/clientSearchListItem';
+import SideMenuItem from '../../components/SideMenuItem';
+import ClientList from '../../components/clientList';
+import WordHighlighter from '../../components/wordHighlighter';
+import ClientSearchListItem from '../../components/clientList/items/clientSearchListItem';
+import AlphabeticalHeader from '../../components/clientList/headers/alphabeticalHeader';
 
+import PrepareClients from '../../components/clientList/prepareClients';
 
-const mockDataClients = require('../mockData/clients.json');
+const mockDataClients = require('../../mockData/clients.json');
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -196,63 +196,67 @@ class ClientsSearchScreen extends React.Component {
       <SideMenuItem
         {...props}
         title="Clients"
-        icon={require('../assets/images/sidemenu/icon_appoint_menu.png')}
+        icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
       />
     ),
   };
 
-  static flexFilter(list, info) {
-    let matchesFilter = [];
-    const matches = [];
-
-    matchesFilter = function match(item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
-          count += 1;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
-  }
-
   constructor(props) {
     super(props);
-    this.state = { clients: mockDataClients, searchText: '', showWalkIn: false };
-  }
 
-  state = {
+    const sortTypes = PrepareClients.getSortTypes();
+    const filterTypes = PrepareClients.getFilterTypes();
+    const prepareClients = PrepareClients.applyFilter(
+      mockDataClients,
+      [sortTypes[0], filterTypes[0]],
+    );
 
+    this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
+    this.props.clientsSearchActions.setClients(prepareClients.clients);
+    this.props.clientsSearchActions.setSearchText('');
+    this.props.clientsSearchActions.setShowWalkIn(false);
   }
 
   componentWillMount() {
     this.props.navigation.setParams({
       onChangeText: searchText => this.filterClients(searchText),
     });
-    this.setState({ filteredClients: this.state.clients });
+    this.props.clientsSearchActions.setFilteredClients(this.props.clientsSearchState.clients);
   }
 
   filterClients(searchText) {
-    if (searchText.length === 0) {
-      this.setState({ filteredClients: this.state.clients, searchText, showWalkIn: false });
-    } else {
+    if (searchText && searchText.length > 0) {
       const criteria = [
         { Field: 'name', Values: [searchText.toLowerCase()] },
         { Field: 'email', Values: [searchText.toLowerCase()] },
       ];
-      const filtered = ClientsSearchScreen.flexFilter(this.state.clients, criteria);
+      const filtered = PrepareClients.flexFilter(this.props.clientsSearchState.clients, criteria);
 
-      const filterWalkin = ClientsSearchScreen.flexFilter([{ name: 'Walkin', email: 'Walkin' }], criteria);
+      const filterWalkin = PrepareClients.flexFilter([{ name: 'Walkin', email: 'Walkin' }], criteria);
 
-      this.setState({ filteredClients: filtered, searchText, showWalkIn: filterWalkin.length > 0 });
+      const sortTypes = PrepareClients.getSortTypes();
+      const filterTypes = PrepareClients.getFilterTypes();
+      const prepareClients = PrepareClients.applyFilter(
+        filtered,
+        [sortTypes[0], filterTypes[0]],
+      );
+
+      this.props.clientsSearchActions.setSearchText(searchText);
+      this.props.clientsSearchActions.setShowWalkIn(filterWalkin.length > 0);
+      this.props.clientsSearchActions.setFilteredClients(filtered);
+      this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
+    } else {
+      this.props.clientsSearchActions.setShowWalkIn(false);
+
+      const sortTypes = PrepareClients.getSortTypes();
+      const filterTypes = PrepareClients.getFilterTypes();
+      const prepareClients = PrepareClients.applyFilter(
+        this.props.clientsSearchState.clients,
+        [sortTypes[0], filterTypes[0]],
+      );
+      this.props.clientsSearchActions.setFilteredClients(this.props.clientsSearchState.clients);
+      this.props.clientsSearchActions.setSearchText(searchText);
+      this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
     }
   }
 
@@ -260,17 +264,17 @@ class ClientsSearchScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
-          { (this.state.filteredClients.length > 0 || this.state.showWalkIn) &&
+          { (this.props.clientsSearchState.prepared.length > 0 || this.props.clientsSearchState.showWalkIn) &&
             <View style={styles.topSearchBar}>
               <Text style={styles.topSearchBarText}>TOP SEARCH MATCHES</Text>
             </View>}
-          {this.state.showWalkIn &&
+          {this.props.clientsSearchState.showWalkIn &&
             <View style={styles.walkinBar}>
               <View style={styles.walkinBarIconContainer}>
                 <View style={styles.walkinBarRound}>
                   <Image
                     style={styles.walkinBarIcon}
-                    source={require('../assets/images/clientsSearch/icon_walkin.png')}
+                    source={require('../../assets/images/clientsSearch/icon_walkin.png')}
                   />
                 </View>
               </View>
@@ -284,7 +288,7 @@ class ClientsSearchScreen extends React.Component {
                 >
 
                   <WordHighlighter
-                    highlight={this.state.searchText}
+                    highlight={this.props.clientsSearchState.searchText}
                     highlightStyle={styles.highlightStyle}
                     style={styles.walkinBarText}
                   >Walkin
@@ -296,14 +300,16 @@ class ClientsSearchScreen extends React.Component {
             </View>
            }
 
-          { (this.state.filteredClients.length > 0 || !this.state.showWalkIn) &&
+          { (this.props.clientsSearchState.prepared.length > 0 || !this.props.clientsSearchState.showWalkIn) &&
 
-          <ClientList
-            listItem={ClientSearchListItem}
-            boldWords={this.state.searchText}
-            clients={this.state.filteredClients}
-            style={styles.clientListContainer}
-          />
+            <ClientList
+              listItem={ClientSearchListItem}
+              headerItem={AlphabeticalHeader}
+              boldWords={this.props.clientsSearchState.searchText}
+              style={styles.clientListContainer}
+              clients={this.props.clientsSearchState.prepared}
+              showLateralList
+            />
 
            }
 
@@ -313,4 +319,4 @@ class ClientsSearchScreen extends React.Component {
     );
   }
 }
-export default connect(null, actions)(ClientsSearchScreen);
+export default ClientsSearchScreen;

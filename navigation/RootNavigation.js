@@ -13,6 +13,9 @@ import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
+import ClientsSearchScreen from './../screens/clientsSearchScreen';
+import ClientsSearchHeader from '../screens/clientsSearchScreen/components/ClientsSearchHeader';
+
 import ScorecardScreen from './../screens/ScorecardScreen';
 import WalkInScreen from '../screens/walkinScreen';
 import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
@@ -30,6 +33,7 @@ import SideMenuItem from '../components/SideMenuItem';
 
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
+import clientsSearchActions from '../actions/clientsSearch';
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -99,27 +103,72 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
-    // ClientsSearch: {
-    //   screen: ClientsSearchScreen,
-    //   navigationOptions: {
-    //     headerStyle: {
-    //       backgroundColor: 'transparent',
-    //       borderBottomWidth: 0,
-    //     },
-    //     headerTitle: 'Client Search',
-    //     header: props => (
-    //       <ImageHeader
-    //         {...props}
-    //         searchBar={searchProps => (
-    //           <SearchBar
-    //             {...searchProps}
-    //             placeHolder=""
-    //             showCancel
-    //             searchIconPosition="left"
-    //           />)}
-    //       />),
-    //   },
-    // },
+
+    ClientsSearch: {
+      screen: ClientsSearchScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: <ClientsSearchHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      }}
+            >
+              <Image
+                style={{
+                          width: 15,
+                          height: 15,
+                        }}
+                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+              />
+              <Text style={{
+                        color: '#FFFFFF',
+                        fontSize: 16,
+                        fontFamily: 'OpenSans-Bold',
+                        backgroundColor: 'transparent',
+                        }}
+              >Back
+              </Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => console.log('pressed right header button'),
+          button: (
+            <Text style={{
+                      color: '#FFFFFF',
+                      fontSize: 16,
+                      width: 50,
+                      fontFamily: 'OpenSans-Bold',
+                      backgroundColor: 'transparent',
+                      alignSelf: 'center',
+                      alignItems: 'center',
+                    }}
+            >New Client
+            </Text>),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeHolder=""
+                showCancel
+                searchIconPosition="left"
+              />)}
+          />),
+      }),
+    },
   },
   {
 
@@ -276,10 +325,12 @@ const mapStateToProps = state => ({
   auth: state.auth,
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
+  clientsSearchState: state.clientsSearchReducer,
 });
 const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
+  clientsSearchActions: bindActionCreators({ ...clientsSearchActions }, dispatch),
 
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);

@@ -6,7 +6,6 @@ import {
   Image, SectionList, TouchableOpacity,
 } from 'react-native';
 
-import * as actions from '../../actions/clients';
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
 import PrepareClients from '../../components/clientList/prepareClients';
