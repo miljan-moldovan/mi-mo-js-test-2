@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     flexDirection: 'row',
     borderBottomColor: '#D3D3D5',
-    opacity: 0.5,
     borderBottomWidth: 2,
   },
   headerTitle: {

@@ -4,6 +4,7 @@ import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
 import ClientNotes from './components/ClientNotes';
 import ClientHistory from './components/ClientHistory';
+import ClientCards from './components/ClientCards';
 
 const initialLayout = {
   height: 0,
@@ -13,6 +14,7 @@ const initialLayout = {
 const FirstRoute = () => <View style={[styles.container, { backgroundColor: '#ff4081' }]} />;
 const SecondRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
 const ThirdRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
+const FourthRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
 
 export default class ClientDescriptionScreen extends Component {
   state = {
@@ -20,7 +22,8 @@ export default class ClientDescriptionScreen extends Component {
     routes: [
       { key: '0', title: 'Details' },
       { key: '1', title: 'Notes' },
-      { key: '2', title: 'History' },
+      { key: '2', title: 'HISTORY' },
+      { key: '3', title: 'CARDS ON FILE' },
     ],
   };
 
@@ -46,6 +49,7 @@ export default class ClientDescriptionScreen extends Component {
     0: ClientNotes,
     1: SecondRoute,
     2: ClientHistory,
+    3: ClientCards,
   });
 
   render() {
