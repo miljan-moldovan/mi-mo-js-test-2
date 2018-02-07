@@ -123,7 +123,7 @@ export default class ClientNotes extends Component {
             />
           </TouchableOpacity>
           <View style={{ marginTop: 20 }}>
-            <Button type="light" text="Modify Attributes List" onPress={null} />
+            <Button type="light" text="Modify Attributes List" onPress={() => {}} />
           </View>
         </View>
       </View>

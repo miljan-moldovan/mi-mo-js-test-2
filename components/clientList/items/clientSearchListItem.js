@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux';
-import AvatarWrapper from '../../avatarWrapper';
+import SalonAvatar from '../../SalonAvatar';
 import WordHighlighter from '../../wordHighlighter';
 
 const styles = StyleSheet.create({
@@ -79,7 +79,7 @@ class ClientSearchListItem extends React.PureComponent {
 
           {
         this.state.client.avatar &&
-        <AvatarWrapper
+        <SalonAvatar
           key={this.state.client.id}
           wrapperStyle={styles.avatarContainer}
           width={59}

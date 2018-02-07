@@ -92,8 +92,7 @@ export default class ClientNotes extends Component {
         <ScrollView>
           <FlatList
             data={this.state.activeData}
-            renderItem={({item, index}) => {
-              return (
+            renderItem={({ item, index }) => (
               <View key={index} style={styles.noteContainer}>
                 <Text style={styles.noteMeta}>
                     By <Text style={styles.textBold}>{item.name}</Text> at {item.date} - {item.time}
@@ -103,9 +102,9 @@ export default class ClientNotes extends Component {
                   <Button type="small" text="Queue" onPress={() => console.log('thangs')} />
                 </View>
               </View>
-            )}}
+            )}
           />
-          <Button type="light" text="+ Add Note" onPress={null} />
+          <Button type="light" text="+ Add Note" onPress={() => console.log('thangs')} />
         </ScrollView>
       </View>
     );

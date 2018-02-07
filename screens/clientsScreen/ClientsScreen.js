@@ -3,14 +3,14 @@ import React from 'react';
 import {
   StyleSheet,
   View, Text,
-  Image, SectionList, TouchableOpacity,
+  Image,
 } from 'react-native';
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
 import PrepareClients from '../../components/clientList/prepareClients';
 import FloatingButton from '../../components/FloatingButton';
-import CustomModal from '../../components/CustomModal';
+import SalonSectionsModal from '../../components/modals/SalonSectionsModal';
 
 const mockDataClients = require('../../mockData/clients.json');
 
@@ -146,61 +146,6 @@ const styles = StyleSheet.create({
   newClientIcon: {
     height: 25,
     width: 21,
-  },
-  filterModal: {
-    padding: 10,
-    margin: 0,
-    left: 0,
-    width: '100%',
-    height: 439,
-  },
-  filterModalContent: {
-    backgroundColor: 'white',
-    alignSelf: 'stretch',
-    paddingTop: 0,
-    paddingBottom: 0,
-    borderRadius: 4,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  filterModalList: {
-    left: 0,
-    borderRadius: 4,
-    width: '100%',
-    height: 439,
-  },
-  modalHeader: {
-    height: 40,
-    backgroundColor: '#F5F5F5',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  modalHeaderText: {
-    color: '#333B3E',
-    fontSize: 12,
-    marginLeft: 30,
-    fontFamily: 'OpenSans-Bold',
-    backgroundColor: 'transparent',
-  },
-  modalLine: {
-    height: 60,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  modalLineText: {
-    color: '#333B3E',
-    fontSize: 13,
-    marginLeft: 30,
-    fontFamily: 'OpenSans-Bold',
-    backgroundColor: 'transparent',
-    flex: 3,
-  },
-  modalLineImage: {
-    width: 18,
-    height: 18,
-    marginRight: 30,
   },
 });
 
@@ -343,57 +288,27 @@ class ClientsScreen extends React.Component {
     this.hideFilterModal();
   }
 
-  renderModalLine(item) {
-    const selectFilter = item.type === 'sort' ? this.props.clientsState.selectedSort : this.props.clientsState.selectedFilter;
-
-    return (
-      <TouchableOpacity
-        key={`${item.type}_${item.id}`}
-        style={styles.modalLine}
-        onPress={() => this.selectFilter(item)}
-      >
-        <Text style={styles.modalLineText}>{item.name.toUpperCase()}</Text>
-
-        {selectFilter.id === item.id &&
-          <Image
-            style={styles.modalLineImage}
-            source={require('../../assets/images/clients/icon_check_2.png')}
-          />
-        }
-      </TouchableOpacity>);
-  }
-
-
   render() {
     return (
       <View style={styles.container}>
 
-        <CustomModal
-          style={styles.filterModal}
-          contentStyle={styles.filterModalContent}
+
+        <SalonSectionsModal
+          key="salonSectionsModalClientScreen"
           isVisible={this.props.clientsState.showFilterModal}
           closeModal={() => this.hideFilterModal()}
-        >
-          {[<SectionList
-            scrollEnabled={false}
-            style={styles.filterModalList}
-            renderItem={({ item }) => this.renderModalLine(item)}
-            renderSectionHeader={({ section }) => ClientsScreen.renderModalHeader(section)}
-            sections={[
-              {
-                  data: this.props.clientsState.sortTypes,
-                  title: 'SORT BY',
-              },
-              {
-                  data: this.props.clientsState.filterTypes,
-                  title: '',
-              },
-            ]}
-          />]}
-
-
-        </CustomModal>
-
+          onPressItem={item => this.selectFilter(item)}
+          sections={[
+          {
+              data: this.props.clientsState.sortTypes,
+              title: 'SORT BY',
+          },
+          {
+              data: this.props.clientsState.filterTypes,
+              title: '',
+          },
+        ]}
+        />
 
         <View style={styles.clientsList}>
 

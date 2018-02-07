@@ -9,6 +9,7 @@ import ClientCards from './components/ClientCards';
 import ClientBalances from './components/ClientBalances';
 import ClientFormulas from './components/ClientFormulas';
 import ClientDetails from './components/ClientDetails';
+import ClientPreferences from './components/ClientPreferences';
 
 const initialLayout = {
   height: 0,
@@ -26,6 +27,7 @@ export default class ClientDescriptionScreen extends Component {
       { key: '4', title: 'CARDS ON FILE' },
       { key: '5', title: 'HISTORY' },
       { key: '8', title: 'BALANCES' },
+      { key: '11', title: 'PREFERENCES' },
     ],
   };
 
@@ -55,6 +57,7 @@ export default class ClientDescriptionScreen extends Component {
     4: ClientCards,
     5: ClientHistory,
     8: ClientBalances,
+    11: ClientPreferences,
   });
 
   render() {
