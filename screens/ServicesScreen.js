@@ -86,6 +86,7 @@ class ServicesScreen extends React.Component {
   }
 
   componentWillMount() {
+    console.log('ServicesScreen.componentWillMount', services.data);
     this.setState({activeData: this.mapData(services.data)});
   }
 
@@ -99,6 +100,7 @@ class ServicesScreen extends React.Component {
 
       for(key in item) {
         if(typeof item[key] === "object") {
+          console.log('mapData', key, item[key], typeof item[key]);
           mapped.data.children = this.mapData(item[key]);
         }
       }
