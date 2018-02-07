@@ -1,3 +1,4 @@
+
 import AlphabeticalListItem from './items/alphabeticalListItem';
 import PreferredProviderClientListItem from './items/preferredProviderClientListItem';
 import LastVisitClientListItem from './items/lastVisitClientListItem';
@@ -62,6 +63,7 @@ class PrepareClients {
           // Prefered Service Provider
           // prepared = clients.sort(PrepareClients.compareByName);
           prepared = PrepareClients.prepareClientsPreferredProvider(clients);
+          prepared = PrepareClients.orderSubLists(prepared);
           headerItem = PreferredProviderHeader;
           listItem = PreferredProviderClientListItem;
           showLateralList = true;
@@ -69,6 +71,7 @@ class PrepareClients {
           // Last Visit
           // prepared = clients.sort(PrepareClients.compareByName);
           prepared = PrepareClients.prepareClientsLastVisit(clients);
+          prepared = PrepareClients.orderSubLists(prepared);
           headerItem = LastVisitHeader;
           listItem = LastVisitClientListItem;
           showLateralList = false;
@@ -76,6 +79,7 @@ class PrepareClients {
           // Upcoming Appointments
           // prepared = clients.sort(PrepareClients.compareByName);
           prepared = PrepareClients.prepareClientsUpcomingAppointments(clients);
+          prepared = PrepareClients.orderSubLists(prepared);
           headerItem = UpcomingAppointmentsHeader;
           listItem = UpcomingAppointmentsClientListItem;
           showLateralList = false;
@@ -83,6 +87,7 @@ class PrepareClients {
           // Membership
           // prepared = clients.sort(PrepareClients.compareByName);
           prepared = PrepareClients.prepareClientsMembership(clients);
+          prepared = PrepareClients.orderSubLists(prepared);
           headerItem = MembershipHeader;
           listItem = MembershipClientListItem;
           showLateralList = true;
@@ -103,6 +108,16 @@ class PrepareClients {
       headerItem: AlphabeticalHeader,
       showLateralList,
     };
+  }
+
+
+  static orderSubLists(dataSource) {
+    for (let i = 0; i < dataSource.length; i += 1) {
+      let subList = dataSource[i].list;
+      subList = subList.sort(PrepareClients.compareByName);
+      dataSource[i].list = subList;
+    }
+    return dataSource;
   }
 
   static prepareClientsAlphabetical(clients) {

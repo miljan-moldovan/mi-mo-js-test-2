@@ -101,7 +101,7 @@ export default class SalonSectionsModal extends React.Component {
     for (let i = 0; i < this.state.selected.length; i += 1) {
       const selectedItem = this.state.selected[i];
 
-      if (selectedItem.id !== item.id && selectedItem.type === item.type) {
+      if (selectedItem.type === item.type) {
         const index = selected.indexOf(selectedItem);
         if (index !== -1) {
           selected.splice(index, 1);
