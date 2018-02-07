@@ -17,7 +17,7 @@ import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 import SideMenuItem from '../components/SideMenuItem';
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../components/searchBar';
 
 const services = {
   "data": [{

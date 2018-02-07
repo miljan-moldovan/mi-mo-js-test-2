@@ -17,7 +17,7 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import SideMenuItem from '../components/SideMenuItem';
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../components/searchBar';
 import CustomModal from '../components/CustomModal';
 
 export default class PromotionsScreen extends React.Component {
