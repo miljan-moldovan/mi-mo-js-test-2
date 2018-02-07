@@ -84,7 +84,7 @@ class ServicesScreen extends React.Component {
 
     }
   }
-  
+
   componentWillMount() {
     this.setState({activeData: this.mapData(services.data)});
   }
@@ -128,16 +128,16 @@ class ServicesScreen extends React.Component {
 
         const toStore = this.state.storedData === null ? this.state.activeData : this.state.storedData;
 
-        var filtered = this.flexFilter(toStore, criteria);       
-  
+        var filtered = this.flexFilter(toStore, criteria);
+
        this.setState({storedData: toStore, searchText: searchText, activeData: filtered});
      }
    }
-  
+
    flexFilter(list, info) {
-  
+
      var matchesFilter, matches = [];
-  
+
      matchesFilter = function(item) {
        let count = 0;
        for (var n = 0; n < info.length; n++) {
@@ -147,15 +147,23 @@ class ServicesScreen extends React.Component {
        }
        return count > 0;
      }
-  
+
      for (var i = 0; i < list.length; i++) {
        if (matchesFilter(list[i])) {
          matches.push(list[i]);
        }
      }
-  
+
      return matches;
   };
+  _handleOnChangeService = (service) => {
+    console.log('service', service);
+    const { onServiceChange, dismissOnSelect } = this.props.navigation.state.params;
+    if (onServiceChange)
+      onServiceChange(service);
+    if (dismissOnSelect)
+      this.props.navigation.goBack();
+  }
 
   _renderItem = ({item, index}) => {
     const { data, key } = item;
@@ -164,6 +172,7 @@ class ServicesScreen extends React.Component {
       <TouchableHighlight
         style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
         onPress={e => {
+          let pickedService = false;
           if(this.hasMappedChildren(data)) {
             this.setState({
               prevData: this.state.activeData,
@@ -171,15 +180,19 @@ class ServicesScreen extends React.Component {
               parentList: data,
               currentStep: this.state.currentStep + 1,
             });
-          }
-          this.setState({activeListItem: data.id});
+          } else
+            pickedService = true;
+
+          this.setState({activeListItem: data.id}, pickedService ? () => {
+            this._handleOnChangeService(data);
+          } : null);
         }}
         underlayColor="#ffffff"
         activeOpacity={2}
       >
         <View>
           <View style={{flex: 1, alignItems: "center", justifyContent: "center", flexDirection: "row"}}>
-            <View style={{flex: 1, flexDirection: "column"}}>  
+            <View style={{flex: 1, flexDirection: "column"}}>
               <Text style={data.id === this.state.activeListItem ? [styles.listText, {fontFamily: "OpenSans-Bold"}] : styles.listText}>{data.name}</Text>
                 { data.duration !== undefined && <Text style={styles.durationText}>{data.duration}m</Text>}
                 </View>
@@ -199,7 +212,7 @@ class ServicesScreen extends React.Component {
           <TouchableHighlight
             onPress={e => {
               this.setState({
-                prevData: this.state.activeData,                
+                prevData: this.state.activeData,
                 activeData: this.state.prevData,
                 parentList: null,
                 currentStep: this.state.currentStep - 1,
