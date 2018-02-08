@@ -19,7 +19,7 @@ import * as actions from '../actions/login.js';
 import SideMenuItem from '../components/SideMenuItem';
 import SearchBar from '../components/SearchBar';
 
-// RP> fix - when navigating away and back to this screen, changes previously 
+// RP> fix - when navigating away and back to this screen, changes previously
 // made to the 'services' objects are kept and this crashes mapData.
 // the initServices function makes sure the services object is reset every
 // time the component mounts
@@ -92,7 +92,6 @@ class ServicesScreen extends React.Component {
 
   componentWillMount() {
     services = initServices();
-    console.log('ServicesScreen.componentWillMount mapData1', JSON.stringify(services.data, null, 2));
     this.setState({activeData: this.mapData(services.data)});
   }
 
@@ -105,8 +104,7 @@ class ServicesScreen extends React.Component {
       }
 
       for(key in item) {
-        if(typeof item[key] === "object") {
-          console.log('mapData1', key, item[key], Array.isArray(item[key]) ? 'y':'n');
+        if(typeof item[key] === "object") {          
           mapped.data.children = this.mapData(item[key]);
         }
       }
