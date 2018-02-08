@@ -6,7 +6,7 @@ import { View,
   StyleSheet,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
-import AvatarWrapper from '../avatarWrapper';
+import SalonAvatar from '../SalonAvatar';
 
 
 const styles = StyleSheet.create({
@@ -166,6 +166,7 @@ class ProviderList extends React.Component {
       refresh: true,
     });
   }
+  _keyExtractor = (item, index) => item.id;
 
   renderItem(elem) {
     const provider = elem.item;
@@ -192,6 +193,8 @@ class ProviderList extends React.Component {
             this.setState({
               refresh: true,
               firstAvailableSelected: false,
+            }, () => {
+              if (this.props.onChangeProvider) { this.props.onChangeProvider(provider); }
             });
 
             const { navigate } = this.props.navigation;
@@ -213,7 +216,7 @@ class ProviderList extends React.Component {
           <View style={isSelected ? styles.selectedLeftBar : styles.leftBar} />
 
           <View style={styles.providerImageContainer}>
-            <AvatarWrapper
+            <SalonAvatar
               wrapperStyle={styles.providerRound}
               width={44}
               borderWidth={5}
@@ -284,6 +287,7 @@ class ProviderList extends React.Component {
           style={styles.providersList}
           data={this.state.providers}
           extraData={this.state.refresh}
+          keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />
       </View>

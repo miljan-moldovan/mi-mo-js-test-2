@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import {
   View,
+  ScrollView,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
+  FlatList,
 } from 'react-native';
 
 import Button from '../../../components/Button';
@@ -12,7 +14,7 @@ import Button from '../../../components/Button';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#80BBDF',
     flexDirection: 'column',
   },
   header: {
@@ -52,13 +54,28 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Bold',
     color: 'rgba(29,29,38,1)',
   },
+  noteFooter: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    marginTop: 5,
+    justifyContent: 'flex-start',
+  },
 });
+
+// const notes = require('../../../mockData/clientDetails/notes.json');
 
 export default class ClientNotes extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      activeData: [],
+    };
   }
 
+  componentWillMount() {
+    // this.setState({ activeData: notes });
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -72,15 +89,23 @@ export default class ClientNotes extends Component {
             <Image style={{ marginLeft: 5, height: 20, width: 20 }} source={require('../../../assets/images/icons/icon_filter.png')} />
           </TouchableOpacity>
         </View>
-        <View style={styles.noteContainer}>
-          <Text style={styles.noteMeta}>
-            By <Text style={styles.textBold}>John Doe</Text> at 03/12/2012 - 11:40AM
-          </Text>
-          <Text>Whatever dawg, this is like the dummy content of the note and shizz.</Text>
-          <View style={styles.noteFooter}>
-            <Button buttonStyle={styles.queueBtn} textStyle={styles.queueBtnText} text="Queue" onPress={() => console.log('thangs')} />
-          </View>
-        </View>
+        <ScrollView>
+          <FlatList
+            data={this.state.activeData}
+            renderItem={({ item, index }) => (
+              <View key={index} style={styles.noteContainer}>
+                <Text style={styles.noteMeta}>
+                    By <Text style={styles.textBold}>{item.name}</Text> at {item.date} - {item.time}
+                </Text>
+                <Text>{item.text}</Text>
+                <View style={styles.noteFooter}>
+                  <Button type="small" text="Queue" onPress={() => console.log('thangs')} />
+                </View>
+              </View>
+            )}
+          />
+          <Button type="light" text="+ Add Note" onPress={() => console.log('thangs')} />
+        </ScrollView>
       </View>
     );
   }
