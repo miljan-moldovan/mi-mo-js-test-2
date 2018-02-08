@@ -7,8 +7,8 @@ import {
   Image,
 } from 'react-native';
 
-import AvatarWrapper from '../../../components/avatarWrapper';
-
+import SalonAvatar from '../../../components/SalonAvatar';
+import SalonSectionsModal from '../../../components/modals/SalonSectionsModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -132,16 +132,94 @@ const styles = StyleSheet.create({
 export default class ClientHistory extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showFilterModal: false,
+    };
+  }
+
+  state = {
+    showFilterModal: false,
+  }
+
+  selectFilter(item) {
+    // item
+  }
+
+
+  showModal() {
+    this.setState({ showFilterModal: true });
   }
 
   render() {
     return (
       <View style={styles.container}>
+
+
+        <SalonSectionsModal
+          key="salonSectionsModalClientHistory"
+          isVisible={this.state.showFilterModal}
+          onPressItem={item => this.selectFilter(item)}
+          sections={[{
+          data: [{
+            id: 1,
+          name: 'RETAIL',
+          type: 'filter',
+          }, {
+          id: 2,
+          name: 'LOYALTY',
+          type: 'filter',
+          }, {
+          id: 3,
+          name: 'REFERRAL',
+          type: 'filter',
+          }, {
+          id: 4,
+          name: 'TANNING',
+          type: 'filter',
+          }, {
+          id: 5,
+          name: 'ACCOUNT',
+          type: 'filter',
+          }, {
+          id: 6,
+          name: 'CANCEL/NO SHOW',
+          type: 'filter',
+          }, {
+          id: 7,
+          name: 'PROMOTIONS',
+          type: 'filter',
+          }, {
+          id: 8,
+          name: 'MAILINGS',
+          type: 'filter',
+          }, {
+          id: 9,
+          name: 'GIFT CARDS',
+          type: 'filter',
+          }, {
+          id: 10,
+          name: 'VOIDED',
+          type: 'filter',
+          }, {
+          id: 11,
+          name: 'SMS CHAT',
+          type: 'filter',
+          }, {
+          id: 12,
+          name: 'EMAILS',
+          type: 'filter',
+          }],
+          title: 'SERVICE',
+          },
+          ]}
+        />
+
+
         <View style={styles.header}>
           <Text style={styles.headerTitle}>SERVICE</Text>
           <TouchableOpacity
             style={styles.filterButton}
-            onPress={() => console.log('pressed filter btn')}
+            onPress={() => this.showModal()}
           >
             <Text style={styles.filterBtnText}>CHANGE</Text>
             <Image style={{ marginLeft: 5, height: 10, width: 10 }} source={require('../../../assets/images/icons/icon_arrow_down_xs.png')} />
@@ -164,7 +242,7 @@ export default class ClientHistory extends Component {
               <Text style={styles.providerWith}>
               with
               </Text>
-              <AvatarWrapper
+              <SalonAvatar
                 wrapperStyle={styles.providerRound}
                 width={24}
                 borderColor="#67A3C7"
@@ -205,7 +283,7 @@ export default class ClientHistory extends Component {
               <Text style={styles.providerWith}>
               with
               </Text>
-              <AvatarWrapper
+              <SalonAvatar
                 wrapperStyle={styles.providerRound}
                 width={24}
                 borderColor="#67A3C7"

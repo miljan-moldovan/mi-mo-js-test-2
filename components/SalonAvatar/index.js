@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AvatarWrapper extends React.Component {
+export default class SalonAvatar extends React.Component {
   constructor(props) {
     super(props);
     let image = 'image' in this.props ? this.props.image : this.state.image;
@@ -29,8 +29,8 @@ export default class AvatarWrapper extends React.Component {
 
     this.imageStyle = 'imageStyle' in this.props ? this.props.imageStyle : styles.imageStyle;
 
-    this.borderColor = 'borderColor' in this.props ? this.props.borderColor : this.state.borderColor;
-    this.borderWidth = 'borderWidth' in this.props ? this.props.borderWidth : this.state.borderWidth;
+    this.state.borderColor = 'borderColor' in this.props ? this.props.borderColor : this.state.borderColor;
+    this.state.borderWidth = 'borderWidth' in this.props ? this.props.borderWidth : this.state.borderWidth;
 
     this.wrapperStyle = 'wrapperStyle' in this.props ? this.props.wrapperStyle : styles.wrapperStyle;
 
@@ -60,6 +60,7 @@ export default class AvatarWrapper extends React.Component {
     width -= nextProps.borderWidth;
 
     const borderRadius = width / 2;
+
 
     this.setState({
       image,

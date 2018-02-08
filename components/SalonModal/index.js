@@ -54,14 +54,38 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+  tailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 0,
+  },
+  tail: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 20,
+    borderRightWidth: 20,
+    borderBottomWidth: 20,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'white',
+  },
 });
 
-const CustomModal = props => (
-  <View style={{ flex: 1 }}>
+const SalonModal = props => (
+  <View style={{ }}>
     <Modal
       isVisible={props.isVisible}
       style={[props.style, styles.container]}
     >
+      { props.showTail &&
+        <View style={[styles.tailContainer, props.tailPosition]}>
+          <View style={[styles.tail, props.tailStyle]} />
+        </View>
+      }
+
       <View style={[styles.content, props.contentStyle]}>
         { props.children }
       </View>
@@ -69,16 +93,22 @@ const CustomModal = props => (
   </View>
 );
 
-CustomModal.propTypes = {
+SalonModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   children: PropTypes.arrayOf(PropTypes.element).isRequired,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+  tailStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+  showTail: PropTypes.bool.isRequired,
+  tailPosition: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+
 };
 
-CustomModal.defaultProps = {
+SalonModal.defaultProps = {
   style: { flex: 1 },
   contentStyle: { },
+  tailStyle: { },
+  tailPosition: { justifyContent: 'flex-start' },
 };
 
-export default CustomModal;
+export default SalonModal;

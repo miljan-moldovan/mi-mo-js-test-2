@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, TextInput, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 
-import CustomModal from './../customModal';
+import SalonModal from './../SalonModal';
 import Button from './../Button';
 
 const styles = StyleSheet.create({
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 });
 
 const ClubCardModal = props => (
-  <CustomModal
+  <SalonModal
     isVisible={props.isVisible}
     closeModal={props.closeModal}
     style={{ flex: 1 }}
@@ -48,7 +48,7 @@ const ClubCardModal = props => (
       <Button onPress={props.cancelCallback} type="light" text="Cancel" />
       <Button onPress={props.okCallback} type="primary" text="Ok" />
     </View>
-  </CustomModal>
+  </SalonModal>
 );
 
 export default ClubCardModal;

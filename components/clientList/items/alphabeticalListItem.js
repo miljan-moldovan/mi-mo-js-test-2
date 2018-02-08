@@ -9,7 +9,7 @@ import {
 import Moment from 'moment';
 
 import { connect } from 'react-redux';
-import AvatarWrapper from '../../avatarWrapper';
+import SalonAvatar from '../../SalonAvatar';
 import WordHighlighter from '../../wordHighlighter';
 
 
@@ -166,7 +166,7 @@ class AlphabeticalListItem extends React.PureComponent {
           <View style={styles.avatarContainer}>
             {
               this.state.client.avatar &&
-              <AvatarWrapper
+              <SalonAvatar
                 key={this.state.client.id}
                 wrapperStyle={styles.avatar}
                 width={44}

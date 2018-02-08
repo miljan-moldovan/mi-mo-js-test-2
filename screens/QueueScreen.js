@@ -26,7 +26,7 @@ import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 
 import FloatingButton from '../components/FloatingButton';
-import CustomModal from '../components/CustomModal';
+import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
 
 const WAITING = '0';
@@ -155,7 +155,7 @@ class QueueScreen extends React.Component {
         <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
         </FloatingButton>
-        <CustomModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
+        <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
           <View style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>
               <Image style={styles.walkoutImage}  source={require('../assets/images/walkoutModal/icon_walkout.png')} />
@@ -183,7 +183,7 @@ class QueueScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-        </CustomModal>
+        </SalonModal>
       </View>
     );
   }

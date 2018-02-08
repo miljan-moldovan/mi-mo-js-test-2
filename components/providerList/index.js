@@ -6,7 +6,7 @@ import { View,
   StyleSheet,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
-import AvatarWrapper from '../avatarWrapper';
+import SalonAvatar from '../SalonAvatar';
 
 
 const styles = StyleSheet.create({
@@ -216,7 +216,7 @@ class ProviderList extends React.Component {
           <View style={isSelected ? styles.selectedLeftBar : styles.leftBar} />
 
           <View style={styles.providerImageContainer}>
-            <AvatarWrapper
+            <SalonAvatar
               wrapperStyle={styles.providerRound}
               width={44}
               borderWidth={5}
