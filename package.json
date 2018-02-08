@@ -17,6 +17,7 @@
     "react-native-largelist": "^1.2.6",
     "react-native-modal": "^5.0.0",
     "react-native-picker": "4.3.5",
+    "react-native-sentry": "^0.33.0",
     "react-native-swipeable": "^0.6.0",
     "react-native-touch-id": "^4.0.0",
     "react-navigation": "^1.0.0-beta.27",
