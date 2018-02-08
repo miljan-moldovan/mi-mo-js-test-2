@@ -22,6 +22,7 @@ import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
+import ChangeServicesScreen from '../screens/servicesScreen';
 
 import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
