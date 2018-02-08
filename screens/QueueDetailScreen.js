@@ -65,7 +65,7 @@ class QueueDetailScreen extends React.Component {
     this.props.navigation.goBack();
   }
   _handleServicePress = () => {
-    this.props.navigation.navigate('Service', {
+    this.props.navigation.navigate('Services', {
       dismissOnSelect: true,
       onServiceChange: this._handleServiceChange
     });
@@ -80,7 +80,7 @@ class QueueDetailScreen extends React.Component {
     });
   }
   _handleProviderPress = () => {
-    this.props.navigation.navigate('ChangeProvider', {
+    this.props.navigation.navigate('Providers', {
       dismissOnSelect: true,
       onProviderChange: this._handleProviderChange
      });
