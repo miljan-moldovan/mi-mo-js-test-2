@@ -213,7 +213,14 @@ class ServicesScreen extends React.Component {
 
     return matches;
   }
-
+  _handleOnChangeService = (service) => {
+    console.log('service', service);
+    const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
+    if (onChangeService)
+      onChangeService(service);
+    if (dismissOnSelect)
+      this.props.navigation.goBack();
+  }
   _renderItem = ({ item, index }) => (
     <TouchableOpacity
       style={item.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
@@ -229,14 +236,18 @@ class ServicesScreen extends React.Component {
 
           this.props.walkInActions.setCurrentStep(2);
         } else {
-          this.props.walkInActions.selectService(item);
-          
-          if(params !== undefined && params.actionType === 'update') {
-            navigate('WalkIn');
+          if (params && params.onChangeService) {
+            this._handleOnChangeService(item);
           } else {
-            this.props.walkInActions.setCurrentStep(3);
-            navigate('Providers');
+            this.props.walkInActions.selectService(item);
+            if(params !== undefined && params.actionType === 'update') {
+              navigate('WalkIn');
+            } else {
+              this.props.walkInActions.setCurrentStep(3);
+              navigate('Providers');
+            }
           }
+
         }
         this.setState({ activeListItem: item.id });
       }}

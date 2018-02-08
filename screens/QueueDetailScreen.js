@@ -67,7 +67,7 @@ class QueueDetailScreen extends React.Component {
   _handleServicePress = () => {
     this.props.navigation.navigate('Services', {
       dismissOnSelect: true,
-      onServiceChange: this._handleServiceChange
+      onChangeService: this._handleServiceChange
     });
   }
   _handleServiceChange = (service) => {
@@ -82,7 +82,7 @@ class QueueDetailScreen extends React.Component {
   _handleProviderPress = () => {
     this.props.navigation.navigate('Providers', {
       dismissOnSelect: true,
-      onProviderChange: this._handleProviderChange
+      onChangeProvider: this._handleProviderChange
      });
   }
   _handleProviderChange = (provider) => {
@@ -96,7 +96,7 @@ class QueueDetailScreen extends React.Component {
   _handlePromoPress = () => {
     this.props.navigation.navigate('Promotions', {
       dismissOnSelect: true,
-      onPromotionChange: this._handlePromoChange
+      onChangePromotion: this._handlePromoChange
      });
   }
   _handlePromoChange = (promotion) => {

@@ -198,15 +198,23 @@ class PromotionsScreen extends React.Component {
 
     return matches;
   }
-
+  _handleOnChangePromotion = (promotion) => {
+    const { onChangePromotion, dismissOnSelect } = this.props.navigation.state.params;
+    if (onChangePromotion) { onChangePromotion(promotion); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
   _renderItem = ({ item: { data, key } }) => (
     <TouchableHighlight
       style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
       onPress={() => {
-        const { navigate } = this.props.navigation;
+        const { navigate, state } = this.props.navigation;
+        if (state.params && state.params.onChangePromotion) {
+          this._handleOnChangePromotion(data);
+        } else {
+          this.props.walkInActions.selectPromotion(data);
+          navigate('WalkIn');
+        }
 
-        this.props.walkInActions.selectPromotion(data);
-        navigate('WalkIn');
       }}
       key={key}
       underlayColor="#ffffff"
@@ -256,4 +264,3 @@ class PromotionsScreen extends React.Component {
   }
 }
 export default PromotionsScreen;
-
