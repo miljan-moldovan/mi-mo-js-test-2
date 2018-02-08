@@ -99,7 +99,6 @@ SalonModal.propTypes = {
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   tailStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
-  showTail: PropTypes.bool.isRequired,
   tailPosition: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
 
 };
