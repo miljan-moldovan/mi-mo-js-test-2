@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 });
 
 const headerMiddle = (props) => {
-  console.log('headerprops', props);
+  console.log('headerMiddle', props);
   return (
     <View style={styles.container}>
       {props.title}

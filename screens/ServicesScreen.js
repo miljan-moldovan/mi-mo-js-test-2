@@ -17,9 +17,14 @@ import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 import SideMenuItem from '../components/SideMenuItem';
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../components/searchBar';
 
-const services = {
+// RP> fix - when navigating away and back to this screen, changes previously
+// made to the 'services' objects are kept and this crashes mapData.
+// the initServices function makes sure the services object is reset every
+// time the component mounts
+let services;
+const initServices = () => ({
   "data": [{
     "id": 1,
     "name": "Adult",
@@ -57,7 +62,7 @@ const services = {
       "duration": 10
     }]
   }]
-};
+});
 
 class ServicesScreen extends React.Component {
   static navigationOptions = {
@@ -86,7 +91,7 @@ class ServicesScreen extends React.Component {
   }
 
   componentWillMount() {
-    console.log('ServicesScreen.componentWillMount', services.data);
+    services = initServices();
     this.setState({activeData: this.mapData(services.data)});
   }
 
@@ -100,7 +105,6 @@ class ServicesScreen extends React.Component {
 
       for(key in item) {
         if(typeof item[key] === "object") {
-          console.log('mapData', key, item[key], typeof item[key]);
           mapped.data.children = this.mapData(item[key]);
         }
       }

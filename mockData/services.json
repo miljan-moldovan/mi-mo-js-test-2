@@ -1,0 +1,37 @@
+[{
+    "id": 1,
+    "name": "Adult",
+    "services": [{
+    "id": 4,
+    "name": "Service 1",
+    "duration": 20
+    }, {
+    "id": 5,
+    "name": "Service 2",
+    "duration": 10
+    }]
+}, {
+    "id": 2,
+    "name": "Kid",
+    "services": [{
+    "id": 6,
+    "name": "Service 1",
+    "duration": 20
+    }, {
+    "id": 7,
+    "name": "Service 2",
+    "duration": 10
+    }]
+}, {
+    "id": 3,
+    "name": "None",
+    "services": [{
+    "id": 8,
+    "name": "Service 1",
+    "duration": 20
+    }, {
+    "id": 9,
+    "name": "Service 2",
+    "duration": 10
+    }]
+}]
