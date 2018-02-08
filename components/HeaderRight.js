@@ -8,10 +8,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const headerRight = props => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
-    {props.button}
-  </TouchableOpacity>
+const headerRight = props => (<TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
+  {props.button}
+</TouchableOpacity>
 );
 
 headerRight.propTypes = {

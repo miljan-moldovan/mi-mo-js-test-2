@@ -91,11 +91,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  providerImage: {
-    borderRadius: 15,
-    height: 30,
-    width: 30,
-  },
+  // providerImage: {
+  //   borderRadius: 15,
+  //   height: 30,
+  //   width: 30,
+  // },
   providerData: {
     marginLeft: 15,
     flex: 2,
@@ -181,7 +181,7 @@ class WalkInScreen extends Component {
             <Text style={styles.subTitle}>PROVIDER</Text>
             <View style={{ flexDirection: 'row' }}>
               <View style={styles.providerImageContainer}>
-                <AvatarWrapper width={44} wrapperStyle={styles.providerRound} image={this.props.walkInState.selectedProvider.imagePath} />
+                <AvatarWrapper width={30} wrapperStyle={styles.providerRound} image={this.props.walkInState.selectedProvider.imagePath} />
               </View>
               <View style={styles.providerData}>
                 <Text style={styles.providerName}>{this.props.walkInState.selectedProvider.name}</Text>

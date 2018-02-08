@@ -62,7 +62,7 @@ const CustomModal = props => (
       isVisible={props.isVisible}
       style={[props.style, styles.container]}
     >
-      <View style={styles.content}>
+      <View style={[styles.content, props.contentStyle]}>
         { props.children }
       </View>
     </Modal>
@@ -73,10 +73,12 @@ CustomModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   children: PropTypes.arrayOf(PropTypes.element).isRequired,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+  contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
 };
 
 CustomModal.defaultProps = {
   style: { flex: 1 },
+  contentStyle: { },
 };
 
 export default CustomModal;

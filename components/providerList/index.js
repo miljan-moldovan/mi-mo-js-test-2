@@ -148,7 +148,7 @@ class ProviderList extends React.Component {
     super(props);
     this.state = {
       providers: props.providers,
-      selectedProvider: props.selectedProvider,
+      selectedProvider: props.walkInState.selectedProvider,
       selectable: props.selectable,
       refresh: false,
       firstAvailableSelected: false,
@@ -161,7 +161,7 @@ class ProviderList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      selectedProvider: nextProps.selectedProvider,
+      selectedProvider: this.props.walkInState.selectedProvider,
       selectable: nextProps.selectable,
       refresh: true,
     });
@@ -191,14 +191,23 @@ class ProviderList extends React.Component {
         onPress={() => {
           if (this.state.selectable) {
             this.setState({
-              selectedProvider: provider,
               refresh: true,
               firstAvailableSelected: false,
             }, () => {
-              if (this.props.onChangeProvider)
-                this.props.onChangeProvider(provider);
+              if (this.props.onChangeProvider) { this.props.onChangeProvider(provider); }
             });
 
+            const { navigate } = this.props.navigation;
+            const { params } = this.props.navigation.state;
+
+            this.props.walkInActions.selectProvider(provider);
+
+            if (params !== undefined && params.actionType === 'update') {
+              navigate('WalkIn');
+            } else {
+              this.props.walkInActions.setCurrentStep(4);
+              navigate('Promotions');
+            }
           }
         }}
       >

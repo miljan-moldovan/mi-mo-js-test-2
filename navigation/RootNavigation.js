@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, Image, Text } from 'react-native';
+import { Image, View, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -11,8 +11,12 @@ import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
-import ClientsScreen from './../screens/ClientsScreen';
-import ClientsSearchScreen from './../screens/ClientsSearchScreen';
+import ClientsScreen from './../screens/clientsScreen';
+import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
+
+import ClientsSearchScreen from './../screens/clientsSearchScreen';
+import ClientsSearchHeader from '../screens/clientsSearchScreen/components/ClientsSearchHeader';
+
 import ScorecardScreen from './../screens/ScorecardScreen';
 import WalkInScreen from '../screens/walkinScreen';
 import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
@@ -23,7 +27,6 @@ import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
 import ProvidersScreen from '../screens/providersScreen';
-import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
@@ -31,7 +34,9 @@ import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
 import ClientDetailsScreen from '../screens/clientDetailsScreen';
 import walkInActions from '../actions/walkIn';
-import ClientDescriptionScreen from '../screens/clientDetailsScreen/ClientDetailsScreen';
+
+import clientsActions from '../actions/clients';
+import clientsSearchActions from '../actions/clientsSearch';
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -109,6 +114,7 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
+
     ClientsSearch: {
       screen: ClientsSearchScreen,
       navigationOptions: rootProps => ({
@@ -116,41 +122,30 @@ const QueueStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                          fontFamily: 'OpenSans-Regular',
-                          color: '#fff',
-                          fontSize: 20,
-                        }}
-            >
-                        Search Clients
-            </Text>),
-        }),
+        headerTitle: <ClientsSearchHeader rootProps={rootProps} />,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
             <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      }}
             >
               <Image
                 style={{
-                      width: 15,
-                      height: 15,
-                    }}
+                          width: 15,
+                          height: 15,
+                        }}
                 source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
               />
               <Text style={{
-                    color: '#FFFFFF',
-                    fontSize: 16,
-                    fontFamily: 'OpenSans-Bold',
-                    backgroundColor: 'transparent',
-                    }}
+                        color: '#FFFFFF',
+                        fontSize: 16,
+                        fontFamily: 'OpenSans-Bold',
+                        backgroundColor: 'transparent',
+                        }}
               >Back
               </Text>
             </View>
@@ -160,27 +155,26 @@ const QueueStackNavigator = StackNavigator(
           handlePress: () => console.log('pressed right header button'),
           button: (
             <Text style={{
-              color: '#FFFFFF',
-              fontSize: 16,
-              width: 50,
-              fontFamily: 'OpenSans-Bold',
-              backgroundColor: 'transparent',
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}
+                      color: '#FFFFFF',
+                      fontSize: 16,
+                      width: 50,
+                      fontFamily: 'OpenSans-Bold',
+                      backgroundColor: 'transparent',
+                      alignSelf: 'center',
+                      alignItems: 'center',
+                    }}
             >New Client
             </Text>),
         }),
         header: props => (
           <ImageHeader
             {...props}
-            {...rootProps}
+            params={rootProps.navigation.state.params}
             searchBar={searchProps => (
               <SearchBar
                 {...searchProps}
-                placeHolder=""
-                showCancel
-                searchIconPosition="left"
+                placeHolder="Search by name, phone or email"
+                searchIconPosition="right"
               />)}
           />),
       }),
@@ -228,18 +222,7 @@ const ClientsStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                          fontFamily: 'OpenSans-Regular',
-                          color: '#fff',
-                          fontSize: 20,
-                        }}
-            >
-                        Clients
-            </Text>),
-        }),
+        headerTitle: <ClientsHeader rootProps={rootProps} />,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
@@ -255,33 +238,30 @@ const ClientsStackNavigator = StackNavigator(
                       width: 15,
                       height: 15,
                     }}
-                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
+                source={require('../assets/images/clients/icon_menu.png')}
               />
-              <Text style={{
-                    color: '#FFFFFF',
-                    fontSize: 16,
-                    fontFamily: 'OpenSans-Bold',
-                    backgroundColor: 'transparent',
-                    }}
-              >Back
-              </Text>
             </View>
           ),
         }),
         headerRight: HeaderLateral({
-          handlePress: () => console.log('pressed right header button'),
-          button: (
-            <Text style={{
-                  color: '#FFFFFF',
-                  fontSize: 16,
-                  width: 50,
-                  fontFamily: 'OpenSans-Bold',
-                  backgroundColor: 'transparent',
-                  alignSelf: 'center',
-                  alignItems: 'center',
-                }}
-            >New Client
-            </Text>),
+          handlePress: () => rootProps.params.handlePress(),
+          params: rootProps.navigation.state.params,
+          button:
+  <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            }}
+  >
+    <Image
+      style={{
+              width: 24,
+              height: 24,
+            }}
+      source={require('../assets/images/clients/filter_icon.png')}
+    />
+  </View>,
         }),
         header: props => (
           <ImageHeader
@@ -290,7 +270,7 @@ const ClientsStackNavigator = StackNavigator(
             searchBar={searchProps => (
               <SearchBar
                 {...searchProps}
-                placeHolder="Search by name, phone or email"
+                placeholder="Search by name, phone or email"
                 searchIconPosition="right"
               />)}
           />),
@@ -364,8 +344,13 @@ class RootNavigator extends React.Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   walkInState: state.walkInReducer,
+  clientsState: state.clientsReducer,
+  clientsSearchState: state.clientsSearchReducer,
 });
 const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
+  clientsSearchActions: bindActionCreators({ ...clientsSearchActions }, dispatch),
+
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);

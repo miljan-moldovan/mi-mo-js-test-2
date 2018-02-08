@@ -9,12 +9,11 @@ export default class SearchBar extends Component {
   }
 
   state = {
-    isVisible: null,
     placeholder: '',
   }
 
   componentWillMount() {
-    this.setState({ isVisible: this.props.isVisible, searchText: '' });
+    this.setState({ searchText: '' });
   }
 
   handleChange= (searchText) => {
@@ -37,7 +36,7 @@ export default class SearchBar extends Component {
               onChangeText={this.handleChange}
               value={this.state.searchText}
             />
-            {this.props.searchIconPosition === 'right' &&
+            {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
               <Image style={styles.searchIconRight} source={require('../../assets/images/clientsSearch/icon_search_w.png')} />
             }
 
