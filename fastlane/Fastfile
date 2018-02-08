@@ -16,6 +16,8 @@ default_platform :ios
 lane :beta do
   sh("npm", "install")
   
+  sh("npm", "run", "bundle:ios")
+  
   cocoapods(
     podfile: "./ios/Podfile"
   )

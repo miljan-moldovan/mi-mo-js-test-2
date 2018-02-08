@@ -9,6 +9,7 @@ import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
+import QueueDetailScreen from './../screens/QueueDetailScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
@@ -25,14 +26,14 @@ import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
-import PromotionsScreen from '../screens/promotionsScreen';
 import ProvidersScreen from '../screens/providersScreen';
+import NewClientScreen from '../screens/NewClientScreen';
+import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
 import ClientDetailsScreen from '../screens/clientDetailsScreen';
 import walkInActions from '../actions/walkIn';
-import ClientDescriptionScreen from '../screens/clientDetailsScreen/ClientDetailsScreen';
 
 import clientsActions from '../actions/clients';
 import clientsSearchActions from '../actions/clientsSearch';
@@ -57,11 +58,20 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
+    ClientDetails: {
+      screen: ClientDetailsScreen,
+      navigationOptions: {
+        headerTitle: 'Details',
+      },
+    },
     Main: {
       screen: ClientDetailsScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    QueueDetail: {
+      screen: QueueDetailScreen,
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -169,11 +179,21 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: {
+        headerTitle: 'Create New Client',
+        headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
+        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
+      },
+    },
   },
   {
     navigationOptions: {
       headerStyle: {
         backgroundColor: 'transparent',
+        paddingLeft: 10,
+        paddingRight: 10,
       },
       header: props => <ImageHeader {...props} />,
       headerTitleStyle: {

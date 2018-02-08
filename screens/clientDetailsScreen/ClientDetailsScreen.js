@@ -2,9 +2,13 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
+import ClientAttributes from './components/ClientAttributes';
 import ClientNotes from './components/ClientNotes';
 import ClientHistory from './components/ClientHistory';
 import ClientCards from './components/ClientCards';
+import ClientBalances from './components/ClientBalances';
+import ClientFormulas from './components/ClientFormulas';
+import ClientDetails from './components/ClientDetails';
 
 const initialLayout = {
   height: 0,
@@ -17,8 +21,11 @@ export default class ClientDescriptionScreen extends Component {
     routes: [
       { key: '0', title: 'Details' },
       { key: '1', title: 'Notes' },
+      { key: '2', title: 'Formulas' },
+      { key: '3', title: 'Attributes' },
       { key: '4', title: 'CARDS ON FILE' },
       { key: '5', title: 'HISTORY' },
+      { key: '8', title: 'BALANCES' },
     ],
   };
 
@@ -41,10 +48,13 @@ export default class ClientDescriptionScreen extends Component {
   );
 
   _renderScene = SceneMap({
-    0: ClientNotes,
+    0: ClientDetails,
     1: ClientNotes,
+    2: ClientFormulas,
+    3: ClientAttributes,
     4: ClientCards,
     5: ClientHistory,
+    8: ClientBalances,
   });
 
   render() {
@@ -72,6 +82,7 @@ export default class ClientDescriptionScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#80BBDF',
   },
   backgroundImage: {
     position: 'absolute',

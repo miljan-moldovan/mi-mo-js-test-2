@@ -4,6 +4,8 @@ import {
   QUEUE,
   QUEUE_RECEIVED,
   QUEUE_FAILED,
+  QUEUE_UPDATE_ITEM,
+  QUEUE_DELETE_ITEM,
   CLIENT_CHECKED_IN,
   CLIENT_RETURNED_LATER,
   CLIENT_WALKED_OUT,
@@ -82,6 +84,37 @@ export default (state = initialState, action) => {
         loading: false,
         queueLength: 0,
         error
+      }
+    case QUEUE_DELETE_ITEM:
+      const waitingQueueDeletedIndex = state.waitingQueue.findIndex((item) => item.queueId == data.id);
+      if (waitingQueueDeletedIndex !== -1) {
+        state.waitingQueue.splice(waitingQueueDeletedIndex, 1);
+      }
+      const serviceQueueDeletedIndex = state.serviceQueue.findIndex((item) => item.queueId == data.id);
+      if (serviceQueueDeletedIndex !== -1) {
+        state.serviceQueue.splice(serviceQueueDeletedIndex, 1);
+      }
+      console.log('QUEUE_DELETE_ITEM', waitingQueueDeletedIndex, serviceQueueDeletedIndex, state.waitingQueue, state.serviceQueue);
+      return {
+        ...state,
+        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : waitingQueue,
+        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : serviceQueue,
+      }
+    case QUEUE_UPDATE_ITEM:
+      const { queueItem } = data;
+      const waitingQueueIndex = state.waitingQueue.findIndex((item) => item.queueId == queueItem.queueId);
+      if (waitingQueueIndex !== -1) {
+        state.waitingQueue[waitingQueueIndex] = queueItem;
+      }
+      const serviceQueueIndex = state.serviceQueue.findIndex((item) => item.queueId == queueItem.queueId);
+      if (serviceQueueIndex !== -1) {
+        state.serviceQueue[serviceQueueIndex] = queueItem;
+      }
+      console.log('QUEUE_UPDATE_ITEM', waitingQueueIndex, serviceQueueIndex, state.waitingQueue, state.serviceQueue);
+      return {
+        ...state,
+        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : waitingQueue,
+        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : serviceQueue,
       }
     case ROW_EXPANDED:
       return {

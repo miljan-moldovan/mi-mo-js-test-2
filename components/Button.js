@@ -35,12 +35,14 @@ const styles = {
   }),
   small: StyleSheet.create({
     button: {
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 30,
+      paddingHorizontal: 15,
+      paddingVertical: 8,
+      borderRadius: 20,
       borderWidth: 1,
       backgroundColor: '#67A3C7',
       borderColor: '#67A3C7',
+      flex: 0,
+      alignSelf: 'center',
     },
     text: { color: 'white', fontSize: 12 },
   }),
@@ -49,7 +51,7 @@ const styles = {
 const Button = props => (
   <TouchableOpacity
     onPress={props.onPress}
-    style={styles[props.type].button}
+    style={[styles[props.type].button, {alignSelf: 'center'}]}
   >
     <Text style={styles[props.type].text}>{props.text}</Text>
   </TouchableOpacity>
