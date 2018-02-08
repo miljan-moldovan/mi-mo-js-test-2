@@ -52,6 +52,7 @@ function showPicker(props) {
 
 const salonPicker = props => (
   <TouchableOpacity
+    disabled={props.disabled}
     onPress={() => showPicker({
       dataSource: props.dataSource,
       selectedValue: props.selectedValue,
@@ -82,6 +83,7 @@ salonPicker.propTypes = {
   pickerFontSize: PropTypes.number,
   pickerToolBarFontSize: PropTypes.number,
   onPickerConfirm: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
 };
 
 salonPicker.defaultProps = {
@@ -89,6 +91,7 @@ salonPicker.defaultProps = {
   pickerTitle: '',
   pickerFontSize: 18,
   pickerToolBarFontSize: 18,
+  disabled: false,
 };
 
 export default salonPicker;

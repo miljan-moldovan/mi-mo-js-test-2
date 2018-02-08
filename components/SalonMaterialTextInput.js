@@ -25,7 +25,11 @@ const styles = StyleSheet.create({
 const salonMaterialTextInput = props => (
   <View style={[styles.container, props.rootStyle]}>
     {props.title ? <Text style={[styles.title, props.titleStyle]}>{props.title}</Text> : null }
-    <TextInput style={[styles.input, props.inputStyle]} />
+    <TextInput
+      editable={props.editable}
+      style={[styles.input, props.inputStyle]}
+      value={props.value}
+    />
   </View>
 );
 
@@ -34,6 +38,8 @@ salonMaterialTextInput.propTypes = {
   titleStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   inputStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   title: PropTypes.string,
+  value: PropTypes.string,
+  editable: PropTypes.bool,
 };
 
 salonMaterialTextInput.defaultProps = {
@@ -41,6 +47,8 @@ salonMaterialTextInput.defaultProps = {
   titleStyle: null,
   inputStyle: null,
   title: null,
+  value: '',
+  editable: true,
 };
 
 export default salonMaterialTextInput;

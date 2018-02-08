@@ -3,32 +3,35 @@ import React from 'react';
 import { View, Image, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
-
+import { bindActionCreators } from 'redux';
 import LoginScreen from './../screens/LoginScreen';
 import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 import SalesScreen from './../screens/SalesScreen';
 import QueueScreen from './../screens/QueueScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
-import PromotionsScreen from './../screens/PromotionsScreen';
-import ServicesScreen from './../screens/ServicesScreen';
 import AppointmentsScreen from './../screens/AppointmentsScreen';
 import ClientsScreen from './../screens/ClientsScreen';
 import ClientsSearchScreen from './../screens/ClientsSearchScreen';
 import ScorecardScreen from './../screens/ScorecardScreen';
-import WalkInScreen from '../screens/walkinScreen/WalkInScreen';
+import WalkInScreen from '../screens/walkinScreen';
+import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
+import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 import HeaderLeftText from '../components/HeaderLeftText';
 import ImageHeader from '../components/ImageHeader';
 import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import SearchBar from '../components/searchBar';
-import ProvidersScreen from '../screens/ProvidersScreen';
+import ProvidersScreen from '../screens/providersScreen';
 import ChangeProviderScreen from '../screens/ChangeProviderScreen';
 import NewClientScreen from '../screens/NewClientScreen';
-
+import PromotionsScreen from '../screens/promotionsScreen';
+import ServicesScreen from '../screens/servicesScreen';
 import SideMenu from './../components/SideMenu';
 import SideMenuItem from '../components/SideMenuItem';
-
+import ClientDetailsScreen from '../screens/clientDetailsScreen';
+import walkInActions from '../actions/walkIn';
+import ClientDescriptionScreen from '../screens/clientDetailsScreen/ClientDetailsScreen';
 
 const LoginStackNavigator = StackNavigator(
   {
@@ -50,8 +53,14 @@ const LoginStackNavigator = StackNavigator(
 
 const QueueStackNavigator = StackNavigator(
   {
+    ClientDetails: {
+      screen: ClientDetailsScreen,
+      navigationOptions: {
+        headerTitle: 'Details',
+      },
+    },
     Main: {
-      screen: QueueScreen,
+      screen: ClientDetailsScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
@@ -59,23 +68,21 @@ const QueueStackNavigator = StackNavigator(
     QueueDetail: {
       screen: QueueDetailScreen,
     },
-    Service: {
-      screen: ServicesScreen,
-      navigationOptions: {
-        headerTitle: 'Service',
-        headerBackTitleStyle: {
-          color: 'white'
-        }
-      },
+    WalkIn: {
+      screen: WalkInScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <WalkInHeader rootProps={rootProps} />,
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
+      }),
     },
-    Promotions: {
-      screen: PromotionsScreen,
-      navigationOptions: {
-        headerTitle: 'Promotions',
-        headerBackTitleStyle: {
-          color: 'white'
-        }
-      },
+    Services: {
+      screen: ServicesScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
+      }),
     },
     Providers: {
       screen: ProvidersScreen,
@@ -84,64 +91,22 @@ const QueueStackNavigator = StackNavigator(
         headerStyle: {
           backgroundColor: 'transparent',
         },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Select Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Walkin Service - 3 of 4</Text> }),
+        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
           />),
       }),
     },
-
-    ChangeProvider: {
-      screen: ChangeProviderScreen,
+    Promotions: {
+      screen: PromotionsScreen,
       navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: HeaderMiddle({ ...rootProps, title: <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'OpenSans-Bold' }}>Change Provider</Text>, subTitle: <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'OpenSans-Regular' }} >Service Queue</Text> }),
+        headerTitle: <WalkInStepHeader dataName="selectedPromotion" rootProps={rootProps} />,
         header: props => (
           <ImageHeader
             {...props}
+            {...rootProps}
           />),
-      }),
-    },
-    WalkIn: {
-      screen: WalkInScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: HeaderMiddle({
-          title: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 20,
-              }}
-            >
-              Walkin
-            </Text>),
-          subTitle: (
-            <Text
-              style={{
-                fontFamily: 'OpenSans-Regular',
-                color: '#fff',
-                fontSize: 12,
-              }}
-            >
-              Est wait time
-              <Text style={{
-                fontFamily: 'OpenSans-Bold',
-              }}
-              >
-                { ` ${rootProps.navigation.state.params.estimatedTime} min` }
-              </Text>
-            </Text>
-          ),
-        }),
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
       }),
     },
     ClientsSearch: {
@@ -195,14 +160,14 @@ const QueueStackNavigator = StackNavigator(
           handlePress: () => console.log('pressed right header button'),
           button: (
             <Text style={{
-                  color: '#FFFFFF',
-                  fontSize: 16,
-                  width: 50,
-                  fontFamily: 'OpenSans-Bold',
-                  backgroundColor: 'transparent',
-                  alignSelf: 'center',
-                  alignItems: 'center',
-                }}
+              color: '#FFFFFF',
+              fontSize: 16,
+              width: 50,
+              fontFamily: 'OpenSans-Bold',
+              backgroundColor: 'transparent',
+              alignSelf: 'center',
+              alignItems: 'center',
+            }}
             >New Client
             </Text>),
         }),
@@ -224,18 +189,17 @@ const QueueStackNavigator = StackNavigator(
       screen: NewClientScreen,
       navigationOptions: {
         headerTitle: 'Create New Client',
-        headerLeft: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Cancel</Text>,
-        headerRight: <Text style={{fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular'}}>Save</Text>,
+        headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
+        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
       },
     },
   },
   {
-
     navigationOptions: {
       headerStyle: {
         backgroundColor: 'transparent',
         paddingLeft: 10,
-        paddingRight: 10
+        paddingRight: 10,
       },
       header: props => <ImageHeader {...props} />,
       headerTitleStyle: {
@@ -384,24 +348,24 @@ const RootDrawerNavigator = DrawerNavigator(
 
 class RootNavigator extends React.Component {
   render() {
-    const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
+    // const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
 
-    const fingerprintTimeout = 60 * 2;
-    const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
-    console.log('RootNavigator.render', loggedIn, useFingerprintId, new Date(fingerprintAuthenticationTime), new Date(fingerprintExpireTime), new Date());
+    // const fingerprintTimeout = 60 * 2;
+    // const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
 
-    // if user is logged in AND fingerprint identification is NOT enabled
-    if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) { return <RootDrawerNavigator />; }
-    // else redirect to login screen so the user can authenticate (user/pass or touchID)
-    return <LoginStackNavigator />;
+    // // if user is logged in AND fingerprint identification is NOT enabled
+    // if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) { return <RootDrawerNavigator />; }
+    // // else redirect to login screen so the user can authenticate (user/pass or touchID)
+    // return <LoginStackNavigator />;
+    return <RootDrawerNavigator />;
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  console.log('RootNavigator-map');
-  return {
-    auth: state.auth,
-  };
-};
-
-export default connect(mapStateToProps, null)(RootNavigator);
+const mapStateToProps = state => ({
+  auth: state.auth,
+  walkInState: state.walkInReducer,
+});
+const mapActionsToProps = dispatch => ({
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+});
+export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);
