@@ -97,8 +97,8 @@ export default (state = initialState, action) => {
       console.log('QUEUE_DELETE_ITEM', waitingQueueDeletedIndex, serviceQueueDeletedIndex, state.waitingQueue, state.serviceQueue);
       return {
         ...state,
-        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : waitingQueue,
-        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : serviceQueue,
+        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : state.waitingQueue,
+        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : state.serviceQueue,
       }
     case QUEUE_UPDATE_ITEM:
       const { queueItem } = data;
@@ -113,8 +113,8 @@ export default (state = initialState, action) => {
       console.log('QUEUE_UPDATE_ITEM', waitingQueueIndex, serviceQueueIndex, state.waitingQueue, state.serviceQueue);
       return {
         ...state,
-        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : waitingQueue,
-        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : serviceQueue,
+        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : state.waitingQueue,
+        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : state.serviceQueue,
       }
     case ROW_EXPANDED:
       return {
