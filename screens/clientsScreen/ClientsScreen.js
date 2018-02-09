@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View, Text,
   Image,
+  Alert
 } from 'react-native';
 
 import SideMenuItem from '../../components/SideMenuItem';
@@ -287,6 +288,19 @@ class ClientsScreen extends React.Component {
 
     this.hideFilterModal();
   }
+  _handleOnChangeClient = (clientName, client) => {
+    console.log('client', client);
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      Alert.alert(clientName);
+      return;
+    }
+
+    const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
+    if (onChangeClient)
+      onChangeClient(client);
+    if (dismissOnSelect)
+      this.props.navigation.goBack();
+  }
 
   render() {
     return (
@@ -321,7 +335,7 @@ class ClientsScreen extends React.Component {
             clients={this.props.clientsState.prepared}
             style={styles.clientListContainer}
             showLateralList={this.props.clientsState.showLateralList}
-            onPressItem={(text) => { alert(text); }}
+            onPressItem={this._handleOnChangeClient}
           />
         }
 

@@ -155,7 +155,7 @@ class AlphabeticalListItem extends React.PureComponent {
       <TouchableHighlight
         style={styles.container}
         underlayColor="transparent"
-        onPress={() => { this.state.onPress(this.state.client.name); }}
+        onPress={() => { this.state.onPress(this.state.client.name, this.state.client); }}
       >
         <View key={`${this.state.client.id}`} style={styles.container}>
 
