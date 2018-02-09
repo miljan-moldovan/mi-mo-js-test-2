@@ -193,20 +193,22 @@ class ProviderList extends React.Component {
             this.setState({
               refresh: true,
               firstAvailableSelected: false,
-            }, () => {
-              if (this.props.onChangeProvider) { this.props.onChangeProvider(provider); }
             });
-
-            const { navigate } = this.props.navigation;
-            const { params } = this.props.navigation.state;
-
-            this.props.walkInActions.selectProvider(provider);
-
-            if (params !== undefined && params.actionType === 'update') {
-              navigate('WalkIn');
+            // if onChangeProvider is set, invoke it. Otherwise, default routine
+            if (this.props.onChangeProvider) {
+              this.props.onChangeProvider(provider);
             } else {
-              this.props.walkInActions.setCurrentStep(4);
-              navigate('Promotions');
+              const { navigate } = this.props.navigation;
+              const { params } = this.props.navigation.state;
+
+              this.props.walkInActions.selectProvider(provider);
+
+              if (params !== undefined && params.actionType === 'update') {
+                navigate('WalkIn');
+              } else {
+                this.props.walkInActions.setCurrentStep(4);
+                navigate('Promotions');
+              }
             }
           }
         }}
