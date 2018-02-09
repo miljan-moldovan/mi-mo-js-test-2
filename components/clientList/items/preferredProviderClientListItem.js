@@ -154,7 +154,7 @@ class PreferredProviderClientListItem extends React.PureComponent {
       <TouchableHighlight
         style={styles.container}
         underlayColor="transparent"
-        onPress={() => { this.state.onPress(this.state.client.name); }}
+        onPress={() => { this.state.onPress(this.state.client); }}
       >
         <View style={styles.container}>
 

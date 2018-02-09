@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 
 import rightArrow from '../../assets/images/walkinScreen/icon_arrow_right_xs.png';
 import serchImage from '../../assets/images/walkinScreen/icon_search_w.png';
+import infoImage from '../../assets/images/icons/icon_plus.png';
 import SalonAvatar from '../../components/SalonAvatar';
 
 const styles = StyleSheet.create({
@@ -34,6 +35,18 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1D1D2626',
     borderBottomWidth: 1,
     flexDirection: 'row',
+  },
+
+  listClientContainer: {
+    flex: 10,
+    backgroundColor: '#fff',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderBottomColor: '#1D1D2626',
+    borderBottomWidth: 1,
+    flexDirection: 'column',
   },
   btnContainer: {
     flex: 10,
@@ -257,20 +270,80 @@ class WalkInScreen extends Component {
     }
   }
 
+  renderClientButton = () => {
+    if (this.props.walkInState.selectedClient !== null) {
+      return (
+        <View style={{ flex: 30, flexDirection: 'column' }}>
+          <View style={styles.listClientContainer}>
+            <Text style={styles.subTitle}>Client</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 10, flexDirection: 'row' }}>
+                <Text style={styles.textInput}>{this.props.walkInState.selectedClient.name}</Text>
+                <Image style={{ marginHorizontal: 10 }} source={infoImage} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity onPress={this.handlePressClient}>
+                  <Image style={styles.searchImage} source={serchImage} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          <View style={styles.listClientContainer}>
+            <Text style={styles.subTitle}>Email</Text>
+            <Text style={styles.textInput}>{this.props.walkInState.selectedClient.email}</Text>
+          </View>
+          <View style={styles.listClientContainer}>
+            <Text style={styles.subTitle}>Phone</Text>
+            <Text style={styles.textInput}>{this.props.walkInState.selectedClient.phone}</Text>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View style={{ flex: 30, flexDirection: 'column' }}>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.textInput}>Client</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => {
+              const { navigate } = this.props.navigation;
+
+              this.props.walkInActions.setCurrentStep(1);
+              navigate('ClientsSearch');
+            }}
+            >
+              <Image style={styles.searchImage} source={serchImage} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.textInput}>Email</Text>
+        </View>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.textInput}>Phone</Text>
+        </View>
+      </View>
+
+    );
+  }
+
+  handlePressClient = () => {
+    const { navigate } = this.props.navigation;
+    const { selectedClient } = this.props.walkInState;
+    this.props.walkInActions.setCurrentStep(3);
+
+    if (selectedClient) {
+      navigate('ClientsSearch', { actionType: 'update' });
+    } else {
+      navigate('ClientsSearch');
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
         {this.renderTitle('CLIENT INFO')}
-        <View style={styles.listItemContainer}>
-          <Text style={styles.textInput}>Client</Text>
-          <Image style={styles.searchImage} source={serchImage} />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.textInput}>Email</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.textInput}>Phone</Text>
-        </View>
+        {this.renderClientButton()}
         {this.renderTitle('SERVICE')}
         {this.renderServiceButton()}
         {this.renderProviderButton()}
