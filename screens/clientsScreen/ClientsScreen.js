@@ -288,18 +288,21 @@ class ClientsScreen extends React.Component {
 
     this.hideFilterModal();
   }
-  _handleOnChangeClient = (clientName, client) => {
+  _handleOnChangeClient = (client) => {
     console.log('client', client);
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      Alert.alert(clientName);
+    const { navigation } = this.props;
+    if (navigation.state && navigation.state.params && navigation.state.params.onChangeClient) {
+        const { onChangeClient, dismissOnSelect } = navigation.state.params;
+        if (onChangeClient)
+          onChangeClient(client);
+        if (dismissOnSelect)
+          navigation.goBack();      
       return;
+    } else {
+        // RP> moved from inline
+        // onPressItem={(client) => { this.props.navigation.navigate('ClientDetails'); }}
+        navigation.navigate('ClientDetails');
     }
-
-    const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
-    if (onChangeClient)
-      onChangeClient(client);
-    if (dismissOnSelect)
-      this.props.navigation.goBack();
   }
 
   render() {
@@ -308,6 +311,7 @@ class ClientsScreen extends React.Component {
 
 
         <SalonSectionsModal
+          showTail
           key="salonSectionsModalClientScreen"
           isVisible={this.props.clientsState.showFilterModal}
           closeModal={() => this.hideFilterModal()}

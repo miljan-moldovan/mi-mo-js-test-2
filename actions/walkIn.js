@@ -3,6 +3,7 @@ export const SET_CURRENT_STEP = 'walkIn/SET_CURRENT_STEP';
 export const SELECTED_SERVICE = 'walkIn/SELECTED_SERVICE';
 export const SELECTED_PROVIDER = 'walkIn/SELECTED_PROVIDER';
 export const SELECTED_PROMOTION = 'walkIn/SELECTED_PROMOTION';
+export const SELECTED_CLIENT = 'walkIn/SELECTED_CLIENT';
 
 function setEstimatedTime(time) {
   return {
@@ -39,12 +40,21 @@ function selectPromotion(promotion) {
   };
 }
 
+
+function selectClient(client) {
+  return {
+    type: SELECTED_CLIENT,
+    data: { client },
+  };
+}
+
 const walkInActions = {
   setEstimatedTime,
   setCurrentStep,
   selectService,
   selectProvider,
   selectPromotion,
+  selectClient,
 };
 
 export default walkInActions;

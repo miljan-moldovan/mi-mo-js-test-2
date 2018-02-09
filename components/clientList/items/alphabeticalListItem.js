@@ -49,8 +49,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   avatar: {
-
-
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
   },
   dataContainer: {
     // marginLeft: 20,
@@ -153,11 +155,12 @@ class AlphabeticalListItem extends React.PureComponent {
   render() {
     return (
       <TouchableHighlight
+        key={`${this.state.client.id}`}
         style={styles.container}
         underlayColor="transparent"
-        onPress={() => { this.state.onPress(this.state.client.name, this.state.client); }}
+        onPress={() => { this.state.onPress(this.state.client); }}
       >
-        <View key={`${this.state.client.id}`} style={styles.container}>
+        <View style={styles.container}>
 
           <View style={styles.pointerContainer}>
             {this.state.client.nextAppointment && <View style={styles.pointer} />}
@@ -167,10 +170,9 @@ class AlphabeticalListItem extends React.PureComponent {
             {
               this.state.client.avatar &&
               <SalonAvatar
-                key={this.state.client.id}
                 wrapperStyle={styles.avatar}
                 width={44}
-                image={this.state.client.avatar}
+                image="https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742"
               />
             }
           </View>

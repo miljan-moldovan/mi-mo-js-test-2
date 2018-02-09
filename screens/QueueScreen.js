@@ -54,7 +54,7 @@ class QueueScreen extends React.Component {
     ],
     index: 0,
     isWalkoutVisible: false,
-    walkoutText: ''
+    walkoutText: '',
   }
   componentWillMount() {
     this.props.actions.receiveQueue();
@@ -85,8 +85,8 @@ class QueueScreen extends React.Component {
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle = {{ backgroundColor : 'transparent', height: 50 }}
-      style = {{ backgroundColor: 'transparent', height: 50 }}
+      tabStyle={{ backgroundColor: 'transparent', height: 50 }}
+      style={{ backgroundColor: 'transparent', height: 50 }}
       renderLabel={this._renderLabel(props)}
       indicatorStyle={{ backgroundColor: '#80BBDF', height: 6 }}
     />
@@ -156,9 +156,9 @@ class QueueScreen extends React.Component {
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
         </FloatingButton>
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
-          <View style={styles.walkoutContainer}>
+          {[<View style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>
-              <Image style={styles.walkoutImage}  source={require('../assets/images/walkoutModal/icon_walkout.png')} />
+              <Image style={styles.walkoutImage} source={require('../assets/images/walkoutModal/icon_walkout.png')} />
             </View>
             <Text style={styles.walkoutText}>Walk-out reason:
               <Text style={styles.walkoutTextBold}>Other</Text>
@@ -182,7 +182,7 @@ class QueueScreen extends React.Component {
                 <Text style={styles.walkoutTextOk}>Ok</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View>]}
         </SalonModal>
       </View>
     );

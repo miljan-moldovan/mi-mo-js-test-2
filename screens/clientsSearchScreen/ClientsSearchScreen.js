@@ -309,7 +309,14 @@ class ClientsSearchScreen extends React.Component {
               style={styles.clientListContainer}
               clients={this.props.clientsSearchState.prepared}
               showLateralList
-              onPressItem={(text) => { alert(text); }}
+              onPressItem={(client) => {
+                  const { navigate } = this.props.navigation;
+                  const { params } = this.props.navigation.state;
+
+                  this.props.walkInActions.selectClient(client);
+
+                  navigate('WalkIn');
+              }}
             />
 
            }

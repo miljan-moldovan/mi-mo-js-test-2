@@ -4,6 +4,7 @@ import walkInActions, {
   SELECTED_SERVICE,
   SELECTED_PROVIDER,
   SELECTED_PROMOTION,
+  SELECTED_CLIENT,
 } from '../actions/walkIn';
 
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
   selectedService: null,
   selectedProvider: null,
   selectedPromotion: null,
+  selectedClient: null,
 };
 
 export default function walkInReducer(state = initialState, action) {
@@ -46,6 +48,12 @@ export default function walkInReducer(state = initialState, action) {
         ...state,
         error: null,
         selectedPromotion: data.promotion,
+      };
+    case SELECTED_CLIENT:
+      return {
+        ...state,
+        error: null,
+        selectedClient: data.client,
       };
     default:
       return state;
