@@ -12,6 +12,14 @@ import ServicesScreen from '../screens/servicesScreen';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
+import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
+import HeaderLeftText from '../components/HeaderLeftText';
+
+import HeaderLateral from '../components/HeaderLateral';
+import SearchBar from '../components/searchBar';
+import ClientsScreen from './../screens/clientsScreen';
+import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
+
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -38,6 +46,67 @@ const AppointmentStackNavigator = StackNavigator(
         header: props => (
           <ImageHeader
             {...props}
+          />),
+      }),
+    },
+    ChangeClient: {
+      screen: ClientsScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: <ClientsHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Image
+                style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                source={require('../assets/images/clients/icon_menu.png')}
+              />
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => rootProps.params.handlePress(),
+          params: rootProps.navigation.state.params,
+          button:
+  <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            }}
+  >
+    <Image
+      style={{
+              width: 24,
+              height: 24,
+            }}
+      source={require('../assets/images/clients/filter_icon.png')}
+    />
+  </View>,
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+            searchBar={searchProps => (
+              <SearchBar
+                {...searchProps}
+                placeholder="Search by name, phone or email"
+                searchIconPosition="right"
+              />)}
           />),
       }),
     },

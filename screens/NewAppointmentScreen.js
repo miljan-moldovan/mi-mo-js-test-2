@@ -49,8 +49,7 @@ const SectionExpand = ({ children }) => (
 const appointment = {
 		"client": {
 			"id": 8423,
-			"name": "Aaran",
-			"lastName": "Willifoard",
+			"name": "Aaran Willifoard",
 			"notes": null
 		},
 		"date": "2017-12-27T00:00:00.000Z",
@@ -104,7 +103,7 @@ class NewAppointmentsScreen extends React.Component {
     item: { ...appointment }
   }
   _handleClientPress = () => {
-    this.props.navigation.navigate('Clients', {
+    this.props.navigation.navigate('ChangeClient', {
       dismissOnSelect: true,
       onChangeClient: this._handleClientChange
     });
@@ -126,10 +125,15 @@ class NewAppointmentsScreen extends React.Component {
   }
   _handleServiceChange = (service) => {
     console.log('NewAppointmentsScreen._handleServiceChange', service);
+    const { item } = this.state;
     this.setState({
       item: {
-        ...this.state.item,
-        services: [ { id: service.id, description: service.name } ]
+        ...item,
+        services: [ {
+          ...item.services[0],
+          id: service.id, description: service.name
+         }
+       ]
       }
     });
   }
@@ -140,10 +144,18 @@ class NewAppointmentsScreen extends React.Component {
      });
   }
   _handleProviderChange = (provider) => {
+    const { item } = this.state;
     this.setState({
       item: {
-        ...this.state.item,
-        employees: [ provider ]
+        ...item,
+        services: [
+          {
+            ...item.services[0],
+            employees: [
+              provider
+            ]
+          }
+        ]
       }
     });
   }
@@ -152,7 +164,7 @@ class NewAppointmentsScreen extends React.Component {
     console.log('item', item);
     const service = item.services[0];
     const employee = service.employees[0].name+' '+service.employees[0].lastName;
-    const client = item.client.name +' '+ item.client.lastName;
+    const client = item.client.name;
     return (
       <View style={{ flex:1 }}>
         <ScrollView contentContainer={styles.container} style={{flex: 1}}>
