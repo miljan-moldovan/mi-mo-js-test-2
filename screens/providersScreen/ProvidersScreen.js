@@ -45,6 +45,9 @@ class ProviderScreen extends React.Component {
   }
   _handleOnChangeProvider = (provider) => {
     console.log('provider', provider);
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
     const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
     if (onChangeProvider)
       onChangeProvider(provider);
@@ -56,7 +59,7 @@ class ProviderScreen extends React.Component {
     const { state } = this.props.navigation;
     let onChangeProvider = null;
     // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params.onChangeProvider)
+    if (state.params && state.params.onChangeProvider)
       onChangeProvider = this._handleOnChangeProvider;
     return (
       <View style={styles.container}>

@@ -20,12 +20,7 @@ import SideMenuItem from '../components/SideMenuItem';
 
 class AppointmentsScreen extends React.Component {
   static navigationOptions = {
-    drawerLabel: (props) => (
-      <SideMenuItem
-        {...props}
-        title="Appointments"
-        icon={require('../assets/images/sidemenu/icon_appoint_menu.png')} />
-    ),
+
   };
   state = {
 
@@ -38,6 +33,9 @@ class AppointmentsScreen extends React.Component {
           style={styles.backgroundImage}
           source={require('../assets/images/login/blue.png')} />
         <Text style={styles.title}>Appointments Screen placeholder</Text>
+        <Button rounded bordered style={styles.loginButton} onPress={()=>this.props.navigation.navigate('NewAppointment')}>
+          <Text style={styles.loginButtonText}>New Appointment</Text>
+        </Button>
         <Button rounded bordered style={styles.loginButton} onPress={this.props.logout}>
           <Text style={styles.loginButtonText}>LOGOUT</Text>{ this.state.waitingLogin && <ActivityIndicator /> }
         </Button>
