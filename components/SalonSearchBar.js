@@ -78,11 +78,6 @@ class SalonSearchBar extends Component {
   constructor(props) {
     super(props);
     this.searchText = '';
-    this.state = { placeholder: props.placeholder };
-  }
-
-  state = {
-    placeholder: '',
   }
 
   componentWillMount() {
@@ -114,7 +109,7 @@ class SalonSearchBar extends Component {
             }
             <TextInput
               style={[styles.searchBarInput, { color: this.props.fontColor }]}
-              placeholder={this.state.placeholder}
+              placeholder={this.props.placeHolderText}
               placeholderTextColor={this.props.placeholderTextColor}
               onChangeText={this.handleChange}
               value={this.state.searchText}
@@ -180,7 +175,7 @@ SalonSearchBar.propTypes = {
   searchIconPosition: PropTypes.string,
   onChangeText: PropTypes.func.isRequired,
   showCancel: PropTypes.bool,
-  placeholder: PropTypes.string,
+  placeHolderText: PropTypes.string,
 
 };
 
@@ -192,7 +187,7 @@ SalonSearchBar.defaultProps = {
   iconsColor: '#FFFFFF',
   searchIconPosition: 'left',
   showCancel: false,
-  placeholder: '',
+  placeHolderText: 'Search1',
 };
 
 export default SalonSearchBar;

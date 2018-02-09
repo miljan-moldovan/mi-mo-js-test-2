@@ -16,7 +16,7 @@ import WordHighlighter from '../../wordHighlighter';
 const styles = StyleSheet.create({
   highlightStyle: {
     color: '#000',
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
   },
   container: {
     flex: 2,
@@ -26,19 +26,19 @@ const styles = StyleSheet.create({
   clientName: {
     color: '#1D1D26',
     fontSize: 18,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   clientNameAppoint: {
     color: '#1D1D26',
     fontSize: 18,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   clientEmail: {
     color: '#1D1D26',
     fontSize: 12,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   avatarContainer: {
@@ -79,19 +79,19 @@ const styles = StyleSheet.create({
   daysCount: {
     color: '#1D1D26',
     fontSize: 30,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   daysMessage: {
     color: '#1D1D26',
     fontSize: 10,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   daysMessageBottom: {
     color: '#1D1D26',
     fontSize: 8,
-    fontFamily: 'OpenSans-Light',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   pointerContainer: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   clientBirthdayText: {
     color: '#3078A4',
     fontSize: 9,
-    fontFamily: 'OpenSans-Light',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'center',
   },

@@ -11,8 +11,11 @@ import ClientSearchListItem from '../../components/clientList/items/clientSearch
 import AlphabeticalHeader from '../../components/clientList/headers/alphabeticalHeader';
 import PrepareClients from '../../components/clientList/prepareClients';
 import SalonSearchBar from '../../components/SalonSearchBar';
+import SalonFlatPicker from '../../components/SalonFlatPicker';
 
 const mockDataClients = require('../../mockData/clients.json');
+
+const filterType = ['This store', 'All stores'];
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -130,8 +133,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomWidth: 1 / 2,
-    borderBottomColor: 'rgba(0,0,0,0.2)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFFFFF',
   },
   topSearchBarText: {
     color: '#1D1D26',
@@ -140,6 +143,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '700',
     backgroundColor: 'transparent',
+  },
+  filterBarContainer: {
+    backgroundColor: '#F8F8F8',
+    flex: 0.1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterBar: {
+    flex: 1,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -168,7 +185,7 @@ class ClientsSearchScreen extends React.Component {
     this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
     this.props.clientsSearchActions.setClients(prepareClients.clients);
     this.props.clientsSearchActions.setSearchText('');
-    this.props.clientsSearchActions.setShowWalkIn(false);
+    this.props.clientsSearchActions.setSelectedFilter(0);
   }
 
   componentWillMount() {
@@ -209,6 +226,10 @@ class ClientsSearchScreen extends React.Component {
     }
   }
 
+  handleGenderChange=(ev, selectedIndex) => {
+    this.props.clientsSearchActions.setSelectedFilter(selectedIndex);
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -216,18 +237,30 @@ class ClientsSearchScreen extends React.Component {
           { (this.props.clientsSearchState.prepared.length > 0) &&
             <View style={styles.topSearchBar}>
               <SalonSearchBar
-                placeHolder="Search"
+                placeHolderText="Search"
+                placeholderTextColor="#727A8F"
                 searchIconPosition="left"
                 iconsColor="#727A8F"
                 fontColor="#727A8F"
                 borderColor="transparent"
                 backgroundColor="rgba(142,142,147,0.12)"
+                onChangeText={searchText => this.filterClients(searchText)}
+              />
+            </View>}
+          <View style={styles.filterBarContainer}>
 
-                onChangeText={() => {}}
+            <View style={styles.filterBar}>
+              <SalonFlatPicker
+                dataSource={filterType}
+                selectedColor="#115ECD"
+                selectedTextColor="#FFFFFF"
+                unSelectedTextColor="#115ECD"
+                onItemPress={this.handleGenderChange}
+                selectedIndex={this.props.clientsSearchState.selectedFilter}
               />
 
-              {/* onChangeText={searchText => this.filterClients(searchText)} */}
-            </View>}
+            </View>
+          </View>
 
           { (this.props.clientsSearchState.prepared.length > 0) &&
 

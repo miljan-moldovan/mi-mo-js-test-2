@@ -7,13 +7,12 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux';
-import SalonAvatar from '../../SalonAvatar';
 import WordHighlighter from '../../wordHighlighter';
 
 const styles = StyleSheet.create({
   highlightStyle: {
-    color: '#000',
-    fontFamily: 'OpenSans-Bold',
+    color: '#1DBF12',
+    fontFamily: 'Roboto',
   },
   container: {
     flex: 2,
@@ -21,15 +20,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   clientName: {
-    color: '#1D1D26',
-    fontSize: 18,
-    fontFamily: 'OpenSans-Regular',
+    color: '#110A24',
+    fontSize: 14,
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   clientEmail: {
-    color: '#1D1D26',
+    color: '#000000',
     fontSize: 12,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   avatarContainer: {
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
   },
   dataContainer: {
     marginLeft: 20,
-    flex: 1.5,
+    flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
   },
@@ -77,15 +76,6 @@ class ClientSearchListItem extends React.PureComponent {
       >
         <View style={styles.container}>
 
-          {
-        this.state.client.avatar &&
-        <SalonAvatar
-          key={this.state.client.id}
-          wrapperStyle={styles.avatarContainer}
-          width={59}
-          image={this.state.client.avatar}
-        />
-      }
 
           <View style={styles.dataContainer}>
 

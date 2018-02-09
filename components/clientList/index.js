@@ -70,33 +70,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-  // topBarText: {
-  //   color: '#1D1D26',
-  //   fontSize: 12,
-  //   marginLeft: 12,
-  //   fontFamily: 'OpenSans-Bold',
-  //   backgroundColor: 'transparent',
-  // },
   foundLetter: {
-    color: '#67A3C7',
-    fontSize: 12,
+    color: '#727A8F',
+    fontSize: 11,
     marginTop: 5,
     marginHorizontal: 5,
-    fontFamily: 'OpenSans-Bold',
-    backgroundColor: 'transparent',
-  },
-  letter: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginTop: 6,
-    marginHorizontal: 12,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   noResults: {
     color: '#3D3C3B',
     fontSize: 30,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'center',
     alignSelf: 'center',
@@ -114,7 +99,7 @@ const styles = StyleSheet.create({
   newClient: {
     color: '#3078A4',
     fontSize: 14,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'center',
     alignSelf: 'center',
@@ -287,7 +272,7 @@ class ClientList extends React.Component {
             numberOfRowsInSection={section => this.getNumberOfRowsInSection(section)}
             heightForSection={() => 36}
             renderSection={section => this.renderSection(section)}
-            heightForCell={() => 96}
+            heightForCell={() => 60}
             renderCell={(section, row) => this.renderItem(section, row)}
             renderItemSeparator={() => <View style={styles.itemSeparator} />}
             onSectionDidHangOnTop={section => this.onSectionChange(section)}
