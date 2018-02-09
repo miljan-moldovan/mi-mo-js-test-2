@@ -11,11 +11,13 @@ target 'SalonUltimateRN' do
   pod 'Crashlytics'
 
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'Core',
-    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+    'BatchedBridge',
+    'DevSupport',
     'RCTText',
+    'RCTImage',
     'RCTNetwork',
-    'RCTWebSocket', # needed for debugging
+    'Core',
+    'RCTWebSocket',
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
   pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
