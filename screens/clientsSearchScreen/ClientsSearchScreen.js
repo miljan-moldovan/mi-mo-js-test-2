@@ -2,66 +2,23 @@
 import React from 'react';
 import {
   StyleSheet,
-  Text,
-  TouchableHighlight,
   View,
-  Image,
 } from 'react-native';
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-import WordHighlighter from '../../components/wordHighlighter';
 import ClientSearchListItem from '../../components/clientList/items/clientSearchListItem';
 import AlphabeticalHeader from '../../components/clientList/headers/alphabeticalHeader';
-
 import PrepareClients from '../../components/clientList/prepareClients';
+import SalonSearchBar from '../../components/SalonSearchBar';
 
 const mockDataClients = require('../../mockData/clients.json');
 
 const styles = StyleSheet.create({
   highlightStyle: {
     color: '#000',
-    fontFamily: 'OpenSans-Bold',
-  },
-  walkinBar: {
-    flex: 0.2,
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'rgba(0,0,0,0.2)',
-  },
-  walkinBarIconContainer: {
-    flex: 1 / 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  walkinBarIcon: {
-    height: 25,
-    width: 21,
-  },
-  walkinBarRound: {
-    backgroundColor: '#67A3C7',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-    borderRadius: 28,
-    height: 59,
-    width: 59,
-  },
-  walkinBarData: {
-    marginLeft: 20,
-    flex: 1.5,
-    justifyContent: 'center',
-    flexDirection: 'column',
-  },
-  walkinBarText: {
-    color: '#1D1D26',
-    fontSize: 18,
-    fontFamily: 'OpenSans-Regular',
-    backgroundColor: 'transparent',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
   },
   container: {
     flex: 1,
@@ -82,7 +39,7 @@ const styles = StyleSheet.create({
   title: {
     color: 'white',
     fontSize: 20,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     padding: 20,
     marginTop: 20,
     alignSelf: 'center',
@@ -130,14 +87,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
   },
   backText: {
     marginTop: 20,
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
   },
   newClientContainer: {
@@ -150,7 +109,8 @@ const styles = StyleSheet.create({
     // marginTop: 20,
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
     alignSelf: 'center',
     alignItems: 'center',
@@ -164,19 +124,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  seachBar: {
-    flexDirection: 'row',
-    flex: 4,
-    marginHorizontal: 10,
-    marginVertical: 5,
-    alignItems: 'center',
-  },
   topSearchBar: {
-    flex: 0.13,
+    flex: 0.1,
     flexDirection: 'column',
-    backgroundColor: '#EFEFEF',
+    backgroundColor: '#F8F8F8',
     justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     borderBottomWidth: 1 / 2,
     borderBottomColor: 'rgba(0,0,0,0.2)',
   },
@@ -184,7 +137,8 @@ const styles = StyleSheet.create({
     color: '#1D1D26',
     fontSize: 12,
     marginLeft: 30,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
   },
 });
@@ -218,9 +172,9 @@ class ClientsSearchScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.props.navigation.setParams({
-      onChangeText: searchText => this.filterClients(searchText),
-    });
+    // this.props.navigation.setParams({
+    //   onChangeText: searchText => this.filterClients(searchText),
+    // });
     this.props.clientsSearchActions.setFilteredClients(this.props.clientsSearchState.clients);
   }
 
@@ -232,8 +186,6 @@ class ClientsSearchScreen extends React.Component {
       ];
       const filtered = PrepareClients.flexFilter(this.props.clientsSearchState.clients, criteria);
 
-      const filterWalkin = PrepareClients.flexFilter([{ name: 'Walkin', email: 'Walkin' }], criteria);
-
       const sortTypes = PrepareClients.getSortTypes();
       const filterTypes = PrepareClients.getFilterTypes();
       const prepareClients = PrepareClients.applyFilter(
@@ -242,12 +194,9 @@ class ClientsSearchScreen extends React.Component {
       );
 
       this.props.clientsSearchActions.setSearchText(searchText);
-      this.props.clientsSearchActions.setShowWalkIn(filterWalkin.length > 0);
       this.props.clientsSearchActions.setFilteredClients(filtered);
       this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
     } else {
-      this.props.clientsSearchActions.setShowWalkIn(false);
-
       const sortTypes = PrepareClients.getSortTypes();
       const filterTypes = PrepareClients.getFilterTypes();
       const prepareClients = PrepareClients.applyFilter(
@@ -264,43 +213,23 @@ class ClientsSearchScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
-          { (this.props.clientsSearchState.prepared.length > 0 || this.props.clientsSearchState.showWalkIn) &&
+          { (this.props.clientsSearchState.prepared.length > 0) &&
             <View style={styles.topSearchBar}>
-              <Text style={styles.topSearchBarText}>TOP SEARCH MATCHES</Text>
+              <SalonSearchBar
+                placeHolder="Search"
+                searchIconPosition="left"
+                iconsColor="#727A8F"
+                fontColor="#727A8F"
+                borderColor="transparent"
+                backgroundColor="rgba(142,142,147,0.12)"
+
+                onChangeText={() => {}}
+              />
+
+              {/* onChangeText={searchText => this.filterClients(searchText)} */}
             </View>}
-          {this.props.clientsSearchState.showWalkIn &&
-            <View style={styles.walkinBar}>
-              <View style={styles.walkinBarIconContainer}>
-                <View style={styles.walkinBarRound}>
-                  <Image
-                    style={styles.walkinBarIcon}
-                    source={require('../../assets/images/clientsSearch/icon_walkin.png')}
-                  />
-                </View>
-              </View>
 
-              <View style={styles.walkinBarData}>
-
-                <TouchableHighlight
-                  style={styles.newClientButton}
-                  underlayColor="transparent"
-                  onPress={() => {}}
-                >
-
-                  <WordHighlighter
-                    highlight={this.props.clientsSearchState.searchText}
-                    highlightStyle={styles.highlightStyle}
-                    style={styles.walkinBarText}
-                  >Walkin
-                  </WordHighlighter>
-
-                </TouchableHighlight>
-
-              </View>
-            </View>
-           }
-
-          { (this.props.clientsSearchState.prepared.length > 0 || !this.props.clientsSearchState.showWalkIn) &&
+          { (this.props.clientsSearchState.prepared.length > 0) &&
 
             <ClientList
               listItem={ClientSearchListItem}

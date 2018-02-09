@@ -22,9 +22,7 @@ import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
-import ChangeServicesScreen from '../screens/servicesScreen';
 
-import HeaderMiddle from '../components/HeaderMiddle';
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
@@ -105,20 +103,13 @@ const QueueStackNavigator = StackNavigator(
                       justifyContent: 'center',
                       }}
             >
-              <Image
-                style={{
-                          width: 15,
-                          height: 15,
-                        }}
-                source={require('../assets/images/clientsSearch/icon_arrow_left_w.png')}
-              />
               <Text style={{
                         color: '#FFFFFF',
-                        fontSize: 16,
-                        fontFamily: 'OpenSans-Bold',
+                        fontSize: 14,
+                        fontFamily: 'Roboto',
                         backgroundColor: 'transparent',
                         }}
-              >Back
+              >Cancel
               </Text>
             </View>
           ),
@@ -126,28 +117,28 @@ const QueueStackNavigator = StackNavigator(
         headerRight: HeaderLateral({
           handlePress: () => console.log('pressed right header button'),
           button: (
-            <Text style={{
-                      color: '#FFFFFF',
-                      fontSize: 16,
-                      width: 50,
-                      fontFamily: 'OpenSans-Bold',
-                      backgroundColor: 'transparent',
-                      alignSelf: 'center',
+            <View style={{
+                      flex: 1,
+                      flexDirection: 'row',
                       alignItems: 'center',
-                    }}
-            >New Client
-            </Text>),
+                      justifyContent: 'center',
+                      }}
+            >
+              <Text style={{
+                        color: '#FFFFFF',
+                        fontSize: 14,
+                        fontFamily: 'Roboto',
+                        backgroundColor: 'transparent',
+                        }}
+              >Add
+              </Text>
+            </View>
+          ),
         }),
         header: props => (
           <ImageHeader
             {...props}
             params={rootProps.navigation.state.params}
-            searchBar={searchProps => (
-              <SearchBar
-                {...searchProps}
-                placeHolder="Search by name, phone or email"
-                searchIconPosition="right"
-              />)}
           />),
       }),
     },

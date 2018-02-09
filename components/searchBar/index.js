@@ -27,7 +27,7 @@ export default class SearchBar extends Component {
         <View style={styles.searchBar}>
           <View style={styles.searchBarItems}>
             {this.props.searchIconPosition === 'left' &&
-              <Image style={styles.searchIconLeft} source={require('../../assets/images/clientsSearch/icon_search_w.png')} />
+              <Image style={styles.searchIconLeft} source={require('../../assets/images/icons/icon_search_w.png')} />
             }
             <TextInput
               style={styles.searchBarInput}
@@ -37,7 +37,7 @@ export default class SearchBar extends Component {
               value={this.state.searchText}
             />
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
-              <Image style={styles.searchIconRight} source={require('../../assets/images/clientsSearch/icon_search_w.png')} />
+              <Image style={styles.searchIconRight} source={require('../../assets/images/icons/icon_search_w.png')} />
             }
 
 
@@ -52,7 +52,7 @@ export default class SearchBar extends Component {
                       this.handleChange('');
                     }}
                 >
-                  <Image style={styles.crossIcon} source={require('../../assets/images/clientsSearch/icon_cross.png')} />
+                  <Image style={styles.crossIcon} source={require('../../assets/images/icons/icon_cross.png')} />
                 </TouchableHighlight>
 
               }
