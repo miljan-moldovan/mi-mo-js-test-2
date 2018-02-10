@@ -7,28 +7,22 @@ const WalkInHeader = props => HeaderMiddle({
   title: (
     <Text
       style={{
-      fontFamily: 'OpenSans-Regular',
-      color: '#fff',
-      fontSize: 20,
-    }}
+        fontFamily: 'Roboto',
+        color: '#fff',
+        fontSize: 17,
+      }}
     >
-    Walkin
+      WalkIn
     </Text>),
   subTitle: (
     <Text
       style={{
-      fontFamily: 'OpenSans-Regular',
-      color: '#fff',
-      fontSize: 12,
-    }}
+        fontFamily: 'Roboto',
+        color: '#fff',
+        fontSize: 10,
+      }}
     >
-    Est wait time
-      <Text style={{
-      fontFamily: 'OpenSans-Bold',
-    }}
-      >
-        { ` ${props.walkInState.estimatedWaitTime} min` }
-      </Text>
+      { `${props.walkInState.estimatedWaitTime}m Est. Wait` }
     </Text>
   ),
 });
