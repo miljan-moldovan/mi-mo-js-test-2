@@ -1,6 +1,7 @@
 import walkInActions, {
   SET_ESTIMATED_TIME,
   SET_CURRENT_STEP,
+  SELECTED_CLIENT,
   SELECTED_SERVICE,
   SELECTED_PROVIDER,
   SELECTED_PROMOTION,
@@ -9,6 +10,7 @@ import walkInActions, {
 const initialState = {
   estimatedWaitTime: 0,
   currentStep: 1,
+  selectedClient: null,
   selectedService: null,
   selectedProvider: null,
   selectedPromotion: null,
@@ -28,6 +30,12 @@ export default function walkInReducer(state = initialState, action) {
         ...state,
         error: null,
         currentStep: data.step,
+      };
+    case SELECTED_CLIENT:
+      return {
+        ...state,
+        error: null,
+        selectedClient: data.client,
       };
     case SELECTED_SERVICE:
       return {

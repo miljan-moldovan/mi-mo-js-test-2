@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
     paddingBottom: 4.5,
     borderBottomWidth: 1,
     borderBottomColor: '#C0C1C6',
+    borderTopWidth: 1,
+    borderTopColor: '#C0C1C6',
   },
   titleText: {
     fontFamily: 'Roboto',
@@ -208,15 +210,15 @@ class WalkInScreen extends Component {
     }
   }
 
-  handlePressPromo = () => {
+  handlePressClient = () => {
     const { navigate } = this.props.navigation;
-    const { selectedPromotion } = this.props.walkInState;
+    const { selectedClient } = this.props.walkInState;
 
     this.props.walkInActions.setCurrentStep(4);
-    if (selectedPromotion) {
-      navigate('Promotions', { actionType: 'update' });
+    if (selectedClient) {
+      navigate('ClientsSearch', { actionType: 'update' });
     } else {
-      navigate('Promotions', { actionType: 'update' });
+      navigate('ClientsSearch', { actionType: 'update' });
     }
   }
 
@@ -226,7 +228,7 @@ class WalkInScreen extends Component {
         <Text style={styles.placeholderText}>Walk-in Client?</Text>
         <Switch onChange={() => { this.setState({ isWalkin: !this.state.isWalkin }); }} value={this.state.isWalkin} />
       </View>
-      {this.state.isWalkin ? (
+      {!this.state.isWalkin ? (
         <View style={{ alignSelf: 'stretch' }}>
           <Divider />
           <TouchableOpacity style={{ alignSelf: 'stretch' }} onPress={this.handlePressClient}>
@@ -323,7 +325,6 @@ class WalkInScreen extends Component {
         {this.renderClientGroup()}
         {this.renderTitle('SERVICE')}
         {this.renderServiceGroup()}
-        <Divider />
         {this.renderTitle('PROVIDER')}
         {this.renderProviderGroup()}
       </View>

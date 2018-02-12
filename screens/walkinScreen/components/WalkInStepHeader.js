@@ -22,19 +22,19 @@ const WalkInStepHeader = props => HeaderMiddle({
             : `${WalkInSteps.new[props.walkInState.currentStep]}`}
     </Text>
   ),
-  subTitle: (
-    <Text
-      style={{
-          fontFamily: 'OpenSans-Regular',
-          color: '#fff',
-          fontSize: 12,
-        }}
-    >{props.rootProps.navigation.state.params !== undefined &&
-      props.rootProps.navigation.state.params.actionType === 'update'
-         ? 'WalkIn Service'
-         : `Walkin Service - ${props.walkInState.currentStep} of 4`}
-    </Text>
-  ),
+  // subTitle: (
+  //   <Text
+  //     style={{
+  //         fontFamily: 'OpenSans-Regular',
+  //         color: '#fff',
+  //         fontSize: 12,
+  //       }}
+  //   >{props.rootProps.navigation.state.params !== undefined &&
+  //     props.rootProps.navigation.state.params.actionType === 'update'
+  //        ? 'WalkIn Service'
+  //        : `Walkin Service - ${props.walkInState.currentStep} of 4`}
+  //   </Text>
+  // ),
 });
 
 const mapStateToProps = state => ({
