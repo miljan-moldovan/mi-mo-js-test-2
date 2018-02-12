@@ -294,6 +294,7 @@ class ClientsScreen extends React.Component {
 
 
         <SalonSectionsModal
+          showTail
           key="salonSectionsModalClientScreen"
           isVisible={this.props.clientsState.showFilterModal}
           closeModal={() => this.hideFilterModal()}
@@ -321,7 +322,7 @@ class ClientsScreen extends React.Component {
             clients={this.props.clientsState.prepared}
             style={styles.clientListContainer}
             showLateralList={this.props.clientsState.showLateralList}
-            onPressItem={(text) => { alert(text); }}
+            onPressItem={(client) => { this.props.navigation.navigate('ClientDetails'); }}
           />
         }
 

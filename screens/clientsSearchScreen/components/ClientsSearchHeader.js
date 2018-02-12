@@ -7,12 +7,13 @@ const ClientsSearchHeader = props => HeaderMiddle({
   title: (
     <Text
       style={{
-      fontFamily: 'OpenSans-Regular',
+      fontFamily: 'Roboto',
       color: '#fff',
-      fontSize: 20,
+      fontSize: 17,
+      fontWeight: '700',
     }}
     >
-      Search Clients
+      Choose Client
     </Text>),
 });
 

@@ -31,12 +31,6 @@ export default function walkInReducer(state = initialState, action) {
         error: null,
         currentStep: data.step,
       };
-    case SELECTED_CLIENT:
-      return {
-        ...state,
-        error: null,
-        selectedClient: data.client,
-      };
     case SELECTED_SERVICE:
       return {
         ...state,
@@ -54,6 +48,12 @@ export default function walkInReducer(state = initialState, action) {
         ...state,
         error: null,
         selectedPromotion: data.promotion,
+      };
+    case SELECTED_CLIENT:
+      return {
+        ...state,
+        error: null,
+        selectedClient: data.client,
       };
     default:
       return state;

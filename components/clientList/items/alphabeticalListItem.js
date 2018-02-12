@@ -16,7 +16,7 @@ import WordHighlighter from '../../wordHighlighter';
 const styles = StyleSheet.create({
   highlightStyle: {
     color: '#000',
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
   },
   container: {
     flex: 2,
@@ -26,19 +26,19 @@ const styles = StyleSheet.create({
   clientName: {
     color: '#1D1D26',
     fontSize: 18,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   clientNameAppoint: {
     color: '#1D1D26',
     fontSize: 18,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   clientEmail: {
     color: '#1D1D26',
     fontSize: 12,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   avatarContainer: {
@@ -49,8 +49,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   avatar: {
-
-
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
   },
   dataContainer: {
     // marginLeft: 20,
@@ -77,19 +79,19 @@ const styles = StyleSheet.create({
   daysCount: {
     color: '#1D1D26',
     fontSize: 30,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   daysMessage: {
     color: '#1D1D26',
     fontSize: 10,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   daysMessageBottom: {
     color: '#1D1D26',
     fontSize: 8,
-    fontFamily: 'OpenSans-Light',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   pointerContainer: {
@@ -114,7 +116,7 @@ const styles = StyleSheet.create({
   clientBirthdayText: {
     color: '#3078A4',
     fontSize: 9,
-    fontFamily: 'OpenSans-Light',
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'center',
   },
@@ -153,11 +155,12 @@ class AlphabeticalListItem extends React.PureComponent {
   render() {
     return (
       <TouchableHighlight
+        key={`${this.state.client.id}`}
         style={styles.container}
         underlayColor="transparent"
-        onPress={() => { this.state.onPress(this.state.client.name); }}
+        onPress={() => { this.state.onPress(this.state.client); }}
       >
-        <View key={`${this.state.client.id}`} style={styles.container}>
+        <View style={styles.container}>
 
           <View style={styles.pointerContainer}>
             {this.state.client.nextAppointment && <View style={styles.pointer} />}
@@ -167,10 +170,9 @@ class AlphabeticalListItem extends React.PureComponent {
             {
               this.state.client.avatar &&
               <SalonAvatar
-                key={this.state.client.id}
                 wrapperStyle={styles.avatar}
                 width={44}
-                image={this.state.client.avatar}
+                image="https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742"
               />
             }
           </View>

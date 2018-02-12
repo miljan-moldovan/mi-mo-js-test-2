@@ -3,10 +3,10 @@ import { Text, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   text: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 12,
-    fontFamily: 'OpenSans-Bold',
+    color: '#110A24',
+    fontSize: 17,
+    marginLeft: 20,
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
 });

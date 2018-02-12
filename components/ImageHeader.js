@@ -7,6 +7,7 @@ import backgroundImage from '../assets/images/login/blue.png';
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
+    backgroundColor: '#115ECD',
   },
 });
 const ImageHeader = (props) => {
@@ -18,10 +19,6 @@ const ImageHeader = (props) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        style={StyleSheet.absoluteFillObject}
-        source={backgroundImage}
-      />
       <Header {...headerProps} />
       {props.searchBar ? props.searchBar(searchParams) : null }
     </View>

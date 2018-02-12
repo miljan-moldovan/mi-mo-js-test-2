@@ -10,6 +10,7 @@ import {
 
 import rightArrow from '../../assets/images/walkinScreen/icon_arrow_right_xs.png';
 import serchImage from '../../assets/images/walkinScreen/icon_search_w.png';
+import infoImage from '../../assets/images/icons/icon_plus.png';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonIcon from '../../components/SalonIcon';
 
@@ -54,6 +55,18 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1D1D2626',
     borderBottomWidth: 1,
     flexDirection: 'row',
+  },
+
+  listClientContainer: {
+    flex: 10,
+    backgroundColor: '#fff',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderBottomColor: '#1D1D2626',
+    borderBottomWidth: 1,
+    flexDirection: 'column',
   },
   btnContainer: {
     flex: 10,
@@ -233,17 +246,17 @@ class WalkInScreen extends Component {
           <Divider />
           <TouchableOpacity style={{ alignSelf: 'stretch' }} onPress={this.handlePressClient}>
             <View style={styles.inputSection}>
-              <Text style={styles.placeholderText}>Name</Text>
+              <Text style={this.props.walkInState.selectedClient === null ? styles.placeholderText : styles.inputText}>{this.props.walkInState.selectedClient === null ? 'Name' : this.props.walkInState.selectedClient.name}</Text>
               <SalonIcon size={15} icon="caretRight" />
             </View>
           </TouchableOpacity>
           <Divider />
           <View style={styles.inputSection}>
-            <Text style={styles.placeholderText}>Email</Text>
+            <Text style={this.props.walkInState.selectedClient === null ? styles.placeholderText : styles.inputText}>{this.props.walkInState.selectedClient === null ? 'Email' : this.props.walkInState.selectedClient.email}</Text>
           </View>
           <Divider />
           <View style={[styles.inputSection, { borderBottomWidth: 0 }]}>
-            <Text style={styles.placeholderText}>Phone number</Text>
+            <Text style={this.props.walkInState.selectedClient === null ? styles.placeholderText : styles.inputText}>{this.props.walkInState.selectedClient === null ? 'Phone number' : this.props.walkInState.selectedClient.phone}</Text>
           </View>
         </View>
       ) : (
@@ -276,6 +289,11 @@ class WalkInScreen extends Component {
       </InputGroup>
     );
   }
+  renderTitle = title => (
+    <View style={styles.titleContainer}>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
 
   renderProviderGroup = () => {
     const { selectedProvider } = this.props.walkInState;
@@ -311,17 +329,79 @@ class WalkInScreen extends Component {
     );
   }
 
-  renderTitle = title => (
-    <View style={styles.titleContainer}>
-      <Text style={styles.titleText}>{title}</Text>
-    </View>
-  );
+  renderClientButton = () => {
+    if (this.props.walkInState.selectedClient !== null) {
+      return (
+        <View style={{ flex: 30, flexDirection: 'column' }}>
+          <View style={styles.listClientContainer}>
+            <Text style={styles.subTitle}>Client</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 10, flexDirection: 'row' }}>
+                <Text style={styles.textInput}>{this.props.walkInState.selectedClient.name}</Text>
+                <Image style={{ marginHorizontal: 10 }} source={infoImage} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity onPress={this.handlePressClient}>
+                  <Image style={styles.searchImage} source={serchImage} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          <View style={styles.listClientContainer}>
+            <Text style={styles.subTitle}>Email</Text>
+            <Text style={styles.textInput}>{this.props.walkInState.selectedClient.email}</Text>
+          </View>
+          <View style={styles.listClientContainer}>
+            <Text style={styles.subTitle}>Phone</Text>
+            <Text style={styles.textInput}>{this.props.walkInState.selectedClient.phone}</Text>
+          </View>
+        </View>
+      );
+    }
 
+    return (
+      <View style={{ flex: 30, flexDirection: 'column' }}>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.textInput}>Client</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => {
+              const { navigate } = this.props.navigation;
+
+              this.props.walkInActions.setCurrentStep(1);
+              navigate('ClientsSearch');
+            }}
+            >
+              <Image style={styles.searchImage} source={serchImage} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.textInput}>Email</Text>
+        </View>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.textInput}>Phone</Text>
+        </View>
+      </View>
+
+    );
+  }
+
+  handlePressClient = () => {
+    const { navigate } = this.props.navigation;
+    const { selectedClient } = this.props.walkInState;
+    this.props.walkInActions.setCurrentStep(3);
+
+    if (selectedClient) {
+      navigate('ClientsSearch', { actionType: 'update' });
+    } else {
+      navigate('ClientsSearch');
+    }
+  }
 
   render() {
     return (
       <View style={styles.container}>
-        {this.renderTitle('CLIENT')}
+        {this.renderTitle('CLIENT INFO')}
         {this.renderClientGroup()}
         {this.renderTitle('SERVICE')}
         {this.renderServiceGroup()}
