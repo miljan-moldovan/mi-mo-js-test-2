@@ -36,6 +36,8 @@ const initialLayout = {
   width: Dimensions.get('window').width,
 };
 
+
+
 class QueueScreen extends React.Component {
   static navigationOptions = {
     drawerLabel: props => (
@@ -49,8 +51,8 @@ class QueueScreen extends React.Component {
   state = {
     refreshing: false,
     routes: [
-      { key: WAITING, title: 'SCHEDULE/WAITING' },
-      { key: SERVICED, title: 'BEING SERVICED' },
+      { key: WAITING, title: 'Waiting' },
+      { key: SERVICED, title: 'In Service' },
     ],
     index: 0,
     isWalkoutVisible: false,
@@ -67,7 +69,7 @@ class QueueScreen extends React.Component {
     setTimeout(() => this.setState({ refreshing: false }), 1000);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, index }) =>
+  _renderLabel = ({ position, navigationState }) => ({ route, focused}) =>
     // const inputRange = navigationState.routes.map((x, i) => i);
     // const outputRange = inputRange.map(
     //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
@@ -76,19 +78,58 @@ class QueueScreen extends React.Component {
     //   inputRange,
     //   outputRange,
     // });
-    (
-      <Text style={styles.tabLabel}>
-        {route.title}
-      </Text>
-    )
-  ;
+    // {
+    //   console.log('*** _renderLabel', route.title, focused);
+    //   return
+      (
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          opacity: 1
+        }}>
+          <Text style={{
+            fontFamily: 'Roboto-Medium',
+            fontSize: 12,
+            color: focused ? '#115ECD' : 'white'
+          }}>
+            {route.title}
+          </Text>
+        </View>
+      );
+    // }
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle={{ backgroundColor: 'transparent', height: 50 }}
-      style={{ backgroundColor: 'transparent', height: 50 }}
+      tabStyle={{
+        height: 33,
+        width: 120,
+        alignItems: 'center',
+        justifyContent: 'center'
+
+      }}
+      style={{
+        height: 34,
+        width: 240,
+        borderWidth: 1,
+        borderColor: 'rgba(8,46,102,0.5)',
+        borderRadius: 16,
+        backgroundColor: '#115ECD',
+        marginLeft: 15,
+        marginBottom: 9
+       }}
       renderLabel={this._renderLabel(props)}
-      indicatorStyle={{ backgroundColor: '#80BBDF', height: 6 }}
+      indicatorStyle={{
+        borderWidth: 1,
+        borderColor: 'white',
+        borderRadius: 16,
+        backgroundColor: 'white',
+        height: 33,
+        shadowColor: '#000',
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.6,
+        shadowRadius: 1,
+       }}
     />
   )
 
@@ -135,13 +176,12 @@ class QueueScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')}
-        />
-
         <TabViewAnimated
-          style={{ flex: 1, marginTop: 10 }}
+          style={{
+            flex: 1,
+            backgroundColor: '#115ECD',
+            borderWidth: 0,
+          }}
           navigationState={this.state}
           renderScene={this._renderScene}
           renderHeader={this._renderBar}
@@ -149,9 +189,12 @@ class QueueScreen extends React.Component {
           initialLayout={initialLayout}
           swipeEnabled={false}
         />
-        <FloatingButton handlePress={this._handleWalkInPress}>
+        <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+          <Text style={styles.walkinButtonText}>Walk-in</Text>
+        </TouchableOpacity>
+        {/* <FloatingButton handlePress={this._handleWalkInPress}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
-        </FloatingButton>
+        </FloatingButton> */}
         <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
         </FloatingButton>
@@ -317,4 +360,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'OpenSans-Regular',
   },
+  walkinButton: {
+    position: 'absolute',
+    right: 12,
+    top: 0,
+    width: 92,
+    borderWidth: 1,
+    borderColor: '#1DBF12',
+    borderRadius: 16,
+    backgroundColor: '#1DBF12',
+    height: 33,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+  },
+  walkinButtonText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 12,
+    color: 'white',
+  }
+
 });
