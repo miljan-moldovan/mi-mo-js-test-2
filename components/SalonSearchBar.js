@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Image, Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-native';
+import { Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonIcon from '../components/SalonIcon';
 
 import searchIcon from '../assets/images/icons/icon_search_w.png';
 import crossIcon from '../assets/images/icons/icon_cross.png';
@@ -102,11 +103,13 @@ class SalonSearchBar extends Component {
         >
           <View style={styles.searchBarItems}>
             {this.props.searchIconPosition === 'left' &&
-              <Image
-                style={[styles.searchIconLeft,
-                { tintColor: this.props.iconsColor }]}
-                source={searchIcon}
-              />
+
+            <SalonIcon
+              size={16}
+              icon="search"
+              style={[styles.searchIconLeft,
+              { tintColor: this.props.iconsColor }]}
+            />
             }
             <TextInput
               style={[styles.searchBarInput, { color: this.props.fontColor }]}
@@ -116,10 +119,12 @@ class SalonSearchBar extends Component {
               value={this.state.searchText}
             />
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
-              <Image
+
+              <SalonIcon
+                size={15}
+                icon="caretRight"
                 style={[styles.searchIconRight,
-                { tintColor: this.props.iconsColor }]}
-                source={searchIcon}
+              { tintColor: this.props.iconsColor }]}
               />
             }
 
@@ -135,10 +140,12 @@ class SalonSearchBar extends Component {
                       this.handleChange('');
                     }}
                 >
-                  <Image
+
+                  <SalonIcon
+                    size={16}
+                    icon="cross"
                     style={[styles.crossIcon,
                     { tintColor: this.props.iconsColor }]}
-                    source={crossIcon}
                   />
                 </TouchableHighlight>
 

@@ -7,8 +7,6 @@ import {
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-// import ClientSearchListItem from '../../components/clientList/clientSearchListItem';
-// import AlphabeticalHeader from '../../components/clientList/alphabeticalHeader';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 

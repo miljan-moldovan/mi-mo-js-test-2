@@ -7,7 +7,6 @@ import {
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 
 const mockDataClients = require('../../mockData/clients.json');

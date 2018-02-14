@@ -13,6 +13,7 @@ const icons = {
   plus: require('../assets/images/icons/icon_plus_quantity.png'),
   search: require('../assets/images/icons/icon_search_w.png'),
   walkIn: require('../assets/images/icons/icon_walkin.png'),
+  cross: require('../assets/images/icons/icon_cross.png'),
 };
 
 const SalonIcon = props => (
