@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux';
-import WordHighlighter from '../../wordHighlighter';
+import WordHighlighter from '../wordHighlighter';
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
-class ClientSearchListItem extends React.PureComponent {
+class ClientListItem extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -106,4 +106,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(ClientSearchListItem);
+export default connect(mapStateToProps)(ClientListItem);

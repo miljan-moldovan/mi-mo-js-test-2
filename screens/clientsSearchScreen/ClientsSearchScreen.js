@@ -7,9 +7,8 @@ import {
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-import ClientSearchListItem from '../../components/clientList/items/clientSearchListItem';
-import AlphabeticalHeader from '../../components/clientList/headers/alphabeticalHeader';
-import PrepareClients from '../../components/clientList/prepareClients';
+// import ClientSearchListItem from '../../components/clientList/clientSearchListItem';
+// import AlphabeticalHeader from '../../components/clientList/alphabeticalHeader';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 
@@ -172,27 +171,37 @@ class ClientsSearchScreen extends React.Component {
     ),
   };
 
+
+  static flexFilter(list, info) {
+    let matchesFilter = [];
+    const matches = [];
+
+    matchesFilter = function match(item) {
+      let count = 0;
+      for (let n = 0; n < info.length; n += 1) {
+        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+          count += 1;
+        }
+      }
+      return count > 0;
+    };
+
+    for (let i = 0; i < list.length; i += 1) {
+      if (matchesFilter(list[i])) {
+        matches.push(list[i]);
+      }
+    }
+
+    return matches;
+  }
+
   constructor(props) {
     super(props);
 
-    const sortTypes = PrepareClients.getSortTypes();
-    const filterTypes = PrepareClients.getFilterTypes();
-    const prepareClients = PrepareClients.applyFilter(
-      mockDataClients,
-      [sortTypes[0], filterTypes[0]],
-    );
-
-    this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
-    this.props.clientsSearchActions.setClients(prepareClients.clients);
+    this.props.clientsSearchActions.setClients(mockDataClients);
+    this.props.clientsSearchActions.setFilteredClients(mockDataClients);
     this.props.clientsSearchActions.setSearchText('');
     this.props.clientsSearchActions.setSelectedFilter(0);
-  }
-
-  componentWillMount() {
-    // this.props.navigation.setParams({
-    //   onChangeText: searchText => this.filterClients(searchText),
-    // });
-    this.props.clientsSearchActions.setFilteredClients(this.props.clientsSearchState.clients);
   }
 
   filterClients(searchText) {
@@ -201,32 +210,18 @@ class ClientsSearchScreen extends React.Component {
         { Field: 'name', Values: [searchText.toLowerCase()] },
         { Field: 'email', Values: [searchText.toLowerCase()] },
       ];
-      const filtered = PrepareClients.flexFilter(this.props.clientsSearchState.clients, criteria);
 
-      const sortTypes = PrepareClients.getSortTypes();
-      const filterTypes = PrepareClients.getFilterTypes();
-      const prepareClients = PrepareClients.applyFilter(
-        filtered,
-        [sortTypes[0], filterTypes[0]],
-      );
+      const filtered = ClientsSearchScreen.flexFilter(this.props.clientsSearchState.clients, criteria);
 
       this.props.clientsSearchActions.setSearchText(searchText);
       this.props.clientsSearchActions.setFilteredClients(filtered);
-      this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
     } else {
-      const sortTypes = PrepareClients.getSortTypes();
-      const filterTypes = PrepareClients.getFilterTypes();
-      const prepareClients = PrepareClients.applyFilter(
-        this.props.clientsSearchState.clients,
-        [sortTypes[0], filterTypes[0]],
-      );
       this.props.clientsSearchActions.setFilteredClients(this.props.clientsSearchState.clients);
       this.props.clientsSearchActions.setSearchText(searchText);
-      this.props.clientsSearchActions.setPreparedClients(prepareClients.prepared);
     }
   }
 
-  handleGenderChange=(ev, selectedIndex) => {
+  handleTypeChange=(ev, selectedIndex) => {
     this.props.clientsSearchActions.setSelectedFilter(selectedIndex);
   }
 
@@ -234,7 +229,7 @@ class ClientsSearchScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
-          { (this.props.clientsSearchState.prepared.length > 0) &&
+          { (this.props.clientsSearchState.clients.length > 0) &&
             <View style={styles.topSearchBar}>
               <SalonSearchBar
                 placeHolderText="Search"
@@ -243,7 +238,7 @@ class ClientsSearchScreen extends React.Component {
                 iconsColor="#727A8F"
                 fontColor="#727A8F"
                 borderColor="transparent"
-                backgroundColor="rgba(142,142,147,0.12)"
+                backgroundColor="rgba(142, 142, 147, 0.24)"
                 onChangeText={searchText => this.filterClients(searchText)}
               />
             </View>}
@@ -255,21 +250,19 @@ class ClientsSearchScreen extends React.Component {
                 selectedColor="#115ECD"
                 selectedTextColor="#FFFFFF"
                 unSelectedTextColor="#115ECD"
-                onItemPress={this.handleGenderChange}
+                onItemPress={this.handleTypeChange}
                 selectedIndex={this.props.clientsSearchState.selectedFilter}
               />
 
             </View>
           </View>
 
-          { (this.props.clientsSearchState.prepared.length > 0) &&
+          { (this.props.clientsSearchState.filtered.length > 0) &&
 
             <ClientList
-              listItem={ClientSearchListItem}
-              headerItem={AlphabeticalHeader}
               boldWords={this.props.clientsSearchState.searchText}
               style={styles.clientListContainer}
-              clients={this.props.clientsSearchState.prepared}
+              clients={this.props.clientsSearchState.filtered}
               showLateralList
               onPressItem={(client) => {
                   const { navigate } = this.props.navigation;

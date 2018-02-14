@@ -19,7 +19,7 @@ const ImageHeader = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header {...headerProps} />
+      {!props.hideHeader && <Header {...headerProps} /> }
       {props.searchBar ? props.searchBar(searchParams) : null }
     </View>
   );

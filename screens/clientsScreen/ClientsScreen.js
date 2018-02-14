@@ -2,22 +2,23 @@
 import React from 'react';
 import {
   StyleSheet,
-  View, Text,
-  Image,
+  View,
 } from 'react-native';
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-import PrepareClients from '../../components/clientList/prepareClients';
-import FloatingButton from '../../components/FloatingButton';
-import SalonSectionsModal from '../../components/modals/SalonSectionsModal';
+import SalonSearchBar from '../../components/SalonSearchBar';
+import SalonFlatPicker from '../../components/SalonFlatPicker';
 
 const mockDataClients = require('../../mockData/clients.json');
+
+const filterType = ['This store', 'All stores'];
 
 const styles = StyleSheet.create({
   highlightStyle: {
     color: '#000',
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
   },
   container: {
     flex: 1,
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   title: {
     color: 'white',
     fontSize: 20,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto',
     padding: 20,
     marginTop: 20,
     alignSelf: 'center',
@@ -86,14 +87,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
   },
   backText: {
     marginTop: 20,
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
   },
   newClientContainer: {
@@ -106,7 +109,8 @@ const styles = StyleSheet.create({
     // marginTop: 20,
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
     alignSelf: 'center',
     alignItems: 'center',
@@ -120,39 +124,42 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  seachBar: {
-    flexDirection: 'row',
-    flex: 4,
-    marginHorizontal: 10,
-    marginVertical: 5,
-    alignItems: 'center',
-  },
   topSearchBar: {
-    flex: 0.13,
+    flex: 0.1,
     flexDirection: 'column',
-    backgroundColor: '#EFEFEF',
+    backgroundColor: '#F8F8F8',
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    borderBottomWidth: 1 / 2,
-    borderBottomColor: 'rgba(0,0,0,0.2)',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFFFFF',
   },
   topSearchBarText: {
     color: '#1D1D26',
     fontSize: 12,
     marginLeft: 30,
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
     backgroundColor: 'transparent',
   },
-  newClientIcon: {
-    height: 25,
-    width: 21,
+  filterBarContainer: {
+    backgroundColor: '#115ECD',
+    flex: 0.1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterBar: {
+    flex: 1,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
 
 class ClientsScreen extends React.Component {
   static navigationOptions = {
-
     drawerLabel: props => (
       <SideMenuItem
         {...props}
@@ -163,57 +170,43 @@ class ClientsScreen extends React.Component {
   };
 
 
-  static renderModalHeader(section) {
-    return (
-      <View style={styles.modalHeader}>
-        <Text style={styles.modalHeaderText}>
-          {section.title.toUpperCase()}
-        </Text>
-      </View>);
-  }
+  static flexFilter(list, info) {
+    let matchesFilter = [];
+    const matches = [];
 
+    matchesFilter = function match(item) {
+      let count = 0;
+      for (let n = 0; n < info.length; n += 1) {
+        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+          count += 1;
+        }
+      }
+      return count > 0;
+    };
+
+    for (let i = 0; i < list.length; i += 1) {
+      if (matchesFilter(list[i])) {
+        matches.push(list[i]);
+      }
+    }
+
+    return matches;
+  }
 
   constructor(props) {
     super(props);
-    const sortTypes = PrepareClients.getSortTypes();
-    const filterTypes = PrepareClients.getFilterTypes();
-    const prepareClients = PrepareClients.applyFilter(
-      mockDataClients,
-      [sortTypes[0], filterTypes[0]],
-    );
 
-    this.props.clientsActions.setSubtitle(`${mockDataClients.length} clients`);
-    this.props.clientsActions.setPreparedClients(prepareClients.prepared);
-    this.props.clientsActions.setClients(prepareClients.clients);
-    this.props.clientsActions.setListItem(prepareClients.listItem);
-    this.props.clientsActions.setHeaderItem(prepareClients.headerItem);
-    this.props.clientsActions.setShowLateralList(prepareClients.showLateralList);
+    this.props.clientsActions.setClients(mockDataClients);
+    this.props.clientsActions.setFilteredClients(mockDataClients);
     this.props.clientsActions.setSearchText('');
-    this.props.clientsActions.setShowFilterModal(false);
-    this.props.clientsActions.setSort(sortTypes[0]);
-    this.props.clientsActions.setFilter(filterTypes[0]);
-    this.props.clientsActions.setSortTypes(sortTypes);
-    this.props.clientsActions.setFilterTypes(filterTypes);
+    this.props.clientsActions.setSelectedFilter(0);
   }
+
 
   componentWillMount() {
     this.props.navigation.setParams({
       onChangeText: searchText => this.filterClients(searchText),
-      handlePress: () => this.showFilterModal(),
     });
-
-    this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
-  }
-
-  componentDidMount() {
-  }
-
-  showFilterModal() {
-    this.props.clientsActions.setShowFilterModal(true);
-  }
-
-  hideFilterModal() {
-    this.props.clientsActions.setShowFilterModal(false);
   }
 
   filterClients(searchText) {
@@ -223,116 +216,60 @@ class ClientsScreen extends React.Component {
         { Field: 'email', Values: [searchText.toLowerCase()] },
       ];
 
-      const filtered = PrepareClients.flexFilter(this.props.clientsState.clients, criteria);
+      const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
 
-      const prepareClients = PrepareClients.applyFilter(
-        filtered,
-        [this.props.clientsState.selectedFilter, this.props.clientsState.selectedSort],
-      );
-
-      this.props.clientsActions.setFilteredClients(filtered);
       this.props.clientsActions.setSearchText(searchText);
-      this.props.clientsActions.setPreparedClients(prepareClients.prepared);
+      this.props.clientsActions.setFilteredClients(filtered);
     } else {
-      const prepareClients = PrepareClients.applyFilter(
-        this.props.clientsState.clients,
-        [this.props.clientsState.selectedFilter, this.props.clientsState.selectedSort],
-      );
-
       this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
       this.props.clientsActions.setSearchText(searchText);
-      this.props.clientsActions.setPreparedClients(prepareClients.prepared);
     }
   }
 
-  handleNewClientPress() {
-    return this;
-  }
-
-  selectFilter(item) {
-    if (item.type === 'sort') {
-      this.props.clientsActions.setSubtitle(`Sorted by: ${item.name}`);
-
-      this.props.clientsActions.setSort(item);
-
-      const prepareClients = PrepareClients.applyFilter(
-        mockDataClients,
-        [this.props.clientsState.selectedFilter, item],
-      );
-
-      this.props.clientsActions.setFilteredClients(prepareClients.clients);
-      this.props.clientsActions.setPreparedClients(prepareClients.prepared);
-      this.props.clientsActions.setListItem(prepareClients.listItem);
-      this.props.clientsActions.setHeaderItem(prepareClients.headerItem);
-      this.props.clientsActions.setShowLateralList(prepareClients.showLateralList);
-    } else if (item.type === 'userType') {
-      if (this.props.clientsState.selectedFilter.id === item.id) {
-        this.props.clientsActions.setFilter({});
-      } else {
-        this.props.clientsActions.setFilter(item);
-      }
-
-      const prepareClients = PrepareClients.applyFilter(
-        mockDataClients,
-        [item, this.props.clientsState.selectedSort],
-      );
-
-      this.props.clientsActions.setFilteredClients(prepareClients.clients);
-      this.props.clientsActions.setPreparedClients(prepareClients.prepared);
-      this.props.clientsActions.setListItem(prepareClients.listItem);
-      this.props.clientsActions.setHeaderItem(prepareClients.headerItem);
-      this.props.clientsActions.setShowLateralList(prepareClients.showLateralList);
-    }
-
-
-    this.hideFilterModal();
+  handleTypeChange=(ev, selectedIndex) => {
+    this.props.clientsActions.setSelectedFilter(selectedIndex);
   }
 
   render() {
     return (
       <View style={styles.container}>
-
-
-        <SalonSectionsModal
-          showTail
-          key="salonSectionsModalClientScreen"
-          isVisible={this.props.clientsState.showFilterModal}
-          closeModal={() => this.hideFilterModal()}
-          onPressItem={item => this.selectFilter(item)}
-          sections={[
-          {
-              data: this.props.clientsState.sortTypes,
-              title: 'SORT BY',
-          },
-          {
-              data: this.props.clientsState.filterTypes,
-              title: '',
-          },
-        ]}
-        />
-
         <View style={styles.clientsList}>
+          <View style={styles.filterBarContainer}>
 
-          { this.props.clientsState.prepared.length > 0 &&
+            <View style={styles.filterBar}>
+              <SalonFlatPicker
+                dataSource={filterType}
+                selectedColor="#FFFFFF"
+                selectedTextColor="#115ECD"
+                unSelectedTextColor="#FFFFFF"
+                onItemPress={this.handleTypeChange}
+                selectedIndex={this.props.clientsState.selectedFilter}
+              />
 
-          <ClientList
-            listItem={this.props.clientsState.listItem}
-            headerItem={this.props.clientsState.headerItem}
-            boldWords={this.props.clientsState.searchText}
-            clients={this.props.clientsState.prepared}
-            style={styles.clientListContainer}
-            showLateralList={this.props.clientsState.showLateralList}
-            onPressItem={(client) => { this.props.navigation.navigate('ClientDetails'); }}
-          />
-        }
+            </View>
+          </View>
+
+          { (this.props.clientsState.filtered.length > 0) &&
+
+            <ClientList
+              boldWords={this.props.clientsState.searchText}
+              style={styles.clientListContainer}
+              clients={this.props.clientsState.filtered}
+              showLateralList
+              onPressItem={(client) => {
+                  const { navigate } = this.props.navigation;
+                  const { params } = this.props.navigation.state;
+
+                  this.props.walkInActions.selectClient(client);
+
+                  navigate('WalkIn');
+              }}
+            />
+
+           }
 
         </View>
-        <FloatingButton handlePress={this.handleNewClientPress}>
-          <Image
-            style={styles.newClientIcon}
-            source={require('../../assets/images/clients/icon_plus_quantity.png')}
-          />
-        </FloatingButton>
+
       </View>
     );
   }

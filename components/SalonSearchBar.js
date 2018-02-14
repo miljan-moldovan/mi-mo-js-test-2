@@ -91,11 +91,12 @@ class SalonSearchBar extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { marginTop: this.props.marginTop }]}>
         <View style={[styles.searchBar,
           {
           backgroundColor: this.props.backgroundColor,
           borderColor: this.props.borderColor,
+
           },
         ]}
         >
@@ -170,10 +171,10 @@ SalonSearchBar.propTypes = {
   placeholderTextColor: PropTypes.string,
   fontColor: PropTypes.string,
   borderColor: PropTypes.string,
+  marginTop: PropTypes.number,
   backgroundColor: PropTypes.string,
   iconsColor: PropTypes.string,
   searchIconPosition: PropTypes.string,
-  onChangeText: PropTypes.func.isRequired,
   showCancel: PropTypes.bool,
   placeHolderText: PropTypes.string,
 
@@ -188,6 +189,7 @@ SalonSearchBar.defaultProps = {
   searchIconPosition: 'left',
   showCancel: false,
   placeHolderText: 'Search1',
+  marginTop: 0,
 };
 
 export default SalonSearchBar;

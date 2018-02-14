@@ -3,31 +3,21 @@ import { Text } from 'react-native';
 import { connect } from 'react-redux';
 import HeaderMiddle from '../../../components/HeaderMiddle';
 
-const ClientsHeader = props => HeaderMiddle({
+const ClientsSearchHeader = props => HeaderMiddle({
   title: (
     <Text
       style={{
-      fontFamily: 'OpenSans-Regular',
+      fontFamily: 'Roboto',
       color: '#fff',
-      fontSize: 20,
+      fontSize: 17,
+      fontWeight: '700',
     }}
     >
-    Clients
+      Clients
     </Text>),
-  subTitle: (
-    <Text
-      style={{
-      fontFamily: 'OpenSans-Regular',
-      color: '#fff',
-      fontSize: 12,
-    }}
-    >
-      { ` ${props.clientsState.subtitle}` }
-    </Text>
-  ),
 });
 
 const mapStateToProps = state => ({
-  clientsState: state.clientsReducer,
+  clientsSearchState: state.clientsSearchReducer,
 });
-export default connect(mapStateToProps)(ClientsHeader);
+export default connect(mapStateToProps)(ClientsSearchHeader);

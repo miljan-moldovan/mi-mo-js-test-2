@@ -2,7 +2,6 @@ import clientsSearchActions, {
   SET_CLIENTS,
   SET_SEARCH_TEXT,
   SET_FILTERED_CLIENTS,
-  SET_PREPARED_CLIENTS,
   SET_SELECTED_FILTER,
 } from '../actions/clientsSearch';
 
@@ -17,12 +16,6 @@ const initialState = {
 export default function clientsSearchReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
-    case SET_PREPARED_CLIENTS:
-      return {
-        ...state,
-        error: null,
-        prepared: data.prepared,
-      };
     case SET_CLIENTS:
       return {
         ...state,

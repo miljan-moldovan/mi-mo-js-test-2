@@ -18,15 +18,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const headerMiddle = (props) => {
-  console.log('headerMiddle', props);
-  return (
-    <View style={styles.container}>
-      {props.title}
-      {props.subTitle}
-    </View>
-  );
-};
+const headerMiddle = props => (
+  <View style={styles.container}>
+    {props.title}
+    {props.subTitle}
+  </View>
+);
 
 headerMiddle.propTypes = {
   title: PropTypes.element.isRequired,

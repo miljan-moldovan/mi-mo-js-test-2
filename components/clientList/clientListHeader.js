@@ -11,6 +11,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const AlphabeticalHeader = props => (<Text style={styles.text}>{props.headerData.header}</Text>);
+const ClientListHeader = props => (<Text style={styles.text}>{props.header}</Text>);
 
-export default AlphabeticalHeader;
+export default ClientListHeader;

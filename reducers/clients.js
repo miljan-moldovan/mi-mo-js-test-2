@@ -12,6 +12,7 @@ import clientsActions, {
   SET_FILTER,
   SET_SORT_TYPES,
   SET_FILTER_TYPES,
+  SET_SELECTED_FILTER,
 } from '../actions/clients';
 
 const initialState = {
@@ -111,7 +112,12 @@ export default function clientsReducer(state = initialState, action) {
         error: null,
         filterTypes: data.filterTypes,
       };
-
+    case SET_SELECTED_FILTER:
+      return {
+        ...state,
+        error: null,
+        selectedFilter: data.selectedFilter,
+      };
     default:
       return state;
   }

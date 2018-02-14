@@ -37,4 +37,3 @@ const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
 });
 export default connect(mapStateToProps)(WalkInHeader);
-
