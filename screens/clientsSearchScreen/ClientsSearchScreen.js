@@ -268,7 +268,7 @@ class ClientsSearchScreen extends React.Component {
                   const { navigate } = this.props.navigation;
                   const { params } = this.props.navigation.state;
 
-                  this.props.walkInActions.selectClient(client);
+                  this.props.walkInActions.selectedClient(client);
 
                   navigate('WalkIn');
               }}
