@@ -228,6 +228,19 @@ class ClientsScreen extends React.Component {
   handleTypeChange=(ev, selectedIndex) => {
     this.props.clientsActions.setSelectedFilter(selectedIndex);
   }
+  _handleOnChangeClient = (client) => {
+    console.log('client', client);
+    const { navigation } = this.props;
+    if (navigation.state && navigation.state.params && navigation.state.params.onChangeClient) {
+      const { onChangeClient, dismissOnSelect } = navigation.state.params;
+      if (onChangeClient) { onChangeClient(client); }
+      if (dismissOnSelect) { navigation.goBack(); }
+      return;
+    }
+    // RP> moved from inline
+    // onPressItem={(client) => { this.props.navigation.navigate('ClientDetails'); }}
+    navigation.navigate('ClientDetails');
+  }
 
   render() {
     return (
@@ -250,22 +263,17 @@ class ClientsScreen extends React.Component {
 
           { (this.props.clientsState.filtered.length > 0) &&
 
-            <ClientList
-              boldWords={this.props.clientsState.searchText}
-              style={styles.clientListContainer}
-              clients={this.props.clientsState.filtered}
-              showLateralList
-              onPressItem={(client) => {
-                  const { navigate } = this.props.navigation;
-                  const { params } = this.props.navigation.state;
 
-                  this.props.walkInActions.selectClient(client);
-
-                  navigate('WalkIn');
-              }}
-            />
-
-           }
+          <ClientList
+            listItem={this.props.clientsState.listItem}
+            headerItem={this.props.clientsState.headerItem}
+            boldWords={this.props.clientsState.searchText}
+            clients={this.props.clientsState.filtered}
+            style={styles.clientListContainer}
+            showLateralList={this.props.clientsState.showLateralList}
+            onPressItem={this._handleOnChangeClient}
+          />
+        }
 
         </View>
 

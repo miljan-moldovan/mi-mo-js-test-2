@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import { Image, View } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
@@ -8,8 +7,6 @@ import ImageHeader from '../components/ImageHeader';
 import SalonSearchBar from '../components/SalonSearchBar';
 
 import ClientsScreen from './../screens/clientsScreen';
-import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
-import HeaderLateral from '../components/HeaderLateral';
 
 const ClientsStackNavigator = StackNavigator(
   {
@@ -23,6 +20,7 @@ const ClientsStackNavigator = StackNavigator(
         header: props => (
           <ImageHeader
             hideHeader
+            style={{ paddingTop: 30 }}
             {...props}
             params={rootProps.navigation.state.params}
             searchBar={searchProps => (

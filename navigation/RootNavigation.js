@@ -37,7 +37,7 @@ class RootNavigator extends React.Component {
   render() {
     const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
 
-    const fingerprintTimeout = 60 * 2;
+    const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
     const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
 
     // if user is logged in AND fingerprint identification is NOT enabled

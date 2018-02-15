@@ -216,6 +216,9 @@ class ServicesScreen extends React.Component {
 
   _handleOnChangeService = (service) => {
     console.log('service', service);
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
     const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
     if (onChangeService)
       {onChangeService(service);}

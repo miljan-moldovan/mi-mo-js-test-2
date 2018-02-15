@@ -46,34 +46,23 @@ export default class App extends Component<{}> {
     ); // .purge(); use to prevent log in
   }
   render() {
-    // if (!this.state.isLoadingComplete || !this.state.storeIsReady) {
-    //   return (
-    //     <ActivityIndicator />
-    //   );
-    // } else {
-    return (
-      <Provider store={store}>
-        <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-            {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-            <RootNavigation />
-          </View>
-      </Provider>
-    );
-    // }
-    // return (
-    //   <View style={styles.container}>
-    //     <Text style={styles.welcome}>
-    //       Welcome to React Native!
-    //     </Text>
-    //     <Text style={styles.instructions}>
-    //       To get started, edit App.js
-    //     </Text>
-    //     <Text style={styles.instructions}>
-    //       {instructions}
-    //     </Text>
-    //   </View>
-    // );
+    if (!this.state.isLoadingComplete || !this.state.storeIsReady) {
+      return (
+        <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
+          <ActivityIndicator />
+        </View>
+      );
+    } else {
+      return (
+        <Provider store={store}>
+          <View style={styles.container}>
+              {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+              {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+              <RootNavigation />
+            </View>
+        </Provider>
+      );
+    }
   }
 }
 
