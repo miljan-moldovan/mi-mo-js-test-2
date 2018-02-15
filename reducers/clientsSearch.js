@@ -3,6 +3,7 @@ import clientsSearchActions, {
   SET_SEARCH_TEXT,
   SET_FILTERED_CLIENTS,
   SET_SELECTED_FILTER,
+  SET_SHOW_FILTER,
 } from '../actions/clientsSearch';
 
 const initialState = {
@@ -11,6 +12,7 @@ const initialState = {
   clients: [],
   searchText: '',
   selectedFilter: 0,
+  showFilter: false,
 };
 
 export default function clientsSearchReducer(state = initialState, action) {
@@ -39,6 +41,12 @@ export default function clientsSearchReducer(state = initialState, action) {
         ...state,
         error: null,
         filtered: data.filtered,
+      };
+    case SET_SHOW_FILTER:
+      return {
+        ...state,
+        error: null,
+        showFilter: data.showFilter,
       };
     default:
       return state;

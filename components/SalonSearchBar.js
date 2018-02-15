@@ -3,8 +3,6 @@ import { Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-nat
 import PropTypes from 'prop-types';
 import SalonIcon from '../components/SalonIcon';
 
-import searchIcon from '../assets/images/icons/icon_search_w.png';
-import crossIcon from '../assets/images/icons/icon_cross.png';
 
 const styles = StyleSheet.create({
   container: {
@@ -92,7 +90,7 @@ class SalonSearchBar extends Component {
 
   render() {
     return (
-      <View style={[styles.container, { marginTop: this.props.marginTop }]}>
+      <View style={[styles.container]}>
         <View style={[styles.searchBar,
           {
           backgroundColor: this.props.backgroundColor,
@@ -178,7 +176,6 @@ SalonSearchBar.propTypes = {
   placeholderTextColor: PropTypes.string,
   fontColor: PropTypes.string,
   borderColor: PropTypes.string,
-  marginTop: PropTypes.number,
   backgroundColor: PropTypes.string,
   iconsColor: PropTypes.string,
   searchIconPosition: PropTypes.string,
@@ -196,7 +193,6 @@ SalonSearchBar.defaultProps = {
   searchIconPosition: 'left',
   showCancel: false,
   placeHolderText: 'Search1',
-  marginTop: 0,
 };
 
 export default SalonSearchBar;

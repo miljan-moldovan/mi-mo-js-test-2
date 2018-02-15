@@ -138,14 +138,6 @@ class ClientList extends React.Component {
     return null;
   }
 
-  static renderSection(item) {
-    return (
-      <View style={styles.topBar}>
-        <ClientListHeader header={item.section.title} />
-      </View>
-    );
-  }
-
 
   static clients(clients) {
     const clientsLetters = [];
@@ -169,15 +161,28 @@ class ClientList extends React.Component {
     return clientsLetters;
   }
 
-  static renderSeparator = () => (
-    <View
-      style={{
-          height: 1,
-          width: '100%',
-          backgroundColor: '#C0C1C6',
-        }}
-    />
-  );
+  static renderSeparator(show) {
+    if (show) {
+      return (<View
+        style={{
+            height: 1,
+            width: '100%',
+            backgroundColor: '#C0C1C6',
+          }}
+      />);
+    }
+    return (null);
+  }
+
+
+  static renderSection(item, showSectionHeader) {
+    if (showSectionHeader) {
+      return (<View style={styles.topBar}>
+        <ClientListHeader header={item.section.title} />
+      </View>);
+    }
+    return (null);
+  }
 
 
   constructor(props) {
@@ -191,12 +196,16 @@ class ClientList extends React.Component {
       dataSource: ClientList.clients(clients),
       letterGuide: [],
       onPressItem: props.onPressItem,
+      showSectionHeader: props.showSectionHeader,
+      simpleListItem: props.simpleListItem,
     };
   }
 
     state:{
       clients:[],
-      showLateralList: true
+      showLateralList: true,
+      showSectionHeader: true,
+      simpleListItem: false,
     };
 
 
@@ -216,11 +225,12 @@ class ClientList extends React.Component {
       this.setState({
         dataSource: ClientList.clients(clients),
         boldWords: nextProps.boldWords,
-        //  showLateralList: nextProps.showLateralList,
+        showLateralList: nextProps.showLateralList,
         onPressItem: nextProps.onPressItem,
+        showSectionHeader: nextProps.showSectionHeader,
+        simpleListItem: nextProps.simpleListItem,
       });
     }
-
 
       scrollToIndex = (section, letter) => {
         let total = 0;
@@ -250,6 +260,7 @@ class ClientList extends React.Component {
         <View key={Math.random().toString()} style={{ height: ITEM_HEIGHT }}>
           <ClientListItem
             client={obj.item}
+            simpleListItem={this.state.simpleListItem}
             boldWords={this.state.boldWords}
             onPress={this.state.onPressItem}
           />
@@ -312,6 +323,7 @@ class ClientList extends React.Component {
             </View>
           }
 
+
             <View style={styles.listContainer}>
               <View style={styles.list}>
                 <SectionList
@@ -326,13 +338,14 @@ class ClientList extends React.Component {
                   getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
-                  renderSectionHeader={ClientList.renderSection}
-                  ItemSeparatorComponent={ClientList.renderSeparator}
+                  renderSectionHeader={item => ClientList.renderSection(item, this.state.showSectionHeader)}
+                  ItemSeparatorComponent={() => ClientList.renderSeparator(this.state.showSectionHeader)}
+
                 />
               </View>
-              <View style={styles.guideContainer}>
+              {this.state.showLateralList && <View style={styles.guideContainer}>
                 {this.state.letterGuide}
-              </View>
+              </View>}
             </View>
           </View>
         );

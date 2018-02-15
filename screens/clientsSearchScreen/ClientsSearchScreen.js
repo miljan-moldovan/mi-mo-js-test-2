@@ -9,6 +9,7 @@ import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
+import ClientsSearchHeader from './components/ClientsSearchHeader';
 
 const mockDataClients = require('../../mockData/clients.json');
 
@@ -127,11 +128,8 @@ const styles = StyleSheet.create({
   topSearchBar: {
     flex: 0.1,
     flexDirection: 'column',
-    backgroundColor: '#F8F8F8',
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#FFFFFF',
   },
   topSearchBarText: {
     color: '#1D1D26',
@@ -142,8 +140,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   filterBarContainer: {
-    backgroundColor: '#F8F8F8',
-    flex: 0.1,
+    backgroundColor: '#115ECD',
+    flex: 0.09,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -202,8 +200,24 @@ class ClientsSearchScreen extends React.Component {
     this.props.clientsSearchActions.setSelectedFilter(0);
   }
 
+  componentWillMount() {
+    this.props.navigation.setParams({
+      onChangeText: searchText => this.filterClients(searchText),
+      showHeader: !this.props.clientsSearchState.showFilter,
+      showBar: this.props.clientsSearchState.showFilter,
+      searchText: this.props.clientsSearchState.searchText,
+    });
+  }
+
+
   filterClients(searchText) {
+    let showFilter = false;
+
     if (searchText && searchText.length > 0) {
+      showFilter = true;
+
+      this.props.clientsSearchActions.setShowFilter(showFilter);
+
       const criteria = [
         { Field: 'name', Values: [searchText.toLowerCase()] },
         { Field: 'email', Values: [searchText.toLowerCase()] },
@@ -214,9 +228,17 @@ class ClientsSearchScreen extends React.Component {
       this.props.clientsSearchActions.setSearchText(searchText);
       this.props.clientsSearchActions.setFilteredClients(filtered);
     } else {
+      this.props.clientsSearchActions.setShowFilter(showFilter);
+
       this.props.clientsSearchActions.setFilteredClients(this.props.clientsSearchState.clients);
       this.props.clientsSearchActions.setSearchText(searchText);
     }
+
+    this.props.navigation.setParams({
+      showHeader: !showFilter,
+      showBar: showFilter,
+      searchText: this.props.clientsSearchState.searchText,
+    });
   }
 
   handleTypeChange=(ev, selectedIndex) => {
@@ -226,34 +248,47 @@ class ClientsSearchScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        { !this.props.clientsSearchState.showFilter && <ClientsSearchHeader {...this.props} />}
         <View style={styles.clientsList}>
+
+
           { (this.props.clientsSearchState.clients.length > 0) &&
-            <View style={styles.topSearchBar}>
-              <SalonSearchBar
-                placeHolderText="Search"
-                placeholderTextColor="#727A8F"
-                searchIconPosition="left"
-                iconsColor="#727A8F"
-                fontColor="#727A8F"
-                borderColor="transparent"
-                backgroundColor="rgba(142, 142, 147, 0.24)"
-                onChangeText={searchText => this.filterClients(searchText)}
-              />
-            </View>}
+          <View style={[styles.topSearchBar, {
+              paddingTop: !this.props.clientsSearchState.showFilter ? 0 : 15,
+              backgroundColor: !this.props.clientsSearchState.showFilter ? '#F8F8F8' : '#115ECD',
+            }]}
+          >
+            <SalonSearchBar
+              placeHolderText="Search"
+              marginVertical={!this.props.clientsSearchState.showFilter ? 0 : 30}
+              placeholderTextColor={!this.props.clientsSearchState.showFilter ? '#727A8F' : '#FFFFFF'}
+              showCancel={this.props.clientsSearchState.showFilter}
+              searchIconPosition="left"
+              iconsColor={!this.props.clientsSearchState.showFilter ? '#727A8F' : '#FFFFFF'}
+              fontColor={!this.props.clientsSearchState.showFilter ? '#727A8F' : '#FFFFFF'}
+              borderColor="transparent"
+              backgroundColor={!this.props.clientsSearchState.showFilter ? 'rgba(142, 142, 147, 0.24)' : '#0C4699'}
+              onChangeText={searchText => this.filterClients(searchText)}
+            />
+          </View>}
+
+          { this.props.clientsSearchState.showFilter &&
           <View style={styles.filterBarContainer}>
 
             <View style={styles.filterBar}>
               <SalonFlatPicker
                 dataSource={filterType}
-                selectedColor="#115ECD"
-                selectedTextColor="#FFFFFF"
-                unSelectedTextColor="#115ECD"
+                selectedColor="#FFFFFF"
+                selectedTextColor="#115ECD"
+                unSelectedTextColor="#FFFFFF"
                 onItemPress={this.handleTypeChange}
                 selectedIndex={this.props.clientsSearchState.selectedFilter}
               />
 
             </View>
           </View>
+        }
+
 
           { (this.props.clientsSearchState.filtered.length > 0) &&
 
@@ -261,8 +296,12 @@ class ClientsSearchScreen extends React.Component {
               boldWords={this.props.clientsSearchState.searchText}
               style={styles.clientListContainer}
               clients={this.props.clientsSearchState.filtered}
-              showLateralList
+              showSectionHeader={!this.props.clientsSearchState.showFilter}
+              simpleListItem={this.props.clientsSearchState.showFilter}
+              showLateralList={!this.props.clientsSearchState.showFilter}
               onPressItem={(client) => {
+                  this.props.clientsSearchActions.setShowFilter(false);
+
                   const { navigate } = this.props.navigation;
                   const { params } = this.props.navigation.state;
 

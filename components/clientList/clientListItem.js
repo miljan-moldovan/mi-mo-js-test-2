@@ -8,8 +8,17 @@ import {
 
 import { connect } from 'react-redux';
 import WordHighlighter from '../wordHighlighter';
+import SalonIcon from '../SalonIcon';
 
 const styles = StyleSheet.create({
+  searchIconLeft: {
+    width: 13,
+    height: 16,
+    paddingHorizontal: 15,
+    paddingTop: 1,
+    resizeMode: 'contain',
+    tintColor: '#000000',
+  },
   highlightStyle: {
     color: '#1DBF12',
     fontFamily: 'Roboto',
@@ -18,6 +27,9 @@ const styles = StyleSheet.create({
     flex: 2,
     flexDirection: 'row',
     backgroundColor: '#FFF',
+  },
+  clientNameContainer: {
+    flexDirection: 'row',
   },
   clientName: {
     color: '#110A24',
@@ -53,17 +65,19 @@ class ClientListItem extends React.PureComponent {
       client: props.client,
       boldWords: props.boldWords,
       onPress: props.onPress,
+      simpleListItem: props.simpleListItem,
     };
   }
 
   state = {
-
+    simpleListItem: false,
   }
   componentWillReceiveProps(nextProps) {
     this.setState({
       client: nextProps.client,
       boldWords: nextProps.boldWords,
       onPress: nextProps.onPress,
+      simpleListItem: nextProps.simpleListItem,
     });
   }
 
@@ -79,21 +93,33 @@ class ClientListItem extends React.PureComponent {
 
           <View style={styles.dataContainer}>
 
-            <WordHighlighter
-              highlight={this.state.boldWords}
-              highlightStyle={styles.highlightStyle}
-              style={styles.clientName}
-            >
-              {this.state.client.name}
-            </WordHighlighter>
+            <View style={styles.clientNameContainer}>
 
-            <WordHighlighter
-              highlight={this.state.boldWords}
-              highlightStyle={styles.highlightStyle}
-              style={styles.clientEmail}
-            >
-              {this.state.client.email}
-            </WordHighlighter>
+              {this.state.simpleListItem &&
+                <SalonIcon
+                  size={16}
+                  icon="search"
+                  style={styles.searchIconLeft}
+                />}
+
+              <WordHighlighter
+                highlight={this.state.boldWords}
+                highlightStyle={styles.highlightStyle}
+                style={styles.clientName}
+              >
+                {this.state.client.name}
+              </WordHighlighter>
+            </View>
+
+            {!this.state.simpleListItem &&
+              <WordHighlighter
+                highlight={this.state.boldWords}
+                highlightStyle={styles.highlightStyle}
+                style={styles.clientEmail}
+              >
+                {this.state.client.email}
+              </WordHighlighter>
+            }
           </View>
 
         </View>

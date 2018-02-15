@@ -11,15 +11,13 @@ const styles = StyleSheet.create({
   },
 });
 const ImageHeader = (props) => {
-  console.log('ImageHeader', props);
-
   const { searchBar, ...headerProps } = props;
   const searchParams = props.params ?
     { onChangeText: props.params.onChangeText } : null;
 
   return (
     <View style={styles.container}>
-      {!props.hideHeader && <Header {...headerProps} /> }
+      {<Header {...headerProps} /> }
       {props.searchBar ? props.searchBar(searchParams) : null }
     </View>
   );

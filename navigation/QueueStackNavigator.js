@@ -5,7 +5,7 @@ import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
-import SearchBar from '../components/searchBar';
+import SalonSearchBar from '../components/SalonSearchBar';
 
 import QueueScreen from './../screens/QueueScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
@@ -15,7 +15,6 @@ import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
 import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 
 import ClientsSearchScreen from './../screens/clientsSearchScreen';
-import ClientsSearchHeader from '../screens/clientsSearchScreen/components/ClientsSearchHeader';
 import ClientDetailsScreen from '../screens/clientDetailsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
@@ -84,62 +83,10 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
-
     ClientsSearch: {
       screen: ClientsSearchScreen,
       navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: <ClientsSearchHeader rootProps={rootProps} />,
-        headerLeft: HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={{
-                      flex: 1,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      }}
-            >
-              <Text style={{
-                        color: '#FFFFFF',
-                        fontSize: 14,
-                        fontFamily: 'Roboto',
-                        backgroundColor: 'transparent',
-                        }}
-              >Cancel
-              </Text>
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          handlePress: () => console.log('pressed right header button'),
-          button: (
-            <View style={{
-                      flex: 1,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      }}
-            >
-              <Text style={{
-                        color: '#FFFFFF',
-                        fontSize: 14,
-                        fontFamily: 'Roboto',
-                        backgroundColor: 'transparent',
-                        }}
-              >Add
-              </Text>
-            </View>
-          ),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-          />),
+        header: props => (<View />),
       }),
     },
     NewClient: {
