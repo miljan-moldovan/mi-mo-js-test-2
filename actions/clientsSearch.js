@@ -1,17 +1,8 @@
 export const SET_CLIENTS = 'clientsSearch/SET_CLIENTS';
-export const SET_PREPARED_CLIENTS = 'clientsSearch/SET_PREPARED_CLIENTS';
 export const SET_SEARCH_TEXT = 'clientsSearch/SET_SEARCH_TEXT';
-export const SET_SHOW_WALKIN = 'clientsSearch/SET_SHOW_WALKIN';
 export const SET_FILTERED_CLIENTS = 'clientsSearch/SET_FILTERED_CLIENTS';
-
-
-function setPreparedClients(prepared) {
-  return {
-    type: SET_PREPARED_CLIENTS,
-    data: { prepared },
-  };
-}
-
+export const SET_SELECTED_FILTER = 'clientsSearch/SET_SELECTED_FILTER';
+export const SET_SHOW_FILTER = 'clientsSearch/SET_SHOW_FILTER';
 
 function setClients(clients) {
   return {
@@ -27,13 +18,6 @@ function setSearchText(searchText) {
   };
 }
 
-function setShowWalkIn(showWalkIn) {
-  return {
-    type: SET_SHOW_WALKIN,
-    data: { showWalkIn },
-  };
-}
-
 function setFilteredClients(filtered) {
   return {
     type: SET_FILTERED_CLIENTS,
@@ -41,12 +25,26 @@ function setFilteredClients(filtered) {
   };
 }
 
+function setSelectedFilter(selectedFilter) {
+  return {
+    type: SET_SELECTED_FILTER,
+    data: { selectedFilter },
+  };
+}
+
+function setShowFilter(showFilter) {
+  return {
+    type: SET_SHOW_FILTER,
+    data: { showFilter },
+  };
+}
+
 const clientsSearchActions = {
   setClients,
   setSearchText,
-  setShowWalkIn,
   setFilteredClients,
-  setPreparedClients,
+  setSelectedFilter,
+  setShowFilter,
 };
 
 export default clientsSearchActions;

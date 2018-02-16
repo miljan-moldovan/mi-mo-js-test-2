@@ -1,15 +1,12 @@
 // @flow
 import React from 'react';
-import { Image, View } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
-import SearchBar from '../components/searchBar';
+import SalonSearchBar from '../components/SalonSearchBar';
 
 import ClientsScreen from './../screens/clientsScreen';
-import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
-import HeaderLateral from '../components/HeaderLateral';
 
 const ClientsStackNavigator = StackNavigator(
   {
@@ -20,57 +17,27 @@ const ClientsStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <ClientsHeader rootProps={rootProps} />,
-        headerLeft: HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Image
-                style={{
-                      width: 15,
-                      height: 15,
-                    }}
-                source={require('../assets/images/clients/icon_menu.png')}
-              />
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          handlePress: () => rootProps.params.handlePress(),
-          params: rootProps.navigation.state.params,
-          button:
-  <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            }}
-  >
-    <Image
-      style={{
-              width: 24,
-              height: 24,
-            }}
-      source={require('../assets/images/clients/filter_icon.png')}
-    />
-  </View>,
-        }),
         header: props => (
           <ImageHeader
+            hideHeader
+            style={{ paddingTop: 30 }}
             {...props}
             params={rootProps.navigation.state.params}
             searchBar={searchProps => (
-              <SearchBar
+              <SalonSearchBar
                 {...searchProps}
-                placeholder="Search by name, phone or email"
-                searchIconPosition="right"
-              />)}
+                marginTop={30}
+                placeHolderText="Search"
+                placeholderTextColor="#FFFFFF"
+                searchIconPosition="left"
+                iconsColor="#FFFFFF"
+                fontColor="#FFFFFF"
+                borderColor="transparent"
+                backgroundColor="#0C4699"
+                showCancel
+              />
+
+            )}
           />),
       }),
     },

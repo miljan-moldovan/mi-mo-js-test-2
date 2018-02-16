@@ -213,6 +213,7 @@ class ServicesScreen extends React.Component {
 
     return matches;
   }
+
   _handleOnChangeService = (service) => {
     console.log('service', service);
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
@@ -220,16 +221,17 @@ class ServicesScreen extends React.Component {
     }
     const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
     if (onChangeService)
-      onChangeService(service);
+      {onChangeService(service);}
     if (dismissOnSelect)
-      this.props.navigation.goBack();
+      {this.props.navigation.goBack();}
   }
+
   _renderItem = ({ item, index }) => (
     <TouchableOpacity
       style={item.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
       onPress={() => {
         const { navigate } = this.props.navigation;
-        const {params} = this.props.navigation.state;
+        const { params } = this.props.navigation.state;
         if (this.hasMappedChildren(item)) {
           this.setState({
             prevData: this.state.activeData,
@@ -238,8 +240,7 @@ class ServicesScreen extends React.Component {
           });
 
           this.props.walkInActions.setCurrentStep(2);
-        } else {
-          if (params && params.onChangeService) {
+        } else if (params && params.onChangeService) {
             this._handleOnChangeService(item);
           } else {
             this.props.walkInActions.selectService(item);
@@ -250,8 +251,6 @@ class ServicesScreen extends React.Component {
               navigate('Providers');
             }
           }
-
-        }
         this.setState({ activeListItem: item.id });
       }}
       key={index}
