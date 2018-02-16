@@ -14,6 +14,7 @@
     "prop-types": "15.6.0",
     "react": "16.2.0",
     "react-native": "0.52.1",
+    "react-native-calendars": "^1.17.1",
     "react-native-modal": "^5.0.0",
     "react-native-picker": "4.3.5",
     "react-native-sentry": "^0.33.0",

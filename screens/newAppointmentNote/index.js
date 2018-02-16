@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import appointmentNoteActions from '../../actions/appointmentNotes';
+import appointmentNotesActions from '../../actions/appointmentNotes';
 import NewAppointmentNoteScreen from './newAppointmentNoteScreen';
 
 const mapStateToProps = state => ({
-  appointmentNoteState: state.appointmentNoteReducer,
+  appointmentNotesState: state.appointmentNotesReducer,
 });
 
 const mapActionsToProps = dispatch => ({
-  appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
+  appointmentNotesActions: bindActionCreators({ ...appointmentNotesActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(NewAppointmentNoteScreen);

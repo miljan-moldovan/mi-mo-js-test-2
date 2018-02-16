@@ -10,8 +10,11 @@ const styles = StyleSheet.create({
 
 
 const HeaderLateral = (props) => {
-  const handlePress = props.params ?
-    props.params.handlePress : null;
+  let handlePress = props.handlePress ?
+    props.handlePress : null;
+
+  handlePress = props.params ?
+    props.params.handlePress : handlePress;
 
   return (
     <TouchableOpacity style={styles.buttonContainer} onPress={handlePress}>

@@ -20,14 +20,64 @@ import SearchBar from '../components/searchBar';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
+import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+
+import NewAppointmentNoteScreen from './../screens/newAppointmentNote';
+import NewAppointmentNoteHeader from '../screens/newAppointmentNote/components/newAppointmentNoteHeader';
 
 const AppointmentStackNavigator = StackNavigator(
   {
     Appointments: {
-      screen: AppointmentScreen,
+      screen: AppoinmentNotes,
+    },
+    NewAppointmentNote: {
+      screen: NewAppointmentNoteScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: <NewAppointmentNoteHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          key: Math.random().toString(),
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          key: Math.random().toString(),
+          params: rootProps.navigation.state.params,
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>
+            </View>
+          ),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+          />),
+      }),
     },
     NewAppointment: {
-      screen: NewAppointmentScreen
+      screen: NewAppointmentScreen,
     },
     Services: {
       screen: ServicesScreen,
@@ -72,7 +122,7 @@ const AppointmentStackNavigator = StackNavigator(
                       width: 15,
                       height: 15,
                     }}
-                source={require('../assets/images/clients/icon_menu.png')}
+                source={require('../assets/images/icons/icon_menu.png')}
               />
             </View>
           ),
@@ -93,7 +143,7 @@ const AppointmentStackNavigator = StackNavigator(
               width: 24,
               height: 24,
             }}
-      source={require('../assets/images/clients/filter_icon.png')}
+      source={require('../assets/images/icons/icon_filter.png')}
     />
   </View>,
         }),
@@ -128,7 +178,8 @@ const AppointmentStackNavigator = StackNavigator(
         <SideMenuItem
           {...props}
           title="Appointments"
-          icon={require('../assets/images/sidemenu/icon_appoint_menu.png')} />
+          icon={require('../assets/images/sidemenu/icon_appoint_menu.png')}
+        />
       ),
     },
   },

@@ -174,13 +174,12 @@ export default class AppointmentNotesScreen extends Component {
 
     const notes = props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
 
-    this.state = {
-      filteredNotes: notes,
-    };
+    props.appointmentNotesActions.setFilteredNotes(notes);
   }
 
   componentWillMount() {
-    this.setState({ filteredNotes: this.props.appointmentNotesState.notes });
+    const notes = this.props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
+    this.props.appointmentNotesActions.setFilteredNotes(notes);
   }
 
   filterNotes(searchText) {
@@ -196,9 +195,9 @@ export default class AppointmentNotesScreen extends Component {
         criteria,
       );
 
-      this.setState({ filteredNotes: filtered });
+      this.props.appointmentNotesActions.setFilteredNotes(filtered);
     } else {
-      this.setState({ filteredNotes: this.props.appointmentNotesState.notes });
+      this.props.appointmentNotesActions.setFilteredNotes(this.props.appointmentNotesState.notes);
     }
   }
 
@@ -264,7 +263,8 @@ export default class AppointmentNotesScreen extends Component {
         <View style={styles.notesScroller}>
           <ScrollView>
             <FlatList
-              data={this.state.filteredNotes}
+              keyExtractor={(item, index) => index}
+              data={this.props.appointmentNotesState.filtered}
               renderItem={({ item, index }) => (
 
 
@@ -326,7 +326,16 @@ export default class AppointmentNotesScreen extends Component {
           </ScrollView>
         </View>
 
-        <SalonBtnFixedBottom backgroundColor="#727A8F" onPress={() => {}} value="Add Note" valueSize={13} valueColor="#FFFFFF" />
+        <SalonBtnFixedBottom
+          backgroundColor="#727A8F"
+          onPress={() => {
+            const { navigate } = this.props.navigation;
+            navigate('NewAppointmentNote');
+        }}
+          value="Add Note"
+          valueSize={13}
+          valueColor="#FFFFFF"
+        />
       </View>
     );
   }
