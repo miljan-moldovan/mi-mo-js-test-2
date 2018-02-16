@@ -20,16 +20,16 @@ const styles = StyleSheet.create({
     flex: 4,
   },
   searchIconRight: {
-    width: 13,
-    height: 16,
-    marginRight: 15,
+    width: 20,
+    height: 23,
+    marginRight: 10,
     paddingTop: 1,
     resizeMode: 'contain',
   },
   searchIconLeft: {
-    width: 13,
-    height: 16,
-    marginLeft: 15,
+    width: 20,
+    height: 23,
+    marginLeft: 10,
     paddingTop: 1,
     resizeMode: 'contain',
   },
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   crossIcon: {
     width: 16,
     height: 16,
-    marginRight: 15,
+    marginRight: 10,
     paddingTop: 1,
   },
   crossIconButton: {
@@ -68,6 +68,17 @@ const styles = StyleSheet.create({
   },
   cancelContainer: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  microphoneIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    paddingTop: 1,
+  },
+  microphoneIconButton: {
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -103,7 +114,7 @@ class SalonSearchBar extends Component {
             {this.props.searchIconPosition === 'left' &&
 
             <SalonIcon
-              size={16}
+              size={23}
               icon="search"
               style={[styles.searchIconLeft,
               { tintColor: this.props.iconsColor }]}
@@ -119,7 +130,7 @@ class SalonSearchBar extends Component {
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
 
               <SalonIcon
-                size={15}
+                size={23}
                 icon="caretRight"
                 style={[styles.searchIconRight,
               { tintColor: this.props.iconsColor }]}
@@ -149,6 +160,30 @@ class SalonSearchBar extends Component {
 
               }
             </View>
+
+
+            <View style={styles.microphoneIconContainer}>
+
+              <TouchableHighlight
+                style={styles.microphoneIconButton}
+                underlayColor="transparent"
+                onPress={
+                    () => {
+                      alert('microphone');
+                    }}
+              >
+
+                <SalonIcon
+                  size={20}
+                  icon="microphone"
+                  style={[styles.microphoneIcon,
+                    { tintColor: this.props.iconsColor }]}
+                />
+              </TouchableHighlight>
+
+            </View>
+
+
           </View>
         </View>
         {this.props.showCancel &&
