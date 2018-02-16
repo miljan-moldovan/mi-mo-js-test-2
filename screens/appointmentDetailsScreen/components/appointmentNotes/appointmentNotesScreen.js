@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React, { Component } from 'react';
 import {
   View,
@@ -9,12 +8,12 @@ import {
   FlatList,
 } from 'react-native';
 
-import SalonSearchBar from '../../../components/SalonSearchBar';
-import SalonIcon from '../../../components/SalonIcon';
-import SalonBtnFixedBottom from '../../../components/SalonBtnFixedBottom';
-import SalonTag from '../../../components/SalonTag';
-import SalonDateTxt from '../../../components/SalonDateTxt';
-import SalonCard from '../../../components/SalonCard';
+import SalonSearchBar from '../../../../components/SalonSearchBar';
+import SalonIcon from '../../../../components/SalonIcon';
+import SalonBtnFixedBottom from '../../../../components/SalonBtnFixedBottom';
+import SalonTag from '../../../../components/SalonTag';
+import SalonDateTxt from '../../../../components/SalonDateTxt';
+import SalonCard from '../../../../components/SalonCard';
 
 const styles = StyleSheet.create({
   container: {
@@ -140,7 +139,7 @@ const styles = StyleSheet.create({
 
 // const notes = require('../../../mockData/clientDetails/notes.json');
 
-export default class AppoinmentNotes extends Component {
+export default class AppointmentNotesScreen extends Component {
   static flexFilter(list, info) {
     let matchesFilter = [];
     const matches = [];
@@ -164,51 +163,24 @@ export default class AppoinmentNotes extends Component {
     return matches;
   }
 
+  static compareByDate(a, b) {
+    if (a.date < b.date) { return 1; }
+    if (a.date > b.date) { return -1; }
+    return 0;
+  }
+
   constructor(props) {
     super(props);
 
+    const notes = props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
+
     this.state = {
-      notes: [{
-        id: 1,
-        date: '2017-02-17',
-        author: 'Dora Knuckles',
-        note: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        tags: ['SALES', 'QUEUE'],
-      },
-      {
-        id: 2,
-        date: '2017-04-23',
-        author: 'Dora Knuckles',
-        note: 'Nulla quis ipsum viverra, ornare arcu vel, dignissim dui. Mauris fringilla, augue ut imperdiet porttitor, lectus eros fermentum velit, vel interdum eros lacus non sem. Aliquam erat volutpat. Sed sagittis ornare consequat. Sed efficitur eleifend dolor id aliquam. Fusce fermentum urna eu odio lacinia, et mattis mi eleifend. Fusce ut augue nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas pellentesque quis mauris vel laoreet. Nunc ac elit eget quam scelerisque vestibulum at eu lacus.',
-        tags: ['SALES'],
-      },
-      {
-        id: 3,
-        date: '2017-06-05',
-        author: 'Dora Knuckles',
-        note: 'Vestibulum ullamcorper finibus interdum. Nunc suscipit ut est vitae molestie. Donec malesuada dignissim commodo. Etiam pulvinar malesuada neque. Quisque nec urna eu velit dignissim lacinia. Sed in ligula vehicula, ultrices ex a, porttitor dui. Curabitur quis velit pharetra, tempor nunc vitae, dignissim justo. Integer feugiat ut ligula a facilisis. Nunc blandit ultrices pellentesque.',
-        tags: ['QUEUE'],
-      },
-      {
-        id: 4,
-        date: '2017-11-08',
-        author: 'Dora Knuckles',
-        note: 'Ut egestas lectus odio, non consectetur lectus malesuada quis. Ut a erat pulvinar, rhoncus odio a, lacinia turpis. Curabitur suscipit cursus ligula non dapibus. Donec ullamcorper nulla fringilla velit sagittis lobortis. Duis malesuada felis tellus, at laoreet est molestie in. Nullam lorem mauris, commodo nec nulla in, imperdiet auctor elit. Proin mattis odio a finibus porta. Cras urna sapien, ultricies quis enim id, condimentum maximus nisl. In sagittis odio sed tempor ultricies. Aenean eget fermentum dolor. In hac habitasse platea dictumst. Phasellus magna tellus, euismod eu erat in, cursus sodales erat. Etiam feugiat pharetra orci imperdiet placerat. Fusce nec convallis ex.',
-        tags: ['SALES', 'QUEUE'],
-      },
-      {
-        id: 5,
-        date: '2018-02-11',
-        author: 'Dora Knuckles',
-        note: 'Aliquam erat volutpat. Praesent pretium malesuada accumsan. Praesent efficitur ligula ultrices massa dictum, at aliquam mauris lacinia. Donec tempus libero ut posuere consequat. Vivamus quis vestibulum eros. Suspendisse quis lobortis diam. Donec a eros at dui interdum ullamcorper. Maecenas lorem nisi, lobortis id ligula in, lacinia sollicitudin justo. Fusce molestie metus purus, at consectetur urna ullamcorper quis. Duis quis diam non nunc dictum consequat. Aenean malesuada euismod libero finibus dignissim. Aliquam erat volutpat. Nunc porttitor diam nibh, quis fermentum lacus tincidunt sit amet. Donec tristique enim at lorem mattis, in posuere erat feugiat.',
-        tags: ['SALES', 'QUEUE', 'APPOINMENT'],
-      }],
-      filteredNotes: [],
+      filteredNotes: notes,
     };
   }
 
   componentWillMount() {
-    this.setState({ filteredNotes: this.state.notes });
+    this.setState({ filteredNotes: this.props.appointmentNotesState.notes });
   }
 
   filterNotes(searchText) {
@@ -219,11 +191,14 @@ export default class AppoinmentNotes extends Component {
         { Field: 'date', Values: [searchText.toLowerCase()] },
       ];
 
-      const filtered = AppoinmentNotes.flexFilter(this.state.notes, criteria);
+      const filtered = AppointmentNotesScreen.flexFilter(
+        this.props.appointmentNotesState.notes,
+        criteria,
+      );
 
       this.setState({ filteredNotes: filtered });
     } else {
-      this.setState({ filteredNotes: this.state.notes });
+      this.setState({ filteredNotes: this.props.appointmentNotesState.notes });
     }
   }
 
