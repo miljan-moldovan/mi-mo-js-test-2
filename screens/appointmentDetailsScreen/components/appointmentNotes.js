@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
   },
   showDeletedButtonContainer: {
     minHeight: 40,
+    marginBottom: 40,
   },
   noteText: {
     color: '#2E3032',
