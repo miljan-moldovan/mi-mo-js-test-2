@@ -18,11 +18,13 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import Swipeable from 'react-native-swipeable';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import * as actions from '../actions/queue';
 import SideMenuItem from '../components/SideMenuItem';
 import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
+import ServiceIcons from './ServiceIcons';
 
 class Queue extends React.Component {
   state = {
@@ -35,7 +37,7 @@ class Queue extends React.Component {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
-    setTimeout(() => this.setState({ refreshing: false }), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 500);
   }
   getButtonsForItem = (item) => {
     const {
@@ -102,20 +104,20 @@ right;
     switch (item.status) {
       case 7:
         return (
-          <View style={styles.waitingTime}>
-            <Text style={styles.waitingTimeTextTop}>FINISHED</Text>
+          <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
+            <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>FINISHED</Text>
           </View>
         );
       case 5:
         return (
-          <View style={styles.waitingTime}>
-            <Text style={styles.waitingTimeTextTop}>RETURNING</Text>
+          <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
+            <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>RETURNING</Text>
           </View>
         );
       case 1:
         return (
-          <View style={styles.waitingTime}>
-            <Text style={styles.waitingTimeTextTop}>NOT ARRIVED</Text>
+          <View style={[styles.waitingTime, { backgroundColor: 'rgba(192,193,198,1)' }]}>
+            <Text style={[styles.waitingTimeTextTop, {color: '#555'}]}>NOT ARRIVED</Text>
           </View>
         );
       default:
@@ -142,13 +144,19 @@ right;
       <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
         <TouchableOpacity style={styles.itemContainer} onPress={()=>this.props.navigation.navigate('QueueDetail', { item })}>
           <View style={styles.itemSummary}>
-            <Text style={styles.clientName}>{item.client.name} {item.client.lastName}</Text>
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+              <ServiceIcons item={item} />
+            </View>
             <Text style={styles.serviceName}>
-              {item.services[0].description}
-              {item.services.length > 1 ? `(+${item.services.length - 1})` : null}
-              &nbsp;with {item.employees[0].name} {item.employees[0].lastName}
+              {item.services[0].description.toUpperCase()}
+              {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
+              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.employees[0].name+' '+item.employees[0].lastName).toUpperCase()}
             </Text>
-            <Text style={styles.serviceTimeContainer}>at <Text style={styles.serviceTime}>{item.start_time}</Text></Text>
+            <Text style={styles.serviceTimeContainer}>
+              <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
+              <Text style={styles.serviceTime}> {item.start_time}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
+            </Text>
           </View>
           {label}
         </TouchableOpacity>
@@ -217,47 +225,67 @@ export default connect(null, actions)(Queue);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: '#f1f1f1'
   },
   itemContainer: {
     // width: '100%',
-    height: 104,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(29,29,38,1)',
+    height: 94,
+    // borderBottomWidth: 1,
+    // borderBottomColor: 'rgba(29,29,38,1)',
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 8,
+    marginTop: 4
   },
   itemSummary: {
     marginLeft: 20,
     marginRight: 'auto',
     paddingRight: 10,
     flex: 1,
+    height: 90,
   },
   clientName: {
-    fontSize: 19,
-    fontFamily: 'OpenSans-Bold',
-    color: 'rgba(17,20,21,1)',
+    fontSize: 16,
+    fontFamily: 'Roboto-Medium',
+    color: '#111415',
   },
   serviceName: {
-    fontSize: 12,
-    fontFamily: 'OpenSans-Regular',
-    color: '#999',
+    fontSize: 11,
+    fontFamily: 'Roboto-Regular',
+    color: '#4D5067',
+    // marginBottom: 12
   },
   serviceTimeContainer: {
     fontSize: 12,
-    fontFamily: 'OpenSans-Regular',
-    color: 'rgba(29,29,38,1)',
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+    marginTop: 'auto',
+    marginBottom: 8,
+    flexDirection: 'row'
+  },
+  serviceRemainingWaitTime: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 11,
+    textDecorationLine: 'underline'
   },
   serviceTime: {
-    fontFamily: 'OpenSans-Bold',
+    // fontFamily: 'OpenSans-Bold',
   },
   waitingTime: {
     marginRight: 15,
     alignItems: 'center',
+    backgroundColor: 'rgba(17,10,36,1)',
+    borderRadius: 4,
+    borderColor: 'transparent',
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    // color: 'white'
+
   },
   waitingTimeTextTop: {
     fontSize: 10,
@@ -266,8 +294,8 @@ const styles = StyleSheet.create({
   },
   waitingTimeTextMid: {
     fontSize: 24,
-    fontFamily: 'OpenSans-Regular',
-    color: 'rgba(181,60,60,1)',
+    fontFamily: 'Roboto-Regular',
+    color: 'white'
   },
   waitingTimeTextBottom: {
     fontSize: 10,
@@ -279,4 +307,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  serviceClockIcon: {
+    fontSize: 12,
+    // padding: 0,
+    color: '#7E8D98',
+    paddingRight: 7
+  }
 });

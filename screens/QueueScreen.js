@@ -20,6 +20,7 @@ import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
@@ -39,15 +40,21 @@ const initialLayout = {
 
 
 class QueueScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Queue"
-        icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
-      />
-    ),
-  };
+  static navigationOptions = ({ navigation }) => {
+    const headerLeft =
+      <FontAwesome style={styles.navButton}>{Icons.bars}</FontAwesome>
+    ;
+    const headerRight =
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', width: 80}}>
+        <FontAwesome style={styles.navButton}>{Icons.ellipsisH}</FontAwesome>
+        <FontAwesome style={styles.navButton}>{Icons.search}</FontAwesome>
+      </View>
+    ;
+    return {
+      headerLeft,
+      headerRight
+    };
+  }
   state = {
     refreshing: false,
     routes: [
@@ -66,28 +73,17 @@ class QueueScreen extends React.Component {
     // FIXME this._refreshData();
     // emulate refresh call
 
-    setTimeout(() => this.setState({ refreshing: false }), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 500);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, focused}) =>
-    // const inputRange = navigationState.routes.map((x, i) => i);
-    // const outputRange = inputRange.map(
-    //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
-    // );
-    // const color = position.interpolate({
-    //   inputRange,
-    //   outputRange,
-    // });
-    // {
-    //   console.log('*** _renderLabel', route.title, focused);
-    //   return
+  _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
       (
-        <View style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          opacity: 1
-        }}>
+        <View style={styles.tabLabelContainer}>
+          <View style={[styles.tabQueueCounter, focused? null : { backgroundColor: '#0C4699' }]}>
+            <Text style={[styles.tabQueueCounterText, focused? null : { color: '#fff' }]}>
+              {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
+            </Text>
+          </View>
           <Text style={{
             fontFamily: 'Roboto-Medium',
             fontSize: 12,
@@ -101,35 +97,10 @@ class QueueScreen extends React.Component {
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle={{
-        height: 33,
-        width: 120,
-        alignItems: 'center',
-        justifyContent: 'center'
-
-      }}
-      style={{
-        height: 34,
-        width: 240,
-        borderWidth: 1,
-        borderColor: 'rgba(8,46,102,0.5)',
-        borderRadius: 16,
-        backgroundColor: '#115ECD',
-        marginLeft: 15,
-        marginBottom: 9
-       }}
+      tabStyle={styles.tab}
+      style={styles.tabContainer}
       renderLabel={this._renderLabel(props)}
-      indicatorStyle={{
-        borderWidth: 1,
-        borderColor: 'white',
-        borderRadius: 16,
-        backgroundColor: 'white',
-        height: 33,
-        shadowColor: '#000',
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.6,
-        shadowRadius: 1,
-       }}
+      indicatorStyle={styles.indicator}
     />
   )
 
@@ -381,6 +352,60 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     fontSize: 12,
     color: 'white',
+  },
+  indicator: {
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 16,
+    backgroundColor: 'white',
+    height: 33,
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+  },
+  tab: {
+     height: 33,
+     width: 120,
+     alignItems: 'center',
+     justifyContent: 'center'
+   },
+  tabContainer: {
+     height: 34,
+     width: 240,
+     borderWidth: 1,
+     borderColor: 'rgba(8,46,102,0.5)',
+     borderRadius: 16,
+     backgroundColor: '#115ECD',
+     marginLeft: 15,
+     marginBottom: 9
+  },
+  tabQueueCounter: {
+    backgroundColor: '#C3D6F1',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    // paddingHorizontal: 3,
+    paddingVertical: 0,
+    paddingHorizontal: 5,
+    marginRight: 3,
+  },
+  tabQueueCounterText: {
+    color: '#1963CE',
+    fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    padding: 0
+  },
+  tabLabelContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 1,
+    flexDirection: 'row'
+  },
+  navButton: {
+    color: 'white',
+    fontSize: 20,
+    marginLeft: 10
   }
-
 });
