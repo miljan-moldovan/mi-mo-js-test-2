@@ -263,6 +263,7 @@ export default class AppointmentNotesScreen extends Component {
         <View style={styles.notesScroller}>
           <ScrollView>
             <FlatList
+              extraData={this.props}
               keyExtractor={(item, index) => index}
               data={this.props.appointmentNotesState.filtered}
               renderItem={({ item, index }) => (

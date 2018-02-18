@@ -1,5 +1,5 @@
 export const ADD_NOTE = 'appointmentNotes/ADD_NOTE';
-export const CONCAT_NOTE = 'appointmentNotes/CONCAT_NOTE';
+export const SET_NOTES = 'appointmentNotes/SET_NOTES';
 export const SET_FILTERED_NOTES = 'appointmentNotes/SET_FILTERED_NOTES';
 
 
@@ -10,10 +10,10 @@ function addNote(note) {
   };
 }
 
-function concatNote(note) {
+function setNotes(notes) {
   return {
-    type: CONCAT_NOTE,
-    data: { note },
+    type: SET_NOTES,
+    data: { notes },
   };
 }
 
@@ -26,7 +26,7 @@ function setFilteredNotes(filtered) {
 
 const appointmentNotesActions = {
   addNote,
-  concatNote,
+  setNotes,
   setFilteredNotes,
 };
 

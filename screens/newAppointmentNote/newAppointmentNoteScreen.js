@@ -67,6 +67,12 @@ const Divider = () => (
 );
 
 class NewAppointmentNoteScreen extends Component {
+  static compareByDate(a, b) {
+    if (a.date < b.date) { return 1; }
+    if (a.date > b.date) { return -1; }
+    return 0;
+  }
+
   state = {
     sales: false,
     queue: false,
@@ -79,9 +85,8 @@ class NewAppointmentNoteScreen extends Component {
 
 
   componentWillMount() {
-    console.log('lalala');
     this.props.navigation.setParams({
-      handlePress: () => this.concatNote(),
+      handlePress: () => this.addNote(),
     });
   }
 
@@ -89,11 +94,21 @@ class NewAppointmentNoteScreen extends Component {
     this.setState({ dateModalVisible: true });
   }
 
-  concatNote() {
+  addNote() {
     if (this.state.isNoteComplete) {
-      console.log(this.props.appointmentNotesState.note);
+      let notes = this.props.appointmentNotesState.notes;
+      notes.push(JSON.parse(JSON.stringify(this.props.appointmentNotesState.note)));
 
-      this.props.appointmentNotesActions.concatNote(this.props.appointmentNotesState.note);
+      this.props.appointmentNotesActions.addNote({
+        id: 0,
+        date: '',
+        author: 'TEST USER',
+        note: '',
+        tags: [],
+      });
+
+      notes = notes.sort(NewAppointmentNoteScreen.compareByDate);
+      this.props.appointmentNotesActions.setNotes(notes);
       this.props.navigation.goBack();
     } else {
       alert('Please fill all the fields');

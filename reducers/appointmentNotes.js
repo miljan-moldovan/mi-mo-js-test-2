@@ -1,6 +1,6 @@
 import appointmentNotesActions, {
   ADD_NOTE,
-  CONCAT_NOTE,
+  SET_NOTES,
   SET_FILTERED_NOTES,
 } from '../actions/appointmentNotes';
 
@@ -33,11 +33,11 @@ export default function clientsReducer(state = initialState, action) {
         error: null,
         filtered: data.filtered,
       };
-    case CONCAT_NOTE:
+    case SET_NOTES:
       return {
         ...state,
         error: null,
-        notes: state.notes.concat(data.note),
+        notes: data.notes,
       };
     default:
       return state;
