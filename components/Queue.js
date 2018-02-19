@@ -22,6 +22,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import * as actions from '../actions/queue';
 import SideMenuItem from '../components/SideMenuItem';
+import CircularCountdown from '../components/CircularCountdown';
 import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
@@ -104,8 +105,14 @@ right;
     switch (item.status) {
       case 7:
         return (
-          <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
-            <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>FINISHED</Text>
+          <View style={styles.finishedContainer}>
+            <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
+              <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>FINISHED</Text>
+            </View>
+            <View style={styles.finishedTime}>
+              <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? {backgroundColor: '#D1242A'} : null]} />
+              <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{fontFamily: 'Roboto-Regular'}}>{item.estimatedTime}min est.</Text></Text>
+            </View>
           </View>
         );
       case 5:
@@ -122,19 +129,22 @@ right;
         );
       default:
         return (
-          <View style={{ flexDirection: 'row' }}>
-            <View style={styles.waitingTime}>
-              <Text style={styles.waitingTimeTextTop}>Waiting</Text>
-              <Text style={styles.waitingTimeTextMid}>{item.processTime}</Text>
-              <Text style={styles.waitingTimeTextBottom}>min</Text>
-            </View>
-            <View style={styles.waitingTime}>
-              <Text style={styles.waitingTimeTextTop}>Est. Wait</Text>
-              <Text style={styles.waitingTimeTextMid}>{item.estimatedTime}</Text>
-              <Text style={styles.waitingTimeTextBottom}>min</Text>
-            </View>
-          </View>
+          <CircularCountdown size={58} estimatedTime={item.estimatedTime} processTime={item.processTime} style={styles.circularCountdown} />
         );
+        // return (
+        //   <View style={{ flexDirection: 'row' }}>
+        //     <View style={styles.waitingTime}>
+        //       <Text style={styles.waitingTimeTextTop}>Waiting</Text>
+        //       <Text style={styles.waitingTimeTextMid}>{item.processTime}</Text>
+        //       <Text style={styles.waitingTimeTextBottom}>min</Text>
+        //     </View>
+        //     <View style={styles.waitingTime}>
+        //       <Text style={styles.waitingTimeTextTop}>Est. Wait</Text>
+        //       <Text style={styles.waitingTimeTextMid}>{item.estimatedTime}</Text>
+        //       <Text style={styles.waitingTimeTextBottom}>min</Text>
+        //     </View>
+        //   </View>
+        // );
     }
   }
   renderItem = ({ item, index }) => {
@@ -243,7 +253,7 @@ const styles = StyleSheet.create({
     marginTop: 4
   },
   itemSummary: {
-    marginLeft: 20,
+    marginLeft: 10,
     marginRight: 'auto',
     paddingRight: 10,
     flex: 1,
@@ -284,8 +294,10 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     paddingHorizontal: 5,
     paddingVertical: 2,
-    // color: 'white'
-
+  },
+  circularCountdown: {
+    marginRight: 15,
+    alignItems: 'center',
   },
   waitingTimeTextTop: {
     fontSize: 10,
@@ -312,5 +324,32 @@ const styles = StyleSheet.create({
     // padding: 0,
     color: '#7E8D98',
     paddingRight: 7
+  },
+  finishedContainer: {
+    height: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 15,
+  },
+  finishedTime: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    marginTop: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  finishedTimeText: {
+    fontSize: 9,
+    fontFamily: 'Roboto-Medium',
+    color: '#4D5067',
+  },
+  finishedTimeFlag: {
+    backgroundColor: '#31CF48',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 3,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'transparent'
   }
 });

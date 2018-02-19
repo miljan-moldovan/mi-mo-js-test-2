@@ -166,9 +166,9 @@ class QueueScreen extends React.Component {
         {/* <FloatingButton handlePress={this._handleWalkInPress}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
         </FloatingButton> */}
-        <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
+        {/* <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
-        </FloatingButton>
+        </FloatingButton> */}
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
           {[<View style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>

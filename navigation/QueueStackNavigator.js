@@ -166,7 +166,7 @@ const QueueStackNavigator = StackNavigator(
         backgroundColor: '#115ECD',
         paddingLeft: 10,
         paddingRight: 10,
-        height: 64,
+        height: 44,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,
