@@ -14,6 +14,7 @@ import {
   RefreshControl,
   Animated,
   Dimensions,
+  ActionSheetIOS
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -38,16 +39,40 @@ const initialLayout = {
 };
 
 
-
+const QueueNavButton = ({ icon, onPress }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
+    </TouchableOpacity>
+  )
+};
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const headerLeft =
-      <FontAwesome style={styles.navButton}>{Icons.bars}</FontAwesome>
-    ;
+      <QueueNavButton icon={Icons.bars} />
+      ;
+    const onActionPress = () => {
+      ActionSheetIOS.showActionSheetWithOptions({
+        // options: ['Cancel', 'Remove'],
+        options: ['Turn Away', 'Combine', 'Cancel'],
+        // destructiveButtonIndex: 1,
+        cancelButtonIndex: 2,
+      },
+      (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            navigation.navigate('TurnAway');
+            break;
+          case 1:
+            navigation.navigate('QueueCombine');
+            break;
+        }
+      });
+    };
     const headerRight =
       <View style={{flexDirection: 'row', justifyContent: 'space-between', width: 80}}>
-        <FontAwesome style={styles.navButton}>{Icons.ellipsisH}</FontAwesome>
-        <FontAwesome style={styles.navButton}>{Icons.search}</FontAwesome>
+        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress}/>
+        <QueueNavButton icon={Icons.search} />
       </View>
     ;
     return {

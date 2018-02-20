@@ -21,11 +21,16 @@ import Swipeable from 'react-native-swipeable';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import * as actions from '../actions/queue';
+import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
+
+
+
 import SideMenuItem from '../components/SideMenuItem';
 import CircularCountdown from '../components/CircularCountdown';
 import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
+
 
 class Queue extends React.Component {
   state = {
@@ -103,7 +108,7 @@ right;
   }
   getLabelForItem = (item) => {
     switch (item.status) {
-      case 7:
+      case QUEUE_ITEM_FINISHED:
         return (
           <View style={styles.finishedContainer}>
             <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
@@ -115,13 +120,13 @@ right;
             </View>
           </View>
         );
-      case 5:
+      case QUEUE_ITEM_RETURNING:
         return (
           <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
             <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>RETURNING</Text>
           </View>
         );
-      case 1:
+      case QUEUE_ITEM_NOT_ARRIVED:
         return (
           <View style={[styles.waitingTime, { backgroundColor: 'rgba(192,193,198,1)' }]}>
             <Text style={[styles.waitingTimeTextTop, {color: '#555'}]}>NOT ARRIVED</Text>
@@ -129,22 +134,14 @@ right;
         );
       default:
         return (
-          <CircularCountdown size={58} estimatedTime={item.estimatedTime} processTime={item.processTime} style={styles.circularCountdown} />
+          <CircularCountdown
+            size={58}
+            estimatedTime={item.estimatedTime}
+            processTime={item.processTime}
+            itemStatus={item.status}
+            style={styles.circularCountdown}
+          />
         );
-        // return (
-        //   <View style={{ flexDirection: 'row' }}>
-        //     <View style={styles.waitingTime}>
-        //       <Text style={styles.waitingTimeTextTop}>Waiting</Text>
-        //       <Text style={styles.waitingTimeTextMid}>{item.processTime}</Text>
-        //       <Text style={styles.waitingTimeTextBottom}>min</Text>
-        //     </View>
-        //     <View style={styles.waitingTime}>
-        //       <Text style={styles.waitingTimeTextTop}>Est. Wait</Text>
-        //       <Text style={styles.waitingTimeTextMid}>{item.estimatedTime}</Text>
-        //       <Text style={styles.waitingTimeTextBottom}>min</Text>
-        //     </View>
-        //   </View>
-        // );
     }
   }
   renderItem = ({ item, index }) => {
@@ -303,16 +300,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'OpenSans-Regular',
     color: '#999',
-  },
-  waitingTimeTextMid: {
-    fontSize: 24,
-    fontFamily: 'Roboto-Regular',
-    color: 'white'
-  },
-  waitingTimeTextBottom: {
-    fontSize: 10,
-    fontFamily: 'OpenSans-Regular',
-    color: 'rgba(181,60,60,1)',
   },
   listItem: {
     height: 75,

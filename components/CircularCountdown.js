@@ -3,6 +3,14 @@ import React, { Component } from 'react';
 import { View, Animated, StyleSheet, Text } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import {
+  QUEUE_ITEM_FINISHED,
+  QUEUE_ITEM_RETURNING,
+  QUEUE_ITEM_NOT_ARRIVED,
+  QUEUE_ITEM_CHECKEDIN,
+  QUEUE_ITEM_INSERVICE
+} from '../constants/QueueStatus.js';
+
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
   var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
   return {
@@ -26,17 +34,79 @@ function describeArc(x, y, radius, startAngle, endAngle){
 }
 const baseSize = 600,
       baseStrokeWidth = 40,
-      baseRadius = 285 - baseStrokeWidth / 2;
+      baseRadius = 285 - baseStrokeWidth / 2,
+      normal = '#31CE49',
+      warning = '#FCA301',
+      danger = '#D1242A';
 
 class CircularCountdown extends Component {
+    getStrokeColor() {
+      const { estimatedTime, processTime, status } = this.props;
+
+      switch (status) {
+        case QUEUE_ITEM_NOT_ARRIVED:
+           if (processTime != null && estimatedTime != null)
+           {
+             if (processTime > estimatedTime + 15 * 60)
+               return danger;
+             else if (processTime > estimatedTime + 60)
+               return warning;
+             else
+               return normal;
+           }
+           return normal;
+
+         case QUEUE_ITEM_RETURNING:
+           return normal;
+         case QUEUE_ITEM_CHECKEDIN:
+            // FIXME fix once appointment API is defined
+           // if (QueueType == QueueTypes.PosAppointment || estimatedTime == null)
+           // {
+           //   if (processTime > 30 * 60)
+           //     return danger;
+           //   else if (processTime > 15 * 60)
+           //     return warning;
+           //   else
+           //     return normal;
+           // }
+           // else
+           // {
+             if (processTime > estimatedTime + 15 * 60)
+               return danger;
+             else if (processTime > estimatedTime + 60)
+               return warning;
+             else
+               return normal;
+           // }
+         case QUEUE_ITEM_INSERVICE:
+           if (estimatedTime - processTime <= -15 * 60)
+             return danger;
+           else if (estimatedTime - processTime <= 0)
+             return warning;
+           else
+             return normal;
+             // not implemented in mobile
+         // case QUEUE_ITEM_FINISHED:
+         //   if (TimeSpanExtensions.Now - FinishServiceTime > new TimeSpan(0, 30, 0))
+         //     return danger;
+         //   else if (TimeSpanExtensions.Now - FinishServiceTime > new TimeSpan(0, 15, 0))
+         //     return warning;
+         //   else
+         //    return normal;
+         default:
+           return normal;
+      }
+    }
     render() {
-      const { size, estimatedTime, processTime, style } = this.props;
+      const { size, estimatedTime, processTime, style, status } = this.props;
       const strokeWidth = baseStrokeWidth * size/baseSize;
       const radius = baseRadius * size/baseSize; //((baseSize - 15 - 20) * size/baseSize - strokeWidth/2)/2;
       const progress = processTime / estimatedTime;
+      const delay = (estimatedTime - processTime) / 60;
 
       const fill = "transparent",
-            stroke = progress <= 1 ? '#31CE49' : (progress <= 1.2 ? '#FCA301' : '#D1242A'),
+            // stroke = progress <= 1 ? '#31CE49' : (progress <= 1.2 ? '#FCA301' : '#D1242A'),
+            stroke = this.getStrokeColor(),
             strokeLinecap="butt",
             arc = describeArc(size/2, size/2, radius, 0, 359.999 * ( progress > 1 ? 1 : progress )),
             backgroundArc = describeArc(size/2, size/2, radius, 0, 359.999);

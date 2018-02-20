@@ -7,22 +7,25 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+
+
 const ServiceIcons = ({ item }) => {
+  const {client} = item;
+  const clientInitials = client.name[0]+client.lastName[0];
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-      <FontAwesome style={{color: '#FFA300', marginRight: 3}}>{Icons.star}</FontAwesome>
-      <View style={styles.newClientTag}>
-        <Text style={styles.newClientTagText}>NL</Text>
-      </View>
-      <FontAwesome style={{color: '#115ECD', marginRight: 3, fontSize: 16}}>{Icons.gift}</FontAwesome>
+      {client.member ? star : null}
+      {client.newClientGlobal ? newGlobal : null}
+      {client.newClientLocal ? newLocal : null}
+      {client.birthday ? birthday : null}
       <View style={styles.clientGroupContainer}>
         <View style={styles.clientGroupLabelContainer}>
           <FontAwesome style={{fontSize: 10, padding: 0 }}>{Icons.userPlus}</FontAwesome>
-          <Text style={styles.clientGroupLabel}>LC</Text>
+          <Text style={styles.clientGroupLabel}>{clientInitials}</Text>
         </View>
         <Text style={styles.dollarSign}>$</Text>
       </View>
-      <FontAwesome style={{marginRight: 3}}>{Icons.tag}</FontAwesome>
+      {client.attributes && Object.keys(client.attributes).length ? tag : null}
     </View>
 
   );
@@ -75,3 +78,8 @@ const styles = StyleSheet.create({
     padding: 0
   }
 });
+const birthday = <FontAwesome style={{color: '#115ECD', marginRight: 3, fontSize: 16}}>{Icons.gift}</FontAwesome>;
+const tag = <FontAwesome style={{marginRight: 3}}>{Icons.tag}</FontAwesome>;
+const newGlobal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>NL</Text></View>;
+const newLocal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>N</Text></View>;
+const star = <FontAwesome style={{color: '#FFA300', marginRight: 3}}>{Icons.star}</FontAwesome>;
