@@ -24,6 +24,7 @@ const SalonIcon = props => (
     style={{
       height: props.size ? props.size : 30,
       width: props.size ? props.size : 30,
+      tintColor: props.tintColor ? props.tintColor : false,
     }}
     {...props}
     source={icons[props.icon]}

@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
     borderRadius: 5,
-    minHeight: 130,
+    // minHeight: 130,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -55,9 +55,11 @@ const salonCard = props => (
     <View style={styles.body}>
       {props.bodyChildren}
     </View>
-    <View style={styles.footer}>
-      {props.footerChildren}
-    </View>
+    {props.footerChildren.length > 0 && (
+      <View style={styles.footer}>
+        {props.footerChildren}
+      </View>
+    )}
   </View>
 );
 

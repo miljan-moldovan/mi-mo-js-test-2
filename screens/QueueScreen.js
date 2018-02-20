@@ -37,7 +37,6 @@ const initialLayout = {
 };
 
 
-
 class QueueScreen extends React.Component {
   static navigationOptions = {
     drawerLabel: props => (
@@ -69,7 +68,7 @@ class QueueScreen extends React.Component {
     setTimeout(() => this.setState({ refreshing: false }), 1000);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, focused}) =>
+  _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
     // const inputRange = navigationState.routes.map((x, i) => i);
     // const outputRange = inputRange.map(
     //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
@@ -81,22 +80,24 @@ class QueueScreen extends React.Component {
     // {
     //   console.log('*** _renderLabel', route.title, focused);
     //   return
-      (
-        <View style={{
+    (
+      <View style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          opacity: 1
-        }}>
+          opacity: 1,
+        }}
+        >
           <Text style={{
             fontFamily: 'Roboto-Medium',
             fontSize: 12,
-            color: focused ? '#115ECD' : 'white'
-          }}>
+            color: focused ? '#115ECD' : 'white',
+          }}
+          >
             {route.title}
           </Text>
         </View>
-      );
+    );
     // }
   _renderBar = props => (
     <TabBar
@@ -105,8 +106,7 @@ class QueueScreen extends React.Component {
         height: 33,
         width: 120,
         alignItems: 'center',
-        justifyContent: 'center'
-
+        justifyContent: 'center',
       }}
       style={{
         height: 34,
@@ -116,8 +116,8 @@ class QueueScreen extends React.Component {
         borderRadius: 16,
         backgroundColor: '#115ECD',
         marginLeft: 15,
-        marginBottom: 9
-       }}
+        marginBottom: 9,
+      }}
       renderLabel={this._renderLabel(props)}
       indicatorStyle={{
         borderWidth: 1,
@@ -157,8 +157,9 @@ class QueueScreen extends React.Component {
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
-    this.props.walkInActions.setEstimatedTime(17);
-    navigate('WalkIn');
+    navigate('AppointmentDetails');
+    // this.props.walkInActions.setEstimatedTime(17);
+    // navigate('WalkIn');
   }
 
   _handleWalkOutPress = () => {
@@ -381,6 +382,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     fontSize: 12,
     color: 'white',
-  }
+  },
 
 });

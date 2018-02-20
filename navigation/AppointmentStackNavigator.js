@@ -20,6 +20,7 @@ import SearchBar from '../components/searchBar';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 
 import NewAppointmentNoteScreen from './../screens/newAppointmentNote';
@@ -27,6 +28,9 @@ import NewAppointmentNoteHeader from '../screens/newAppointmentNote/components/n
 
 const AppointmentStackNavigator = StackNavigator(
   {
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
     Appointments: {
       screen: AppoinmentNotes,
     },
