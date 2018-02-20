@@ -21,12 +21,19 @@ import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
+import TurnAwayScreen from '../screens/turnAwayScreen';
 
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
 const QueueStackNavigator = StackNavigator(
   {
+    TurnAway: {
+      screen: TurnAwayScreen,
+      navigationOptions: {
+        headerTitle: 'Turn Away',
+      },
+    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
