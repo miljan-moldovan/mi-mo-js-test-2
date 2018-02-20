@@ -1,6 +1,6 @@
 const AppointmentNotes = {
   new: {
-    1: 'Note',
+    1: 'New Note',
   },
   update: {
     1: 'Edit Note',

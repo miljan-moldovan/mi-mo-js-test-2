@@ -77,7 +77,7 @@ class SalonDatePicker extends React.Component {
     this.props.onPress(day.dateString);
   }
 
-  hideModal() {
+  hideModal = () => {
     this.setState({ isVisible: false });
   }
   render() {

@@ -22,22 +22,22 @@ import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 
-import NewAppointmentNoteScreen from './../screens/newAppointmentNote';
-import NewAppointmentNoteHeader from '../screens/newAppointmentNote/components/newAppointmentNoteHeader';
+import AppointmentNoteScreen from './../screens/appointmentNote';
+import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
 const AppointmentStackNavigator = StackNavigator(
   {
     Appointments: {
       screen: AppoinmentNotes,
     },
-    NewAppointmentNote: {
-      screen: NewAppointmentNoteScreen,
+    AppointmentNote: {
+      screen: AppointmentNoteScreen,
       navigationOptions: rootProps => ({
         headerStyle: {
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <NewAppointmentNoteHeader rootProps={rootProps} />,
+        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,

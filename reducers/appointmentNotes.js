@@ -17,8 +17,8 @@ const initialState = {
   filterTypes: JSON.parse(JSON.stringify(AppointmentNotes.filterTypes)),
   note: {
     id: Math.random().toString(),
-    date: '',
-    author: '',
+    date: null,
+    author: null,
     note: '',
     tags: [],
     active: 1,
