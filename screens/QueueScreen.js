@@ -195,7 +195,7 @@ class QueueScreen extends React.Component {
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
         </FloatingButton> */}
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
-          {[<View style={styles.walkoutContainer}>
+          {[<View key={Math.random().toString()} style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>
               <Image style={styles.walkoutImage} source={require('../assets/images/walkoutModal/icon_walkout.png')} />
             </View>

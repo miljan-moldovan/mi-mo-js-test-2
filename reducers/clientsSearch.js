@@ -1,9 +1,9 @@
 import clientsSearchActions, {
   SET_CLIENTS,
   SET_SEARCH_TEXT,
-  SET_SHOW_WALKIN,
   SET_FILTERED_CLIENTS,
-  SET_PREPARED_CLIENTS,
+  SET_SELECTED_FILTER,
+  SET_SHOW_FILTER,
 } from '../actions/clientsSearch';
 
 const initialState = {
@@ -11,18 +11,13 @@ const initialState = {
   filtered: [],
   clients: [],
   searchText: '',
-  showWalkIn: false,
+  selectedFilter: 0,
+  showFilter: false,
 };
 
 export default function clientsSearchReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
-    case SET_PREPARED_CLIENTS:
-      return {
-        ...state,
-        error: null,
-        prepared: data.prepared,
-      };
     case SET_CLIENTS:
       return {
         ...state,
@@ -35,17 +30,23 @@ export default function clientsSearchReducer(state = initialState, action) {
         error: null,
         searchText: data.searchText,
       };
-    case SET_SHOW_WALKIN:
+    case SET_SELECTED_FILTER:
       return {
         ...state,
         error: null,
-        showWalkIn: data.showWalkIn,
+        selectedFilter: data.selectedFilter,
       };
     case SET_FILTERED_CLIENTS:
       return {
         ...state,
         error: null,
         filtered: data.filtered,
+      };
+    case SET_SHOW_FILTER:
+      return {
+        ...state,
+        error: null,
+        showFilter: data.showFilter,
       };
     default:
       return state;

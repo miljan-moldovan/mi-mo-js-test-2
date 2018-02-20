@@ -11,6 +11,8 @@ export const SET_SORT = 'clients/SET_SORT';
 export const SET_FILTER = 'clients/SET_FILTER';
 export const SET_SORT_TYPES = 'clients/SET_SORT_TYPES';
 export const SET_FILTER_TYPES = 'clients/SET_FILTER_TYPES';
+export const SET_SELECTED_FILTER = 'clientsSearch/SET_SELECTED_FILTER';
+
 
 function setSubtitle(subtitle) {
   return {
@@ -108,6 +110,13 @@ function setFilterTypes(filterTypes) {
   };
 }
 
+function setSelectedFilter(selectedFilter) {
+  return {
+    type: SET_SELECTED_FILTER,
+    data: { selectedFilter },
+  };
+}
+
 const clientsActions = {
   setSubtitle,
   setPreparedClients,
@@ -122,6 +131,7 @@ const clientsActions = {
   setFilter,
   setSortTypes,
   setFilterTypes,
+  setSelectedFilter,
 };
 
 export default clientsActions;

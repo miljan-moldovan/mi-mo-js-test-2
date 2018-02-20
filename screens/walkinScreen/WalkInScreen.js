@@ -1,21 +1,41 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  Switch,
+} from 'react-native';
 
 import rightArrow from '../../assets/images/walkinScreen/icon_arrow_right_xs.png';
 import serchImage from '../../assets/images/walkinScreen/icon_search_w.png';
 import infoImage from '../../assets/images/icons/icon_plus.png';
 import SalonAvatar from '../../components/SalonAvatar';
+import SalonIcon from '../../components/SalonIcon';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f3f4',
+    backgroundColor: '#F8F8F8',
   },
   titleContainer: {
-    backgroundColor: '#f3f3f4',
-    flex: 7,
+    backgroundColor: '#F8F8F8',
     justifyContent: 'center',
-    paddingLeft: 20,
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 4.5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#C0C1C6',
+    borderTopWidth: 1,
+    borderTopColor: '#C0C1C6',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#727A8F',
+    letterSpacing: 0,
   },
   inputContainer: {
     flex: 10,
@@ -53,13 +73,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     justifyContent: 'center',
     alignItems: 'center',
-
-  },
-  title: {
-    fontFamily: 'OpenSans-Bold',
-    fontSize: 12,
-    color: '#000',
-    letterSpacing: 1,
   },
   textInput: {
     fontFamily: 'OpenSans-Regular',
@@ -121,55 +134,70 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
     backgroundColor: 'transparent',
   },
+  inputGroup: {
+    backgroundColor: '#FFFFFF',
+    borderBottomColor: '#C0C1C6',
+    borderBottomWidth: 1,
+    flexDirection: 'column',
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  inputSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    alignSelf: 'stretch',
+  },
+  divider: {
+    height: 1,
+    alignSelf: 'stretch',
+    backgroundColor: '#C0C1C6',
+  },
+  placeholderText: {
+    color: '#727A8F',
+    fontSize: 14,
+    lineHeight: 22,
+    fontFamily: 'Roboto',
+  },
+  inputText: {
+    color: '#110A24',
+    fontSize: 14,
+    lineHeight: 22,
+    fontFamily: 'Roboto',
+  },
+  avatar: {
+    height: 30,
+    width: 30,
+    borderRadius: 30 / 2,
+    backgroundColor: '#C3D6F2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  avatarText: {
+    color: '#115ECD',
+    fontSize: 10,
+    lineHeight: 11,
+    fontFamily: 'Roboto',
+  },
 });
 
+const InputGroup = props => (
+  <View style={styles.inputGroup}>
+    {props.children}
+  </View>
+);
+
+const Divider = () => (
+  <View style={styles.divider} />
+);
+
 class WalkInScreen extends Component {
-  componentWillMount() {
-  }
-
-  componentDidMount() {
-  }
-
-  renderTitle = title => (
-    <View style={styles.titleContainer}>
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-
-  renderServiceButton = () => {
-    if (this.props.walkInState.selectedService !== null) {
-      return (
-        <TouchableOpacity
-          style={styles.listItemContainer}
-          onPress={this.handlePressService}
-        >
-          <View style={{ flexDirection: 'column' }}>
-            <Text style={styles.textInput}>{this.props.walkInState.selectedService.name}</Text>
-            <Text style={styles.serviceDuration}>{this.props.walkInState.selectedService.duration}min</Text>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.servicePrice}>$39</Text>
-            <Image source={rightArrow} />
-          </View>
-        </TouchableOpacity>
-      );
-    }
-
-    return (
-      <TouchableOpacity
-        style={styles.listItemContainer}
-        onPress={() => {
-          const { navigate } = this.props.navigation;
-
-          this.props.walkInActions.setCurrentStep(1);
-          navigate('Services');
-        }}
-      >
-        <Text style={styles.textInput}>Service</Text>
-        <Image source={rightArrow} />
-      </TouchableOpacity>
-    );
-  }
+  state = {
+    isWalkin: false,
+  };
 
   handlePressService = () => {
     const { navigate } = this.props.navigation;
@@ -179,42 +207,8 @@ class WalkInScreen extends Component {
     if (selectedService) {
       navigate('Services', { actionType: 'update' });
     } else {
-      navigate('Services');
+      navigate('Services', { actionType: 'update' });
     }
-  }
-
-  renderProviderButton = () => {
-    if (this.props.walkInState.selectedProvider !== null) {
-      return (
-        <TouchableOpacity
-          style={styles.listItemContainer}
-          onPress={this.handlePressProvider}
-        >
-          <View style={{ flex: 1, flexDirection: 'column' }}>
-            <Text style={styles.subTitle}>PROVIDER</Text>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={styles.providerImageContainer}>
-                <SalonAvatar width={30} wrapperStyle={styles.providerRound} image={this.props.walkInState.selectedProvider.imagePath} />
-              </View>
-              <View style={styles.providerData}>
-                <Text style={styles.providerName}>{this.props.walkInState.selectedProvider.name}</Text>
-              </View>
-            </View>
-          </View>
-          <Image source={rightArrow} />
-        </TouchableOpacity>
-      );
-    }
-
-    return (
-      <TouchableOpacity
-        style={styles.listItemContainer}
-        onPress={this.handlePressProvider}
-      >
-        <Text style={styles.textInput}>Provider</Text>
-        <Image source={rightArrow} />
-      </TouchableOpacity>
-    );
   }
 
   handlePressProvider = () => {
@@ -225,49 +219,114 @@ class WalkInScreen extends Component {
     if (selectedProvider) {
       navigate('Providers', { actionType: 'update' });
     } else {
-      navigate('Providers');
+      navigate('Providers', { actionType: 'update' });
     }
   }
 
-  renderPromoButton = () => {
-    const { selectedPromotion } = this.props.walkInState;
-
-    if (selectedPromotion) {
-      return (
-        <TouchableOpacity
-          style={styles.listItemContainer}
-          onPress={this.handlePressPromo}
-        >
-          <View style={{ flexDirection: 'column' }}>
-            <Text style={styles.subTitle}>PROMO</Text>
-            <Text style={styles.textInput}>{selectedPromotion.name}</Text>
-          </View>
-          <Image source={rightArrow} />
-        </TouchableOpacity>
-      );
-    }
-
-    return (
-      <TouchableOpacity
-        style={styles.listItemContainer}
-        onPress={this.handlePressPromo}
-      >
-        <Text style={styles.textInput}>Promo</Text>
-        <Image source={rightArrow} />
-      </TouchableOpacity>
-    );
-  }
-
-  handlePressPromo = () => {
+  handlePressClient = () => {
     const { navigate } = this.props.navigation;
-    const { selectedPromotion } = this.props.walkInState;
+    const { selectedClient } = this.props.walkInState;
 
     this.props.walkInActions.setCurrentStep(4);
-    if (selectedPromotion) {
-      navigate('Promotions', { actionType: 'update' });
+    if (selectedClient) {
+      navigate('ClientsSearch', { actionType: 'update' });
     } else {
-      navigate('Promotions');
+      navigate('ClientsSearch', { actionType: 'update' });
     }
+  }
+
+  renderClientGroup = () => (
+    <InputGroup>
+      <View style={styles.inputSection}>
+        <Text style={styles.placeholderText}>Walk-in Client?</Text>
+        <Switch onChange={() => { this.setState({ isWalkin: !this.state.isWalkin }); }} value={this.state.isWalkin} />
+      </View>
+      {!this.state.isWalkin ? (
+        <View style={{ alignSelf: 'stretch' }}>
+          <Divider />
+          <TouchableOpacity style={{ alignSelf: 'stretch' }} onPress={this.handlePressClient}>
+            <View style={styles.inputSection}>
+              <Text style={this.props.walkInState.selectedClient === null ? styles.placeholderText : styles.inputText}>{this.props.walkInState.selectedClient === null ? 'Name' : this.props.walkInState.selectedClient.name}</Text>
+              <SalonIcon size={15} icon="caretRight" />
+            </View>
+          </TouchableOpacity>
+          <Divider />
+          <View style={styles.inputSection}>
+            <Text style={this.props.walkInState.selectedClient === null ? styles.placeholderText : styles.inputText}>{this.props.walkInState.selectedClient === null ? 'Email' : this.props.walkInState.selectedClient.email}</Text>
+          </View>
+          <Divider />
+          <View style={[styles.inputSection, { borderBottomWidth: 0 }]}>
+            <Text style={this.props.walkInState.selectedClient === null ? styles.placeholderText : styles.inputText}>{this.props.walkInState.selectedClient === null ? 'Phone number' : this.props.walkInState.selectedClient.phone}</Text>
+          </View>
+        </View>
+      ) : (
+        null
+      )}
+    </InputGroup>
+  );
+
+  renderServiceGroup = () => {
+    const { selectedService } = this.props.walkInState;
+
+    return (
+      <InputGroup>
+        {selectedService ? (
+          <TouchableOpacity onPress={this.handlePressService} style={{ alignSelf: 'stretch' }}>
+            <View style={[styles.inputSection, { borderBottomWidth: 0 }]}>
+              <Text style={styles.inputText}>{selectedService.name}</Text>
+              <SalonIcon icon="caretRight" size={15} />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={this.handlePressService} style={{ alignSelf: 'stretch' }}>
+            <View style={[styles.inputSection, { borderBottomWidth: 0 }]}>
+              <Text style={styles.placeholderText}>Choose service</Text>
+              <SalonIcon icon="caretRight" size={15} />
+            </View>
+          </TouchableOpacity>
+        )}
+
+      </InputGroup>
+    );
+  }
+  renderTitle = title => (
+    <View style={styles.titleContainer}>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+
+  renderProviderGroup = () => {
+    const { selectedProvider } = this.props.walkInState;
+
+    return (
+      <InputGroup>
+        {selectedProvider ? (
+          <TouchableOpacity onPress={this.handlePressProvider} style={{ alignSelf: 'stretch' }}>
+            <View style={[styles.inputSection, { borderBottomWidth: 0 }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>FA</Text>
+                </View>
+                <Text style={styles.inputText}>{selectedProvider.name}</Text>
+              </View>
+              <SalonIcon icon="caretRight" size={15} />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={this.handlePressProvider} style={{ alignSelf: 'stretch' }}>
+            <View style={[styles.inputSection, { borderBottomWidth: 0 }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>FA</Text>
+                </View>
+                <Text style={styles.inputText}>First Available</Text>
+              </View>
+              <SalonIcon icon="caretRight" size={15} />
+            </View>
+          </TouchableOpacity>
+        )}
+      </InputGroup>
+    );
   }
 
   renderClientButton = () => {
@@ -343,14 +402,11 @@ class WalkInScreen extends Component {
     return (
       <View style={styles.container}>
         {this.renderTitle('CLIENT INFO')}
-        {this.renderClientButton()}
+        {this.renderClientGroup()}
         {this.renderTitle('SERVICE')}
-        {this.renderServiceButton()}
-        {this.renderProviderButton()}
-        {this.renderPromoButton()}
-        <View style={styles.btnContainer}>
-          <Text style={styles.textBtn}>ADD TO QUEUE</Text>
-        </View>
+        {this.renderServiceGroup()}
+        {this.renderTitle('PROVIDER')}
+        {this.renderProviderGroup()}
       </View>
     );
   }
