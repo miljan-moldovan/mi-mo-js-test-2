@@ -35,7 +35,7 @@ const salonTag = (props) => {
   return (
 
     <TouchableHighlight
-      onPress={onPress}
+      onPress={() => onPress(props.value)}
       underlayColor="transparent"
       style={styles.btnContainer}
     >

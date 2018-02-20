@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     fontFamily: 'Roboto',
+    marginRight: 5,
   },
 });
 
@@ -99,24 +100,32 @@ class NewAppointmentNoteScreen extends Component {
       let notes = this.props.appointmentNotesState.notes;
       notes.push(JSON.parse(JSON.stringify(this.props.appointmentNotesState.note)));
 
+      this.props.appointmentNotesActions.selectProvider(null);
+
       this.props.appointmentNotesActions.addNote({
-        id: 0,
+        id: Math.random().toString(),
         date: '',
-        author: 'TEST USER',
+        author: '',
         note: '',
         tags: [],
+        active: 1,
       });
 
       notes = notes.sort(NewAppointmentNoteScreen.compareByDate);
       this.props.appointmentNotesActions.setNotes(notes);
+      this.props.appointmentNotesActions.setFilteredNotes(notes);
+      this.props.appointmentNotesActions.selectedFilterTypes([]);
       this.props.navigation.goBack();
     } else {
       alert('Please fill all the fields');
     }
   }
 
-  handlePressClient() {
-
+  onChangeProvider = (provider) => {
+    this.props.appointmentNotesActions.selectProvider(provider);
+    const note = this.props.appointmentNotesState.note;
+    note.author = `${provider.name} ${provider.lastName}`;
+    this.props.appointmentNotesActions.addNote(note);
   }
 
   setNoteProperty(name, value) {
@@ -135,15 +144,39 @@ class NewAppointmentNoteScreen extends Component {
   }
 
 
-  renderNoteGroup = () => (
-    <InputGroup>
+  renderNoteGroup = () => {
+    const { selectedProvider } = this.props.appointmentNotesState;
+    return (<InputGroup>
       <View style={styles.inputSection}>
-        <Text style={styles.placeholderText}>Added by</Text>
-        <TouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.handlePressClient()}>
-          <View style={styles.inputSection}>
-            <SalonIcon size={15} icon="caretRight" style={{ tintColor: '#727A8F' }} />
-          </View>
-        </TouchableOpacity>
+        {selectedProvider ? (
+          <TouchableOpacity onPress={this.handlePressProvider} style={{ width: '100%', flexDirection: 'row' }}>
+            <View style={[styles.inputSection, {
+ borderBottomWidth: 0, width: '70%', flexDirection: 'row', justifyContent: 'flex-start',
+}]}
+            >
+              <Text style={styles.placeholderText}>Added by</Text>
+              <Text style={styles.inputText}>{selectedProvider.name} {selectedProvider.lastName}</Text>
+            </View>
+            <View style={[styles.inputSection, {
+ borderBottomWidth: 0, width: '30%', flexDirection: 'row', justifyContent: 'flex-end',
+}]}
+            >
+              <SalonIcon icon="caretRight" size={15} />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={this.handlePressProvider} style={{ width: '100%', flexDirection: 'row' }}>
+            <View style={[styles.inputSection, { borderBottomWidth: 0, width: '70%', flexDirection: 'row' }]}>
+              <Text style={styles.placeholderText}>Added by</Text>
+            </View>
+            <View style={[styles.inputSection, {
+ borderBottomWidth: 0, width: '30%', flexDirection: 'row', justifyContent: 'flex-end',
+}]}
+            >
+              <SalonIcon icon="caretRight" size={15} />
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
       <Divider />
       <View style={styles.inputSection}>
@@ -169,8 +202,8 @@ class NewAppointmentNoteScreen extends Component {
           value={this.state.note}
         />
       </View>
-    </InputGroup>
-  );
+    </InputGroup>);
+  }
 
   renderNoteTypeGroup = () => (
     <InputGroup>
@@ -215,6 +248,35 @@ class NewAppointmentNoteScreen extends Component {
     </View>
   );
 
+  handlePressProvider = () => {
+    const { navigate } = this.props.navigation;
+    const { selectedProvider } = this.props.appointmentNotesState;
+
+    this.props.walkInActions.setCurrentStep(3);
+
+    if (selectedProvider) {
+      navigate('Providers', {
+        actionType: 'update',
+        dismissOnSelect: this.dismissOnSelect,
+        onChangeProvider: this.onChangeProvider,
+        ...this.props,
+      });
+    } else {
+      navigate('Providers', {
+        actionType: 'new',
+        dismissOnSelect: this.dismissOnSelect,
+        onChangeProvider: this.onChangeProvider,
+        ...this.props,
+      });
+    }
+  }
+
+
+  dismissOnSelect() {
+    const { navigate } = this.props.navigation;
+    const { selectedProvider } = this.props.appointmentNotesState;
+    navigate('NewAppointmentNoteScreen');
+  }
 
   render() {
     return (

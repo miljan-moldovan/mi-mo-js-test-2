@@ -17,6 +17,7 @@ const icons = {
   microphone: require('../assets/images/icons/icon_microphone.png'),
   check: require('../assets/images/icons/icon_check.png'),
   dots: require('../assets/images/icons/icon_dots.png'),
+  unchecked: require('../assets/images/icons/icon_unchecked.png'),
 };
 
 const SalonIcon = props => (

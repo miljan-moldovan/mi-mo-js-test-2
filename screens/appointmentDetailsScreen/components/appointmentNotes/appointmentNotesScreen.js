@@ -6,14 +6,25 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
-
+import ActionSheet from '@yfuks/react-native-action-sheet';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
 import SalonIcon from '../../../../components/SalonIcon';
 import SalonBtnFixedBottom from '../../../../components/SalonBtnFixedBottom';
 import SalonTag from '../../../../components/SalonTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
+import AppointmentNotes from '../../../../constants/AppointmentNotes';
+
+const BUTTONS = [
+  'Edit Note',
+  'Delete Note',
+  'Cancel',
+];
+
+const DESTRUCTIVE_INDEX = 1;
+const CANCEL_INDEX = 2;
 
 const styles = StyleSheet.create({
   container: {
@@ -172,14 +183,84 @@ export default class AppointmentNotesScreen extends Component {
   constructor(props) {
     super(props);
 
-    const notes = props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
-
+    let notes = props.appointmentNotesState.notes.filter(el => el.active === 1);
+    notes = notes.sort(AppointmentNotesScreen.compareByDate);
     props.appointmentNotesActions.setFilteredNotes(notes);
   }
 
   componentWillMount() {
-    const notes = this.props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
+    let notes = this.props.appointmentNotesState.notes.filter(el => el.active === 1);
+    notes = notes.sort(AppointmentNotesScreen.compareByDate);
     this.props.appointmentNotesActions.setFilteredNotes(notes);
+  }
+
+
+  showActionSheet = (note) => {
+    ActionSheet.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        tintColor: 'blue',
+      },
+      (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            this.editNote(note);
+            break;
+          case 1:
+            this.deleteNoteAlert(note);
+            break;
+          default:
+            break;
+        }
+      },
+    );
+  };
+
+  deleteNoteAlert(note) {
+    Alert.alert(
+      'Delete Note',
+      'Are you sure you want to delete this note?',
+      [
+        { text: 'Cancel', onPress: () => null, style: 'cancel' },
+        { text: 'OK', onPress: () => this.deleteNote(note) },
+      ],
+      { cancelable: false },
+    );
+  }
+
+  deleteNote(note) {
+    note.active = 0;
+    let notes = this.props.appointmentNotesState.notes.filter(el => el.active === 1);
+    notes = notes.sort(AppointmentNotesScreen.compareByDate);
+
+    this.props.appointmentNotesActions.setNotes(notes);
+    this.props.appointmentNotesActions.setFilteredNotes(notes);
+  }
+
+
+  editNote(note) {
+    this.props.appointmentNotesActions.setOnEditionNote(note);
+    const { navigate } = this.props.navigation;
+    navigate('NewAppointmentNote', {
+      actionType: 'update',
+      note,
+      ...this.props,
+    });
+  }
+
+  onPressTagFilter = (value) => {
+    let filterTypes = this.props.appointmentNotesState.filterTypes;
+
+    if (filterTypes.indexOf(value) > -1) {
+      filterTypes = filterTypes.splice(filterTypes.indexOf(value), 1);
+    } else {
+      filterTypes.push(value);
+    }
+
+    // this.props.appointmentNotesActions.selectedFilterTypes(filterTypes);
+    this.filterNotes();
   }
 
   filterNotes(searchText) {
@@ -195,9 +276,32 @@ export default class AppointmentNotesScreen extends Component {
         criteria,
       );
 
-      this.props.appointmentNotesActions.setFilteredNotes(filtered);
+      let tagNotes = [];
+
+      for (let i = 0; i < filtered.length; i++) {
+        const note = filtered[i];
+        const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
+        if (found) {
+          tagNotes.push(note);
+        }
+      }
+
+      tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
+
+      this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
     } else {
-      this.props.appointmentNotesActions.setFilteredNotes(this.props.appointmentNotesState.notes);
+      let tagNotes = [];
+
+      for (let i = 0; i < this.props.appointmentNotesState.notes.length; i++) {
+        const note = this.props.appointmentNotesState.notes[i];
+        const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
+        if (found) {
+          tagNotes.push(note);
+        }
+      }
+
+      tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
+      this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
     }
   }
 
@@ -219,49 +323,29 @@ export default class AppointmentNotesScreen extends Component {
             />
           </View>
           <View style={styles.tagsBar} >
-            <View style={styles.tag}>
-              <SalonTag
-                key={Math.random().toString()}
-                iconSize={13}
-                icon="check"
-                iconColor="#FFFFFF"
-                tagHeight={24}
-                backgroundColor="#1DBF12"
-                value="Queue"
-                valueSize={10}
-                valueColor="#FFFFFF"
-              />
-            </View>
-            <View style={styles.tag}>
-              <SalonTag
-                key={Math.random().toString()}
-                iconSize={13}
-                icon="check"
-                iconColor="#FFFFFF"
-                tagHeight={24}
-                backgroundColor="#1DBF12"
-                value="Sales"
-                valueSize={10}
-                valueColor="#FFFFFF"
-              />
-            </View>
-            <View style={styles.tag}>
-              <SalonTag
-                key={Math.random().toString()}
-                iconSize={13}
-                icon="check"
-                iconColor="#FFFFFF"
-                tagHeight={24}
-                backgroundColor="#1DBF12"
-                value="Appointment"
-                valueSize={10}
-                valueColor="#FFFFFF"
-              />
-            </View>
+
+            {AppointmentNotes.filterTypes.map((filterType) => {
+              const isSelected = this.props.appointmentNotesState.filterTypes.indexOf(filterType) > -1;
+
+              return (<View key={Math.random().toString()} style={styles.tag}>
+                <SalonTag
+                  iconSize={13}
+                  onPress={this.onPressTagFilter}
+                  icon={isSelected ? 'check' : 'unchecked'}
+                  iconColor={isSelected ? '#FFFFFF' : '#727A8F'}
+                  tagHeight={24}
+                  backgroundColor={isSelected ? '#1DBF12' : '#FFFFFF'}
+                  value={filterType}
+                  valueSize={10}
+                  valueColor={isSelected ? '#FFFFFF' : '#727A8F'}
+                />
+              </View>);
+            })}
+
           </View>
         </View>
         <View style={styles.notesScroller}>
-          <ScrollView>
+          <ScrollView style={{ alignSelf: 'stretch' }}>
             <FlatList
               extraData={this.props}
               keyExtractor={(item, index) => index}
@@ -290,7 +374,7 @@ export default class AppointmentNotesScreen extends Component {
                       <View style={styles.noteHeaderRight}>
                         <TouchableOpacity
                           style={styles.dotsButton}
-                          onPress={() => { alert(item.id); }}
+                          onPress={() => { this.showActionSheet(item); }}
                         >
                           <SalonIcon
                             size={16}
@@ -318,7 +402,11 @@ export default class AppointmentNotesScreen extends Component {
 
               <TouchableOpacity
                 style={styles.showDeletedButton}
-                onPress={() => {}}
+                onPress={() => {
+                  const notes = this.props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
+                  this.props.appointmentNotesActions.setNotes(notes);
+                  this.filterNotes();
+                }}
               >
                 <Text style={styles.showDeletedText}>Show deleted</Text>
               </TouchableOpacity>

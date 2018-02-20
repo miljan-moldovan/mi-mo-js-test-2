@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':@yfuks/react-native-action-sheet')
     compile project(':react-native-picker')
     compile project(':react-native-touch-id')
     compile fileTree(dir: "libs", include: ["*.jar"])

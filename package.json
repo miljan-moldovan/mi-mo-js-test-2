@@ -8,6 +8,7 @@
     "bundle:ios": "react-native bundle --entry-file ./index.js --platform ios --bundle-output ios/SalonUltimateRN/main.jsbundle"
   },
   "dependencies": {
+    "@yfuks/react-native-action-sheet": "0.0.4",
     "axios": "^0.17.1",
     "moment": "^2.20.1",
     "native-base": "^2.3.7",

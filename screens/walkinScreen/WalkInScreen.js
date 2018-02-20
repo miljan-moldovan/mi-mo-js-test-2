@@ -202,12 +202,12 @@ class WalkInScreen extends Component {
   handlePressService = () => {
     const { navigate } = this.props.navigation;
     const { selectedService } = this.props.walkInState;
-    this.props.walkInActions.setCurrentStep(3);
+    this.props.walkInActions.setCurrentStep(2);
 
     if (selectedService) {
       navigate('Services', { actionType: 'update' });
     } else {
-      navigate('Services', { actionType: 'update' });
+      navigate('Services', { actionType: 'new' });
     }
   }
 
@@ -219,7 +219,7 @@ class WalkInScreen extends Component {
     if (selectedProvider) {
       navigate('Providers', { actionType: 'update' });
     } else {
-      navigate('Providers', { actionType: 'update' });
+      navigate('Providers', { actionType: 'new' });
     }
   }
 
@@ -227,11 +227,11 @@ class WalkInScreen extends Component {
     const { navigate } = this.props.navigation;
     const { selectedClient } = this.props.walkInState;
 
-    this.props.walkInActions.setCurrentStep(4);
+    this.props.walkInActions.setCurrentStep(5);
     if (selectedClient) {
       navigate('ClientsSearch', { actionType: 'update' });
     } else {
-      navigate('ClientsSearch', { actionType: 'update' });
+      navigate('ClientsSearch', { actionType: 'new' });
     }
   }
 
