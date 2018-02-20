@@ -74,9 +74,9 @@ export default class AppointmentDetailsScreen extends React.Component {
   );
 
   _renderScene = SceneMap({
-    0: AppoinmentNotes,
-    1: AppoinmentNotes,
-    2: AppointmentFormulas,
+    0: () => <AppoinmentNotes navigation={this.props.navigation} />,
+    1: () => <AppoinmentNotes navigation={this.props.navigation} />,
+    2: () => <AppointmentFormulas navigation={this.props.navigation} />,
   });
 
   render() {

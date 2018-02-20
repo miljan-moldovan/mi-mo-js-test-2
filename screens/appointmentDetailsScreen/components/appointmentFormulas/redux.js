@@ -2,10 +2,10 @@ export const ADD_FORMULA = 'appointmentFormulas/ADD_FORMULA';
 export const SET_FORMULAS = 'appointmentFormulas/SET_FORMULAS';
 export const SET_FILTERED_FORMULAS = 'appointmentFormulas/SET_FILTERED_FORMULAS';
 
-const appointmentNotes = require('../../../../mockData/appointmentNotes.json');
+const formulas = require('../../../../mockData/appointmentFormulas.json');
 
 const initialState = {
-  formulas: appointmentNotes,
+  formulas,
   filtered: [],
   newFormula: {
     id: 0,

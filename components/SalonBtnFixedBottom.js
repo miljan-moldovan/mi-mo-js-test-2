@@ -22,12 +22,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    borderTopLeftRadius: 9,
+    borderTopRightRadius: 9,
   },
   text: {
     fontFamily: 'OpenSans-Regular',
     color: '#1D1D26',
   },
-
 });
 
 const salonBtnFixedBottom = props => (

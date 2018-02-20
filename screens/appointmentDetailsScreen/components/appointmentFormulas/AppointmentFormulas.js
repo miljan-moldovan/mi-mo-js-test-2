@@ -155,9 +155,26 @@ const styles = StyleSheet.create({
   italicText: {
     fontStyle: 'italic',
   },
+  fixedBtnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
+  fixedBtnText: {
+    fontSize: 12,
+    lineHeight: 12,
+    color: '#FFFFFF',
+  },
+  fixedBtnIconContainer: {
+    height: 24,
+    width: 24,
+    borderRadius: 24 / 2,
+    backgroundColor: '#4D5067',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
-
-// const notes = require('../../../mockData/clientDetails/notes.json');
 
 export default class AppointmentFormulas extends Component {
   static flexFilter(list, info) {
@@ -201,11 +218,24 @@ export default class AppointmentFormulas extends Component {
     this.props.appointmentFormulasActions.setFilteredFormulas(formulas);
   }
 
+  existingCategories = () => {
+    const { formulas } = this.props.appointmentFormulasState;
+    const existing = [];
+    for (let i = 0; i < formulas.length; i += 1) {
+      if (existing.indexOf(formulas[i].category) < 0) {
+        existing.push(formulas[i].category);
+      }
+    }
+
+    return existing;
+  }
+
   filterNotes(searchText) {
     if (searchText && searchText.length > 0) {
       const criteria = [
-        { Field: 'author', Values: [searchText.toLowerCase()] },
-        { Field: 'note', Values: [searchText.toLowerCase()] },
+        { Field: 'provider', Values: [searchText.toLowerCase()] },
+        { Field: 'service', Values: [searchText.toLowerCase()] },
+        { Field: 'category', Values: [searchText.toLowerCase()] },
         { Field: 'date', Values: [searchText.toLowerCase()] },
       ];
 
@@ -238,45 +268,21 @@ export default class AppointmentFormulas extends Component {
             />
           </View>
           <View style={styles.tagsBar} >
-            <View style={styles.tag}>
-              <SalonTag
-                key={Math.random().toString()}
-                iconSize={13}
-                icon="check"
-                iconColor="#FFFFFF"
-                tagHeight={24}
-                backgroundColor="#1DBF12"
-                value="Queue"
-                valueSize={10}
-                valueColor="#FFFFFF"
-              />
-            </View>
-            <View style={styles.tag}>
-              <SalonTag
-                key={Math.random().toString()}
-                iconSize={13}
-                icon="check"
-                iconColor="#FFFFFF"
-                tagHeight={24}
-                backgroundColor="#1DBF12"
-                value="Sales"
-                valueSize={10}
-                valueColor="#FFFFFF"
-              />
-            </View>
-            <View style={styles.tag}>
-              <SalonTag
-                key={Math.random().toString()}
-                iconSize={13}
-                icon="check"
-                iconColor="#FFFFFF"
-                tagHeight={24}
-                backgroundColor="#1DBF12"
-                value="Appointment"
-                valueSize={10}
-                valueColor="#FFFFFF"
-              />
-            </View>
+            {this.existingCategories().map(item => (
+              <View style={styles.tag}>
+                <SalonTag
+                  key={Math.random().toString()}
+                  iconSize={13}
+                  icon="check"
+                  iconColor="#FFFFFF"
+                  tagHeight={24}
+                  backgroundColor="#1DBF12"
+                  value={item}
+                  valueSize={10}
+                  valueColor="#FFFFFF"
+                />
+              </View>
+            ))}
           </View>
         </View>
         <View style={styles.notesScroller}>
@@ -300,17 +306,14 @@ export default class AppointmentFormulas extends Component {
                           valueSize={12}
                         />
                       </View>
-                      <Text style={styles.formulaType}>MASSAGE</Text>
+                      <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
                     </View>]}
 
                   bodyChildren={[
-                    <View style={{
-                      flexDirection: 'column', width: '100%', alignSelf: 'stretch', flex: 1,
-                      }}
-                    >
+                    <View style={{ flexDirection: 'column' }}>
                       <Text style={styles.noteText}>
-                        <Text style={[styles.noteText, styles.boldText]}>Derma Treatment</Text>
-                        <Text style={styles.italicText}> by</Text> Amanda Styles
+                        <Text style={[styles.noteText, styles.boldText]}>{item.service}</Text>
+                        <Text style={styles.italicText}> by</Text> {item.provider}
                       </Text>
                       <Text
                         key={Math.random().toString()}
@@ -338,36 +341,14 @@ export default class AppointmentFormulas extends Component {
           backgroundColor="#727A8F"
           onPress={() => {
             const { navigate } = this.props.navigation;
-            navigate('NewAppointmentFormula');
+            navigate('WalkIn');
           }}
           valueSize={13}
           valueColor="#FFFFFF"
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignSelf: 'stretch',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{
-              fontSize: 12,
-              lineHeight: 12,
-              color: '#FFFFFF',
-            }}
-            >Add Formula
-            </Text>
-            <View
-              style={{
-                height: 24,
-                width: 24,
-                borderRadius: 24 / 2,
-                backgroundColor: '#4D5067',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+          <View style={styles.fixedBtnContainer}>
+            <Text style={styles.fixedBtnText}>Add Formula</Text>
+            <View style={styles.fixedBtnIconContainer}>
               <SalonIcon tintColor="#FFFFFF" icon="plus" size={12} />
             </View>
           </View>
