@@ -22,12 +22,16 @@ import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 
 import NewAppointmentNoteScreen from './../screens/newAppointmentNote';
 import NewAppointmentNoteHeader from '../screens/newAppointmentNote/components/newAppointmentNoteHeader';
 
 const AppointmentStackNavigator = StackNavigator(
   {
+    AppointmentFormula: {
+      screen: AppointmentFormula,
+    },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
     },

@@ -341,7 +341,7 @@ export default class AppointmentFormulas extends Component {
           backgroundColor="#727A8F"
           onPress={() => {
             const { navigate } = this.props.navigation;
-            navigate('WalkIn');
+            navigate('AppointmentFormula');
           }}
           valueSize={13}
           valueColor="#FFFFFF"
