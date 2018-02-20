@@ -8,6 +8,7 @@ import ImageHeader from '../components/ImageHeader';
 import SearchBar from '../components/searchBar';
 
 import QueueScreen from './../screens/QueueScreen';
+import QueueCombineScreen from './../screens/QueueCombineScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
@@ -44,6 +45,9 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueDetail: {
       screen: QueueDetailScreen,
+    },
+    QueueCombine: {
+      screen: QueueCombineScreen,
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -163,14 +167,19 @@ const QueueStackNavigator = StackNavigator(
   {
     navigationOptions: {
       headerStyle: {
-        backgroundColor: 'transparent',
+        backgroundColor: '#115ECD',
         paddingLeft: 10,
         paddingRight: 10,
+        height: 44,
+        borderWidth: 0,
+        shadowColor: 'transparent',
+        elevation: 0,
+        borderBottomWidth: 0,
+
       },
-      header: props => <ImageHeader {...props} />,
       headerTitleStyle: {
-        fontFamily: 'OpenSans-Regular',
-        fontSize: 20,
+        fontFamily: 'Roboto-Regular',
+        fontSize: 17,
         color: '#fff',
       },
       drawerLabel: props => (

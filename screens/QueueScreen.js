@@ -14,12 +14,14 @@ import {
   RefreshControl,
   Animated,
   Dimensions,
+  ActionSheetIOS
 } from 'react-native';
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
@@ -36,21 +38,53 @@ const initialLayout = {
   width: Dimensions.get('window').width,
 };
 
+
+const QueueNavButton = ({ icon, onPress }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
+    </TouchableOpacity>
+  )
+};
 class QueueScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Queue"
-        icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
-      />
-    ),
-  };
+  static navigationOptions = ({ navigation }) => {
+    const headerLeft =
+      <QueueNavButton icon={Icons.bars} />
+      ;
+    const onActionPress = () => {
+      ActionSheetIOS.showActionSheetWithOptions({
+        // options: ['Cancel', 'Remove'],
+        options: ['Turn Away', 'Combine', 'Cancel'],
+        // destructiveButtonIndex: 1,
+        cancelButtonIndex: 2,
+      },
+      (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            navigation.navigate('TurnAway');
+            break;
+          case 1:
+            navigation.navigate('QueueCombine');
+            break;
+        }
+      });
+    };
+    const headerRight =
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', width: 80}}>
+        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress}/>
+        <QueueNavButton icon={Icons.search} />
+      </View>
+    ;
+    return {
+      headerLeft,
+      headerRight
+    };
+  }
   state = {
     refreshing: false,
     routes: [
-      { key: WAITING, title: 'SCHEDULE/WAITING' },
-      { key: SERVICED, title: 'BEING SERVICED' },
+      { key: WAITING, title: 'Waiting' },
+      { key: SERVICED, title: 'In Service' },
     ],
     index: 0,
     isWalkoutVisible: false,
@@ -64,31 +98,34 @@ class QueueScreen extends React.Component {
     // FIXME this._refreshData();
     // emulate refresh call
 
-    setTimeout(() => this.setState({ refreshing: false }), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 500);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, index }) =>
-    // const inputRange = navigationState.routes.map((x, i) => i);
-    // const outputRange = inputRange.map(
-    //   inputIndex => (inputIndex === index ? '#ffffff' : '#cccccc')
-    // );
-    // const color = position.interpolate({
-    //   inputRange,
-    //   outputRange,
-    // });
-    (
-      <Text style={styles.tabLabel}>
-        {route.title}
-      </Text>
-    )
-  ;
+  _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
+      (
+        <View style={styles.tabLabelContainer}>
+          <View style={[styles.tabQueueCounter, focused? null : { backgroundColor: '#0C4699' }]}>
+            <Text style={[styles.tabQueueCounterText, focused? null : { color: '#fff' }]}>
+              {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
+            </Text>
+          </View>
+          <Text style={{
+            fontFamily: 'Roboto-Medium',
+            fontSize: 12,
+            color: focused ? '#115ECD' : 'white'
+          }}>
+            {route.title}
+          </Text>
+        </View>
+      );
+    // }
   _renderBar = props => (
     <TabBar
       {...props}
-      tabStyle={{ backgroundColor: 'transparent', height: 50 }}
-      style={{ backgroundColor: 'transparent', height: 50 }}
+      tabStyle={styles.tab}
+      style={styles.tabContainer}
       renderLabel={this._renderLabel(props)}
-      indicatorStyle={{ backgroundColor: '#80BBDF', height: 6 }}
+      indicatorStyle={styles.indicator}
     />
   )
 
@@ -135,13 +172,12 @@ class QueueScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')}
-        />
-
         <TabViewAnimated
-          style={{ flex: 1, marginTop: 10 }}
+          style={{
+            flex: 1,
+            backgroundColor: '#115ECD',
+            borderWidth: 0,
+          }}
           navigationState={this.state}
           renderScene={this._renderScene}
           renderHeader={this._renderBar}
@@ -149,12 +185,15 @@ class QueueScreen extends React.Component {
           initialLayout={initialLayout}
           swipeEnabled={false}
         />
-        <FloatingButton handlePress={this._handleWalkInPress}>
+        <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+          <Text style={styles.walkinButtonText}>Walk-in</Text>
+        </TouchableOpacity>
+        {/* <FloatingButton handlePress={this._handleWalkInPress}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
-        </FloatingButton>
-        <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
+        </FloatingButton> */}
+        {/* <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
-        </FloatingButton>
+        </FloatingButton> */}
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
           {[<View style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>
@@ -317,4 +356,81 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'OpenSans-Regular',
   },
+  walkinButton: {
+    position: 'absolute',
+    right: 12,
+    top: 0,
+    width: 92,
+    borderWidth: 1,
+    borderColor: '#1DBF12',
+    borderRadius: 16,
+    backgroundColor: '#1DBF12',
+    height: 33,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+  },
+  walkinButtonText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 12,
+    color: 'white',
+  },
+  indicator: {
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 16,
+    backgroundColor: 'white',
+    height: 33,
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+  },
+  tab: {
+     height: 33,
+     width: 120,
+     alignItems: 'center',
+     justifyContent: 'center'
+   },
+  tabContainer: {
+     height: 34,
+     width: 240,
+     borderWidth: 1,
+     borderColor: 'rgba(8,46,102,0.5)',
+     borderRadius: 16,
+     backgroundColor: '#115ECD',
+     marginLeft: 15,
+     marginBottom: 9
+  },
+  tabQueueCounter: {
+    backgroundColor: '#C3D6F1',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    // paddingHorizontal: 3,
+    paddingVertical: 0,
+    paddingHorizontal: 5,
+    marginRight: 3,
+  },
+  tabQueueCounterText: {
+    color: '#1963CE',
+    fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    padding: 0
+  },
+  tabLabelContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 1,
+    flexDirection: 'row'
+  },
+  navButton: {
+    color: 'white',
+    fontSize: 20,
+    marginLeft: 10
+  }
 });
