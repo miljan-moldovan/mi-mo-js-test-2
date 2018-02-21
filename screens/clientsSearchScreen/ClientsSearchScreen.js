@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
@@ -193,21 +194,20 @@ class ClientsSearchScreen extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.props.clientsSearchActions.setClients(mockDataClients);
     this.props.clientsSearchActions.setFilteredClients(mockDataClients);
     this.props.clientsSearchActions.setSearchText('');
     this.props.clientsSearchActions.setSelectedFilter(0);
   }
 
-  componentWillMount() {
-    this.props.navigation.setParams({
-      onChangeText: searchText => this.filterClients(searchText),
-      showHeader: !this.props.clientsSearchState.showFilter,
-      showBar: this.props.clientsSearchState.showFilter,
-      searchText: this.props.clientsSearchState.searchText,
-    });
-  }
+  // componentWillMount() {
+  //   this.props.navigation.setParams({
+  //     onChangeText: searchText => this.filterClients(searchText),
+  //     showHeader: !this.props.clientsSearchState.showFilter,
+  //     showBar: this.props.clientsSearchState.showFilter,
+  //     searchText: this.props.clientsSearchState.searchText,
+  //   });
+  // }
 
 
   filterClients(searchText) {
@@ -245,7 +245,31 @@ class ClientsSearchScreen extends React.Component {
     this.props.clientsSearchActions.setSelectedFilter(selectedIndex);
   }
 
+  _handleOnChangeClient = (client) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
+
+  // handleOnItemPress =(client) => {
+  //   debugger
+  //   this.props.clientsSearchActions.setShowFilter(false);
+  //
+  //   const { navigate } = this.props.navigation;
+  //
+  //   this.props.walkInActions.selectedClient(client);
+  //
+  //   navigate('WalkIn');
+  // }
+
   render() {
+    let onChangeClient = null;
+    const { state } = this.props.navigation;
+    // make sure we only pass a callback to the component if we have one for the screen
+    if (state.params && state.params.onChangeClient) { onChangeClient = this._handleOnChangeClient; }
     return (
       <View style={styles.container}>
         { !this.props.clientsSearchState.showFilter && <ClientsSearchHeader {...this.props} />}
@@ -299,16 +323,7 @@ class ClientsSearchScreen extends React.Component {
               showSectionHeader={!this.props.clientsSearchState.showFilter}
               simpleListItem={this.props.clientsSearchState.showFilter}
               showLateralList={!this.props.clientsSearchState.showFilter}
-              onPressItem={(client) => {
-                  this.props.clientsSearchActions.setShowFilter(false);
-
-                  const { navigate } = this.props.navigation;
-                  const { params } = this.props.navigation.state;
-
-                  this.props.walkInActions.selectedClient(client);
-
-                  navigate('WalkIn');
-              }}
+              onChangeClient={onChangeClient}
             />
 
            }
@@ -319,4 +334,21 @@ class ClientsSearchScreen extends React.Component {
     );
   }
 }
+
+ClientsSearchScreen.propTypes = {
+  navigation: PropTypes.shape({
+    goBack: PropTypes.func,
+    state: PropTypes.shape({
+      params: PropTypes.shape({
+        onChangeClient: PropTypes.func,
+        dismissOnSelect: PropTypes.bool,
+      }),
+    }),
+  }),
+};
+
+ClientsSearchScreen.defaultProps = {
+  navigation: null,
+};
+
 export default ClientsSearchScreen;

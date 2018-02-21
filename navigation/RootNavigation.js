@@ -62,6 +62,5 @@ const mapActionsToProps = dispatch => ({
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
   clientsSearchActions: bindActionCreators({ ...clientsSearchActions }, dispatch),
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
-
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);
