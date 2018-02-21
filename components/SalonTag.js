@@ -1,12 +1,9 @@
 import React from 'react';
-import { TouchableHighlight, Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonIcon from './../components/SalonIcon';
 
 const styles = StyleSheet.create({
-  btnContainer: {
-    backgroundColor: 'transparent',
-  },
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -28,40 +25,29 @@ const styles = StyleSheet.create({
   },
 });
 
-const salonTag = (props) => {
-  const onPress = props.onPress ?
-    props.onPress : null;
+const salonTag = props => (
 
-  return (
-
-    <TouchableHighlight
-      onPress={onPress}
-      underlayColor="transparent"
-      style={styles.btnContainer}
-    >
-      <View style={[styles.container, {
+  <View style={[styles.container, {
     backgroundColor: props.backgroundColor,
     height: props.tagHeight,
   }]}
-      >
-        {props.icon &&
-        <SalonIcon
-          size={props.iconSize}
-          icon={props.icon}
-          style={[styles.icon, { tintColor: props.iconColor }]}
-        />
+  >
+    {props.icon &&
+    <SalonIcon
+      size={props.iconSize}
+      icon={props.icon}
+      style={[styles.icon, { tintColor: props.iconColor }]}
+    />
     }
 
-        <Text style={[styles.text, {
+    <Text style={[styles.text, {
           fontSize: props.valueSize,
           color: props.valueColor,
         }]}
-        >{props.value}
-        </Text>
-      </View>
-    </TouchableHighlight>
-  );
-};
+    >{props.value}
+    </Text>
+  </View>
+);
 
 salonTag.propTypes = {
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
@@ -72,7 +58,6 @@ salonTag.propTypes = {
   icon: PropTypes.string,
   iconColor: PropTypes.string,
   backgroundColor: PropTypes.string,
-  onPress: PropTypes.func,
 };
 
 salonTag.defaultProps = {
@@ -83,7 +68,6 @@ salonTag.defaultProps = {
   iconSize: 14,
   icon: null,
   iconColor: '#FFFFFF',
-  onPress: () => {},
 };
 
 export default salonTag;

@@ -12,13 +12,14 @@ const styles = StyleSheet.create({
 
 });
 
+
 const salonDateTxt = props => (
   <Text style={[styles.text, {
           fontSize: props.valueSize,
           color: props.valueColor,
         }]}
   >
-    {moment(props.value).format(props.dateFormat)}
+    { moment(props.value, 'YYYY-MM-DD', true).isValid() ? moment(props.value).format(props.dateFormat) : props.value}
   </Text>
 );
 

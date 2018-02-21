@@ -24,8 +24,8 @@ import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/Appo
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 
-import NewAppointmentNoteScreen from './../screens/newAppointmentNote';
-import NewAppointmentNoteHeader from '../screens/newAppointmentNote/components/newAppointmentNoteHeader';
+import AppointmentNoteScreen from './../screens/appointmentNote';
+import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -38,14 +38,14 @@ const AppointmentStackNavigator = StackNavigator(
     Appointments: {
       screen: AppoinmentNotes,
     },
-    NewAppointmentNote: {
-      screen: NewAppointmentNoteScreen,
+    AppointmentNote: {
+      screen: AppointmentNoteScreen,
       navigationOptions: rootProps => ({
         headerStyle: {
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <NewAppointmentNoteHeader rootProps={rootProps} />,
+        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,

@@ -8,6 +8,7 @@ import ImageHeader from '../components/ImageHeader';
 import SalonSearchBar from '../components/SalonSearchBar';
 
 import QueueScreen from './../screens/QueueScreen';
+import QueueCombineScreen from './../screens/QueueCombineScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
@@ -41,6 +42,9 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueDetail: {
       screen: QueueDetailScreen,
+    },
+    QueueCombine: {
+      screen: QueueCombineScreen,
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -104,7 +108,7 @@ const QueueStackNavigator = StackNavigator(
         backgroundColor: '#115ECD',
         paddingLeft: 10,
         paddingRight: 10,
-        height: 64,
+        height: 44,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,

@@ -3,6 +3,8 @@ package com.salonultimatern;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.actionsheet.ActionSheetPackage;
+import com.horcrux.svg.SvgPackage;
 import com.beefe.picker.PickerViewPackage;
 import com.rnfingerprint.FingerprintAuthPackage;
 import com.facebook.react.ReactNativeHost;
@@ -25,6 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ActionSheetPackage(),
+            new SvgPackage(),
             new PickerViewPackage(),
             new FingerprintAuthPackage()
       );
