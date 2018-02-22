@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-
-import SalonIcon from '../../../components/SalonIcon';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
+import PropTypes from 'prop-types';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -12,10 +14,16 @@ const styles = StyleSheet.create({
     height: 44,
     borderBottomWidth: 1,
     borderColor: '#C0C1C6',
+    paddingLeft: 16,
+    alignItems: 'center',
+    paddingRight: 16,
   },
   lastInnerRow: {
     flexDirection: 'row',
     height: 44,
+    alignItems: 'center',
+    paddingRight: 16,
+    paddingLeft: 16,
   },
   addRow: {
     flexDirection: 'row',
@@ -28,13 +36,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#C0C1C6',
   },
-  plusContainer: {
-    backgroundColor: '#115ECD',
-    height: 22,
-    width: 22,
-    borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
+  plusIcon: {
+    color: '#115ECD',
+    fontSize: 22,
     marginRight: 5,
   },
   textData: {
@@ -59,38 +63,189 @@ const styles = StyleSheet.create({
   },
   removeIcon: {
     marginRight: 8,
+    fontSize: 22,
+    color: '#D1242A',
+  },
+  carretIcon: {
+    fontSize: 20,
+    color: '#727A8F',
+  },
+  label: {
+    fontFamily: 'Roboto-Medium',
+    color: '#727A8F',
+    fontSize: 14,
+  },
+  dataContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  row: {
+    flexDirection: 'row',
   },
 });
 
-const renderService = service => (
-  <View style={styles.serviceRow}>
-    <View style={styles.iconContainer}>
-      <SalonIcon style={styles.removeIcon} icon="cross" />
-      <Text>service</Text>
-    </View>
-    <View style={styles.serviceDataContainer}>
-      <View style={styles.innerRow}>
-        <Text>{service}</Text>
-      </View>
-      <View style={styles.lastInnerRow}>
-        <Text>{service}</Text>
-      </View>
-    </View>
-  </View>
-);
+class ServiceSection extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      date: new Date(),
+      service: null,
+      index: 0,
+      type: '',
+      isDateTimePickerVisible: false,
+    };
+  }
 
-const serviceSection = props => (
-  <View style={styles.container}>
-    {renderService('test')}
-    <TouchableOpacity>
-      <View style={styles.addRow}>
-        <View style={styles.plusContainer}>
-          <SalonIcon style={styles.plusStyle} icon="plus" />
-        </View>
-        <Text style={styles.textData}>add Service</Text>
-      </View>
-    </TouchableOpacity>
-  </View>
-);
+  hideDateTimePicker =() => {
+    this.setState({ isDateTimePickerVisible: false });
+  }
 
-export default serviceSection;
+  showDateTimePicker =(date, service, index, type) => {
+    this.setState({
+      isDateTimePickerVisible: true,
+      date: date.toDate(),
+      service,
+      index,
+      type,
+    });
+  }
+
+  handleDateSelection=(date) => {
+    console.log(date, "Cheese bacon");
+    const newService = this.state.service;
+    newService[this.state.type] = moment(date.getTime());
+    this.props.onUpdate(this.state.index, newService);
+    this.hideDateTimePicker();
+  }
+
+  handleProviderSelection = (provider, service, index) => {
+    const newService = service;
+    newService.provider = provider;
+    this.props.onUpdate(index, newService);
+  }
+
+  handlePressProvider = (service, index) => {
+    this.props.navigate('Providers', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeProvider: provider => this.handleProviderSelection(provider, service, index),
+    });
+  }
+
+  handleServiceSelection = (data, service, index) => {
+    const newService = service;
+    newService.service = data;
+    this.props.onUpdate(index, newService);
+  }
+
+  handlePressService = (service, index) => {
+    this.props.navigate('Services', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeService: data => this.handleServiceSelection(data, service, index),
+    });
+  }
+
+  renderProvider = (provider) => {
+    if (provider) {
+      return (
+        <Text style={styles.textData}>{`${provider.name} ${provider.lastName}`}</Text>
+      );
+    }
+    return (
+      <Text style={styles.label}>Provider</Text>
+    );
+  }
+
+  renderServiceInfo = (service) => {
+    if (service) {
+      return (
+        <Text style={styles.textData}>{service.name}</Text>
+      );
+    }
+    return (
+      <Text style={styles.label}>Service</Text>
+    );
+  }
+
+  renderService = (service, index) => (
+    <View style={styles.serviceRow} key={index}>
+      <View style={styles.iconContainer}>
+        <TouchableOpacity onPress={() => this.props.onRemove(index)}>
+          <View style={styles.row}>
+            <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
+            <Text style={styles.textData}>service</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.serviceDataContainer}>
+        <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
+          <View style={styles.innerRow}>
+            {this.renderProvider(service.provider)}
+            <View style={styles.dataContainer}>
+              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
+            </View>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.handlePressService(service, index)}>
+          <View style={styles.innerRow}>
+            {this.renderServiceInfo(service.service)}
+            <View style={styles.dataContainer}>
+              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
+            </View>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.showDateTimePicker(service.start, service, index, 'start')}>
+          <View style={styles.innerRow}>
+            <Text style={styles.label}>Start</Text>
+            <View style={styles.dataContainer}>
+              <Text style={styles.textData}>{service.start.format('hh:mm a')}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.showDateTimePicker(service.end, service, index, 'end')}>
+          <View style={styles.lastInnerRow}>
+            <Text style={styles.label}>End</Text>
+            <View style={styles.dataContainer}>
+              <Text style={styles.textData}>{service.end.format('hh:mm a')}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  )
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {this.props.services.map((service, index) => this.renderService(service, index))}
+        <TouchableOpacity onPress={this.props.onAdd}>
+          <View style={styles.addRow}>
+            <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
+            <Text style={styles.textData}>add Service</Text>
+          </View>
+        </TouchableOpacity>
+        <DateTimePicker
+          isVisible={this.state.isDateTimePickerVisible}
+          onConfirm={this.handleDateSelection}
+          onCancel={this.hideDateTimePicker}
+          mode="time"
+          date={this.state.date}
+        />
+      </View>
+    );
+  }
+}
+
+
+ServiceSection.propTypes = {
+  services: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onAdd: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  navigate: PropTypes.func.isRequired,
+};
+
+export default ServiceSection;
