@@ -230,13 +230,13 @@ class WalkInScreen extends Component {
 
     this.props.walkInActions.setCurrentStep(5);
     if (selectedClient) {
-      navigate('ClientsSearch', {
+      navigate('Clients', {
         actionType: 'update',
         dismissOnSelect: true,
         onChangeClient: this.handleClientSelection,
       });
     } else {
-      navigate('ClientsSearch', {
+      navigate('Clients', {
         actionType: 'new',
         dismissOnSelect: true,
         onChangeClient: this.handleClientSelection,
@@ -380,7 +380,7 @@ class WalkInScreen extends Component {
               const { navigate } = this.props.navigation;
 
               this.props.walkInActions.setCurrentStep(1);
-              navigate('ClientsSearch');
+              navigate('Clients');
             }}
             >
               <Image style={styles.searchImage} source={serchImage} />

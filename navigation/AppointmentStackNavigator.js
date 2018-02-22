@@ -16,7 +16,7 @@ import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeade
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import HeaderLateral from '../components/HeaderLateral';
-import SearchBar from '../components/searchBar';
+import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
@@ -152,7 +152,7 @@ const AppointmentStackNavigator = StackNavigator(
             {...props}
             params={rootProps.navigation.state.params}
             searchBar={searchProps => (
-              <SearchBar
+              <SalonSearchBar
                 {...searchProps}
                 placeholder="Search by name, phone or email"
                 searchIconPosition="right"
