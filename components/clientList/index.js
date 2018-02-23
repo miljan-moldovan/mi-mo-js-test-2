@@ -192,12 +192,8 @@ class ClientList extends React.Component {
 
     this.state = {
       clients,
-      boldWords: props.boldWords,
       dataSource: ClientList.clients(clients),
       letterGuide: [],
-      onPressItem: props.onPressItem,
-      showSectionHeader: props.showSectionHeader,
-      simpleListItem: props.simpleListItem,
     };
   }
 
@@ -224,11 +220,6 @@ class ClientList extends React.Component {
       const clients = nextProps.clients.sort(ClientList.compareByName);
       this.setState({
         dataSource: ClientList.clients(clients),
-        boldWords: nextProps.boldWords,
-        showLateralList: nextProps.showLateralList,
-        onPressItem: nextProps.onPressItem,
-        showSectionHeader: nextProps.showSectionHeader,
-        simpleListItem: nextProps.simpleListItem,
       });
     }
 
@@ -262,7 +253,7 @@ class ClientList extends React.Component {
             client={obj.item}
             simpleListItem={this.state.simpleListItem}
             boldWords={this.state.boldWords}
-            onPress={this.state.onPressItem}
+            onPress={this.props.onChangeClient}
           />
         </View>)
 
@@ -300,6 +291,7 @@ class ClientList extends React.Component {
       }
 
       render() {
+        console.log("ClientList", this.props)
         return (
           <View style={styles.container}>
             {this.state.dataSource.length === 0 &&
