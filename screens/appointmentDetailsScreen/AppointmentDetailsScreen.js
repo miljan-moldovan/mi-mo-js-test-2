@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import AppoinmentNotes from './components/appointmentNotes';
 import AppointmentFormulas from './components/appointmentFormulas';
@@ -35,6 +36,9 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     paddingBottom: 8,
   },
+  tabIcon: {
+    marginRight: 5,
+  },
   textWalkInBtn: {
     color: '#fff',
     fontFamily: 'Roboto',
@@ -46,34 +50,57 @@ const styles = StyleSheet.create({
 });
 
 export default class AppointmentDetailsScreen extends React.Component {
-  state = {
-    index: 0,
-    routes: [
-      { key: '0', title: 'Appt. Details' },
-      { key: '1', title: 'Notes' },
-      { key: '2', title: 'Formulas' },
-    ],
+  static navigationOptions = {
+    headerTitle: (
+      <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 16, fontFamily: 'Roboto-Medium', color: 'white' }}>Rod Stewart</Text>
+      </View>
+    ),
+    headerLeft: (
+      <Text style={{ fontSize: 14, color: '#fff' }}>
+        <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+      </Text>
+    ),
+    headerRight: (
+      <Text style={{ fontSize: 14, color: '#fff' }}>
+        <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
+      </Text>
+    ),
   };
 
-  _handleIndexChange = index => this.setState({ index });
+  constructor(props) {
+    super(props);
 
-  _renderLabel = ({ position, navigationState }) => ({ route, index }) => (
+    this.state = {
+      index: 0,
+      routes: [
+        { key: '0', title: 'Appt. Details', icon: 'pencil' },
+        { key: '1', title: 'Notes', icon: 'file' },
+        { key: '2', title: 'Formulas', icon: 'eyedropper' },
+      ],
+    };
+  }
+
+  handleIndexChange = index => this.setState({ index });
+
+  renderLabel = ({ position, navigationState }) => ({ route, index }) => (
     <Text style={styles.tabLabel}>
-      {route.title}
+      <FontAwesome style={styles.tabIcon}>{Icons[route.icon]}</FontAwesome>
+      {` ${route.title}`}
     </Text>
   );
 
-  _renderHeader = props => (
+  renderHeader = props => (
     <TabBar
       {...props}
       tabStyle={{ backgroundColor: 'transparent' }}
       style={{ backgroundColor: 'transparent' }}
-      renderLabel={this._renderLabel(props)}
+      renderLabel={this.renderLabel(props)}
       indicatorStyle={{ backgroundColor: '#115ECD', height: 4 }}
     />
   );
 
-  _renderScene = SceneMap({
+  renderScene = SceneMap({
     0: () => <AppoinmentNotes navigation={this.props.navigation} />,
     1: () => <AppoinmentNotes navigation={this.props.navigation} />,
     2: () => <AppointmentFormulas navigation={this.props.navigation} />,
@@ -85,9 +112,9 @@ export default class AppointmentDetailsScreen extends React.Component {
         <TabViewAnimated
           style={{ flex: 1 }}
           navigationState={this.state}
-          renderScene={this._renderScene}
-          renderHeader={this._renderHeader}
-          onIndexChange={this._handleIndexChange}
+          renderScene={this.renderScene}
+          renderHeader={this.renderHeader}
+          onIndexChange={this.handleIndexChange}
           initialLayout={initialLayout}
           swipeEnabled={false}
         />

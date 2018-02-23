@@ -35,7 +35,7 @@ const SalonIcon = props => (
 SalonIcon.propTypes = {
   size: PropTypes.number.isRequired,
   icon: PropTypes.string.isRequired,
-  tintColor: PropTypes.string,
+  tintColor: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 SalonIcon.defaultProps = {
   tintColor: false,

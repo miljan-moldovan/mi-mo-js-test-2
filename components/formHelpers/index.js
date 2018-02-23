@@ -9,6 +9,9 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import SalonDateTxt from '../../components/SalonDateTxt';
+import SalonDatePicker from '../../components/modals/SalonDatePicker';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -82,7 +85,7 @@ InputGroup.propTypes = {
 };
 InputGroup.defaultProps = {
   style: false,
-  children: [],
+  children: null,
 };
 
 export const InputButton = props => (
@@ -92,9 +95,11 @@ export const InputButton = props => (
         <Text style={styles.labelText}>{props.placeholder}</Text>
         <View style={{ flexDirection: 'row' }}>
           {props.value && (
-          <Text style={styles.inputText}>{props.value}</Text>
-            )}
-          <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+            <Text style={styles.inputText}>{props.value}</Text>
+          )}
+          {!props.noIcon && (
+            <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+          )}
         </View>
       </View>
     </View>
@@ -103,15 +108,17 @@ export const InputButton = props => (
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  value: PropTypes.oneOf([PropTypes.bool, PropTypes.string, PropTypes.element]),
+  value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
+  noIcon: PropTypes.bool,
 };
 InputButton.defaultProps = {
   placeholder: '',
   value: false,
+  noIcon: false,
 };
 
 export const InputText = props => (
-  <View style={styles.inputText}>
+  <View style={{}}>
     <TextInput
       {...props}
       style={styles.textArea}
@@ -124,3 +131,35 @@ export const InputText = props => (
   </View>
 );
 
+export class InputDate extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showModal: false,
+    };
+  }
+
+  render() {
+    return (
+      <View>
+        <SalonDatePicker
+          isVisible={this.state.showModal}
+          onPress={(selectedDate) => {
+            this.setState({ showModal: false });
+            this.props.onPress(selectedDate);
+          }}
+          selectedDate={this.props.selectedDate}
+        />
+        <InputButton
+          onPress={() => {
+            this.setState({ showModal: !this.state.showModal });
+          }}
+          noIcon
+          placeholder={this.props.placeholder}
+          value={this.props.selectedDate}
+        />
+      </View>
+    );
+  }
+}

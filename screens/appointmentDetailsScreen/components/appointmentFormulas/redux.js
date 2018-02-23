@@ -1,6 +1,7 @@
 export const ADD_FORMULA = 'appointmentFormulas/ADD_FORMULA';
 export const SET_FORMULAS = 'appointmentFormulas/SET_FORMULAS';
 export const SET_FILTERED_FORMULAS = 'appointmentFormulas/SET_FILTERED_FORMULAS';
+export const SELECTED_FILTER_TYPES = 'appointmentFormulas/SELECTED_FILTER_TYPES';
 
 const formulas = require('../../../../mockData/appointmentFormulas.json');
 
@@ -63,10 +64,18 @@ function setFilteredFormulas(filtered) {
   };
 }
 
+function selectedFilterTypes(filterTypes) {
+  return {
+    type: SELECTED_FILTER_TYPES,
+    data: { filterTypes },
+  };
+}
+
 const appointmentFormulasActions = {
   addFormula,
   setFormulas,
   setFilteredFormulas,
+  selectedFilterTypes,
 };
 
 export default appointmentFormulasActions;

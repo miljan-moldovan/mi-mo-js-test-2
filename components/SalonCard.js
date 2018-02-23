@@ -66,12 +66,13 @@ const salonCard = props => (
 salonCard.propTypes = {
   headerChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
   bodyChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
-  footerChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
+  footerChildren: PropTypes.arrayOf(PropTypes.element),
   backgroundColor: PropTypes.string,
 };
 
 salonCard.defaultProps = {
   backgroundColor: 'transparent',
+  footerChildren: [],
 };
 
 export default salonCard;

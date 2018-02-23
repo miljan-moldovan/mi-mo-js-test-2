@@ -52,7 +52,7 @@ const salonBtnFixedBottom = props => (
 
 salonBtnFixedBottom.propTypes = {
   children: PropTypes.element,
-  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.bool]),
   valueColor: PropTypes.string,
   valueSize: PropTypes.number,
   backgroundColor: PropTypes.string,

@@ -47,8 +47,7 @@ const QueueNavButton = ({ icon, onPress }) => (
 
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerLeft =
-      <QueueNavButton icon={Icons.bars} />;
+    const headerLeft = <QueueNavButton icon={Icons.bars} />;
     const onActionPress = () => {
       ActionSheetIOS.showActionSheetWithOptions(
         {
@@ -65,30 +64,37 @@ class QueueScreen extends React.Component {
             case 1:
               navigation.navigate('QueueCombine');
               break;
+            default:
+              break;
           }
         },
       );
     };
-    const headerRight =
-      (<View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 80 }}>
+
+    const headerRight = (
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 80 }}>
         <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} />
         <QueueNavButton icon={Icons.search} />
-      </View>);
+      </View>
+    );
+
     return {
       headerLeft,
       headerRight,
     };
   }
+
   state = {
     refreshing: false,
+    index: 0,
+    isWalkoutVisible: false,
+    walkoutText: '',
     routes: [
       { key: WAITING, title: 'Waiting' },
       { key: SERVICED, title: 'In Service' },
     ],
-    index: 0,
-    isWalkoutVisible: false,
-    walkoutText: '',
   }
+
   componentWillMount() {
     this.props.actions.receiveQueue();
   }
@@ -104,18 +110,18 @@ class QueueScreen extends React.Component {
     (
       <View style={styles.tabLabelContainer}>
         <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
-            <Text style={[styles.tabQueueCounterText, focused ? null : { color: '#fff' }]}>
-              {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
-            </Text>
-          </View>
+          <Text style={[styles.tabQueueCounterText, focused ? null : { color: '#fff' }]}>
+            {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
+          </Text>
+        </View>
         <Text style={{
             fontFamily: 'Roboto-Medium',
             fontSize: 12,
             color: focused ? '#115ECD' : 'white',
           }}
-          >
-            {route.title}
-          </Text>
+        >
+          {route.title}
+        </Text>
       </View>
     );
     // }
@@ -222,7 +228,7 @@ class QueueScreen extends React.Component {
                 <Text style={styles.walkoutTextOk}>Ok</Text>
               </TouchableOpacity>
             </View>
-            </View>]}
+          </View>]}
         </SalonModal>
       </View>
     );

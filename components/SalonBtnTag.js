@@ -87,8 +87,14 @@ salonBtnTag.propTypes = {
   tagHeight: PropTypes.number,
   iconSize: PropTypes.number,
   onPress: PropTypes.func,
-  activeStyle: PropTypes.object,
-  inactiveStyle: PropTypes.object,
+  activeStyle: PropTypes.shape({
+    icon: PropTypes.string,
+
+  }),
+  inactiveStyle: PropTypes.shape({
+    icon: PropTypes.string,
+
+  }),
 };
 
 salonBtnTag.defaultProps = {

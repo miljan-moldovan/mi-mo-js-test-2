@@ -79,10 +79,9 @@ class ClientListItem extends React.PureComponent {
   //     onPress: nextProps.onPress,
   //     simpleListItem: nextProps.simpleListItem,
   //   });
-//  }
+  //  }
 
   render() {
-    console.log(this.props, "clientitem")
     return (
       <TouchableHighlight
         style={styles.container}

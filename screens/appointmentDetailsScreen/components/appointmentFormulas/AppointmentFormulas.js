@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import SalonSearchBar from '../../../../components/SalonSearchBar';
 import SalonIcon from '../../../../components/SalonIcon';
 import SalonBtnFixedBottom from '../../../../components/SalonBtnFixedBottom';
 import SalonTag from '../../../../components/SalonTag';
+import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 
@@ -209,13 +211,20 @@ export default class AppointmentFormulas extends Component {
   constructor(props) {
     super(props);
 
-    const formulas = props.appointmentFormulasState.formulas.sort(AppointmentFormulas.compareByDate);
-    props.appointmentFormulasActions.setFilteredFormulas(formulas);
+    this.state = {
+      activeCategories: [],
+      existingCategories: [],
+      showDeleted: true,
+    };
   }
 
   componentWillMount() {
     const formulas = this.props.appointmentFormulasState.formulas.sort(AppointmentFormulas.compareByDate);
     this.props.appointmentFormulasActions.setFilteredFormulas(formulas);
+    this.setState({
+      activeCategories: this.existingCategories(),
+      existingCategories: this.existingCategories(),
+    });
   }
 
   existingCategories = () => {
@@ -230,23 +239,81 @@ export default class AppointmentFormulas extends Component {
     return existing;
   }
 
-  filterNotes(searchText) {
+  // filterNotes(searchText) {
+  //   if (searchText && searchText.length > 0) {
+  //     const criteria = [
+  //       { Field: 'provider', Values: [searchText.toLowerCase()] },
+  //       { Field: 'service', Values: [searchText.toLowerCase()] },
+  //       { Field: 'category', Values: [searchText.toLowerCase()] },
+  //       { Field: 'date', Values: [searchText.toLowerCase()] },
+  //     ];
+
+  //     const filtered = AppointmentFormulas.flexFilter(
+  //       this.props.appointmentFormulasState.formulas,
+  //       criteria,
+  //     );
+
+  //     this.props.appointmentFormulasActions.setFilteredFormulas(filtered);
+  //   } else {
+  //     this.props.appointmentFormulasActions.setFilteredFormulas(this.props.appointmentFormulasState.formulas);
+  //   }
+  // }
+
+  onPressTagFilter = (value) => {
+    const filterTypes = this.state.activeCategories;
+
+    if (filterTypes.indexOf(value) > -1) {
+      filterTypes.splice(filterTypes.indexOf(value), 1);
+    } else {
+      filterTypes.push(value);
+    }
+
+    console.log('active', filterTypes, this.state.activeCategories);
+    this.setState({ activeCategories: filterTypes });
+    this.filterNotes(null, this.state.showDeleted);
+  }
+
+  filterNotes(searchText, showDeleted) {
+    const baseFormulas = showDeleted ? this.props.appointmentFormulasState.formulas :
+      this.props.appointmentFormulasState.formulas.filter(el => el.active === 1);
+
+    let tagFormulas = [];
     if (searchText && searchText.length > 0) {
       const criteria = [
         { Field: 'provider', Values: [searchText.toLowerCase()] },
-        { Field: 'service', Values: [searchText.toLowerCase()] },
         { Field: 'category', Values: [searchText.toLowerCase()] },
+        { Field: 'service', Values: [searchText.toLowerCase()] },
         { Field: 'date', Values: [searchText.toLowerCase()] },
       ];
 
       const filtered = AppointmentFormulas.flexFilter(
-        this.props.appointmentFormulasState.formulas,
+        baseFormulas,
         criteria,
       );
 
-      this.props.appointmentFormulasActions.setFilteredFormulas(filtered);
+
+      for (let i = 0; i < filtered.length; i++) {
+        const formula = filtered[i];
+        const found = this.state.activeCategories.indexOf(formula.category) !== -1;
+        if (found) {
+          tagFormulas.push(formula);
+        }
+      }
+
+      tagFormulas = tagFormulas.sort(AppointmentFormulas.compareByDate);
+      this.props.appointmentFormulasActions.setFilteredFormulas(tagFormulas);
     } else {
-      this.props.appointmentFormulasActions.setFilteredFormulas(this.props.appointmentFormulasState.formulas);
+      for (let i = 0; i < baseFormulas.length; i += 1) {
+        const formula = baseFormulas[i];
+
+        const found = this.state.activeCategories.indexOf(formula.category) !== -1;
+        if (found) {
+          tagFormulas.push(formula);
+        }
+      }
+
+      tagFormulas = tagFormulas.sort(AppointmentFormulas.compareByDate);
+      this.props.appointmentFormulasActions.setFilteredFormulas(tagFormulas);
     }
   }
 
@@ -268,18 +335,27 @@ export default class AppointmentFormulas extends Component {
             />
           </View>
           <View style={styles.tagsBar} >
-            {this.existingCategories().map(item => (
-              <View style={styles.tag}>
-                <SalonTag
-                  key={Math.random().toString()}
+            {this.state.existingCategories.map(item => (
+              <View style={styles.tag} key={Math.random().toString()}>
+                <SalonBtnTag
                   iconSize={13}
-                  icon="check"
-                  iconColor="#FFFFFF"
+                  onPress={this.onPressTagFilter}
                   tagHeight={24}
-                  backgroundColor="#1DBF12"
                   value={item}
                   valueSize={10}
-                  valueColor="#FFFFFF"
+                  isVisible={this.state.activeCategories.indexOf(item) !== -1}
+                  activeStyle={{
+                    icon: 'check',
+                    iconColor: '#FFFFFF',
+                    backgroundColor: '#1DBF12',
+                    valueColor: '#FFFFFF',
+                  }}
+                  inactiveStyle={{
+                    icon: 'unchecked',
+                    iconColor: '#727A8F',
+                    backgroundColor: '#FFFFFF',
+                    valueColor: '#727A8F',
+                  }}
                 />
               </View>
             ))}
@@ -310,26 +386,22 @@ export default class AppointmentFormulas extends Component {
                     </View>]}
 
                   bodyChildren={[
-                    <View style={{ flexDirection: 'column' }}>
+                    <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
                       <Text style={styles.noteText}>
                         <Text style={[styles.noteText, styles.boldText]}>{item.service}</Text>
                         <Text style={styles.italicText}> by</Text> {item.provider}
                       </Text>
-                      <Text
-                        key={Math.random().toString()}
-                        style={styles.formulaText}
-                      >Sport Clip Haircuts of Dallas/Knox St
-                      </Text>
+                      <Text style={styles.formulaText}>Sport Clip Haircuts of Dallas/Knox St</Text>
                     </View>]}
-
-                  footerChildren={() => []}
                 />
               )}
             />
             <View style={styles.showDeletedButtonContainer}>
               <TouchableOpacity
                 style={styles.showDeletedButton}
-                onPress={() => {}}
+                onPress={() => {
+                  this.setState({ showDeleted: false });
+                }}
               >
                 <Text style={styles.showDeletedText}>Show deleted</Text>
               </TouchableOpacity>
