@@ -61,32 +61,33 @@ const styles = StyleSheet.create({
 class ClientListItem extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      client: props.client,
-      boldWords: props.boldWords,
-      onPress: props.onPress,
-      simpleListItem: props.simpleListItem,
-    };
+    // this.state = {
+    //   client: props.client,
+    //   boldWords: props.boldWords,
+    //   onPress: props.onPress,
+    //   simpleListItem: props.simpleListItem,
+    // };
   }
 
   state = {
     simpleListItem: false,
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      client: nextProps.client,
-      boldWords: nextProps.boldWords,
-      onPress: nextProps.onPress,
-      simpleListItem: nextProps.simpleListItem,
-    });
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   this.setState({
+  //     client: nextProps.client,
+  //     boldWords: nextProps.boldWords,
+  //     onPress: nextProps.onPress,
+  //     simpleListItem: nextProps.simpleListItem,
+  //   });
+//  }
 
   render() {
+    console.log(this.props, "clientitem")
     return (
       <TouchableHighlight
         style={styles.container}
         underlayColor="transparent"
-        onPress={() => { this.state.onPress(this.state.client); }}
+        onPress={() => { this.props.onPress(this.props.client); }}
       >
         <View style={styles.container}>
 
@@ -95,7 +96,7 @@ class ClientListItem extends React.PureComponent {
 
             <View style={styles.clientNameContainer}>
 
-              {this.state.simpleListItem &&
+              {this.props.simpleListItem &&
                 <SalonIcon
                   size={16}
                   icon="search"
@@ -103,21 +104,21 @@ class ClientListItem extends React.PureComponent {
                 />}
 
               <WordHighlighter
-                highlight={this.state.boldWords}
+                highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientName}
               >
-                {this.state.client.name}
+                {this.props.client.name}
               </WordHighlighter>
             </View>
 
             {!this.state.simpleListItem &&
               <WordHighlighter
-                highlight={this.state.boldWords}
+                highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientEmail}
               >
-                {this.state.client.email}
+                {this.props.client.email}
               </WordHighlighter>
             }
           </View>
