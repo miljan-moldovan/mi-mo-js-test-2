@@ -3,6 +3,7 @@ import { ScrollView, View, Image, Text, TouchableOpacity, SectionList, StyleShee
 import PropTypes from 'prop-types';
 
 import SalonModal from './../SalonModal';
+import SalonIcon from './../SalonIcon';
 
 const styles = StyleSheet.create({
   modal: {
@@ -139,10 +140,12 @@ export default class SalonSectionsModal extends React.Component {
         <Text style={styles.modalLineText}>{item.name.toUpperCase()}</Text>
 
         {isSelected &&
-          <Image
+          <SalonIcon
+            size={18}
+            icon="check"
             style={styles.modalLineImage}
-            source={require('../../assets/images/clients/icon_check_2.png')}
           />
+
         }
       </TouchableOpacity>);
   }

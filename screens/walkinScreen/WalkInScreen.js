@@ -219,9 +219,11 @@ class WalkInScreen extends Component {
     if (selectedProvider) {
       navigate('Providers', { actionType: 'update' });
     } else {
-      navigate('Providers', { actionType: 'update' });
+      navigate('Providers', { actionType: 'new' });
     }
   }
+
+
 
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
@@ -229,10 +231,21 @@ class WalkInScreen extends Component {
 
     this.props.walkInActions.setCurrentStep(4);
     if (selectedClient) {
-      navigate('ClientsSearch', { actionType: 'update' });
+      navigate('ClientsSearch', {
+        actionType: 'update',
+        dismissOnSelect: true,
+        onChangeClient: this.handleClientSelection,
+      });
     } else {
-      navigate('ClientsSearch', { actionType: 'update' });
+      navigate('ClientsSearch', {
+        actionType: 'new',
+        dismissOnSelect: true,
+        onChangeClient: this.handleClientSelection,
+      });
     }
+  }
+  handleClientSelection = (client) => {
+    this.props.walkInActions.selectedClient(client);
   }
 
   renderClientGroup = () => (
@@ -384,18 +397,6 @@ class WalkInScreen extends Component {
       </View>
 
     );
-  }
-
-  handlePressClient = () => {
-    const { navigate } = this.props.navigation;
-    const { selectedClient } = this.props.walkInState;
-    this.props.walkInActions.setCurrentStep(3);
-
-    if (selectedClient) {
-      navigate('ClientsSearch', { actionType: 'update' });
-    } else {
-      navigate('ClientsSearch');
-    }
   }
 
   render() {

@@ -14,6 +14,9 @@ const icons = {
   search: require('../assets/images/icons/icon_search_w.png'),
   walkIn: require('../assets/images/icons/icon_walkin.png'),
   cross: require('../assets/images/icons/icon_cross.png'),
+  microphone: require('../assets/images/icons/icon_microphone.png'),
+  check: require('../assets/images/icons/icon_check.png'),
+  dots: require('../assets/images/icons/icon_dots.png'),
 };
 
 const SalonIcon = props => (
