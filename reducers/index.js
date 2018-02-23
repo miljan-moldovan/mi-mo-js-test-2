@@ -5,6 +5,7 @@ import queue from './queue';
 import walkInReducer from './walkIn';
 import clientsReducer from './clients';
 import clientsSearchReducer from './clientsSearch';
+import formCache from './formCache';
 import { REHYDRATE } from 'redux-persist/constants';
 
 export default combineReducers({
@@ -13,4 +14,5 @@ export default combineReducers({
   walkInReducer,
   clientsReducer,
   clientsSearchReducer,
+  formCache
 });
