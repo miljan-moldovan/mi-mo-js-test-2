@@ -29,16 +29,16 @@ import HeaderLeftText from '../components/HeaderLeftText';
 
 const QueueStackNavigator = StackNavigator(
   {
-    TurnAway: {
-      screen: TurnAwayScreen,
-      navigationOptions: {
-        headerTitle: 'Turn Away',
-      },
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
+      },
+    },
+    TurnAway: {
+      screen: TurnAwayScreen,
+      navigationOptions: {
+        headerTitle: 'Turn Away',
       },
     },
     ClientDetails: {

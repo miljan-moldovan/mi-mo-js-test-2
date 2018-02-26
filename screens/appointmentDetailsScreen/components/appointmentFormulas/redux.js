@@ -10,10 +10,13 @@ const initialState = {
   filtered: [],
   newFormula: {
     id: 0,
-    date: '',
-    author: 'TEST USER',
-    note: '',
-    tags: [],
+    client: null,
+    type: null,
+    formula: '',
+    associated: null,
+    date: null,
+    provider: null,
+    copyTo: null,
   },
 };
 

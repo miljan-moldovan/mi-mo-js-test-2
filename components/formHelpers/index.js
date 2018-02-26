@@ -94,9 +94,13 @@ export const InputButton = props => (
       <View style={styles.inputRow}>
         <Text style={styles.labelText}>{props.placeholder}</Text>
         <View style={{ flexDirection: 'row' }}>
-          {props.value && (
-            <Text style={styles.inputText}>{props.value}</Text>
-          )}
+          {
+            typeof props.value === 'string'
+            ? (
+              <Text style={styles.inputText}>{props.value}</Text>
+            ) :
+              props.value
+          }
           {!props.noIcon && (
             <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
           )}

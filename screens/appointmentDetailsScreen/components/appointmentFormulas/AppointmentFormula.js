@@ -38,16 +38,24 @@ const NavButton = ({ icon, onPress }) => (
 );
 
 export default class AppointmentFormula extends React.Component {
-  static navigationOptions = {
+  static navigationOptions = rootProps => ({
     headerTitle: (
       <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ fontSize: 16, fontFamily: 'Roboto-Medium', color: 'white' }}>New Formula</Text>
         <Text style={{ fontSize: 10, fontFamily: 'Roboto-Regular', color: 'white' }}>Rod Stewart</Text>
       </View>
     ),
-    headerLeft: <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'Roboto-Regular' }}>Cancel</Text>,
+    headerLeft: (
+      <TouchableOpacity
+        onPress={() => {
+          rootProps.navigation.goBack();
+          }}
+      >
+        <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'Roboto-Regular' }}>Cancel</Text>
+      </TouchableOpacity>
+    ),
     headerRight: <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'Roboto-Regular' }}>Save</Text>,
-  };
+  })
 
   constructor(props) {
     super(props);
@@ -60,7 +68,8 @@ export default class AppointmentFormula extends React.Component {
   }
 
   handleClientSelection = (client) => {
-    console.log('selected this dude', client);
+    console.log('selected client', client);
+    debugger //eslint-disable-line
   }
 
   render() {

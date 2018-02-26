@@ -29,13 +29,13 @@ import AppointmentNoteHeader from '../screens/appointmentNote/components/appoint
 
 const AppointmentStackNavigator = StackNavigator(
   {
-    AppointmentFormula: {
-      screen: AppointmentFormula,
-    },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
     },
-    Appointments: {
+    AppointmentFormula: {
+      screen: AppointmentFormula,
+    },
+    AppointmentNotes: {
       screen: AppoinmentNotes,
     },
     AppointmentNote: {
