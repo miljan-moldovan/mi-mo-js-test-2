@@ -108,6 +108,17 @@ const QueueStackNavigator = StackNavigator(
         headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
       },
     },
+    TurnAway: {
+      screen: TurnAwayScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: 'Turn Away',
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
+        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>,
+      }),
+    },
   },
   {
     navigationOptions: {

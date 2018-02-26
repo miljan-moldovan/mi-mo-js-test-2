@@ -16,9 +16,10 @@ import {
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
-import * as actions from '../actions/login.js';
-import SideMenuItem from '../components/SideMenuItem';
 import { SafeAreaView } from 'react-navigation';
+
+import * as formCacheActions from '../actions/formCache';
+import fetchFormCache from '../utilities/fetchFormCache';
 
 const Item = ({ onPress, children }) => (
   <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
@@ -87,10 +88,10 @@ class NewAppointmentsScreen extends React.Component {
               top: 0,
               right: 0
             }} />
-          <View style={{ marginTop: 40, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
+          <View style={{ marginTop: 60, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
             <NavButton onPress={()=>navigation.goBack()}>Cancel</NavButton>
             <Text style={styles.navTitle}>Modify Appointment</Text>
-            <NavButton>Save</NavButton>
+            <NavButton>.</NavButton>
           </View>
           <View style={{backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10, marginVertical: 10, marginTop: 'auto', marginHorizontal: 20}}>
             <Text style={styles.headerDateLabel}>DATE</Text>
@@ -102,6 +103,35 @@ class NewAppointmentsScreen extends React.Component {
   state = {
     item: { ...appointment }
   }
+  componentWillMount() {
+    // the formCache data can be accessed directly in redux state or
+    // preferably through the utility function fetchFormCache
+    const cachedForm = fetchFormCache('NewAppointmentsScreen', '0', this.props.formCache);
+    if (cachedForm) {
+      // something was stored for this screen. use that instead of the default state
+      this.setState({ item: cachedForm });
+    } else {
+      // go the usual route e.g.: use default screen state, fetch data from the network etc.
+    }
+  }
+  _handleSavePress = () => {
+    // 1 - send information to API - if successful, call purgeForm(formName, itemIdentifier)
+    // 2 - receive network error
+    // 3 - save info with storeForm
+      // this plain object holds all fields we want to persist/restore in the form
+      // anything can be put in it
+      const formData = this.state.item;
+      // this is the name of the screen or form we want to persist info from
+      const formName = 'NewAppointmentsScreen';
+      // this is the identifier of the item we are editing (in list views, for ex.)
+      // in this case, we are loading this info next time the user tries to create
+      // a new appointment, so we will just use '0'
+      const itemIdentifier = '0';
+      this.props.storeForm(formName, itemIdentifier, formData);
+      // 4 - inform user of the error and that the info is saved
+      Alert.alert('Network Error', 'Due to a network error, your action could not be completed. \nYou data has been saved locally and you can return to this screen at any time to resume your work.');
+  }
+
   _handleClientPress = () => {
     this.props.navigation.navigate('ChangeClient', {
       dismissOnSelect: true,
@@ -266,15 +296,18 @@ class NewAppointmentsScreen extends React.Component {
           </View>
           <View style={{height: 80, backgroundColor: 'white'}} />
         </ScrollView>
-        <View style={styles.mainButtonContainer}>
+        <TouchableOpacity style={styles.mainButtonContainer} onPress={this._handleSavePress}>
           <Text style={styles.mainButtonTitle}>SAVE</Text>
           <Text style={styles.mainButtonSubtitle}>Total ${service.price} | {service.length}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     );
   }
 }
-export default connect(null, actions)(NewAppointmentsScreen);
+const mapStateToProps = (state, ownProps) => ({
+  formCache: state.formCache,
+});
+export default connect(mapStateToProps, formCacheActions)(NewAppointmentsScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -362,5 +395,4 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-SemiBold',
     color: 'white'
   }
-
 });
