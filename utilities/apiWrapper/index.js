@@ -25,8 +25,8 @@ function cleanCache(service, callback) {
       const cacheDependencies = apiConstants.cacheCleaningDependencies[service];
       if (cacheDependencies) {
         for (let i = 0; i < cacheDependencies.length; i += 1) {
-          const cacheDependencie = cacheDependencies[i];
-          api.clearCache(cacheDependencie);
+          const cacheDependency = cacheDependencies[i];
+          api.clearCache(cacheDependency);
         }
       }
     }
