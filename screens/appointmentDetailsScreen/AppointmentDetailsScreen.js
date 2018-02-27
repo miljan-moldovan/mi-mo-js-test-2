@@ -2,13 +2,14 @@ import React from 'react';
 import {
   View,
   Text,
-  Image,
+  TouchableOpacity,
   StyleSheet,
   Dimensions,
 } from 'react-native';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import AppointmentDetails from './components/appointmentDetails';
 import AppoinmentNotes from './components/appointmentNotes';
 import AppointmentFormulas from './components/appointmentFormulas';
 
@@ -50,29 +51,39 @@ const styles = StyleSheet.create({
 });
 
 export default class AppointmentDetailsScreen extends React.Component {
-  static navigationOptions = {
-    headerTitle: (
-      <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 16, fontFamily: 'Roboto-Medium', color: 'white' }}>Rod Stewart</Text>
-      </View>
-    ),
-    headerLeft: (
-      <Text style={{ fontSize: 14, color: '#fff' }}>
-        <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-      </Text>
-    ),
-    headerRight: (
-      <Text style={{ fontSize: 14, color: '#fff' }}>
-        <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
-      </Text>
-    ),
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    let title = 'New Appointment';
+    if (params && params.item) {
+      title = `${params.item.client.name} ${params.item.client.lastName}`;
+    }
+    return ({
+      headerTitle: (
+        <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 16, fontFamily: 'Roboto-Medium', color: 'white' }}>{title}</Text>
+        </View>
+      ),
+      headerLeft: (
+        <TouchableOpacity onPress={() => { navigation.navigate('Queue'); }}>
+          <Text style={{ fontSize: 14, color: '#fff' }}>
+            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+          </Text>
+        </TouchableOpacity>
+      ),
+      headerRight: (
+        <Text style={{ fontSize: 14, color: '#fff' }}>
+          <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
+        </Text>
+      ),
+    });
   };
 
   constructor(props) {
     super(props);
-
+    const { params } = this.props.navigation.state;
     this.state = {
       index: 0,
+      appointment: params && params.item ? params.item : null,
       routes: [
         { key: '0', title: 'Appt. Details', icon: 'pencil' },
         { key: '1', title: 'Notes', icon: 'file' },
@@ -101,9 +112,9 @@ export default class AppointmentDetailsScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <AppoinmentNotes navigation={this.props.navigation} />,
-    1: () => <AppoinmentNotes navigation={this.props.navigation} />,
-    2: () => <AppointmentFormulas navigation={this.props.navigation} />,
+    0: () => <AppointmentDetails appointment={this.state.appointment} navigation={this.props.navigation} />,
+    1: () => <AppoinmentNotes appointment={this.state.appointment} navigation={this.props.navigation} />,
+    2: () => <AppointmentFormulas appointment={this.state.appointment} navigation={this.props.navigation} />,
   });
 
   render() {

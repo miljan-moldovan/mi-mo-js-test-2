@@ -60,16 +60,16 @@ class Queue extends React.Component {
         ];
         right = [
           <QueueButton
-type={checkin}
-right
+            type={checkin}
+            right
             onPress={() => {
               LayoutAnimation.spring();
               this.props.checkInClient(queueId);
               }}
           />,
           <QueueButton
-type={service}
-right
+            type={service}
+            right
             onPress={() => {
               LayoutAnimation.spring();
               this.props.startService(queueId);
@@ -85,32 +85,32 @@ right
         right = [
           <QueueButton type={uncheckin} right />,
           <QueueButton
-type={service}
-onPress={()=>{
+            type={service}
+            onPress={() => {
             LayoutAnimation.spring();
             this.props.startService(queueId);
-            this.showNotification(item, 'service')
+            this.showNotification(item, 'service');
           }}
-right 
+            right
           />,
         ];
       }
     } else if (item.finishService) {
       left = [
-          <QueueButton type={undoFinish} left />,
+        <QueueButton type={undoFinish} left />,
       ];
       right = [
-          <QueueButton type={rebook} right />,
-          <QueueButton type={checkout} right />,
+        <QueueButton type={rebook} right />,
+        <QueueButton type={checkout} right />,
       ];
     } else {
       left = [
-          <QueueButton type={notesFormulas} left />,
-          <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId) ;}} left />,
+        <QueueButton type={notesFormulas} left />,
+        <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
       ];
       right = [
-          <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
-          <QueueButton type={checkout} right />,
+        <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
+        <QueueButton type={checkout} right />,
       ];
     }
     return { left, right };
@@ -193,17 +193,17 @@ right
   }
   renderNotification = () => {
     const {
- notificationType, notificationItem,
-      notificationVisible 
-} = this.state;
+      notificationType, notificationItem,
+      notificationVisible,
+    } = this.state;
     console.log('renderNotification - notificationVisible', notificationVisible);
-    let notificationColor, 
-notificationButton, 
-notificationText;
+    let notificationColor,
+      notificationButton,
+      notificationText;
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
-        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name } ${ client.lastName}`}</Text></Text>);
+        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name} ${client.lastName}`}</Text></Text>);
         notificationColor = '#ccc';
         notificationButton = <NotificationBannerButton title="UNDO" />;
         break;
