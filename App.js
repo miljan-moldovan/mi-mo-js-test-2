@@ -39,7 +39,7 @@ export default class App extends Component<{}> {
       store,
       {
         storage: AsyncStorage,
-        blacklist: ['walkInReducer'],
+        blacklist: ['walkInReducer', 'queue'],
         // whitelist: ['auth']
       },
       () => { this.setState({ storeIsReady: true }); console.log('storeIsReady!'); },
