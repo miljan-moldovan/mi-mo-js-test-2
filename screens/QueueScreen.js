@@ -130,7 +130,6 @@ class QueueScreen extends React.Component {
   )
 
   _renderScene = ({ route }) => {
-    console.log('_renderScene', route);
     switch (route.key) {
       case WAITING:
         return (
