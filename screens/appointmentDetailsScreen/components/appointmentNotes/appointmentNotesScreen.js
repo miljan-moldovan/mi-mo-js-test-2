@@ -254,7 +254,13 @@ export default class AppointmentNotesScreen extends Component {
   };
 
   handlePress = (i) => {
-    console.log(i);
+    setTimeout(() => {
+      this.handlePressAction(i);
+    }, 500);
+    return false;
+  }
+
+  handlePressAction(i) {
     switch (i) {
       case 0:
         this.editNote(this.state.note);
@@ -265,6 +271,8 @@ export default class AppointmentNotesScreen extends Component {
       default:
         break;
     }
+
+    return false;
   }
 
   filterNotes(searchText, showDeleted) {
