@@ -39,10 +39,10 @@ export default class App extends Component<{}> {
       store,
       {
         storage: AsyncStorage,
-        blacklist: ['walkInReducer'],
+        blacklist: ['walkInReducer', 'appointmentFormulasReducer'],
         // whitelist: ['auth']
       },
-      () => { this.setState({ storeIsReady: true }); console.log('storeIsReady!'); },
+      () => { this.setState({ storeIsReady: true }); },
     ); // .purge(); use to prevent log in
   }
   render() {
@@ -52,17 +52,16 @@ export default class App extends Component<{}> {
           <ActivityIndicator />
         </View>
       );
-    } else {
-      return (
-        <Provider store={store}>
-          <View style={styles.container}>
-              {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-              {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-              <RootNavigation />
-            </View>
-        </Provider>
-      );
     }
+    return (
+      <Provider store={store}>
+        <View style={styles.container}>
+          {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+          {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+          <RootNavigation />
+        </View>
+      </Provider>
+    );
   }
 }
 

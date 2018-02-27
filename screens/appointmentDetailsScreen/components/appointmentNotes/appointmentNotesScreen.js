@@ -8,7 +8,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import ActionSheet from '@yfuks/react-native-action-sheet';
+import SalonActionSheet from '../../../../components/SalonActionSheet';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
 import SalonIcon from '../../../../components/SalonIcon';
 import SalonBtnFixedBottom from '../../../../components/SalonBtnFixedBottom';
@@ -18,14 +18,13 @@ import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import AppointmentNotes from '../../../../constants/AppointmentNotes';
 
-const BUTTONS = [
+const CANCEL_INDEX = 2;
+const DESTRUCTIVE_INDEX = 1;
+const options = [
   'Edit Note',
   'Delete Note',
   'Cancel',
 ];
-
-const DESTRUCTIVE_INDEX = 1;
-const CANCEL_INDEX = 2;
 
 const styles = StyleSheet.create({
   container: {
@@ -186,6 +185,7 @@ export default class AppointmentNotesScreen extends Component {
 
     this.state = {
       showDeleted: false,
+      note: null,
     };
   }
 
@@ -248,94 +248,108 @@ export default class AppointmentNotesScreen extends Component {
   }
 
 
-    showActionSheet = (note) => {
-      ActionSheet.showActionSheetWithOptions(
-        {
-          options: BUTTONS,
-          cancelButtonIndex: CANCEL_INDEX,
-          destructiveButtonIndex: DESTRUCTIVE_INDEX,
-          tintColor: 'blue',
-        },
-        (buttonIndex) => {
-          switch (buttonIndex) {
-            case 0:
-              this.editNote(note);
-              break;
-            case 1:
-              this.deleteNoteAlert(note);
-              break;
-            default:
-              break;
-          }
-        },
-      );
-    };
+  showActionSheet = (note) => {
+    this.setState({ note });
+    this.SalonActionSheet.show();
+  };
 
-    filterNotes(searchText, showDeleted) {
-      const baseNotes = showDeleted ? this.props.appointmentNotesState.notes :
-        this.props.appointmentNotesState.notes.filter(el => el.active === 1);
+  handlePress = (i) => {
+    setTimeout(() => {
+      this.handlePressAction(i);
+    }, 500);
+    return false;
+  }
 
-      if (searchText && searchText.length > 0) {
-        const criteria = [
-          { Field: 'author', Values: [searchText.toLowerCase()] },
-          { Field: 'note', Values: [searchText.toLowerCase()] },
-          { Field: 'date', Values: [searchText.toLowerCase()] },
-        ];
-
-        const filtered = AppointmentNotesScreen.flexFilter(
-          baseNotes,
-          criteria,
-        );
-
-        let tagNotes = [];
-
-        for (let i = 0; i < filtered.length; i++) {
-          const note = filtered[i];
-          const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
-          if (found) {
-            tagNotes.push(note);
-          }
-        }
-
-        tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
-
-        this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
-      } else {
-        let tagNotes = [];
-
-        for (let i = 0; i < baseNotes.length; i++) {
-          const note = baseNotes[i];
-          const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
-          if (found) {
-            tagNotes.push(note);
-          }
-        }
-
-        tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
-        this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
-      }
+  handlePressAction(i) {
+    switch (i) {
+      case 0:
+        this.editNote(this.state.note);
+        break;
+      case 1:
+        this.deleteNoteAlert(this.state.note);
+        break;
+      default:
+        break;
     }
 
-    render() {
-      return (
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.topSearchBar}>
-              <SalonSearchBar
-                placeHolderText="Search"
-                marginVertical={0}
-                placeholderTextColor="#727A8F"
-                searchIconPosition="left"
-                iconsColor="#727A8F"
-                fontColor="#727A8F"
-                borderColor="transparent"
-                backgroundColor="rgba(142, 142, 147, 0.24)"
-                onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted)}
-              />
-            </View>
-            <View style={styles.tagsBar} >
+    return false;
+  }
 
-              {AppointmentNotes.filterTypes.map((filterType) => {
+  filterNotes(searchText, showDeleted) {
+    const baseNotes = showDeleted ? this.props.appointmentNotesState.notes :
+      this.props.appointmentNotesState.notes.filter(el => el.active === 1);
+
+    if (searchText && searchText.length > 0) {
+      const criteria = [
+        { Field: 'author', Values: [searchText.toLowerCase()] },
+        { Field: 'note', Values: [searchText.toLowerCase()] },
+        { Field: 'date', Values: [searchText.toLowerCase()] },
+      ];
+
+      const filtered = AppointmentNotesScreen.flexFilter(
+        baseNotes,
+        criteria,
+      );
+
+      let tagNotes = [];
+
+      for (let i = 0; i < filtered.length; i++) {
+        const note = filtered[i];
+        const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
+        if (found) {
+          tagNotes.push(note);
+        }
+      }
+
+      tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
+
+      this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
+    } else {
+      let tagNotes = [];
+
+      for (let i = 0; i < baseNotes.length; i++) {
+        const note = baseNotes[i];
+        const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
+        if (found) {
+          tagNotes.push(note);
+        }
+      }
+
+      tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
+      this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
+    }
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+
+        <SalonActionSheet
+          ref={o => this.SalonActionSheet = o}
+          options={options}
+          cancelButtonIndex={CANCEL_INDEX}
+          destructiveButtonIndex={DESTRUCTIVE_INDEX}
+          onPress={(i) => { this.handlePress(i); }}
+        />
+
+
+        <View style={styles.header}>
+          <View style={styles.topSearchBar}>
+            <SalonSearchBar
+              placeHolderText="Search"
+              marginVertical={0}
+              placeholderTextColor="#727A8F"
+              searchIconPosition="left"
+              iconsColor="#727A8F"
+              fontColor="#727A8F"
+              borderColor="transparent"
+              backgroundColor="rgba(142, 142, 147, 0.24)"
+              onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted)}
+            />
+          </View>
+          <View style={styles.tagsBar} >
+
+            {AppointmentNotes.filterTypes.map((filterType) => {
               const isSelected = this.props.appointmentNotesState.filterTypes.indexOf(filterType) > -1;
 
               return (<View key={Math.random().toString()} style={styles.tag}>
@@ -366,89 +380,89 @@ export default class AppointmentNotesScreen extends Component {
               </View>);
             })}
 
-            </View>
           </View>
-          <View style={styles.notesScroller}>
-            <ScrollView style={{ alignSelf: 'stretch' }}>
-              <FlatList
-                extraData={this.props}
-                keyExtractor={(item, index) => index}
-                data={this.props.appointmentNotesState.filtered}
-                renderItem={({ item, index }) => (
+        </View>
+        <View style={styles.notesScroller}>
+          <ScrollView style={{ alignSelf: 'stretch' }}>
+            <FlatList
+              extraData={this.props}
+              keyExtractor={(item, index) => index}
+              data={this.props.appointmentNotesState.filtered}
+              renderItem={({ item, index }) => (
 
 
-                  <SalonCard
-                    key={index}
-                    backgroundColor="#FFFFFF"
-                    headerChildren={[
-                      <View style={styles.noteTags} key={Math.random().toString()}>
-                        <View style={styles.noteHeaderLeft}>
+                <SalonCard
+                  key={index}
+                  backgroundColor="#FFFFFF"
+                  headerChildren={[
+                    <View style={styles.noteTags} key={Math.random().toString()}>
+                      <View style={styles.noteHeaderLeft}>
 
-                          <SalonDateTxt
-                            dateFormat="MMM. DD YYYY"
-                            value={item.date}
-                            valueColor="#000000"
-                            valueSize={12}
+                        <SalonDateTxt
+                          dateFormat="MMM. DD YYYY"
+                          value={item.date}
+                          valueColor="#000000"
+                          valueSize={12}
+                        />
+
+                        <Text style={styles.noteBy}>by</Text>
+                        <Text style={styles.noteAuthor}>{item.author}</Text>
+
+                      </View>
+                      <View style={styles.noteHeaderRight}>
+                        <TouchableOpacity
+                          style={styles.dotsButton}
+                          onPress={() => { this.showActionSheet(item); }}
+                        >
+                          <SalonIcon
+                            size={16}
+                            icon="dots"
+                            style={styles.dotsIcon}
                           />
+                        </TouchableOpacity>
+                      </View>
+                    </View>]}
 
-                          <Text style={styles.noteBy}>by</Text>
-                          <Text style={styles.noteAuthor}>{item.author}</Text>
+                  bodyChildren={[
+                    <Text
+                      key={Math.random().toString()}
+                      style={styles.noteText}
+                    >{item.note}
+                    </Text>]}
 
-                        </View>
-                        <View style={styles.noteHeaderRight}>
-                          <TouchableOpacity
-                            style={styles.dotsButton}
-                            onPress={() => { this.showActionSheet(item); }}
-                          >
-                            <SalonIcon
-                              size={16}
-                              icon="dots"
-                              style={styles.dotsIcon}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>]}
-
-                    bodyChildren={[
-                      <Text
-                        key={Math.random().toString()}
-                        style={styles.noteText}
-                      >{item.note}
-                      </Text>]}
-
-                    footerChildren={item.tags.map(tag => (
-                      <SalonTag key={Math.random().toString()} tagHeight={16} backgroundColor="#C3D6F2" value={tag} valueSize={10} valueColor="#2F3142" />
+                  footerChildren={item.tags.map(tag => (
+                    <SalonTag key={Math.random().toString()} tagHeight={16} backgroundColor="#C3D6F2" value={tag} valueSize={10} valueColor="#2F3142" />
                   ))}
-                  />
+                />
             )}
-              />
-              <View style={styles.showDeletedButtonContainer}>
+            />
+            <View style={styles.showDeletedButtonContainer}>
 
-                <TouchableOpacity
-                  style={styles.showDeletedButton}
-                  onPress={() => {
+              <TouchableOpacity
+                style={styles.showDeletedButton}
+                onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
                   this.filterNotes(null, !this.state.showDeleted);
                 }}
-                >
-                  <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-                </TouchableOpacity>
-              </View>
+              >
+                <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
+              </TouchableOpacity>
+            </View>
 
-            </ScrollView>
-          </View>
+          </ScrollView>
+        </View>
 
-          <SalonBtnFixedBottom
-            backgroundColor="#727A8F"
-            onPress={() => {
+        <SalonBtnFixedBottom
+          backgroundColor="#727A8F"
+          onPress={() => {
             const { navigate } = this.props.navigation;
             navigate('AppointmentNote', { actionType: 'new' });
         }}
-            value="Add New Note"
-            valueSize={13}
-            valueColor="#FFFFFF"
-          />
-        </View>
-      );
-    }
+          value="Add New Note"
+          valueSize={13}
+          valueColor="#FFFFFF"
+        />
+      </View>
+    );
+  }
 }

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-import ClientsHeader from './components/ClientsHeader';
+import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
 
 const mockDataClients = require('../../mockData/clients.json');
@@ -164,6 +164,8 @@ class ClientsScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.props.salonSearchHeaderActions.setTitle('Clients');
+
     this.props.clientsActions.setClients(mockDataClients);
     this.props.clientsActions.setFilteredClients(mockDataClients);
     this.props.clientsActions.setSearchText('');
@@ -206,7 +208,7 @@ class ClientsScreen extends React.Component {
 
   filterClients = (searchText) => {
     if (searchText && searchText.length > 0) {
-      this.props.clientsActions.setShowFilter(true);
+      // this.props.salonSearchHeaderActions.setShowFilter(true);
 
       const criteria = [
         { Field: 'name', Values: [searchText.toLowerCase()] },
@@ -221,7 +223,7 @@ class ClientsScreen extends React.Component {
     } else {
       this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
       this.props.clientsActions.setSearchText(searchText);
-      this.props.clientsActions.setShowFilter(false);
+      // this.props.salonSearchHeaderActions.setShowFilter(false);
     }
 
     this.props.navigation.setParams({
@@ -233,7 +235,7 @@ class ClientsScreen extends React.Component {
     console.log(item);
     this.props.clientsActions.setSearchText(item);
     this.filterClients(item);
-    this.props.clientsActions.setShowFilter(false);
+    this.props.salonSearchHeaderActions.setShowFilter(false);
   }
 
 
@@ -257,13 +259,15 @@ class ClientsScreen extends React.Component {
   }
 
   filterList = (searchText) => {
-    if (!this.props.clientsState.showFilter) {
+    debugger //eslint-disable-line
+
+    if (!this.props.salonSearchHeaderState.showFilter) {
       this.filterClients(searchText);
     } else {
       this.filterSuggestions(searchText);
-      if (searchText.length === 0) {
-        this.props.clientsActions.setShowFilter(false);
-      }
+      // if (searchText.length === 0) {
+      //   this.props.salonSearchHeaderActions.setShowFilter(false);
+      // }
     }
   }
 
@@ -277,13 +281,13 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
 
 
-        <ClientsHeader
+        <SalonSearchHeader
           filterList={searchText => this.filterList(searchText)}
           {...this.props}
         />
 
         <View style={styles.clientsList}>
-          { (!this.props.clientsState.showFilter && this.props.clientsState.filtered.length > 0) &&
+          { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
             <ClientList
               boldWords={this.props.clientsState.searchText}
               style={styles.clientListContainer}
@@ -292,7 +296,7 @@ class ClientsScreen extends React.Component {
             />
            }
 
-          { (this.props.clientsState.showFilter && this.props.clientsState.filtered.length > 0) &&
+          { (this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
           <ClientSuggestions
             {...this.props}
             onPressItem={this.onPressItem}

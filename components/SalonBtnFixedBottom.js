@@ -16,15 +16,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    alignSelf: 'stretch',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    borderTopLeftRadius: 9,
+    borderTopRightRadius: 9,
   },
   text: {
     fontFamily: 'OpenSans-Regular',
     color: '#1D1D26',
   },
-
 });
 
 const salonBtnFixedBottom = props => (
@@ -33,18 +37,22 @@ const salonBtnFixedBottom = props => (
     style={[styles.btnContainer, { backgroundColor: props.backgroundColor }]}
   >
     <View style={styles.container}>
-      <Text style={[styles.text, {
-          fontSize: props.valueSize,
-          color: props.valueColor,
-        }]}
-      >{props.value}
-      </Text>
+      {props.value && (
+        <Text style={[styles.text, {
+              fontSize: props.valueSize,
+              color: props.valueColor,
+            }]}
+        >{props.value}
+        </Text>
+      )}
+      {props.children}
     </View>
   </TouchableOpacity>
 );
 
 salonBtnFixedBottom.propTypes = {
-  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  children: PropTypes.element,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.bool]),
   valueColor: PropTypes.string,
   valueSize: PropTypes.number,
   backgroundColor: PropTypes.string,
@@ -52,6 +60,8 @@ salonBtnFixedBottom.propTypes = {
 };
 
 salonBtnFixedBottom.defaultProps = {
+  children: null,
+  value: false,
   backgroundColor: 'transparent',
   valueColor: '#000000',
   valueSize: 14,

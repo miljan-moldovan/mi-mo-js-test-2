@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import moment from 'moment';
 
 import DatePicker from '../../../components/modals/SalonDatePicker';
@@ -70,7 +70,32 @@ class TurnAwayScreen extends Component {
       date: moment().format('DD MMMM YYYY'),
       isModalVisible: false,
       selectedClient: null,
+      services: [],
     };
+  }
+
+  handleAddService= () => {
+    const service = {
+      provider: null,
+      service: null,
+      start: moment(),
+      end: moment().add(1, 'hours'),
+    };
+    const { services } = this.state;
+    services.push(service);
+    this.setState({ services });
+  }
+
+  handleRemoveService= (index) => {
+    const { services } = this.state;
+    services.splice(index, 1);
+    this.setState({ services });
+  }
+
+  handleUpdateService= (index, service) => {
+    const { services } = this.state;
+    services[index] = service;
+    this.setState({ services });
   }
 
   handleDateModal = () => {
@@ -100,8 +125,9 @@ class TurnAwayScreen extends Component {
   }
 
   render() {
+    const { navigate } = this.props.navigation;
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={[styles.row, styles.rowFirst]}>
           <Text style={styles.label}>Date</Text>
           <View style={styles.dataContainer}>
@@ -116,9 +142,15 @@ class TurnAwayScreen extends Component {
         <View style={styles.titleRow}>
           <Text style={styles.title}>SERVICES</Text>
         </View>
-        <ServiceSection />
+        <ServiceSection
+          services={this.state.services}
+          onAdd={this.handleAddService}
+          onRemove={this.handleRemoveService}
+          onUpdate={this.handleUpdateService}
+          navigate={navigate}
+        />
         <DatePicker onPress={this.handleSelectDate} isVisible={this.state.isModalVisible} />
-      </View>
+      </ScrollView>
     );
   }
 }
