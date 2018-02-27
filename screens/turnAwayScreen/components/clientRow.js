@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
-
-import SalonIcon from '../../../components/SalonIcon';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 const styles = StyleSheet.create({
   row: {
@@ -31,7 +30,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   iconStyle: {
-    tintColor: '#727A8F',
+    fontSize: 20,
+    color: '#727A8F',
     marginLeft: 5,
   },
   buttonStyle: {
@@ -50,7 +50,7 @@ const renderClient = (client, onCrossPress) => {
       <View style={styles.clientContainer}>
         <Text style={styles.textData}>{client.name}</Text>
         <TouchableOpacity onPress={onCrossPress}>
-          <SalonIcon icon="cross" style={styles.iconStyle} />
+          <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
         </TouchableOpacity>
       </View>
     );
@@ -65,7 +65,7 @@ const clientRow = props => (
       <View style={styles.buttonStyle}>
         { renderClient(props.client, props.onCrossPress) }
         <TouchableOpacity onPress={props.onPress}>
-          <SalonIcon icon="caretRight" style={styles.iconStyle} />
+          <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
         </TouchableOpacity>
       </View>
     </View>
