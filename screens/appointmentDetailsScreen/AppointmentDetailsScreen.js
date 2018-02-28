@@ -86,7 +86,7 @@ export default class AppointmentDetailsScreen extends React.Component {
     const { params } = this.props.navigation.state;
     this.state = {
       index: 0,
-      appointment: params && params.item ? params.item : null,
+      appointment: params && params.appointment ? params.appointment : null,
       routes: [
         { key: '0', title: 'Appt. Details', icon: 'pencil' },
         { key: '1', title: 'Notes', icon: 'file' },
