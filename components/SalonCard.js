@@ -47,15 +47,17 @@ const salonCard = props => (
   <View
     key={Math.random().toString()}
     style={
-    [styles.container, { backgroundColor: props.backgroundColor }]}
+    [styles.container, { backgroundColor: props.backgroundColor }, props.containerStyles]}
   >
-    <View style={styles.header}>
-      {props.headerChildren}
-    </View>
-    <View style={styles.body}>
+    {props.headerChildren && props.headerChildren.length > 0 && (
+      <View style={styles.header}>
+        {props.headerChildren}
+      </View>
+    )}
+    <View style={[styles.body, props.bodyStyles]}>
       {props.bodyChildren}
     </View>
-    {props.footerChildren.length > 0 && (
+    {props.footerChildren && props.footerChildren.length > 0 && (
       <View style={styles.footer}>
         {props.footerChildren}
       </View>
@@ -64,15 +66,20 @@ const salonCard = props => (
 );
 
 salonCard.propTypes = {
-  headerChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
+  headerChildren: PropTypes.oneOf([PropTypes.arrayOf(PropTypes.element), null]),
   bodyChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
-  footerChildren: PropTypes.arrayOf(PropTypes.element),
+  footerChildren: PropTypes.oneOf([PropTypes.arrayOf(PropTypes.element), null]),
   backgroundColor: PropTypes.string,
+  containerStyles: PropTypes.shape,
+  bodyStyles: PropTypes.shape,
 };
 
 salonCard.defaultProps = {
   backgroundColor: 'transparent',
-  footerChildren: [],
+  headerChildren: null,
+  footerChildren: null,
+  containerStyles: {},
+  bodyStyles: {},
 };
 
 export default salonCard;

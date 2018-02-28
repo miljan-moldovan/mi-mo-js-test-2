@@ -31,11 +31,14 @@ const styles = StyleSheet.create({
     top: 0,
   },
   tabLabel: {
-    color: '#115ECD',
+    color: '#4D5067',
     fontFamily: 'Roboto',
     fontSize: 12,
     lineHeight: 14,
     paddingBottom: 8,
+  },
+  tabLabelActive: {
+    color: '#1DBF12',
   },
   tabIcon: {
     marginRight: 5,
@@ -95,7 +98,13 @@ export default class AppointmentDetailsScreen extends React.Component {
   handleIndexChange = index => this.setState({ index });
 
   renderLabel = ({ position, navigationState }) => ({ route, index }) => (
-    <Text style={styles.tabLabel}>
+    <Text
+      style={
+        this.state.index === index
+        ? [styles.tabLabel, styles.tabLabelActive]
+        : styles.tabLabel
+      }
+    >
       <FontAwesome style={styles.tabIcon}>{Icons[route.icon]}</FontAwesome>
       {` ${route.title}`}
     </Text>
@@ -107,7 +116,7 @@ export default class AppointmentDetailsScreen extends React.Component {
       tabStyle={{ backgroundColor: 'transparent' }}
       style={{ backgroundColor: 'transparent' }}
       renderLabel={this.renderLabel(props)}
-      indicatorStyle={{ backgroundColor: '#115ECD', height: 4 }}
+      indicatorStyle={{ backgroundColor: '#1DBF12', height: 2 }}
     />
   );
 
