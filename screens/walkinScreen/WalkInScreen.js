@@ -14,6 +14,8 @@ import infoImage from '../../assets/images/icons/icon_plus.png';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonIcon from '../../components/SalonIcon';
 
+import FontAwesome, { Icons } from 'react-native-fontawesome';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -229,16 +231,20 @@ class WalkInScreen extends Component {
     const { selectedClient } = this.props.walkInState;
 
     this.props.walkInActions.setCurrentStep(5);
+
+
     if (selectedClient) {
       navigate('Clients', {
         actionType: 'update',
         dismissOnSelect: true,
+        headerConf: 'walkin',
         onChangeClient: this.handleClientSelection,
       });
     } else {
       navigate('Clients', {
         actionType: 'new',
         dismissOnSelect: true,
+        headerConf: 'walkin',
         onChangeClient: this.handleClientSelection,
       });
     }

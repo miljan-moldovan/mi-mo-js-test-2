@@ -2,7 +2,6 @@ import React from 'react';
 import { View,
   Text,
   TouchableHighlight,
-  Dimensions,
   SectionList,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
@@ -189,7 +188,7 @@ class ClientList extends React.Component {
           <ClientListItem
             client={obj.item}
             boldWords={this.state.boldWords}
-            onPress={this.props.onChangeClient}
+            onPress={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
           />
         </View>)
 

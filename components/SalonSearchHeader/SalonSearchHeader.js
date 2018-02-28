@@ -1,11 +1,8 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
-import { connect } from 'react-redux';
 
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
-
-// const filterType = ['This store', 'All stores'];
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -57,14 +54,64 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  leftButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
 });
 
 
 class SalonSearchHeader extends React.Component {
   constructor(props) {
     super(props);
-    debugger //eslint-disable-line
+  }
+
+  componentWillMount() {
   }
 
   showSuggestions() {
@@ -75,7 +122,6 @@ class SalonSearchHeader extends React.Component {
     this.props.salonSearchHeaderActions.setSelectedFilter(selectedIndex);
   }
 
-
   render() {
     return (
       <View style={styles.headerContainer}>
@@ -83,83 +129,34 @@ class SalonSearchHeader extends React.Component {
         { !this.props.salonSearchHeaderState.showFilter &&
           <View style={styles.header}>
 
+            {this.props.salonSearchHeaderState.leftButton && this.props.salonSearchHeaderState.leftButtonOnPress &&
             <TouchableOpacity
-              style={{
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    }}
-              onPress={() => { this.props.navigation.goBack(); }}
+              style={styles.leftButton}
+              onPress={() => { this.props.salonSearchHeaderState.leftButtonOnPress(); }}
             >
-              <View>
-                <Text style={{
-        color: '#FFFFFF',
-        fontSize: 14,
-        fontFamily: 'Roboto',
-        backgroundColor: 'transparent',
-        }}
-                >Cancel
+              <View style={styles.leftButtonContainer}>
+                <Text style={styles.leftButtonText}>
+                  {this.props.salonSearchHeaderState.leftButton}
                 </Text>
               </View>
-            </TouchableOpacity>
-            <View style={{
-      flex: 1,
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      }}
-            >
-              <Text
-                style={{
-        fontFamily: 'Roboto',
-        color: '#fff',
-        fontSize: 17,
-        fontWeight: '700',
-        }}
-              >
-                {this.props.salonSearchHeaderState.title}
-              </Text>
-              {this.props.salonSearchHeaderState.subTitle &&
-                <Text
-                  style={{
-                    fontFamily: 'Roboto',
-                    color: '#fff',
-                    fontSize: 10,
-                  }}
-                >
-                  {this.props.salonSearchHeaderState.subTitle}
-                </Text>
-              }
+
+            </TouchableOpacity>}
+            <View style={styles.titleContainer}>
+              {this.props.salonSearchHeaderState.title && <Text style={styles.titleText}>{this.props.salonSearchHeaderState.title}</Text>}
+              {this.props.salonSearchHeaderState.subTitle && <Text style={styles.subTitleText}>{this.props.salonSearchHeaderState.subTitle}</Text>}
             </View>
-
+            {this.props.salonSearchHeaderState.rightButton && this.props.salonSearchHeaderState.rightButtonOnPress &&
             <TouchableOpacity
-              style={{
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        }}
-              onPress={() => { this.props.navigation.navigate('NewClientScreen'); }}
+              style={styles.rightButton}
+              onPress={() => { this.props.salonSearchHeaderState.rightButtonOnPress(); }}
             >
-              <View style={{
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      }}
-              >
-                <Text style={{
-      color: '#FFFFFF',
-      fontSize: 14,
-      fontFamily: 'Roboto',
-      backgroundColor: 'transparent',
-      }}
-                >Add
+              <View style={styles.rightButtonContainer}>
+                <Text style={styles.rightButtonText}>
+                  {this.props.salonSearchHeaderState.rightButton}
                 </Text>
               </View>
             </TouchableOpacity>
-
+}
 
           </View>}
 
@@ -179,6 +176,7 @@ class SalonSearchHeader extends React.Component {
             borderColor="transparent"
             backgroundColor={!this.props.salonSearchHeaderState.showFilter ? 'rgba(142, 142, 147, 0.24)' : '#0C4699'}
             onChangeText={(searchText) => {
+                this.props.salonSearchHeaderActions.setSearchText(searchText);
                 this.props.filterList(searchText);
                 if (searchText && searchText.length > 0) {
                   this.props.salonSearchHeaderActions.setShowFilter(true);

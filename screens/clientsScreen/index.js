@@ -5,6 +5,7 @@ import ClientsScreen from './ClientsScreen';
 import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
 
 const mapStateToProps = state => ({
+  walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
 });

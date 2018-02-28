@@ -3,6 +3,7 @@ import React from 'react';
 import {
   StyleSheet,
   View,
+  Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -10,6 +11,7 @@ import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
+import WalkInSteps from '../../constants/WalkInSteps';
 
 const mockDataClients = require('../../mockData/clients.json');
 
@@ -105,7 +107,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   newClient: {
-    // marginTop: 20,
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Roboto',
@@ -123,7 +124,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-
 });
 
 
@@ -164,12 +164,32 @@ class ClientsScreen extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.props.salonSearchHeaderActions.setTitle('Clients');
+    this.props.salonSearchHeaderActions.setSearchText('');
+    this.props.salonSearchHeaderActions.setSubTitle(null);
+    this.props.salonSearchHeaderActions.setLeftButton('Cancel');
+    this.props.salonSearchHeaderActions.setLeftButtonOnPress(() => { this.props.navigation.goBack(); });
+    this.props.salonSearchHeaderActions.setRightButtonOnPress(() => { this.props.navigation.navigate('NewClientScreen'); });
+
+
+    if (this.props.navigation.state && this.props.navigation.state.params) {
+      if (this.props.navigation.state.params.headerConf === 'walkin') {
+        this.props.salonSearchHeaderActions.setTitle('Walk In');
+        this.props.salonSearchHeaderActions.setSubTitle(props.navigation.state.params.actionType === 'update'
+          ? `${WalkInSteps.update[props.walkInState.currentStep]}`
+          : `${WalkInSteps.new[props.walkInState.currentStep]}`);
+        this.props.salonSearchHeaderActions.setSearchText('');
+        this.props.salonSearchHeaderActions.setLeftButton('< Back');
+        this.props.salonSearchHeaderActions.setLeftButtonOnPress(() => {
+          this.props.navigation.goBack();
+        });
+        this.props.salonSearchHeaderActions.setRightButtonOnPress(() => { this.props.navigation.navigate('NewClientScreen'); });
+      }
+    }
 
     this.props.clientsActions.setClients(mockDataClients);
     this.props.clientsActions.setFilteredClients(mockDataClients);
-    this.props.clientsActions.setSearchText('');
-    this.props.clientsActions.setSelectedFilter(0);
     const suggestionList = this.getSuggestionsList(mockDataClients);
     this.props.clientsActions.setSuggestionsList(suggestionList);
     this.props.clientsActions.setFilteredSuggestions(suggestionList);
@@ -208,8 +228,6 @@ class ClientsScreen extends React.Component {
 
   filterClients = (searchText) => {
     if (searchText && searchText.length > 0) {
-      // this.props.salonSearchHeaderActions.setShowFilter(true);
-
       const criteria = [
         { Field: 'name', Values: [searchText.toLowerCase()] },
         { Field: 'lastName', Values: [searchText.toLowerCase()] },
@@ -217,31 +235,24 @@ class ClientsScreen extends React.Component {
       ];
 
       const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
-
-      this.props.clientsActions.setSearchText(searchText);
       this.props.clientsActions.setFilteredClients(filtered);
     } else {
       this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
-      this.props.clientsActions.setSearchText(searchText);
-      // this.props.salonSearchHeaderActions.setShowFilter(false);
     }
 
     this.props.navigation.setParams({
-      searchText: this.props.clientsState.searchText,
+      searchText: this.props.salonSearchHeaderState.searchText,
     });
   }
 
   onPressItem = (item) => {
-    console.log(item);
-    this.props.clientsActions.setSearchText(item);
+    this.props.salonSearchHeaderActions.setSearchText(item);
     this.filterClients(item);
     this.props.salonSearchHeaderActions.setShowFilter(false);
   }
 
 
   filterSuggestions = (searchText) => {
-    this.props.clientsActions.setSearchText(searchText);
-
     if (searchText && searchText.length > 0) {
       const filtered = [];
       for (let i = 0; i < this.props.clientsState.suggestionsList.length; i += 1) {
@@ -259,15 +270,10 @@ class ClientsScreen extends React.Component {
   }
 
   filterList = (searchText) => {
-    debugger //eslint-disable-line
-
     if (!this.props.salonSearchHeaderState.showFilter) {
       this.filterClients(searchText);
     } else {
       this.filterSuggestions(searchText);
-      // if (searchText.length === 0) {
-      //   this.props.salonSearchHeaderActions.setShowFilter(false);
-      // }
     }
   }
 
@@ -280,16 +286,14 @@ class ClientsScreen extends React.Component {
     return (
       <View style={styles.container}>
 
-
         <SalonSearchHeader
           filterList={searchText => this.filterList(searchText)}
-          {...this.props}
         />
 
         <View style={styles.clientsList}>
           { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
             <ClientList
-              boldWords={this.props.clientsState.searchText}
+              boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.clientListContainer}
               clients={this.props.clientsState.filtered}
               onChangeClient={onChangeClient}

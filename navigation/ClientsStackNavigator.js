@@ -4,7 +4,6 @@ import { StackNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
-import SalonSearchBar from '../components/SalonSearchBar';
 
 import ClientsScreen from './../screens/clientsScreen';
 

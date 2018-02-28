@@ -75,7 +75,7 @@ export default class ClientSuggestions extends React.Component {
         <View style={styles.suggestionList}>
           <SuggestionList
             list={this.props.clientsState.filteredSuggestions}
-            boldWords={this.props.clientsState.searchText}
+            boldWords={this.props.salonSearchHeaderState.searchText}
             onPress={this.selectItem}
           />
         </View>
