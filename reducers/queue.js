@@ -344,7 +344,7 @@ export default (state = initialState, action) => {
       delete filtredGroups[data.groupId];
 
       const removeGroup = (queue) => {
-        if (queue.groupId === data.groupId) {
+        if (queue.groupId == data.groupId) {
           queue.groupId = null;
           queue.groupLead = null;
           queue.groupLeadName = null;

@@ -3,7 +3,6 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -11,7 +10,8 @@ import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
-import WalkInSteps from '../../constants/WalkInSteps';
+import ClientsHeader from './components/ClientsHeader';
+
 
 const mockDataClients = require('../../mockData/clients.json');
 
@@ -165,26 +165,11 @@ class ClientsScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.salonSearchHeaderActions.setTitle('Clients');
-    this.props.salonSearchHeaderActions.setSearchText('');
-    this.props.salonSearchHeaderActions.setSubTitle(null);
-    this.props.salonSearchHeaderActions.setLeftButton('Cancel');
-    this.props.salonSearchHeaderActions.setLeftButtonOnPress(() => { this.props.navigation.goBack(); });
-    this.props.salonSearchHeaderActions.setRightButtonOnPress(() => { this.props.navigation.navigate('NewClientScreen'); });
-
+    this.props.salonSearchHeaderActions.setHeader(<ClientsHeader {...props} />);
 
     if (this.props.navigation.state && this.props.navigation.state.params) {
-      if (this.props.navigation.state.params.headerConf === 'walkin') {
-        this.props.salonSearchHeaderActions.setTitle('Walk In');
-        this.props.salonSearchHeaderActions.setSubTitle(props.navigation.state.params.actionType === 'update'
-          ? `${WalkInSteps.update[props.walkInState.currentStep]}`
-          : `${WalkInSteps.new[props.walkInState.currentStep]}`);
-        this.props.salonSearchHeaderActions.setSearchText('');
-        this.props.salonSearchHeaderActions.setLeftButton('< Back');
-        this.props.salonSearchHeaderActions.setLeftButtonOnPress(() => {
-          this.props.navigation.goBack();
-        });
-        this.props.salonSearchHeaderActions.setRightButtonOnPress(() => { this.props.navigation.navigate('NewClientScreen'); });
+      if (this.props.navigation.state.params.header) {
+        this.props.salonSearchHeaderActions.setHeader(this.props.navigation.state.params.header);
       }
     }
 

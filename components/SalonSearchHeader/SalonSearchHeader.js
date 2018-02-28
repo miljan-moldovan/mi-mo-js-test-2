@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
+    textAlign: 'center',
   },
   rightButtonContainer: {
     flexDirection: 'row',
@@ -127,38 +128,8 @@ class SalonSearchHeader extends React.Component {
       <View style={styles.headerContainer}>
 
         { !this.props.salonSearchHeaderState.showFilter &&
-          <View style={styles.header}>
-
-            {this.props.salonSearchHeaderState.leftButton && this.props.salonSearchHeaderState.leftButtonOnPress &&
-            <TouchableOpacity
-              style={styles.leftButton}
-              onPress={() => { this.props.salonSearchHeaderState.leftButtonOnPress(); }}
-            >
-              <View style={styles.leftButtonContainer}>
-                <Text style={styles.leftButtonText}>
-                  {this.props.salonSearchHeaderState.leftButton}
-                </Text>
-              </View>
-
-            </TouchableOpacity>}
-            <View style={styles.titleContainer}>
-              {this.props.salonSearchHeaderState.title && <Text style={styles.titleText}>{this.props.salonSearchHeaderState.title}</Text>}
-              {this.props.salonSearchHeaderState.subTitle && <Text style={styles.subTitleText}>{this.props.salonSearchHeaderState.subTitle}</Text>}
-            </View>
-            {this.props.salonSearchHeaderState.rightButton && this.props.salonSearchHeaderState.rightButtonOnPress &&
-            <TouchableOpacity
-              style={styles.rightButton}
-              onPress={() => { this.props.salonSearchHeaderState.rightButtonOnPress(); }}
-            >
-              <View style={styles.rightButtonContainer}>
-                <Text style={styles.rightButtonText}>
-                  {this.props.salonSearchHeaderState.rightButton}
-                </Text>
-              </View>
-            </TouchableOpacity>
-}
-
-          </View>}
+          this.props.salonSearchHeaderState.header
+        }
 
         <View style={[styles.topSearchBar, {
            paddingTop: !this.props.salonSearchHeaderState.showFilter ? 0 : 15,

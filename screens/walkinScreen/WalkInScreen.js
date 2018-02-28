@@ -15,6 +15,8 @@ import SalonAvatar from '../../components/SalonAvatar';
 import SalonIcon from '../../components/SalonIcon';
 
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import WalkInStepHeader from './components/WalkInStepHeader';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -237,14 +239,14 @@ class WalkInScreen extends Component {
       navigate('Clients', {
         actionType: 'update',
         dismissOnSelect: true,
-        headerConf: 'walkin',
+        //  header: <WalkInStepHeader {...this.props}/>,
         onChangeClient: this.handleClientSelection,
       });
     } else {
       navigate('Clients', {
         actionType: 'new',
         dismissOnSelect: true,
-        headerConf: 'walkin',
+        //  header: <WalkInStepHeader {...this.props}/>,
         onChangeClient: this.handleClientSelection,
       });
     }

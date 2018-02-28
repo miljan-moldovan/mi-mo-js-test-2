@@ -9,6 +9,10 @@ export const SET_LEFT_BUTTON_ONPRESS = 'salonSearchHeader/SET_LEFT_BUTTON_ONPRES
 export const SET_RIGHT_BUTTON = 'salonSearchHeader/SET_RIGHT_BUTTON';
 export const SET_RIGHT_BUTTON_ONPRESS = 'salonSearchHeader/SET_RIGHT_BUTTON_ONPRESS';
 
+
+export const SET_HEADER = 'salonSearchHeader/SET_HEADER';
+
+
 const initialState = {
   filterTypes: ['This store', 'All stores'],
   selectedFilter: 0,
@@ -20,6 +24,7 @@ const initialState = {
   leftButtonOnPress: () => {},
   rightButtonOnPress: () => {},
   rightButton: 'Add',
+  header: {},
 };
 
 export function salonSearchHeaderReducer(state = initialState, action) {
@@ -85,7 +90,12 @@ export function salonSearchHeaderReducer(state = initialState, action) {
         error: null,
         rightButtonOnPress: data.rightButtonOnPress,
       };
-
+    case SET_HEADER:
+      return {
+        ...state,
+        error: null,
+        header: data.header,
+      };
     default:
       return state;
   }
@@ -161,6 +171,14 @@ function setRightButtonOnPress(rightButtonOnPress) {
   };
 }
 
+function setHeader(header) {
+  return {
+    type: SET_HEADER,
+    data: { header },
+  };
+}
+
+
 const salonSearchHeaderActions = {
   setFilterTypes,
   setSelectedFilter,
@@ -172,6 +190,7 @@ const salonSearchHeaderActions = {
   setLeftButtonOnPress,
   setRightButton,
   setRightButtonOnPress,
+  setHeader,
 };
 
 export default salonSearchHeaderActions;
