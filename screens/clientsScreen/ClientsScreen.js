@@ -11,9 +11,7 @@ import ClientList from '../../components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
 import ClientsHeader from './components/ClientsHeader';
-
-
-const mockDataClients = require('../../mockData/clients.json');
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -173,11 +171,15 @@ class ClientsScreen extends React.Component {
       }
     }
 
-    this.props.clientsActions.setClients(mockDataClients);
-    this.props.clientsActions.setFilteredClients(mockDataClients);
-    const suggestionList = this.getSuggestionsList(mockDataClients);
-    this.props.clientsActions.setSuggestionsList(suggestionList);
-    this.props.clientsActions.setFilteredSuggestions(suggestionList);
+    apiWrapper.doRequest('getClients', {
+    }).then((responseJson) => {
+      const clients = responseJson.response;
+      this.props.clientsActions.setClients(clients);
+      this.props.clientsActions.setFilteredClients(clients);
+      const suggestionList = this.getSuggestionsList(clients);
+      this.props.clientsActions.setSuggestionsList(suggestionList);
+      this.props.clientsActions.setFilteredSuggestions(suggestionList);
+    });
   }
 
 
