@@ -57,7 +57,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#727A8F',
     marginLeft: 10,
-    alignSelf: 'flex-end',
+    marginRight: 16,
+    // alignSelf: 'flex-end',
   },
   textArea: {
     height: 60,
@@ -93,8 +94,8 @@ export const InputButton = props => (
   <TouchableOpacity onPress={props.onPress} style={props.style}>
     <View style={{ alignSelf: 'stretch' }}>
       <View style={styles.inputRow}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
             { props.placeholder && (
               <Text style={styles.labelText}>{props.placeholder}</Text>
             )}
