@@ -178,7 +178,7 @@ class Queue extends React.Component {
 
   handlePressModify = () => {
     const { appointment } = this.state;
-debugger //eslint-disable-line
+
     this.hideDialog();
     if (appointment !== null) {
       this.props.navigation.navigate('AppointmentDetails', { appointment });

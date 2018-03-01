@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   View,
+  ScrollView,
   Text,
   StyleSheet,
   TouchableOpacity,
@@ -16,6 +17,7 @@ import ServiceIcons from '../../../../components/ServiceIcons';
 import SalonCard from '../../../../components/SalonCard';
 import { InputButton } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
+import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 
 const styles = StyleSheet.create({
   container: {
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#d3d9e0',
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingVertical: 19,
   },
   infoTitleText: {
     color: '#4D5067',
@@ -123,12 +125,58 @@ const styles = StyleSheet.create({
     color: '#110A24',
     fontFamily: 'Roboto-Regular',
   },
+  timeCaretIcon: {
+    fontSize: 8,
+    marginHorizontal: 3,
+  },
+  promoDescription: {
+    fontSize: 10,
+    lineHeight: 14,
+    color: '#FFA300',
+    fontFamily: 'Roboto-Light',
+  },
+  lineThrough: {
+    textDecorationLine: 'line-through',
+  },
+  totalLabel: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: '#2F3142',
+    fontFamily: 'Roboto-Medium',
+  },
+  totalAmount: {
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#4D5067',
+    fontFamily: 'Roboto-Medium',
+  },
+  bottomButtonWrapper: {
+    flexDirection: 'column',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomButtonIcon: {
+    fontSize: 24,
+    lineHeight: 26,
+    color: 'white',
+  },
+  bottomButtonText: {
+    fontSize: 10,
+    lineHeight: 11,
+    color: 'white',
+    fontFamily: 'Roboto-Light',
+  },
 });
+
+const caretRight = () => (
+  <FontAwesome style={styles.timeCaretIcon}>{Icons.angleRight}</FontAwesome>
+);
 
 const SalonAppointmentTime = props => (
   <Text style={styles.serviceTimeContainer}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
-    <Text style={styles.serviceTime}> {props.appointment.start_time}</Text> {'> REM Wait'} <Text style={styles.serviceRemainingWaitTime}>7m</Text>
+    <Text style={styles.serviceTime}> {props.appointment.start_time}</Text> {caretRight} REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
   </Text>
 );
 SalonAppointmentTime.propTypes = {
@@ -143,7 +191,7 @@ const ServiceCard = props => (
     bodyChildren={[
       <View style={{ flex: 1, alignSelf: 'flex-start' }}>
         <Text style={styles.serviceTitle}>Corrective C0l0R</Text>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', marginTop: 5 }}>
           <SalonAvatar
             wrapperStyle={styles.providerRound}
             width={25}
@@ -156,12 +204,32 @@ const ServiceCard = props => (
       </View>,
       <View
         style={{
-        flex: 1, alignSelf: 'flex-start', justifyContent: 'flex-end', flexDirection: 'row',
+        flex: 1, alignSelf: 'stretch', justifyContent: 'flex-end', flexDirection: 'row',
         }}
       >
-        <View>
-          <Text style={styles.price}>$40</Text>
-        </View>
+        {props.hasPromo
+          ? (
+            <View
+              style={{
+                flexDirection: 'column',
+                alignSelf: 'stretch',
+                justifyContent: 'space-between',
+                paddingBottom: 8,
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
+                <Text style={[styles.price, styles.lineThrough]}>$40</Text>
+                <Text style={[styles.price, { marginLeft: 3, color: '#FFA300' }]}>$20</Text>
+              </View>
+              <Text style={styles.promoDescription}>FIRST CUSTOMER -50%</Text>
+            </View>
+          )
+          : (
+            <View>
+              <Text style={styles.price}>$40</Text>
+            </View>
+          )
+        }
         <View>
           <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
         </View>
@@ -231,20 +299,33 @@ CircularIcon.defaultProps = {
 };
 
 const AddButton = props => (
-  <View style={{
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    padding: 12,
-  }}
+  <TouchableOpacity
+    onPress={props.onPress}
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      padding: 12,
+    }}
   >
     <CircularIcon />
     <Text style={styles.addButtonText}> {props.title}</Text>
-  </View>
+  </TouchableOpacity>
 );
 AddButton.propTypes = {
   title: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
 };
+
+const BottomButton = props => (
+  <TouchableOpacity
+    style={styles.bottomButtonWrapper}
+    onPress={props.onPress}
+  >
+    <FontAwesome style={styles.bottomButtonIcon}>{Icons[props.icon]}</FontAwesome>
+    <Text style={styles.bottomButtonText}>{props.title}</Text>
+  </TouchableOpacity>
+);
 
 export default class AppointmentDetails extends React.Component {
   constructor(props) {
@@ -304,7 +385,7 @@ export default class AppointmentDetails extends React.Component {
     const label = this.getLabelForItem(appointment);
 
     return (
-      <View style={styles.container}>
+      <ScrollView style={[styles.container, { paddingBottom: 63 }]}>
         <View style={styles.infoContainer}>
           <View style={{ flex: 1 }}>
             <Text style={styles.infoTitleText}>Queue Appointment</Text>
@@ -323,16 +404,49 @@ export default class AppointmentDetails extends React.Component {
             backgroundColor="white"
             containerStyles={{ marginHorizontal: 0 }}
             bodyStyles={{ paddingVertical: 0 }}
-            bodyChildren={<InputButton placeholder="Client" value="What" onPress={() => alert('pressed')} />}
+            bodyChildren={<InputButton value={<View style={{ flex: 1 }}><Text>Client</Text></View>} onPress={() => alert('pressed')} />}
           />
           <Text style={styles.titleText}>Services</Text>
+          <ServiceCard hasPromo />
           <ServiceCard />
-          <AddButton title="Add Service" />
+          <AddButton onPress={() => alert('add serv')} title="Add Service" />
           <Text style={styles.titleText}>Products</Text>
           <ProductCard />
-          <AddButton title="Add Product" />
+          <AddButton onPress={() => alert('add prod')} title="Add Product" />
+          <View style={{ alignSelf: 'stretch' }}>
+            <InputButton
+              style={{
+                paddingHorizontal: 5,
+                paddingVertical: 15,
+                borderBottomWidth: 1,
+                borderBottomColor: '#C0C1C6',
+              }}
+              placeholder="Recommendations"
+              onPress={() => alert('not implementeited')}
+            />
+          </View>
+          <View style={{
+            flexDirection: 'row',
+            marginTop: 23,
+            marginBottom: 77,
+            justifyContent: 'space-between',
+          }}
+          >
+            <Text style={styles.totalLabel}>TOTAL</Text>
+            <Text style={styles.totalAmount}>$90</Text>
+          </View>
         </View>
-      </View>
+        <SalonFixedBottom
+          backgroundColor="#727A8F"
+        >
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <BottomButton icon="check" onPress={() => alert('pressed button')} title="Check In" />
+            <BottomButton icon="signOut" onPress={() => alert('pressed button')} title="Walk Out" />
+            <BottomButton icon="refresh" onPress={() => alert('pressed button')} title="Returning" />
+            <BottomButton icon="play" onPress={() => alert('pressed button')} title="To Service" />
+          </View>
+        </SalonFixedBottom>
+      </ScrollView>
     );
   }
 }
