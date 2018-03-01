@@ -113,7 +113,6 @@ class ServiceSection extends Component {
   }
 
   handleDateSelection=(date) => {
-    console.log(date, "Cheese bacon");
     const newService = this.state.service;
     newService[this.state.type] = moment(date.getTime());
     this.props.onUpdate(this.state.index, newService);

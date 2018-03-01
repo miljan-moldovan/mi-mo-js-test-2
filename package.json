@@ -8,6 +8,7 @@
     "bundle:ios": "react-native bundle --entry-file ./index.js --platform ios --bundle-output ios/SalonUltimateRN/main.jsbundle"
   },
   "dependencies": {
+    "@yfuks/react-native-action-sheet": "0.0.4",
     "axios": "^0.17.1",
     "moment": "^2.20.1",
     "native-base": "^2.3.7",
@@ -18,11 +19,11 @@
     "react-native-fontawesome": "^5.7.0",
     "react-native-largelist": "^1.2.6",
     "react-native-modal": "^5.0.0",
-    "react-native-modal-datetime-picker": "4.13.0",
     "react-native-offline-api": "^2.2.0",
+    "react-native-modal-datetime-picker": "4.13.0",
     "react-native-picker": "4.3.5",
     "react-native-sentry": "^0.33.0",
-    "react-native-svg": "6.2.2",
+    "react-native-svg": "^6.2.2",
     "react-native-swipeable": "^0.6.0",
     "react-native-touch-id": "^4.0.0",
     "react-navigation": "^1.0.0-beta.27",

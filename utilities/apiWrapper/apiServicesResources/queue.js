@@ -37,7 +37,7 @@ const resources = {
     method: 'put',
     disableCache: true,
   },
-  postQueue: {
+  postQueueGroup: {
     path: 'Queue/Group',
     method: 'post',
     disableCache: true,

@@ -14,6 +14,10 @@ import infoImage from '../../assets/images/icons/icon_plus.png';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonIcon from '../../components/SalonIcon';
 
+import FontAwesome, { Icons } from 'react-native-fontawesome';
+import WalkInStepHeader from './components/WalkInStepHeader';
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -202,12 +206,12 @@ class WalkInScreen extends Component {
   handlePressService = () => {
     const { navigate } = this.props.navigation;
     const { selectedService } = this.props.walkInState;
-    this.props.walkInActions.setCurrentStep(3);
+    this.props.walkInActions.setCurrentStep(2);
 
     if (selectedService) {
       navigate('Services', { actionType: 'update' });
     } else {
-      navigate('Services', { actionType: 'update' });
+      navigate('Services', { actionType: 'new' });
     }
   }
 
@@ -224,22 +228,25 @@ class WalkInScreen extends Component {
   }
 
 
-
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
     const { selectedClient } = this.props.walkInState;
 
-    this.props.walkInActions.setCurrentStep(4);
+    this.props.walkInActions.setCurrentStep(5);
+
+
     if (selectedClient) {
-      navigate('ClientsSearch', {
+      navigate('Clients', {
         actionType: 'update',
         dismissOnSelect: true,
+        //  header: <WalkInStepHeader {...this.props}/>,
         onChangeClient: this.handleClientSelection,
       });
     } else {
-      navigate('ClientsSearch', {
+      navigate('Clients', {
         actionType: 'new',
         dismissOnSelect: true,
+        //  header: <WalkInStepHeader {...this.props}/>,
         onChangeClient: this.handleClientSelection,
       });
     }
@@ -381,7 +388,7 @@ class WalkInScreen extends Component {
               const { navigate } = this.props.navigation;
 
               this.props.walkInActions.setCurrentStep(1);
-              navigate('ClientsSearch');
+              navigate('Clients');
             }}
             >
               <Image style={styles.searchImage} source={serchImage} />

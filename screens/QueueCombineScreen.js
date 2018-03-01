@@ -76,6 +76,10 @@ class QueueCombineScreen extends React.Component {
       });
       // make sure the group leader is the first item
       groupClients.sort((a, b) => a.groupLead ? -1 : 0);
+      // TODO:
+      // - estilizar primeiro item para ter bordas curvadas em cima e sem fundo branco sobre o amarelo
+      // - estilizar section footer para ter bordas curvadas em baixo
+      // - implementar search
       groupData.push({
         groupId,
         title: groupLead.client ? (groupLead.client.name+' '+groupLead.client.lastName) : 'No leader identified',

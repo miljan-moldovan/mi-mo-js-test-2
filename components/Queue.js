@@ -20,9 +20,9 @@ import { connect } from 'react-redux';
 import Swipeable from 'react-native-swipeable';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
-
 
 
 import SideMenuItem from '../components/SideMenuItem';
@@ -39,6 +39,9 @@ class Queue extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
+    isVisible: false,
+    client: null,
+    services: null,
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -48,63 +51,73 @@ class Queue extends React.Component {
   }
   getButtonsForItem = (item) => {
     const {
- noShow, returnLater, clientReturned, service, walkout, checkin,
+      noShow, returnLater, clientReturned, service, walkout, checkin,
       uncheckin, undoFinish, rebook, checkout, notesFormulas,
       toWaiting, finishService
 } = QueueButtonTypes;
     const { id: queueId } = item;
     let left,
-right;
+      right;
     if (!item.serviced) {
       if (!item.checked_in) {
         left = [
           <QueueButton type={noShow} left />,
         ];
         right = [
-          <QueueButton type={checkin} right
-            onPress={()=>{
+          <QueueButton
+type={checkin}
+right
+            onPress={() => {
               LayoutAnimation.spring();
               this.props.checkInClient(queueId);
-              }} />,
-          <QueueButton type={service} right
-            onPress={()=>{
+              }}
+          />,
+          <QueueButton
+type={service}
+right
+            onPress={() => {
               LayoutAnimation.spring();
               this.props.startService(queueId);
-              this.showNotification(item, 'service')
-            }} />
+              this.showNotification(item, 'service');
+            }}
+          />,
         ];
       } else {
         left = [
-          <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId) ;}} left />,
-          <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId) ;}} left />,
+          <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId); }} left />,
+          <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId); }} left />,
         ];
         right = [
-          <QueueButton type={uncheckin} right/>,
-          <QueueButton type={service} onPress={()=>{
+          <QueueButton type={uncheckin} right />,
+          <QueueButton
+type={service}
+onPress={()=>{
             LayoutAnimation.spring();
             this.props.startService(queueId);
             this.showNotification(item, 'service')
-          }} right/>
+          }}
+right
+          />,
         ];
       }
     } else if (item.finishService) {
-        left = [
-          <QueueButton type={undoFinish} left/>
-        ];
-        right = [
-          <QueueButton type={rebook} right/>,
-          <QueueButton type={checkout} right/>
-        ];
-      } else {
-        left = [
-          <QueueButton type={notesFormulas} left/>,
-          <QueueButton type={toWaiting} onPress={()=>{ LayoutAnimation.spring(); this.props.toWaiting(queueId)}} left/>
-        ];
-        right = [
-          <QueueButton type={finishService} onPress={()=>{ LayoutAnimation.spring(); this.props.finishService(queueId)}} right/>,
-          <QueueButton type={checkout} right/>
-        ];
-      }
+      left = [
+          <QueueButton type={undoFinish} left />,
+      ];
+      right = [
+          <QueueButton type={rebook} right />,
+          <QueueButton type={checkout} right />,
+      ];
+    } else {
+      left = [
+          <QueueButton type={notesFormulas} left />,
+          <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId) ;}} left />,
+      ];
+      right = [
+          <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
+          <QueueButton type={checkout} right />,
+      ];
+    }
     return { left, right };
   }
   getLabelForItem = (item) => {
@@ -113,24 +126,24 @@ right;
         return (
           <View style={styles.finishedContainer}>
             <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
-              <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>FINISHED</Text>
+              <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>FINISHED</Text>
             </View>
             <View style={styles.finishedTime}>
-              <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? {backgroundColor: '#D1242A'} : null]} />
-              <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{fontFamily: 'Roboto-Regular'}}>{item.estimatedTime}min est.</Text></Text>
+              <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
+              <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
             </View>
           </View>
         );
       case QUEUE_ITEM_RETURNING:
         return (
           <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
-            <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>RETURNING</Text>
+            <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>RETURNING</Text>
           </View>
         );
       case QUEUE_ITEM_NOT_ARRIVED:
         return (
           <View style={[styles.waitingTime, { backgroundColor: 'rgba(192,193,198,1)' }]}>
-            <Text style={[styles.waitingTimeTextTop, {color: '#555'}]}>NOT ARRIVED</Text>
+            <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED</Text>
           </View>
         );
       default:
@@ -145,16 +158,27 @@ right;
         );
     }
   }
+
+  handlePress = (item) => {
+    if (!this.state.isVisible) {
+      this.setState({ client: item.client, services: item.services, isVisible: true });
+    }
+  }
+
+  hideDialog = () => {
+    this.setState({ isVisible: false });
+  }
+
   renderItem = (row) => {
     const item: QueueItem = row.item;
     const index = row.index;
     const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
     return (
-      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.id} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={()=>this.props.navigation.navigate('QueueDetail', { item })}>
+      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
+        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })}>
           <View style={styles.itemSummary}>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
+            <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
               <ServiceIcons item={item} />
             </View>
@@ -178,7 +202,7 @@ right;
     this.setState({
       notificationVisible: true,
       notificationType: type,
-      notificationItem: item
+      notificationItem: item,
     });
   }
   onDismissNotification = () => {
@@ -186,28 +210,33 @@ right;
     this.setState({ notificationVisible: false });
   }
   renderNotification = () => {
-    const { notificationType, notificationItem,
-            notificationVisible } = this.state;
+    const {
+ notificationType, notificationItem,
+      notificationVisible
+} = this.state;
     console.log('renderNotification - notificationVisible', notificationVisible);
-    let notificationColor, notificationButton, notificationText;
+    let notificationColor,
+notificationButton,
+notificationText;
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
-        notificationText = (<Text>Started service for <Text style={{fontFamily: 'OpenSans-Bold'}}>{client.name +' '+ client.lastName}</Text></Text>);
+        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name } ${ client.lastName}`}</Text></Text>);
         notificationColor = '#ccc';
-        notificationButton = <NotificationBannerButton title="UNDO" />
+        notificationButton = <NotificationBannerButton title="UNDO" />;
         break;
-      default: ''
+      default: '';
     }
     return (
       <NotificationBanner
         backgroundColor={notificationColor}
         visible={notificationVisible}
         button={notificationButton}
-        onDismiss={this.onDismissNotification}>
+        onDismiss={this.onDismissNotification}
+      >
         <Text>{notificationText}</Text>
       </NotificationBanner>
-    )
+    );
   }
   _keyExtractor = (item, index) => item.id;
 
@@ -226,6 +255,12 @@ right;
             />
           }
         />
+        <QueueItemSummary
+          isVisible={this.state.isVisible}
+          client={this.state.client}
+          services={this.state.services}
+          onDonePress={this.hideDialog}
+        />
         {this.renderNotification()}
       </View>
     );
@@ -236,7 +271,7 @@ export default connect(null, actions)(Queue);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f1f1'
+    backgroundColor: '#f1f1f1',
   },
   itemContainer: {
     // width: '100%',
@@ -251,7 +286,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
-    marginTop: 4
+    marginTop: 4,
   },
   itemSummary: {
     marginLeft: 10,
@@ -277,12 +312,12 @@ const styles = StyleSheet.create({
     color: '#000',
     marginTop: 'auto',
     marginBottom: 8,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
     fontSize: 11,
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
   },
   serviceTime: {
     // fontFamily: 'OpenSans-Bold',
@@ -314,7 +349,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     // padding: 0,
     color: '#7E8D98',
-    paddingRight: 7
+    paddingRight: 7,
   },
   finishedContainer: {
     height: 58,
@@ -341,6 +376,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginRight: 3,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'transparent'
-  }
+    borderColor: 'transparent',
+  },
 });
