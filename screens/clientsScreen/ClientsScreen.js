@@ -4,14 +4,14 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from '../../components/clientList';
-import SalonFlatPicker from '../../components/SalonFlatPicker';
-
-const mockDataClients = require('../../mockData/clients.json');
-
-const filterType = ['This store', 'All stores'];
+import SalonSearchHeader from '../../components/SalonSearchHeader';
+import ClientSuggestions from './components/ClientSuggestions';
+import ClientsHeader from './components/ClientsHeader';
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   newClient: {
-    // marginTop: 20,
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Roboto',
@@ -122,37 +121,6 @@ const styles = StyleSheet.create({
   clientsBarBottomSection: {
     flex: 1,
     flexDirection: 'row',
-  },
-  topSearchBar: {
-    flex: 0.1,
-    flexDirection: 'column',
-    backgroundColor: '#F8F8F8',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#FFFFFF',
-  },
-  topSearchBarText: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 30,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-  },
-  filterBarContainer: {
-    backgroundColor: '#115ECD',
-    flex: 0.1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterBar: {
-    flex: 1,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 
@@ -195,84 +163,137 @@ class ClientsScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.clientsActions.setClients(mockDataClients);
-    this.props.clientsActions.setFilteredClients(mockDataClients);
-    this.props.clientsActions.setSearchText('');
-    this.props.clientsActions.setSelectedFilter(0);
-  }
+    this.props.salonSearchHeaderActions.setHeader(<ClientsHeader {...props} />);
 
+    if (this.props.navigation.state && this.props.navigation.state.params) {
+      if (this.props.navigation.state.params.header) {
+        this.props.salonSearchHeaderActions.setHeader(this.props.navigation.state.params.header);
+      }
+    }
 
-  componentWillMount() {
-    this.props.navigation.setParams({
-      onChangeText: searchText => this.filterClients(searchText),
+    apiWrapper.doRequest('getClients', {
+    }).then((responseJson) => {
+      const clients = responseJson.response;
+      this.props.clientsActions.setClients(clients);
+      this.props.clientsActions.setFilteredClients(clients);
+      const suggestionList = this.getSuggestionsList(clients);
+      this.props.clientsActions.setSuggestionsList(suggestionList);
+      this.props.clientsActions.setFilteredSuggestions(suggestionList);
     });
   }
 
-  filterClients(searchText) {
+
+  getSuggestionsList = (clients) => {
+    let suggestions = [];
+
+    for (let i = 0; i < clients.length; i += 1) {
+      const client = clients[i];
+      if (suggestions.indexOf(client.name) === -1 && client.name) {
+        suggestions.push(client.name);
+      } else if (suggestions.indexOf(client.lastName) === -1 && client.lastName) {
+        suggestions.push(client.lastName);
+      }
+    }
+
+    suggestions = suggestions.sort((a, b) => {
+      if (a < b) return -1;
+      else if (a > b) return 1;
+      return 0;
+    });
+
+    return suggestions;
+  }
+
+  _handleOnChangeClient = (client) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
+
+  filterClients = (searchText) => {
     if (searchText && searchText.length > 0) {
       const criteria = [
         { Field: 'name', Values: [searchText.toLowerCase()] },
+        { Field: 'lastName', Values: [searchText.toLowerCase()] },
         { Field: 'email', Values: [searchText.toLowerCase()] },
       ];
 
       const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
-
-      this.props.clientsActions.setSearchText(searchText);
       this.props.clientsActions.setFilteredClients(filtered);
     } else {
       this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
-      this.props.clientsActions.setSearchText(searchText);
+    }
+
+    this.props.navigation.setParams({
+      searchText: this.props.salonSearchHeaderState.searchText,
+    });
+  }
+
+  onPressItem = (item) => {
+    this.props.salonSearchHeaderActions.setSearchText(item);
+    this.filterClients(item);
+    this.props.salonSearchHeaderActions.setShowFilter(false);
+  }
+
+
+  filterSuggestions = (searchText) => {
+    if (searchText && searchText.length > 0) {
+      const filtered = [];
+      for (let i = 0; i < this.props.clientsState.suggestionsList.length; i += 1) {
+        const item = this.props.clientsState.suggestionsList[i];
+
+        if (item.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+          filtered.push(item);
+        }
+      }
+
+      this.props.clientsActions.setFilteredSuggestions(filtered);
+    } else {
+      this.props.clientsActions.setFilteredSuggestions(this.props.clientsState.suggestionsList);
     }
   }
 
-  handleTypeChange=(ev, selectedIndex) => {
-    this.props.clientsActions.setSelectedFilter(selectedIndex);
-  }
-  _handleOnChangeClient = (client) => {
-    console.log('client', client);
-    const { navigation } = this.props;
-    if (navigation.state && navigation.state.params && navigation.state.params.onChangeClient) {
-      const { onChangeClient, dismissOnSelect } = navigation.state.params;
-      if (onChangeClient) { onChangeClient(client); }
-      if (dismissOnSelect) { navigation.goBack(); }
-      return;
+  filterList = (searchText) => {
+    if (!this.props.salonSearchHeaderState.showFilter) {
+      this.filterClients(searchText);
+    } else {
+      this.filterSuggestions(searchText);
     }
-    // RP> moved from inline
-    // onPressItem={(client) => { this.props.navigation.navigate('ClientDetails'); }}
-    navigation.navigate('ClientDetails');
   }
 
   render() {
+    let onChangeClient = null;
+    const { state } = this.props.navigation;
+    // make sure we only pass a callback to the component if we have one for the screen
+    if (state.params && state.params.onChangeClient) { onChangeClient = this._handleOnChangeClient; }
+
     return (
       <View style={styles.container}>
+
+        <SalonSearchHeader
+          filterList={searchText => this.filterList(searchText)}
+        />
+
         <View style={styles.clientsList}>
-          <View style={styles.filterBarContainer}>
-
-            <View style={styles.filterBar}>
-              <SalonFlatPicker
-                dataSource={filterType}
-                selectedColor="#FFFFFF"
-                selectedTextColor="#115ECD"
-                unSelectedTextColor="#FFFFFF"
-                onItemPress={this.handleTypeChange}
-                selectedIndex={this.props.clientsState.selectedFilter}
-              />
-
-            </View>
-          </View>
-
-          { (this.props.clientsState.filtered.length > 0) &&
+          { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
             <ClientList
-              listItem={this.props.clientsState.listItem}
-              headerItem={this.props.clientsState.headerItem}
-              boldWords={this.props.clientsState.searchText}
-              clients={this.props.clientsState.filtered}
+              boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.clientListContainer}
-              showLateralList={this.props.clientsState.showLateralList}
-              onPressItem={this._handleOnChangeClient}
-              showSectionHeader
+              clients={this.props.clientsState.filtered}
+              onChangeClient={onChangeClient}
             />
-          }
+           }
+
+          { (this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
+          <ClientSuggestions
+            {...this.props}
+            onPressItem={this.onPressItem}
+            list={this.props.clientsState.suggestionsList}
+          />
+            }
 
         </View>
 
@@ -280,4 +301,21 @@ class ClientsScreen extends React.Component {
     );
   }
 }
+
+ClientsScreen.propTypes = {
+  navigation: PropTypes.shape({
+    goBack: PropTypes.func,
+    state: PropTypes.shape({
+      params: PropTypes.shape({
+        onChangeClient: PropTypes.func,
+        dismissOnSelect: PropTypes.bool,
+      }),
+    }),
+  }),
+};
+
+ClientsScreen.defaultProps = {
+  navigation: null,
+};
+
 export default ClientsScreen;

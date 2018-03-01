@@ -16,28 +16,35 @@ import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeade
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import HeaderLateral from '../components/HeaderLateral';
-import SearchBar from '../components/searchBar';
+import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
-import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 
-import NewAppointmentNoteScreen from './../screens/newAppointmentNote';
-import NewAppointmentNoteHeader from '../screens/newAppointmentNote/components/newAppointmentNoteHeader';
+import AppointmentNoteScreen from './../screens/appointmentNote';
+import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
 const AppointmentStackNavigator = StackNavigator(
   {
-    Appointments: {
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    AppointmentFormula: {
+      screen: AppointmentFormula,
+    },
+    AppointmentNotes: {
       screen: AppoinmentNotes,
     },
-    NewAppointmentNote: {
-      screen: NewAppointmentNoteScreen,
+    AppointmentNote: {
+      screen: AppointmentNoteScreen,
       navigationOptions: rootProps => ({
         headerStyle: {
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <NewAppointmentNoteHeader rootProps={rootProps} />,
+        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,
@@ -106,7 +113,7 @@ const AppointmentStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <ClientsHeader rootProps={rootProps} />,
+        headerTitle: <View />,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
@@ -152,7 +159,7 @@ const AppointmentStackNavigator = StackNavigator(
             {...props}
             params={rootProps.navigation.state.params}
             searchBar={searchProps => (
-              <SearchBar
+              <SalonSearchBar
                 {...searchProps}
                 placeholder="Search by name, phone or email"
                 searchIconPosition="right"
@@ -163,17 +170,22 @@ const AppointmentStackNavigator = StackNavigator(
   },
   {
     navigationOptions: {
-      // headerStyle: {
-      //   backgroundColor: 'transparent',
-      //   paddingLeft: 10,
-      //   paddingRight: 10,
-      // },
-      // header: props => <ImageHeader {...props} />,
-      // headerTitleStyle: {
-      //   fontFamily: 'OpenSans-Regular',
-      //   fontSize: 20,
-      //   color: '#fff',
-      // },
+      headerStyle: {
+        backgroundColor: '#115ECD',
+        paddingLeft: 10,
+        paddingRight: 10,
+        height: 44,
+        borderWidth: 0,
+        shadowColor: 'transparent',
+        elevation: 0,
+        borderBottomWidth: 0,
+
+      },
+      headerTitleStyle: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 17,
+        color: '#fff',
+      },
       drawerLabel: props => (
         <SideMenuItem
           {...props}

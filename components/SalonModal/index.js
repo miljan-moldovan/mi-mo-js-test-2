@@ -78,6 +78,7 @@ const SalonModal = props => (
   <View style={{ }}>
     <Modal
       isVisible={props.isVisible}
+      onBackdropPress={props.closeModal ? props.closeModal : null}
       style={[props.style, styles.container]}
     >
       { props.showTail &&
@@ -95,6 +96,7 @@ const SalonModal = props => (
 
 SalonModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
   children: PropTypes.arrayOf(PropTypes.element).isRequired,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
