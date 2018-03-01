@@ -20,6 +20,7 @@ import { connect } from 'react-redux';
 import Swipeable from 'react-native-swipeable';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
 
@@ -37,6 +38,9 @@ class Queue extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
+    isVisible: false,
+    client: null,
+    services: null,
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -153,6 +157,17 @@ right
         );
     }
   }
+
+  handlePress = (item) => {
+    if (!this.state.isVisible) {
+      this.setState({ client: item.client, services: item.services, isVisible: true });
+    }
+  }
+
+  hideDialog = () => {
+    this.setState({ isVisible: false });
+  }
+
   renderItem = ({ item, index }) => {
     const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
@@ -236,6 +251,12 @@ notificationText;
               onRefresh={this._onRefresh}
             />
           }
+        />
+        <QueueItemSummary
+          isVisible={this.state.isVisible}
+          client={this.state.client}
+          services={this.state.services}
+          onDonePress={this.hideDialog}
         />
         {this.renderNotification()}
       </View>
