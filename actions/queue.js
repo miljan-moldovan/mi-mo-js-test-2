@@ -24,13 +24,35 @@ import {
   UNCOMBINE,
   UPDATE_GROUPS
 } from './constants';
+import apiWrapper from '../utilities/apiWrapper';
 
 const queueData = require('./queue.json');
 
 export const receiveQueue = () => (dispatch) => {
-  console.log('receiveQueue');
   dispatch({type: QUEUE});
-  dispatch({type: QUEUE_RECEIVED, data: queueData.data});
+  apiWrapper.doRequest('getQueue', {
+  }).then(({ response }) => {
+    // console.log(responseJson);
+    dispatch({type: QUEUE_RECEIVED, data: response});
+  }).catch((error) => {
+    // console.log(error);
+    dispatch({type: QUEUE_FAILED, error});
+  });
+
+  // api.get(`Queue`)
+  //   .then(({response}) => {
+  //   // .then((response: any) => {
+  //     dispatch({type: QUEUE_RECEIVED, data: response});
+  //   //   dispatch({type: QUEUE_RECEIVED, data: response.data.response});
+  //   })
+  //   .catch((error) => {
+  //     dispatch({type: QUEUE_FAILED, error});
+  //   });
+
+
+  // console.log('receiveQueue');
+  // dispatch({type: QUEUE});
+  // dispatch({type: QUEUE_RECEIVED, data: queueData.data});
   //axios.get('http://192.168.1.134:4000/api/queue')
   // axios.get('queue.json')
   //   .then(({data}) => {

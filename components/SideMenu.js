@@ -22,9 +22,6 @@ class SideMenu extends React.Component {
   }
 
   render() {
-    console.log('SideMenu render');
-    console.log(this.props);
-    console.log(this.props.navigation);
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.header}>

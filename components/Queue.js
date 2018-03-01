@@ -31,6 +31,7 @@ import { NotificationBanner, NotificationBannerButton } from '../components/Noti
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
 
+import type { QueueItem } from '../models';
 
 class Queue extends React.Component {
   state = {
@@ -51,7 +52,7 @@ class Queue extends React.Component {
       uncheckin, undoFinish, rebook, checkout, notesFormulas,
       toWaiting, finishService
 } = QueueButtonTypes;
-    const { queueId } = item;
+    const { id: queueId } = item;
     let left,
 right;
     if (!item.serviced) {
@@ -144,11 +145,13 @@ right;
         );
     }
   }
-  renderItem = ({ item, index }) => {
+  renderItem = (row) => {
+    const item: QueueItem = row.item;
+    const index = row.index;
     const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
     return (
-      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
+      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.id} leftButtonWidth={100} rightButtonWidth={100}>
         <TouchableOpacity style={styles.itemContainer} onPress={()=>this.props.navigation.navigate('QueueDetail', { item })}>
           <View style={styles.itemSummary}>
             <View style={{flexDirection: 'row', marginTop: 10}}>
@@ -156,13 +159,13 @@ right;
               <ServiceIcons item={item} />
             </View>
             <Text style={styles.serviceName}>
-              {item.services[0].description.toUpperCase()}
+              {item.services[0].serviceName.toUpperCase()}
               {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
-              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.employees[0].name+' '+item.employees[0].lastName).toUpperCase()}
+              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
             </Text>
             <Text style={styles.serviceTimeContainer}>
               <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
-              <Text style={styles.serviceTime}> {item.start_time}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
+              <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
             </Text>
           </View>
           {label}
@@ -206,9 +209,10 @@ right;
       </NotificationBanner>
     )
   }
-  _keyExtractor = (item, index) => item.queueId;
+  _keyExtractor = (item, index) => item.id;
 
   render() {
+    console.log('Queue.render', this.props.data);
     return (
       <View style={styles.container}>
         <FlatList

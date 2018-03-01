@@ -262,18 +262,17 @@ class ClientsScreen extends React.Component {
           </View>
 
           { (this.props.clientsState.filtered.length > 0) &&
-
-
-          <ClientList
-            listItem={this.props.clientsState.listItem}
-            headerItem={this.props.clientsState.headerItem}
-            boldWords={this.props.clientsState.searchText}
-            clients={this.props.clientsState.filtered}
-            style={styles.clientListContainer}
-            showLateralList={this.props.clientsState.showLateralList}
-            onPressItem={this._handleOnChangeClient}
-          />
-        }
+            <ClientList
+              listItem={this.props.clientsState.listItem}
+              headerItem={this.props.clientsState.headerItem}
+              boldWords={this.props.clientsState.searchText}
+              clients={this.props.clientsState.filtered}
+              style={styles.clientListContainer}
+              showLateralList={this.props.clientsState.showLateralList}
+              onPressItem={this._handleOnChangeClient}
+              showSectionHeader
+            />
+          }
 
         </View>
 

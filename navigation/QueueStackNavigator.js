@@ -22,6 +22,7 @@ import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
+import TurnAwayScreen from '../screens/turnAwayScreen';
 
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
@@ -100,6 +101,17 @@ const QueueStackNavigator = StackNavigator(
         headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
         headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
       },
+    },
+    TurnAway: {
+      screen: TurnAwayScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: 'Turn Away',
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
+        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>,
+      }),
     },
   },
   {

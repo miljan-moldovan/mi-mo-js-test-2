@@ -31,6 +31,8 @@ import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
 
+import apiWrapper from '../utilities/apiWrapper';
+
 const WAITING = '0';
 const SERVICED = '1';
 const initialLayout = {
@@ -92,13 +94,27 @@ class QueueScreen extends React.Component {
   }
   componentWillMount() {
     this.props.actions.receiveQueue();
+    // this._refreshData();
+  }
+  _refreshData = () => {
+    // this.setState({ refreshing: true }, () => {
+    //   apiWrapper.doRequest('getQueue', {
+    //   }).then((responseJson) => {
+    //     console.log(responseJson);
+    //     this.setState({ refreshing: false })
+    //   }).catch((error) => {
+    //     console.log(error);
+    //     this.setState({ refreshing: false })
+    //   });
+    // });
+
   }
   _onRefresh = () => {
-    this.setState({ refreshing: true });
-    // FIXME this._refreshData();
-    // emulate refresh call
-
-    setTimeout(() => this.setState({ refreshing: false }), 500);
+    this._refreshData();
+    // this.setState({ refreshing: true });
+    // // FIXME this._refreshData();
+    // // emulate refresh call
+    // setTimeout(() => this.setState({ refreshing: false }), 500);
   }
 
   _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
@@ -130,7 +146,6 @@ class QueueScreen extends React.Component {
   )
 
   _renderScene = ({ route }) => {
-    console.log('_renderScene', route);
     switch (route.key) {
       case WAITING:
         return (
@@ -170,6 +185,7 @@ class QueueScreen extends React.Component {
   };
 
   render() {
+    console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
     return (
       <View style={styles.container}>
         <TabViewAnimated

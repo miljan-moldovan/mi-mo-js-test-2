@@ -8,23 +8,17 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 
-
 const ServiceIcons = ({ item }) => {
   const {client} = item;
-  const clientInitials = client.name[0]+client.lastName[0];
+
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
       {client.member ? star : null}
       {client.newClientGlobal ? newGlobal : null}
       {client.newClientLocal ? newLocal : null}
       {client.birthday ? birthday : null}
-      <View style={styles.clientGroupContainer}>
-        <View style={styles.clientGroupLabelContainer}>
-          <FontAwesome style={{fontSize: 10, padding: 0 }}>{Icons.userPlus}</FontAwesome>
-          <Text style={styles.clientGroupLabel}>{clientInitials}</Text>
-        </View>
-        <Text style={styles.dollarSign}>$</Text>
-      </View>
+      {item.groupId ? ( <Group leader={item.groupLead} leaderName={item.groupLeadName} /> ) : null }
+
       {client.attributes && Object.keys(client.attributes).length ? tag : null}
     </View>
 
@@ -83,3 +77,16 @@ const tag = <FontAwesome style={{marginRight: 3}}>{Icons.tag}</FontAwesome>;
 const newGlobal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>NL</Text></View>;
 const newLocal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>N</Text></View>;
 const star = <FontAwesome style={{color: '#FFA300', marginRight: 3}}>{Icons.star}</FontAwesome>;
+const Group = ({ leader, leaderName }) => {
+  const names = leaderName.split(' ');
+  const leaderInitials = names[0][0]+names[names.length-1][0];
+  return (
+    <View style={styles.clientGroupContainer}>
+      <View style={styles.clientGroupLabelContainer}>
+        <FontAwesome style={{fontSize: 10, padding: 0 }}>{Icons.userPlus}</FontAwesome>
+        <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>
+      </View>
+      { leader ? (<Text style={styles.dollarSign}>$</Text>) : null }
+    </View>
+  )
+}
