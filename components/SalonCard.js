@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
     borderRadius: 5,
-    minHeight: 130,
+    // minHeight: 130,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -55,21 +55,24 @@ const salonCard = props => (
     <View style={styles.body}>
       {props.bodyChildren}
     </View>
-    <View style={styles.footer}>
-      {props.footerChildren}
-    </View>
+    {props.footerChildren.length > 0 && (
+      <View style={styles.footer}>
+        {props.footerChildren}
+      </View>
+    )}
   </View>
 );
 
 salonCard.propTypes = {
   headerChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
   bodyChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
-  footerChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
+  footerChildren: PropTypes.arrayOf(PropTypes.element),
   backgroundColor: PropTypes.string,
 };
 
 salonCard.defaultProps = {
   backgroundColor: 'transparent',
+  footerChildren: [],
 };
 
 export default salonCard;

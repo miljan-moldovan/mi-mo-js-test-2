@@ -64,6 +64,7 @@ function renderBtn(
     textStyle = [textStyle, { color: selectedTextColor }];
   } else {
     textStyle = [textStyle, { color: unSelectedTextColor }];
+    btnStyle = [btnStyle, { borderColor: 'transparent' }];
   }
 
 
