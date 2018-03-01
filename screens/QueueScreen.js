@@ -389,20 +389,20 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
   },
   tab: {
-     height: 33,
-     width: 120,
-     alignItems: 'center',
-     justifyContent: 'center'
-   },
+    height: 33,
+    width: 120,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   tabContainer: {
-     height: 34,
-     width: 240,
-     borderWidth: 1,
-     borderColor: 'rgba(8,46,102,0.5)',
-     borderRadius: 16,
-     backgroundColor: '#115ECD',
-     marginLeft: 15,
-     marginBottom: 9
+    height: 34,
+    width: 240,
+    borderWidth: 1,
+    borderColor: 'rgba(8,46,102,0.5)',
+    borderRadius: 16,
+    backgroundColor: '#115ECD',
+    marginLeft: 15,
+    marginBottom: 9,
   },
   tabQueueCounter: {
     backgroundColor: '#C3D6F1',
@@ -418,18 +418,18 @@ const styles = StyleSheet.create({
     color: '#1963CE',
     fontSize: 10,
     fontFamily: 'Roboto-Regular',
-    padding: 0
+    padding: 0,
   },
   tabLabelContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     opacity: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   navButton: {
     color: 'white',
     fontSize: 20,
-    marginLeft: 10
-  }
+    marginLeft: 10,
+  },
 });

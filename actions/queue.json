@@ -37,7 +37,9 @@
 		"servicedTime": null,
 		"services": [{
 			"description": "Buzz Cut MVP",
-			"id": 34
+			"id": 34,
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "12:30 AM",
 		"status": 1,
@@ -80,7 +82,9 @@
 		"servicedTime": null,
 		"services": [{
 			"description": "Buzz Cut Triple Play",
-			"id": 33
+			"id": 33,
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "11:00 AM",
 		"status": 1,
@@ -126,7 +130,9 @@
 		"servicedTime": null,
 		"services": [{
 			"description": "Buzz Cut Triple Play",
-			"id": 33
+			"id": 33,
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "11:25 AM",
 		"status": 1,
@@ -172,7 +178,9 @@
 		"servicedTime": "43278",
 		"services": [{
 			"description": "Beard Detail (each 5 mins)",
-			"id": 11
+			"id": 11,
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "11:25 AM",
 		"status": 7,
@@ -217,7 +225,9 @@
 		"servicedTime": null,
 		"services": [{
 			"id": 11,
-			"description": "Beard Detail (each 5 mins)"
+			"description": "Beard Detail (each 5 mins)",
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "11:00 AM",
 		"status": 1,
@@ -263,7 +273,9 @@
 		"servicedTime": null,
 		"services": [{
 			"id": 34,
-			"description": "Buzz Cut MVP"
+			"description": "Buzz Cut MVP",
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "01:42 PM",
 		"status": 0,
@@ -315,10 +327,20 @@
 		"servicedTime": null,
 		"services": [{
 			"id": 4,
-			"description": "Kids MVP SH/HC/AST"
+			"description": "Kids MVP SH/HC/AST",
+			"employeeFirstName": "Bacon",
+			"employeeLastName": "Cheese",
 		}, {
 			"id": 39,
-			"description": "New Client Kid Double MVP"
+			"description": "New Client Kid Double MVP",
+			"employeeFirstName": "Ariel",
+			"employeeLastName": "Selamastik",
+		},
+		{
+			"id": 40,
+			"description": "Hair cut",
+			"employeeFirstName": "Sebastian",
+			"employeeLastName": "Clamastikou",
 		}],
 		"start_time": "11:50 AM",
 		"status": 1,
@@ -363,7 +385,9 @@
 		"servicedTime": null,
 		"services": [{
 			"id": 34,
-			"description": "Buzz Cut MVP"
+			"description": "Buzz Cut MVP",
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "11:50 AM",
 		"status": 0,
@@ -408,7 +432,9 @@
 		"servicedTime": null,
 		"services": [{
 			"id": 11,
-			"description": "Beard Detail (each 5 mins)"
+			"description": "Beard Detail (each 5 mins)",
+			"employeeFirstName": "Shortcuts",
+			"employeeLastName": "Support",
 		}],
 		"start_time": "11:25 AM",
 		"status": 1,
