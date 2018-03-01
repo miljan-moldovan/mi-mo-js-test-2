@@ -29,11 +29,11 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     height: 44,
-    paddingRight: 16,
+
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   inputDivider: {
     height: 1,
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#727A8F',
     marginLeft: 10,
+    alignSelf: 'flex-end',
   },
   textArea: {
     height: 60,
@@ -89,18 +90,22 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
-  <TouchableOpacity onPress={props.onPress}>
+  <TouchableOpacity onPress={props.onPress} style={props.style}>
     <View style={{ alignSelf: 'stretch' }}>
       <View style={styles.inputRow}>
-        <Text style={styles.labelText}>{props.placeholder}</Text>
         <View style={{ flexDirection: 'row' }}>
-          {
-            typeof props.value === 'string'
-            ? (
-              <Text style={styles.inputText}>{props.value}</Text>
-            ) :
-              props.value
-          }
+          <View style={{ flex: 1 }}>
+            { props.placeholder && (
+              <Text style={styles.labelText}>{props.placeholder}</Text>
+            )}
+            {
+              typeof props.value === 'string'
+              ? (
+                <Text style={styles.inputText}>{props.value}</Text>
+              ) :
+                props.value
+            }
+          </View>
           {!props.noIcon && (
             <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
           )}
@@ -111,12 +116,14 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-  placeholder: PropTypes.string,
+  style: PropTypes.shape,
+  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
 };
 InputButton.defaultProps = {
-  placeholder: '',
+  style: {},
+  placeholder: false,
   value: false,
   noIcon: false,
 };
