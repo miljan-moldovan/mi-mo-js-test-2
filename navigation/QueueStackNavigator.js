@@ -30,23 +30,18 @@ import HeaderLeftText from '../components/HeaderLeftText';
 
 const QueueStackNavigator = StackNavigator(
   {
-    Walkout: {
-      screen: WalkOutScreen,
-      navigationOptions: {
-        headerTitle: 'Walkout',
-      },
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
     },
-    TurnAway: {
-      screen: TurnAwayScreen,
-      navigationOptions: {
-        headerTitle: 'Turn Away',
-      },
+    Walkout: {
+      screen: WalkOutScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: 'Walkout',
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+      }),
     },
     ClientDetails: {
       screen: ClientDetailsScreen,

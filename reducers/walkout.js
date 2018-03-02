@@ -12,7 +12,6 @@ const initialState = {
 
 export default function walkoutReducer(state = initialState, action) {
   const { type, data } = action;
-  debugger
   switch (type) {
     case GET_REMOVAL_REASON_TYPES:
       return {
