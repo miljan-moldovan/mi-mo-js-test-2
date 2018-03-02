@@ -172,11 +172,11 @@ right
   renderItem = (row) => {
     const item: QueueItem = row.item;
     const index = row.index;
-    const buttons = this.getButtonsForItem(item);
+    // const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
     return (
-      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })}>
+      // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
+        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })} key={item.id}>
           <View style={styles.itemSummary}>
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
@@ -194,7 +194,7 @@ right
           </View>
           {label}
         </TouchableOpacity>
-      </Swipeable>
+      // </Swipeable>
     );
   }
   showNotification = (item, type) => {

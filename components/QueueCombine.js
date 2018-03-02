@@ -74,20 +74,27 @@ class QueueCombineItem extends React.PureComponent {
     const { selected, index, type } = this.props;
     const item: QueueItem = this.props.item;
     const label = this.getLabelForItem(item);
-    const first = index == 0 && type == "uncombine" ? { backgroundColor : '#EDFCEF'} : null;
+    let first = null;
+    if (type == "uncombine") {
+      first = index == 0 ? styles.itemContainerCombinedFirst : styles.itemContainerCombined;
+    }
+    // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
+
     return (
-      <TouchableOpacity style={[styles.itemContainer, first]} key={item.id} onPress={this._onPress}>
+      <TouchableOpacity style={[styles.itemContainer, type == "uncombine" ? {'backgroundColor': 'white'} : null, first]} key={item.id} onPress={this._onPress}>
         {this.renderCheckContainer()}
-        <View style={styles.itemSummary}>
-          <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-          <Text style={styles.serviceName}>
-            {item.services[0].serviceName.toUpperCase()}
-            {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
-            &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
-          </Text>
-          {label}
+        <View style={[styles.itemSummary, type == "uncombine"? (index == 0 ? styles.itemSummaryCombinedFirst : styles.itemSummaryCombined) : null]}>
+          <View>
+            <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+            <Text style={styles.serviceName}>
+              {item.services[0].serviceName.toUpperCase()}
+              {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
+              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
+            </Text>
+            {label}
+          </View>
+          {this.renderPaymentIcon()}
         </View>
-        {this.renderPaymentIcon()}
       </TouchableOpacity>
     );
   }
@@ -97,11 +104,47 @@ class QueueCombineItem extends React.PureComponent {
 export class QueueCombine extends React.Component {
   state = {
     refreshing: false,
+    data: [],
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
     selected: (new Map(): Map<string, boolean>)
   }
+  componentWillMount() {
+    this.setState({ data: this.props.data });
+  }
+  componentWillReceiveProps(nextProps: Object) {
+    if (nextProps.data !== this.props.data) {
+      this.setState({ data: nextProps.data });
+    }
+    if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
+      this.searchText(nextProps.filterText);
+    }
+  }
+  searchText = (query: string) => {
+    const { data } = this.props;
+
+    if (query === '') {
+      this.setState({ data });
+    }
+
+    let text = query.toLowerCase();
+    // search by food truck name
+    let filteredData = data.filter(({ client }) => {
+      const fullName = (client.name||'')+' '+(client.middleName||'')+' '+(client.lastName||'');
+      return fullName.toLowerCase().match(text);
+    });
+
+    // if no match, set empty array
+    if (!filteredData || !filteredData.length)
+      this.setState({ data: [] });
+    // if the matched numbers are equal to the original data, keep it the same
+    else if (filteredData.length === data.length)
+      this.setState({ data: this.props.data });
+    // else, set the filtered data
+    else
+      this.setState({ data: filteredData });
+  };
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
@@ -145,7 +188,7 @@ export class QueueCombine extends React.Component {
       // <View style={styles.container}>
         <FlatList
           renderItem={this.renderItem}
-          data={this.props.data}
+          data={this.state.data}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           refreshControl={
@@ -214,6 +257,10 @@ export class QueueUncombine extends React.Component {
       </TouchableOpacity>
     </View>
   )};
+  renderSectionFooter = ({section}) => {
+    return (
+    <View style={styles.sectionFooter} />
+  )};
 
   _keyExtractor = (item, index) => item.id;
 
@@ -223,6 +270,7 @@ export class QueueUncombine extends React.Component {
       // <View style={styles.container}>
         <SectionList
           renderSectionHeader={this.renderSectionHeader}
+          renderSectionFooter={this.renderSectionFooter}
           renderItem={this.renderItem}
           sections={this.props.data}
           extraData={this.state}
@@ -256,21 +304,84 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     flexDirection: 'row',
     backgroundColor: 'white',
+    backgroundColor: '#F8F8F8',
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
-    marginTop: 4
+    marginBottom: 4
+  },
+  itemContainerCombinedFirst: {
+    backgroundColor : '#EDFCEF',
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
+    marginBottom: 0,
+    height: 99
+  },
+  itemContainerCombined: {
+    backgroundColor : '#EDFCEF',
+    borderRadius: 0,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    marginBottom: 0,
+    height: 99
+  },
+  sectionFooter: {
+    backgroundColor : '#EDFCEF',
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderTopColor: 'transparent',
+    paddingTop: 5,
+    marginHorizontal: 8,
+    marginBottom: 4
   },
   itemSummary: {
     paddingLeft: 10,
     marginRight: 'auto',
     paddingRight: 10,
     flex: 1,
-    height: 90,
+    height: 94,
+    // borderTopLeftRadius: 5,
+    // borderBottomLeftRadius: 5,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    left: 1
+  },
+  itemSummaryCombined: {
+    // borderRadius: 0,
+    // borderWidth: 0,
+    // borderColor: 'transparent',
+    // backgroundColor: 'transparent',
+    left: 0,
+    marginRight: 4,
+    marginLeft: 4,
+    marginTop: 4,
+    height: 94,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: 'white',
+  },
+  itemSummaryCombinedFirst: {
+    left: 0,
+    marginRight: 4,
+    marginLeft: 4,
+    marginTop: 4,
+    height: 94,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
   },
   clientName: {
     fontSize: 16,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
+    fontWeight: '500',
     color: '#111415',
     marginTop: 12,
     marginBottom: 4
@@ -282,7 +393,7 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   sectionHeader: {
-    marginTop: 40,
+    marginTop: 28,
     flexDirection: 'row',
     marginHorizontal: 8,
 
@@ -291,6 +402,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     color: '#4D5067',
+    marginLeft: 16,
     marginBottom: 7
   },
   sectionUncombineText: {
@@ -332,7 +444,7 @@ const styles = StyleSheet.create({
     height: 92,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F8F8F8',
+    // backgroundColor: '#F8F8F8',
     borderRightColor: '#EFEFEF',
     borderRightWidth: 1,
     borderTopLeftRadius: 4,
@@ -360,7 +472,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 10,
     fontFamily: 'Roboto-Medium',
-
   },
 
 });

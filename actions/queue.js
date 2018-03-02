@@ -26,18 +26,65 @@ import {
 } from './constants';
 import apiWrapper from '../utilities/apiWrapper';
 
-const queueData = require('./queue.json');
+const queueData = require('./queueNew.json');
 
-export const receiveQueue = () => (dispatch) => {
+export const receiveQueue = () => async (dispatch: Object => void) => {
+
   dispatch({type: QUEUE});
-  apiWrapper.doRequest('getQueue', {
-  }).then(({ response }) => {
-    // console.log(responseJson);
-    dispatch({type: QUEUE_RECEIVED, data: response});
-  }).catch((error) => {
-    // console.log(error);
-    dispatch({type: QUEUE_FAILED, error});
-  });
+  console.log('receiveQueue begin');
+
+
+  // try {
+  //   // let data = await apiWrapper.doRequest('getQueue', {});
+  //   // console.log('receiveQueue', data);
+  //   const cookie = await axios.request({
+  //     url: 'https://zenithnew.dev.cicd.salondev.net/api/Cookie?storeId=1',
+  //     method: 'post',
+  //     withCredentials: true
+  //   });
+
+    // const cookie = await fetch('https://zenithnew.dev.cicd.salondev.net/api/Cookie?storeId=1', {
+    //   method: 'POST',
+    //   credentials: 'include',
+    //   withCredentials: true
+      // headers: {
+      //   Accept: 'application/json',
+      //   'Content-Type': 'application/json',
+      // },
+      // body: JSON.stringify({
+      //   firstParam: 'yourValue',
+      //   secondParam: 'yourOtherValue',
+      // }),
+    // });
+    // console.log('cookie', JSON.stringify(cookie, null, 2));
+
+    // const data = await axios.request({
+    //   url: 'https://zenithnew.dev.cicd.salondev.net/api/Queue',
+    //   method: 'get',
+    //   withCredentials: true
+    // });
+    // const data = await fetch('https://zenithnew.dev.cicd.salondev.net/api/Queue', {
+    //   method: 'GET',
+    //   credentials: 'include',
+    //   withCredentials: true
+    // });
+    // console.log('queue', JSON.stringify(data, null, 2));
+
+  // 
+  //   dispatch({type: QUEUE_RECEIVED, data: data.response});
+  // } catch (error) {
+  //   console.log('receiveQueue error', JSON.stringify(error, null, 2));
+  //   dispatch({type: QUEUE_FAILED, error});
+  // }
+
+  // apiWrapper.doRequest('getQueue', {
+  // }).then(({ response }) => {
+  //   // console.log(responseJson);
+  //   dispatch({type: QUEUE_RECEIVED, data: response});
+  // }).catch((error) => {
+  //   // console.log(error);
+  //   dispatch({type: QUEUE_FAILED, error});
+  // });
 
   // api.get(`Queue`)
   //   .then(({response}) => {
@@ -52,7 +99,7 @@ export const receiveQueue = () => (dispatch) => {
 
   // console.log('receiveQueue');
   // dispatch({type: QUEUE});
-  // dispatch({type: QUEUE_RECEIVED, data: queueData.data});
+  dispatch({type: QUEUE_RECEIVED, data: queueData.response});
   //axios.get('http://192.168.1.134:4000/api/queue')
   // axios.get('queue.json')
   //   .then(({data}) => {

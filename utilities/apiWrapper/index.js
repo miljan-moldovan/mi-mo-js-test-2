@@ -38,7 +38,9 @@ function cleanCache(service, callback) {
 function setCookie(storeId) {
   return api.fetch(
     'postCookie',
-    { queryParameters: { storeId } },
+    { queryParameters: { storeId },
+      credentials: 'include'
+    },
   );
 }
 
@@ -54,9 +56,14 @@ function doRequest(key, parameters, options = {
   const fetchData = {
     headers: getHeader(needsAuth),
   };
-
+  fetchData.fetchOptions = {
+    credentials: 'include'
+  }
   if ('body' in parameters) {
-    fetchData.fetchOptions = { body: parameters.body };
+    // fetchData.fetchOptions = {
+    //   body: parameters.body
+    // };
+    // fetchData.fetchOptions.body = parameters.body;
   }
 
   if ('path' in parameters) {

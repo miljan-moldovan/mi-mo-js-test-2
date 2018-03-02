@@ -10,10 +10,13 @@ import {
   View,
   Alert,
   Modal,
-  ActivityIndicator
+  ActivityIndicator,
+  TextInput
 } from 'react-native';
 
 import { Button } from 'native-base';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
+
 import { connect } from 'react-redux';
 import * as actions from '../actions/queue.js';
 import { QueueCombine, QueueUncombine } from '../components/QueueCombine';
@@ -46,7 +49,9 @@ class QueueCombineScreen extends React.Component {
   state = {
     combinedClients: [],
     queueData: [],
-    groupData: []
+    groupData: [],
+    uncombinedFirst: true,
+    searchText: ''
   }
   componentWillMount() {
     this.prepareQueueData();
@@ -122,28 +127,41 @@ class QueueCombineScreen extends React.Component {
       uncombinedFirst: !this.state.uncombinedFirst
     })
   }
+  changeSearchText = searchText => this.setState({ searchText });
+
   render() {
-    console.log('groups', this.state.groupData);
-    console.log('queueData', this.state.queueData);
+    const { searchText, uncombinedFirst, queueData, groupData } = this.state;
+    console.log('groups', groupData);
+    console.log('queueData', queueData);
+
     const uncombined = (
       <QueueUncombine
-        data={this.state.groupData}
+        data={groupData}
         navigation={this.props.navigation}
         onUncombineClients={this.onUncombineClients}
        />
     )
     return (
       <ScrollView style={styles.container}>
-        <TouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
-          <Text style={styles.sortButtonText}>{this.state.uncombinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
-        </TouchableOpacity>
-        {this.state.uncombinedFirst ? uncombined : null}
+        <View style={styles.searchContainer}>
+          <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome>
+          <TextInput style={styles.search} onChangeText={this.changeSearchText} value={this.state.searchText} placeholder="Search" returnKeyType="search" />
+        </View>
+        <View style={{alignItems: 'flex-start'}}>
+          <TouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
+            <FontAwesome style={styles.sortButtonIcon}>{uncombinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
+            <Text style={styles.sortButtonLabel}>Sort</Text>
+            <Text style={styles.sortButtonText}>{uncombinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
+          </TouchableOpacity>
+        </View>
+        {uncombinedFirst ? uncombined : null}
         <QueueCombine
-          data={this.state.queueData}
+          data={queueData}
           navigation={this.props.navigation}
           onChangeCombineClients={this.onChangeCombineClients}
+          filterText={searchText}
          />
-        {this.state.uncombinedFirst ? null : uncombined}
+        {uncombinedFirst ? null : uncombined}
       </ScrollView>
     );
   }
@@ -158,8 +176,9 @@ export default connect(mapStateToProps, actions)(QueueCombineScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f1f1'
+    backgroundColor: '#f1f1f1',
   },
+
   headerTitle: {
     fontSize: 17,
     fontFamily: 'Roboto-Regular',
@@ -184,13 +203,51 @@ const styles = StyleSheet.create({
     padding: 6,
     borderWidth: 1,
     borderColor: 'transparent',
-    width: 'auto',
-    marginTop: 12,
-    marginBottom: 5,
+    // width: 'auto',
+    marginTop: 7,
+    marginBottom: 14,
     marginHorizontal: 10,
+    flexDirection: 'row',
+    flexShrink: 2,
+    alignItems: 'center'
+  },
+  sortButtonIcon: {
+    color: 'rgba(114,122,143,1)',
+    fontSize: 10,
+  },
+  sortButtonLabel: {
+    fontSize: 10,
+    color: 'rgba(114,122,143,1)',
+    marginLeft: 3
   },
   sortButtonText: {
-    fontSize: 12,
-    color: '#1DBF12'
+    fontSize: 10,
+    color: '#1DBF12',
+    marginLeft: 10,
+  },
+  searchContainer: {
+    borderRadius: 10,
+    backgroundColor: 'rgba(142,142,147,0.24)',
+    height: 36,
+    margin: 8,
+    alignItems: 'center',
+    // justifyContent: 'center',
+    flexDirection: 'row'
+  },
+  searchIcon: {
+    // position: 'absolute',
+    marginLeft: 7,
+    color: 'rgba(114,122,143,0.7)',
+    // height: '100%',
+    fontSize: 14
+  },
+  search: {
+    margin: 7,
+    height: 36,
+    borderWidth: 0,
+    color: 'rgba(114,122,143,1)',
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular',
+
   }
 });

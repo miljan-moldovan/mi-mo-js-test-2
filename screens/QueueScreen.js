@@ -252,6 +252,7 @@ class QueueScreen extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
   serviceQueue: state.queue.serviceQueue,
+  loading: state.queue.loading,
   walkInState: state.walkInReducer.walkInState,
 });
 
