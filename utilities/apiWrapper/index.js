@@ -7,12 +7,15 @@ import ApiError from './apiError';
 
 const api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
 
-function getHeader() {
+function getHeader(needsAuth) {
   const header = {
-    Accept: 'application/json',
     'Content-Type': 'application/json',
-    'X-SU-store_id': 'store_id=1',
   };
+
+  if (needsAuth) {
+    header['X-SU-store-id'] = 1;
+  }
+
   return header;
 }
 
@@ -72,7 +75,6 @@ function doRequest(key, parameters, options = {
 
   const fetchData = {
     headers: getHeader(needsAuth),
-    credentials: 'include',
   };
 
   if ('body' in parameters) {
