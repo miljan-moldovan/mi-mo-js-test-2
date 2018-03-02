@@ -16,9 +16,8 @@ import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeade
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import HeaderLateral from '../components/HeaderLateral';
-import SearchBar from '../components/searchBar';
+import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
-import ClientsHeader from '../screens/clientsScreen/components/ClientsHeader';
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
@@ -73,7 +72,7 @@ const AppointmentStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>
+              <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.3)', fontFamily: 'OpenSans-Regular' }}>Save</Text>
             </View>
           ),
         }),
@@ -114,7 +113,7 @@ const AppointmentStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <ClientsHeader rootProps={rootProps} />,
+        headerTitle: <View />,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
@@ -160,7 +159,7 @@ const AppointmentStackNavigator = StackNavigator(
             {...props}
             params={rootProps.navigation.state.params}
             searchBar={searchProps => (
-              <SearchBar
+              <SalonSearchBar
                 {...searchProps}
                 placeholder="Search by name, phone or email"
                 searchIconPosition="right"

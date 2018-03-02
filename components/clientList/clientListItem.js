@@ -5,19 +5,17 @@ import {
   TouchableHighlight,
   StyleSheet,
 } from 'react-native';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import { connect } from 'react-redux';
 import WordHighlighter from '../wordHighlighter';
-import SalonIcon from '../SalonIcon';
 
 const styles = StyleSheet.create({
-  searchIconLeft: {
-    width: 13,
-    height: 16,
-    paddingHorizontal: 15,
-    paddingTop: 1,
-    resizeMode: 'contain',
-    tintColor: '#000000',
+  phoneIconLeft: {
+    fontSize: 18,
+    marginRight: 10,
+    textAlign: 'center',
+    color: '#727A8F',
   },
   highlightStyle: {
     color: '#1DBF12',
@@ -27,31 +25,49 @@ const styles = StyleSheet.create({
     flex: 2,
     flexDirection: 'row',
     backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   clientNameContainer: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  bottomContainer: {
+    flex: 2,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   clientName: {
     color: '#110A24',
     fontSize: 14,
     fontFamily: 'Roboto',
+    fontWeight: 'bold',
     backgroundColor: 'transparent',
   },
   clientEmail: {
-    color: '#000000',
-    fontSize: 12,
+    color: '#727A8F',
+    fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
-  avatarContainer: {
-    flex: 1 / 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-    marginLeft: 10,
+  clientPhone: {
+    color: '#727A8F',
+    fontSize: 11,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    marginRight: 10,
   },
   dataContainer: {
     marginLeft: 20,
+    marginVertical: 10,
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
@@ -61,25 +77,23 @@ const styles = StyleSheet.create({
 class ClientListItem extends React.PureComponent {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   client: props.client,
-    //   boldWords: props.boldWords,
-    //   onPress: props.onPress,
-    //   simpleListItem: props.simpleListItem,
-    // };
+    this.state = {
+      client: props.client,
+      name: `${props.client.name} ${props.client.lastName}`,
+      boldWords: props.boldWords,
+      onPress: props.onPress,
+    };
   }
 
-  state = {
-    simpleListItem: false,
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps.boldWords);
+    this.setState({
+      client: nextProps.client,
+      name: `${nextProps.client.name} ${nextProps.client.lastName}`,
+      boldWords: nextProps.boldWords,
+      onPress: nextProps.onPress,
+    });
   }
-  // componentWillReceiveProps(nextProps) {
-  //   this.setState({
-  //     client: nextProps.client,
-  //     boldWords: nextProps.boldWords,
-  //     onPress: nextProps.onPress,
-  //     simpleListItem: nextProps.simpleListItem,
-  //   });
-  //  }
 
   render() {
     return (
@@ -90,28 +104,38 @@ class ClientListItem extends React.PureComponent {
       >
         <View style={styles.container}>
 
-
           <View style={styles.dataContainer}>
 
-            <View style={styles.clientNameContainer}>
 
-              {this.props.simpleListItem &&
-                <SalonIcon
-                  size={16}
-                  icon="search"
-                  style={styles.searchIconLeft}
-                />}
+            <View style={styles.topContainer}>
 
+              <View style={styles.clientNameContainer}>
+
+                <WordHighlighter
+                  highlight={this.props.boldWords}
+                  highlightStyle={styles.highlightStyle}
+                  style={styles.clientName}
+                >
+                  {this.state.name}
+                </WordHighlighter>
+              </View>
+
+            </View>
+
+            <View style={styles.bottomContainer}>
+              {this.props.client.phone &&
+              <FontAwesome style={styles.phoneIconLeft}>{Icons.mobile}</FontAwesome>}
+              {this.props.client.phone &&
               <WordHighlighter
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
-                style={styles.clientName}
+                style={styles.clientPhone}
               >
-                {this.props.client.name}
+                {this.props.client.phone}
               </WordHighlighter>
-            </View>
+            }
 
-            {!this.state.simpleListItem &&
+              {this.props.client.email &&
               <WordHighlighter
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
@@ -120,6 +144,7 @@ class ClientListItem extends React.PureComponent {
                 {this.props.client.email}
               </WordHighlighter>
             }
+            </View>
           </View>
 
         </View>

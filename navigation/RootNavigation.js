@@ -13,7 +13,6 @@ import SideMenu from './../components/SideMenu';
 
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
-import clientsSearchActions from '../actions/clientsSearch';
 import appointmentNoteActions from '../actions/appointmentNotes';
 
 import QueueStackNavigator from './QueueStackNavigator';
@@ -54,13 +53,11 @@ const mapStateToProps = state => ({
   auth: state.auth,
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
-  clientsSearchState: state.clientsSearchReducer,
   appointmentNoteState: state.appointmentNoteReducer,
 });
 const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
-  clientsSearchActions: bindActionCreators({ ...clientsSearchActions }, dispatch),
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);

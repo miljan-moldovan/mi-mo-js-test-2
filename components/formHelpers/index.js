@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Switch,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     height: 44,
-
+    paddingRight: 16,
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
@@ -57,8 +58,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#727A8F',
     marginLeft: 10,
-    marginRight: 16,
-    // alignSelf: 'flex-end',
   },
   textArea: {
     height: 60,
@@ -66,11 +65,29 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingRight: 16,
   },
+  sectionTitle: {
+    fontSize: 12,
+    lineHeight: 22,
+    color: '#727A8F',
+    fontFamily: 'Roboto-Medium',
+    marginLeft: 16,
+  },
 });
+
+export const SectionTitle = props => (
+  <View style={{ height: 38, flexDirection: 'column', justifyContent: 'flex-end' }} >
+    <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
+  </View>
+);
+
+SectionTitle.propTypes = {
+  value: PropTypes.string.isRequired,
+};
 
 export const SectionDivider = () => (
   <View style={{ height: 35 }} />
 );
+
 
 export const InputDivider = () => (
   <View style={styles.inputDivider} />
@@ -95,7 +112,7 @@ export const InputButton = props => (
     <View style={{ alignSelf: 'stretch' }}>
       <View style={styles.inputRow}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
             { props.placeholder && (
               <Text style={styles.labelText}>{props.placeholder}</Text>
             )}
@@ -170,6 +187,30 @@ export class InputDate extends React.Component {
           noIcon
           placeholder={this.props.placeholder}
           value={this.props.selectedDate}
+        />
+      </View>
+    );
+  }
+}
+
+
+export class InputSwitch extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: false,
+    };
+  }
+
+  render() {
+    return (
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }]}>
+        <Text style={styles.labelText}>{this.props.text}</Text>
+
+        <Switch
+          onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}
+          value={this.state.value}
         />
       </View>
     );

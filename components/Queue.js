@@ -194,7 +194,7 @@ debugger //eslint-disable-line
     const label = this.getLabelForItem(item);
     return (
       <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => this.handlePress(item)}>
+        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })}>
           <View style={styles.itemSummary}>
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>

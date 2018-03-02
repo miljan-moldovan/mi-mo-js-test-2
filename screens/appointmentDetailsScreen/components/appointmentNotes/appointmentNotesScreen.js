@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     color: '#4D5067',
     fontSize: 12,
     fontFamily: 'Roboto',
+    fontStyle: 'italic',
   },
   checkIcon: {
     width: 10,
@@ -402,6 +403,7 @@ export default class AppointmentNotesScreen extends Component {
                           dateFormat="MMM. DD YYYY"
                           value={item.date}
                           valueColor="#000000"
+                          fontFamily="Roboto-Bold"
                           valueSize={12}
                         />
 
@@ -431,7 +433,7 @@ export default class AppointmentNotesScreen extends Component {
                     </Text>]}
 
                   footerChildren={item.tags.map(tag => (
-                    <SalonTag key={Math.random().toString()} tagHeight={16} backgroundColor="#C3D6F2" value={tag} valueSize={10} valueColor="#2F3142" />
+                    <SalonTag key={Math.random().toString()} tagHeight={20} backgroundColor="rgb(17,47,98)" value={tag} valueSize={10} valueColor="#FFFFFF" />
                   ))}
                 />
             )}
