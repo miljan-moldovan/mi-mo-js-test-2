@@ -14,7 +14,7 @@ import {
   RefreshControl,
   Animated,
   Dimensions,
-  ActionSheetIOS
+  ActionSheetIOS,
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -39,57 +39,62 @@ const initialLayout = {
 };
 
 
-const QueueNavButton = ({ icon, onPress }) => {
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
-    </TouchableOpacity>
-  )
-};
+const QueueNavButton = ({ icon, onPress }) => (
+  <TouchableOpacity onPress={onPress}>
+    <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
+  </TouchableOpacity>
+);
+
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerLeft =
-      <QueueNavButton icon={Icons.bars} />
-      ;
+    const headerLeft = <QueueNavButton icon={Icons.bars} />;
     const onActionPress = () => {
-      ActionSheetIOS.showActionSheetWithOptions({
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
         // options: ['Cancel', 'Remove'],
-        options: ['Turn Away', 'Combine', 'Cancel'],
-        // destructiveButtonIndex: 1,
-        cancelButtonIndex: 2,
-      },
-      (buttonIndex) => {
-        switch (buttonIndex) {
-          case 0:
-            navigation.navigate('TurnAway');
-            break;
-          case 1:
-            navigation.navigate('QueueCombine');
-            break;
-        }
-      });
+          options: ['Turn Away', 'Combine', 'Cancel'],
+          // destructiveButtonIndex: 1,
+          cancelButtonIndex: 2,
+        },
+        (buttonIndex) => {
+          switch (buttonIndex) {
+            case 0:
+              navigation.navigate('TurnAway');
+              break;
+            case 1:
+              navigation.navigate('QueueCombine');
+              break;
+            default:
+              break;
+          }
+        },
+      );
     };
-    const headerRight =
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', width: 80}}>
-        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress}/>
+
+    const headerRight = (
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 80 }}>
+        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} />
         <QueueNavButton icon={Icons.search} />
       </View>
-    ;
+    );
+
     return {
       headerLeft,
-      headerRight
+      headerRight,
     };
   }
+
   state = {
     refreshing: false,
+    index: 0,
+    isWalkoutVisible: false,
+    walkoutText: '',
     routes: [
       { key: WAITING, title: 'Waiting' },
       { key: SERVICED, title: 'In Service' },
     ],
-    index: 0,
-    isWalkoutVisible: false,
-    walkoutText: '',
   }
+
   componentWillMount() {
     this.props.actions.receiveQueue();
   }
@@ -102,22 +107,23 @@ class QueueScreen extends React.Component {
   }
 
   _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
-      (
-        <View style={styles.tabLabelContainer}>
-          <View style={[styles.tabQueueCounter, focused? null : { backgroundColor: '#0C4699' }]}>
-            <Text style={[styles.tabQueueCounterText, focused? null : { color: '#fff' }]}>
-              {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
-            </Text>
-          </View>
-          <Text style={{
-            fontFamily: 'Roboto-Medium',
-            fontSize: 12,
-            color: focused ? '#115ECD' : 'white'
-          }}>
-            {route.title}
+    (
+      <View style={styles.tabLabelContainer}>
+        <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
+          <Text style={[styles.tabQueueCounterText, focused ? null : { color: '#fff' }]}>
+            {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
           </Text>
         </View>
-      );
+        <Text style={{
+            fontFamily: 'Roboto-Medium',
+            fontSize: 12,
+            color: focused ? '#115ECD' : 'white',
+          }}
+        >
+          {route.title}
+        </Text>
+      </View>
+    );
     // }
   _renderBar = props => (
     <TabBar

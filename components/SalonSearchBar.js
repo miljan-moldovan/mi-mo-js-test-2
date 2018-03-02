@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
-import SalonIcon from '../components/SalonIcon';
-
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,18 +19,14 @@ const styles = StyleSheet.create({
     flex: 4,
   },
   searchIconRight: {
-    width: 20,
-    height: 23,
+    fontSize: 15,
     marginRight: 10,
-    paddingTop: 1,
-    resizeMode: 'contain',
+    textAlign: 'center',
   },
   searchIconLeft: {
-    width: 20,
-    height: 23,
+    fontSize: 15,
     marginLeft: 10,
-    paddingTop: 1,
-    resizeMode: 'contain',
+    textAlign: 'center',
   },
   searchBarInput: {
     height: 35,
@@ -50,16 +45,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancelSearch: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Roboto',
     alignSelf: 'center',
     backgroundColor: 'transparent',
   },
   crossIcon: {
-    width: 16,
-    height: 16,
+    fontSize: 15,
     marginRight: 10,
-    paddingTop: 1,
+    textAlign: 'center',
   },
   crossIconButton: {
     flexDirection: 'column',
@@ -72,10 +66,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   microphoneIcon: {
-    width: 20,
-    height: 20,
+    fontSize: 15,
     marginRight: 10,
-    paddingTop: 1,
+    textAlign: 'center',
   },
   microphoneIconButton: {
     flexDirection: 'column',
@@ -87,12 +80,18 @@ const styles = StyleSheet.create({
 class SalonSearchBar extends Component {
   constructor(props) {
     super(props);
-    this.searchText = '';
   }
 
   componentWillMount() {
     this.setState({ searchText: '' });
   }
+
+  componentDidMount() {
+    if (this.props.focusOnMount) {
+      textInput.focus();
+    }
+  }
+
 
   handleChange= (searchText) => {
     this.setState({ searchText });
@@ -113,28 +112,30 @@ class SalonSearchBar extends Component {
           <View style={styles.searchBarItems}>
             {this.props.searchIconPosition === 'left' &&
 
-            <SalonIcon
-              size={23}
-              icon="search"
-              style={[styles.searchIconLeft,
-              { tintColor: this.props.iconsColor }]}
-            />
+            <FontAwesome style={[styles.searchIconLeft,
+            { color: this.props.iconsColor }]}
+            >{Icons.search}
+            </FontAwesome>
+
+
             }
             <TextInput
+              ref={ref => textInput = ref}
+              focusOnMount={this.props.focusOnMount}
               style={[styles.searchBarInput, { color: this.props.fontColor }]}
               placeholder={this.props.placeHolderText}
               placeholderTextColor={this.props.placeholderTextColor}
               onChangeText={this.handleChange}
               value={this.state.searchText}
+              onFocus={this.props.onFocus}
             />
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
 
-              <SalonIcon
-                size={23}
-                icon="caretRight"
-                style={[styles.searchIconRight,
-              { tintColor: this.props.iconsColor }]}
-              />
+              <FontAwesome style={[styles.searchIconRight,
+                            { color: this.props.iconsColor }]}
+              >{Icons.search}
+              </FontAwesome>
+
             }
 
 
@@ -150,12 +151,11 @@ class SalonSearchBar extends Component {
                     }}
                 >
 
-                  <SalonIcon
-                    size={16}
-                    icon="cross"
-                    style={[styles.crossIcon,
-                    { tintColor: this.props.iconsColor }]}
-                  />
+                  <FontAwesome style={[styles.crossIcon,
+                    { color: this.props.iconsColor }]}
+                  >{Icons.timesCircle}
+                  </FontAwesome>
+
                 </TouchableHighlight>
 
               }
@@ -173,12 +173,10 @@ class SalonSearchBar extends Component {
                     }}
               >
 
-                <SalonIcon
-                  size={20}
-                  icon="microphone"
-                  style={[styles.microphoneIcon,
-                    { tintColor: this.props.iconsColor }]}
-                />
+                <FontAwesome style={[styles.microphoneIcon,
+                  { color: this.props.iconsColor }]}
+                >{Icons.microphone}
+                </FontAwesome>
               </TouchableHighlight>
 
             </View>
@@ -216,7 +214,9 @@ SalonSearchBar.propTypes = {
   searchIconPosition: PropTypes.string,
   showCancel: PropTypes.bool,
   placeHolderText: PropTypes.string,
-
+  onFocus: PropTypes.func,
+  onChangeText: PropTypes.func.isRequired,
+  focusOnMount: PropTypes.bool,
 };
 
 SalonSearchBar.defaultProps = {
@@ -228,6 +228,8 @@ SalonSearchBar.defaultProps = {
   searchIconPosition: 'left',
   showCancel: false,
   placeHolderText: 'Search1',
+  onFocus: () => {},
+  focusOnMount: false,
 };
 
 export default SalonSearchBar;

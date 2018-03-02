@@ -23,42 +23,45 @@ import * as actions from '../actions/queue.js';
 
 class QueueDetailScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    console.log('QueueDetailScreen.navOptions', navigation.state.params);
     const { name, lastName } = navigation.state.params.item.client;
     return {
       headerTitle: `${name} ${lastName}`,
       headerTintColor: 'white',
       headerBackTitleStyle: styles.headerButton,
       headerRight:
-      <HeaderRight button={(
-        <Text style={styles.headerButton}>Save</Text>
+  <HeaderRight
+    button={(
+      <Text style={styles.headerButton}>Save</Text>
       )}
-        handlePress={navigation.state.params.save} />
+    handlePress={navigation.state.params.save}
+  />,
     };
   };
 
   state = {
     refreshing: false,
-    item: {}
+    item: {},
   }
   componentWillMount() {
     this.setState({
-      item: this.props.navigation.state.params.item
+      item: this.props.navigation.state.params.item,
     });
   }
   componentDidMount() {
     const { navigation } = this.props;
     // We can only set the function after the component has been initialized
-    navigation.setParams({ save: () => {
-      this.props.saveQueueItem(this.state.item);
-      navigation.goBack();
-    }});
+    navigation.setParams({
+      save: () => {
+        this.props.saveQueueItem(this.state.item);
+        navigation.goBack();
+      },
+    });
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
-    setTimeout(()=>this.setState({refreshing: false}), 1000);
+    setTimeout(() => this.setState({ refreshing: false }), 1000);
   }
   _handleDeletePress = () => {
     this.props.deleteQueueItem(this.state.item.queueId);
@@ -67,7 +70,7 @@ class QueueDetailScreen extends React.Component {
   _handleServicePress = () => {
     this.props.navigation.navigate('Services', {
       dismissOnSelect: true,
-      onChangeService: this._handleServiceChange
+      onChangeService: this._handleServiceChange,
     });
   }
   _handleServiceChange = (service) => {
@@ -75,42 +78,42 @@ class QueueDetailScreen extends React.Component {
     this.setState({
       item: {
         ...this.state.item,
-        services: [ { id: service.id, description: service.name } ]
-      }
+        services: [{ id: service.id, description: service.name }],
+      },
     });
   }
   _handleProviderPress = () => {
     this.props.navigation.navigate('Providers', {
       dismissOnSelect: true,
-      onChangeProvider: this._handleProviderChange
-     });
+      onChangeProvider: this._handleProviderChange,
+    });
   }
   _handleProviderChange = (provider) => {
     this.setState({
       item: {
         ...this.state.item,
-        employees: [ provider ]
-      }
+        employees: [provider],
+      },
     });
   }
   _handlePromoPress = () => {
     this.props.navigation.navigate('Promotions', {
       dismissOnSelect: true,
-      onChangePromotion: this._handlePromoChange
-     });
+      onChangePromotion: this._handlePromoChange,
+    });
   }
   _handlePromoChange = (promotion) => {
     console.log('QueueDetailScreen._handlePromoChange', promotion);
     this.setState({
       item: {
         ...this.state.item,
-        promotion
-      }
+        promotion,
+      },
     });
   }
   render() {
     const { item } = this.state;
-    const employee = item.employees[0].name+' '+item.employees[0].lastName;
+    const employee = `${item.employees[0].name} ${item.employees[0].lastName}`;
     const promotion = item.promotion;
     return (
       <View style={styles.container}>
@@ -125,7 +128,7 @@ class QueueDetailScreen extends React.Component {
         <TouchableOpacity style={styles.itemContainer} onPress={this._handleProviderPress}>
           <View>
             <Text style={styles.providerLabel}>PROVIDER</Text>
-            <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
               <View style={styles.providerPicture} />
               <Text style={styles.providerName}>{employee}</Text>
             </View>
@@ -135,9 +138,9 @@ class QueueDetailScreen extends React.Component {
         <TouchableOpacity style={styles.itemContainer} onPress={this._handlePromoPress}>
           <View>
             <Text style={styles.providerLabel}>PROMO CODE</Text>
-            <Text style={styles.promoCode}>{ promotion ? promotion.name.substring(0,30) : 'None'}</Text>
+            <Text style={styles.promoCode}>{ promotion ? promotion.name.substring(0, 30) : 'None'}</Text>
           </View>
-          <Text style={styles.promoDiscount}>{ promotion ? ('-$'+ promotion.discount) : '' }</Text>
+          <Text style={styles.promoDiscount}>{ promotion ? (`-$${promotion.discount}`) : '' }</Text>
         </TouchableOpacity>
 
         <Button rounded bordered style={styles.deleteButton} onPress={this._handleDeletePress}>
@@ -151,16 +154,16 @@ const mapStateToProps = (state, ownProps) => {
   console.log('QueueDetailScreen-map', state);
   return {
     waitingQueue: state.queue.waitingQueue,
-    serviceQueue: state.queue.serviceQueue
-  }
-}
+    serviceQueue: state.queue.serviceQueue,
+  };
+};
 export default connect(mapStateToProps, actions)(QueueDetailScreen);
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f3f3'
+    backgroundColor: '#f3f3f3',
   },
   providerPicture: {
     height: 26,
@@ -168,7 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     borderColor: '#67A3C7',
     borderWidth: 2,
-    marginRight: 5
+    marginRight: 5,
   },
   itemContainer: {
     // width: '100%',
@@ -224,7 +227,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
     color: '#CE3333',
     fontSize: 16,
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
   deleteButton: {
     width: 250,
@@ -233,7 +236,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'white',
     borderColor: 'transparent',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   deleteButtonText: {
     color: '#DE406A',
@@ -242,11 +245,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-    padding: 20
+    padding: 20,
   },
   headerButton: {
     fontSize: 16,
     fontFamily: 'OpenSans-Regular',
-    color: 'white'
-  }
+    color: 'white',
+  },
 });

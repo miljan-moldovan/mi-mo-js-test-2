@@ -17,6 +17,7 @@ const icons = {
   microphone: require('../assets/images/icons/icon_microphone.png'),
   check: require('../assets/images/icons/icon_check.png'),
   dots: require('../assets/images/icons/icon_dots.png'),
+  unchecked: require('../assets/images/icons/icon_unchecked.png'),
 };
 
 const SalonIcon = props => (
@@ -24,6 +25,7 @@ const SalonIcon = props => (
     style={{
       height: props.size ? props.size : 30,
       width: props.size ? props.size : 30,
+      tintColor: props.tintColor ? props.tintColor : false,
     }}
     {...props}
     source={icons[props.icon]}
@@ -33,5 +35,9 @@ const SalonIcon = props => (
 SalonIcon.propTypes = {
   size: PropTypes.number.isRequired,
   icon: PropTypes.string.isRequired,
+  tintColor: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+};
+SalonIcon.defaultProps = {
+  tintColor: false,
 };
 export default SalonIcon;

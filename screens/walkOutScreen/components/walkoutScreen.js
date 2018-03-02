@@ -187,7 +187,7 @@ WalkoutScreen.propTypes = {
   walkoutActions: PropTypes.shape({
     getRemovalReasonTypes: PropTypes.func,
   }).isRequired,
-  reasonTypes: Prop.array.isRequired,
+  reasonTypes: Prop.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default WalkoutScreen;

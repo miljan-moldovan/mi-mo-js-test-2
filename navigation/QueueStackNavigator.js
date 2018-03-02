@@ -15,7 +15,7 @@ import WalkInScreen from '../screens/walkinScreen';
 import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
 import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 
-import ClientsSearchScreen from './../screens/clientsSearchScreen';
+import ClientsScreen from './../screens/clientsScreen';
 import ClientDetailsScreen from '../screens/clientDetailsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
@@ -40,6 +40,12 @@ const QueueStackNavigator = StackNavigator(
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
+      },
+    },
+    TurnAway: {
+      screen: TurnAwayScreen,
+      navigationOptions: {
+        headerTitle: 'Turn Away',
       },
     },
     ClientDetails: {
@@ -95,8 +101,8 @@ const QueueStackNavigator = StackNavigator(
           />),
       }),
     },
-    ClientsSearch: {
-      screen: ClientsSearchScreen,
+    Clients: {
+      screen: ClientsScreen,
       navigationOptions: rootProps => ({
         header: props => (<View />),
       }),
