@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import PropTypes from 'prop-types';
+/*
+  {
+    "key": 1,
+    "name": "Tired of Waiting",
+    "allowNoShow": true,
+    "allowWalkOut": true,
+    "allowRemoval": true,
+    "id": 1,
+    "updateStamp": 1488226050796154,
+    "isDeleted": false
+    },
+*/
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
   },
 });
 
-class WalkOutScreen extends Component {
+class WalkoutScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -96,6 +108,10 @@ class WalkOutScreen extends Component {
       otherText: '',
       provider: null,
     };
+  }
+
+  componentWillMount() {
+    this.props.walkoutActions.getRemovalReasonTypes();
   }
 
   handlePressReason = (id) => {
@@ -167,4 +183,11 @@ class WalkOutScreen extends Component {
   }
 }
 
-export default WalkOutScreen;
+WalkoutScreen.propTypes = {
+  walkoutActions: PropTypes.shape({
+    getRemovalReasonTypes: PropTypes.func,
+  }).isRequired,
+  reasonTypes: Prop.array.isRequired,
+};
+
+export default WalkoutScreen;
