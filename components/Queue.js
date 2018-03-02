@@ -38,10 +38,20 @@ class Queue extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
+    appointment: null,
     isVisible: false,
     client: null,
     services: null,
   }
+
+  handlePressSummary = {
+    checkIn: () => alert('Not Implemented'),
+    walkOut: () => alert('Not Implemented'),
+    modify: () => this.handlePressModify(),
+    returning: () => alert('Not Implemented'),
+    toService: () => alert('Not Implemented'),
+  }
+
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
@@ -64,16 +74,16 @@ class Queue extends React.Component {
         ];
         right = [
           <QueueButton
-type={checkin}
-right
+            type={checkin}
+            right
             onPress={() => {
               LayoutAnimation.spring();
               this.props.checkInClient(queueId);
               }}
           />,
           <QueueButton
-type={service}
-right
+            type={service}
+            right
             onPress={() => {
               LayoutAnimation.spring();
               this.props.startService(queueId);
@@ -89,32 +99,32 @@ right
         right = [
           <QueueButton type={uncheckin} right />,
           <QueueButton
-type={service}
-onPress={()=>{
+            type={service}
+            onPress={() => {
             LayoutAnimation.spring();
             this.props.startService(queueId);
-            this.showNotification(item, 'service')
+            this.showNotification(item, 'service');
           }}
-right 
+            right
           />,
         ];
       }
     } else if (item.finishService) {
       left = [
-          <QueueButton type={undoFinish} left />,
+        <QueueButton type={undoFinish} left />,
       ];
       right = [
-          <QueueButton type={rebook} right />,
-          <QueueButton type={checkout} right />,
+        <QueueButton type={rebook} right />,
+        <QueueButton type={checkout} right />,
       ];
     } else {
       left = [
-          <QueueButton type={notesFormulas} left />,
-          <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId) ;}} left />,
+        <QueueButton type={notesFormulas} left />,
+        <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
       ];
       right = [
-          <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
-          <QueueButton type={checkout} right />,
+        <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
+        <QueueButton type={checkout} right />,
       ];
     }
     return { left, right };
@@ -160,7 +170,18 @@ right
 
   handlePress = (item) => {
     if (!this.state.isVisible) {
-      this.setState({ client: item.client, services: item.services, isVisible: true });
+      this.setState({
+        appointment: item, client: item.client, services: item.services, isVisible: true,
+      });
+    }
+  }
+
+  handlePressModify = () => {
+    const { appointment } = this.state;
+
+    this.hideDialog();
+    if (appointment !== null) {
+      this.props.navigation.navigate('AppointmentDetails', { appointment });
     }
   }
 
@@ -173,7 +194,7 @@ right
     const label = this.getLabelForItem(item);
     return (
       <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })}>
+        <TouchableOpacity style={styles.itemContainer} onPress={() => this.handlePress(item)}>
           <View style={styles.itemSummary}>
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
@@ -208,17 +229,17 @@ right
   }
   renderNotification = () => {
     const {
- notificationType, notificationItem,
-      notificationVisible 
-} = this.state;
+      notificationType, notificationItem,
+      notificationVisible,
+    } = this.state;
     console.log('renderNotification - notificationVisible', notificationVisible);
-    let notificationColor, 
-notificationButton, 
-notificationText;
+    let notificationColor,
+      notificationButton,
+      notificationText;
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
-        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name } ${ client.lastName}`}</Text></Text>);
+        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name} ${client.lastName}`}</Text></Text>);
         notificationColor = '#ccc';
         notificationButton = <NotificationBannerButton title="UNDO" />;
         break;
@@ -257,6 +278,7 @@ notificationText;
           client={this.state.client}
           services={this.state.services}
           onDonePress={this.hideDialog}
+          onPressSummary={this.handlePressSummary}
         />
         {this.renderNotification()}
       </View>

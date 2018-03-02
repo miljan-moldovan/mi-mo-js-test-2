@@ -15,19 +15,21 @@ const AUTODISMISS_TIMEOUT = 2000;
 export class NotificationBanner extends React.Component {
   state = {
     visible: false,
-    fadeAnim: new Animated.Value(0),  // Initial value for opacity: 0
-    timeout: null
+    fadeAnim: new Animated.Value(0), // Initial value for opacity: 0
+    timeout: null,
   }
+
   componentWillMount() {
     console.log('NotificationBanner.componentWillMount', this.props.visible);
     this.setState({ visible: this.props.visible });
   }
+
   componentWillReceiveProps(nextProps: Object) {
     console.log('NotificationBanner.componentWillReceiveProps', nextProps.visible, this.props.visible);
     if (nextProps.visible && !this.props.visible) {
       // clear any running timeout in case of multiple calls
       if (this.timeout)
-        clearTimeout(this.timeout);
+        {clearTimeout(this.timeout);}
 
       this.timeout = setTimeout(() => {
         this.hide();
@@ -43,19 +45,21 @@ export class NotificationBanner extends React.Component {
     }
   }
   hide() {
-    Animated.timing(this.state.fadeAnim,
+    Animated.timing(
+this.state.fadeAnim,
       {
         toValue: 0,
         duration: 400,
-      }
+      },
     ).start();
   }
   show() {
-    Animated.timing(this.state.fadeAnim,
+    Animated.timing(
+this.state.fadeAnim,
       {
         toValue: 1,
         duration: 600,
-      }
+      },
     ).start();
   }
   render() {
@@ -68,9 +72,10 @@ export class NotificationBanner extends React.Component {
           opacity: this.state.fadeAnim,
           top: this.state.fadeAnim.interpolate({
             inputRange: [0, 1],
-            outputRange: [BANNER_HEIGHT * -1, 0]
-          })
-        }]}>
+            outputRange: [BANNER_HEIGHT * -1, 0],
+          }),
+        }]}
+      >
         <Text style={styles.text}>
           {this.props.children}
         </Text>
@@ -100,23 +105,23 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: '#333',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   text: {
     color: 'white',
     fontSize: 12,
     fontFamily: 'OpenSans-Regular',
     margin: 16,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   buttonContainer: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
   buttonText: {
     color: 'white',
     fontSize: 14,
     fontFamily: 'OpenSans-Regular',
     backgroundColor: 'transparent',
-    marginRight: 5
+    marginRight: 5,
   },
 });

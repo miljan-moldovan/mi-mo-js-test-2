@@ -7,6 +7,7 @@ import clientsReducer from './clients';
 import formCache from './formCache';
 import appointmentNotesReducer from './appointmentNotes';
 import walkoutReducer from './walkout';
+import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/components/appointmentDetails/redux';
 import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/components/appointmentFormulas/redux';
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
 
@@ -18,6 +19,7 @@ export default combineReducers({
   walkInReducer,
   clientsReducer,
   formCache,
+  appointmentDetailsReducer,
   appointmentNotesReducer,
   walkoutReducer,
   appointmentFormulasReducer,
