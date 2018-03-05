@@ -1,4 +1,3 @@
-
 export default {
   // Response Codes APIs
   responsesCodes: {
@@ -8,6 +7,7 @@ export default {
     FailedValidation: 4,
     Exception: 5,
     NotFound: 6,
+    NetworkError: 99,
   },
   // Must clean cache after doing these requests
   cleanCache: ['postQueue', 'postClientNote'],
