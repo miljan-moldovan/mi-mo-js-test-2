@@ -29,85 +29,16 @@ import apiWrapper from '../utilities/apiWrapper';
 const queueData = require('./queueNew.json');
 
 export const receiveQueue = () => async (dispatch: Object => void) => {
-
   dispatch({type: QUEUE});
   console.log('receiveQueue begin');
-
-
-  // try {
-  //   // let data = await apiWrapper.doRequest('getQueue', {});
-  //   // console.log('receiveQueue', data);
-  //   const cookie = await axios.request({
-  //     url: 'https://zenithnew.dev.cicd.salondev.net/api/Cookie?storeId=1',
-  //     method: 'post',
-  //     withCredentials: true
-  //   });
-
-    // const cookie = await fetch('https://zenithnew.dev.cicd.salondev.net/api/Cookie?storeId=1', {
-    //   method: 'POST',
-    //   credentials: 'include',
-    //   withCredentials: true
-      // headers: {
-      //   Accept: 'application/json',
-      //   'Content-Type': 'application/json',
-      // },
-      // body: JSON.stringify({
-      //   firstParam: 'yourValue',
-      //   secondParam: 'yourOtherValue',
-      // }),
-    // });
-    // console.log('cookie', JSON.stringify(cookie, null, 2));
-
-    // const data = await axios.request({
-    //   url: 'https://zenithnew.dev.cicd.salondev.net/api/Queue',
-    //   method: 'get',
-    //   withCredentials: true
-    // });
-    // const data = await fetch('https://zenithnew.dev.cicd.salondev.net/api/Queue', {
-    //   method: 'GET',
-    //   credentials: 'include',
-    //   withCredentials: true
-    // });
-    // console.log('queue', JSON.stringify(data, null, 2));
-
-  // 
-  //   dispatch({type: QUEUE_RECEIVED, data: data.response});
-  // } catch (error) {
-  //   console.log('receiveQueue error', JSON.stringify(error, null, 2));
-  //   dispatch({type: QUEUE_FAILED, error});
-  // }
-
-  // apiWrapper.doRequest('getQueue', {
-  // }).then(({ response }) => {
-  //   // console.log(responseJson);
-  //   dispatch({type: QUEUE_RECEIVED, data: response});
-  // }).catch((error) => {
-  //   // console.log(error);
-  //   dispatch({type: QUEUE_FAILED, error});
-  // });
-
-  // api.get(`Queue`)
-  //   .then(({response}) => {
-  //   // .then((response: any) => {
-  //     dispatch({type: QUEUE_RECEIVED, data: response});
-  //   //   dispatch({type: QUEUE_RECEIVED, data: response.data.response});
-  //   })
-  //   .catch((error) => {
-  //     dispatch({type: QUEUE_FAILED, error});
-  //   });
-
-
-  // console.log('receiveQueue');
-  // dispatch({type: QUEUE});
-  dispatch({type: QUEUE_RECEIVED, data: queueData.response});
-  //axios.get('http://192.168.1.134:4000/api/queue')
-  // axios.get('queue.json')
-  //   .then(({data}) => {
-  //     dispatch({type: QUEUE_RECEIVED, data: data.data});
-  //   })
-  //   .catch((error) => {
-  //     dispatch({type: QUEUE_FAILED, error});
-  //   });
+  try {
+    let data = await apiWrapper.doRequest('getQueue', {});
+    console.log('receiveQueue', data);
+    dispatch({type: QUEUE_RECEIVED, data });
+  } catch (error) {
+    console.log('receiveQueue error', JSON.stringify(error, null, 2));
+    dispatch({type: QUEUE_FAILED, error});
+  }
 }
 export function deleteQueueItem(id) {
   return {
@@ -188,10 +119,44 @@ export function cancelCombine() {
     type: CANCEL_COMBINE
   }
 }
-
-export function finishCombine() {
-  return {
-    type: FINISH_COMBINE
+export const finishCombine = (combiningClients) => async (dispatch: Object => void) => {
+  try {
+    const data = {
+      clientQueueIdList: [],
+      payingClientQueueId: null
+    };
+    combiningClients.map((item) => {
+      data.clientQueueIdList.push(item.id);
+      if (item.groupLead) {
+        data.payingClientQueueId = item.id;
+      }
+    });
+    console.log('finishCombine1', data);
+    //
+    // let response = await fetch('http://zenithnew.dev.cicd.salondev.net/api/Queue/Group', {
+    //   body: JSON.stringify(data),
+    //   method: 'post',
+    //   headers: {
+    //     'Content-Type': "application/json",
+    //     'X-SU-store-id': 1
+    //   },
+    // });
+    //
+    let response = await apiWrapper.doRequest('postQueueGroup', {
+      body: JSON.stringify(data)
+    });
+    // let response = await axios.request({
+    //   url: 'http://zenithnew.dev.cicd.salondev.net/api/Queue/Group',
+    //   method: 'post',
+    //   headers: {
+    //     'X-SU-store-id': 1
+    //   },
+    //   data});
+    console.log('finishCombine response', response);
+    setTimeout(()=>dispatch(receiveQueue()), 1000);
+  } catch (error) {
+    console.log(error);
+    dispatch({type: QUEUE_FAILED, error});
   }
 }
 
@@ -209,11 +174,24 @@ export function updateGroupLead(data) {
   }
 }
 
-export function uncombine(groupId) {
-  return {
-    type: UNCOMBINE,
-    data: {groupId}
+export const uncombine = (groupId) => async (dispatch: Object => void) => {
+  try {
+    console.log('uncombine', groupId);
+    let response = await apiWrapper.doRequest('deleteQueueGroup', {
+      path: { groupId }
+    });
+    console.log('uncombine response', response);
+    dispatch(receiveQueue());
+  } catch (error) {
+    dispatch({type: QUEUE_FAILED, error});
   }
+
+
+// export function uncombine(groupId) {
+  // return {
+  //   type: UNCOMBINE,
+  //   data: {groupId}
+  // }
 }
 
 export function updateGroups() {

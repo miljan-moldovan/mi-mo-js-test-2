@@ -8,7 +8,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 
-const ServiceIcons = ({ item }) => {
+const ServiceIcons = ({ item, groupLeaderName }) => {
   const {client} = item;
 
   return (
@@ -17,7 +17,7 @@ const ServiceIcons = ({ item }) => {
       {client.newClientGlobal ? newGlobal : null}
       {client.newClientLocal ? newLocal : null}
       {client.birthday ? birthday : null}
-      {item.groupId ? ( <Group leader={item.groupLead} leaderName={item.groupLeadName} /> ) : null }
+      {item.groupId ? ( <Group leader={item.isGroupLeader} leaderName={groupLeaderName} /> ) : null }
 
       {client.attributes && Object.keys(client.attributes).length ? tag : null}
     </View>

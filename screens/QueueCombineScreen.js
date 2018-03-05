@@ -11,15 +11,22 @@ import {
   Alert,
   Modal,
   ActivityIndicator,
-  TextInput
+  TextInput,
+  LayoutAnimation,
+  UIManager
 } from 'react-native';
 
 import { Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { SafeAreaView } from 'react-navigation';
 
 import { connect } from 'react-redux';
 import * as actions from '../actions/queue.js';
 import { QueueCombine, QueueUncombine } from '../components/QueueCombine';
+
+UIManager.setLayoutAnimationEnabledExperimental &&
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+
 
 class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -27,22 +34,20 @@ class QueueCombineScreen extends React.Component {
     const { onPressDone } = params;
 
     return {
-      headerTitle: (
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={styles.headerTitle}>Combine</Text>
-          <Text style={styles.headerSubtitle}>Select clients to combine</Text>
-        </View>
+      header: (
+          <SafeAreaView style={{justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19 }}>
+            <TouchableOpacity style={styles.navButton} onPress={()=>navigation.goBack()}>
+              <Text style={styles.navButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={styles.headerTitle}>Combine</Text>
+              <Text style={styles.headerSubtitle}>Select clients to combine</Text>
+            </View>
+            <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
+              <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
       ),
-      headerLeft: (
-        <TouchableOpacity style={styles.navButton} onPress={()=>navigation.goBack()}>
-          <Text style={styles.navButtonText}>Cancel</Text>
-        </TouchableOpacity>
-      ),
-      headerRight: (
-        <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
-          <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-        </TouchableOpacity>
-      )
     }
   };
 
@@ -50,7 +55,7 @@ class QueueCombineScreen extends React.Component {
     combinedClients: [],
     queueData: [],
     groupData: [],
-    uncombinedFirst: true,
+    combinedFirst: false,
     searchText: ''
   }
   componentWillMount() {
@@ -70,24 +75,20 @@ class QueueCombineScreen extends React.Component {
     const groupData = [];
     for (let groupId in groups) {
       const group = groups[groupId];
-      console.log('Search groupLead', groupId, queueData);
-      const groupLead = queueData.find((queueItem) => queueItem.groupId == groupId && queueItem.groupLead) || {};
-      console.log('groupLead', groupId, groupLead);
-      const groupClients = group.map(item=>{
+      // console.log('Search groupLead', groupId, queueData);
+      // const groupLead = queueData.find((queueItem) => queueItem.groupId == groupId && queueItem.isGroupLeader) || {};
+      console.log('groupLead', groupId);
+      const groupClients = group.clients.map(item=>{
         return {
           ...item,
           queueItem: queueData.find((queueItem) => queueItem.id === item.id)
         }
       });
       // make sure the group leader is the first item
-      groupClients.sort((a, b) => a.groupLead ? -1 : 0);
-      // TODO:
-      // - estilizar primeiro item para ter bordas curvadas em cima e sem fundo branco sobre o amarelo
-      // - estilizar section footer para ter bordas curvadas em baixo
-      // - implementar search
+      groupClients.sort((a, b) => a.isGroupLeader ? -1 : 0);
       groupData.push({
         groupId,
-        title: groupLead.client ? (groupLead.client.name+' '+groupLead.client.lastName) : 'No leader identified',
+        title: group.groupLeadName,
         data: groupClients
       })
     }
@@ -108,14 +109,16 @@ class QueueCombineScreen extends React.Component {
   }
   onFinishCombineClients = () => {
     const { combinedClients, queueData } = this.state;
-
+    const combinedData = [];
     this.props.startCombine();
-    combinedClients.forEach((id)=> {
+    combinedClients.forEach((id, index)=> {
       const queueItem = queueData.find((item)=> item.id === id)
       const clientName = queueItem.client.name +' '+ queueItem.client.lastName;
+      // for now the first client will always be the group lead
+      combinedData.push({id, groupLead: index === 0});
       this.props.combineClient({ id, clientName });
     });
-    this.props.finishCombine();
+    this.props.finishCombine(combinedData);
     this.props.navigation.goBack();
   }
   onUncombineClients = (groupId) => {
@@ -123,14 +126,15 @@ class QueueCombineScreen extends React.Component {
     this.props.uncombine(groupId);
   }
   toggleSort = () => {
+    LayoutAnimation.spring();
     this.setState({
-      uncombinedFirst: !this.state.uncombinedFirst
+      combinedFirst: !this.state.combinedFirst
     })
   }
   changeSearchText = searchText => this.setState({ searchText });
 
   render() {
-    const { searchText, uncombinedFirst, queueData, groupData } = this.state;
+    const { searchText, combinedFirst, queueData, groupData } = this.state;
     console.log('groups', groupData);
     console.log('queueData', queueData);
 
@@ -149,19 +153,19 @@ class QueueCombineScreen extends React.Component {
         </View>
         <View style={{alignItems: 'flex-start'}}>
           <TouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
-            <FontAwesome style={styles.sortButtonIcon}>{uncombinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
+            <FontAwesome style={styles.sortButtonIcon}>{combinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
             <Text style={styles.sortButtonLabel}>Sort</Text>
-            <Text style={styles.sortButtonText}>{uncombinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
+            <Text style={styles.sortButtonText}>{combinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
           </TouchableOpacity>
         </View>
-        {uncombinedFirst ? uncombined : null}
+        {combinedFirst ? uncombined : null}
         <QueueCombine
           data={queueData}
           navigation={this.props.navigation}
           onChangeCombineClients={this.onChangeCombineClients}
           filterText={searchText}
          />
-        {uncombinedFirst ? null : uncombined}
+        {combinedFirst ? null : uncombined}
       </ScrollView>
     );
   }
@@ -188,6 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Roboto-Regular',
     color: 'white',
+    marginBottom: 6
   },
   navButton: {
 
@@ -248,6 +253,6 @@ const styles = StyleSheet.create({
     color: 'rgba(114,122,143,1)',
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
-
+    flex: 1,
   }
 });

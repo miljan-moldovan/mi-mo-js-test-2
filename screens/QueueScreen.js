@@ -23,6 +23,7 @@ import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
+import * as settingsActions from '../actions/settings.js';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
@@ -41,15 +42,15 @@ const initialLayout = {
 };
 
 
-const QueueNavButton = ({ icon, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
+const QueueNavButton = ({ icon, onPress, style }) => (
+  <TouchableOpacity onPress={onPress} style={[{height: '100%'},style]}>
     <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
   </TouchableOpacity>
 );
 
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerLeft = <QueueNavButton icon={Icons.bars} />;
+    const headerLeft = <QueueNavButton icon={Icons.bars} style={{marginLeft: 6}} />;
     const onActionPress = () => {
       ActionSheetIOS.showActionSheetWithOptions(
         {
@@ -74,8 +75,8 @@ class QueueScreen extends React.Component {
     };
 
     const headerRight = (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 80 }}>
-        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, height: '100%' }}>
+        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} style={{marginRight: 19}} />
         <QueueNavButton icon={Icons.search} />
       </View>
     );
@@ -99,6 +100,7 @@ class QueueScreen extends React.Component {
 
   componentWillMount() {
     this.props.actions.receiveQueue();
+    this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     // this._refreshData();
   }
   _refreshData = () => {
@@ -142,24 +144,30 @@ class QueueScreen extends React.Component {
     );
     // }
   _renderBar = props => (
-    <TabBar
-      {...props}
-      tabStyle={styles.tab}
-      style={styles.tabContainer}
-      renderLabel={this._renderLabel(props)}
-      indicatorStyle={styles.indicator}
-    />
+    <View>
+      <TabBar
+        {...props}
+        tabStyle={styles.tab}
+        style={styles.tabContainer}
+        renderLabel={this._renderLabel(props)}
+        indicatorStyle={styles.indicator}
+      />
+      <View style={styles.summaryBar}>
+        <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
+        <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>25m</Text> Est. Wait</Text>
+      </View>
+    </View>
   )
-
   _renderScene = ({ route }) => {
+    const { navigation, waitingQueue, serviceQueue, groups} = this.props;
     switch (route.key) {
       case WAITING:
         return (
-          <Queue data={this.props.waitingQueue} navigation={this.props.navigation} />
+          <Queue data={waitingQueue} groups={groups} navigation={navigation} />
         );
       case SERVICED:
         return (
-          <Queue data={this.props.serviceQueue} navigation={this.props.navigation} />
+          <Queue data={serviceQueue} groups={groups} navigation={navigation} />
         );
       default:
         return route;
@@ -191,7 +199,9 @@ class QueueScreen extends React.Component {
   };
 
   render() {
-    console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
+    // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
+    console.log('QueueScreen.render', this.props.settings);
+
     return (
       <View style={styles.container}>
         <TabViewAnimated
@@ -205,11 +215,15 @@ class QueueScreen extends React.Component {
           renderHeader={this._renderBar}
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
-          swipeEnabled={false}
+          // swipeEnabled={false}
         />
-        <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
-          <Text style={styles.walkinButtonText}>Walk-in</Text>
-        </TouchableOpacity>
+        {
+          this.props.settings.data.SupressServiceForWalkIn ? null : (
+            <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+              <Text style={styles.walkinButtonText}>Walk-in</Text><FontAwesome style={styles.walkinButtonIcon}>{Icons.signIn}</FontAwesome>
+            </TouchableOpacity>
+          )
+        }
         {/* <FloatingButton handlePress={this._handleWalkInPress}>
           <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
         </FloatingButton> */}
@@ -252,12 +266,16 @@ class QueueScreen extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
   serviceQueue: state.queue.serviceQueue,
+  groups: state.queue.groups,
+  queueLength: state.queue.queueLength,
   loading: state.queue.loading,
   walkInState: state.walkInReducer.walkInState,
+  settings: state.settings,
 });
 
 const mapActionsToProps = dispatch => ({
   actions: bindActionCreators({ ...actions }, dispatch),
+  settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
@@ -395,31 +413,40 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.6,
     shadowRadius: 1,
+    flexDirection: 'row'
   },
   walkinButtonText: {
     fontFamily: 'Roboto-Medium',
     fontSize: 12,
     color: 'white',
   },
+  walkinButtonIcon: {
+    color: 'white',
+    fontSize: 16,
+    marginLeft: 8,
+  },
   indicator: {
     borderWidth: 1,
     borderColor: 'white',
-    borderRadius: 16,
+    borderRadius: 15.5,
     backgroundColor: 'white',
-    height: 33,
+    height: 31,
     shadowColor: '#000',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.6,
     shadowRadius: 1,
   },
   tab: {
-    height: 33,
+    height: 31,
     width: 120,
+    // backgroundColor: 'rgba(0,255,0,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    // alignItems: 'flex-start',
+    paddingLeft: 0
   },
   tabContainer: {
-    height: 34,
+    height: 32,
     width: 240,
     borderWidth: 1,
     borderColor: 'rgba(8,46,102,0.5)',
@@ -436,7 +463,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 3,
     paddingVertical: 0,
     paddingHorizontal: 5,
-    marginRight: 3,
+    marginRight: 5,
   },
   tabQueueCounterText: {
     color: '#1963CE',
@@ -450,10 +477,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     opacity: 1,
     flexDirection: 'row',
+    // backgroundColor: 'yellow',
+    alignSelf: 'flex-start',
+    marginLeft: 15,
+    paddingLeft: 0,
+    top: -1
   },
   navButton: {
     color: 'white',
     fontSize: 20,
-    marginLeft: 10,
+    // marginLeft: 10,
+  },
+  summaryBar: {
+    height: 31,
+    backgroundColor: '#0C4699',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  summaryBarTextLeft: {
+    color: 'rgba(195,214,242,1)',
+    fontSize: 8,
+    fontFamily: 'Roboto-Regular',
+    marginLeft: 16
+  },
+  summaryBarTextLeftEm: {
+    fontSize: 10,
+    fontWeight: '500'
+  },
+  summaryBarTextRight: {
+    color: 'white',
+    fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    marginRight: 23
+  },
+  summaryBarTextRightEm: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 11,
   },
 });

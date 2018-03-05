@@ -49,10 +49,9 @@ class QueueCombineItem extends React.PureComponent {
     const { type, item } = this.props;
     if (type === "uncombine")
       return (
-        <View style={[styles.dollarSignContainer, item.groupLead ? null : { backgroundColor : 'transparent'}]}>
-          <Text style={[styles.dollarSign, item.groupLead ? null : { color : '#00E480' }]}>$</Text>
+        <View style={[styles.dollarSignContainer, item.isGroupLeader ? null : { backgroundColor : 'transparent'}]}>
+          <Text style={[styles.dollarSign, item.isGroupLeader ? null : { color : '#00E480' }]}>$</Text>
         </View>
-
       )
     return null;
   }
@@ -85,8 +84,8 @@ class QueueCombineItem extends React.PureComponent {
         {this.renderCheckContainer()}
         <View style={[styles.itemSummary, type == "uncombine"? (index == 0 ? styles.itemSummaryCombinedFirst : styles.itemSummaryCombined) : null]}>
           <View>
-            <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-            <Text style={styles.serviceName}>
+            <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
+            <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
               {item.services[0].serviceName.toUpperCase()}
               {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
               &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
@@ -129,7 +128,7 @@ export class QueueCombine extends React.Component {
     }
 
     let text = query.toLowerCase();
-    // search by food truck name
+    // search by the client full name
     let filteredData = data.filter(({ client }) => {
       const fullName = (client.name||'')+' '+(client.middleName||'')+' '+(client.lastName||'');
       return fullName.toLowerCase().match(text);
@@ -191,6 +190,7 @@ export class QueueCombine extends React.Component {
           data={this.state.data}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
+          style={{marginBottom: 28}}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -265,9 +265,8 @@ export class QueueUncombine extends React.Component {
   _keyExtractor = (item, index) => item.id;
 
   render() {
-    console.log('Atualizou...');
+
     return (
-      // <View style={styles.container}>
         <SectionList
           renderSectionHeader={this.renderSectionHeader}
           renderSectionFooter={this.renderSectionFooter}
@@ -282,7 +281,6 @@ export class QueueUncombine extends React.Component {
             />
           }
         />
-      // </View>
     );
   }
 }
@@ -333,9 +331,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderTopColor: 'transparent',
-    paddingTop: 5,
+    paddingTop: 3,
     marginHorizontal: 8,
-    marginBottom: 4
+    marginBottom: 28
   },
   itemSummary: {
     paddingLeft: 10,
@@ -393,7 +391,7 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   sectionHeader: {
-    marginTop: 28,
+    // marginTop: 28,
     flexDirection: 'row',
     marginHorizontal: 8,
 

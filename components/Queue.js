@@ -168,21 +168,28 @@ right
   hideDialog = () => {
     this.setState({ isVisible: false });
   }
+  getGroupLeaderName = (item: QueueItem) => {
+    const { groups } = this.props;
+    if (groups && groups[item.groupId])
+      return groups[item.groupId].groupLeadName;
+    return null;
+  }
 
   renderItem = (row) => {
     const item: QueueItem = row.item;
     const index = row.index;
     // const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
+    const groupLeaderName = this.getGroupLeaderName(item);
     return (
       // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
         <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })} key={item.id}>
           <View style={styles.itemSummary}>
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-              <ServiceIcons item={item} />
+              <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
             </View>
-            <Text style={styles.serviceName}>
+            <Text style={styles.serviceName} multiline={2} ellipsizeMode="tail">
               {item.services[0].serviceName.toUpperCase()}
               {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
               &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
@@ -210,14 +217,9 @@ right
     this.setState({ notificationVisible: false });
   }
   renderNotification = () => {
-    const {
- notificationType, notificationItem,
-      notificationVisible
-} = this.state;
+    const { notificationType, notificationItem, notificationVisible } = this.state;
     console.log('renderNotification - notificationVisible', notificationVisible);
-    let notificationColor,
-notificationButton,
-notificationText;
+    let notificationColor, notificationButton, notificationText;
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
