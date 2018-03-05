@@ -197,7 +197,7 @@ const ServiceCard = props => (
     bodyStyles={{ paddingVertical: 10 }}
     bodyChildren={[
       <View key={Math.random()} style={{ flex: 1, alignSelf: 'flex-start' }}>
-        <Text style={styles.serviceTitle}>Corrective C0l0R</Text>
+        <Text style={styles.serviceTitle}>{props.service.name}</Text>
         <View style={{ flexDirection: 'row', marginTop: 5 }}>
           <SalonAvatar
             wrapperStyle={styles.providerRound}
@@ -384,6 +384,12 @@ export default class AppointmentDetails extends React.Component {
     }
   }
 
+  handleServiceSelection = (data, service, index) => {
+    const { appointment } = this.state;
+    appointment.services.push(data);
+    this.setState({ appointment });
+  }
+
   render() {
     if (this.state.appointment === null) {
       return null;
@@ -392,7 +398,7 @@ export default class AppointmentDetails extends React.Component {
     const { appointment } = this.state;
     const { client } = appointment;
     const label = this.getLabelForItem(appointment);
-
+debugger //eslint-disable-line
     return (
       <ScrollView style={[styles.container, { paddingBottom: 63 }]}>
         <View style={styles.infoContainer}>
@@ -416,9 +422,19 @@ export default class AppointmentDetails extends React.Component {
             bodyChildren={<InputButton value={<View style={{ flex: 1 }}><Text>Client</Text></View>} onPress={() => alert('pressed')} />}
           />
           <Text style={styles.titleText}>Services</Text>
-          <ServiceCard hasPromo />
-          <ServiceCard />
-          <AddButton onPress={() => alert('add serv')} title="Add Service" />
+          {this.state.appointment.services.map(item => (
+            <ServiceCard service={item} />
+          ))}
+          <AddButton
+            onPress={() => {
+              this.props.navigation.navigate('Services', {
+                actionType: 'update',
+                dismissOnSelect: true,
+                onChangeService: data => this.handleServiceSelection(data),
+              });
+            }}
+            title="Add Service"
+          />
           <Text style={styles.titleText}>Products</Text>
           <ProductCard />
           <AddButton onPress={() => alert('add prod')} title="Add Product" />
