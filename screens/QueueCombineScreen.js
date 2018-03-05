@@ -31,7 +31,7 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
-    const { onPressDone } = params;
+    const { onPressDone, loading } = params;
 
     return {
       header: (
@@ -43,9 +43,16 @@ class QueueCombineScreen extends React.Component {
               <Text style={styles.headerTitle}>Combine</Text>
               <Text style={styles.headerSubtitle}>Select clients to combine</Text>
             </View>
-            <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
-              <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-            </TouchableOpacity>
+            {loading ? (
+              <View style={styles.navButton}>
+                <ActivityIndicator />
+              </View>
+            ):(
+              <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
+                <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+              </TouchableOpacity>
+            )}
+
           </SafeAreaView>
       ),
     }
@@ -61,11 +68,20 @@ class QueueCombineScreen extends React.Component {
   componentWillMount() {
     this.prepareQueueData();
   }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.waitingQueue || nextProps.serviceQueue || nextProps.group)
       this.prepareQueueData(nextProps);
+    if (nextProps.error) {
+      console.log('QueueCombineScreen.componentWillReceiveProps error', nextProps.error);
+      Alert.alert('Error', nextProps.error.toString());
+    }
+
+    if (nextProps.loading !== undefined)
+      this.props.navigation.state.setParams({ loading: nextProps.loading });
   }
   prepareQueueData = (nextProps = {}) => {
+    console.log('prepareQueueData');
     const waitingQueue = nextProps.waitingQueue || this.props.waitingQueue;
     const serviceQueue = nextProps.serviceQueue || this.props.serviceQueue;
     const queueData = [...waitingQueue, ...serviceQueue];
@@ -92,6 +108,7 @@ class QueueCombineScreen extends React.Component {
         data: groupClients
       })
     }
+    console.log('groupData', groupData);
     this.setState({
       // clients in groups don't show up on the main list, filter them out
       queueData: queueData.filter(({groupId})=>!groupId),
@@ -119,7 +136,7 @@ class QueueCombineScreen extends React.Component {
       this.props.combineClient({ id, clientName });
     });
     this.props.finishCombine(combinedData);
-    this.props.navigation.goBack();
+    // this.props.navigation.goBack();
   }
   onUncombineClients = (groupId) => {
     // Alert.alert('onUncombineClients', groupId);
@@ -143,6 +160,7 @@ class QueueCombineScreen extends React.Component {
         data={groupData}
         navigation={this.props.navigation}
         onUncombineClients={this.onUncombineClients}
+        loading={this.props.loading}
        />
     )
     return (
@@ -173,7 +191,9 @@ class QueueCombineScreen extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
   serviceQueue: state.queue.serviceQueue,
-  groups: state.queue.groups
+  error: state.queue.error,
+  groups: state.queue.groups,
+  loading: state.queue.loading
 });
 export default connect(mapStateToProps, actions)(QueueCombineScreen);
 

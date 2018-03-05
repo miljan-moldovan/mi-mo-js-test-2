@@ -119,8 +119,9 @@ export function cancelCombine() {
     type: CANCEL_COMBINE
   }
 }
-export const finishCombine = (combiningClients) => async (dispatch: Object => void) => {
+export const finishCombine = (combiningClients: Array<Object>) => async (dispatch: Object => void) => {
   try {
+    dispatch({type: QUEUE});
     const data = {
       clientQueueIdList: [],
       payingClientQueueId: null
@@ -132,26 +133,9 @@ export const finishCombine = (combiningClients) => async (dispatch: Object => vo
       }
     });
     console.log('finishCombine1', data);
-    //
-    // let response = await fetch('http://zenithnew.dev.cicd.salondev.net/api/Queue/Group', {
-    //   body: JSON.stringify(data),
-    //   method: 'post',
-    //   headers: {
-    //     'Content-Type': "application/json",
-    //     'X-SU-store-id': 1
-    //   },
-    // });
-    //
     let response = await apiWrapper.doRequest('postQueueGroup', {
       body: JSON.stringify(data)
     });
-    // let response = await axios.request({
-    //   url: 'http://zenithnew.dev.cicd.salondev.net/api/Queue/Group',
-    //   method: 'post',
-    //   headers: {
-    //     'X-SU-store-id': 1
-    //   },
-    //   data});
     console.log('finishCombine response', response);
     setTimeout(()=>dispatch(receiveQueue()), 1000);
   } catch (error) {
@@ -174,24 +158,19 @@ export function updateGroupLead(data) {
   }
 }
 
-export const uncombine = (groupId) => async (dispatch: Object => void) => {
+export const uncombine = (groupId: number) => async (dispatch: Object => void) => {
   try {
+    dispatch({type: QUEUE});
     console.log('uncombine', groupId);
     let response = await apiWrapper.doRequest('deleteQueueGroup', {
       path: { groupId }
     });
     console.log('uncombine response', response);
-    dispatch(receiveQueue());
+    // dispatch(receiveQueue());
+    setTimeout(()=>dispatch(receiveQueue()), 1000);
   } catch (error) {
     dispatch({type: QUEUE_FAILED, error});
   }
-
-
-// export function uncombine(groupId) {
-  // return {
-  //   type: UNCOMBINE,
-  //   data: {groupId}
-  // }
 }
 
 export function updateGroups() {

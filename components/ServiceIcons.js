@@ -9,19 +9,15 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 
 const ServiceIcons = ({ item, groupLeaderName }) => {
-  const {client} = item;
-
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-      {client.member ? star : null}
-      {client.newClientGlobal ? newGlobal : null}
-      {client.newClientLocal ? newLocal : null}
-      {client.birthday ? birthday : null}
+      {item.membership ? star : null}
+      {item.newGlobal ? newGlobal : null}
+      {item.newLocal ? newLocal : null}
+      {item.birthday ? birthday : null}
       {item.groupId ? ( <Group leader={item.isGroupLeader} leaderName={groupLeaderName} /> ) : null }
-
-      {client.attributes && Object.keys(client.attributes).length ? tag : null}
+      {item.attributes && item.attributes.length ? tag : null}
     </View>
-
   );
 }
 

@@ -249,11 +249,13 @@ export class QueueUncombine extends React.Component {
   );
   renderSectionHeader = ({section}) => {
     console.log('renderSectionHeader', section);
+    const { loading } = this.props;
     return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{section.title}</Text>
-      <TouchableOpacity onPress={()=>this.props.onUncombineClients(section.groupId)} style={{marginLeft: 'auto'}}>
-        <Text style={styles.sectionUncombineText}>UNCOMBINE</Text>
+      <TouchableOpacity onPress={loading? null : ()=>this.props.onUncombineClients(section.groupId)} style={{marginLeft: 'auto'}}>
+        {loading? <ActivityIndicator /> : null }
+        <Text style={[styles.sectionUncombineText, loading? {color: 'gray'} : null ]}>UNCOMBINE</Text>
       </TouchableOpacity>
     </View>
   )};

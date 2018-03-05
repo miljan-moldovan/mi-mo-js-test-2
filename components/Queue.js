@@ -14,6 +14,7 @@ import {
   RefreshControl,
   TouchableHighlight,
   LayoutAnimation,
+  ActivityIndicator
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -246,6 +247,11 @@ right
     console.log('Queue.render', this.props.data);
     return (
       <View style={styles.container}>
+        {this.props.loading?(
+          <View style={{height: 50, alignItems: 'center', justifyContent: 'center'}}>
+            <ActivityIndicator />
+          </View>
+        ):null}
         <FlatList
           renderItem={this.renderItem}
           data={this.props.data}

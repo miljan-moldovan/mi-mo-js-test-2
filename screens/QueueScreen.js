@@ -103,6 +103,12 @@ class QueueScreen extends React.Component {
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     // this._refreshData();
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.error) {
+      console.log('QueueScreen.componentWillReceiveProps error', nextProps.error);
+      Alert.alert('Error', nextProps.error.toString());
+    }
+  }
   _refreshData = () => {
     // this.setState({ refreshing: true }, () => {
     //   apiWrapper.doRequest('getQueue', {
@@ -159,15 +165,15 @@ class QueueScreen extends React.Component {
     </View>
   )
   _renderScene = ({ route }) => {
-    const { navigation, waitingQueue, serviceQueue, groups} = this.props;
+    const { navigation, waitingQueue, serviceQueue, groups, loading} = this.props;
     switch (route.key) {
       case WAITING:
         return (
-          <Queue data={waitingQueue} groups={groups} navigation={navigation} />
+          <Queue data={waitingQueue} groups={groups} navigation={navigation} loading={loading} />
         );
       case SERVICED:
         return (
-          <Queue data={serviceQueue} groups={groups} navigation={navigation} />
+          <Queue data={serviceQueue} groups={groups} navigation={navigation} loading={loading} />
         );
       default:
         return route;
@@ -267,6 +273,7 @@ const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
   serviceQueue: state.queue.serviceQueue,
   groups: state.queue.groups,
+  error: state.queue.error,
   queueLength: state.queue.queueLength,
   loading: state.queue.loading,
   walkInState: state.walkInReducer.walkInState,
