@@ -174,6 +174,7 @@ class Queue extends React.Component {
         appointment: item, client: item.client, services: item.services, isVisible: true,
       });
     }
+    this.props.navigation.navigate('AppointmentDetails', { item });
   }
 
   handlePressModify = () => {

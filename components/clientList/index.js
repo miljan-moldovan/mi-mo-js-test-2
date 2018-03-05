@@ -2,7 +2,6 @@ import React from 'react';
 import { View,
   Text,
   TouchableHighlight,
-  Dimensions,
   SectionList,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
@@ -11,7 +10,7 @@ import ClientListHeader from '../../components/clientList/clientListHeader';
 
 const ITEM_HEIGHT = 60;
 const HEADER_HEIGHT = 30;
-const window = Dimensions.get('window');
+
 const abecedary = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -21,39 +20,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#E7E7E7',
   },
-  itemSeparator: {
-    backgroundColor: '#EEE',
-    height: 1,
-  },
-  lineItemCointainer: {
-    flex: 1,
-    flexDirection: 'row',
-    borderBottomColor: 'transparent',
-  },
-  noResultsContainer:
-  {
-    flex: 10000,
-    height: '100%',
-    width: '100%',
-    backgroundColor: '#E7E7E7',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noResultsView: {
-    flex: 1,
-    marginTop: 150,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
   clientList: {
     backgroundColor: '#FFF',
     flex: 10,
-  },
-  letterList: {
-    flex: 0.6,
-    backgroundColor: '#FFF',
   },
   listContainer: {
     flex: 9,
@@ -68,7 +37,7 @@ const styles = StyleSheet.create({
   guideContainer: {
     flex: 1 / 2,
     flexDirection: 'column',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EFEFEF',
   },
   letterContainer: {
     backgroundColor: 'transparent',
@@ -95,32 +64,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-  },
-  noResults: {
-    color: '#3D3C3B',
-    fontSize: 30,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  newClientButton: {
-    borderRadius: 30,
-    flexDirection: 'column',
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 200,
-    height: 50,
-  },
-  newClient: {
-    color: '#3078A4',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-    alignSelf: 'center',
   },
 });
 
@@ -161,27 +104,21 @@ class ClientList extends React.Component {
     return clientsLetters;
   }
 
-  static renderSeparator(show) {
-    if (show) {
-      return (<View
-        style={{
+  static renderSeparator() {
+    return (<View
+      style={{
             height: 1,
             width: '100%',
             backgroundColor: '#C0C1C6',
           }}
-      />);
-    }
-    return (null);
+    />);
   }
 
 
-  static renderSection(item, showSectionHeader) {
-    if (showSectionHeader) {
-      return (<View style={styles.topBar}>
-        <ClientListHeader header={item.section.title} />
-      </View>);
-    }
-    return (null);
+  static renderSection(item) {
+    return (<View style={styles.topBar}>
+      <ClientListHeader header={item.section.title} />
+    </View>);
   }
 
 
@@ -194,14 +131,12 @@ class ClientList extends React.Component {
       clients,
       dataSource: ClientList.clients(clients),
       letterGuide: [],
+      boldWords: props.boldWords,
     };
   }
 
     state:{
-      clients:[],
-      showLateralList: true,
-      showSectionHeader: true,
-      simpleListItem: false,
+      clients:[]
     };
 
 
@@ -220,6 +155,7 @@ class ClientList extends React.Component {
       const clients = nextProps.clients.sort(ClientList.compareByName);
       this.setState({
         dataSource: ClientList.clients(clients),
+        boldWords: nextProps.boldWords,
       });
     }
 
@@ -251,9 +187,8 @@ class ClientList extends React.Component {
         <View key={Math.random().toString()} style={{ height: ITEM_HEIGHT }}>
           <ClientListItem
             client={obj.item}
-            simpleListItem={this.state.simpleListItem}
             boldWords={this.state.boldWords}
-            onPress={this.props.onChangeClient}
+            onPress={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
           />
         </View>)
 
@@ -291,30 +226,8 @@ class ClientList extends React.Component {
       }
 
       render() {
-        console.log("ClientList", this.props)
         return (
           <View style={styles.container}>
-            {this.state.dataSource.length === 0 &&
-
-            <View style={styles.noResultsContainer}>
-
-              <View style={styles.noResultsView}>
-
-                <Text style={styles.noResults}>NO RESULTS</Text>
-
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  onPress={() => {}}
-                  style={styles.newClientButton}
-                >
-                  <Text style={styles.newClient}>
-                    CREATE NEW CLIENT
-                  </Text>
-                </TouchableHighlight>
-              </View>
-            </View>
-          }
-
 
             <View style={styles.listContainer}>
               <View style={styles.list}>
@@ -322,6 +235,7 @@ class ClientList extends React.Component {
                   key={Math.random().toString()}
                   style={{ height: '100%', flex: 1 }}
                   enableEmptySections
+                  keyboardShouldPersistTaps="always"
                   initialNumToRender={this.state.dataSource.length}
                   ref={(ref) => { this.sectionListRef = ref; }}
                   sections={this.state.dataSource}
@@ -330,12 +244,12 @@ class ClientList extends React.Component {
                   getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
-                  renderSectionHeader={item => ClientList.renderSection(item, this.state.showSectionHeader)}
-                  ItemSeparatorComponent={() => ClientList.renderSeparator(this.state.showSectionHeader)}
+                  renderSectionHeader={item => ClientList.renderSection(item)}
+                  ItemSeparatorComponent={() => ClientList.renderSeparator()}
 
                 />
               </View>
-              {this.state.showLateralList && <View style={styles.guideContainer}>
+              {<View style={styles.guideContainer}>
                 {this.state.letterGuide}
               </View>}
             </View>
