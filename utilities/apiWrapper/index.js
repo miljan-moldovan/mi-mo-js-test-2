@@ -1,4 +1,3 @@
-import { NetInfo } from 'react-native';
 import OfflineFirstAPI from 'react-native-offline-api';
 import apiOptions from './apiOptions';
 import apiServices from './apiServices';
@@ -66,7 +65,7 @@ function getError(requestResponse) {
 
   return new ApiError(
     message, requestResponse.systemErrorDetail,
-    requestResponse.systemErrorStack, requestResponse.systemErrorType,
+    requestResponse.systemErrorStack, requestResponse.systemErrorType, requestResponse.result,
   );
 }
 
@@ -127,7 +126,10 @@ function doRequest(key, parameters, options = {
           count += 1;
           delay ? setTimeout(attempt, delay) : attempt();
         } else {
-          reject(error);
+          reject(new ApiError(
+            error.message, null,
+            error.stack, null, apiConstants.responsesCodes.NetworkError,
+          ));
         }
       });
     attempt();
