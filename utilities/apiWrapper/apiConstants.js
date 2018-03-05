@@ -10,10 +10,12 @@ export default {
     NotFound: 6,
   },
   // Must clean cache after doing these requests
-  cleanCache: ['postQueue'],
+  cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup'],
   // Must clean these Dependencies cache after doing these requests
   cacheCleaningDependencies: {
     postQueue: ['getQueue'],
+    postQueueGroup: ['getQueue', 'getQueueGroups'],
+    deleteQueueGroup: ['getQueue', 'getQueueGroups'],
   },
   // Global expiration time
   expiration: 5 * 60 * 1000,
