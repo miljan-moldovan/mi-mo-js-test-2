@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Switch,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     height: 44,
-
+    paddingRight: 16,
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
@@ -57,8 +58,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#727A8F',
     marginLeft: 10,
-    marginRight: 16,
-    // alignSelf: 'flex-end',
   },
   textArea: {
     height: 60,
@@ -66,7 +65,23 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingRight: 16,
   },
+  sectionTitle: {
+    fontSize: 12,
+    lineHeight: 22,
+    color: '#727A8F',
+    fontFamily: 'Roboto-Medium',
+    marginLeft: 16,
+  },
 });
+
+export const SectionTitle = props => (
+  <View style={{ height: 38, flexDirection: 'column', justifyContent: 'flex-end' }} >
+    <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
+  </View>
+);
+SectionTitle.propTypes = {
+  value: PropTypes.string.isRequired,
+};
 
 export const SectionDivider = () => (
   <View style={{ height: 35 }} />
@@ -106,7 +121,9 @@ export const InputButton = props => (
               ) :
                 props.value
             }
+
           </View>
+          {props.children}
           {!props.noIcon && (
             <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
           )}
@@ -117,16 +134,46 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-  style: PropTypes.shape,
+  style: View.propTypes.style,
   placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
+  children: PropTypes.arrayOf(PropTypes.element),
 };
 InputButton.defaultProps = {
   style: {},
   placeholder: false,
   value: false,
   noIcon: false,
+  children: [],
+};
+
+export const InputLabel = props => (
+  <View style={[styles.inputRow, { flexDirection: 'row', alignSelf: 'stretch' }]}>
+    <Text style={[styles.labelText, { alignSelf: 'flex-start' }]}>{props.label}</Text>
+    <Text style={[styles.inputText, { alignSelf: 'flex-end' }]}>{props.value}</Text>
+  </View>
+);
+InputLabel.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+};
+
+export const LabeledButton = props => (
+  <InputButton
+    style={{ alignSelf: 'stretch' }}
+    onPress={props.onPress}
+  >
+    <InputLabel
+      label={props.label}
+      value={props.value}
+    />
+  </InputButton>
+);
+LabeledButton.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  onPress: PropTypes.func.isRequired,
 };
 
 export const InputText = props => (
@@ -170,6 +217,29 @@ export class InputDate extends React.Component {
           noIcon
           placeholder={this.props.placeholder}
           value={this.props.selectedDate}
+        />
+      </View>
+    );
+  }
+}
+
+export class InputSwitch extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: false,
+    };
+  }
+
+  render() {
+    return (
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }]}>
+        <Text style={styles.labelText}>{this.props.text}</Text>
+
+        <Switch
+          onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}
+          value={this.state.value}
         />
       </View>
     );

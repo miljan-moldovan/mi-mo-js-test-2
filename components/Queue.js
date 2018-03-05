@@ -259,7 +259,6 @@ class Queue extends React.Component {
   _keyExtractor = (item, index) => item.queueId;
 
   render() {
-    console.log('Queue.render', this.props.data);
     return (
       <View style={styles.container}>
         <FlatList

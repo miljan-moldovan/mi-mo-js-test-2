@@ -25,12 +25,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
   },
   serviceTimeContainer: {
-    fontSize: 12,
-    fontFamily: 'Roboto-Regular',
-    color: '#000',
+    // fontSize: 12,
+    // fontFamily: 'Roboto-Regular',
+    // color: '#000',
     marginTop: 'auto',
     marginBottom: 8,
     flexDirection: 'row',
+    alignSelf: 'stretch',
+    alignItems: 'flex-start',
   },
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
   },
   timeCaretIcon: {
-    fontSize: 8,
+    fontSize: 12,
     marginHorizontal: 3,
   },
   promoDescription: {
@@ -169,15 +171,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const caretRight = () => (
+const caretRight = (
   <FontAwesome style={styles.timeCaretIcon}>{Icons.angleRight}</FontAwesome>
 );
 
 const SalonAppointmentTime = props => (
-  <Text style={styles.serviceTimeContainer}>
+  <View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
-    <Text style={styles.serviceTime}> {props.appointment.start_time}</Text> {caretRight} REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
-  </Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Text style={styles.serviceTime}> {props.appointment.start_time}</Text>
+      {caretRight}
+      <Text style={styles.serviceTime}>REM Wait</Text>
+      <Text style={styles.serviceRemainingWaitTime}> 7m</Text>
+    </View>
+  </View>
 );
 SalonAppointmentTime.propTypes = {
   appointment: PropTypes.shape(AppointmentModel).isRequired,
@@ -189,7 +196,7 @@ const ServiceCard = props => (
     containerStyles={{ marginHorizontal: 0 }}
     bodyStyles={{ paddingVertical: 10 }}
     bodyChildren={[
-      <View style={{ flex: 1, alignSelf: 'flex-start' }}>
+      <View key={Math.random()} style={{ flex: 1, alignSelf: 'flex-start' }}>
         <Text style={styles.serviceTitle}>Corrective C0l0R</Text>
         <View style={{ flexDirection: 'row', marginTop: 5 }}>
           <SalonAvatar
@@ -203,6 +210,7 @@ const ServiceCard = props => (
         </View>
       </View>,
       <View
+        key={Math.random()}
         style={{
         flex: 1, alignSelf: 'stretch', justifyContent: 'flex-end', flexDirection: 'row',
         }}
@@ -244,11 +252,12 @@ const ProductCard = props => (
     containerStyles={{ marginHorizontal: 0 }}
     bodyStyles={{ paddingVertical: 10 }}
     bodyChildren={[
-      <View style={{ flex: 1, alignSelf: 'flex-start' }}>
+      <View key={Math.random()} style={{ flex: 1, alignSelf: 'flex-start' }}>
         <Text style={styles.serviceTitle}>Dry Shampoo</Text>
         <Text style={styles.employeeText}>Dynamo Humm</Text>
       </View>,
       <View
+        key={Math.random()}
         style={{
         flex: 1, alignSelf: 'flex-start', justifyContent: 'flex-end', flexDirection: 'row',
         }}
@@ -451,6 +460,9 @@ export default class AppointmentDetails extends React.Component {
   }
 }
 AppointmentDetails.propTypes = {
-  appointment: PropTypes.shape(AppointmentModel).isRequired,
+  appointment: PropTypes.oneOfType([PropTypes.shape(AppointmentModel), PropTypes.string]),
+};
+AppointmentDetails.defaultProps = {
+  appointment: null,
 };
 

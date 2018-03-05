@@ -66,12 +66,21 @@ const salonCard = props => (
 );
 
 salonCard.propTypes = {
-  headerChildren: PropTypes.oneOf([PropTypes.arrayOf(PropTypes.element), null]),
-  bodyChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
-  footerChildren: PropTypes.oneOf([PropTypes.arrayOf(PropTypes.element), null]),
+  headerChildren: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
+  bodyChildren: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]).isRequired,
+  footerChildren: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
   backgroundColor: PropTypes.string,
-  containerStyles: PropTypes.shape,
-  bodyStyles: PropTypes.shape,
+  containerStyles: View.propTypes.style,
+  bodyStyles: View.propTypes.style,
 };
 
 salonCard.defaultProps = {
