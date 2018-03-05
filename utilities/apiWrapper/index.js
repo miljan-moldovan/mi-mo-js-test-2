@@ -1,38 +1,44 @@
+import { NetInfo } from 'react-native';
 import OfflineFirstAPI from 'react-native-offline-api';
 import apiOptions from './apiOptions';
 import apiServices from './apiServices';
 import apiConstants from './apiConstants';
 import ApiError from './apiError';
 
-
 const api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
 
-function getHeader(needsAuth) {
+function getHeader() {
   const header = {
     'Content-Type': 'application/json',
+    'X-SU-store-key': '4',
+    'X-SU-user-name': 'Imported',
   };
-
-  if (needsAuth) {
-    header['X-SU-store-id'] = 1;
-  }
-
   return header;
 }
 
 function cleanCache(service, callback) {
+  const promises = [];
+
   if (apiConstants.cleanCache.indexOf(service) > -1) {
-    api.clearCache(service);
+    promises.push(api.clearCache(service));
     if (service in apiConstants.cacheCleaningDependencies) {
       const cacheDependencies = apiConstants.cacheCleaningDependencies[service];
       if (cacheDependencies) {
         for (let i = 0; i < cacheDependencies.length; i += 1) {
           const cacheDependency = cacheDependencies[i];
-          api.clearCache(cacheDependency);
+          promises.push(api.clearCache(cacheDependency));
         }
       }
     }
   }
-  callback();
+
+  Promise.all(promises)
+    .then((data) => {
+      callback(data);
+    })
+    .catch((error) => {
+      callback(error);
+    });
 }
 
 function getError(requestResponse) {
@@ -78,7 +84,8 @@ function doRequest(key, parameters, options = {
   };
 
   if ('body' in parameters) {
-    fetchData.fetchOptions = { body: parameters.body };
+    const body = (typeof parameters.body === 'string' || parameters.body instanceof String) ? parameters.body : JSON.stringify(parameters.body);
+    fetchData.fetchOptions = { body };
   }
 
   if ('path' in parameters) {
@@ -104,7 +111,7 @@ function doRequest(key, parameters, options = {
       fetchData,
     )
       .then((requestResponse) => {
-        const status = 'status' in requestResponse ? response.status.toString() : '200';
+        const status = 'status' in requestResponse ? requestResponse.status.toString() : '200';
 
         if (rejectCodes.includes(status) && count < retries) {
           count += 1;
