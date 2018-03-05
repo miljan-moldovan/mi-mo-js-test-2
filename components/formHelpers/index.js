@@ -72,6 +72,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     marginLeft: 16,
   },
+  dateCancelButtonStyle: {
+    width: '10%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  dateCancelStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export const SectionTitle = props => (
@@ -79,7 +89,6 @@ export const SectionTitle = props => (
     <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
   </View>
 );
-
 SectionTitle.propTypes = {
   value: PropTypes.string.isRequired,
 };
@@ -123,7 +132,9 @@ export const InputButton = props => (
               ) :
                 props.value
             }
+
           </View>
+          {props.children}
           {!props.noIcon && (
             <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
           )}
@@ -134,16 +145,46 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-  style: PropTypes.shape,
+  style: View.propTypes.style,
   placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
+  children: PropTypes.arrayOf(PropTypes.element),
 };
 InputButton.defaultProps = {
   style: {},
   placeholder: false,
   value: false,
   noIcon: false,
+  children: [],
+};
+
+export const InputLabel = props => (
+  <View style={[styles.inputRow, { flexDirection: 'row', alignSelf: 'stretch' }]}>
+    <Text style={[styles.labelText, { alignSelf: 'flex-start' }]}>{props.label}</Text>
+    <Text style={[styles.inputText, { alignSelf: 'flex-end' }]}>{props.value}</Text>
+  </View>
+);
+InputLabel.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+};
+
+export const LabeledButton = props => (
+  <InputButton
+    style={{ alignSelf: 'stretch' }}
+    onPress={props.onPress}
+  >
+    <InputLabel
+      label={props.label}
+      value={props.value}
+    />
+  </InputButton>
+);
+LabeledButton.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  onPress: PropTypes.func.isRequired,
 };
 
 export const InputText = props => (
@@ -171,7 +212,7 @@ export class InputDate extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={{ flexDirection: 'row' }}>
         <SalonDatePicker
           isVisible={this.state.showModal}
           onPress={(selectedDate) => {
@@ -181,6 +222,7 @@ export class InputDate extends React.Component {
           selectedDate={this.props.selectedDate}
         />
         <InputButton
+          style={{ width: '90%' }}
           onPress={() => {
             this.setState({ showModal: !this.state.showModal });
           }}
@@ -188,11 +230,20 @@ export class InputDate extends React.Component {
           placeholder={this.props.placeholder}
           value={this.props.selectedDate}
         />
+        <TouchableOpacity
+          onPress={() => {
+            this.props.onPress(null);
+          }}
+          style={styles.dateCancelButtonStyle}
+        >
+          <View style={styles.dateCancelStyle}>
+            <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
 }
-
 
 export class InputSwitch extends React.Component {
   constructor(props) {

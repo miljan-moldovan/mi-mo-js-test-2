@@ -384,7 +384,6 @@ export default class AppointmentFormulas extends Component {
                       </View>
                       <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
                     </View>]}
-
                   bodyChildren={[
                     <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
                       <Text style={styles.noteText}>

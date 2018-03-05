@@ -57,8 +57,8 @@ export default class AppointmentDetailsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     let title = 'New Appointment';
-    if (params && params.item) {
-      title = `${params.item.client.name} ${params.item.client.lastName}`;
+    if (params && params.appointment) {
+      title = `${params.appointment.client.name} ${params.appointment.client.lastName}`;
     }
     return ({
       headerTitle: (

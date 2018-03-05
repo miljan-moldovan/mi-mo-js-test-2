@@ -6,7 +6,7 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
-  postClientNotes: {
+  postClientNote: {
     path: 'Client/:clientId/Note',
     method: 'post',
     expiration: apiConstants.expiration,

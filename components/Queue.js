@@ -174,11 +174,12 @@ class Queue extends React.Component {
         appointment: item, client: item.client, services: item.services, isVisible: true,
       });
     }
+    this.props.navigation.navigate('AppointmentDetails', { item });
   }
 
   handlePressModify = () => {
     const { appointment } = this.state;
-debugger //eslint-disable-line
+
     this.hideDialog();
     if (appointment !== null) {
       this.props.navigation.navigate('AppointmentDetails', { appointment });
@@ -194,7 +195,7 @@ debugger //eslint-disable-line
     const label = this.getLabelForItem(item);
     return (
       <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })}>
+        <TouchableOpacity style={styles.itemContainer} onPress={() => this.handlePress(item)}>
           <View style={styles.itemSummary}>
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
@@ -259,7 +260,6 @@ debugger //eslint-disable-line
   _keyExtractor = (item, index) => item.queueId;
 
   render() {
-    console.log('Queue.render', this.props.data);
     return (
       <View style={styles.container}>
         <FlatList

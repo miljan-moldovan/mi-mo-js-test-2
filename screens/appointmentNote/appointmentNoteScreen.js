@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import {
   View,
   StyleSheet,
@@ -32,26 +33,27 @@ class AppointmentNoteScreen extends Component {
   state = {
     note: {
       id: Math.random().toString(),
-      date: null,
-      author: '',
-      note: '',
-      tags: [],
-      active: 1,
+      notes: '',
+      expiration: '',
+      forAppointment: false,
+      forQueue: false,
+      forSales: false,
+      isDeleted: false,
     },
     sales: false,
-    queue: false,
+    forQueue: false,
     appointment: false,
   };
 
 
   componentWillMount() {
     if (this.props.navigation.state.params.actionType === 'update') {
-      const sales = this.props.appointmentNotesState.onEditionNote.tags.indexOf('Sales') > -1;
-      const queue = this.props.appointmentNotesState.onEditionNote.tags.indexOf('Queue') > -1;
-      const appointment = this.props.appointmentNotesState.onEditionNote.tags.indexOf('Appointment') > -1;
+      const forSales = this.props.appointmentNotesState.onEditionNote.forSales;
+      const forQueue = this.props.appointmentNotesState.onEditionNote.forQueue;
+      const forAppointment = this.props.appointmentNotesState.onEditionNote.forAppointment;
 
       this.setState({
-        note: this.props.appointmentNotesState.onEditionNote, sales, queue, appointment,
+        note: this.props.appointmentNotesState.onEditionNote, forSales, forQueue, forAppointment,
       });
     }
 
@@ -66,27 +68,35 @@ class AppointmentNoteScreen extends Component {
       return false;
     } else if (this.state.note.author === '') {
       return false;
-    } else if (this.state.note.tags.length === 0) {
-      return false;
     }
 
     return true;
   }
 
   saveNote() {
-    if (this.isNoteValid()) {
-      let notes = this.props.appointmentNotesState.notes;
+  //  if (this.isNoteValid()) {
+    if (true) {
+      const notes = this.props.appointmentNotesState.notes;
 
       if (this.props.navigation.state.params.actionType === 'new') {
-        notes.push(this.state.note);
-      }
+        this.props.appointmentNotesActions.postAppointmentNotes(this.state.note).then((response) => {
+          this.props.appointmentNotesActions.getAppointmentNotes().then((response) => {
+            this.props.appointmentNotesActions.setNotes(response.data.notes);
+            this.props.appointmentNotesActions.setFilteredNotes(response.data.notes);
+            this.props.appointmentNotesActions.selectProvider(null);
 
-      this.props.appointmentNotesActions.selectProvider(null);
-      notes = notes.sort(AppointmentNoteScreen.compareByDate);
-      this.props.appointmentNotesActions.setNotes(notes);
-      this.props.appointmentNotesActions.setFilteredNotes(notes);
-      this.props.appointmentNotesActions.selectedFilterTypes([]);
-      this.props.navigation.goBack();
+            this.props.navigation.goBack();
+          }).catch((error) => {
+            alert(error.message);
+            console.log(error);
+          });
+        }).catch((error) => {
+          alert(error.message);
+          console.log(error);
+        });
+      } else {
+
+      }
     } else {
       alert('Please fill all the fields');
     }
@@ -146,7 +156,7 @@ class AppointmentNoteScreen extends Component {
             placeholder="Write Note"
             onChangeText={(txtNote) => {
                 const note = this.state.note;
-                note.note = txtNote;
+                note.notes = txtNote;
                 this.setState({ note });
             }}
             value={this.state.note.note}
@@ -157,13 +167,9 @@ class AppointmentNoteScreen extends Component {
 
           <InputSwitch
             onChange={(state) => {
-               const note = this.state.note;
-               if (!this.state.sales) {
-                 note.tags.push('SALES');
-               } else {
-                 note.tags = note.tags.filter(a => a !== 'SALES');
-               }
-              this.setState({ note, sales: !this.state.sales });
+              const note = this.state.note;
+              note.forSales = !this.state.forSales;
+              this.setState({ note, forSales: !this.state.forSales });
              }}
             text="Sales"
           />
@@ -171,14 +177,9 @@ class AppointmentNoteScreen extends Component {
           <InputDivider />
           <InputSwitch
             onChange={(state) => {
-               const note = this.state.note;
-               if (!this.state.appointment) {
-                 note.tags.push('APPOINTMENT');
-               } else {
-                 note.tags = note.tags.filter(a => a !== 'APPOINTMENT');
-               }
-
-              this.setState({ note, appointment: !this.state.appointment });
+              const note = this.state.note;
+              note.forAppointment = !this.state.forAppointment;
+              this.setState({ note, forAppointment: !this.state.forAppointment });
              }}
             text="Appointment"
           />
@@ -187,14 +188,9 @@ class AppointmentNoteScreen extends Component {
           <InputDivider />
           <InputSwitch
             onChange={(state) => {
-               const note = this.state.note;
-               if (!this.state.queue) {
-                 note.tags.push('QUEUE');
-               } else {
-                 note.tags = note.tags.filter(a => a !== 'QUEUE');
-               }
-
-              this.setState({ note, queue: state });
+              const note = this.state.note;
+              note.forQueue = !this.state.forQueue;
+              this.setState({ note, forQueue: state });
              }}
             text="Queue"
           />
@@ -210,7 +206,7 @@ class AppointmentNoteScreen extends Component {
               note.date = selectedDate;
               this.setState({ note });
               }}
-            selectedDate={this.state.note.date ? this.state.note.date : 'Optional'}
+            selectedDate={moment(this.state.note.date, 'YYYY-MM-DD', true).isValid() ? moment(this.state.note.date).format('DD MMMM YYYY') : 'Optional'}
           />
         </InputGroup>
       </View>

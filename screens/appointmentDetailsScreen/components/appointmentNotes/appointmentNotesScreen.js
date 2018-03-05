@@ -16,7 +16,6 @@ import SalonTag from '../../../../components/SalonTag';
 import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
-import AppointmentNotes from '../../../../constants/AppointmentNotes';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -115,7 +114,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   noteText: {
-    color: '#2E3032',
     fontSize: 12,
     fontFamily: 'Roboto',
   },
@@ -149,8 +147,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// const notes = require('../../../mockData/clientDetails/notes.json');
-
 export default class AppointmentNotesScreen extends Component {
   static flexFilter(list, info) {
     let matchesFilter = [];
@@ -176,29 +172,46 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   static compareByDate(a, b) {
-    if (a.date < b.date) { return 1; }
-    if (a.date > b.date) { return -1; }
+    if (a.enterTime < b.enterTime) { return 1; }
+    if (a.enterTime > b.enterTime) { return -1; }
     return 0;
   }
 
   constructor(props) {
     super(props);
-
     this.state = {
       showDeleted: false,
       note: null,
+      forAppointment: true,
+      forQueue: true,
+      forSales: true,
     };
   }
 
   state:{
-
+    showDeleted: false,
+    note: null,
+    forAppointment: true,
+    forQueue: true,
+    forSales: true,
   }
 
   componentWillMount() {
-    const notes = this.props.appointmentNotesState.notes.sort(AppointmentNotesScreen.compareByDate);
-    this.props.appointmentNotesActions.setFilteredNotes(notes);
+    this.props.appointmentNotesActions.getAppointmentNotes().then((response) => {
+      const notes = response.data.notes.sort(AppointmentNotesScreen.compareByDate);
+      this.props.appointmentNotesActions.setFilteredNotes(notes);
+      this.props.appointmentNotesActions.setNotes(notes);
 
-    this.filterNotes(null, false);
+      const forAppointment = response.data.notes.filter(el => el.forAppointment).length > 0;
+      const forSales = response.data.notes.filter(el => el.forSales).length > 0;
+      const forQueue = response.data.notes.filter(el => el.forQueue).length > 0;
+
+      this.filterNotes(null, false, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+
+      this.setState({ forAppointment, forSales, forQueue });
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
 
@@ -215,14 +228,12 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   deleteNote(note) {
-    note.active = 0;
+    note.isDeleted = false;
     let notes = this.props.appointmentNotesState.notes;
     notes = notes.sort(AppointmentNotesScreen.compareByDate);
-
     this.props.appointmentNotesActions.setNotes(notes);
     this.props.appointmentNotesActions.setFilteredNotes(notes);
-
-    this.filterNotes(null, this.state.showDeleted);
+    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
 
@@ -235,19 +246,6 @@ export default class AppointmentNotesScreen extends Component {
       ...this.props,
     });
   }
-
-  onPressTagFilter = (value) => {
-    let filterTypes = this.props.appointmentNotesState.filterTypes;
-
-    if (filterTypes.indexOf(value) > -1) {
-      filterTypes = filterTypes.splice(filterTypes.indexOf(value), 1);
-    } else {
-      filterTypes.push(value);
-    }
-
-    this.filterNotes(null, this.state.showDeleted);
-  }
-
 
   showActionSheet = (note) => {
     this.setState({ note });
@@ -276,15 +274,15 @@ export default class AppointmentNotesScreen extends Component {
     return false;
   }
 
-  filterNotes(searchText, showDeleted) {
-    const baseNotes = showDeleted ? this.props.appointmentNotesState.notes :
-      this.props.appointmentNotesState.notes.filter(el => el.active === 1);
+  filterNotes(searchText, showDeleted, forSales, forAppointment, forQueue) {
+    const baseNotes = showDeleted ?
+      this.props.appointmentNotesState.notes : this.props.appointmentNotesState.notes.filter(el => !el.isDeleted);
 
     if (searchText && searchText.length > 0) {
       const criteria = [
-        { Field: 'author', Values: [searchText.toLowerCase()] },
-        { Field: 'note', Values: [searchText.toLowerCase()] },
-        { Field: 'date', Values: [searchText.toLowerCase()] },
+        { Field: 'enteredBy', Values: [searchText.toLowerCase()] },
+        { Field: 'notes', Values: [searchText.toLowerCase()] },
+        { Field: 'enterTime', Values: [searchText.toLowerCase()] },
       ];
 
       const filtered = AppointmentNotesScreen.flexFilter(
@@ -294,10 +292,14 @@ export default class AppointmentNotesScreen extends Component {
 
       let tagNotes = [];
 
-      for (let i = 0; i < filtered.length; i++) {
+      for (let i = 0; i < filtered.length; i += 1) {
         const note = filtered[i];
-        const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
-        if (found) {
+
+        if (forAppointment && note.forAppointment) {
+          tagNotes.push(note);
+        } else if (forSales && note.forSales) {
+          tagNotes.push(note);
+        } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -308,10 +310,13 @@ export default class AppointmentNotesScreen extends Component {
     } else {
       let tagNotes = [];
 
-      for (let i = 0; i < baseNotes.length; i++) {
+      for (let i = 0; i < baseNotes.length; i += 1) {
         const note = baseNotes[i];
-        const found = note.tags.some(v => this.props.appointmentNotesState.filterTypes.indexOf(v) != -1);
-        if (found) {
+        if (forAppointment && note.forAppointment) {
+          tagNotes.push(note);
+        } else if (forSales && note.forSales) {
+          tagNotes.push(note);
+        } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -319,6 +324,113 @@ export default class AppointmentNotesScreen extends Component {
       tagNotes = tagNotes.sort(AppointmentNotesScreen.compareByDate);
       this.props.appointmentNotesActions.setFilteredNotes(tagNotes);
     }
+  }
+
+  setNoteTags = (note) => {
+    debugger //eslint-disable-line
+
+    const tags = [];
+
+    if (note.forQueue) {
+      tags.push(<SalonTag
+        key={Math.random().toString()}
+        tagHeight={20}
+        backgroundColor={note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="Queue"
+        valueSize={10}
+        valueColor="#FFFFFF"
+      />);
+    }
+
+    if (note.forSales) {
+      tags.push(<SalonTag
+        key={Math.random().toString()}
+        tagHeight={20}
+        backgroundColor={note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="Sales"
+        valueSize={10}
+        valueColor="#FFFFFF"
+      />);
+    }
+
+    if (note.forAppointment) {
+      tags.push(<SalonTag
+        key={Math.random().toString()}
+        tagHeight={20}
+        backgroundColor={note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="Appointment"
+        valueSize={10}
+        valueColor="#FFFFFF"
+      />);
+    }
+
+    return tags;
+  }
+
+  setTagsBar = () => {
+    const activeStyle = {
+      icon: 'check',
+      iconColor: '#FFFFFF',
+      backgroundColor: '#1DBF12',
+      valueColor: '#FFFFFF',
+    };
+
+    const inactiveStyle = {
+      icon: 'unchecked',
+      iconColor: '#727A8F',
+      backgroundColor: '#FFFFFF',
+      valueColor: '#727A8F',
+    };
+
+    const tags = [
+      <View key={Math.random().toString()} style={styles.tag}>
+        <SalonBtnTag
+          iconSize={13}
+          onPress={() => {
+            this.setState({ forAppointment: !this.state.forAppointment });
+            this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forAppointment, this.state.forQueue);
+          }}
+          tagHeight={24}
+          value="Appointment"
+          valueSize={10}
+          isVisible={this.state.forAppointment}
+          activeStyle={activeStyle}
+          inactiveStyle={inactiveStyle}
+        />
+      </View>,
+      <View key={Math.random().toString()} style={styles.tag}>
+        <SalonBtnTag
+          iconSize={13}
+          onPress={() => {
+            this.setState({ forSales: !this.state.forSales });
+            this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forAppointment, this.state.forQueue);
+          }}
+          tagHeight={24}
+          value="Sales"
+          valueSize={10}
+          isVisible={this.state.forSales}
+          activeStyle={activeStyle}
+          inactiveStyle={inactiveStyle}
+        />
+      </View>,
+      <View key={Math.random().toString()} style={styles.tag}>
+        <SalonBtnTag
+          iconSize={13}
+          onPress={() => {
+            this.setState({ forQueue: !this.state.forQueue });
+            this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, !this.state.forQueue);
+          }}
+          tagHeight={24}
+          value="Queue"
+          valueSize={10}
+          isVisible={this.state.forQueue}
+          activeStyle={activeStyle}
+          inactiveStyle={inactiveStyle}
+        />
+      </View>];
+
+
+    return tags;
   }
 
   render() {
@@ -345,42 +457,11 @@ export default class AppointmentNotesScreen extends Component {
               fontColor="#727A8F"
               borderColor="transparent"
               backgroundColor="rgba(142, 142, 147, 0.24)"
-              onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted)}
+              onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue)}
             />
           </View>
           <View style={styles.tagsBar} >
-
-            {AppointmentNotes.filterTypes.map((filterType) => {
-              const isSelected = this.props.appointmentNotesState.filterTypes.indexOf(filterType) > -1;
-
-              return (<View key={Math.random().toString()} style={styles.tag}>
-                <SalonBtnTag
-                  iconSize={13}
-                  onPress={this.onPressTagFilter}
-                  tagHeight={24}
-                  value={filterType}
-                  valueSize={10}
-
-                  isVisible={isSelected}
-
-                  activeStyle={{
-                      icon: 'check',
-                      iconColor: '#FFFFFF',
-                      backgroundColor: '#1DBF12',
-                      valueColor: '#FFFFFF',
-                    }}
-
-                  inactiveStyle={{
-                      icon: 'unchecked',
-                      iconColor: '#727A8F',
-                      backgroundColor: '#FFFFFF',
-                      valueColor: '#727A8F',
-                    }}
-
-                />
-              </View>);
-            })}
-
+            {this.setTagsBar()}
           </View>
         </View>
         <View style={styles.notesScroller}>
@@ -390,25 +471,23 @@ export default class AppointmentNotesScreen extends Component {
               keyExtractor={(item, index) => index}
               data={this.props.appointmentNotesState.filtered}
               renderItem={({ item, index }) => (
-
-
                 <SalonCard
                   key={index}
-                  backgroundColor="#FFFFFF"
+                  backgroundColor={item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
                   headerChildren={[
                     <View style={styles.noteTags} key={Math.random().toString()}>
                       <View style={styles.noteHeaderLeft}>
 
                         <SalonDateTxt
                           dateFormat="MMM. DD YYYY"
-                          value={item.date}
-                          valueColor="#000000"
+                          value={item.enterTime}
+                          valueColor={item.isDeleted ? '#000000' : '#4D5065'}
                           fontFamily="Roboto-Bold"
                           valueSize={12}
                         />
 
                         <Text style={styles.noteBy}>by</Text>
-                        <Text style={styles.noteAuthor}>{item.author}</Text>
+                        <Text style={styles.noteAuthor}>{item.enteredBy}</Text>
 
                       </View>
                       <View style={styles.noteHeaderRight}>
@@ -428,23 +507,22 @@ export default class AppointmentNotesScreen extends Component {
                   bodyChildren={[
                     <Text
                       key={Math.random().toString()}
-                      style={styles.noteText}
-                    >{item.note}
+                      style={[styles.noteText, { color: item.isDeleted ? '#2E3032' : '#58595B' }]}
+                    >{item.notes}
                     </Text>]}
 
-                  footerChildren={item.tags.map(tag => (
-                    <SalonTag key={Math.random().toString()} tagHeight={20} backgroundColor="rgb(17,47,98)" value={tag} valueSize={10} valueColor="#FFFFFF" />
-                  ))}
+                  footerChildren={this.setNoteTags(item)}
                 />
             )}
             />
+
             <View style={styles.showDeletedButtonContainer}>
 
               <TouchableOpacity
                 style={styles.showDeletedButton}
                 onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
-                  this.filterNotes(null, !this.state.showDeleted);
+                  this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
                 }}
               >
                 <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
