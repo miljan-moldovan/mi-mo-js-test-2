@@ -23,6 +23,8 @@ import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
+import checkinActions from '../actions/checkin';
+import serviceActions from '../actions/service';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
@@ -139,11 +141,21 @@ class QueueScreen extends React.Component {
     switch (route.key) {
       case WAITING:
         return (
-          <Queue data={this.props.waitingQueue} navigation={this.props.navigation} />
+          <Queue
+            data={this.props.waitingQueue}
+            navigation={this.props.navigation}
+            onCheckin={this.props.checkinActions.putCheckin}
+            onStartService={this.props.serviceActions.putStartService}
+          />
         );
       case SERVICED:
         return (
-          <Queue data={this.props.serviceQueue} navigation={this.props.navigation} />
+          <Queue
+            data={this.props.serviceQueue}
+            navigation={this.props.navigation}
+            onCheckin={this.props.checkinActions.putCheckin}
+            onStartService={this.props.serviceActions.putStartService}
+          />
         );
       default:
         return route;
@@ -241,6 +253,8 @@ const mapStateToProps = (state, ownProps) => ({
 const mapActionsToProps = dispatch => ({
   actions: bindActionCreators({ ...actions }, dispatch),
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  checkinActions: bindActionCreators({ ...checkinActions }, dispatch),
+  serviceActions: bindActionCreators({ ...serviceActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
 

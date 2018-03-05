@@ -27,20 +27,26 @@ const putWalkoutFailed = error => ({
   data: { error },
 });
 
-const putWalkout = (clientQueueItemId, params) => dispatch => apiWrapper.doRequest('putWalkOut', {
-  path: {
-    clientQueueItemId,
-  },
-  body: {
-    ...params,
-  },
-})
-  .then((response) => { console.log('WALKOUT TEST', response); return dispatch(putWalkoutSuccess(response)); })
-  .catch(error => dispatch(putWalkoutFailed(error)));
+const putWalkout = (clientQueueItemId, params) => (dispatch) => {
+  dispatch({ type: PUT_WALKOUT });
+  return apiWrapper.doRequest('putWalkOut', {
+    path: {
+      clientQueueItemId,
+    },
+    body: {
+      ...params,
+    },
+  })
+    .then(response => dispatch(putWalkoutSuccess(response)))
+    .catch(error => dispatch(putWalkoutFailed(error)));
+};
 
-const getRemovalReasonTypes = () => dispatch => apiWrapper.doRequest('getReasonTypes', {})
-  .then(response => dispatch(getRemovalReasonTypesSuccess(response)))
-  .catch(error => dispatch(getRemovalReasonTypesFailed(error)));
+const getRemovalReasonTypes = () => (dispatch) => {
+  dispatch({ type: GET_REMOVAL_REASON_TYPES });
+  return apiWrapper.doRequest('getReasonTypes', {})
+    .then(response => dispatch(getRemovalReasonTypesSuccess(response)))
+    .catch(error => dispatch(getRemovalReasonTypesFailed(error)));
+};
 
 const walkoutActions = {
   getRemovalReasonTypes,

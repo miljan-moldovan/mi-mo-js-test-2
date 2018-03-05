@@ -187,6 +187,18 @@ class Queue extends React.Component {
     this.props.navigation.navigate('Walkout', { clientQueueItemId: client.id });
   }
 
+  handlePressCheckin = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.onCheckin(client.id);
+  }
+
+  handlePressService = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.onStartService(client.id);
+  }
+
   hideDialog = () => {
     this.setState({ isVisible: false });
   }
@@ -261,11 +273,11 @@ class Queue extends React.Component {
   _keyExtractor = (item, index) => item.queueId;
 
   handlePressSummary = {
-    checkIn: () => alert('Not Implemented'),
+    checkIn: this.handlePressCheckin,
     walkOut: this.handlePressWalkout,
     modify: this.handlePressModify,
     returning: () => alert('Not Implemented'),
-    toService: () => alert('Not Implemented'),
+    toService: this.handlePressService,
   }
 
   render() {

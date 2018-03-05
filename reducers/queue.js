@@ -20,7 +20,7 @@ import {
   COMBINE_CLIENT,
   GROUP_LEAD_UPDATE,
   UNCOMBINE,
-  UPDATE_GROUPS
+  UPDATE_GROUPS,
 } from '../actions/constants';
 
 const initialState = {

@@ -143,7 +143,7 @@ class WalkoutScreen extends Component {
   }
 
   handleWalkout = () => {
-    const { clientQueueItemId } = this.propsnavigation.state.params;
+    const { clientQueueItemId } = this.props.navigation.state.params;
     this.props.walkoutActions.putWalkout(clientQueueItemId, this.state);
   }
 
