@@ -201,7 +201,7 @@ export class InputDate extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={{ flexDirection: 'row' }}>
         <SalonDatePicker
           isVisible={this.state.showModal}
           onPress={(selectedDate) => {
@@ -211,6 +211,7 @@ export class InputDate extends React.Component {
           selectedDate={this.props.selectedDate}
         />
         <InputButton
+          style={{ width: '90%' }}
           onPress={() => {
             this.setState({ showModal: !this.state.showModal });
           }}
@@ -218,6 +219,16 @@ export class InputDate extends React.Component {
           placeholder={this.props.placeholder}
           value={this.props.selectedDate}
         />
+        <TouchableOpacity
+          onPress={() => {
+            this.props.onPress(null);
+          }}
+          style={styles.dateCancelButtonStyle}
+        >
+          <View style={styles.dateCancelStyle}>
+            <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
