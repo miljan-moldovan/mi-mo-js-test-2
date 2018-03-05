@@ -3,7 +3,6 @@ const conf = {
   prefixes: { default: '/api' },
   debugAPI: true,
   printNetworkRequests: true,
-  ignoreHeadersWhenCaching: true,
 };
 
 export default {
