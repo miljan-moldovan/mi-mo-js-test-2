@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import HeaderRight from '../../../components/HeaderRight';
 import reasonTypeModel from '../../../utilities/models/reasonType';
+import fetchFormCache from '../../../utilities/fetchFormCache';
 
 const styles = StyleSheet.create({
   container: {
@@ -125,6 +126,13 @@ class WalkoutScreen extends Component {
 
   componentWillMount() {
     this.props.walkoutActions.getRemovalReasonTypes();
+    const { clientQueueItemId } = this.props.navigation.state.params;
+    const cachedForm = fetchFormCache('WalkoutScreen', clientQueueItemId.toString(), this.props.formCache);
+    if (clientQueueItemId === cachedForm.clientQueueItemId) {
+      this.setState({ ...cachedForm });
+    } else {
+      this.setState({ clientQueueItemId });
+    }
   }
 
   componentDidMount() {
@@ -143,7 +151,7 @@ class WalkoutScreen extends Component {
   }
 
   handleWalkout = () => {
-    const { clientQueueItemId } = this.props.navigation.state.params;
+    const { clientQueueItemId } = this.state;
     this.props.walkoutActions.putWalkout(clientQueueItemId, this.state);
   }
 
