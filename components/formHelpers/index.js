@@ -250,7 +250,7 @@ export class InputSwitch extends React.Component {
     super(props);
 
     this.state = {
-      value: false,
+      value: props.value,
     };
   }
 

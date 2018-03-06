@@ -19,7 +19,8 @@ const salonDateTxt = props => (
           fontFamily: props.fontFamily,
         }]}
   >
-    { moment(props.value, 'YYYY-MM-DD', true).isValid() ? moment(props.value).format(props.dateFormat) : props.value}
+    { moment(props.value).isValid() ?
+      moment(props.value).format(props.dateFormat) : props.value}
   </Text>
 );
 
@@ -28,6 +29,7 @@ salonDateTxt.propTypes = {
   valueColor: PropTypes.string,
   valueSize: PropTypes.number,
   dateFormat: PropTypes.string,
+
   fontFamily: PropTypes.string,
 };
 

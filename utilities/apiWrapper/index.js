@@ -66,7 +66,7 @@ function getError(requestResponse) {
 
   return new ApiError(
     message, requestResponse.systemErrorDetail,
-    requestResponse.systemErrorStack, requestResponse.systemErrorType,
+    requestResponse.systemErrorStack, requestResponse.systemErrorType, requestResponse.result,
   );
 }
 
@@ -106,6 +106,7 @@ function doRequest(key, parameters, options = {
 
   return new Promise((resolve, reject) => {
     let count = 1;
+
     const attempt = () => api.fetch(
       key,
       fetchData,
@@ -127,7 +128,17 @@ function doRequest(key, parameters, options = {
           count += 1;
           delay ? setTimeout(attempt, delay) : attempt();
         } else {
-          reject(error);
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            let errorCode = apiConstants.responsesCodes.UnknownError;
+
+            if (!isConnected) {
+              errorCode = apiConstants.responsesCodes.NetworkError;
+            }
+            reject(new ApiError(
+              error.message, null,
+              error.stack, null, errorCode,
+            ));
+          });
         }
       });
     attempt();

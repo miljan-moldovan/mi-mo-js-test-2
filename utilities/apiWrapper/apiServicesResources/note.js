@@ -9,12 +9,12 @@ const resources = {
   postClientNote: {
     path: 'Client/:clientId/Note',
     method: 'post',
-    expiration: apiConstants.expiration,
+    disableCache: true,
   },
   deleteClientNote: {
     path: 'Client/:clientId/Note/:id',
     method: 'delete',
-    expiration: apiConstants.expiration,
+    disableCache: true,
   },
   getClientNote: {
     path: 'Client/:clientId/Note/:id',
@@ -24,12 +24,12 @@ const resources = {
   putClientNote: {
     path: 'Client/:clientId/Note/:id',
     method: 'put',
-    expiration: apiConstants.expiration,
+    disableCache: true,
   },
   postUndeleteClientNote: {
     path: 'Client/:clientId/Note/:id/Undelete',
     method: 'post',
-    expiration: apiConstants.expiration,
+    disableCache: true,
   },
 };
 

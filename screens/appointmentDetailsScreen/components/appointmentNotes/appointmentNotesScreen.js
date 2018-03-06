@@ -11,7 +11,7 @@ import {
 import SalonActionSheet from '../../../../components/SalonActionSheet';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
 import SalonIcon from '../../../../components/SalonIcon';
-import SalonBtnFixedBottom from '../../../../components/SalonBtnFixedBottom';
+import FloatingButton from '../../../../components/FloatingButton';
 import SalonTag from '../../../../components/SalonTag';
 import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
@@ -145,6 +145,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: '#115ECD',
   },
+  plusIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    tintColor: '#FFFFFF',
+  },
 });
 
 export default class AppointmentNotesScreen extends Component {
@@ -197,45 +203,65 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   componentWillMount() {
-    this.props.appointmentNotesActions.getAppointmentNotes().then((response) => {
-      const notes = response.data.notes.sort(AppointmentNotesScreen.compareByDate);
-      this.props.appointmentNotesActions.setFilteredNotes(notes);
-      this.props.appointmentNotesActions.setNotes(notes);
+    this.getNotes();
+  }
 
-      const forAppointment = response.data.notes.filter(el => el.forAppointment).length > 0;
-      const forSales = response.data.notes.filter(el => el.forSales).length > 0;
-      const forQueue = response.data.notes.filter(el => el.forQueue).length > 0;
+  getNotes = () => {
+    this.props.appointmentNotesActions.getAppointmentNotes(93).then((response) => {
+      if (response.data.error) {
+        this.props.navigation.goBack();
+        alert(response.data.error.message);
+      } else {
+        const notes = response.data.notes.sort(AppointmentNotesScreen.compareByDate);
+        this.props.appointmentNotesActions.setFilteredNotes(notes);
+        this.props.appointmentNotesActions.setNotes(notes);
 
-      this.filterNotes(null, false, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+        const forAppointment = response.data.notes.filter(el => el.forAppointment).length > 0;
+        const forSales = response.data.notes.filter(el => el.forSales).length > 0;
+        const forQueue = response.data.notes.filter(el => el.forQueue).length > 0;
 
-      this.setState({ forAppointment, forSales, forQueue });
-    }).catch((error) => {
-      console.log(error);
+        this.filterNotes(null, false, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+      }
     });
   }
 
 
   deleteNoteAlert(note) {
+    let deleteMessage = 'Delete Note';
+    let deleteFunction = () => this.deleteNote(note);
+
+    if (note.isDeleted) {
+      deleteMessage = 'Undelete Note';
+      deleteFunction = () => this.undeleteNote(note);
+    }
+
     Alert.alert(
-      'Delete Note',
+      deleteMessage,
       'Are you sure you want to delete this note?',
       [
         { text: 'Cancel', onPress: () => null, style: 'cancel' },
-        { text: 'OK', onPress: () => this.deleteNote(note) },
+        { text: 'OK', onPress: deleteFunction },
       ],
       { cancelable: false },
     );
   }
 
   deleteNote(note) {
-    note.isDeleted = false;
-    let notes = this.props.appointmentNotesState.notes;
-    notes = notes.sort(AppointmentNotesScreen.compareByDate);
-    this.props.appointmentNotesActions.setNotes(notes);
-    this.props.appointmentNotesActions.setFilteredNotes(notes);
-    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+    this.props.appointmentNotesActions.deleteAppointmentNotes(note.clientId, note.id).then((response) => {
+      this.getNotes();
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
+
+  undeleteNote(note) {
+    this.props.appointmentNotesActions.undeleteAppointmentNotes(note.clientId, note.id).then((response) => {
+      this.getNotes();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
 
   editNote(note) {
     this.props.appointmentNotesActions.setOnEditionNote(note);
@@ -301,6 +327,8 @@ export default class AppointmentNotesScreen extends Component {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
+        } else if (!note.forAppointment && !note.forSales && !note.forSales) {
+          tagNotes.push(note);
         }
       }
 
@@ -318,6 +346,8 @@ export default class AppointmentNotesScreen extends Component {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
+        } else if (!note.forAppointment && !note.forSales && !note.forSales) {
+          tagNotes.push(note);
         }
       }
 
@@ -327,8 +357,6 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   setNoteTags = (note) => {
-    debugger //eslint-disable-line
-
     const tags = [];
 
     if (note.forQueue) {
@@ -436,7 +464,6 @@ export default class AppointmentNotesScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-
         <SalonActionSheet
           ref={o => this.SalonActionSheet = o}
           options={options}
@@ -508,7 +535,7 @@ export default class AppointmentNotesScreen extends Component {
                     <Text
                       key={Math.random().toString()}
                       style={[styles.noteText, { color: item.isDeleted ? '#2E3032' : '#58595B' }]}
-                    >{item.notes}
+                    >{item.text}
                     </Text>]}
 
                   footerChildren={this.setNoteTags(item)}
@@ -532,16 +559,20 @@ export default class AppointmentNotesScreen extends Component {
           </ScrollView>
         </View>
 
-        <SalonBtnFixedBottom
-          backgroundColor="#727A8F"
-          onPress={() => {
+        <FloatingButton
+          rootStyle={{ backgroundColor: '#727A8F' }}
+          handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('AppointmentNote', { actionType: 'new' });
-        }}
-          value="Add New Note"
-          valueSize={13}
-          valueColor="#FFFFFF"
-        />
+          }}
+        >
+          <SalonIcon
+            size={24}
+            icon="plus"
+            style={styles.plusIcon}
+          />
+        </FloatingButton>
+
       </View>
     );
   }
