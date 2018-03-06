@@ -15,6 +15,7 @@ import {
   RefreshControl,
   TouchableHighlight,
   LayoutAnimation,
+  ActivityIndicator
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -253,7 +254,7 @@ export class QueueUncombine extends React.Component {
     return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{section.title}</Text>
-      <TouchableOpacity onPress={loading? null : ()=>this.props.onUncombineClients(section.groupId)} style={{marginLeft: 'auto'}}>
+      <TouchableOpacity onPress={loading? null : ()=>this.props.onUncombineClients(section.groupId)} style={styles.sectionUncombine}>
         {loading? <ActivityIndicator /> : null }
         <Text style={[styles.sectionUncombineText, loading? {color: 'gray'} : null ]}>UNCOMBINE</Text>
       </TouchableOpacity>
@@ -409,7 +410,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Roboto-Bold',
     color: '#1DBF12',
-    marginBottom: 7
+    marginLeft: 5
   },
   listItem: {
     height: 75,
@@ -473,5 +474,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Roboto-Medium',
   },
-
+  sectionUncombine: {
+    marginLeft: 'auto',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 7
+  }
 });

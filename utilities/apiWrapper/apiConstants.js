@@ -1,4 +1,3 @@
-
 export default {
   // Response Codes APIs
   responsesCodes: {
@@ -8,14 +7,16 @@ export default {
     FailedValidation: 4,
     Exception: 5,
     NotFound: 6,
+    NetworkError: 99,
   },
   // Must clean cache after doing these requests
-  cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup'],
+  cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup', 'postClientNote'],
   // Must clean these Dependencies cache after doing these requests
   cacheCleaningDependencies: {
     postQueue: ['getQueue'],
     postQueueGroup: ['getQueue', 'getQueueGroups'],
     deleteQueueGroup: ['getQueue', 'getQueueGroups'],
+    postClientNote: ['getClientNotes'],
   },
   // Global expiration time
   expiration: 5 * 60 * 1000,

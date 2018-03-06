@@ -137,7 +137,7 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
       body: JSON.stringify(data)
     });
     console.log('finishCombine response', response);
-    setTimeout(()=>dispatch(receiveQueue()), 1000);
+    dispatch(receiveQueue());
   } catch (error) {
     console.log(error);
     dispatch({type: QUEUE_FAILED, error});
@@ -166,8 +166,8 @@ export const uncombine = (groupId: number) => async (dispatch: Object => void) =
       path: { groupId }
     });
     console.log('uncombine response', response);
-    // dispatch(receiveQueue());
-    setTimeout(()=>dispatch(receiveQueue()), 1000);
+    dispatch(receiveQueue());
+    // setTimeout(()=>dispatch(receiveQueue()), 1000);
   } catch (error) {
     dispatch({type: QUEUE_FAILED, error});
   }

@@ -70,15 +70,18 @@ class QueueCombineScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.waitingQueue || nextProps.serviceQueue || nextProps.group)
+    const { waitingQueue, serviceQueue, group, error, loading } = nextProps;
+    if (waitingQueue !== this.props.waitingQueue || serviceQueue !== this.props.serviceQueue || group !== this.props.group)
       this.prepareQueueData(nextProps);
-    if (nextProps.error) {
-      console.log('QueueCombineScreen.componentWillReceiveProps error', nextProps.error);
-      Alert.alert('Error', nextProps.error.toString());
+    if (error) {
+      console.log('QueueCombineScreen.componentWillReceiveProps error', error);
+      Alert.alert('Error', error.toString());
     }
 
-    if (nextProps.loading !== undefined)
-      this.props.navigation.state.setParams({ loading: nextProps.loading });
+    if (loading !== undefined && loading !== this.props.loading) {
+      console.log('nextProps.loading', loading);
+      this.props.navigation.setParams({ loading });
+    }
   }
   prepareQueueData = (nextProps = {}) => {
     console.log('prepareQueueData');
@@ -135,6 +138,7 @@ class QueueCombineScreen extends React.Component {
       combinedData.push({id, groupLead: index === 0});
       this.props.combineClient({ id, clientName });
     });
+    this.props.navigation.setParams({ onPressDone: undefined });
     this.props.finishCombine(combinedData);
     // this.props.navigation.goBack();
   }
