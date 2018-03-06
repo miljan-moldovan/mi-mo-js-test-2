@@ -281,7 +281,6 @@ class Queue extends React.Component {
   }
 
   render() {
-    console.log('Queue.render', this.props.data);
     return (
       <View style={styles.container}>
         <FlatList

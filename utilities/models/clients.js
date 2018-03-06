@@ -5,11 +5,11 @@ const ClientNotesModel = {
 };
 
 const AppointmentClientModel = {
-  attributes: PropTypes.any,
-  birthday: PropTypes.oneOf([PropTypes.bool, PropTypes.string]),
   id: PropTypes.number,
+  attributes: PropTypes.any,
+  birthday: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   lastName: PropTypes.string,
-  member: PropTypes.oneOf([PropTypes.bool, PropTypes.string, PropTypes.number]),
+  member: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.number]),
   name: PropTypes.string,
   newClientGlobal: PropTypes.bool,
   newClientLocal: PropTypes.bool,

@@ -28,10 +28,13 @@ import WalkOutScreen from '../screens/walkOutScreen';
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
+import ModifyServiceScreen from '../screens/modifyServiceScreen';
+
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
-      screen: QueueScreen,
+      // screen: QueueScreen,
+      screen: ModifyServiceScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
