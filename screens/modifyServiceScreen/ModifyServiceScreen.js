@@ -44,7 +44,7 @@ export default class ModifyServiceScreen extends React.Component {
         <InputGroup>
           {
           //   <InputButton
-          //   placeholder="Service"
+          //   label="Service"
           //   value={null}
           //   onPress={() => alert('Muffins, dawg')}
           // />
@@ -77,7 +77,7 @@ export default class ModifyServiceScreen extends React.Component {
             }}
           />
           <InputDivider />
-          <InputLabel label="Discount" value="20%" />        
+          <InputLabel label="Discount" value="20%" />
           <InputLabel label="Price" value="$40" />
         </InputGroup>
         <SectionDivider />

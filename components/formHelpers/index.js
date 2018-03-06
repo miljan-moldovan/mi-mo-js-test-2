@@ -106,43 +106,39 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
-  <TouchableOpacity onPress={props.onPress} style={props.style}>
-    <View style={{ alignSelf: 'stretch' }}>
-      <View style={styles.inputRow}>
-        <View style={{ flexDirection: 'row', alignSelf: 'stretch', alignItems: 'center' }}>
-          <View style={{ alignSelf: 'stretch', flexDirection: 'row' }}>
-            { props.placeholder && (
-              <Text style={styles.labelText}>{props.placeholder}</Text>
-            )}
-            {
-              typeof props.value === 'string'
-              ? (
-                <Text style={styles.inputText}>{props.value}</Text>
-              ) :
-                props.value
-            }
-
-          </View>
-          {props.children}
-          {!props.noIcon && (
-            <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-          )}
-        </View>
-      </View>
+  <TouchableOpacity
+    style={[styles.inputRow, {justifyContent: 'center'}]}
+    onPress={props.onPress}
+  >
+    { props.label && (
+      <Text style={styles.labelText}>{props.label}</Text>
+    )}
+    <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
+      {
+        typeof props.value === 'string'
+        ? (
+          <Text style={styles.inputText}>{props.value}</Text>
+        ) :
+          props.value
+      }
+      {props.children}
     </View>
+    {!props.noIcon && (
+      <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+    )}
   </TouchableOpacity>
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   style: View.propTypes.style,
-  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
+  label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,
 };
 InputButton.defaultProps = {
   style: {},
-  placeholder: false,
+  label: false,
   value: false,
   noIcon: false,
   children: null,

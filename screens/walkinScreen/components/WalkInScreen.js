@@ -2,22 +2,18 @@ import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  Switch,
+  ScrollView,
 } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import moment from 'moment';
 
-import SalonAvatar from '../../../components/SalonAvatar';
-import WalkInStepHeader from './WalkInStepHeader';
 import {
   InputLabel,
   InputButton,
   InputGroup,
   InputDivider,
-  SectionTitle
+  SectionTitle,
 } from '../../../components/formHelpers';
+import ServiceSection from '../../../components/formHelpers/serviceSection';
 
 
 const styles = StyleSheet.create({
@@ -28,17 +24,57 @@ const styles = StyleSheet.create({
 });
 
 class WalkInScreen extends Component {
-componentWillMount() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      services: [],
+    };
+  }
 
-}
+  handleAddService= () => {
+    const service = {
+      provider: null,
+      service: null,
+      start: moment(),
+      end: moment().add(1, 'hours'),
+    };
+    const { services } = this.state;
+    services.push(service);
+    this.setState({ services });
+  }
+
+  handleRemoveService= (index) => {
+    const { services } = this.state;
+    services.splice(index, 1);
+    this.setState({ services });
+  }
+
+  handleUpdateService= (index, service) => {
+    const { services } = this.state;
+    services[index] = service;
+    this.setState({ services });
+  }
+
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <SectionTitle value="CLIENT" />
         <InputGroup>
+          <InputButton label="Client" value="Alex" />
+          <InputDivider />
           <InputLabel label="Email" value="a@a.com" />
+          <InputDivider />
+          <InputLabel label="Phone" value="222222" />
         </InputGroup>
-      </View>
+        <SectionTitle value="SERVICE AND PROVIDER" />
+        <ServiceSection
+          services={this.state.services}
+          onAdd={this.handleAddService}
+          navigate={this.props.navigation.navigate}
+          onRemove={this.handleRemoveService}
+          onUpdate={this.handleUpdateService}
+        />
+      </ScrollView>
     );
   }
 }
