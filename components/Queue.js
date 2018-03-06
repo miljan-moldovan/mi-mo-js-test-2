@@ -42,14 +42,7 @@ class Queue extends React.Component {
     isVisible: false,
     client: null,
     services: null,
-  }
-
-  handlePressSummary = {
-    checkIn: () => alert('Not Implemented'),
-    walkOut: () => alert('Not Implemented'),
-    modify: () => this.handlePressModify(),
-    returning: () => alert('Not Implemented'),
-    toService: () => alert('Not Implemented'),
+    clientQueueItemId: 0,
   }
 
   _onRefresh = () => {
@@ -171,7 +164,10 @@ class Queue extends React.Component {
   handlePress = (item) => {
     if (!this.state.isVisible) {
       this.setState({
-        appointment: item, client: item.client, services: item.services, isVisible: true,
+        appointment: item,
+        client: item.client,
+        services: item.services,
+        isVisible: true,
       });
     }
   }
@@ -183,6 +179,24 @@ class Queue extends React.Component {
     if (appointment !== null) {
       this.props.navigation.navigate('AppointmentDetails', { appointment });
     }
+  }
+
+  handlePressWalkout = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.navigation.navigate('Walkout', { clientQueueItemId: client.id });
+  }
+
+  handlePressCheckin = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.onCheckin(client.id);
+  }
+
+  handlePressService = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.onStartService(client.id);
   }
 
   hideDialog = () => {
@@ -257,6 +271,14 @@ class Queue extends React.Component {
     );
   }
   _keyExtractor = (item, index) => item.queueId;
+
+  handlePressSummary = {
+    checkIn: this.handlePressCheckin,
+    walkOut: this.handlePressWalkout,
+    modify: this.handlePressModify,
+    returning: () => alert('Not Implemented'),
+    toService: this.handlePressService,
+  }
 
   render() {
     return (

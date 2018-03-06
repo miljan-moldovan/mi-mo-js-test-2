@@ -133,7 +133,7 @@ class QueueItemSummary extends Component {
     this.state.fadeAnim, // The animated value to drive
     {
       toValue: value, // Animate to opacity: 1 (opaque)
-      duration: 400, // Make it take a while
+      duration: 100, // Make it take a while
     },
   ); // Starts the animation
 
@@ -141,7 +141,7 @@ class QueueItemSummary extends Component {
     this.state.translateYAnim, // The animated value to drive
     {
       toValue: value, // Animate to opacity: 1 (opaque)
-      duration: 600, // Make it take a while
+      duration: 300, // Make it take a while
     },
   ); // Starts the animation
 

@@ -15,7 +15,7 @@ export default (state: Object = initialState, action: Object) => {
       return {
         ...state,
         [data.formIdentifier]: {
-          ...state.formIdentifier,
+          ...state[data.formIdentifier],
           [data.itemIdentifier]: data.formState
         }
       };
@@ -23,7 +23,7 @@ export default (state: Object = initialState, action: Object) => {
       return {
         ...state,
         [data.formIdentifier]: {
-          ...state.formIdentifier,
+          ...state[data.formIdentifier],
           [data.itemIdentifier]: undefined
         }
       };

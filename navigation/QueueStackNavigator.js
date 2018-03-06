@@ -23,6 +23,7 @@ import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
+import WalkOutScreen from '../screens/walkOutScreen';
 
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
@@ -38,11 +39,12 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: 'Queue',
       },
     },
-    TurnAway: {
-      screen: TurnAwayScreen,
-      navigationOptions: {
-        headerTitle: 'Turn Away',
-      },
+    Walkout: {
+      screen: WalkOutScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: 'Walkout',
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+      }),
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
