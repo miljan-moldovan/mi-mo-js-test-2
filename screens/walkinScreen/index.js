@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import walkInActions from '../../actions/walkIn';
 import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
-import WalkInScreen from './WalkInScreen';
+import WalkInScreen from './components/WalkInScreen';
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
