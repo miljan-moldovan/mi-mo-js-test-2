@@ -35,7 +35,7 @@ class AppointmentNoteScreen extends Component {
   state = {
     note: {
       id: Math.random().toString(),
-      notes: '',
+      text: '',
       expiration: '',
       forAppointment: false,
       forQueue: false,
@@ -91,14 +91,18 @@ class AppointmentNoteScreen extends Component {
       const notes = this.props.appointmentNotesState.notes;
 
       if (this.props.navigation.state.params.actionType === 'new') {
-        this.props.appointmentNotesActions.postAppointmentNotes(93, this.state.note).then((response) => {
+        const note = this.state.note;
+        note.notes = note.text;
+        this.props.appointmentNotesActions.postAppointmentNotes(93, note).then((response) => {
           this.getNotes();
         }).catch((error) => {
           alert(error.message);
           console.log(error);
         });
       } else if (this.props.navigation.state.params.actionType === 'update') {
-        this.props.appointmentNotesActions.putAppointmentNotes(93, this.state.note).then((response) => {
+        const note = this.state.note;
+        note.notes = note.text;
+        this.props.appointmentNotesActions.putAppointmentNotes(93, note).then((response) => {
           this.getNotes();
         }).catch((error) => {
           alert(error.message);
