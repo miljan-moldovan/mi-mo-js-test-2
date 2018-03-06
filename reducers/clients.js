@@ -3,6 +3,9 @@ import clientsActions, {
   SET_FILTERED_CLIENTS,
   SET_SUGGESTIONS_LIST,
   SET_FILTERED_SUGGESTIONS_LIST,
+  GET_CLIENTS,
+  GET_CLIENTS_SUCCESS,
+  GET_CLIENTS_FAILED,
 } from '../actions/clients';
 
 const initialState = {
@@ -15,6 +18,25 @@ const initialState = {
 export default function clientsReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case GET_CLIENTS:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_CLIENTS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        clients: data.clients,
+        error: null,
+      };
+    case GET_CLIENTS_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: data.error,
+        clients: [],
+      };
     case SET_CLIENTS:
       return {
         ...state,

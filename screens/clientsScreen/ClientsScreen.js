@@ -11,7 +11,7 @@ import ClientList from '../../components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
 import ClientsHeader from './components/ClientsHeader';
-import apiWrapper from '../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -171,14 +171,18 @@ class ClientsScreen extends React.Component {
       }
     }
 
-    apiWrapper.doRequest('getClients', {
-    }).then((responseJson) => {
-      const clients = responseJson.response;
-      this.props.clientsActions.setClients(clients);
-      this.props.clientsActions.setFilteredClients(clients);
-      const suggestionList = this.getSuggestionsList(clients);
-      this.props.clientsActions.setSuggestionsList(suggestionList);
-      this.props.clientsActions.setFilteredSuggestions(suggestionList);
+    this.props.clientsActions.getClients().then((response) => {
+      if (response.data.error) {
+        this.props.navigation.goBack();
+        alert(response.data.error.message);
+      } else {
+        const clients = response.data.clients;
+        this.props.clientsActions.setClients(clients);
+        this.props.clientsActions.setFilteredClients(clients);
+        const suggestionList = this.getSuggestionsList(clients);
+        this.props.clientsActions.setSuggestionsList(suggestionList);
+        this.props.clientsActions.setFilteredSuggestions(suggestionList);
+      }
     });
   }
 
