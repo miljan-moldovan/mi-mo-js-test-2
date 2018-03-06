@@ -1,3 +1,4 @@
+import { NetInfo } from 'react-native';
 import OfflineFirstAPI from 'react-native-offline-api';
 import apiOptions from './apiOptions';
 import apiServices from './apiServices';
@@ -126,10 +127,17 @@ function doRequest(key, parameters, options = {
           count += 1;
           delay ? setTimeout(attempt, delay) : attempt();
         } else {
-          reject(new ApiError(
-            error.message, null,
-            error.stack, null, apiConstants.responsesCodes.NetworkError,
-          ));
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            let errorCode = apiConstants.responsesCodes.UnknownError;
+
+            if (!isConnected) {
+              errorCode = apiConstants.responsesCodes.NetworkError;
+            }
+            reject(new ApiError(
+              error.message, null,
+              error.stack, null, errorCode,
+            ));
+          });
         }
       });
     attempt();
