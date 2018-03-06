@@ -98,7 +98,7 @@ export const InputGroup = props => (
 );
 InputGroup.propTypes = {
   style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-  children: PropTypes.arrayOf(PropTypes.element),
+  children: PropTypes.element,
 };
 InputGroup.defaultProps = {
   style: false,
@@ -109,8 +109,8 @@ export const InputButton = props => (
   <TouchableOpacity onPress={props.onPress} style={props.style}>
     <View style={{ alignSelf: 'stretch' }}>
       <View style={styles.inputRow}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', alignSelf: 'stretch', alignItems: 'center' }}>
+          <View style={{ alignSelf: 'stretch', flexDirection: 'row' }}>
             { props.placeholder && (
               <Text style={styles.labelText}>{props.placeholder}</Text>
             )}
@@ -138,25 +138,30 @@ InputButton.propTypes = {
   placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
-  children: PropTypes.arrayOf(PropTypes.element),
+  children: PropTypes.element,
 };
 InputButton.defaultProps = {
   style: {},
   placeholder: false,
   value: false,
   noIcon: false,
-  children: [],
+  children: null,
 };
 
 export const InputLabel = props => (
-  <View style={[styles.inputRow, { flexDirection: 'row', alignSelf: 'stretch' }]}>
-    <Text style={[styles.labelText, { alignSelf: 'flex-start' }]}>{props.label}</Text>
-    <Text style={[styles.inputText, { alignSelf: 'flex-end' }]}>{props.value}</Text>
+  <View style={[styles.inputRow, { justifyContent: 'center' }]}>
+    <Text style={[styles.labelText]}>{props.label}</Text>
+    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+      <Text style={[styles.inputText]}>{props.value}</Text>
+    </View>
   </View>
 );
 InputLabel.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+};
+InputLabel.defaultProps = {
+  value: null,
 };
 
 export const LabeledButton = props => (
@@ -172,8 +177,11 @@ export const LabeledButton = props => (
 );
 LabeledButton.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   onPress: PropTypes.func.isRequired,
+};
+LabeledButton.defaultProps = {
+  value: null,
 };
 
 export const InputText = props => (
@@ -253,6 +261,123 @@ export class InputSwitch extends React.Component {
           value={this.state.value}
         />
       </View>
+    );
+  }
+}
+
+export class ServiceInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedService: null,
+    };
+  }
+
+  handleServiceSelection = (service) => {
+    this.setState({ selectedService: service });
+    this.props.onChange(service);
+  }
+
+  handlePress = () => {
+    this.props.navigate('Services', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeService: service => this.handleServiceSelection(service),
+    });
+  }
+
+  render() {
+    const value = this.state.selectedService ? this.state.selectedService.name : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, {justifyContent: 'center'}]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Service</Text>
+        <View style={{flex: 1, alignItems: 'flex-end'}}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
+    );
+  }
+}
+
+export class ProviderInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedProvider: null,
+    };
+  }
+
+  handleProviderSelection = (provider) => {
+    this.setState({ selectedProvider: provider });
+    this.props.onChange(provider);
+  }
+
+  handlePress = () => {
+    this.props.navigate('Providers', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeProvider: provider => this.handleProviderSelection(provider),
+    });
+  }
+
+  render() {
+    const value = this.state.selectedProvider ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, {justifyContent: 'center'}]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Provider</Text>
+        <View style={{flex: 1, alignItems: 'flex-end'}}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
+    );
+  }
+}
+
+export class PromotionInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedPromotion: null,
+    };
+  }
+
+  handlePromoSelection = (promotion) => {
+    this.setState({ selectedPromotion: promotion });
+    this.props.onChange(promotion);
+  }
+
+  handlePress = () => {
+    this.props.navigate('Promotions', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangePromotion: promotion => this.handlePromoSelection(promotion),
+    });
+  }
+
+  render() {
+    const value = this.state.selectedPromotion ? this.state.selectedPromotion.name : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, {justifyContent: 'center'}]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Promotion</Text>
+        <View style={{flex: 1, alignItems: 'flex-end'}}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
     );
   }
 }
