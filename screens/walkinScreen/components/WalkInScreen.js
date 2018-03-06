@@ -12,13 +12,12 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import SalonAvatar from '../../../components/SalonAvatar';
 import WalkInStepHeader from './WalkInStepHeader';
 import {
-  InputDate,
-  InputText,
-  InputGroup,
+  InputLabel,
   InputButton,
+  InputGroup,
   InputDivider,
-  SectionDivider,
-} from '../../../../components/formHelpers';
+  SectionTitle
+} from '../../../components/formHelpers';
 
 
 const styles = StyleSheet.create({
@@ -29,10 +28,16 @@ const styles = StyleSheet.create({
 });
 
 class WalkInScreen extends Component {
+componentWillMount() {
 
+}
   render() {
     return (
       <View style={styles.container}>
+        <SectionTitle value="CLIENT" />
+        <InputGroup>
+          <InputLabel label="Email" value="a@a.com" />
+        </InputGroup>
       </View>
     );
   }

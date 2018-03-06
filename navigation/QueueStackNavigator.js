@@ -33,8 +33,8 @@ import ModifyServiceScreen from '../screens/modifyServiceScreen';
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
-      // screen: QueueScreen,
-      screen: ModifyServiceScreen,
+       screen: QueueScreen,
+      //screen: ModifyServiceScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
