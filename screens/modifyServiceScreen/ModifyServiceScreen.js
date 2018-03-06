@@ -3,17 +3,14 @@ import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
 import {
   InputGroup,
   InputDivider,
-  SectionTitle,
   InputSwitch,
-  InputText,
-  InputButton,
-  LabeledButton,
   ServiceInput,
   ProviderInput,
   SectionDivider,
@@ -42,13 +39,6 @@ export default class ModifyServiceScreen extends React.Component {
     return (
       <View style={styles.container}>
         <InputGroup>
-          {
-          //   <InputButton
-          //   placeholder="Service"
-          //   value={null}
-          //   onPress={() => alert('Muffins, dawg')}
-          // />
-        }
           <ServiceInput
             navigate={this.props.navigation.navigate}
             onChange={(service) => {
@@ -77,16 +67,19 @@ export default class ModifyServiceScreen extends React.Component {
             }}
           />
           <InputDivider />
-          <InputLabel label="Discount" value="20%" />        
+          <InputLabel label="Discount" value="20%" />
           <InputLabel label="Price" value="$40" />
         </InputGroup>
         <SectionDivider />
         <InputGroup>
-          <View style={{height: 44, alignItems: 'center', justifyContent: 'center'}}>
-            <Text style={{fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium'}}>
+          <TouchableOpacity style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{
+              fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+              }}
+            >
               Remove Service
             </Text>
-          </View>
+          </TouchableOpacity>
         </InputGroup>
       </View>
     );
