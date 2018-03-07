@@ -52,7 +52,7 @@ class AppointmentNoteScreen extends Component {
     let note = this.state.note;
 
     if (this.props.navigation.state.params.actionType === 'update') {
-      note = this.props.appointmentNotesState.onEditionNote;
+      note = JSON.parse(JSON.stringify(this.props.appointmentNotesState.onEditionNote));
 
       const cachedForm = fetchFormCache('AppointmentNoteScreenUpdate', this.props.appointmentNotesState.onEditionNote.id, this.props.formCache);
 
@@ -132,7 +132,7 @@ class AppointmentNoteScreen extends Component {
   }
   onChangeProvider = (provider) => {
     this.props.appointmentNotesActions.selectProvider(provider);
-    const note = this.props.appointmentNotesState.note;
+    const note = this.state.note;
     note.author = `${provider.name} ${provider.lastName}`;
     this.setState({ note });
   }

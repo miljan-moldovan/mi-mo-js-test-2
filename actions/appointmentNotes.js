@@ -48,7 +48,9 @@ const putAppointmentNotes = (clientId, note) => (dispatch) => {
     body: note,
   })
     .then((response) => {
+      console.log('AppointmentNoteScreenUpdate 1');
       dispatch(purgeForm('AppointmentNoteScreenUpdate', note.id.toString()));
+      console.log('AppointmentNoteScreenUpdate 2');
       return dispatch(putAppointmentNotesSuccess(response));
     })
     .catch((error) => {
