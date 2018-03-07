@@ -47,15 +47,17 @@ const salonCard = props => (
   <View
     key={Math.random().toString()}
     style={
-    [styles.container, { backgroundColor: props.backgroundColor }]}
+    [styles.container, { backgroundColor: props.backgroundColor }, props.containerStyles]}
   >
-    <View style={styles.header}>
-      {props.headerChildren}
-    </View>
-    <View style={styles.body}>
+    {props.headerChildren && props.headerChildren.length > 0 && (
+      <View style={styles.header}>
+        {props.headerChildren}
+      </View>
+    )}
+    <View style={[styles.body, props.bodyStyles]}>
       {props.bodyChildren}
     </View>
-    {props.footerChildren.length > 0 && (
+    {props.footerChildren && props.footerChildren.length > 0 && (
       <View style={styles.footer}>
         {props.footerChildren}
       </View>
@@ -64,15 +66,29 @@ const salonCard = props => (
 );
 
 salonCard.propTypes = {
-  headerChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
-  bodyChildren: PropTypes.arrayOf(PropTypes.element).isRequired,
-  footerChildren: PropTypes.arrayOf(PropTypes.element),
+  headerChildren: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
+  bodyChildren: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]).isRequired,
+  footerChildren: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
   backgroundColor: PropTypes.string,
+  containerStyles: View.propTypes.style,
+  bodyStyles: View.propTypes.style,
 };
 
 salonCard.defaultProps = {
   backgroundColor: 'transparent',
-  footerChildren: [],
+  headerChildren: null,
+  footerChildren: null,
+  containerStyles: {},
+  bodyStyles: {},
 };
 
 export default salonCard;

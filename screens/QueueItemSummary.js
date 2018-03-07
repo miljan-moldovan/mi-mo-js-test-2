@@ -197,7 +197,7 @@ class QueueItemSummary extends Component {
                 />
               </ScrollView>
               <View style={styles.btnContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
                       <FontAwesome style={styles.btnIcon}>{Icons.check}</FontAwesome>
@@ -205,7 +205,7 @@ class QueueItemSummary extends Component {
                     <Text style={styles.btnbottomText}>Check-in</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
                       <FontAwesome style={styles.btnIcon}>{Icons.signOut}</FontAwesome>
@@ -213,7 +213,7 @@ class QueueItemSummary extends Component {
                     <Text style={styles.btnbottomText}>Walk-out</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this.props.onPressSummary.modify}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
                       <FontAwesome style={styles.btnIcon}>{Icons.pencil}</FontAwesome>
@@ -221,7 +221,7 @@ class QueueItemSummary extends Component {
                     <Text style={styles.btnbottomText}>Modify</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this.props.onPressSummary.returning}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
                       <FontAwesome style={styles.btnIcon}>{Icons.refresh}</FontAwesome>
@@ -229,7 +229,7 @@ class QueueItemSummary extends Component {
                     <Text style={styles.btnbottomText}>Returning</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this.props.onPressSummary.toService}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
                       <FontAwesome style={styles.btnIcon}>{Icons.play}</FontAwesome>

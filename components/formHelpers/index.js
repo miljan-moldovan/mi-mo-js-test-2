@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Switch,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   inputDivider: {
     height: 1,
@@ -64,11 +65,38 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingRight: 16,
   },
+  sectionTitle: {
+    fontSize: 12,
+    lineHeight: 22,
+    color: '#727A8F',
+    fontFamily: 'Roboto-Medium',
+    marginLeft: 16,
+  },
+  dateCancelButtonStyle: {
+    width: '10%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  dateCancelStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
+
+export const SectionTitle = props => (
+  <View style={{ height: 38, flexDirection: 'column', justifyContent: 'flex-end' }} >
+    <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
+  </View>
+);
+SectionTitle.propTypes = {
+  value: PropTypes.string.isRequired,
+};
 
 export const SectionDivider = () => (
   <View style={{ height: 35 }} />
 );
+
 
 export const InputDivider = () => (
   <View style={styles.inputDivider} />
@@ -89,18 +117,24 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
-  <TouchableOpacity onPress={props.onPress}>
+  <TouchableOpacity onPress={props.onPress} style={props.style}>
     <View style={{ alignSelf: 'stretch' }}>
       <View style={styles.inputRow}>
-        <Text style={styles.labelText}>{props.placeholder}</Text>
-        <View style={{ flexDirection: 'row' }}>
-          {
-            typeof props.value === 'string'
-            ? (
-              <Text style={styles.inputText}>{props.value}</Text>
-            ) :
-              props.value
-          }
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+            { props.placeholder && (
+              <Text style={styles.labelText}>{props.placeholder}</Text>
+            )}
+            {
+              typeof props.value === 'string'
+              ? (
+                <Text style={styles.inputText}>{props.value}</Text>
+              ) :
+                props.value
+            }
+
+          </View>
+          {props.children}
           {!props.noIcon && (
             <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
           )}
@@ -111,14 +145,46 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-  placeholder: PropTypes.string,
+  style: View.propTypes.style,
+  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
+  children: PropTypes.arrayOf(PropTypes.element),
 };
 InputButton.defaultProps = {
-  placeholder: '',
+  style: {},
+  placeholder: false,
   value: false,
   noIcon: false,
+  children: [],
+};
+
+export const InputLabel = props => (
+  <View style={[styles.inputRow, { flexDirection: 'row', alignSelf: 'stretch' }]}>
+    <Text style={[styles.labelText, { alignSelf: 'flex-start' }]}>{props.label}</Text>
+    <Text style={[styles.inputText, { alignSelf: 'flex-end' }]}>{props.value}</Text>
+  </View>
+);
+InputLabel.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+};
+
+export const LabeledButton = props => (
+  <InputButton
+    style={{ alignSelf: 'stretch' }}
+    onPress={props.onPress}
+  >
+    <InputLabel
+      label={props.label}
+      value={props.value}
+    />
+  </InputButton>
+);
+LabeledButton.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  onPress: PropTypes.func.isRequired,
 };
 
 export const InputText = props => (
@@ -146,7 +212,7 @@ export class InputDate extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={{ flexDirection: 'row' }}>
         <SalonDatePicker
           isVisible={this.state.showModal}
           onPress={(selectedDate) => {
@@ -156,12 +222,46 @@ export class InputDate extends React.Component {
           selectedDate={this.props.selectedDate}
         />
         <InputButton
+          style={{ width: '90%' }}
           onPress={() => {
             this.setState({ showModal: !this.state.showModal });
           }}
           noIcon
           placeholder={this.props.placeholder}
           value={this.props.selectedDate}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            this.props.onPress(null);
+          }}
+          style={styles.dateCancelButtonStyle}
+        >
+          <View style={styles.dateCancelStyle}>
+            <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
+
+export class InputSwitch extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: props.value,
+    };
+  }
+
+  render() {
+    return (
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }]}>
+        <Text style={styles.labelText}>{this.props.text}</Text>
+
+        <Switch
+          onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}
+          value={this.state.value}
         />
       </View>
     );
