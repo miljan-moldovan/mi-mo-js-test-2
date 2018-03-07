@@ -136,17 +136,22 @@ const QueueStackNavigator = StackNavigator(
         backgroundColor: '#115ECD',
         paddingLeft: 10,
         paddingRight: 10,
-        height: 44,
+        // height: 44,
+        height: 35,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,
         borderBottomWidth: 0,
-
+        justifyContent: 'center',
+        // alignItems: 'center'
       },
       headerTitleStyle: {
         fontFamily: 'Roboto-Regular',
         fontSize: 17,
         color: '#fff',
+        fontWeight: '500',
+        // backgroundColor: 'red',
+        height: '100%'
       },
       drawerLabel: props => (
         <SideMenuItem

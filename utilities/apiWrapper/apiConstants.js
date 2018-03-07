@@ -1,4 +1,3 @@
-
 export default {
   // Response Codes APIs
   responsesCodes: {
@@ -9,13 +8,15 @@ export default {
     Exception: 5,
     NotFound: 6,
     NetworkError: 99,
-    UnknownError: 100,
   },
   // Must clean cache after doing these requests
-  cleanCache: ['postQueue', 'postClientNote', 'putClientNote', 'postUndeleteClientNote', 'deleteClientNote'],
+  cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup', 'postClientNote',
+    'putClientNote', 'postUndeleteClientNote', 'deleteClientNote'],
   // Must clean these Dependencies cache after doing these requests
   cacheCleaningDependencies: {
     postQueue: ['getQueue'],
+    postQueueGroup: ['getQueue', 'getQueueGroups'],
+    deleteQueueGroup: ['getQueue', 'getQueueGroups'],
     postClientNote: ['getClientNotes'],
     putClientNote: ['getClientNotes'],
     postUndeleteClientNote: ['getClientNotes'],

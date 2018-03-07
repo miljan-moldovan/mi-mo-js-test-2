@@ -1,4 +1,6 @@
+// @flow
 import * as helpers from './helpers';
+import type { QueueItem } from '../models';
 
 import {
   QUEUE,
@@ -52,31 +54,63 @@ export default (state = initialState, action) => {
     case QUEUE_RECEIVED:
       const waitingQueue = [];
       const serviceQueue = [];
-      console.log(data);
-      data.map((item) => {
+      const initialGroups = {};
+      data.map((item: QueueItem) => {
+        item.client.fullName = (item.client.name ?
+          item.client.name[0].toUpperCase() + item.client.name.toLowerCase().slice(1, item.client.name.length) : '') + ' ' +
+          (item.client.lastName ?
+          item.client.lastName[0].toUpperCase() + item.client.lastName.toLowerCase().slice(1, item.client.lastName.length) : '');
+
+        if (item.groupId) {
+          if (! initialGroups[item.groupId]) {
+            console.log('init group', item.groupId);
+            initialGroups[item.groupId] = {
+              clients: [],
+              groupLeadName: null
+            };
+          }
+          initialGroups[item.groupId].clients.push({
+            id: item.id,
+            isGroupLeader: item.isGroupLeader
+          });
+          if (item.isGroupLeader) {
+            console.log('here', item.client.fullName, item.groupId);
+            initialGroups[item.groupId].groupLeadName = item.client.fullName;
+          }
+        }
+
+        if (! item.startTime) {
+          item.startTime = '10:51:48';
+        }
+
         item.background = helpers.getLabelColor(item);
         if (item.status < 6 && item.status !== 4) {
-          item.startTime = item.start_time;
-          item.processTime = helpers.getWaitTime(item);
-          item.estimatedTime = helpers.getEstimatedWaitTime(item);
-          item.expectedStartTime = helpers.getExpectedStartTime(item);
+          item.processTime = item.progressTime;
+        //   item.estimatedTime = helpers.getEstimatedWaitTime(item);
+        //   item.expectedStartTime = helpers.getExpectedStartTime(item);
           waitingQueue.push(item);
+
         } else {
-          item.startTime = helpers.formatServiceStartTime(item.servicedTime);
-          item.processTime = helpers.getWorkingTime(item);
-          item.estimatedTime = helpers.getEstimatedServiceTime(item);
+        //   item.startTime = helpers.formatServiceStartTime(item.servicedTimeAt);
+          item.processTime = item.progressTime;
+        //   item.estimatedTime = helpers.getEstimatedServiceTime(item);
           item.completed = helpers.getProcentCompleted(item);
           serviceQueue.push(item);
         }
         return item;
       });
 
+      helpers.generateColorsForGroups(initialGroups);
+
       return {
         ...state,
         loading: false,
         queueLength: data.length,
+        groups: initialGroups,
         waitingQueue,
-        serviceQueue
+        serviceQueue,
+        combiningClients: [],
+        combining: false
       };
     case QUEUE_FAILED:
       return {
@@ -84,13 +118,13 @@ export default (state = initialState, action) => {
         loading: false,
         queueLength: 0,
         error
-      }
+      };
     case QUEUE_DELETE_ITEM:
-      const waitingQueueDeletedIndex = state.waitingQueue.findIndex((item) => item.queueId == data.id);
+      const waitingQueueDeletedIndex = state.waitingQueue.findIndex((item) => item.id == data.id);
       if (waitingQueueDeletedIndex !== -1) {
         state.waitingQueue.splice(waitingQueueDeletedIndex, 1);
       }
-      const serviceQueueDeletedIndex = state.serviceQueue.findIndex((item) => item.queueId == data.id);
+      const serviceQueueDeletedIndex = state.serviceQueue.findIndex((item) => item.id == data.id);
       if (serviceQueueDeletedIndex !== -1) {
         state.serviceQueue.splice(serviceQueueDeletedIndex, 1);
       }
@@ -102,11 +136,11 @@ export default (state = initialState, action) => {
       }
     case QUEUE_UPDATE_ITEM:
       const { queueItem } = data;
-      const waitingQueueIndex = state.waitingQueue.findIndex((item) => item.queueId == queueItem.queueId);
+      const waitingQueueIndex = state.waitingQueue.findIndex((item) => item.id == queueItem.id);
       if (waitingQueueIndex !== -1) {
         state.waitingQueue[waitingQueueIndex] = queueItem;
       }
-      const serviceQueueIndex = state.serviceQueue.findIndex((item) => item.queueId == queueItem.queueId);
+      const serviceQueueIndex = state.serviceQueue.findIndex((item) => item.id == queueItem.id);
       if (serviceQueueIndex !== -1) {
         state.serviceQueue[serviceQueueIndex] = queueItem;
       }
@@ -123,7 +157,7 @@ export default (state = initialState, action) => {
       }
     case CLIENT_CHECKED_IN:
       const itemsCheckedIn = state.waitingQueue.map((item) => {
-        if (item.queueId === data.id) {
+        if (item.id === data.id) {
           item.status = 0;
           item.checked_in = true;
           item.enteredTime = helpers.getSecondsPassedSinceMidnight();
@@ -142,7 +176,7 @@ export default (state = initialState, action) => {
       };
     case CLIENT_RETURNED_LATER:
       const itemsReturnLater = state.waitingQueue.map((item) => {
-        if (item.queueId === data.id) {
+        if (item.id === data.id) {
           item.status = item.status === 0 ? 5 : 0;
           item = {...item};
         }
@@ -155,7 +189,7 @@ export default (state = initialState, action) => {
       };
     case CLIENT_WALKED_OUT:
       const itemsWalkOut = state.waitingQueue.filter((item) => {
-        return item.queueId !== data.id;
+        return item.id !== data.id;
       });
 
       return {
@@ -164,7 +198,7 @@ export default (state = initialState, action) => {
         waitingQueue: itemsWalkOut
       };
     case CLIENT_START_SERVICE:
-      const newServicedItem = state.waitingQueue.find((item) => item.queueId === data.id);
+      const newServicedItem = state.waitingQueue.find((item) => item.id === data.id);
 
       newServicedItem.servicedTime = helpers.getSecondsPassedSinceMidnight();
       newServicedItem.startTime = helpers.formatServiceStartTime(newServicedItem.servicedTime);
@@ -176,7 +210,7 @@ export default (state = initialState, action) => {
       newServicedItem.estimatedTime = helpers.getEstimatedServiceTime(newServicedItem);
       newServicedItem.completed = helpers.getProcentCompleted(newServicedItem);
 
-      const waitingItemsStartService = state.waitingQueue.filter((item) => item.queueId !== data.id);
+      const waitingItemsStartService = state.waitingQueue.filter((item) => item.id !== data.id);
       const serviceItemsStartService = state.serviceQueue.concat(newServicedItem);
 
       return {
@@ -187,7 +221,7 @@ export default (state = initialState, action) => {
       };
     case CLIENT_FINISH_SERVICE:
       const itemsFinishService = state.serviceQueue.map((item) => {
-        if (item.queueId === data.id) {
+        if (item.id === data.id) {
           if (item.status === 6) {
             item.status = 7;
             item.finishService = helpers.getSecondsPassedSinceMidnight();
@@ -206,7 +240,7 @@ export default (state = initialState, action) => {
         serviceQueue: itemsFinishService
       };
     case CLIENT_TO_WAITING:
-      const newWaitingItem = state.serviceQueue.find((item) => item.queueId === data.id);
+      const newWaitingItem = state.serviceQueue.find((item) => item.id === data.id);
 
       newWaitingItem.checked_in = true;
       newWaitingItem.serviced = false;
@@ -216,7 +250,7 @@ export default (state = initialState, action) => {
       newWaitingItem.estimatedTime = helpers.getEstimatedWaitTime(newWaitingItem);
       newWaitingItem.expectedStartTime = helpers.getExpectedStartTime(newWaitingItem);
 
-      const serviceItemsToWaiting = state.serviceQueue.filter((item) => item.queueId !== data.id);
+      const serviceItemsToWaiting = state.serviceQueue.filter((item) => item.id !== data.id);
       const waitingItemsToWaiting = state.waitingQueue.concat(newWaitingItem);
 
       return {
@@ -238,7 +272,7 @@ export default (state = initialState, action) => {
 
         groupsNew[groupId] = groupOld.map((client) => {
           return {
-            queueId: client.queueId,
+            id: client.id,
             clientName: client.client.name + ' ' + client.client.lastName,
             groupLead: client.groupLead
           };
@@ -256,11 +290,11 @@ export default (state = initialState, action) => {
       };
     case COMBINE_CLIENT:
       let newCombiningClints = [];
-      if (state.combiningClients.find((client) => client.queueId === data.id)) {
-        newCombiningClints = state.combiningClients.filter((client) => client.queueId !== data.id);
+      if (state.combiningClients.find((client) => client.id === data.id)) {
+        newCombiningClints = state.combiningClients.filter((client) => client.id !== data.id);
       } else {
         newCombiningClints = state.combiningClients.concat({
-          queueId: data.id,
+          id: data.id,
           clientName: data.clientName
         });
       }
@@ -276,7 +310,7 @@ export default (state = initialState, action) => {
       if (data.groupId) {
         const groupsEdit = {...state.groups};
         groupsEdit[data.groupId].map((client) => {
-          if (client.queueId === data.id) {
+          if (client.id === data.id) {
             client.groupLead = true;
           } else {
             client.groupLead = false;
@@ -296,7 +330,7 @@ export default (state = initialState, action) => {
           client = {...client};
           return client;
         });
-        const payingClient = updatedCombiningClints.find((client) => client.queueId === data.id);
+        const payingClient = updatedCombiningClints.find((client) => client.id === data.id);
 
         payingClient.groupLead = true;
 
@@ -313,7 +347,7 @@ export default (state = initialState, action) => {
       const groupLeadName = state.combiningClients.find((client) => client.groupLead).clientName;
 
       const addToGroup = (queue, client) => {
-        if (queue.queueId === client.queueId) {
+        if (queue.id === client.id) {
           queue.groupId = newLastGroupId;
           queue.groupLead = client.groupLead;
           queue.groupLeadName = groupLeadName;
@@ -371,7 +405,7 @@ export default (state = initialState, action) => {
 
         const updateGroup = (queue) => {
           if (queue.groupId === groupId) {
-            queue.groupLead = queue.queueId === groupLead.queueId;
+            queue.groupLead = queue.id === groupLead.id;
             queue.groupLeadName = groupLead.clientName;
             queue = {...queue};
           }
