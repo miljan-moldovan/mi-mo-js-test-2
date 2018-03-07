@@ -65,16 +65,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  microphoneIcon: {
-    fontSize: 15,
-    marginRight: 10,
-    textAlign: 'center',
-  },
-  microphoneIconButton: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
 
 class SalonSearchBar extends Component {
@@ -160,28 +150,6 @@ class SalonSearchBar extends Component {
 
               }
             </View>
-
-
-            <View style={styles.microphoneIconContainer}>
-
-              <TouchableHighlight
-                style={styles.microphoneIconButton}
-                underlayColor="transparent"
-                onPress={
-                    () => {
-                      alert('microphone');
-                    }}
-              >
-
-                <FontAwesome style={[styles.microphoneIcon,
-                  { color: this.props.iconsColor }]}
-                >{Icons.microphone}
-                </FontAwesome>
-              </TouchableHighlight>
-
-            </View>
-
-
           </View>
         </View>
         {this.props.showCancel &&

@@ -14,7 +14,7 @@ import {
   RefreshControl,
   TouchableHighlight,
   LayoutAnimation,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -40,6 +40,7 @@ class Queue extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
+    appointment: null,
     isVisible: false,
     client: null,
     services: null,
@@ -92,6 +93,15 @@ class Queue extends React.Component {
     else
       this.setState({ data: filteredData });
   };
+
+  handlePressSummary = {
+    checkIn: () => alert('Not Implemented'),
+    walkOut: () => alert('Not Implemented'),
+    modify: () => this.handlePressModify(),
+    returning: () => alert('Not Implemented'),
+    toService: () => alert('Not Implemented'),
+  }
+
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
@@ -102,8 +112,8 @@ class Queue extends React.Component {
     const {
       noShow, returnLater, clientReturned, service, walkout, checkin,
       uncheckin, undoFinish, rebook, checkout, notesFormulas,
-      toWaiting, finishService
-} = QueueButtonTypes;
+      toWaiting, finishService,
+    } = QueueButtonTypes;
     const { id: queueId } = item;
     let left,
       right;
@@ -114,16 +124,16 @@ class Queue extends React.Component {
         ];
         right = [
           <QueueButton
-type={checkin}
-right
+            type={checkin}
+            right
             onPress={() => {
               LayoutAnimation.spring();
               this.props.checkInClient(queueId);
               }}
           />,
           <QueueButton
-type={service}
-right
+            type={service}
+            right
             onPress={() => {
               LayoutAnimation.spring();
               this.props.startService(queueId);
@@ -139,32 +149,32 @@ right
         right = [
           <QueueButton type={uncheckin} right />,
           <QueueButton
-type={service}
-onPress={()=>{
+            type={service}
+            onPress={() => {
             LayoutAnimation.spring();
             this.props.startService(queueId);
-            this.showNotification(item, 'service')
+            this.showNotification(item, 'service');
           }}
-right
+            right
           />,
         ];
       }
     } else if (item.finishService) {
       left = [
-          <QueueButton type={undoFinish} left />,
+        <QueueButton type={undoFinish} left />,
       ];
       right = [
-          <QueueButton type={rebook} right />,
-          <QueueButton type={checkout} right />,
+        <QueueButton type={rebook} right />,
+        <QueueButton type={checkout} right />,
       ];
     } else {
       left = [
-          <QueueButton type={notesFormulas} left />,
-          <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId) ;}} left />,
+        <QueueButton type={notesFormulas} left />,
+        <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
       ];
       right = [
-          <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
-          <QueueButton type={checkout} right />,
+        <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
+        <QueueButton type={checkout} right />,
       ];
     }
     return { left, right };
@@ -210,7 +220,19 @@ right
 
   handlePress = (item) => {
     if (!this.state.isVisible) {
-      this.setState({ client: item.client, services: item.services, isVisible: true });
+      this.setState({
+        appointment: item, client: item.client, services: item.services, isVisible: true,
+      });
+    }
+    this.props.navigation.navigate('AppointmentDetails', { item });
+  }
+
+  handlePressModify = () => {
+    const { appointment } = this.state;
+
+    this.hideDialog();
+    if (appointment !== null) {
+      this.props.navigation.navigate('AppointmentDetails', { appointment });
     }
   }
 
@@ -219,8 +241,7 @@ right
   }
   getGroupLeaderName = (item: QueueItem) => {
     const { groups } = this.props;
-    if (groups && groups[item.groupId])
-      return groups[item.groupId].groupLeadName;
+    if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
     return null;
   }
 
@@ -231,26 +252,26 @@ right
     const label = this.getLabelForItem(item);
     const groupLeaderName = this.getGroupLeaderName(item);
     return (
-      // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })} key={item.id}>
-          <View style={styles.itemSummary}>
-            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-              <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-              <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
-            </View>
-            <Text style={styles.serviceName} multiline={2} ellipsizeMode="tail">
-              {item.services[0].serviceName.toUpperCase()}
-              {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
-              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
-            </Text>
-            <Text style={styles.serviceTimeContainer}>
-              <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
-              <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
-            </Text>
+    // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
+      <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })} key={item.id}>
+        <View style={styles.itemSummary}>
+          <View style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+            <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
           </View>
-          {label}
-        </TouchableOpacity>
-      // </Swipeable>
+          <Text style={styles.serviceName} multiline={2} ellipsizeMode="tail">
+            {item.services[0].serviceName.toUpperCase()}
+            {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
+            <Text style={{ color: '#727A8F' }}>with</Text> {(`${item.services[0].employeeFirstName} ${item.services[0].employeeLastName}`).toUpperCase()}
+          </Text>
+          <Text style={styles.serviceTimeContainer}>
+            <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
+            <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
+          </Text>
+        </View>
+        {label}
+      </TouchableOpacity>
+    // </Swipeable>
     );
   }
   showNotification = (item, type) => {
@@ -271,7 +292,7 @@ right
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
-        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name } ${ client.lastName}`}</Text></Text>);
+        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name} ${client.lastName}`}</Text></Text>);
         notificationColor = '#ccc';
         notificationButton = <NotificationBannerButton title="UNDO" />;
         break;
@@ -303,11 +324,11 @@ right
     ) : null;
     return (
       <View style={styles.container}>
-        {this.props.loading?(
-          <View style={{height: 50, alignItems: 'center', justifyContent: 'center'}}>
+        {this.props.loading ? (
+          <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
             <ActivityIndicator />
           </View>
-        ):null}
+        ) : null}
         <FlatList
           renderItem={this.renderItem}
           data={this.state.data}
@@ -325,6 +346,7 @@ right
           client={this.state.client}
           services={this.state.services}
           onDonePress={this.hideDialog}
+          onPressSummary={this.handlePressSummary}
         />
         {this.renderNotification()}
       </View>

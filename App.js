@@ -39,7 +39,11 @@ export default class App extends Component<{}> {
       store,
       {
         storage: AsyncStorage,
-        blacklist: ['walkInReducer', 'appointmentFormulasReducer', 'queue'],
+        blacklist: [
+          'walkInReducer',
+          'queue',
+          'appointmentFormulasReducer', 'appointmentNotesReducer', 'queue',
+        ],
         // whitelist: ['auth']
       },
       () => { this.setState({ storeIsReady: true }); },

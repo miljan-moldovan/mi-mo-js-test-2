@@ -72,7 +72,7 @@ const AppointmentStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>
+              <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.3)', fontFamily: 'OpenSans-Regular' }}>Save</Text>
             </View>
           ),
         }),

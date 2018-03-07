@@ -34,7 +34,6 @@ import QueueHeader from '../components/QueueHeader';
 import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
-
 import apiWrapper from '../utilities/apiWrapper';
 
 const WAITING = '0';
@@ -147,7 +146,9 @@ class QueueScreen extends React.Component {
     </View>
   )
   _renderScene = ({ route }) => {
-    const { navigation, waitingQueue, serviceQueue, groups, loading} = this.props;
+    const {
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
     switch (route.key) {
       case WAITING:
         return (
@@ -203,10 +204,17 @@ class QueueScreen extends React.Component {
   };
 
   _handleWalkInPress = () => {
-    const { navigate } = this.props.navigation;
+    // const { navigate } = this.props.navigation;
+    //
+    // this.props.walkInActions.setEstimatedTime(17);
+    // navigate('WalkIn');
 
-    this.props.walkInActions.setEstimatedTime(17);
-    navigate('WalkIn');
+    //    apiWrapper.doRequest('postCookie', { query: { storeId: 1 } }).then((result) => {
+    apiWrapper.doRequest('getQueue', { }).then((result) => {
+      console.log(result);
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   _handleWalkOutPress = () => {
@@ -433,7 +441,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.6,
     shadowRadius: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   walkinButtonText: {
     fontFamily: 'Roboto-Medium',
@@ -463,7 +471,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // alignItems: 'flex-start',
-    paddingLeft: 0
+    paddingLeft: 0,
   },
   tabContainer: {
     height: 32,
@@ -501,30 +509,30 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: 15,
     paddingLeft: 0,
-    top: -1
+    top: -1,
   },
   summaryBar: {
     height: 31,
     backgroundColor: '#0C4699',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   summaryBarTextLeft: {
     color: 'rgba(195,214,242,1)',
     fontSize: 8,
     fontFamily: 'Roboto-Regular',
-    marginLeft: 16
+    marginLeft: 16,
   },
   summaryBarTextLeftEm: {
     fontSize: 10,
-    fontWeight: '500'
+    fontWeight: '500',
   },
   summaryBarTextRight: {
     color: 'white',
     fontSize: 10,
     fontFamily: 'Roboto-Regular',
-    marginRight: 23
+    marginRight: 23,
   },
   summaryBarTextRightEm: {
     fontFamily: 'Roboto-Bold',

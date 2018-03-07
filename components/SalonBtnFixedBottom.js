@@ -31,6 +31,28 @@ const styles = StyleSheet.create({
   },
 });
 
+export const SalonFixedBottom = props => (
+  <View
+    style={[styles.btnContainer, {
+      backgroundColor: props.backgroundColor,
+      borderTopRightRadius: 9,
+      borderTopLeftRadius: 9,
+    }]}
+  >
+    <View style={styles.container}>
+      {props.value && (
+        <Text style={[styles.text, {
+              fontSize: props.valueSize,
+              color: props.valueColor,
+            }]}
+        >{props.value}
+        </Text>
+      )}
+      {props.children}
+    </View>
+  </View>
+);
+
 const salonBtnFixedBottom = props => (
   <TouchableOpacity
     onPress={props.onPress}
