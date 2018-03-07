@@ -98,11 +98,12 @@ class CircularCountdown extends Component {
     }
   render() {
     const {
- size, estimatedTime, processTime, style, status 
-} = this.props;
+      size, style, status, // FIXME: use props once API ready - estimatedTime, processTime,
+    } = this.props;
+    const estimatedTime = 10, processTime = 20;
     const strokeWidth = baseStrokeWidth * size / baseSize;
     const radius = baseRadius * size / baseSize; // ((baseSize - 15 - 20) * size/baseSize - strokeWidth/2)/2;
-    const progress = processTime / estimatedTime;
+    const progress = 0.5 // FIXME: after api is ready processTime / estimatedTime;
     const delay = (estimatedTime - processTime) / 60;
 
     const fill = 'transparent',
