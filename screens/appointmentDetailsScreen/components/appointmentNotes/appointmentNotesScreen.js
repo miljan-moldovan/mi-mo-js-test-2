@@ -185,12 +185,16 @@ export default class AppointmentNotesScreen extends Component {
 
   constructor(props) {
     super(props);
+    const { params } = this.props.navigation.state;
+    const { appointment } = this.props;
+
     this.state = {
       showDeleted: false,
       note: null,
       forAppointment: true,
       forQueue: true,
       forSales: true,
+      appointment,
     };
   }
 
@@ -200,6 +204,7 @@ export default class AppointmentNotesScreen extends Component {
     forAppointment: true,
     forQueue: true,
     forSales: true,
+    appointment: {}
   }
 
   componentWillMount() {
@@ -207,10 +212,10 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   getNotes = () => {
-    this.props.appointmentNotesActions.getAppointmentNotes(93).then((response) => {
+    this.props.appointmentNotesActions.getAppointmentNotes(this.state.appointment.client.id).then((response) => {
       if (response.data.error) {
-        this.props.navigation.goBack();
-        alert(response.data.error.message);
+        this.props.appointmentNotesActions.setFilteredNotes([]);
+        this.props.appointmentNotesActions.setNotes([]);
       } else {
         const notes = response.data.notes.sort(AppointmentNotesScreen.compareByDate);
         this.props.appointmentNotesActions.setFilteredNotes(notes);
@@ -247,7 +252,8 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   deleteNote(note) {
-    this.props.appointmentNotesActions.deleteAppointmentNotes(93, note.id).then((response) => {
+    const { appointment } = this.props;
+    this.props.appointmentNotesActions.deleteAppointmentNotes(this.state.appointment.client.id, note.id).then((response) => {
       this.getNotes();
     }).catch((error) => {
       console.log(error);
@@ -256,7 +262,8 @@ export default class AppointmentNotesScreen extends Component {
 
 
   undeleteNote(note) {
-    this.props.appointmentNotesActions.undeleteAppointmentNotes(93, note.id).then((response) => {
+    const { appointment } = this.props;
+    this.props.appointmentNotesActions.undeleteAppointmentNotes(this.state.appointment.client.id, note.id).then((response) => {
       this.getNotes();
     }).catch((error) => {
       console.log(error);
@@ -266,6 +273,7 @@ export default class AppointmentNotesScreen extends Component {
   editNote(note) {
     this.props.appointmentNotesActions.setOnEditionNote(note);
     const { navigate } = this.props.navigation;
+    const { item } = this.props.navigation.state.params;
     navigate('AppointmentNote', {
       actionType: 'update',
       note,
@@ -563,7 +571,7 @@ export default class AppointmentNotesScreen extends Component {
           rootStyle={{ backgroundColor: '#727A8F' }}
           handlePress={() => {
             const { navigate } = this.props.navigation;
-            navigate('AppointmentNote', { actionType: 'new' });
+            navigate('AppointmentNote', { actionType: 'new', ...this.props });
           }}
         >
           <SalonIcon

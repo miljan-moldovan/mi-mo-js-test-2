@@ -30,6 +30,13 @@ import HeaderLeftText from '../components/HeaderLeftText';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
+import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import AppointmentNoteScreen from './../screens/appointmentNote';
+import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
+
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
@@ -44,7 +51,64 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: 'Walkout',
       },
     },
-
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    AppointmentFormula: {
+      screen: AppointmentFormula,
+    },
+    AppointmentNotes: {
+      screen: AppoinmentNotes,
+    },
+    AppointmentNote: {
+      screen: AppointmentNoteScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          key: Math.random().toString(),
+          ...rootProps,
+          handlePress: () => { rootProps.navigation.goBack(); },
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          key: Math.random().toString(),
+          params: rootProps.navigation.state.params,
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
+            </View>
+          ),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+          />),
+      }),
+    },
+    NewAppointment: {
+      screen: NewAppointmentScreen,
+    },
     TurnAway: {
       screen: TurnAwayScreen,
       navigationOptions: {
@@ -151,7 +215,7 @@ const QueueStackNavigator = StackNavigator(
         color: '#fff',
         fontWeight: '500',
         // backgroundColor: 'red',
-        height: '100%'
+        height: '100%',
       },
       drawerLabel: props => (
         <SideMenuItem

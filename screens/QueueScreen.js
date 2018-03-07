@@ -31,7 +31,6 @@ import Queue from '../components/Queue';
 import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
-import apiWrapper from '../utilities/apiWrapper';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -190,17 +189,10 @@ class QueueScreen extends React.Component {
   };
 
   _handleWalkInPress = () => {
-    // const { navigate } = this.props.navigation;
-    //
-    // this.props.walkInActions.setEstimatedTime(17);
-    // navigate('WalkIn');
+    const { navigate } = this.props.navigation;
 
-    //    apiWrapper.doRequest('postCookie', { query: { storeId: 1 } }).then((result) => {
-    apiWrapper.doRequest('getQueue', { }).then((result) => {
-      console.log(result);
-    }).catch((error) => {
-      console.log(error);
-    });
+    this.props.walkInActions.setEstimatedTime(17);
+    navigate('WalkIn');
   }
 
   _handleWalkOutPress = () => {

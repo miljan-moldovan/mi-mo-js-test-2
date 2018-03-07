@@ -51,6 +51,8 @@ class AppointmentNoteScreen extends Component {
   componentWillMount() {
     let note = this.state.note;
 
+    const { appointment } = this.props;
+
     if (this.props.navigation.state.params.actionType === 'update') {
       note = JSON.parse(JSON.stringify(this.props.appointmentNotesState.onEditionNote));
 
@@ -60,7 +62,7 @@ class AppointmentNoteScreen extends Component {
         note = cachedForm;
       }
     } else if (this.props.navigation.state.params.actionType === 'new') {
-      const cachedForm = fetchFormCache('AppointmentNoteScreenNew', 93, this.props.formCache);
+      const cachedForm = fetchFormCache('AppointmentNoteScreenNew', appointment.client.id, this.props.formCache);
 
       if (cachedForm) {
         note = cachedForm;
@@ -89,11 +91,12 @@ class AppointmentNoteScreen extends Component {
   saveNote() {
     if (this.isNoteValid()) {
       const notes = this.props.appointmentNotesState.notes;
+      const { appointment } = this.props;
 
       if (this.props.navigation.state.params.actionType === 'new') {
         const note = this.state.note;
         note.notes = note.text;
-        this.props.appointmentNotesActions.postAppointmentNotes(93, note).then((response) => {
+        this.props.appointmentNotesActions.postAppointmentNotes(appointment.client.id, note).then((response) => {
           this.getNotes();
         }).catch((error) => {
           alert(error.message);
@@ -102,7 +105,7 @@ class AppointmentNoteScreen extends Component {
       } else if (this.props.navigation.state.params.actionType === 'update') {
         const note = this.state.note;
         note.notes = note.text;
-        this.props.appointmentNotesActions.putAppointmentNotes(93, note).then((response) => {
+        this.props.appointmentNotesActions.putAppointmentNotes(appointment.client.id, note).then((response) => {
           this.getNotes();
         }).catch((error) => {
           alert(error.message);
@@ -116,10 +119,14 @@ class AppointmentNoteScreen extends Component {
 
 
   getNotes = () => {
-    this.props.appointmentNotesActions.getAppointmentNotes(93).then((response) => {
+    const { appointment } = this.props;
+    this.props.appointmentNotesActions.getAppointmentNotes(appointment.client.id).then((response) => {
       if (response.data.error) {
-        this.props.navigation.goBack();
-        alert(response.data.error.message);
+        // this.props.navigation.goBack();
+        // alert(response.data.error.message);
+
+        this.props.appointmentNotesActions.setFilteredNotes([]);
+        this.props.appointmentNotesActions.setNotes([]);
       } else {
         const notes = response.data.notes.sort(AppointmentNoteScreen.compareByDate);
         this.props.appointmentNotesActions.setFilteredNotes(notes);
