@@ -7,29 +7,21 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-
-const ServiceIcons = (props) => {
-  const { client } = props.item;
-
-  return (
-    <View
-      style={{
-        flexDirection: props.direction ? props.direction : 'row',
-        alignItems: props.align ? props.align : 'center',
-        justifyContent: 'center',
-      }}
-    >
-      {client.member ? star : null}
-      {client.newClientGlobal ? newGlobal : null}
-      {client.newClientLocal ? newLocal : null}
-      {client.birthday ? birthday : null}
-      {props.item.groupId ? (<Group leader={props.item.groupLead} leaderName={props.item.groupLeadName} />) : null }
-
-      {client.attributes && Object.keys(client.attributes).length ? tag : null}
-    </View>
-
-  );
-};
+const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
+  <View style={{
+      flexDirection: props.direction ? props.direction : 'row',
+      alignItems: props.align ? props.align : 'center',
+    justifyContent: 'center',
+}}
+  >
+    {item.membership ? star : null}
+    {item.newGlobal ? newGlobal : null}
+    {item.newLocal ? newLocal : null}
+    {item.birthday ? birthday : null}
+    {item.groupId ? (<Group leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
+    {item.attributes && item.attributes.length ? tag : null}
+  </View>
+);
 export default ServiceIcons;
 
 const styles = StyleSheet.create({

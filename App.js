@@ -42,7 +42,7 @@ export default class App extends Component<{}> {
         blacklist: [
           'walkInReducer',
           'queue',
-          'appointmentFormulasReducer', 'appointmentNotesReducer',
+          'appointmentFormulasReducer', 'appointmentNotesReducer', 'queue',
         ],
         // whitelist: ['auth']
       },
