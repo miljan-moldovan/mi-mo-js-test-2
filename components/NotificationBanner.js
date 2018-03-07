@@ -19,11 +19,9 @@ export class NotificationBanner extends React.Component {
     timeout: null
   }
   componentWillMount() {
-    console.log('NotificationBanner.componentWillMount', this.props.visible);
     this.setState({ visible: this.props.visible });
   }
   componentWillReceiveProps(nextProps: Object) {
-    console.log('NotificationBanner.componentWillReceiveProps', nextProps.visible, this.props.visible);
     if (nextProps.visible && !this.props.visible) {
       // clear any running timeout in case of multiple calls
       if (this.timeout)

@@ -43,7 +43,55 @@ class Queue extends React.Component {
     isVisible: false,
     client: null,
     services: null,
+    data: []
   }
+  componentWillReceiveProps({ data, searchClient, searchProvider, filterText }) {
+    if (data !== this.props.data) {
+      this.setState({ data: data });
+    }
+
+    // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
+    if (searchClient != this.props.searchClient ||
+        searchProvider != this.props.searchProvider ||
+        filterText != this.props.filterText) {
+      this.searchText(filterText, searchClient, searchProvider);
+    }
+  }
+  searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
+    const { data } = this.props;
+    if (query === '' || (!searchClient && !searchProvider)) {
+      this.setState({ data });
+    }
+    let text = query.toLowerCase();
+    // search by the client full name
+    let filteredData = data.filter(({ client, services }) => {
+      if (searchClient) {
+        const fullName = (client.name||'')+' '+(client.middleName||'')+' '+(client.lastName||'');
+        // if this row is a match, we don't need to check providers
+        if (fullName.toLowerCase().match(text))
+          return true;
+      }
+      if (searchProvider) {
+        for (let i = 0; i < services.length; i++) {
+          const { employeeFirstName, employeeLastName } = services[i];
+          const fullName = (employeeFirstName||'')+' '+(employeeLastName||'');
+          // if this provider is a match, we don't need to check other providers
+          if (fullName.toLowerCase().match(text))
+            return true;
+        }
+      }
+      return false;
+    });
+    // if no match, set empty array
+    if (!filteredData || !filteredData.length)
+      this.setState({ data: [] });
+    // if the matched numbers are equal to the original data, keep it the same
+    else if (filteredData.length === data.length)
+      this.setState({ data: this.props.data });
+    // else, set the filtered data
+    else
+      this.setState({ data: filteredData });
+  };
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
@@ -219,7 +267,6 @@ right
   }
   renderNotification = () => {
     const { notificationType, notificationItem, notificationVisible } = this.state;
-    console.log('renderNotification - notificationVisible', notificationVisible);
     let notificationColor, notificationButton, notificationText;
     switch (notificationType) {
       case 'service':
@@ -244,7 +291,16 @@ right
   _keyExtractor = (item, index) => item.id;
 
   render() {
-    console.log('Queue.render', this.props.data);
+    // console.log('Queue.render', this.props.data);
+    const { headerTitle, searchText } = this.props;
+    const numResult = this.state.data.length;
+
+    const header = headerTitle ? (
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{headerTitle}</Text>
+        <Text style={styles.headerCount}>{numResult} {numResult === 1 ? 'Result' : 'Results'}</Text>
+      </View>
+    ) : null;
     return (
       <View style={styles.container}>
         {this.props.loading?(
@@ -254,8 +310,9 @@ right
         ):null}
         <FlatList
           renderItem={this.renderItem}
-          data={this.props.data}
+          data={this.state.data}
           keyExtractor={this._keyExtractor}
+          ListHeaderComponent={header}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -385,5 +442,24 @@ const styles = StyleSheet.create({
     marginRight: 3,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'transparent',
+  },
+  header: {
+    flexDirection: 'row',
+    marginBottom: 6,
+    marginTop: 22,
+    marginHorizontal: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  headerTitle: {
+    fontFamily: 'Roboto-Regular',
+    fontWeight: '500',
+    color: '#4D5067',
+    fontSize: 14
+  },
+  headerCount: {
+    fontFamily: 'Roboto-Regular',
+    color: '#4D5067',
+    fontSize: 11
   },
 });
