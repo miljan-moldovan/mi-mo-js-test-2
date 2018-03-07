@@ -51,7 +51,9 @@ class AppointmentNoteScreen extends Component {
   componentWillMount() {
     let note = this.state.note;
 
-    const { appointment } = this.props;
+    console.log(this.props);
+
+    const { appointment } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params.actionType === 'update') {
       note = JSON.parse(JSON.stringify(this.props.appointmentNotesState.onEditionNote));
@@ -91,7 +93,7 @@ class AppointmentNoteScreen extends Component {
   saveNote() {
     if (this.isNoteValid()) {
       const notes = this.props.appointmentNotesState.notes;
-      const { appointment } = this.props;
+      const { appointment } = this.props.navigation.state.params;
 
       if (this.props.navigation.state.params.actionType === 'new') {
         const note = this.state.note;
@@ -119,7 +121,7 @@ class AppointmentNoteScreen extends Component {
 
 
   getNotes = () => {
-    const { appointment } = this.props;
+    const { appointment } = this.props.navigation.state.params;
     this.props.appointmentNotesActions.getAppointmentNotes(appointment.client.id).then((response) => {
       if (response.data.error) {
         // this.props.navigation.goBack();
@@ -179,74 +181,75 @@ class AppointmentNoteScreen extends Component {
       <View style={styles.container}>
         <View style={{ marginTop: 16, borderColor: 'transparent', borderWidth: 0 }} />
         <InputGroup style={{ flexDirection: 'row' }}>
-          <InputButton
+          {[<InputButton
             onPress={this.handlePressProvider}
             placeholder="Added by"
             value={this.state.note.author}
-          />
+          />]}
         </InputGroup>
         <SectionTitle value="NOTE" />
         <InputGroup>
-          <InputText
+          {[<InputText
             placeholder="Write Note"
             onChangeText={(txtNote) => {
-                const note = this.state.note;
-                note.text = txtNote;
-                this.setState({ note });
-            }}
+                        const note = this.state.note;
+                        note.text = txtNote;
+                        this.setState({ note });
+                    }}
             value={this.state.note.text}
-          />
+          />]}
+
         </InputGroup>
         <SectionTitle value="TYPES" />
         <InputGroup >
-
-          <InputSwitch
+          {[<InputSwitch
             onChange={(state) => {
-              const note = this.state.note;
-              note.forSales = !this.state.forSales;
-              this.setState({ note, forSales: !this.state.forSales });
-             }}
+      const note = this.state.note;
+      note.forSales = !this.state.forSales;
+      this.setState({ note, forSales: !this.state.forSales });
+     }}
             value={this.state.forSales}
             text="Sales"
-          />
+          />,
+            <InputDivider />,
+            <InputSwitch
+              onChange={(state) => {
+      const note = this.state.note;
+      note.forAppointment = !this.state.forAppointment;
+      this.setState({ note, forAppointment: !this.state.forAppointment });
+     }}
+              value={this.state.forAppointment}
+              text="Appointment"
+            />,
 
-          <InputDivider />
-          <InputSwitch
-            onChange={(state) => {
-              const note = this.state.note;
-              note.forAppointment = !this.state.forAppointment;
-              this.setState({ note, forAppointment: !this.state.forAppointment });
-             }}
-            value={this.state.forAppointment}
-            text="Appointment"
-          />
 
+            <InputDivider />,
+            <InputSwitch
+              onChange={(state) => {
+      const note = this.state.note;
+      note.forQueue = !this.state.forQueue;
+      this.setState({ note, forQueue: state });
+     }}
+              value={this.state.forQueue}
+              text="Queue"
+            />]}
 
-          <InputDivider />
-          <InputSwitch
-            onChange={(state) => {
-              const note = this.state.note;
-              note.forQueue = !this.state.forQueue;
-              this.setState({ note, forQueue: state });
-             }}
-            value={this.state.forQueue}
-            text="Queue"
-          />
 
         </InputGroup>
         <SectionDivider />
 
         <InputGroup style={{ flexDirection: 'row' }}>
-          <InputDate
+          {[<InputDate
             placeholder="Expire Date"
             onPress={(selectedDate) => {
-              const { note } = this.state;
-              note.expiration = selectedDate;
+            const { note } = this.state;
+            note.expiration = selectedDate;
 
-              this.setState({ note });
-              }}
+            this.setState({ note });
+            }}
             selectedDate={moment(this.state.note.expiration).isValid() ? moment(this.state.note.expiration).format('DD MMMM YYYY') : 'Optional'}
-          />
+          />]}
+
         </InputGroup>
       </View>
     );

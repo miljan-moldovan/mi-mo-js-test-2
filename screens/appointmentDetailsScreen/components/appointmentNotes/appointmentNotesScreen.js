@@ -277,6 +277,7 @@ export default class AppointmentNotesScreen extends Component {
     navigate('AppointmentNote', {
       actionType: 'update',
       note,
+      appointment: this.props.appointment,
       ...this.props,
     });
   }
@@ -571,7 +572,7 @@ export default class AppointmentNotesScreen extends Component {
           rootStyle={{ backgroundColor: '#727A8F' }}
           handlePress={() => {
             const { navigate } = this.props.navigation;
-            navigate('AppointmentNote', { actionType: 'new', ...this.props });
+            navigate('AppointmentNote', { actionType: 'new', ...this.props, appointment: this.props.appointment });
           }}
         >
           <SalonIcon
