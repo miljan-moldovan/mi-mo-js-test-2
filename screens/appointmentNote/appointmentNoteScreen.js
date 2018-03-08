@@ -206,15 +206,15 @@ class AppointmentNoteScreen extends Component {
     return (
       <View style={styles.container}>
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-          <View style={{ marginTop: 16, borderColor: 'transparent', borderWidth: 0 }} />
-          <InputGroup style={{ flexDirection: 'row' }}>
+          <View style={{ marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 }} />
+          <InputGroup style={{ flexDirection: 'row', height: 44 }}>
             {[<InputButton
               onPress={this.handlePressProvider}
               placeholder="Added by"
               value={this.state.note.author}
             />]}
           </InputGroup>
-          <SectionTitle value="NOTE" />
+          <SectionTitle value="NOTE" style={{ height: 38 }} />
           <InputGroup>
             {[<InputText
               placeholder="Write Note"
@@ -228,9 +228,11 @@ class AppointmentNoteScreen extends Component {
             />]}
 
           </InputGroup>
-          <SectionTitle value="TYPES" />
+          <SectionTitle value="TYPES" style={{ height: 37 }} />
           <InputGroup >
             {[<InputSwitch
+              style={{ height: 43 }}
+              textStyle={{ color: '#000000' }}
               onChange={(state) => {
       const note = this.state.note;
       note.forSales = !this.state.forSales;
@@ -242,6 +244,8 @@ class AppointmentNoteScreen extends Component {
             />,
               <InputDivider />,
               <InputSwitch
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
                 onChange={(state) => {
       const note = this.state.note;
       note.forAppointment = !this.state.forAppointment;
@@ -255,6 +259,8 @@ class AppointmentNoteScreen extends Component {
 
               <InputDivider />,
               <InputSwitch
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
                 onChange={(state) => {
                   const note = this.state.note;
                   note.forQueue = !this.state.forQueue;
@@ -267,7 +273,7 @@ class AppointmentNoteScreen extends Component {
 
 
           </InputGroup>
-          <SectionDivider />
+          <SectionDivider style={{ height: 37 }} />
 
           <InputGroup style={{ flexDirection: 'row' }}>
             {[<InputDate

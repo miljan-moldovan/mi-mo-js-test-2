@@ -80,7 +80,7 @@ const QueueStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
+              <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
             </View>
           ),
         }),
@@ -95,7 +95,7 @@ const QueueStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
+              <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
             </View>
           ),
         }),

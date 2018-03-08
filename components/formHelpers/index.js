@@ -70,8 +70,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 22,
     color: '#727A8F',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     marginLeft: 16,
+    marginTop: 7,
   },
   dateCancelButtonStyle: {
     width: '10%',
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
 });
 
 export const SectionTitle = props => (
-  <View style={{ height: 38, flexDirection: 'column', justifyContent: 'flex-end' }} >
+  <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
   </View>
 );
@@ -94,8 +95,8 @@ SectionTitle.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-export const SectionDivider = () => (
-  <View style={{ height: 35 }} />
+export const SectionDivider = props => (
+  <View style={[{ height: 35 }, props.style]} />
 );
 
 
@@ -257,8 +258,8 @@ export class InputSwitch extends React.Component {
 
   render() {
     return (
-      <View style={[styles.inputRow, { justifyContent: 'space-between' }]}>
-        <Text style={styles.labelText}>{this.props.text}</Text>
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
+        <Text style={[styles.labelText, this.props.textStyle]}>{this.props.text}</Text>
 
         <Switch
           onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}

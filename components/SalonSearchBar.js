@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 5,
     alignItems: 'center',
-    height: 35,
+    height: 36,
     flex: 4,
   },
   searchIconRight: {
@@ -90,7 +90,7 @@ class SalonSearchBar extends Component {
 
   render() {
     return (
-      <View style={[styles.container]}>
+      <View style={[styles.container, this.props.containerStyle]}>
         <View style={[styles.searchBar,
           {
           backgroundColor: this.props.backgroundColor,
@@ -185,6 +185,7 @@ SalonSearchBar.propTypes = {
   onFocus: PropTypes.func,
   onChangeText: PropTypes.func.isRequired,
   focusOnMount: PropTypes.bool,
+  containerStyle: View.propTypes.style,
 };
 
 SalonSearchBar.defaultProps = {
@@ -198,6 +199,7 @@ SalonSearchBar.defaultProps = {
   placeHolderText: 'Search1',
   onFocus: () => {},
   focusOnMount: false,
+  containerStyle: {},
 };
 
 export default SalonSearchBar;
