@@ -26,6 +26,10 @@ const styles = StyleSheet.create({
 });
 
 export default class ModifyServiceScreen extends React.Component {
+  static navigationOptions = rootProps => ({
+    headerTitle: rootProps.navigation.state.params.actionType === 'new' ?
+      'Add Service' : 'Modify Service',
+  });
   constructor(props) {
     super(props);
 

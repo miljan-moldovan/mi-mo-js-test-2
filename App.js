@@ -28,6 +28,8 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
+// console.disableYellowBox = true; // Disable annoying yellow box notifications
+
 export default class App extends Component<{}> {
   state = {
     isLoadingComplete: true,

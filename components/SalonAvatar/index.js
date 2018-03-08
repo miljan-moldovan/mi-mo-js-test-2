@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View, Image, StyleSheet,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    width: '100%',
+    // width: '100%',
   },
 });
 
@@ -76,6 +76,11 @@ export default class SalonAvatar extends React.Component {
   }
 
   render() {
+    const badgeSize = this.state.totalWidth / 2;
+    const badgeBorderRadius = badgeSize / 2;
+    const badgeOffsetTop = badgeSize - (badgeSize / 5);
+    const badgeOffsetRight = -(badgeSize / 1.5);
+
     return (
       <View style={[styles.wrapperStyle, this.wrapperStyle]}>
         <View style={{
@@ -97,8 +102,35 @@ export default class SalonAvatar extends React.Component {
             }}
             source={this.state.image}
           />
+          {this.props.hasBadge && (
+            <View style={{
+              position: 'absolute',
+              width: badgeSize,
+              height: badgeSize,
+              borderRadius: badgeBorderRadius,
+              backgroundColor: this.props.badgeColor,
+              top: badgeOffsetTop,
+              right: badgeOffsetRight,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            >
+              {this.props.badgeComponent}
+            </View>
+          )}
         </View>
       </View>
     );
   }
 }
+SalonAvatar.propTypes = {
+  badgeColor: PropTypes.string,
+  badgeComponent: PropTypes.element,
+  hasBadge: PropTypes.bool,
+};
+SalonAvatar.defaultProps = {
+  badgeColor: 'white',
+  badgeComponent: null,
+  hasBadge: false,
+};
+

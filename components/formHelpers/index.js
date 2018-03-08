@@ -98,7 +98,7 @@ export const InputGroup = props => (
 );
 InputGroup.propTypes = {
   style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-  children: PropTypes.element,
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
 };
 InputGroup.defaultProps = {
   style: false,
@@ -106,43 +106,39 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
-  <TouchableOpacity onPress={props.onPress} style={props.style}>
-    <View style={{ alignSelf: 'stretch' }}>
-      <View style={styles.inputRow}>
-        <View style={{ flexDirection: 'row', alignSelf: 'stretch', alignItems: 'center' }}>
-          <View style={{ alignSelf: 'stretch', flexDirection: 'row' }}>
-            { props.placeholder && (
-              <Text style={styles.labelText}>{props.placeholder}</Text>
-            )}
-            {
-              typeof props.value === 'string'
-              ? (
-                <Text style={styles.inputText}>{props.value}</Text>
-              ) :
-                props.value
-            }
-
-          </View>
-          {props.children}
-          {!props.noIcon && (
-            <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-          )}
-        </View>
-      </View>
+  <TouchableOpacity
+    style={[styles.inputRow, props.style, { justifyContent: 'center' }]}
+    onPress={props.onPress}
+  >
+    { props.label && (
+      <Text style={styles.labelText}>{props.label}</Text>
+    )}
+    <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
+      {
+        typeof props.value === 'string'
+        ? (
+          <Text style={styles.inputText}>{props.value}</Text>
+        ) :
+          props.value
+      }
+      {props.children}
     </View>
+    {!props.noIcon && (
+      <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+    )}
   </TouchableOpacity>
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   style: View.propTypes.style,
-  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
+  label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,
 };
 InputButton.defaultProps = {
   style: {},
-  placeholder: false,
+  label: false,
   value: false,
   noIcon: false,
   children: null,
@@ -291,11 +287,11 @@ export class ServiceInput extends React.Component {
     const value = this.state.selectedService ? this.state.selectedService.name : null;
     return (
       <TouchableOpacity
-        style={[styles.inputRow, {justifyContent: 'center'}]}
+        style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Service</Text>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
@@ -330,11 +326,11 @@ export class ProviderInput extends React.Component {
     const value = this.state.selectedProvider ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : null;
     return (
       <TouchableOpacity
-        style={[styles.inputRow, {justifyContent: 'center'}]}
+        style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Provider</Text>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
@@ -369,11 +365,11 @@ export class PromotionInput extends React.Component {
     const value = this.state.selectedPromotion ? this.state.selectedPromotion.name : null;
     return (
       <TouchableOpacity
-        style={[styles.inputRow, {justifyContent: 'center'}]}
+        style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Promotion</Text>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>

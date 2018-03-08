@@ -26,11 +26,13 @@ import AppointmentFormula from './../screens/appointmentDetailsScreen/components
 import AppointmentNoteScreen from './../screens/appointmentNote';
 import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
+import ModifyServiceScreen from './../screens/modifyServiceScreen';
+
 const AppointmentStackNavigator = StackNavigator(
   {
-    AppointmentDetails: {
-      screen: AppointmentDetailsScreen,
-    },
+    // AppointmentDetailss: {
+    //   screen: AppointmentDetailsScreen,
+    // },
     AppointmentFormula: {
       screen: AppointmentFormula,
     },
@@ -86,6 +88,9 @@ const AppointmentStackNavigator = StackNavigator(
     NewAppointment: {
       screen: NewAppointmentScreen,
     },
+    // ModifyService2: {
+    //   screen: ModifyServiceScreen,
+    // },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({

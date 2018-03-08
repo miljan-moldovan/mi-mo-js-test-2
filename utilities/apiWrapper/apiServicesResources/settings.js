@@ -1,13 +1,14 @@
 import apiConstants from '../apiConstants';
 
+
 const resources = {
-  getClients: {
-    path: 'Clients',
+  getSettings: {
+    path: 'Settings',
     method: 'get',
     expiration: apiConstants.expiration,
   },
-  clientFormulas: {
-    path: 'Clients/:id/NotesAndFormulas',
+  getSettingsByName: {
+    path: 'Settings/ByName/:name',
     method: 'get',
     expiration: apiConstants.expiration,
   },

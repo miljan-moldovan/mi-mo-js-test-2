@@ -25,21 +25,21 @@ import {
   UNCOMBINE,
   UPDATE_GROUPS,
 } from './constants';
+import apiWrapper from '../utilities/apiWrapper';
 
-const queueData = require('./queue.json');
+const queueData = require('./queueNew.json');
 
-export const receiveQueue = () => (dispatch) => {
-  console.log('receiveQueue');
+export const receiveQueue = () => async (dispatch: Object => void) => {
   dispatch({type: QUEUE});
-  dispatch({type: QUEUE_RECEIVED, data: queueData.data});
-  //axios.get('http://192.168.1.134:4000/api/queue')
-  // axios.get('queue.json')
-  //   .then(({data}) => {
-  //     dispatch({type: QUEUE_RECEIVED, data: data.data});
-  //   })
-  //   .catch((error) => {
-  //     dispatch({type: QUEUE_FAILED, error});
-  //   });
+  console.log('receiveQueue begin');
+  try {
+    let data = await apiWrapper.doRequest('getQueue', {});
+    console.log('receiveQueue', data);
+    dispatch({type: QUEUE_RECEIVED, data });
+  } catch (error) {
+    console.log('receiveQueue error', JSON.stringify(error, null, 2));
+    dispatch({type: QUEUE_FAILED, error});
+  }
 }
 export function deleteQueueItem(id) {
   return {
@@ -120,10 +120,28 @@ export function cancelCombine() {
     type: CANCEL_COMBINE
   }
 }
-
-export function finishCombine() {
-  return {
-    type: FINISH_COMBINE
+export const finishCombine = (combiningClients: Array<Object>) => async (dispatch: Object => void) => {
+  try {
+    dispatch({type: QUEUE});
+    const data = {
+      clientQueueIdList: [],
+      payingClientQueueId: null
+    };
+    combiningClients.map((item) => {
+      data.clientQueueIdList.push(item.id);
+      if (item.groupLead) {
+        data.payingClientQueueId = item.id;
+      }
+    });
+    console.log('finishCombine1', data);
+    let response = await apiWrapper.doRequest('postQueueGroup', {
+      body: JSON.stringify(data)
+    });
+    console.log('finishCombine response', response);
+    dispatch(receiveQueue());
+  } catch (error) {
+    console.log(error);
+    dispatch({type: QUEUE_FAILED, error});
   }
 }
 
@@ -141,10 +159,18 @@ export function updateGroupLead(data) {
   }
 }
 
-export function uncombine(groupId) {
-  return {
-    type: UNCOMBINE,
-    data: {groupId}
+export const uncombine = (groupId: number) => async (dispatch: Object => void) => {
+  try {
+    dispatch({type: QUEUE});
+    console.log('uncombine', groupId);
+    let response = await apiWrapper.doRequest('deleteQueueGroup', {
+      path: { groupId }
+    });
+    console.log('uncombine response', response);
+    dispatch(receiveQueue());
+    // setTimeout(()=>dispatch(receiveQueue()), 1000);
+  } catch (error) {
+    dispatch({type: QUEUE_FAILED, error});
   }
 }
 

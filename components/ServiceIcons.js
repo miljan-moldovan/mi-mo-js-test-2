@@ -27,7 +27,6 @@ const ServiceIcons = (props) => {
 
       {client.attributes && Object.keys(client.attributes).length ? tag : null}
     </View>
-
   );
 };
 export default ServiceIcons;

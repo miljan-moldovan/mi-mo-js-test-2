@@ -28,16 +28,22 @@ import WalkOutScreen from '../screens/walkOutScreen';
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
+import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
-      // screen: QueueScreen,
-      screen: ModifyServiceScreen,
+      screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    Service: {
+      screen: ModifyServiceScreen,
     },
     Walkout: {
       screen: WalkOutScreen,
@@ -129,19 +135,25 @@ const QueueStackNavigator = StackNavigator(
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#115ECD',
-        paddingLeft: 10,
-        paddingRight: 10,
-        height: 44,
+        paddingHorizontal: 10,
+        paddingVertical: 14,
+        paddingTop: 20,
+        // height: 44,
+        // height: 35,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,
         borderBottomWidth: 0,
-
+        justifyContent: 'center',
+        // alignItems: 'center'
       },
       headerTitleStyle: {
         fontFamily: 'Roboto-Regular',
         fontSize: 17,
         color: '#fff',
+        fontWeight: '500',
+        // backgroundColor: 'red',
+        height: '100%',
       },
       drawerLabel: props => (
         <SideMenuItem

@@ -11,10 +11,12 @@ export default {
     UnknownError: 100,
   },
   // Must clean cache after doing these requests
-  cleanCache: ['postQueue', 'postClientNote'],
+  cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup', 'postClientNote'],
   // Must clean these Dependencies cache after doing these requests
   cacheCleaningDependencies: {
     postQueue: ['getQueue'],
+    postQueueGroup: ['getQueue', 'getQueueGroups'],
+    deleteQueueGroup: ['getQueue', 'getQueueGroups'],
     postClientNote: ['getClientNotes'],
   },
   // Global expiration time
