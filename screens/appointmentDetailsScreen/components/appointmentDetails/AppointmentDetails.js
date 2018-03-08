@@ -385,7 +385,6 @@ export default class AppointmentDetails extends React.Component {
   }
 
   render() {
-    debugger
     if (this.state.appointment === null) {
       return null;
     }
