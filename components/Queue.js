@@ -176,11 +176,16 @@ class Queue extends React.Component {
         appointment: item, client: item.client, services: item.services, isVisible: true,
       });
     }
+    console.log('lalalala');
+    console.log(item);
     this.props.navigation.navigate('AppointmentDetails', { item });
   }
 
   handlePressModify = () => {
     const { appointment } = this.state;
+
+    console.log('lololo');
+    console.log(appointment);
 
     this.hideDialog();
     if (appointment !== null) {
@@ -199,13 +204,23 @@ class Queue extends React.Component {
 
   renderItem = (row) => {
     const item: QueueItem = row.item;
+
+
     const index = row.index;
     // const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
     const groupLeaderName = this.getGroupLeaderName(item);
     return (
     // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
-      <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation.navigate('AppointmentDetails', { item })} key={item.id}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => {
+        console.log('lelelel');
+        console.log(item);
+        this.props.navigation.navigate('AppointmentDetails', { item });
+}}
+        key={item.id}
+      >
         <View style={styles.itemSummary}>
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>

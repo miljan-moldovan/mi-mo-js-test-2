@@ -28,6 +28,9 @@ import AppointmentNoteHeader from '../screens/appointmentNote/components/appoint
 
 const AppointmentStackNavigator = StackNavigator(
   {
+    Appointments: {
+      screen: AppointmentScreen,
+    },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
     },
@@ -48,7 +51,7 @@ const AppointmentStackNavigator = StackNavigator(
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
+          handlePress: () => { rootProps.navigation.goBack(); },
           button: (
             <View style={{
                   flex: 1,
@@ -72,7 +75,7 @@ const AppointmentStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.3)', fontFamily: 'OpenSans-Regular' }}>Save</Text>
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
             </View>
           ),
         }),

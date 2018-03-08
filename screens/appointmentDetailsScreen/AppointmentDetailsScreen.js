@@ -67,7 +67,7 @@ export default class AppointmentDetailsScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity onPress={() => { navigation.navigate('Queue'); }}>
+        <TouchableOpacity onPress={() => { navigation.goBack(); }}>
           <Text style={{ fontSize: 14, color: '#fff' }}>
             <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
           </Text>
@@ -84,9 +84,13 @@ export default class AppointmentDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
     const { params } = this.props.navigation.state;
+
+
+    this.appointment = params.item ? params.item : null;
+
     this.state = {
       index: 0,
-      appointment: params && params.appointment ? params.appointment : null,
+      appointment: params && params.item ? params.item : null,
       routes: [
         { key: '0', title: 'Appt. Details', icon: 'pencil' },
         { key: '1', title: 'Notes', icon: 'file' },
@@ -121,9 +125,9 @@ export default class AppointmentDetailsScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <AppointmentDetails appointment={this.state.appointment} navigation={this.props.navigation} />,
-    1: () => <AppoinmentNotes appointment={this.state.appointment} navigation={this.props.navigation} />,
-    2: () => <AppointmentFormulas appointment={this.state.appointment} navigation={this.props.navigation} />,
+    0: () => <AppointmentDetails appointment={this.appointment} navigation={this.props.navigation} />,
+    1: () => <AppoinmentNotes appointment={this.appointment} navigation={this.props.navigation} />,
+    2: () => <AppointmentFormulas appointment={this.appointment} navigation={this.props.navigation} />,
   });
 
   render() {
