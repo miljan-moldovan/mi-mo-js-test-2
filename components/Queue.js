@@ -173,23 +173,19 @@ class Queue extends React.Component {
   handlePress = (item) => {
     if (!this.state.isVisible) {
       this.setState({
-        appointment: item, client: item.client, services: item.services, isVisible: true,
+        appointment: item,
+        client: item.client,
+        services: item.services,
+        isVisible: true,
       });
     }
-    console.log('lalalala');
-    console.log(item);
-    this.props.navigation.navigate('AppointmentDetails', { item });
   }
 
   handlePressModify = () => {
     const { appointment } = this.state;
-
-    console.log('lololo');
-    console.log(appointment);
-
     this.hideDialog();
     if (appointment !== null) {
-      this.props.navigation.navigate('AppointmentDetails', { appointment });
+      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment } });
     }
   }
 
@@ -214,11 +210,7 @@ class Queue extends React.Component {
     // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
       <TouchableOpacity
         style={styles.itemContainer}
-        onPress={() => {
-        console.log('lelelel');
-        console.log(item);
-        this.props.navigation.navigate('AppointmentDetails', { item });
-}}
+        onPress={() => this.handlePress(item)}
         key={item.id}
       >
         <View style={styles.itemSummary}>
@@ -250,7 +242,6 @@ class Queue extends React.Component {
     });
   }
   onDismissNotification = () => {
-    console.log('onDismissNotification');
     this.setState({ notificationVisible: false });
   }
   renderNotification = () => {
