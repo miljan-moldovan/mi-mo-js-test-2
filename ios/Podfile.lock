@@ -2,74 +2,15 @@ PODS:
   - Crashlytics (3.10.1):
     - Fabric (~> 1.7.5)
   - Fabric (1.7.5)
-  - KSCrash/Core (1.15.18):
-    - KSCrash/Reporting/Filters/Basic
-  - KSCrash/Recording (1.15.18):
-    - KSCrash/Recording/Tools (= 1.15.18)
-  - KSCrash/Recording/Tools (1.15.18)
-  - KSCrash/Reporting/Filters/Base (1.15.18):
-    - KSCrash/Recording
-  - KSCrash/Reporting/Filters/Basic (1.15.18):
-    - KSCrash/Recording
-    - KSCrash/Reporting/Filters/Base
-  - Picker (4.3.5):
-    - Picker/Core (= 4.3.5)
-  - Picker/Core (4.3.5)
-  - React (0.52.1):
-    - React/Core (= 0.52.1)
-  - React/Core (0.52.1):
-    - yoga (= 0.52.1.React)
-  - React/DevSupport (0.52.1):
-    - React/Core
-    - React/RCTWebSocket
-  - React/fishhook (0.52.1)
-  - React/RCTBlob (0.52.1):
-    - React/Core
-  - React/RCTWebSocket (0.52.1):
-    - React/Core
-    - React/fishhook
-    - React/RCTBlob
-  - Sentry (3.10.0):
-    - Sentry/Core (= 3.10.0)
-    - Sentry/KSCrash (= 3.10.0)
-  - Sentry/Core (3.10.0)
-  - Sentry/KSCrash (3.10.0):
-    - KSCrash/Core (~> 1.15.12)
-  - SentryReactNative (0.33.0):
-    - React
-    - Sentry (~> 3.10.0)
-    - Sentry/KSCrash (~> 3.10.0)
-  - yoga (0.52.1.React)
 
 DEPENDENCIES:
   - Crashlytics
   - Fabric
-  - Picker (from `../node_modules/react-native-picker`)
-  - React/Core (from `../node_modules/react-native`)
-  - React/DevSupport (from `../node_modules/react-native`)
-  - SentryReactNative (from `../node_modules/react-native-sentry`)
-  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
-
-EXTERNAL SOURCES:
-  Picker:
-    :path: ../node_modules/react-native-picker
-  React:
-    :path: ../node_modules/react-native
-  SentryReactNative:
-    :path: ../node_modules/react-native-sentry
-  yoga:
-    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   Crashlytics: aee1a064cbbf99b32efa3f056a5f458d846bc8ff
   Fabric: ae7146a5f505ea370a1e44820b4b1dc8890e2890
-  KSCrash: 5394936f41e5c1ef7b79cf79b30d53299b0c160e
-  Picker: f11a9887a32fb5112a31851bbf523362af0f7bbc
-  React: 43e97926f429d846050880666de1809e22dd5cc5
-  Sentry: 546079394a729c35ba8c10332942c25f96cac921
-  SentryReactNative: a306955d6c4b45954ff04d2fbeaa536f947f5ba4
-  yoga: 55da126afc384965b96bff46652464373b330add
 
-PODFILE CHECKSUM: d1ada82b5cdb7dd97fdef14b7ebb537c8d45ec37
+PODFILE CHECKSUM: a798db6430c24db38835cfe460eefcd7b916c2b3
 
 COCOAPODS: 1.4.0

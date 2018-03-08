@@ -7,20 +7,8 @@ target 'SalonUltimateRN' do
 
   # Pods for SalonUltimateRN
 
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'DevSupport',
-    'Core',
-  ]
-
-  pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
-
   pod 'Fabric'
   pod 'Crashlytics'
-
-
-  pod 'SentryReactNative', :path => '../node_modules/react-native-sentry'
-
-  pod 'Picker', :path => '../node_modules/react-native-picker'
 
   target 'SalonUltimateRNTests' do
     inherit! :search_paths
