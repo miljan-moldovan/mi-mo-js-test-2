@@ -71,7 +71,7 @@ const QueueStackNavigator = StackNavigator(
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,
-          handlePress: () => { rootProps.navigation.goBack(); },
+          handlePress: () => { rootProps.navigation.state.params.handleGoBack(); },
           button: (
             <View style={{
                   flex: 1,

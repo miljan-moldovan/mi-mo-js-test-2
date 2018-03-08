@@ -17,6 +17,7 @@
     "react-native": "0.52.1",
     "react-native-calendars": "^1.17.1",
     "react-native-fontawesome": "^5.7.0",
+    "react-native-keyboard-aware-scroll-view": "^0.4.4",
     "react-native-largelist": "^1.2.6",
     "react-native-modal": "^5.0.0",
     "react-native-modal-datetime-picker": "4.13.0",

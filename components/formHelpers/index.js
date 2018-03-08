@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
-  ViewPropTypes
+  ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -21,13 +21,14 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderTopWidth: 1 / 2,
+    borderBottomWidth: 1 / 2,
     borderTopColor: '#C0C1C6',
     borderBottomColor: '#C0C1C6',
     alignSelf: 'stretch',
     flexDirection: 'column',
     paddingLeft: 16,
+    justifyContent: 'flex-start',
   },
   inputRow: {
     height: 44,
@@ -53,7 +54,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#110A24',
     fontFamily: 'Roboto-Medium',
-
   },
   iconStyle: {
     fontSize: 20,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   textArea: {
-    height: 60,
+    minHeight: 60,
     paddingVertical: 12,
     paddingTop: 12,
     paddingRight: 16,
@@ -194,9 +194,9 @@ export const InputText = props => (
       {...props}
       style={styles.textArea}
       multiline
+      autoGrow
       numberOfLines={2}
       placeholderTextColor="#727A8F"
-      maxHeight={60}
       placeholder={props.placeholder}
     />
   </View>
