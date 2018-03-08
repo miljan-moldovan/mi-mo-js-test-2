@@ -8,11 +8,11 @@ import {
 
 import { connect } from 'react-redux';
 // import * as actions from '../actions/provider';
-import SideMenuItem from '../../components/SideMenuItem';
+import SideMenuItem from '../../../components/SideMenuItem';
 
-import ProviderList from '../../components/providerList';
+import ProviderList from './ProviderList';
 
-const mockDataProviders = require('../../mockData/providers.json');
+const mockDataProviders = require('../../../mockData/providers.json');
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const iconAppointMenu = require('../../assets/images/sidemenu/icon_appoint_menu.png');
+const iconAppointMenu = require('../../../assets/images/sidemenu/icon_appoint_menu.png');
 
 class ProviderScreen extends React.Component {
   static navigationOptions = {

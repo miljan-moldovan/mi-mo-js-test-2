@@ -110,9 +110,10 @@ export const InputButton = props => (
     style={[styles.inputRow, {justifyContent: 'center'}]}
     onPress={props.onPress}
   >
-    { props.label && (
+    { props.label && typeof props.label === 'string'
+    ? (
       <Text style={styles.labelText}>{props.label}</Text>
-    )}
+    ) : props.label }
     <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
       {
         typeof props.value === 'string'
