@@ -215,8 +215,6 @@ class Queue extends React.Component {
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => {
-        console.log('lelelel');
-        console.log(item);
         this.props.navigation.navigate('AppointmentDetails', { item });
 }}
         key={item.id}
@@ -250,7 +248,6 @@ class Queue extends React.Component {
     });
   }
   onDismissNotification = () => {
-    console.log('onDismissNotification');
     this.setState({ notificationVisible: false });
   }
   renderNotification = () => {
