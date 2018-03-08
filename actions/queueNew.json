@@ -97,6 +97,15 @@
           "promoCode": null,
           "promoId": -1,
           "price": 10
+        },{
+          "serviceId": 61,
+          "serviceName": "Polish Change Hand",
+          "employeeId": 20,
+          "employeeFirstName": "Betsy",
+          "employeeLastName": "Johnson",
+          "promoCode": null,
+          "promoId": -1,
+          "price": 10
         }
       ],
       "totalPrice": 10,
