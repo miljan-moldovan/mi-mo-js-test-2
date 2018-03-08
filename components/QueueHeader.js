@@ -18,21 +18,8 @@ import {
   TextInput
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-
-import { Button } from 'native-base';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import * as actions from '../actions/queue.js';
-import * as settingsActions from '../actions/settings.js';
-import walkInActions from '../actions/walkIn';
-import SideMenuItem from '../components/SideMenuItem';
-import Queue from '../components/Queue';
 
-import FloatingButton from '../components/FloatingButton';
-import SalonModal from '../components/SalonModal';
-import SalonTextInput from '../components/SalonTextInput';
 
 import apiWrapper from '../utilities/apiWrapper';
 
@@ -79,7 +66,7 @@ export default class QueueHeader extends React.Component {
             <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
           </View>
           <TouchableOpacity onPress={this.onSearchCancel}>
-            <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginBottom: 10, marginLeft: 6 }]}>Cancel</Text>
+            <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginBottom: 6, marginLeft: 6 }]}>Cancel</Text>
           </TouchableOpacity>
         </SafeAreaView>
       ) : (
@@ -137,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(12,70,153,1)',
     height: 36,
     marginHorizontal: 6,
-    marginBottom: 10,
+    marginBottom: 6,
     alignItems: 'center',
     // justifyContent: 'center',
     flexDirection: 'row',

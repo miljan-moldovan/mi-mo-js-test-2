@@ -68,11 +68,15 @@ class QueueScreen extends React.Component {
     searchMode: false,
     searchText: '',
     searchType: '',
+    searchWaitingCount: 0,
+    searchServiceCount: 0,
     routes: [
       { key: WAITING, title: 'Waiting' },
       { key: SERVICED, title: 'In Service' },
     ],
   }
+  searchWaitingRef = null;
+  searchServicingRef = null;
 
   componentWillMount() {
     this.props.actions.receiveQueue();
@@ -162,11 +166,20 @@ class QueueScreen extends React.Component {
         return route;
     }
   }
-  handleSearchClients = () => {console.log('handleSearchClients'); this.setState({ searchType: SEARCH_PROVIDERS });}
-  handleSearchProviders = () => {console.log('handleSearchProviders'); this.setState({ searchType: SEARCH_CLIENTS });}
+  handleSearchClients = () => {
+    console.log('handleSearchClients');
+    this.setState({ searchType: SEARCH_CLIENTS });
+  }
+  handleSearchProviders = () => {
+    console.log('handleSearchProviders');
+    this.setState({ searchType: SEARCH_PROVIDERS });
+  }
+  updateSearchWaitingCount = (searchWaitingCount) => this.setState({ searchWaitingCount });
+  updateSearchServiceCount = (searchServiceCount) => this.setState({ searchServiceCount });
+
   _renderSearchResults = () => {
     const { navigation, waitingQueue, serviceQueue, groups, loading } = this.props;
-    const { searchType, searchText: filterText } = this.state;
+    const { searchType, searchWaitingCount, searchServiceCount, searchText: filterText } = this.state;
     const p = {
       groups, navigation, loading, filterText,
       searchClient: searchType === SEARCH_CLIENTS,
@@ -174,13 +187,38 @@ class QueueScreen extends React.Component {
     };
     const active = { backgroundColor: 'white'};
     const activeText = { color: '#115ECD' };
+    console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
         <ScrollView style={{marginTop: 40}}>
-          <Queue data={waitingQueue} headerTitle="Waiting" {...p} />
-          <Queue data={serviceQueue} headerTitle="In Service" {...p} />
+          { !searchWaitingCount && !searchServiceCount ? (
+            <View style={styles.searchEmpty}>
+              <View style={styles.searchEmptyIconContainer}>
+                <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome>
+              </View>
+              <Text style={styles.searchEmptyText}>
+                Results matching <Text style={{color: 'black'}}>“{filterText}”</Text> were not found.
+              </Text>
+              <Text style={styles.searchEmptyTextSmall}>
+                Check your spelling and try again or tap on one of the suggestions below
+              </Text>
+            </View>
+          ) : null }
+          <Queue
+            onChangeFilterResultCount={this.updateSearchWaitingCount}
+            data={waitingQueue}
+            headerTitle={ searchWaitingCount || searchServiceCount ? "Waiting" : undefined }
+            {...p}
+          />
+          <Queue
+            onChangeFilterResultCount={this.updateSearchServiceCount}
+            data={serviceQueue}
+            headerTitle={ searchWaitingCount || searchServiceCount ? "In Service" : undefined }
+            {...p}
+          />
         </ScrollView>
         <View style={styles.searchTypeContainer}>
+          {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
           <View style={styles.searchType}>
             <TouchableOpacity
               style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
@@ -575,4 +613,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  searchEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    padding: 60
+  },
+  searchEmptyText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#727A8F',
+    fontFamily: 'Roboto-Regular',
+    marginVertical: 20
+  },
+  searchEmptyTextSmall: {
+    fontSize: 11,
+    color: '#727A8F',
+    fontFamily: 'Roboto-Regular',
+  },
+  searchEmptyIcon: {
+    fontSize: 50,
+    color: '#E3E4E5',
+  },
+  searchEmptyIconContainer: {
+    width: 100,
+    height: 100,
+    borderWidth: 6,
+    borderRadius: 50,
+    borderColor: '#E3E4E5',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 });

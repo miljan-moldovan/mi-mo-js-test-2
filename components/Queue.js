@@ -46,11 +46,16 @@ class Queue extends React.Component {
     services: null,
     data: []
   }
+  componentWillMount() {
+    const { data, searchClient, searchProvider, filterText } = this.props;
+    this.setState({ data });
+    if (searchClient || searchProvider)
+      this.searchText(filterText, searchClient, searchProvider);
+  }
   componentWillReceiveProps({ data, searchClient, searchProvider, filterText }) {
     if (data !== this.props.data) {
       this.setState({ data: data });
     }
-
     // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
     if (searchClient != this.props.searchClient ||
         searchProvider != this.props.searchProvider ||
@@ -58,10 +63,17 @@ class Queue extends React.Component {
       this.searchText(filterText, searchClient, searchProvider);
     }
   }
+  onChangeFilterResultCount = () => {
+    console.log('onChangeFilterResultCount', this.state.data.length);
+    if (this.props.onChangeFilterResultCount)
+      this.props.onChangeFilterResultCount(this.state.data.length);
+  }
   searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
     const { data } = this.props;
+    const prevCount = this.state.data.length;
+    console.log('searchText prevCount', prevCount);
     if (query === '' || (!searchClient && !searchProvider)) {
-      this.setState({ data });
+      this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
     }
     let text = query.toLowerCase();
     // search by the client full name
@@ -85,13 +97,13 @@ class Queue extends React.Component {
     });
     // if no match, set empty array
     if (!filteredData || !filteredData.length)
-      this.setState({ data: [] });
+      this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined);
     // if the matched numbers are equal to the original data, keep it the same
     else if (filteredData.length === data.length)
-      this.setState({ data: this.props.data });
+      this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined);
     // else, set the filtered data
     else
-      this.setState({ data: filteredData });
+      this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined);
   };
 
   handlePressSummary = {
