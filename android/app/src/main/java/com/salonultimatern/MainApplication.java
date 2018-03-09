@@ -3,9 +3,10 @@ package com.salonultimatern;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.beefe.picker.PickerViewPackage;
+import io.sentry.RNSentryPackage;
 import com.actionsheet.ActionSheetPackage;
 import com.horcrux.svg.SvgPackage;
-import com.beefe.picker.PickerViewPackage;
 import com.rnfingerprint.FingerprintAuthPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -27,9 +28,10 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new PickerViewPackage(),
+            new RNSentryPackage(MainApplication.this),
             new ActionSheetPackage(),
             new SvgPackage(),
-            new PickerViewPackage(),
             new FingerprintAuthPackage()
       );
     }

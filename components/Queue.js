@@ -176,10 +176,9 @@ class Queue extends React.Component {
 
   handlePressModify = () => {
     const { appointment } = this.state;
-
     this.hideDialog();
     if (appointment !== null) {
-      this.props.navigation.navigate('AppointmentDetails', { appointment });
+      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment } });
     }
   }
 
@@ -212,6 +211,8 @@ class Queue extends React.Component {
 
   renderItem = (row) => {
     const item: QueueItem = row.item;
+
+
     const index = row.index;
     const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
@@ -248,7 +249,6 @@ class Queue extends React.Component {
     });
   }
   onDismissNotification = () => {
-    console.log('onDismissNotification');
     this.setState({ notificationVisible: false });
   }
   renderNotification = () => {

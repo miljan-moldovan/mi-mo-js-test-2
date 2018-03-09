@@ -1,34 +1,32 @@
 // @flow
 import {
-  STORE_FORM, PURGE_FORM
+  STORE_FORM, PURGE_FORM,
 } from '../actions/constants';
 
 const initialState = {
 };
 
 export default (state: Object = initialState, action: Object) => {
-  const {type, data, error} = action;
-  console.log('***** formCache.reducer', type, data, error);
+  const { type, data, error } = action;
 
-  switch(type) {
+  switch (type) {
     case STORE_FORM:
       return {
         ...state,
         [data.formIdentifier]: {
           ...state[data.formIdentifier],
-          [data.itemIdentifier]: data.formState
-        }
+          [data.itemIdentifier]: data.formState,
+        },
       };
     case PURGE_FORM:
       return {
         ...state,
         [data.formIdentifier]: {
           ...state[data.formIdentifier],
-          [data.itemIdentifier]: undefined
-        }
+          [data.itemIdentifier]: undefined,
+        },
       };
     default:
       return state;
   }
-
-}
+};

@@ -3,6 +3,7 @@ import { View, StyleSheet, Animated, TouchableOpacity, Text, ScrollView, FlatLis
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import ListItem from './QueueListItemSummary';
+import SalonIcon from '../components/SalonIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,12 +22,13 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'flex-end',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 19,
   },
   body: {
     backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 17,
+    paddingTop: 15,
+    //height: 329,
   },
   btnText: {
     color: '#fff',
@@ -44,11 +46,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  dataContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
   infoIcon: {
     color: '#115ECD',
     fontSize: 20,
@@ -60,7 +57,7 @@ const styles = StyleSheet.create({
   },
   angleIcon: {
     fontSize: 12,
-    marginHorizontal: 5,
+    marginHorizontal: 8,
     color: '#111415',
   },
   timeText: {
@@ -78,13 +75,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     marginTop: 10,
-    maxHeight: 180,
+    maxHeight: 172,
   },
   btnContainer: {
-    marginTop: 20,
+    marginTop: 18,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    marginBottom: 16,
   },
   btnBottom: {
     width: 40,
@@ -102,10 +101,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 9,
     color: '#727A8F',
+    lineHeight: 9,
+    marginTop: 5,
   },
   btnGroup: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconStartService: {
+    marginLeft: 4,
   },
 });
 
@@ -177,12 +181,12 @@ class QueueItemSummary extends Component {
             <View style={styles.body}>
               <View style={styles.row}>
                 <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-                <View style={styles.dataContainer}>
-                  <FontAwesome style={styles.infoIcon}>{Icons.infoCircle}</FontAwesome>
-                </View>
+                <TouchableOpacity onPress={()=>alert("Not implemented")}>
+                  <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
+                </TouchableOpacity>
               </View>
-              <View style={styles.row}>
-                <FontAwesome style={styles.clockIcon}>{Icons.clockO}</FontAwesome>
+              <View style={[styles.row, { marginTop: 8 }]}>
+                <SalonIcon icon="clock" size={12} style={{ marginRight: 4 }} />
                 <Text style={styles.timeText}>11:57 AM</Text>
                 <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
                 <Text style={styles.remTimeText}>{'REM wait '}
@@ -200,7 +204,7 @@ class QueueItemSummary extends Component {
                 <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
-                      <FontAwesome style={styles.btnIcon}>{Icons.check}</FontAwesome>
+                      <SalonIcon icon="checkin" size={16} />
                     </View>
                     <Text style={styles.btnbottomText}>Check-in</Text>
                   </View>
@@ -208,7 +212,7 @@ class QueueItemSummary extends Component {
                 <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
-                      <FontAwesome style={styles.btnIcon}>{Icons.signOut}</FontAwesome>
+                      <SalonIcon icon="walkout" size={16} />
                     </View>
                     <Text style={styles.btnbottomText}>Walk-out</Text>
                   </View>
@@ -216,7 +220,7 @@ class QueueItemSummary extends Component {
                 <TouchableOpacity onPress={this.props.onPressSummary.modify}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
-                      <FontAwesome style={styles.btnIcon}>{Icons.pencil}</FontAwesome>
+                      <SalonIcon icon="modify" size={16} />
                     </View>
                     <Text style={styles.btnbottomText}>Modify</Text>
                   </View>
@@ -224,7 +228,7 @@ class QueueItemSummary extends Component {
                 <TouchableOpacity onPress={this.props.onPressSummary.returning}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
-                      <FontAwesome style={styles.btnIcon}>{Icons.refresh}</FontAwesome>
+                      <SalonIcon icon="returning" size={16} />
                     </View>
                     <Text style={styles.btnbottomText}>Returning</Text>
                   </View>
@@ -232,7 +236,7 @@ class QueueItemSummary extends Component {
                 <TouchableOpacity onPress={this.props.onPressSummary.toService}>
                   <View style={styles.btnGroup}>
                     <View style={styles.btnBottom}>
-                      <FontAwesome style={styles.btnIcon}>{Icons.play}</FontAwesome>
+                      <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
                     </View>
                     <Text style={styles.btnbottomText}>To Service</Text>
                   </View>

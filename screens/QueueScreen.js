@@ -34,8 +34,6 @@ import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
 
-import apiWrapper from '../utilities/apiWrapper';
-
 const WAITING = '0';
 const SERVICED = '1';
 const initialLayout = {
@@ -78,8 +76,9 @@ class QueueScreen extends React.Component {
 
     const headerRight = (
       <View style={{
- flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, height: '100%' 
-}}>
+        flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, height: '100%',
+      }}
+      >
         <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} style={{ marginRight: 19 }} />
         <QueueNavButton icon={Icons.search} />
       </View>
@@ -170,8 +169,8 @@ class QueueScreen extends React.Component {
   )
   _renderScene = ({ route }) => {
     const {
- navigation, waitingQueue, serviceQueue, groups, loading
- } = this.props;
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
     switch (route.key) {
       case WAITING:
         return (
@@ -269,7 +268,7 @@ class QueueScreen extends React.Component {
                 <Text style={styles.walkoutTextOk}>Ok</Text>
               </TouchableOpacity>
             </View>
-            </View>]}
+          </View>]}
         </SalonModal>
       </View>
     );

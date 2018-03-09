@@ -82,7 +82,7 @@ export default class AppointmentDetailsScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity onPress={() => { navigation.navigate('Queue'); }}>
+        <TouchableOpacity onPress={() => { navigation.goBack(); }}>
           <Text style={{ fontSize: 14, color: '#fff' }}>
             <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
           </Text>

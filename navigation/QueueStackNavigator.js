@@ -31,6 +31,13 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
+import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import AppointmentNoteScreen from './../screens/appointmentNote';
+import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
+
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
@@ -47,10 +54,73 @@ const QueueStackNavigator = StackNavigator(
     },
     Walkout: {
       screen: WalkOutScreen,
-      navigationOptions: rootProps => ({
+      navigationOptions: {
         headerTitle: 'Walkout',
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+      },
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    AppointmentFormula: {
+      screen: AppointmentFormula,
+    },
+    AppointmentNotes: {
+      screen: AppoinmentNotes,
+    },
+    AppointmentNote: {
+      screen: AppointmentNoteScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          key: Math.random().toString(),
+          ...rootProps,
+          handlePress: () => { rootProps.navigation.state.params.handleGoBack(); },
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          key: Math.random().toString(),
+          params: rootProps.navigation.state.params,
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
+            </View>
+          ),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+          />),
       }),
+    },
+    NewAppointment: {
+      screen: NewAppointmentScreen,
+    },
+    TurnAway: {
+      screen: TurnAwayScreen,
+      navigationOptions: {
+        headerTitle: 'Turn Away',
+      },
     },
     ClientDetails: {
       screen: ClientDetailsScreen,

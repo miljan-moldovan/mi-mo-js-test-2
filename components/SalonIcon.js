@@ -2,6 +2,14 @@ import React from 'react';
 import { Image } from 'react-native';
 import PropTypes from 'prop-types';
 
+import iconCheckin from '../assets/images/icons/icon_checkin.png';
+import iconWalkout from '../assets/images/icons/icon_walkout.png';
+import iconModify from '../assets/images/icons/icon_modify.png';
+import iconStartService from '../assets/images/icons/icon_start_service.png';
+import iconReturning from '../assets/images/icons/icon_returning.png';
+import iconClock from '../assets/images/icons/icon_clock.png';
+import iconInfo from '../assets/images/icons/icon_info_circle.png';
+
 const icons = {
   info: require('../assets/images/icons/icon_info.png'),
   caretRight: require('../assets/images/icons/icon_caret_right.png'),
@@ -18,6 +26,13 @@ const icons = {
   check: require('../assets/images/icons/icon_check.png'),
   dots: require('../assets/images/icons/icon_dots.png'),
   unchecked: require('../assets/images/icons/icon_unchecked.png'),
+  checkin: iconCheckin,
+  walkout: iconWalkout,
+  returning: iconReturning,
+  startService: iconStartService,
+  modify: iconModify,
+  clock: iconClock,
+  iconInfo,
 };
 
 const SalonIcon = props => (
@@ -26,6 +41,7 @@ const SalonIcon = props => (
       height: props.size ? props.size : 30,
       width: props.size ? props.size : 30,
       tintColor: props.tintColor ? props.tintColor : false,
+      resizeMode: 'contain',
     }}
     {...props}
     source={icons[props.icon]}

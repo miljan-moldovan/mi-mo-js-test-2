@@ -7,6 +7,7 @@ import walkInActions from '../../actions/walkIn';
 const mapStateToProps = state => ({
   appointmentNotesState: state.appointmentNotesReducer,
   walkInState: state.walkInReducer,
+  formCache: state.formCache,
 });
 
 const mapActionsToProps = dispatch => ({

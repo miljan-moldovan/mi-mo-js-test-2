@@ -19,7 +19,8 @@ lane :beta do
   sh("npm", "run", "bundle:ios")
   
   cocoapods(
-    podfile: "./ios/Podfile"
+    podfile: "./ios/Podfile",
+    repo_update: true
   )
   
   enable_automatic_code_signing(

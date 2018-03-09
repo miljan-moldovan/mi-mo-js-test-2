@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
     borderRadius: 5,
-    // minHeight: 130,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -20,19 +19,20 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     alignSelf: 'stretch',
-    marginTop: 5,
+    marginTop: 7,
     marginBottom: 10,
     marginHorizontal: 15,
     justifyContent: 'flex-start',
   },
   header: {
-    paddingVertical: 10,
+    paddingVertical: 8.5,
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignSelf: 'stretch',
     justifyContent: 'flex-start',
     borderBottomColor: '#F1F1F1',
     borderBottomWidth: 1,
+    maxHeight: 45,
   },
   body: {
     paddingVertical: 10,
@@ -79,8 +79,8 @@ salonCard.propTypes = {
     PropTypes.arrayOf(PropTypes.element),
   ]),
   backgroundColor: PropTypes.string,
-  containerStyles: View.propTypes.style,
-  bodyStyles: View.propTypes.style,
+  containerStyles: ViewPropTypes.style,
+  bodyStyles: ViewPropTypes.style,
 };
 
 salonCard.defaultProps = {

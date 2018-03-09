@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-native';
+import { Text, TextInput, TouchableHighlight, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 5,
     alignItems: 'center',
-    height: 35,
+    height: 36,
     flex: 4,
   },
   searchIconRight: {
@@ -65,16 +65,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  microphoneIcon: {
-    fontSize: 15,
-    marginRight: 10,
-    textAlign: 'center',
-  },
-  microphoneIconButton: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
 
 class SalonSearchBar extends Component {
@@ -100,7 +90,7 @@ class SalonSearchBar extends Component {
 
   render() {
     return (
-      <View style={[styles.container]}>
+      <View style={[styles.container, this.props.containerStyle]}>
         <View style={[styles.searchBar,
           {
           backgroundColor: this.props.backgroundColor,
@@ -160,28 +150,6 @@ class SalonSearchBar extends Component {
 
               }
             </View>
-
-
-            <View style={styles.microphoneIconContainer}>
-
-              <TouchableHighlight
-                style={styles.microphoneIconButton}
-                underlayColor="transparent"
-                onPress={
-                    () => {
-                      alert('microphone');
-                    }}
-              >
-
-                <FontAwesome style={[styles.microphoneIcon,
-                  { color: this.props.iconsColor }]}
-                >{Icons.microphone}
-                </FontAwesome>
-              </TouchableHighlight>
-
-            </View>
-
-
           </View>
         </View>
         {this.props.showCancel &&
@@ -217,6 +185,7 @@ SalonSearchBar.propTypes = {
   onFocus: PropTypes.func,
   onChangeText: PropTypes.func.isRequired,
   focusOnMount: PropTypes.bool,
+  containerStyle: ViewPropTypes.style,
 };
 
 SalonSearchBar.defaultProps = {
@@ -230,6 +199,7 @@ SalonSearchBar.defaultProps = {
   placeHolderText: 'Search1',
   onFocus: () => {},
   focusOnMount: false,
+  containerStyle: {},
 };
 
 export default SalonSearchBar;

@@ -28,7 +28,7 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-// console.disableYellowBox = true; // Disable annoying yellow box notifications
+console.disableYellowBox = true;
 
 export default class App extends Component<{}> {
   state = {
@@ -44,7 +44,7 @@ export default class App extends Component<{}> {
         blacklist: [
           'walkInReducer',
           'queue',
-          'appointmentFormulasReducer',
+          'appointmentFormulasReducer', 'appointmentNotesReducer', 'queue',
         ],
         // whitelist: ['auth']
       },

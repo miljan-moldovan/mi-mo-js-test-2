@@ -4,7 +4,7 @@ const resources = {
   getClientNotes: {
     path: 'Client/:clientId/Note',
     method: 'get',
-    disableCache: true,
+    expiration: apiConstants.expiration,
   },
   postClientNote: {
     path: 'Client/:clientId/Note',

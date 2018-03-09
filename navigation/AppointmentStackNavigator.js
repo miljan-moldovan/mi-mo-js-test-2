@@ -30,7 +30,10 @@ import ModifyServiceScreen from './../screens/modifyServiceScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
-    // AppointmentDetailss: {
+    Appointments: {
+      screen: AppointmentScreen,
+    },
+    // AppointmentDetails: {
     //   screen: AppointmentDetailsScreen,
     // },
     AppointmentFormula: {
@@ -50,7 +53,7 @@ const AppointmentStackNavigator = StackNavigator(
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
+          handlePress: () => { rootProps.navigation.goBack(); },
           button: (
             <View style={{
                   flex: 1,
@@ -74,7 +77,7 @@ const AppointmentStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
             </View>
           ),
         }),

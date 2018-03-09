@@ -504,4 +504,3 @@ AppointmentDetails.propTypes = {
 AppointmentDetails.defaultProps = {
   appointment: null,
 };
-

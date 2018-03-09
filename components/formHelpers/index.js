@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
+  ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -20,13 +21,14 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderTopWidth: 1 / 2,
+    borderBottomWidth: 1 / 2,
     borderTopColor: '#C0C1C6',
     borderBottomColor: '#C0C1C6',
     alignSelf: 'stretch',
     flexDirection: 'column',
     paddingLeft: 16,
+    justifyContent: 'flex-start',
   },
   inputRow: {
     height: 44,
@@ -52,7 +54,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#110A24',
     fontFamily: 'Roboto-Medium',
-
   },
   iconStyle: {
     fontSize: 20,
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   textArea: {
-    height: 60,
+    minHeight: 60,
     paddingVertical: 12,
     paddingTop: 12,
     paddingRight: 16,
@@ -69,13 +70,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 22,
     color: '#727A8F',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     marginLeft: 16,
+    marginTop: 7,
+  },
+  dateCancelButtonStyle: {
+    width: '10%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  dateCancelStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
 export const SectionTitle = props => (
-  <View style={{ height: 38, flexDirection: 'column', justifyContent: 'flex-end' }} >
+  <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
   </View>
 );
@@ -83,9 +95,10 @@ SectionTitle.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-export const SectionDivider = () => (
-  <View style={{ height: 35 }} />
+export const SectionDivider = props => (
+  <View style={[{ height: 35 }, props.style]} />
 );
+
 
 export const InputDivider = () => (
   <View style={styles.inputDivider} />
@@ -106,6 +119,7 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
+<<<<<<< HEAD
   <TouchableOpacity
     style={[styles.inputRow, props.style, { justifyContent: 'center' }]}
     onPress={props.onPress}
@@ -122,6 +136,31 @@ export const InputButton = props => (
           props.value
       }
       {props.children}
+=======
+  <TouchableOpacity onPress={props.onPress} style={props.style}>
+    <View style={{ alignSelf: 'stretch' }}>
+      <View style={styles.inputRow}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+            { props.placeholder && (
+              <Text style={styles.labelText}>{props.placeholder}</Text>
+            )}
+            {
+              typeof props.value === 'string'
+              ? (
+                <Text style={styles.inputText}>{props.value}</Text>
+              ) :
+                props.value
+            }
+
+          </View>
+          {props.children}
+          {!props.noIcon && (
+            <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+          )}
+        </View>
+      </View>
+>>>>>>> origin/develop
     </View>
     {!props.noIcon && (
       <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
@@ -130,8 +169,13 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
+<<<<<<< HEAD
   style: View.propTypes.style,
   label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
+=======
+  style: ViewPropTypes.style,
+  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
+>>>>>>> origin/develop
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,
@@ -186,9 +230,9 @@ export const InputText = props => (
       {...props}
       style={styles.textArea}
       multiline
+      autoGrow
       numberOfLines={2}
       placeholderTextColor="#727A8F"
-      maxHeight={60}
       placeholder={props.placeholder}
     />
   </View>
@@ -243,14 +287,14 @@ export class InputSwitch extends React.Component {
     super(props);
 
     this.state = {
-      value: false,
+      value: props.value,
     };
   }
 
   render() {
     return (
-      <View style={[styles.inputRow, { justifyContent: 'space-between' }]}>
-        <Text style={styles.labelText}>{this.props.text}</Text>
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
+        <Text style={[styles.labelText, this.props.textStyle]}>{this.props.text}</Text>
 
         <Switch
           onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}
