@@ -75,7 +75,7 @@ export default class QueueHeader extends React.Component {
           <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', height: '100%', bottom: 0}}>
             <Text style={styles.headerTitle}>Queue</Text>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto', height: '100%' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto', height: '100%', top: 3 }}>
             <QueueNavButton icon={Icons.ellipsisH} onPress={this.onActionPress} style={{marginRight: 19}} />
             <QueueNavButton icon={Icons.search} onPress={this.onSearchPress} />
           </View>
