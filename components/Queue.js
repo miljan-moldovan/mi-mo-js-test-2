@@ -240,23 +240,25 @@ class Queue extends React.Component {
       </Swipeable>
     );
   }
+
   showNotification = (item, type) => {
-    console.log('showNotification', type);
     this.setState({
       notificationVisible: true,
       notificationType: type,
       notificationItem: item,
     });
   }
+
   onDismissNotification = () => {
     this.setState({ notificationVisible: false });
   }
+
   renderNotification = () => {
     const {
       notificationType, notificationItem,
       notificationVisible,
     } = this.state;
-    console.log('renderNotification - notificationVisible', notificationVisible);
+
     let notificationColor,
       notificationButton,
       notificationText;

@@ -28,7 +28,7 @@ import WalkOutScreen from '../screens/walkOutScreen';
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
-import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+// import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
@@ -57,9 +57,6 @@ const QueueStackNavigator = StackNavigator(
       navigationOptions: {
         headerTitle: 'Walkout',
       },
-    },
-    AppointmentDetails: {
-      screen: AppointmentDetailsScreen,
     },
     AppointmentFormula: {
       screen: AppointmentFormula,

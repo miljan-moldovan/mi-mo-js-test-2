@@ -158,13 +158,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bottomButtonIcon: {
-    fontSize: 24,
-    lineHeight: 26,
+    fontSize: 16,
+    lineHeight: 16,
     color: 'white',
   },
   bottomButtonText: {
     fontSize: 10,
     lineHeight: 11,
+    marginTop: 7,
     color: 'white',
     fontFamily: 'Roboto-Light',
   },
@@ -486,6 +487,8 @@ export default class AppointmentDetails extends React.Component {
         </ScrollView>
         <SalonFixedBottom
           backgroundColor="#727A8F"
+          rootStyle={{ minHeight: 44 }}
+          containerStyle={{ height: 44, paddingHorizontal: 0, paddingVertical: 0 }}
         >
           <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
             <BottomButton icon="check" onPress={() => alert('pressed button')} title="Check In" />

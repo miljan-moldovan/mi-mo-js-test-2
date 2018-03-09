@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 
 
@@ -37,9 +37,9 @@ export const SalonFixedBottom = props => (
       backgroundColor: props.backgroundColor,
       borderTopRightRadius: 9,
       borderTopLeftRadius: 9,
-    }]}
+    }, props.rootStyle]}
   >
-    <View style={styles.container}>
+    <View style={[styles.container, props.containerStyle]}>
       {props.value && (
         <Text style={[styles.text, {
               fontSize: props.valueSize,
@@ -52,11 +52,30 @@ export const SalonFixedBottom = props => (
     </View>
   </View>
 );
+SalonFixedBottom.propTypes = {
+  children: PropTypes.element,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.bool]),
+  valueColor: PropTypes.string,
+  valueSize: PropTypes.number,
+  backgroundColor: PropTypes.string,
+  onPress: PropTypes.func.isRequired,
+  rootStyle: ViewPropTypes,
+  containerStyle: ViewPropTypes,
+};
+SalonFixedBottom.defaultProps = {
+  children: null,
+  value: false,
+  backgroundColor: 'transparent',
+  valueColor: '#000000',
+  valueSize: 14,
+  rootStyle: {},
+  containerStyle: {},
+};
 
 const salonBtnFixedBottom = props => (
   <TouchableOpacity
     onPress={props.onPress}
-    style={[styles.btnContainer, { backgroundColor: props.backgroundColor }]}
+    style={[styles.btnContainer, props.rootStyle, { backgroundColor: props.backgroundColor }]}
   >
     <View style={styles.container}>
       {props.value && (
@@ -71,7 +90,6 @@ const salonBtnFixedBottom = props => (
     </View>
   </TouchableOpacity>
 );
-
 salonBtnFixedBottom.propTypes = {
   children: PropTypes.element,
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.bool]),

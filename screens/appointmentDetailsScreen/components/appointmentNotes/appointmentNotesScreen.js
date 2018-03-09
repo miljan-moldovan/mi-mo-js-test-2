@@ -201,12 +201,12 @@ export default class AppointmentNotesScreen extends Component {
     const { appointment } = this.props;
 
     this.state = {
-      showDeleted: false,
+      appointment,
       note: null,
-      forAppointment: true,
       forQueue: true,
       forSales: true,
-      appointment,
+      showDeleted: false,
+      forAppointment: true,
     };
   }
 

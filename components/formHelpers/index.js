@@ -119,7 +119,6 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
-<<<<<<< HEAD
   <TouchableOpacity
     style={[styles.inputRow, props.style, { justifyContent: 'center' }]}
     onPress={props.onPress}
@@ -136,31 +135,6 @@ export const InputButton = props => (
           props.value
       }
       {props.children}
-=======
-  <TouchableOpacity onPress={props.onPress} style={props.style}>
-    <View style={{ alignSelf: 'stretch' }}>
-      <View style={styles.inputRow}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-            { props.placeholder && (
-              <Text style={styles.labelText}>{props.placeholder}</Text>
-            )}
-            {
-              typeof props.value === 'string'
-              ? (
-                <Text style={styles.inputText}>{props.value}</Text>
-              ) :
-                props.value
-            }
-
-          </View>
-          {props.children}
-          {!props.noIcon && (
-            <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-          )}
-        </View>
-      </View>
->>>>>>> origin/develop
     </View>
     {!props.noIcon && (
       <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
@@ -169,13 +143,8 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-<<<<<<< HEAD
-  style: View.propTypes.style,
-  label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
-=======
   style: ViewPropTypes.style,
   placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
->>>>>>> origin/develop
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,

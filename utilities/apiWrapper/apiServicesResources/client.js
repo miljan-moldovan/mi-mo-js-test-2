@@ -7,7 +7,7 @@ const resources = {
     expiration: apiConstants.expiration,
   },
   clientFormulas: {
-    path: 'Clients/:id/NotesAndFormulas',
+    path: 'Clients/:id/Formulas',
     method: 'get',
     expiration: apiConstants.expiration,
   },

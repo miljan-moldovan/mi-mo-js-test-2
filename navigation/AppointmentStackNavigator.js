@@ -126,11 +126,11 @@ const AppointmentStackNavigator = StackNavigator(
           handlePress: () => rootProps.navigation.goBack(),
           button: (
             <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <Image
                 style={{

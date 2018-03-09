@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   tabLabel: {
-    height: 38,
+    height: 39.5,
     // paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -72,8 +72,8 @@ export default class AppointmentDetailsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     let title = 'New Appointment';
-    if (params && params.appointment) {
-      title = `${params.appointment.client.name} ${params.appointment.client.lastName}`;
+    if (params && params.item) {
+      title = `${params.item.client.name} ${params.item.client.lastName}`;
     }
     return ({
       headerTitle: (
@@ -82,16 +82,16 @@ export default class AppointmentDetailsScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity onPress={() => { navigation.goBack(); }}>
+        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
           <Text style={{ fontSize: 14, color: '#fff' }}>
             <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
           </Text>
         </TouchableOpacity>
       ),
       headerRight: (
-        <Text style={{ fontSize: 14, color: '#fff' }}>
+        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => alert('Not Implemented')}>
           <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
-        </Text>
+        </TouchableOpacity>
       ),
     });
   };
@@ -103,7 +103,7 @@ export default class AppointmentDetailsScreen extends React.Component {
     this.state = {
       index: 0,
       loading: true,
-      appointment: params && params.appointment ? params.appointment : null,
+      appointment: params && params.item ? params.item : null,
       formulas: [],
       notes: [],
       routes: [
@@ -115,18 +115,19 @@ export default class AppointmentDetailsScreen extends React.Component {
   }
 
   componentDidMount() {
-    // apiWrapper.doRequest('clientFormulas', { path: { id: 306 } })
-    //   .then((res) => {
-    //     debugger//eslint-disable-line
-    //     const { notes, formulas } = res;
-    //     this.setState({ loading: false, notes, formulas });
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //   });
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 2000);
+    apiWrapper.doRequest('clientFormulas', { path: { id: 306 } })
+      .then((res) => {
+        debugger//eslint-disable-line
+        const { notes, formulas } = res;
+        this.setState({ loading: false, notes, formulas });
+      })
+      .catch((err) => {
+        console.warn(err);
+      });
+
+    // setTimeout(() => {
+    //   this.setState({ loading: false });
+    // }, 2000);
   }
 
   handleIndexChange = index => this.setState({ index });
@@ -165,6 +166,7 @@ export default class AppointmentDetailsScreen extends React.Component {
 
   render() {
     const { loading } = this.state;
+
     return loading ?
       (
         <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>

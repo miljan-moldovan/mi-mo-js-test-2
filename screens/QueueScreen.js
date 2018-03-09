@@ -123,8 +123,8 @@ class QueueScreen extends React.Component {
     //     this.setState({ refreshing: false })
     //   });
     // });
-
   }
+
   _onRefresh = () => {
     this._refreshData();
     // this.setState({ refreshing: true });
@@ -167,6 +167,7 @@ class QueueScreen extends React.Component {
       </View>
     </View>
   )
+
   _renderScene = ({ route }) => {
     const {
       navigation, waitingQueue, serviceQueue, groups, loading,
@@ -186,7 +187,6 @@ class QueueScreen extends React.Component {
   }
 
   _handleIndexChange = (index) => {
-    console.log('_handleIndexChange ', index);
     this.setState({ index });
   };
 
@@ -268,7 +268,7 @@ class QueueScreen extends React.Component {
                 <Text style={styles.walkoutTextOk}>Ok</Text>
               </TouchableOpacity>
             </View>
-          </View>]}
+            </View>]}
         </SalonModal>
       </View>
     );
@@ -284,7 +284,6 @@ const mapStateToProps = (state, ownProps) => ({
   walkInState: state.walkInReducer.walkInState,
   settings: state.settings,
 });
-
 const mapActionsToProps = dispatch => ({
   actions: bindActionCreators({ ...actions }, dispatch),
   settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
@@ -293,7 +292,6 @@ const mapActionsToProps = dispatch => ({
   serviceActions: bindActionCreators({ ...serviceActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
-
 
 const styles = StyleSheet.create({
   container: {
