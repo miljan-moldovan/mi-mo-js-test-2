@@ -118,7 +118,7 @@ export default class AppointmentDetailsScreen extends React.Component {
     <TabBar
       {...props}
       tabStyle={{ backgroundColor: 'transparent' }}
-      style={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: 'transparent', height: 39.5 }}
       renderLabel={this.renderLabel(props)}
       indicatorStyle={{ backgroundColor: '#1DBF12', height: 2 }}
     />
