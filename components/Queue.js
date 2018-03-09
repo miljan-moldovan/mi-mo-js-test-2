@@ -32,7 +32,8 @@ import { NotificationBanner, NotificationBannerButton } from '../components/Noti
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
 
-import { QueueItem } from '../models';
+import type { QueueItem } from '../models';
+// const chevron = require('../assets/images/icons/icon_caret_right.png');
 
 class Queue extends React.Component {
   state = {
@@ -153,7 +154,7 @@ class Queue extends React.Component {
       default:
         return (
           <CircularCountdown
-            size={58}
+            size={46}
             estimatedTime={item.estimatedTime}
             processTime={item.processTime}
             itemStatus={item.status}
@@ -218,26 +219,31 @@ class Queue extends React.Component {
     const label = this.getLabelForItem(item);
     const groupLeaderName = this.getGroupLeaderName(item);
     return (
-      <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} key={item.queueId} leftButtonWidth={100} rightButtonWidth={100}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => this.handlePress(item)}>
-          <View style={styles.itemSummary}>
-            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-              <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-              <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
-            </View>
-            <Text style={styles.serviceName} multiline={2} ellipsizeMode="tail">
-              {item.services[0].serviceName.toUpperCase()}
-              {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
-              &nbsp;<Text style={{ color: '#727A8F' }}>with</Text> {(`${item.services[0].employeeFirstName} ${item.services[0].employeeLastName}`).toUpperCase()}
-            </Text>
-            <Text style={styles.serviceTimeContainer}>
-              <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
-              <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
-            </Text>
+    // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => this.handlePress(item)}
+        key={item.id}
+      >
+        <View style={styles.itemSummary}>
+          <View style={{ flexDirection: 'row', marginTop: 11 }}>
+            <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+            <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
           </View>
-          {label}
-        </TouchableOpacity>
-      </Swipeable>
+          <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
+            {item.services[0].serviceName.toUpperCase()}
+            {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
+            <Text style={{ color: '#727A8F' }}>with</Text> {(`${item.services[0].employeeFirstName} ${item.services[0].employeeLastName}`).toUpperCase()}
+          </Text>
+          <Text style={styles.serviceTimeContainer}>
+            <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
+            <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
+          </Text>
+        </View>
+        {label}
+        <Image source={chevron} style={styles.chevron} />
+      </TouchableOpacity>
+    // </Swipeable>
     );
   }
 
@@ -254,11 +260,7 @@ class Queue extends React.Component {
   }
 
   renderNotification = () => {
-    const {
-      notificationType, notificationItem,
-      notificationVisible,
-    } = this.state;
-
+    const { notificationType, notificationItem, notificationVisible } = this.state;
     let notificationColor,
       notificationButton,
       notificationText;
@@ -293,6 +295,16 @@ class Queue extends React.Component {
   }
 
   render() {
+    // console.log('Queue.render', this.props.data);
+    const { headerTitle, searchText } = this.props;
+    const numResult = this.state.data.length;
+
+    const header = headerTitle ? (
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{headerTitle}</Text>
+        <Text style={styles.headerCount}>{numResult} {numResult === 1 ? 'Result' : 'Results'}</Text>
+      </View>
+    ) : null;
     return (
       <View style={styles.container}>
         {this.props.loading ? (
@@ -301,9 +313,11 @@ class Queue extends React.Component {
           </View>
         ) : null}
         <FlatList
+          style={{ marginTop: 5 }}
           renderItem={this.renderItem}
-          data={this.props.data}
+          data={this.state.data}
           keyExtractor={this._keyExtractor}
+          ListHeaderComponent={header}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -317,6 +331,8 @@ class Queue extends React.Component {
           services={this.state.services}
           onDonePress={this.hideDialog}
           onPressSummary={this.handlePressSummary}
+          isWaiting={this.props.isWaiting}
+          isCheckedIn={this.state.appointment ? this.state.appointment.checkedIn : false}
         />
         {this.renderNotification()}
       </View>
@@ -336,14 +352,19 @@ const styles = StyleSheet.create({
     // borderBottomWidth: 1,
     // borderBottomColor: 'rgba(29,29,38,1)',
     borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    // borderWidth: 1,
+    // borderColor: '#ccc',
     flexDirection: 'row',
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
     marginTop: 4,
+    shadowColor: 'black',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1.1,
+    // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
   },
   itemSummary: {
     marginLeft: 10,
@@ -354,26 +375,28 @@ const styles = StyleSheet.create({
   },
   clientName: {
     fontSize: 16,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
+    fontWeight: '500',
     color: '#111415',
   },
   serviceName: {
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
+    marginTop: 5,
     // marginBottom: 12
   },
   serviceTimeContainer: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#000',
-    marginTop: 'auto',
+    marginTop: 11,
     marginBottom: 8,
     flexDirection: 'row',
   },
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
-    fontSize: 11,
+    fontSize: 10,
     textDecorationLine: 'underline',
   },
   serviceTime: {
@@ -389,7 +412,10 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   circularCountdown: {
-    marginRight: 15,
+    marginLeft: 'auto',
+    marginBottom: 'auto',
+    marginRight: 52,
+    marginTop: 16,
     alignItems: 'center',
   },
   waitingTimeTextTop: {
@@ -412,7 +438,11 @@ const styles = StyleSheet.create({
     height: 58,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 15,
+
+    marginLeft: 'auto',
+    marginBottom: 'auto',
+    marginRight: 42,
+    marginTop: 16,
   },
   finishedTime: {
     flexDirection: 'row',
@@ -434,5 +464,30 @@ const styles = StyleSheet.create({
     marginRight: 3,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'transparent',
+  },
+  header: {
+    flexDirection: 'row',
+    marginBottom: 6,
+    marginTop: 22,
+    marginHorizontal: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontFamily: 'Roboto-Regular',
+    fontWeight: '500',
+    color: '#4D5067',
+    fontSize: 14,
+  },
+  headerCount: {
+    fontFamily: 'Roboto-Regular',
+    color: '#4D5067',
+    fontSize: 11,
+  },
+  chevron: {
+    position: 'absolute',
+    top: 22,
+    right: 10,
+    tintColor: '#115ECD',
   },
 });

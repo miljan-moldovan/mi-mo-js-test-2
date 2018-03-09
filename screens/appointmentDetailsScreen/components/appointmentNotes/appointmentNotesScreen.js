@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import {
   View,
-  ScrollView,
   Text,
   StyleSheet,
   TouchableOpacity,
   FlatList,
   Alert,
+  RefreshControl,
+  ScrollView,
 } from 'react-native';
 import SalonActionSheet from '../../../../components/SalonActionSheet';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
@@ -17,8 +18,7 @@ import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 2,
-    // paddingVertical: 10,
     alignSelf: 'stretch',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -205,6 +204,7 @@ export default class AppointmentNotesScreen extends Component {
       note: null,
       forQueue: true,
       forSales: true,
+      refreshing: false,
       showDeleted: false,
       forAppointment: true,
     };
@@ -224,6 +224,8 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   getNotes = () => {
+    this.setState({ refreshing: true });
+
     this.props.appointmentNotesActions.getAppointmentNotes(this.state.appointment.client.id).then((response) => {
       if (response.data.error) {
         this.props.appointmentNotesActions.setFilteredNotes([]);
@@ -238,6 +240,8 @@ export default class AppointmentNotesScreen extends Component {
         const forQueue = response.data.notes.filter(el => el.forQueue).length > 0;
 
         this.filterNotes(null, false, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+
+        this.setState({ refreshing: false });
       }
     });
   }
@@ -503,8 +507,15 @@ export default class AppointmentNotesScreen extends Component {
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
           onPress={(i) => { this.handlePress(i); }}
         />
-        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
 
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.getNotes}
+            />
+          }
+        >
           <View style={styles.header}>
             <View style={styles.topSearchBar}>
               <SalonSearchBar
@@ -602,8 +613,8 @@ export default class AppointmentNotesScreen extends Component {
 
             </View>
           </View>
-
-        </KeyboardAwareScrollView>
+        </ScrollView>
+        <KeyboardSpacer />
         <FloatingButton
           rootStyle={{ right: 16, bottom: 16, backgroundColor: '#727A8F' }}
           handlePress={() => {
@@ -617,7 +628,6 @@ export default class AppointmentNotesScreen extends Component {
             style={styles.plusIcon}
           />
         </FloatingButton>
-
       </View>
     );
   }

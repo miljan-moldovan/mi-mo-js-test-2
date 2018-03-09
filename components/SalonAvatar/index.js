@@ -133,4 +133,3 @@ SalonAvatar.defaultProps = {
   badgeComponent: null,
   hasBadge: false,
 };
-
