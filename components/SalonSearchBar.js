@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableHighlight, View, StyleSheet } from 'react-native';
+import { Text, TextInput, TouchableHighlight, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
@@ -185,7 +185,7 @@ SalonSearchBar.propTypes = {
   onFocus: PropTypes.func,
   onChangeText: PropTypes.func.isRequired,
   focusOnMount: PropTypes.bool,
-  containerStyle: View.propTypes.style,
+  containerStyle: ViewPropTypes.style,
 };
 
 SalonSearchBar.defaultProps = {
