@@ -297,6 +297,8 @@ class Queue extends React.Component {
           services={this.state.services}
           onDonePress={this.hideDialog}
           onPressSummary={this.handlePressSummary}
+          isWaiting={this.props.isWaiting}
+          isCheckedIn={this.state.appointment ? this.state.appointment.checkedIn : false}
         />
         {this.renderNotification()}
       </View>

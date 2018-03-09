@@ -109,12 +109,6 @@ const QueueStackNavigator = StackNavigator(
     NewAppointment: {
       screen: NewAppointmentScreen,
     },
-    TurnAway: {
-      screen: TurnAwayScreen,
-      navigationOptions: {
-        headerTitle: 'Turn Away',
-      },
-    },
     ClientDetails: {
       screen: ClientDetailsScreen,
       navigationOptions: {

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import SalonAvatar from '../components/SalonAvatar';
+
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
@@ -53,6 +55,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginRight: 8,
   },
+  providerRound: {
+    width: 26,
+    marginRight: 14.5,
+  }
 });
 const queueListItemSummary = props => (
   <View>
@@ -67,7 +73,16 @@ const queueListItemSummary = props => (
       </TouchableOpacity>
       <TouchableOpacity onPress={()=>alert("Not implemented")}>
         <View style={styles.row}>
-          <View style={styles.imageContainer} />
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={26}
+            image="https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742"
+            hasBadge
+            badgeComponent={
+              <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
+                  {Icons.lock}
+              </FontAwesome>}
+          />
           <Text style={styles.textNormal}>{`${props.service.employeeFirstName} ${props.service.employeeLastName}`}</Text>
           <View style={styles.iconContainer}>
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>

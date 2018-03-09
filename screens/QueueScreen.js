@@ -172,7 +172,7 @@ class QueueScreen extends React.Component {
     switch (route.key) {
       case WAITING:
         return (
-          <Queue data={waitingQueue} groups={groups} navigation={navigation} loading={loading} />
+          <Queue data={waitingQueue} groups={groups} navigation={navigation} loading={loading} isWaiting />
         );
       case SERVICED:
         return (
