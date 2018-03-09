@@ -16,6 +16,9 @@ import SalonTag from '../../../../components/SalonTag';
 import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
+import SalonViewMoreText from '../../../../components/SalonViewMoreText';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -39,6 +42,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#F1F1F1',
     flexDirection: 'column',
+    marginBottom: 11,
   },
   notesScroller: {
     flex: 9,
@@ -51,6 +55,7 @@ const styles = StyleSheet.create({
   noteHeaderLeft: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    alignItems: 'center',
     flex: 1,
   },
   noteHeaderRight: {
@@ -59,7 +64,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topSearchBar: {
-    marginTop: 10,
+    // marginTop: 8,
     backgroundColor: 'transparent',
     flex: 1,
     flexDirection: 'column',
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
   },
   showDeletedText: {
     color: '#115ECD',
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Roboto',
   },
   showDeletedButtonContainer: {
@@ -117,10 +122,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Roboto',
   },
+  moreText: {
+    color: '#3343CA',
+    fontSize: 12,
+    fontFamily: 'Roboto',
+  },
   noteAuthor: {
     color: '#2F3142',
     fontSize: 12,
     fontFamily: 'Roboto',
+    paddingBottom: 1,
   },
   noteBy: {
     paddingHorizontal: 5,
@@ -128,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Roboto',
     fontStyle: 'italic',
+    paddingBottom: 1,
   },
   checkIcon: {
     width: 10,
@@ -316,7 +328,7 @@ export default class AppointmentNotesScreen extends Component {
     if (searchText && searchText.length > 0) {
       const criteria = [
         { Field: 'enteredBy', Values: [searchText.toLowerCase()] },
-        { Field: 'notes', Values: [searchText.toLowerCase()] },
+        { Field: 'text', Values: [searchText.toLowerCase()] },
         { Field: 'enterTime', Values: [searchText.toLowerCase()] },
       ];
 
@@ -371,9 +383,9 @@ export default class AppointmentNotesScreen extends Component {
     if (note.forQueue) {
       tags.push(<SalonTag
         key={Math.random().toString()}
-        tagHeight={20}
-        backgroundColor={note.isDeleted ? '#112F62' : '#B6B9C3'}
-        value="Queue"
+        tagHeight={17}
+        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="QUEUE"
         valueSize={10}
         valueColor="#FFFFFF"
       />);
@@ -382,9 +394,9 @@ export default class AppointmentNotesScreen extends Component {
     if (note.forSales) {
       tags.push(<SalonTag
         key={Math.random().toString()}
-        tagHeight={20}
-        backgroundColor={note.isDeleted ? '#112F62' : '#B6B9C3'}
-        value="Sales"
+        tagHeight={17}
+        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="SALES"
         valueSize={10}
         valueColor="#FFFFFF"
       />);
@@ -393,9 +405,9 @@ export default class AppointmentNotesScreen extends Component {
     if (note.forAppointment) {
       tags.push(<SalonTag
         key={Math.random().toString()}
-        tagHeight={20}
-        backgroundColor={note.isDeleted ? '#112F62' : '#B6B9C3'}
-        value="Appointment"
+        tagHeight={17}
+        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="APPOINTMENT"
         valueSize={10}
         valueColor="#FFFFFF"
       />);
@@ -470,6 +482,17 @@ export default class AppointmentNotesScreen extends Component {
     return tags;
   }
 
+  renderViewMore(onPress) {
+    return (
+      <Text style={styles.moreText} onPress={onPress}>... more</Text>
+    );
+  }
+  renderViewLess(onPress) {
+    // return (
+    //   <Text style={styles.moreText} onPress={onPress}> less</Text>
+    // );
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -480,96 +503,109 @@ export default class AppointmentNotesScreen extends Component {
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
           onPress={(i) => { this.handlePress(i); }}
         />
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
 
-
-        <View style={styles.header}>
-          <View style={styles.topSearchBar}>
-            <SalonSearchBar
-              placeHolderText="Search"
-              marginVertical={0}
-              placeholderTextColor="#727A8F"
-              searchIconPosition="left"
-              iconsColor="#727A8F"
-              fontColor="#727A8F"
-              borderColor="transparent"
-              backgroundColor="rgba(142, 142, 147, 0.24)"
-              onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue)}
-            />
+          <View style={styles.header}>
+            <View style={styles.topSearchBar}>
+              <SalonSearchBar
+                placeHolderText="Search"
+                marginVertical={0}
+                placeholderTextColor="#727A8F"
+                searchIconPosition="left"
+                iconsColor="#727A8F"
+                fontColor="#727A8F"
+                containerStyle={{ paddingTop: 4, paddingBottom: 10 }}
+                borderColor="transparent"
+                backgroundColor="rgba(142, 142, 147, 0.24)"
+                onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue)}
+              />
+            </View>
+            <View style={styles.tagsBar} >
+              {this.setTagsBar()}
+            </View>
           </View>
-          <View style={styles.tagsBar} >
-            {this.setTagsBar()}
-          </View>
-        </View>
-        <View style={styles.notesScroller}>
-          <ScrollView style={{ alignSelf: 'stretch' }}>
-            <FlatList
-              extraData={this.props}
-              keyExtractor={(item, index) => index}
-              data={this.props.appointmentNotesState.filtered}
-              renderItem={({ item, index }) => (
-                <SalonCard
-                  key={index}
-                  backgroundColor={item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
-                  headerChildren={[
-                    <View style={styles.noteTags} key={Math.random().toString()}>
-                      <View style={styles.noteHeaderLeft}>
+          <View style={styles.notesScroller}>
+            <View style={{ alignSelf: 'stretch' }}>
+              <FlatList
+                extraData={this.props}
+                keyExtractor={(item, index) => index}
+                data={this.props.appointmentNotesState.filtered}
+                renderItem={({ item, index }) => (
+                  <SalonCard
+                    containerStyles={{ marginVertical: 2 }}
+                    bodyStyles={{ minHeight: 57 }}
+                    key={index}
+                    backgroundColor={item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
+                    headerChildren={[
+                      <View style={styles.noteTags} key={Math.random().toString()}>
+                        <View style={styles.noteHeaderLeft}>
 
-                        <SalonDateTxt
-                          dateFormat="MMM. DD YYYY"
-                          value={item.enterTime}
-                          valueColor={item.isDeleted ? '#000000' : '#4D5065'}
-                          fontFamily="Roboto-Bold"
-                          valueSize={12}
-                        />
-
-                        <Text style={styles.noteBy}>by</Text>
-                        <Text style={styles.noteAuthor}>{item.enteredBy}</Text>
-
-                      </View>
-                      <View style={styles.noteHeaderRight}>
-                        <TouchableOpacity
-                          style={styles.dotsButton}
-                          onPress={() => { this.showActionSheet(item); }}
-                        >
-                          <SalonIcon
-                            size={16}
-                            icon="dots"
-                            style={styles.dotsIcon}
+                          <SalonDateTxt
+                            dateFormat="MMM. DD YYYY"
+                            value={item.enterTime}
+                            valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
+                            fontFamily="Roboto-Bold"
+                            valueSize={12}
                           />
-                        </TouchableOpacity>
-                      </View>
-                    </View>]}
 
-                  bodyChildren={[
-                    <Text
-                      key={Math.random().toString()}
-                      style={[styles.noteText, { color: item.isDeleted ? '#2E3032' : '#58595B' }]}
-                    >{item.text}
-                    </Text>]}
+                          <Text style={styles.noteBy}>by</Text>
+                          <Text style={styles.noteAuthor}>{item.enteredBy}</Text>
 
-                  footerChildren={this.setNoteTags(item)}
-                />
+                        </View>
+                        <View style={styles.noteHeaderRight}>
+                          <TouchableOpacity
+                            style={styles.dotsButton}
+                            onPress={() => { this.showActionSheet(item); }}
+                          >
+                            <SalonIcon
+                              size={16}
+                              icon="dots"
+                              style={styles.dotsIcon}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>]}
+
+                    bodyChildren={[
+                      <SalonViewMoreText
+                        numberOfLines={3}
+                        renderViewMore={this.renderViewMore}
+                        renderViewLess={this.renderViewLess}
+                        textStyle={{ }}
+                      >
+                        <Text
+                          key={Math.random().toString()}
+                          style={[styles.noteText, { color: item.isDeleted ? '#2E3032' : '#58595B' }]}
+                        >
+                          {item.text}
+                        </Text>
+                      </SalonViewMoreText>,
+                  ]}
+
+                    footerChildren={this.setNoteTags(item)}
+                  />
             )}
-            />
+              />
 
-            <View style={styles.showDeletedButtonContainer}>
+              <View style={styles.showDeletedButtonContainer}>
 
-              <TouchableOpacity
-                style={styles.showDeletedButton}
-                onPress={() => {
+                <TouchableOpacity
+                  style={styles.showDeletedButton}
+                  onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
                   this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
                 }}
-              >
-                <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-              </TouchableOpacity>
+                >
+                  <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
+          </View>
 
-          </ScrollView>
-        </View>
-
+        </KeyboardAwareScrollView>
         <FloatingButton
-          rootStyle={{ backgroundColor: '#727A8F' }}
+          rootStyle={{ right: 16, bottom: 16, backgroundColor: '#727A8F' }}
           handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('AppointmentNote', { actionType: 'new', ...this.props, appointment: this.props.appointment });

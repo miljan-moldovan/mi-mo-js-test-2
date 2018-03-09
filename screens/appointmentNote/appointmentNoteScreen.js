@@ -15,8 +15,9 @@ import {
   SectionTitle,
   InputText,
 } from '../../components/formHelpers';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import fetchFormCache from '../../utilities/fetchFormCache';
+import { storeForm, purgeForm } from '../../actions/formCache';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,11 +33,12 @@ class AppointmentNoteScreen extends Component {
     return 0;
   }
 
+  shouldSave = false
   state = {
     note: {
       id: Math.random().toString(),
       text: '',
-      expiration: '',
+      expiration: null,
       forAppointment: false,
       forQueue: false,
       forSales: false,
@@ -47,11 +49,8 @@ class AppointmentNoteScreen extends Component {
     appointment: false,
   };
 
-
   componentWillMount() {
     let note = this.state.note;
-
-    console.log(this.props);
 
     const { appointment } = this.props.navigation.state.params;
 
@@ -77,7 +76,19 @@ class AppointmentNoteScreen extends Component {
 
     this.props.navigation.setParams({
       handlePress: () => this.saveNote(),
+      handleGoBack: () => this.goBack(),
     });
+  }
+
+  goBack() {
+    if (this.props.navigation.state.params.actionType === 'new') {
+      const { appointment } = this.props.navigation.state.params;
+      this.props.appointmentNotesActions.purgeAppointmentNoteNewForm(appointment.client.id.toString(), this.state.note);
+    } else {
+      this.props.appointmentNotesActions.purgeAppointmentNoteUpdateForm(this.state.note);
+    }
+
+    this.props.navigation.goBack();
   }
 
   isNoteValid() {
@@ -88,6 +99,19 @@ class AppointmentNoteScreen extends Component {
     }
 
     return true;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.navigation.state.params.actionType === 'new') {
+      const { appointment } = this.props.navigation.state.params;
+      if (this.shouldSave) {
+        this.shouldSave = false;
+        this.props.appointmentNotesActions.setAppointmentNoteNewForm(appointment.client.id.toString(), prevState.note);
+      }
+    } else if (this.shouldSave) {
+      this.shouldSave = false;
+      this.props.appointmentNotesActions.setAppointmentNoteUpdateForm(prevState.note);
+    }
   }
 
   saveNote() {
@@ -152,6 +176,8 @@ class AppointmentNoteScreen extends Component {
 
     this.props.walkInActions.setCurrentStep(3);
 
+    this.shouldSave = true;
+
     if (selectedProvider) {
       navigate('Providers', {
         actionType: 'update',
@@ -179,78 +205,90 @@ class AppointmentNoteScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={{ marginTop: 16, borderColor: 'transparent', borderWidth: 0 }} />
-        <InputGroup style={{ flexDirection: 'row' }}>
-          {[<InputButton
-            onPress={this.handlePressProvider}
-            placeholder="Added by"
-            value={this.state.note.author}
-          />]}
-        </InputGroup>
-        <SectionTitle value="NOTE" />
-        <InputGroup>
-          {[<InputText
-            placeholder="Write Note"
-            onChangeText={(txtNote) => {
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+          <View style={{ marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 }} />
+          <InputGroup style={{ flexDirection: 'row', height: 44 }}>
+            {[<InputButton
+              onPress={this.handlePressProvider}
+              placeholder="Added by"
+              value={this.state.note.author}
+            />]}
+          </InputGroup>
+          <SectionTitle value="NOTE" style={{ height: 38 }} />
+          <InputGroup>
+            {[<InputText
+              placeholder="Write Note"
+              onChangeText={(txtNote) => {
                         const note = this.state.note;
                         note.text = txtNote;
+                        this.shouldSave = true;
                         this.setState({ note });
                     }}
-            value={this.state.note.text}
-          />]}
-
-        </InputGroup>
-        <SectionTitle value="TYPES" />
-        <InputGroup >
-          {[<InputSwitch
-            onChange={(state) => {
-      const note = this.state.note;
-      note.forSales = !this.state.forSales;
-      this.setState({ note, forSales: !this.state.forSales });
-     }}
-            value={this.state.forSales}
-            text="Sales"
-          />,
-            <InputDivider />,
-            <InputSwitch
-              onChange={(state) => {
-      const note = this.state.note;
-      note.forAppointment = !this.state.forAppointment;
-      this.setState({ note, forAppointment: !this.state.forAppointment });
-     }}
-              value={this.state.forAppointment}
-              text="Appointment"
-            />,
-
-
-            <InputDivider />,
-            <InputSwitch
-              onChange={(state) => {
-      const note = this.state.note;
-      note.forQueue = !this.state.forQueue;
-      this.setState({ note, forQueue: state });
-     }}
-              value={this.state.forQueue}
-              text="Queue"
+              value={this.state.note.text}
             />]}
 
+          </InputGroup>
+          <SectionTitle value="TYPES" style={{ height: 37 }} />
+          <InputGroup >
+            {[<InputSwitch
+              style={{ height: 43 }}
+              textStyle={{ color: '#000000' }}
+              onChange={(state) => {
+      const note = this.state.note;
+      note.forSales = !this.state.forSales;
+      this.shouldSave = true;
+      this.setState({ note, forSales: !this.state.forSales });
+     }}
+              value={this.state.forSales}
+              text="Sales"
+            />,
+              <InputDivider />,
+              <InputSwitch
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
+      const note = this.state.note;
+      note.forAppointment = !this.state.forAppointment;
+      this.shouldSave = true;
+      this.setState({ note, forAppointment: !this.state.forAppointment });
+     }}
+                value={this.state.forAppointment}
+                text="Appointment"
+              />,
 
-        </InputGroup>
-        <SectionDivider />
 
-        <InputGroup style={{ flexDirection: 'row' }}>
-          {[<InputDate
-            placeholder="Expire Date"
-            onPress={(selectedDate) => {
-            const { note } = this.state;
-            note.expiration = selectedDate;
+              <InputDivider />,
+              <InputSwitch
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
+                  const note = this.state.note;
+                  note.forQueue = !this.state.forQueue;
+                  this.shouldSave = true;
+                  this.setState({ note, forQueue: state });
+                 }}
+                value={this.state.forQueue}
+                text="Queue"
+              />]}
 
-            this.setState({ note });
-            }}
-            selectedDate={moment(this.state.note.expiration).isValid() ? moment(this.state.note.expiration).format('DD MMMM YYYY') : 'Optional'}
-          />]}
 
-        </InputGroup>
+          </InputGroup>
+          <SectionDivider style={{ height: 37 }} />
+
+          <InputGroup style={{ flexDirection: 'row' }}>
+            {[<InputDate
+              placeholder="Expire Date"
+              onPress={(selectedDate) => {
+                const { note } = this.state;
+                note.expiration = selectedDate;
+                this.shouldSave = true;
+                this.setState({ note });
+              }}
+              selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
+            />]}
+
+          </InputGroup>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

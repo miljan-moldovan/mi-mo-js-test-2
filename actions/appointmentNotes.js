@@ -27,6 +27,8 @@ export const UNDELETE_APPOINTMENT_NOTE = 'appointmentNotes/UNDELETE_APPOINTMENT_
 export const UNDELETE_APPOINTMENT_NOTE_SUCCESS = 'appointmentNotes/UNDELETE_APPOINTMENT_NOTE_SUCCESS';
 export const UNDELETE_APPOINTMENT_NOTE_FAILED = 'appointmentNotes/UNDELETE_APPOINTMENT_NOTE_FAILED';
 
+export const SET_APPOINTMENT_NOTE_FORM = 'appointmentNotes/SET_APPOINTMENT_NOTE_FORM';
+
 
 const putAppointmentNotesSuccess = notes => ({
   type: PUT_APPOINTMENT_NOTE_SUCCESS,
@@ -58,6 +60,13 @@ const putAppointmentNotes = (clientId, note) => (dispatch) => {
       return dispatch(putAppointmentNotesFailed(error));
     });
 };
+
+
+const setAppointmentNoteUpdateForm = note => dispatch => dispatch(storeForm('AppointmentNoteScreenUpdate', note.id.toString(), note));
+const setAppointmentNoteNewForm = (clientId, note) => dispatch => dispatch(storeForm('AppointmentNoteScreenNew', clientId.toString(), note));
+
+const purgeAppointmentNoteUpdateForm = note => dispatch => dispatch(purgeForm('AppointmentNoteScreenUpdate', note.id.toString(), note));
+const purgeAppointmentNoteNewForm = (clientId, note) => dispatch => dispatch(purgeForm('AppointmentNoteScreenNew', clientId.toString(), note));
 
 
 const undeleteAppointmentNotesSuccess = notes => ({
@@ -198,6 +207,10 @@ const appointmentNotesActions = {
   deleteAppointmentNotes,
   undeleteAppointmentNotes,
   putAppointmentNotes,
+  setAppointmentNoteUpdateForm,
+  setAppointmentNoteNewForm,
+  purgeAppointmentNoteNewForm,
+  purgeAppointmentNoteUpdateForm,
 };
 
 export default appointmentNotesActions;
