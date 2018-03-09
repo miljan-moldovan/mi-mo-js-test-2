@@ -15,7 +15,9 @@ import {
   Animated,
   Dimensions,
   ActionSheetIOS,
+  TextInput
 } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -27,6 +29,7 @@ import * as settingsActions from '../actions/settings.js';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
+import QueueHeader from '../components/QueueHeader';
 
 import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
@@ -34,75 +37,65 @@ import SalonTextInput from '../components/SalonTextInput';
 
 const WAITING = '0';
 const SERVICED = '1';
+const SEARCH_CLIENTS = 'clients';
+const SEARCH_PROVIDERS = 'providers';
 const initialLayout = {
   height: 0,
   width: Dimensions.get('window').width,
 };
 
-
-const QueueNavButton = ({ icon, onPress, style }) => (
-  <TouchableOpacity onPress={onPress} style={[{ height: '100%' }, style]}>
-    <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
-  </TouchableOpacity>
-);
-
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerLeft = <QueueNavButton icon={Icons.bars} style={{ marginLeft: 6 }} />;
-    const onActionPress = () => {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-        // options: ['Cancel', 'Remove'],
-          options: ['Turn Away', 'Combine', 'Cancel'],
-          // destructiveButtonIndex: 1,
-          cancelButtonIndex: 2,
-        },
-        (buttonIndex) => {
-          switch (buttonIndex) {
-            case 0:
-              navigation.navigate('TurnAway');
-              break;
-            case 1:
-              navigation.navigate('QueueCombine');
-              break;
-            default:
-              break;
-          }
-        },
-      );
-    };
-
-    const headerRight = (
-      <View style={{
- flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, height: '100%',
-}}
-      >
-        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} style={{ marginRight: 19 }} />
-        <QueueNavButton icon={Icons.search} />
-      </View>
-    );
-
+    const { params = {} } = navigation.state;
+    const { searchMode, searchText, onChangeSearchMode, onChangeSearchText } = params;
     return {
-      headerLeft,
-      headerRight,
+      header:
+        <QueueHeader
+          navigation={navigation}
+          onChangeSearchMode={onChangeSearchMode}
+          onChangeSearchText={onChangeSearchText}
+          searchMode={searchMode}
+          searchText={searchText}
+        />
     };
-  }
-
+  };
   state = {
     refreshing: false,
     index: 0,
     isWalkoutVisible: false,
     walkoutText: '',
+    searchMode: false,
+    searchText: '',
+    searchType: '',
+    searchWaitingCount: 0,
+    searchServiceCount: 0,
     routes: [
       { key: WAITING, title: 'Waiting' },
       { key: SERVICED, title: 'In Service' },
     ],
   }
+  searchWaitingRef = null;
+  searchServicingRef = null;
 
   componentWillMount() {
     this.props.actions.receiveQueue();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     // this._refreshData();
+  }
+  componentDidMount() {
+    this.props.navigation.setParams({
+      onChangeSearchMode: this.onChangeSearchMode,
+      onChangeSearchText: this.onChangeSearchText,
+      searchMode: this.state.searchMode,
+      searchText: this.state.searchText
+    });
+  }
+  onChangeSearchMode = (searchMode) => {
+    console.log('onChangeSearchMode', searchMode);
+    this.setState({ searchMode, searchType: searchMode ? SEARCH_CLIENTS : '', searchText: '' }, () => this.props.navigation.setParams({searchMode, searchText: ''}));
+  }
+  onChangeSearchText = (searchText) => {
+    this.setState({searchText}, () => this.props.navigation.setParams({searchText}));
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.error) {
@@ -111,20 +104,10 @@ class QueueScreen extends React.Component {
     }
   }
   _refreshData = () => {
-    // this.setState({ refreshing: true }, () => {
-    //   apiWrapper.doRequest('getQueue', {
-    //   }).then((responseJson) => {
-    //     console.log(responseJson);
-    //     this.setState({ refreshing: false })
-    //   }).catch((error) => {
-    //     console.log(error);
-    //     this.setState({ refreshing: false })
-    //   });
-    // });
-
+    this.props.actions.receiveQueue();
   }
   _onRefresh = () => {
-    this._refreshData();
+    // this._refreshData();
     // this.setState({ refreshing: true });
     // // FIXME this._refreshData();
     // // emulate refresh call
@@ -150,7 +133,7 @@ class QueueScreen extends React.Component {
       </View>
     );
     // }
-  _renderBar = props => (
+  _renderBar = (props) => (
     <View>
       <TabBar
         {...props}
@@ -182,6 +165,75 @@ class QueueScreen extends React.Component {
         return route;
     }
   }
+  handleSearchClients = () => {
+    console.log('handleSearchClients');
+    this.setState({ searchType: SEARCH_CLIENTS });
+  }
+  handleSearchProviders = () => {
+    console.log('handleSearchProviders');
+    this.setState({ searchType: SEARCH_PROVIDERS });
+  }
+  updateSearchWaitingCount = (searchWaitingCount) => this.setState({ searchWaitingCount });
+  updateSearchServiceCount = (searchServiceCount) => this.setState({ searchServiceCount });
+
+  _renderSearchResults = () => {
+    const { navigation, waitingQueue, serviceQueue, groups, loading } = this.props;
+    const { searchType, searchWaitingCount, searchServiceCount, searchText: filterText } = this.state;
+    const p = {
+      groups, navigation, loading, filterText,
+      searchClient: searchType === SEARCH_CLIENTS,
+      searchProvider: searchType === SEARCH_PROVIDERS,
+    };
+    const active = { backgroundColor: 'white'};
+    const activeText = { color: '#115ECD' };
+    console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
+    return (
+      <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
+        <ScrollView style={{marginTop: 40}}>
+          { !searchWaitingCount && !searchServiceCount ? (
+            <View style={styles.searchEmpty}>
+              <View style={styles.searchEmptyIconContainer}>
+                <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome>
+              </View>
+              <Text style={styles.searchEmptyText}>
+                Results matching <Text style={{color: 'black'}}>“{filterText}”</Text> were not found.
+              </Text>
+              <Text style={styles.searchEmptyTextSmall}>
+                Check your spelling and try again or tap on one of the suggestions below
+              </Text>
+            </View>
+          ) : null }
+          <Queue
+            onChangeFilterResultCount={this.updateSearchWaitingCount}
+            data={waitingQueue}
+            headerTitle={ searchWaitingCount || searchServiceCount ? "Waiting" : undefined }
+            {...p}
+          />
+          <Queue
+            onChangeFilterResultCount={this.updateSearchServiceCount}
+            data={serviceQueue}
+            headerTitle={ searchWaitingCount || searchServiceCount ? "In Service" : undefined }
+            {...p}
+          />
+        </ScrollView>
+        <View style={styles.searchTypeContainer}>
+          {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
+          <View style={styles.searchType}>
+            <TouchableOpacity
+              style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
+              onPress={this.handleSearchClients}>
+              <Text style={[styles.searchTypeText, searchType === SEARCH_CLIENTS ? activeText : null]}>Client</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.searchProvider, searchType === SEARCH_PROVIDERS ? active : null]}
+              onPress={this.handleSearchProviders}>
+              <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    )
+  }
 
   _handleIndexChange = (index) => {
     console.log('_handleIndexChange ', index);
@@ -209,7 +261,9 @@ class QueueScreen extends React.Component {
 
   render() {
     // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
-    console.log('QueueScreen.render', this.props.settings);
+    // console.log('QueueScreen.render', this.props.settings);
+    if (this.state.searchMode)
+      return this._renderSearchResults();
 
     return (
       <View style={styles.container}>
@@ -233,12 +287,6 @@ class QueueScreen extends React.Component {
             </TouchableOpacity>
           )
         }
-        {/* <FloatingButton handlePress={this._handleWalkInPress}>
-          <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
-        </FloatingButton> */}
-        {/* <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
-          <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
-        </FloatingButton> */}
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
           {[<View key={Math.random().toString()} style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>
@@ -493,11 +541,6 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     top: -1,
   },
-  navButton: {
-    color: 'white',
-    fontSize: 20,
-    // marginLeft: 10,
-  },
   summaryBar: {
     height: 31,
     backgroundColor: '#0C4699',
@@ -525,4 +568,72 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Bold',
     fontSize: 11,
   },
+  searchTypeContainer: {
+    backgroundColor: '#115ECD',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%'
+  },
+  searchType: {
+    marginHorizontal: 16,
+    marginVertical: 10,
+    height: 27,
+    flexDirection: 'row',
+  },
+  searchTypeText: {
+    fontSize: 13,
+    fontWeight: '500',
+    fontFamily: 'Roboto-Regular',
+    color: 'white'
+  },
+  searchClient: {
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
+    borderColor: 'white',
+    borderWidth: 1,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  searchProvider: {
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+    borderColor: 'white',
+    borderWidth: 1,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  searchEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    padding: 60
+  },
+  searchEmptyText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#727A8F',
+    fontFamily: 'Roboto-Regular',
+    marginVertical: 20
+  },
+  searchEmptyTextSmall: {
+    fontSize: 11,
+    color: '#727A8F',
+    fontFamily: 'Roboto-Regular',
+  },
+  searchEmptyIcon: {
+    fontSize: 50,
+    color: '#E3E4E5',
+  },
+  searchEmptyIconContainer: {
+    width: 100,
+    height: 100,
+    borderWidth: 6,
+    borderRadius: 50,
+    borderColor: '#E3E4E5',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 });
