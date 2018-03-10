@@ -18,14 +18,16 @@ import {
   TextInput
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// import FontAwesome, { Icons } from 'react-native-fontawesome';
+import Icon from './UI/Icon';
 
 
 import apiWrapper from '../utilities/apiWrapper';
 
 const QueueNavButton = ({ icon, onPress, style }) => (
   <TouchableOpacity onPress={onPress} style={[{height: '100%'},style]}>
-    <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
+    {/* <FontAwesome style={styles.navButton}>{icon}</FontAwesome> */}
+    <Icon name={icon} type="light" style={styles.navButton} />
   </TouchableOpacity>
 );
 
@@ -62,7 +64,8 @@ export default class QueueHeader extends React.Component {
     return this.props.searchMode ? (
         <SafeAreaView style={styles.headerContainer}>
           <View style={styles.searchContainer}>
-            <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome>
+            {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
+            <Icon name="search" type="light" style={styles.searchIcon} />
             <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
           </View>
           <TouchableOpacity onPress={this.onSearchCancel}>
@@ -71,13 +74,13 @@ export default class QueueHeader extends React.Component {
         </SafeAreaView>
       ) : (
         <SafeAreaView style={[styles.headerContainer]}>
-          <QueueNavButton icon={Icons.bars} style={{marginLeft: 6, marginRight: 'auto'}} />
+          <QueueNavButton icon="bars" style={{marginLeft: 6, marginRight: 'auto'}} />
           <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', height: '100%', bottom: 0}}>
             <Text style={styles.headerTitle}>Queue</Text>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto', height: '100%', top: 3 }}>
-            <QueueNavButton icon={Icons.ellipsisH} onPress={this.onActionPress} style={{marginRight: 19}} />
-            <QueueNavButton icon={Icons.search} onPress={this.onSearchPress} />
+            <QueueNavButton icon="ellipsisH" onPress={this.onActionPress} style={{marginRight: 19}} />
+            <QueueNavButton icon="search" onPress={this.onSearchPress} />
           </View>
         </SafeAreaView>
       )

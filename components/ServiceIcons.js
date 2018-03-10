@@ -5,7 +5,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import Icon from '../components/UI/Icon';
 
 const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
   <View style={{
@@ -69,18 +69,18 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 });
-const birthday = <FontAwesome style={{ color: '#115ECD', marginRight: 3, fontSize: 16 }}>{Icons.gift}</FontAwesome>;
-const tag = <FontAwesome style={{ marginRight: 3 }}>{Icons.tag}</FontAwesome>;
+const birthday = <Icon style={{ color: '#115ECD', marginRight: 3, fontSize: 15 }} type="solid" name="gift" />;
+const tag = <Icon style={{ marginRight: 3, color: 'black' }} type="regular" name="tag" />;
 const newGlobal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>NL</Text></View>;
 const newLocal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>N</Text></View>;
-const star = <FontAwesome style={{ color: '#FFA300', marginRight: 3 }}>{Icons.star}</FontAwesome>;
+const star = <Icon style={{ color: '#FFA300', marginRight: 3 }} type="regular" name="star" />;
 const Group = ({ leader, leaderName }) => {
   const names = leaderName.split(' ');
   const leaderInitials = names[0][0] + names[names.length - 1][0];
   return (
     <View style={styles.clientGroupContainer}>
       <View style={styles.clientGroupLabelContainer}>
-        <FontAwesome style={{ fontSize: 10, padding: 0 }}>{Icons.userPlus}</FontAwesome>
+        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="regular" color="black" />
         <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>
       </View>
       { leader ? (<Text style={styles.dollarSign}>$</Text>) : null }
