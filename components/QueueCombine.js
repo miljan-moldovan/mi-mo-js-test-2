@@ -19,7 +19,8 @@ import {
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// import FontAwesome, { Icons } from 'react-native-fontawesome';
+import Icon from '../components/UI/Icon';
 
 import * as actions from '../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEUE_ITEM_INSERVICE, QUEUE_ITEM_CHECKEDIN } from '../constants/QueueStatus.js';
@@ -33,15 +34,17 @@ class QueueCombineItem extends React.PureComponent {
   getLabelForItem = (item: QueueItem) => {
     let label, iconName;
     if (item.status < 6 && item.status !== 4) {
-      iconName = Icons.hourglassHalf;
+      // iconName = Icons.hourglassHalf;
+      iconName = 'hourglassHalf';
       label = 'Waiting';
     } else {
-      iconName = Icons.play;
+      // iconName = Icons.play;
+      iconName = 'play';
       label =  'In service';
     }
     return (
       <View style={styles.clientStatusContainer}>
-        <FontAwesome style={styles.clientStatusIcon}>{iconName}</FontAwesome>
+        <Icon name={iconName} style={styles.clientStatusIcon} />
         <Text style={[styles.clientStatusText]}>{label}</Text>
       </View>
     );
@@ -61,10 +64,14 @@ class QueueCombineItem extends React.PureComponent {
     if (this.props.type === "combine")
       return (
         <View style={styles.checkContainer}>
-          <FontAwesome
+          {/* <FontAwesome
             style={[styles.checkIcon, selected? { color: '#2BBA11' } : null]}>
             {selected ? Icons.checkCircle : Icons.circleO}
-          </FontAwesome>
+          </FontAwesome> */}
+          <Icon
+            name={selected ? "checkCircle" : "circle"}
+            color={selected ? '#2BBA11' : undefined }
+            style={styles.checkIcon}  />
         </View>
       )
     return null;

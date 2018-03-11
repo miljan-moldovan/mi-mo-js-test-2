@@ -23,7 +23,7 @@ import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
 import * as settingsActions from '../actions/settings.js';
 import checkinActions from '../actions/checkin';
@@ -32,6 +32,7 @@ import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 import QueueHeader from '../components/QueueHeader';
+import Icon from '../components/UI/Icon';
 
 import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
@@ -207,7 +208,8 @@ class QueueScreen extends React.Component {
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
-                <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome>
+                {/* <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome> */}
+                <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
               </View>
               <Text style={styles.searchEmptyText}>
                 Results matching <Text style={{ color: 'black' }}>“{filterText}”</Text> were not found.
@@ -297,7 +299,8 @@ class QueueScreen extends React.Component {
         {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
             <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
-              <Text style={styles.walkinButtonText}>Walk-in</Text><FontAwesome style={styles.walkinButtonIcon}>{Icons.signIn}</FontAwesome>
+              <Text style={styles.walkinButtonText}>Walk-in</Text>
+              <Icon style={styles.walkinButtonIcon} name="signIn" />
             </TouchableOpacity>
           )
         }
@@ -493,7 +496,6 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   walkinButtonIcon: {
-    color: 'white',
     fontSize: 16,
     marginLeft: 8,
   },
@@ -639,7 +641,7 @@ const styles = StyleSheet.create({
   },
   searchEmptyIcon: {
     fontSize: 50,
-    color: '#E3E4E5',
+    // color: '#E3E4E5',
   },
   searchEmptyIconContainer: {
     width: 100,

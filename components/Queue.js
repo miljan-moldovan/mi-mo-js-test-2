@@ -19,7 +19,6 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import Swipeable from 'react-native-swipeable';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
@@ -31,6 +30,7 @@ import CircularCountdown from '../components/CircularCountdown';
 import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
+import Icon from '../components/UI/Icon';
 
 import type { QueueItem } from '../models';
 // const chevron = require('../assets/images/icons/icon_caret_right.png');
@@ -212,14 +212,10 @@ class Queue extends React.Component {
 
   renderItem = (row) => {
     const item: QueueItem = row.item;
-
-
     const index = row.index;
-    const buttons = this.getButtonsForItem(item);
     const label = this.getLabelForItem(item);
     const groupLeaderName = this.getGroupLeaderName(item);
     return (
-    // <Swipeable leftButtons={buttons.left} rightButtons={buttons.right} leftButtonWidth={100} rightButtonWidth={100}>
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => this.handlePress(item)}
@@ -236,14 +232,14 @@ class Queue extends React.Component {
             <Text style={{ color: '#727A8F' }}>with</Text> {(`${item.services[0].employeeFirstName} ${item.services[0].employeeLastName}`).toUpperCase()}
           </Text>
           <Text style={styles.serviceTimeContainer}>
-            <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
+            <Icon name="clockO" style={styles.serviceClockIcon} />
             <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
           </Text>
         </View>
         {label}
-        <Image source={chevron} style={styles.chevron} />
+        {/* <Image source={chevron} style={styles.chevron} /> */}
+        <Icon name="chevronRight" style={styles.chevron} type="solid" />
       </TouchableOpacity>
-    // </Swipeable>
     );
   }
 
@@ -429,7 +425,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   serviceClockIcon: {
-    fontSize: 12,
+    fontSize: 10,
     // padding: 0,
     color: '#7E8D98',
     paddingRight: 7,
@@ -488,6 +484,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 22,
     right: 10,
-    tintColor: '#115ECD',
+    fontSize: 15,
+    color: '#115ECD',
   },
 });
