@@ -1,18 +1,16 @@
 import apiConstants from '../apiConstants';
 
 const resources = {
-  getClients: {
-    path: 'Clients',
+  getServices: {
+    path: 'Services',
     method: 'get',
     expiration: apiConstants.expiration,
   },
-  clientFormulas: {
-    path: 'Clients/:id/Formulas',
+  getServiceTree: {
+    path: 'Services/Tree',
     method: 'get',
     expiration: apiConstants.expiration,
   },
 };
 
-export default {
-  resources,
-};
+export default { resources };

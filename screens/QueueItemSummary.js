@@ -133,11 +133,19 @@ class QueueItemSummary extends Component {
     }
   }
 
+  fadeInOut = value => Animated.timing( // Animate over time
+    this.state.fadeAnim, // The animated value to drive
+    {
+      toValue: value, // Animate to opacity: 1 (opaque)
+      duration: 100, // Make it take a while
+    },
+  ); // Starts the animation
+
   translateY = value => Animated.timing( // Animate over time
     this.state.translateYAnim, // The animated value to drive
     {
       toValue: value, // Animate to opacity: 1 (opaque)
-      duration: 400, // Make it take a while
+      duration: 300, // Make it take a while
     },
   ); // Starts the animation
 
@@ -155,7 +163,7 @@ class QueueItemSummary extends Component {
         <View style={styles.body}>
           <View style={styles.row}>
             <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-            <TouchableOpacity onPress={()=>alert("Not implemented")}>
+            <TouchableOpacity onPress={() => alert('Not implemented')}>
               <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
             </TouchableOpacity>
           </View>
@@ -226,7 +234,7 @@ class QueueItemSummary extends Component {
       <View style={styles.body}>
         <View style={styles.row}>
           <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-          <TouchableOpacity onPress={()=>alert("Not implemented")}>
+          <TouchableOpacity onPress={() => alert('Not implemented')}>
             <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
           </TouchableOpacity>
         </View>

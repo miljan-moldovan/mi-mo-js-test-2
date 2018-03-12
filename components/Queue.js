@@ -22,7 +22,7 @@ import Swipeable from 'react-native-swipeable';
 
 import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
-import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
+import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus';
 
 
 import SideMenuItem from '../components/SideMenuItem';
@@ -33,7 +33,7 @@ import ServiceIcons from './ServiceIcons';
 import Icon from '../components/UI/Icon';
 
 import type { QueueItem } from '../models';
-const chevron = require('../assets/images/icons/icon_caret_right.png');
+// const chevron = require('../assets/images/icons/icon_caret_right.png');
 
 class Queue extends React.Component {
   state = {
@@ -45,74 +45,7 @@ class Queue extends React.Component {
     isVisible: false,
     client: null,
     services: null,
-    data: []
-  }
-  componentWillMount() {
-    const { data, searchClient, searchProvider, filterText } = this.props;
-    this.setState({ data });
-    if (searchClient || searchProvider)
-      this.searchText(filterText, searchClient, searchProvider);
-  }
-  componentWillReceiveProps({ data, searchClient, searchProvider, filterText }) {
-    if (data !== this.props.data) {
-      this.setState({ data: data });
-    }
-    // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
-    if (searchClient != this.props.searchClient ||
-        searchProvider != this.props.searchProvider ||
-        filterText != this.props.filterText) {
-      this.searchText(filterText, searchClient, searchProvider);
-    }
-  }
-  onChangeFilterResultCount = () => {
-    console.log('onChangeFilterResultCount', this.state.data.length);
-    if (this.props.onChangeFilterResultCount)
-      this.props.onChangeFilterResultCount(this.state.data.length);
-  }
-  searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
-    const { data } = this.props;
-    const prevCount = this.state.data.length;
-    console.log('searchText prevCount', prevCount);
-    if (query === '' || (!searchClient && !searchProvider)) {
-      this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
-    }
-    let text = query.toLowerCase();
-    // search by the client full name
-    let filteredData = data.filter(({ client, services }) => {
-      if (searchClient) {
-        const fullName = (client.name||'')+' '+(client.middleName||'')+' '+(client.lastName||'');
-        // if this row is a match, we don't need to check providers
-        if (fullName.toLowerCase().match(text))
-          return true;
-      }
-      if (searchProvider) {
-        for (let i = 0; i < services.length; i++) {
-          const { employeeFirstName, employeeLastName } = services[i];
-          const fullName = (employeeFirstName||'')+' '+(employeeLastName||'');
-          // if this provider is a match, we don't need to check other providers
-          if (fullName.toLowerCase().match(text))
-            return true;
-        }
-      }
-      return false;
-    });
-    // if no match, set empty array
-    if (!filteredData || !filteredData.length)
-      this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined);
-    // if the matched numbers are equal to the original data, keep it the same
-    else if (filteredData.length === data.length)
-      this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined);
-    // else, set the filtered data
-    else
-      this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined);
-  };
-
-  handlePressSummary = {
-    checkIn: () => alert('Not Implemented'),
-    walkOut: () => alert('Not Implemented'),
-    modify: () => this.handlePressModify(),
-    returning: () => alert('Not Implemented'),
-    toService: () => alert('Not Implemented'),
+    clientQueueItemId: 0,
   }
 
   _onRefresh = () => {
@@ -164,10 +97,10 @@ class Queue extends React.Component {
           <QueueButton
             type={service}
             onPress={() => {
-            LayoutAnimation.spring();
-            this.props.startService(queueId);
-            this.showNotification(item, 'service');
-          }}
+              LayoutAnimation.spring();
+              this.props.startService(queueId);
+              this.showNotification(item, 'service');
+            }}
             right
           />,
         ];
@@ -250,6 +183,24 @@ class Queue extends React.Component {
     }
   }
 
+  handlePressWalkout = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.navigation.navigate('Walkout', { clientQueueItemId: client.id });
+  }
+
+  handlePressCheckin = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.onCheckin(client.id);
+  }
+
+  handlePressService = () => {
+    this.hideDialog();
+    const { client } = this.state;
+    this.props.onStartService(client.id);
+  }
+
   hideDialog = () => {
     this.setState({ isVisible: false });
   }
@@ -262,7 +213,6 @@ class Queue extends React.Component {
   renderItem = (row) => {
     const item: QueueItem = row.item;
     const index = row.index;
-
     const label = this.getLabelForItem(item);
     const groupLeaderName = this.getGroupLeaderName(item);
     return (
@@ -292,20 +242,24 @@ class Queue extends React.Component {
       </TouchableOpacity>
     );
   }
+
   showNotification = (item, type) => {
-    console.log('showNotification', type);
     this.setState({
       notificationVisible: true,
       notificationType: type,
       notificationItem: item,
     });
   }
+
   onDismissNotification = () => {
     this.setState({ notificationVisible: false });
   }
+
   renderNotification = () => {
     const { notificationType, notificationItem, notificationVisible } = this.state;
-    let notificationColor, notificationButton, notificationText;
+    let notificationColor,
+      notificationButton,
+      notificationText;
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
@@ -328,6 +282,14 @@ class Queue extends React.Component {
   }
   _keyExtractor = (item, index) => item.id;
 
+  handlePressSummary = {
+    checkIn: this.handlePressCheckin,
+    walkOut: this.handlePressWalkout,
+    modify: this.handlePressModify,
+    returning: () => alert('Not Implemented'),
+    toService: this.handlePressService,
+  }
+
   render() {
     // console.log('Queue.render', this.props.data);
     const { headerTitle, searchText } = this.props;
@@ -347,7 +309,7 @@ class Queue extends React.Component {
           </View>
         ) : null}
         <FlatList
-          style={{marginTop: 5}}
+          style={{ marginTop: 5 }}
           renderItem={this.renderItem}
           data={this.state.data}
           keyExtractor={this._keyExtractor}
@@ -417,7 +379,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    marginTop: 5
+    marginTop: 5,
     // marginBottom: 12
   },
   serviceTimeContainer: {
@@ -505,24 +467,24 @@ const styles = StyleSheet.create({
     marginTop: 22,
     marginHorizontal: 16,
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerTitle: {
     fontFamily: 'Roboto-Regular',
     fontWeight: '500',
     color: '#4D5067',
-    fontSize: 14
+    fontSize: 14,
   },
   headerCount: {
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    fontSize: 11
+    fontSize: 11,
   },
   chevron: {
     position: 'absolute',
     top: 22,
     right: 10,
     fontSize: 15,
-    color: '#115ECD'
-  }
+    color: '#115ECD',
+  },
 });
