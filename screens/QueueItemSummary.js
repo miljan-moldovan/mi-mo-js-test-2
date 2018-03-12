@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Animated, TouchableOpacity, Text, ScrollView, FlatList, Modal } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import Icon from '../components/UI/Icon';
+import IconDB from '../components/UI/IconDB';
 import ListItem from './QueueListItemSummary';
 import SalonIcon from '../components/SalonIcon';
 
@@ -152,114 +154,24 @@ class QueueItemSummary extends Component {
       const btnCheckInStyle =
         this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
       return (
-        <View style={styles.body}>
-          <View style={styles.row}>
-            <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-            <TouchableOpacity onPress={()=>alert("Not implemented")}>
-              <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.row, { marginTop: 8 }]}>
-            <SalonIcon icon="clock" size={12} style={{ marginRight: 4 }} />
-            <Text style={styles.timeText}>11:57 AM</Text>
-            <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
-            <Text style={styles.remTimeText}>{'REM wait '}
-              <Text style={styles.underlineText}>7m</Text>
-            </Text>
-          </View>
-          <ScrollView style={styles.listContainer}>
-            <FlatList
-              data={this.props.services}
-              renderItem={this.renderItem}
-              keyExtractor={this.keyExtractor}
-            />
-          </ScrollView>
-          <View style={styles.btnContainer}>
-            <TouchableOpacity
-              onPress={this.props.onPressSummary.checkIn}
-              disabled={this.props.isCheckedIn}
-            >
-              <View style={styles.btnGroup}>
-                <View style={btnCheckInStyle}>
-                  <SalonIcon icon="checkin" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Check-in</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
-              <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
-                  <SalonIcon icon="walkout" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Walk-out</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.modify}>
-              <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
-                  <SalonIcon icon="modify" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Modify</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.returning}>
-              <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
-                  <SalonIcon icon="returning" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Returning</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.toService}>
-              <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
-                  <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
-                </View>
-                <Text style={styles.btnbottomText}>To Service</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
-    return (
-      <View style={styles.body}>
-        <View style={styles.row}>
-          <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-          <TouchableOpacity onPress={()=>alert("Not implemented")}>
-            <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
-          </TouchableOpacity>
-        </View>
-        <View style={[styles.row, { marginTop: 8 }]}>
-          <SalonIcon icon="clock" size={12} style={{ marginRight: 4 }} />
-          <Text style={styles.timeText}>11:57 AM</Text>
-          <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
-          <Text style={styles.remTimeText}>{'REM wait '}
-            <Text style={styles.underlineText}>7m</Text>
-          </Text>
-        </View>
-        <ScrollView style={styles.listContainer}>
-          <FlatList
-            data={this.props.services}
-            renderItem={this.renderItem}
-            keyExtractor={this.keyExtractor}
-          />
-        </ScrollView>
         <View style={styles.btnContainer}>
-          <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+          <TouchableOpacity
+            onPress={this.props.onPressSummary.checkIn}
+            disabled={this.props.isCheckedIn}
+          >
             <View style={styles.btnGroup}>
-              <View style={styles.btnBottom}>
+              <View style={btnCheckInStyle}>
                 <SalonIcon icon="checkin" size={16} />
               </View>
-              <Text style={styles.btnbottomText}>To Waiting</Text>
+              <Text style={styles.btnbottomText}>Check-in</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+          <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
             <View style={styles.btnGroup}>
               <View style={styles.btnBottom}>
-                <SalonIcon icon="checkin" size={16} />
+                <SalonIcon icon="walkout" size={16} />
               </View>
-              <Text style={styles.btnbottomText}>Rebook</Text>
+              <Text style={styles.btnbottomText}>Walk-out</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={this.props.onPressSummary.modify}>
@@ -275,7 +187,7 @@ class QueueItemSummary extends Component {
               <View style={styles.btnBottom}>
                 <SalonIcon icon="returning" size={16} />
               </View>
-              <Text style={styles.btnbottomText}>Finish</Text>
+              <Text style={styles.btnbottomText}>Returning</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={this.props.onPressSummary.toService}>
@@ -283,10 +195,54 @@ class QueueItemSummary extends Component {
               <View style={styles.btnBottom}>
                 <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
               </View>
-              <Text style={styles.btnbottomText}>Checkout</Text>
+              <Text style={styles.btnbottomText}>To Service</Text>
             </View>
           </TouchableOpacity>
         </View>
+      );
+    }
+    return (
+      <View style={styles.btnContainer}>
+        <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+          <View style={styles.btnGroup}>
+            <View style={styles.btnBottom}>
+              <Icon name="hourglassHalf" size={16} color="#fff" type="solid" />
+            </View>
+            <Text style={styles.btnbottomText}>To Waiting</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+          <View style={styles.btnGroup}>
+            <View style={styles.btnBottom}>
+              <Icon name="undo" size={16} color="#fff" type="solid" />
+            </View>
+            <Text style={styles.btnbottomText}>Rebook</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.props.onPressSummary.modify}>
+          <View style={styles.btnGroup}>
+            <View style={styles.btnBottom}>
+              <SalonIcon icon="modify" size={16} />
+            </View>
+            <Text style={styles.btnbottomText}>Modify</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.props.onPressSummary.returning}>
+          <View style={styles.btnGroup}>
+            <View style={styles.btnBottom}>
+              <Icon name="checkSquare" size={16} color="#fff" type="regular" />
+            </View>
+            <Text style={styles.btnbottomText}>Finish</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.props.onPressSummary.toService}>
+          <View style={styles.btnGroup}>
+            <View style={styles.btnBottom}>
+              <Icon name="dollar" size={16} color="#fff" type="regular" />
+            </View>
+            <Text style={styles.btnbottomText}>Checkout</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -315,7 +271,30 @@ class QueueItemSummary extends Component {
                   <Text style={styles.btnText}>Done</Text>
                 </TouchableOpacity>
               </View>
-              {this.renderBtnContainer()}
+              <View style={styles.body}>
+                <View style={styles.row}>
+                  <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
+                  <TouchableOpacity onPress={()=>alert("Not implemented")}>
+                    <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
+                  </TouchableOpacity>
+                </View>
+                <View style={[styles.row, { marginTop: 8 }]}>
+                  <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
+                  <Text style={styles.timeText}>11:57 AM</Text>
+                  <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+                  <Text style={styles.remTimeText}>{'REM wait '}
+                    <Text style={styles.underlineText}>7m</Text>
+                  </Text>
+                </View>
+                <ScrollView style={styles.listContainer}>
+                  <FlatList
+                    data={this.props.services}
+                    renderItem={this.renderItem}
+                    keyExtractor={this.keyExtractor}
+                  />
+                </ScrollView>
+                {this.renderBtnContainer()}
+              </View>
             </Animated.View>
           </View>
         </Modal>
