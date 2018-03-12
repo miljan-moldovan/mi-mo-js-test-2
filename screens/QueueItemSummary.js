@@ -135,11 +135,19 @@ class QueueItemSummary extends Component {
     }
   }
 
+  fadeInOut = value => Animated.timing( // Animate over time
+    this.state.fadeAnim, // The animated value to drive
+    {
+      toValue: value, // Animate to opacity: 1 (opaque)
+      duration: 100, // Make it take a while
+    },
+  ); // Starts the animation
+
   translateY = value => Animated.timing( // Animate over time
     this.state.translateYAnim, // The animated value to drive
     {
       toValue: value, // Animate to opacity: 1 (opaque)
-      duration: 400, // Make it take a while
+      duration: 300, // Make it take a while
     },
   ); // Starts the animation
 
@@ -154,51 +162,51 @@ class QueueItemSummary extends Component {
       const btnCheckInStyle =
         this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
       return (
-        <View style={styles.btnContainer}>
-          <TouchableOpacity
-            onPress={this.props.onPressSummary.checkIn}
-            disabled={this.props.isCheckedIn}
-          >
-            <View style={styles.btnGroup}>
-              <View style={btnCheckInStyle}>
-                <SalonIcon icon="checkin" size={16} />
+          <View style={styles.btnContainer}>
+            <TouchableOpacity
+              onPress={this.props.onPressSummary.checkIn}
+              disabled={this.props.isCheckedIn}
+            >
+              <View style={styles.btnGroup}>
+                <View style={btnCheckInStyle}>
+                  <SalonIcon icon="checkin" size={16} />
+                </View>
+                <Text style={styles.btnbottomText}>Check-in</Text>
               </View>
-              <Text style={styles.btnbottomText}>Check-in</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
-            <View style={styles.btnGroup}>
-              <View style={styles.btnBottom}>
-                <SalonIcon icon="walkout" size={16} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
+              <View style={styles.btnGroup}>
+                <View style={styles.btnBottom}>
+                  <SalonIcon icon="walkout" size={16} />
+                </View>
+                <Text style={styles.btnbottomText}>Walk-out</Text>
               </View>
-              <Text style={styles.btnbottomText}>Walk-out</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.props.onPressSummary.modify}>
-            <View style={styles.btnGroup}>
-              <View style={styles.btnBottom}>
-                <SalonIcon icon="modify" size={16} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.props.onPressSummary.modify}>
+              <View style={styles.btnGroup}>
+                <View style={styles.btnBottom}>
+                  <SalonIcon icon="modify" size={16} />
+                </View>
+                <Text style={styles.btnbottomText}>Modify</Text>
               </View>
-              <Text style={styles.btnbottomText}>Modify</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.props.onPressSummary.returning}>
-            <View style={styles.btnGroup}>
-              <View style={styles.btnBottom}>
-                <SalonIcon icon="returning" size={16} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.props.onPressSummary.returning}>
+              <View style={styles.btnGroup}>
+                <View style={styles.btnBottom}>
+                  <SalonIcon icon="returning" size={16} />
+                </View>
+                <Text style={styles.btnbottomText}>Returning</Text>
               </View>
-              <Text style={styles.btnbottomText}>Returning</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.props.onPressSummary.toService}>
-            <View style={styles.btnGroup}>
-              <View style={styles.btnBottom}>
-                <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.props.onPressSummary.toService}>
+              <View style={styles.btnGroup}>
+                <View style={styles.btnBottom}>
+                  <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
+                </View>
+                <Text style={styles.btnbottomText}>To Service</Text>
               </View>
-              <Text style={styles.btnbottomText}>To Service</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+            </TouchableOpacity>
+          </View>
       );
     }
     return (

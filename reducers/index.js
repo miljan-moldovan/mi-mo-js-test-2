@@ -11,6 +11,8 @@ import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/components/appointmentDetails/redux';
 import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/components/appointmentFormulas/redux';
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
+import checkinReducer from './checkin';
+import serviceReducer from './service';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -26,4 +28,6 @@ export default combineReducers({
   walkoutReducer,
   appointmentFormulasReducer,
   salonSearchHeaderReducer,
+  checkinReducer,
+  serviceReducer,
 });
