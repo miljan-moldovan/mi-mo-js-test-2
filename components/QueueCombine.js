@@ -64,13 +64,11 @@ class QueueCombineItem extends React.PureComponent {
     if (this.props.type === "combine")
       return (
         <View style={styles.checkContainer}>
-          {/* <FontAwesome
-            style={[styles.checkIcon, selected? { color: '#2BBA11' } : null]}>
-            {selected ? Icons.checkCircle : Icons.circleO}
-          </FontAwesome> */}
           <Icon
             name={selected ? "checkCircle" : "circle"}
-            color={selected ? '#2BBA11' : undefined }
+            type={selected ? "regular" : "solid"}
+            size={selected ? 23 : 20 }
+            color={selected ? '#2BBA11' : '#727A8F' }
             style={styles.checkIcon}  />
         </View>
       )
@@ -303,15 +301,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1'
   },
   itemContainer: {
-    // width: '100%',
     height: 94,
-    // borderBottomWidth: 1,
-    // borderBottomColor: 'rgba(29,29,38,1)',
     borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
+
+    // borderWidth: 1,
+    // borderColor: '#ccc',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+
     flexDirection: 'row',
-    backgroundColor: 'white',
     backgroundColor: '#F8F8F8',
     alignItems: 'center',
     justifyContent: 'center',
@@ -338,9 +338,14 @@ const styles = StyleSheet.create({
     backgroundColor : '#EDFCEF',
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderTopColor: 'transparent',
+    // borderWidth: 1,
+    // borderColor: '#ccc',
+    // borderTopColor: 'transparent',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+
     paddingTop: 3,
     marginHorizontal: 8,
     marginBottom: 28
@@ -354,8 +359,14 @@ const styles = StyleSheet.create({
     // borderTopLeftRadius: 5,
     // borderBottomLeftRadius: 5,
     borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
+
+    // borderWidth: 1,
+    // borderColor: '#ccc',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+
     backgroundColor: 'white',
     flexDirection: 'row',
     left: 1
@@ -371,8 +382,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     height: 94,
     borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    // borderWidth: 1,
+    // borderColor: '#ccc',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+
     backgroundColor: 'white',
   },
   itemSummaryCombinedFirst: {
@@ -385,6 +401,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'transparent',
     backgroundColor: 'transparent',
+
+    shadowColor: null,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
   },
   clientName: {
     fontSize: 16,
@@ -453,8 +474,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // backgroundColor: '#F8F8F8',
-    borderRightColor: '#EFEFEF',
-    borderRightWidth: 1,
+
+    // borderRightColor: '#EFEFEF',
+    // borderRightWidth: 1,
+
     borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
     borderLeftColor: 'transparent',
