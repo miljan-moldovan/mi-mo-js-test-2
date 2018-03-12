@@ -286,7 +286,7 @@ class QueueScreen extends React.Component {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
             <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
-              <Icon style={styles.walkinButtonIcon} name="signIn" />
+              <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
             </TouchableOpacity>
           )
         }
