@@ -16,6 +16,7 @@ import SalonTag from '../../../../components/SalonTag';
 import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
+import FloatingButton from '../../../../components/FloatingButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
   notesScroller: {
     flex: 9,
     backgroundColor: '#F1F1F1',
-    paddingBottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -142,14 +142,17 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: '#115ECD',
   },
+  formulaTypeTag: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: '#082e66',
+  },
   formulaType: {
     fontSize: 10,
     lineHeight: 12,
     fontFamily: 'Roboto',
-    color: '#2F3142',
-    padding: 4,
-    borderRadius: 4,
-    backgroundColor: '#C3D6F2',
+    color: '#FFFFFF',
   },
   boldText: {
     fontWeight: 'bold',
@@ -205,6 +208,7 @@ export default class AppointmentFormulas extends Component {
   static compareByDate(a, b) {
     if (a.date < b.date) { return 1; }
     if (a.date > b.date) { return -1; }
+
     return 0;
   }
 
@@ -212,14 +216,16 @@ export default class AppointmentFormulas extends Component {
     super(props);
 
     this.state = {
+      loading: false,
       activeCategories: [],
       existingCategories: [],
-      showDeleted: true,
+      showDeleted: false,
     };
   }
 
   componentWillMount() {
     const formulas = this.props.appointmentFormulasState.formulas.sort(AppointmentFormulas.compareByDate);
+
     this.props.appointmentFormulasActions.setFilteredFormulas(formulas);
     this.setState({
       activeCategories: this.existingCategories(),
@@ -229,6 +235,7 @@ export default class AppointmentFormulas extends Component {
 
   existingCategories = () => {
     const { formulas } = this.props.appointmentFormulasState;
+    // debugger//eslint-disable-line
     const existing = [];
     for (let i = 0; i < formulas.length; i += 1) {
       if (existing.indexOf(formulas[i].category) < 0) {
@@ -267,8 +274,6 @@ export default class AppointmentFormulas extends Component {
     } else {
       filterTypes.push(value);
     }
-
-    console.log('active', filterTypes, this.state.activeCategories);
     this.setState({ activeCategories: filterTypes });
     this.filterNotes(null, this.state.showDeleted);
   }
@@ -292,7 +297,7 @@ export default class AppointmentFormulas extends Component {
       );
 
 
-      for (let i = 0; i < filtered.length; i++) {
+      for (let i = 0; i < filtered.length; i += 1) {
         const formula = filtered[i];
         const found = this.state.activeCategories.indexOf(formula.category) !== -1;
         if (found) {
@@ -318,6 +323,8 @@ export default class AppointmentFormulas extends Component {
   }
 
   render() {
+    console.log('fpormulas', this.props);
+
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -382,7 +389,9 @@ export default class AppointmentFormulas extends Component {
                           valueSize={12}
                         />
                       </View>
-                      <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
+                      <View style={styles.formulaTypeTag}>
+                        <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
+                      </View>
                     </View>]}
                   bodyChildren={[
                     <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
@@ -399,31 +408,47 @@ export default class AppointmentFormulas extends Component {
               <TouchableOpacity
                 style={styles.showDeletedButton}
                 onPress={() => {
-                  this.setState({ showDeleted: false });
+                  this.setState({ showDeleted: !this.state.showDeleted });
                 }}
               >
-                <Text style={styles.showDeletedText}>Show deleted</Text>
+                <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
         </View>
-
-        <SalonBtnFixedBottom
-          backgroundColor="#727A8F"
-          onPress={() => {
-            const { navigate } = this.props.navigation;
-            navigate('AppointmentFormula');
+        <FloatingButton
+          rootStyle={{
+            height: 56,
+            width: 56,
+            borderRadius: 56 / 2,
+            backgroundColor: '#727A8F',
           }}
-          valueSize={13}
-          valueColor="#FFFFFF"
+          handlePress={() => {
+            // const { navigate } = this.props.navigation;
+            // navigate('AppointmentFormula');
+            alert('Screen Not Implemented');
+          }}
         >
-          <View style={styles.fixedBtnContainer}>
-            <Text style={styles.fixedBtnText}>Add Formula</Text>
-            <View style={styles.fixedBtnIconContainer}>
-              <SalonIcon tintColor="#FFFFFF" icon="plus" size={12} />
-            </View>
-          </View>
-        </SalonBtnFixedBottom>
+          <SalonIcon tintColor="#FFFFFF" icon="plus" size={21} />
+        </FloatingButton>
+        {
+        //   <SalonBtnFixedBottom
+        //   backgroundColor="#727A8F"
+        //   onPress={() => {
+        //     const { navigate } = this.props.navigation;
+        //     navigate('AppointmentFormula');
+        //   }}
+        //   valueSize={13}
+        //   valueColor="#FFFFFF"
+        // >
+        //   <View style={styles.fixedBtnContainer}>
+        //     <Text style={styles.fixedBtnText}>Add Formula</Text>
+        //     <View style={styles.fixedBtnIconContainer}>
+        //       <SalonIcon tintColor="#FFFFFF" icon="plus" size={12} />
+        //     </View>
+        //   </View>
+        // </SalonBtnFixedBottom>
+      }
       </View>
     );
   }

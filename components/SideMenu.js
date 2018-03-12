@@ -55,13 +55,9 @@ class SideMenu extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  console.log('login-map 1');
-  return {
-    auth: state.auth,
-  };
-};
-
+const mapStateToProps = (state, ownProps) => ({
+  auth: state.auth,
+});
 export default connect(mapStateToProps, actions)(SideMenu);
 
 const styles = StyleSheet.create({
