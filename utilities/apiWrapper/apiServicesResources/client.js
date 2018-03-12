@@ -6,6 +6,11 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  clientFormulas: {
+    path: 'Clients/:id/Formulas',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
 };
 
 export default {

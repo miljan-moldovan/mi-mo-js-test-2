@@ -28,23 +28,90 @@ import WalkOutScreen from '../screens/walkOutScreen';
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
+// import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
+
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
+import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import AppointmentNoteScreen from './../screens/appointmentNote';
+import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
-       screen: QueueScreen,
-      //screen: ModifyServiceScreen,
+      screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
     },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    Service: {
+      screen: ModifyServiceScreen,
+    },
     Walkout: {
       screen: WalkOutScreen,
-      navigationOptions: rootProps => ({
+      navigationOptions: {
         headerTitle: 'Walkout',
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+      },
+    },
+    AppointmentFormula: {
+      screen: AppointmentFormula,
+    },
+    AppointmentNotes: {
+      screen: AppoinmentNotes,
+    },
+    AppointmentNote: {
+      screen: AppointmentNoteScreen,
+      navigationOptions: rootProps => ({
+        headerStyle: {
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        },
+        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
+        headerLeft: HeaderLateral({
+          key: Math.random().toString(),
+          ...rootProps,
+          handlePress: () => { rootProps.navigation.state.params.handleGoBack(); },
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          key: Math.random().toString(),
+          params: rootProps.navigation.state.params,
+          button: (
+            <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  }}
+            >
+              <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
+            </View>
+          ),
+        }),
+        header: props => (
+          <ImageHeader
+            {...props}
+            params={rootProps.navigation.state.params}
+          />),
       }),
+    },
+    NewAppointment: {
+      screen: NewAppointmentScreen,
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
@@ -129,19 +196,25 @@ const QueueStackNavigator = StackNavigator(
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#115ECD',
-        paddingLeft: 10,
-        paddingRight: 10,
-        height: 44,
+        paddingHorizontal: 10,
+        paddingVertical: 14,
+        paddingTop: 20,
+        // height: 44,
+        // height: 35,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,
         borderBottomWidth: 0,
-
+        justifyContent: 'center',
+        // alignItems: 'center'
       },
       headerTitleStyle: {
         fontFamily: 'Roboto-Regular',
         fontSize: 17,
         color: '#fff',
+        fontWeight: '500',
+        // backgroundColor: 'red',
+        height: '100%',
       },
       drawerLabel: props => (
         <SideMenuItem

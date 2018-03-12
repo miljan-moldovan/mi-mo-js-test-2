@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
+  ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -20,13 +21,14 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderTopWidth: 1 / 2,
+    borderBottomWidth: 1 / 2,
     borderTopColor: '#C0C1C6',
     borderBottomColor: '#C0C1C6',
     alignSelf: 'stretch',
     flexDirection: 'column',
     paddingLeft: 16,
+    justifyContent: 'flex-start',
   },
   inputRow: {
     height: 44,
@@ -52,7 +54,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#110A24',
     fontFamily: 'Roboto-Medium',
-
   },
   iconStyle: {
     fontSize: 20,
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   textArea: {
-    height: 60,
+    minHeight: 60,
     paddingVertical: 12,
     paddingTop: 12,
     paddingRight: 16,
@@ -69,13 +70,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 22,
     color: '#727A8F',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     marginLeft: 16,
+    marginTop: 7,
+  },
+  dateCancelButtonStyle: {
+    width: '10%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  dateCancelStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
 export const SectionTitle = props => (
-  <View style={{ height: 38, flexDirection: 'column', justifyContent: 'flex-end' }} >
+  <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
   </View>
 );
@@ -83,9 +95,10 @@ SectionTitle.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-export const SectionDivider = () => (
-  <View style={{ height: 35 }} />
+export const SectionDivider = props => (
+  <View style={[{ height: 35 }, props.style]} />
 );
+
 
 export const InputDivider = () => (
   <View style={styles.inputDivider} />
@@ -98,7 +111,7 @@ export const InputGroup = props => (
 );
 InputGroup.propTypes = {
   style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-  children: PropTypes.element,
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
 };
 InputGroup.defaultProps = {
   style: false,
@@ -187,9 +200,9 @@ export const InputText = props => (
       {...props}
       style={styles.textArea}
       multiline
+      autoGrow
       numberOfLines={2}
       placeholderTextColor="#727A8F"
-      maxHeight={60}
       placeholder={props.placeholder}
     />
   </View>
@@ -244,14 +257,14 @@ export class InputSwitch extends React.Component {
     super(props);
 
     this.state = {
-      value: false,
+      value: props.value,
     };
   }
 
   render() {
     return (
-      <View style={[styles.inputRow, { justifyContent: 'space-between' }]}>
-        <Text style={styles.labelText}>{this.props.text}</Text>
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
+        <Text style={[styles.labelText, this.props.textStyle]}>{this.props.text}</Text>
 
         <Switch
           onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}
@@ -288,11 +301,11 @@ export class ServiceInput extends React.Component {
     const value = this.state.selectedService ? this.state.selectedService.name : null;
     return (
       <TouchableOpacity
-        style={[styles.inputRow, {justifyContent: 'center'}]}
+        style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Service</Text>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
@@ -327,11 +340,11 @@ export class ProviderInput extends React.Component {
     const value = this.state.selectedProvider ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : null;
     return (
       <TouchableOpacity
-        style={[styles.inputRow, {justifyContent: 'center'}]}
+        style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Provider</Text>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
@@ -366,11 +379,11 @@ export class PromotionInput extends React.Component {
     const value = this.state.selectedPromotion ? this.state.selectedPromotion.name : null;
     return (
       <TouchableOpacity
-        style={[styles.inputRow, {justifyContent: 'center'}]}
+        style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Promotion</Text>
-        <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>

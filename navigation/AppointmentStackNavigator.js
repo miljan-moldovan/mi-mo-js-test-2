@@ -26,11 +26,16 @@ import AppointmentFormula from './../screens/appointmentDetailsScreen/components
 import AppointmentNoteScreen from './../screens/appointmentNote';
 import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
+import ModifyServiceScreen from './../screens/modifyServiceScreen';
+
 const AppointmentStackNavigator = StackNavigator(
   {
-    AppointmentDetails: {
-      screen: AppointmentDetailsScreen,
+    Appointments: {
+      screen: AppointmentScreen,
     },
+    // AppointmentDetails: {
+    //   screen: AppointmentDetailsScreen,
+    // },
     AppointmentFormula: {
       screen: AppointmentFormula,
     },
@@ -48,7 +53,7 @@ const AppointmentStackNavigator = StackNavigator(
         headerLeft: HeaderLateral({
           key: Math.random().toString(),
           ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
+          handlePress: () => { rootProps.navigation.goBack(); },
           button: (
             <View style={{
                   flex: 1,
@@ -72,7 +77,7 @@ const AppointmentStackNavigator = StackNavigator(
                   justifyContent: 'center',
                   }}
             >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
             </View>
           ),
         }),
@@ -86,6 +91,9 @@ const AppointmentStackNavigator = StackNavigator(
     NewAppointment: {
       screen: NewAppointmentScreen,
     },
+    // ModifyService2: {
+    //   screen: ModifyServiceScreen,
+    // },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
@@ -118,11 +126,11 @@ const AppointmentStackNavigator = StackNavigator(
           handlePress: () => rootProps.navigation.goBack(),
           button: (
             <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <Image
                 style={{

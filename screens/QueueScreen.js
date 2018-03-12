@@ -15,19 +15,24 @@ import {
   Animated,
   Dimensions,
   ActionSheetIOS,
+  TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
+import * as settingsActions from '../actions/settings.js';
 import checkinActions from '../actions/checkin';
 import serviceActions from '../actions/service';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
+import QueueHeader from '../components/QueueHeader';
+import Icon from '../components/UI/Icon';
 
 import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
@@ -35,77 +40,85 @@ import SalonTextInput from '../components/SalonTextInput';
 
 const WAITING = '0';
 const SERVICED = '1';
+const SEARCH_CLIENTS = 'clients';
+const SEARCH_PROVIDERS = 'providers';
 const initialLayout = {
   height: 0,
   width: Dimensions.get('window').width,
 };
 
-
-const QueueNavButton = ({ icon, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
-    <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
-  </TouchableOpacity>
-);
-
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerLeft = <QueueNavButton icon={Icons.bars} />;
-    const onActionPress = () => {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-        // options: ['Cancel', 'Remove'],
-          options: ['Turn Away', 'Combine', 'Cancel'],
-          // destructiveButtonIndex: 1,
-          cancelButtonIndex: 2,
-        },
-        (buttonIndex) => {
-          switch (buttonIndex) {
-            case 0:
-              navigation.navigate('TurnAway');
-              break;
-            case 1:
-              navigation.navigate('QueueCombine');
-              break;
-            default:
-              break;
-          }
-        },
-      );
-    };
-
-    const headerRight = (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 80 }}>
-        <QueueNavButton icon={Icons.ellipsisH} onPress={onActionPress} />
-        <QueueNavButton icon={Icons.search} />
-      </View>
-    );
-
+    const { params = {} } = navigation.state;
+    const {
+      searchMode, searchText, onChangeSearchMode, onChangeSearchText,
+    } = params;
     return {
-      headerLeft,
-      headerRight,
+      header:
+  <QueueHeader
+    navigation={navigation}
+    onChangeSearchMode={onChangeSearchMode}
+    onChangeSearchText={onChangeSearchText}
+    searchMode={searchMode}
+    searchText={searchText}
+  />,
     };
-  }
-
+  };
   state = {
     refreshing: false,
     index: 0,
     isWalkoutVisible: false,
     walkoutText: '',
+    searchMode: false,
+    searchText: '',
+    searchType: '',
+    searchWaitingCount: 0,
+    searchServiceCount: 0,
     routes: [
       { key: WAITING, title: 'Waiting' },
       { key: SERVICED, title: 'In Service' },
     ],
   }
+  searchWaitingRef = null;
+  searchServicingRef = null;
 
   componentWillMount() {
     this.props.actions.receiveQueue();
+    this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
+    // this._refreshData();
   }
-  _onRefresh = () => {
-    this.setState({ refreshing: true });
-    // FIXME this._refreshData();
-    // emulate refresh call
+  componentDidMount() {
+    this.props.navigation.setParams({
+      onChangeSearchMode: this.onChangeSearchMode,
+      onChangeSearchText: this.onChangeSearchText,
+      searchMode: this.state.searchMode,
+      searchText: this.state.searchText,
+    });
+  }
 
-    setTimeout(() => this.setState({ refreshing: false }), 500);
+  onChangeSearchMode = (searchMode) => {
+    console.log('onChangeSearchMode', searchMode);
+    this.setState({ searchMode, searchType: searchMode ? SEARCH_CLIENTS : '', searchText: '' }, () => this.props.navigation.setParams({ searchMode, searchText: '' }));
+  }
+  onChangeSearchText = (searchText) => {
+    this.setState({ searchText }, () => this.props.navigation.setParams({ searchText }));
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.error) {
+      console.log('QueueScreen.componentWillReceiveProps error', nextProps.error);
+      Alert.alert('Error', nextProps.error.toString());
+    }
+  }
+  _refreshData = () => {
+    this.props.actions.receiveQueue();
+  }
+
+  _onRefresh = () => {
+    // this._refreshData();
+    // this.setState({ refreshing: true });
+    // // FIXME this._refreshData();
+    // // emulate refresh call
+    // setTimeout(() => this.setState({ refreshing: false }), 500);
   }
 
   _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
@@ -128,42 +141,119 @@ class QueueScreen extends React.Component {
     );
     // }
   _renderBar = props => (
-    <TabBar
-      {...props}
-      tabStyle={styles.tab}
-      style={styles.tabContainer}
-      renderLabel={this._renderLabel(props)}
-      indicatorStyle={styles.indicator}
-    />
+    <View>
+      <TabBar
+        {...props}
+        tabStyle={styles.tab}
+        style={styles.tabContainer}
+        renderLabel={this._renderLabel(props)}
+        indicatorStyle={styles.indicator}
+      />
+      <View style={styles.summaryBar}>
+        <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
+        <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>25m</Text> Est. Wait</Text>
+      </View>
+    </View>
   )
 
   _renderScene = ({ route }) => {
+    const {
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
     switch (route.key) {
       case WAITING:
         return (
-          <Queue
-            data={this.props.waitingQueue}
-            navigation={this.props.navigation}
-            onCheckin={this.props.checkinActions.putCheckin}
-            onStartService={this.props.serviceActions.putStartService}
-          />
+          <Queue data={waitingQueue} groups={groups} navigation={navigation} loading={loading} isWaiting />
         );
       case SERVICED:
         return (
-          <Queue
-            data={this.props.serviceQueue}
-            navigation={this.props.navigation}
-            onCheckin={this.props.checkinActions.putCheckin}
-            onStartService={this.props.serviceActions.putStartService}
-          />
+          <Queue data={serviceQueue} groups={groups} navigation={navigation} loading={loading} />
         );
       default:
         return route;
     }
   }
+  handleSearchClients = () => {
+    console.log('handleSearchClients');
+    this.setState({ searchType: SEARCH_CLIENTS });
+  }
+  handleSearchProviders = () => {
+    console.log('handleSearchProviders');
+    this.setState({ searchType: SEARCH_PROVIDERS });
+  }
+  updateSearchWaitingCount = searchWaitingCount => this.setState({ searchWaitingCount });
+  updateSearchServiceCount = searchServiceCount => this.setState({ searchServiceCount });
+
+  _renderSearchResults = () => {
+    const {
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
+    const {
+      searchType, searchWaitingCount, searchServiceCount, searchText: filterText,
+    } = this.state;
+    const p = {
+      groups,
+      navigation,
+      loading,
+      filterText,
+      searchClient: searchType === SEARCH_CLIENTS,
+      searchProvider: searchType === SEARCH_PROVIDERS,
+    };
+    const active = { backgroundColor: 'white' };
+    const activeText = { color: '#115ECD' };
+    console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
+    return (
+      <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
+        <ScrollView style={{ marginTop: 40 }}>
+          { !searchWaitingCount && !searchServiceCount ? (
+            <View style={styles.searchEmpty}>
+              <View style={styles.searchEmptyIconContainer}>
+                {/* <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome> */}
+                <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
+              </View>
+              <Text style={styles.searchEmptyText}>
+                Results matching <Text style={{ color: 'black' }}>“{filterText}”</Text> were not found.
+              </Text>
+              <Text style={styles.searchEmptyTextSmall}>
+                Check your spelling and try again or tap on one of the suggestions below
+              </Text>
+            </View>
+          ) : null }
+          <Queue
+            onChangeFilterResultCount={this.updateSearchWaitingCount}
+            data={waitingQueue}
+            headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
+            {...p}
+          />
+          <Queue
+            onChangeFilterResultCount={this.updateSearchServiceCount}
+            data={serviceQueue}
+            headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
+            {...p}
+          />
+        </ScrollView>
+        <View style={styles.searchTypeContainer}>
+          {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
+          <View style={styles.searchType}>
+            <TouchableOpacity
+              style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
+              onPress={this.handleSearchClients}
+            >
+              <Text style={[styles.searchTypeText, searchType === SEARCH_CLIENTS ? activeText : null]}>Client</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.searchProvider, searchType === SEARCH_PROVIDERS ? active : null]}
+              onPress={this.handleSearchProviders}
+            >
+              <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   _handleIndexChange = (index) => {
-    console.log('_handleIndexChange ', index);
     this.setState({ index });
   };
 
@@ -187,6 +277,10 @@ class QueueScreen extends React.Component {
   };
 
   render() {
+    // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
+    // console.log('QueueScreen.render', this.props.settings);
+    if (this.state.searchMode) { return this._renderSearchResults(); }
+
     return (
       <View style={styles.container}>
         <TabViewAnimated
@@ -200,17 +294,16 @@ class QueueScreen extends React.Component {
           renderHeader={this._renderBar}
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
-          swipeEnabled={false}
+          // swipeEnabled={false}
         />
-        <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
-          <Text style={styles.walkinButtonText}>Walk-in</Text>
-        </TouchableOpacity>
-        {/* <FloatingButton handlePress={this._handleWalkInPress}>
-          <Text style={styles.textWalkInBtn}>WALK {'\n'} IN</Text>
-        </FloatingButton> */}
-        {/* <FloatingButton handlePress={this._handleWalkOutPress} rootStyle={styles.walkOutRoot}>
-          <Text style={styles.textWalkInBtn}>WALK {'\n'} OUT</Text>
-        </FloatingButton> */}
+        {
+          this.props.settings.data.SupressServiceForWalkIn ? null : (
+            <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+              <Text style={styles.walkinButtonText}>Walk-in</Text>
+              <Icon style={styles.walkinButtonIcon} name="signIn" />
+            </TouchableOpacity>
+          )
+        }
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
           {[<View key={Math.random().toString()} style={styles.walkoutContainer}>
             <View style={styles.walkoutImageContainer}>
@@ -247,17 +340,21 @@ class QueueScreen extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
   serviceQueue: state.queue.serviceQueue,
+  groups: state.queue.groups,
+  error: state.queue.error,
+  queueLength: state.queue.queueLength,
+  loading: state.queue.loading,
   walkInState: state.walkInReducer.walkInState,
+  settings: state.settings,
 });
-
 const mapActionsToProps = dispatch => ({
   actions: bindActionCreators({ ...actions }, dispatch),
+  settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   checkinActions: bindActionCreators({ ...checkinActions }, dispatch),
   serviceActions: bindActionCreators({ ...serviceActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
-
 
 const styles = StyleSheet.create({
   container: {
@@ -391,31 +488,39 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.6,
     shadowRadius: 1,
+    flexDirection: 'row',
   },
   walkinButtonText: {
     fontFamily: 'Roboto-Medium',
     fontSize: 12,
     color: 'white',
   },
+  walkinButtonIcon: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
   indicator: {
     borderWidth: 1,
     borderColor: 'white',
-    borderRadius: 16,
+    borderRadius: 15.5,
     backgroundColor: 'white',
-    height: 33,
+    height: 31,
     shadowColor: '#000',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.6,
     shadowRadius: 1,
   },
   tab: {
-    height: 33,
+    height: 31,
     width: 120,
+    // backgroundColor: 'rgba(0,255,0,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    // alignItems: 'flex-start',
+    paddingLeft: 0,
   },
   tabContainer: {
-    height: 34,
+    height: 32,
     width: 240,
     borderWidth: 1,
     borderColor: 'rgba(8,46,102,0.5)',
@@ -432,7 +537,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 3,
     paddingVertical: 0,
     paddingHorizontal: 5,
-    marginRight: 3,
+    marginRight: 5,
   },
   tabQueueCounterText: {
     color: '#1963CE',
@@ -446,10 +551,105 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     opacity: 1,
     flexDirection: 'row',
+    // backgroundColor: 'yellow',
+    alignSelf: 'flex-start',
+    marginLeft: 15,
+    paddingLeft: 0,
+    top: -1,
   },
-  navButton: {
+  summaryBar: {
+    height: 31,
+    backgroundColor: '#0C4699',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  summaryBarTextLeft: {
+    color: 'rgba(195,214,242,1)',
+    fontSize: 8,
+    fontFamily: 'Roboto-Regular',
+    marginLeft: 16,
+  },
+  summaryBarTextLeftEm: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  summaryBarTextRight: {
     color: 'white',
-    fontSize: 20,
-    marginLeft: 10,
+    fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    marginRight: 23,
+  },
+  summaryBarTextRightEm: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 11,
+  },
+  searchTypeContainer: {
+    backgroundColor: '#115ECD',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+  },
+  searchType: {
+    marginHorizontal: 16,
+    marginVertical: 10,
+    height: 27,
+    flexDirection: 'row',
+  },
+  searchTypeText: {
+    fontSize: 13,
+    fontWeight: '500',
+    fontFamily: 'Roboto-Regular',
+    color: 'white',
+  },
+  searchClient: {
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
+    borderColor: 'white',
+    borderWidth: 1,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchProvider: {
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+    borderColor: 'white',
+    borderWidth: 1,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    padding: 60,
+  },
+  searchEmptyText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#727A8F',
+    fontFamily: 'Roboto-Regular',
+    marginVertical: 20,
+  },
+  searchEmptyTextSmall: {
+    fontSize: 11,
+    color: '#727A8F',
+    fontFamily: 'Roboto-Regular',
+  },
+  searchEmptyIcon: {
+    fontSize: 50,
+    // color: '#E3E4E5',
+  },
+  searchEmptyIconContainer: {
+    width: 100,
+    height: 100,
+    borderWidth: 6,
+    borderRadius: 50,
+    borderColor: '#E3E4E5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

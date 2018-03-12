@@ -106,6 +106,7 @@ function doRequest(key, parameters, options = {
 
   return new Promise((resolve, reject) => {
     let count = 1;
+
     const attempt = () => api.fetch(
       key,
       fetchData,
