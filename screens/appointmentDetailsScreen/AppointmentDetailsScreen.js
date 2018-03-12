@@ -115,19 +115,19 @@ export default class AppointmentDetailsScreen extends React.Component {
   }
 
   componentDidMount() {
-    apiWrapper.doRequest('clientFormulas', { path: { id: 306 } })
-      .then((res) => {
-        debugger//eslint-disable-line
-        const { notes, formulas } = res;
-        this.setState({ loading: false, notes, formulas });
-      })
-      .catch((err) => {
-        console.warn(err);
-      });
+    // apiWrapper.doRequest('clientFormulas', { path: { id: 306 } })
+    //   .then((res) => {
+    //     debugger//eslint-disable-line
+    //     const { notes, formulas } = res;
+    //     this.setState({ loading: false, notes, formulas });
+    //   })
+    //   .catch((err) => {
+    //     console.warn(err);
+    //   });
 
-    // setTimeout(() => {
-    //   this.setState({ loading: false });
-    // }, 2000);
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 2000);
   }
 
   handleIndexChange = index => this.setState({ index });
