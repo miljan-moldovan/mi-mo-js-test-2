@@ -18,7 +18,7 @@ const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
     {item.newGlobal ? newGlobal : null}
     {item.newLocal ? newLocal : null}
     {item.birthday ? birthday : null}
-    {item.groupId ? (<Group leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
+    {item.groupId && groupLeaderName ? (<Group leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
     {item.attributes && item.attributes.length ? tag : null}
   </View>
 );
