@@ -9,6 +9,7 @@ import SalonSearchBar from '../components/SalonSearchBar';
 
 import QueueScreen from './../screens/QueueScreen';
 import QueueCombineScreen from './../screens/QueueCombineScreen';
+import ClientMergeScreen from './../screens/ClientMergeScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
@@ -120,6 +121,9 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueCombine: {
       screen: QueueCombineScreen,
+    },
+    ClientMerge: {
+      screen: ClientMergeScreen
     },
     WalkIn: {
       screen: WalkInScreen,
