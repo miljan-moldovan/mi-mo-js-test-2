@@ -56,8 +56,6 @@ Icon.propTypes = {
 
 const styles = StyleSheet.create({
   icon: {
-    // fontFamily:       'FontAwesome',
     backgroundColor:  'transparent',
-    color: 'white'
   },
 });
