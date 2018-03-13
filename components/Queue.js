@@ -275,7 +275,7 @@ class Queue extends React.Component {
             <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
           </View>
           <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
-            {item.services[0].serviceName.toUpperCase()}
+            {/* item.services[0].serviceName.toUpperCase()*/}
             {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
             <Text style={{ color: '#727A8F' }}>with</Text> {(`${item.services[0].employeeFirstName} ${item.services[0].employeeLastName}`).toUpperCase()}
           </Text>
