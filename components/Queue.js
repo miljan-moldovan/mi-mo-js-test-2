@@ -262,6 +262,9 @@ class Queue extends React.Component {
 
     const label = this.getLabelForItem(item);
     const groupLeaderName = this.getGroupLeaderName(item);
+    const firstService = item.services[0] || {};
+    const serviceName = (firstService.serviceName || '').toUpperCase();
+    const employee = ((firstService.employeeFirstName||'')+' '+(firstService.employeeLastName||'')).toUpperCase();
     return (
       <TouchableOpacity
         style={styles.itemContainer}
@@ -274,9 +277,9 @@ class Queue extends React.Component {
             <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
           </View>
           <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
-            {item.services[0].serviceName.toUpperCase()}
+            {serviceName}
             {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
-            <Text style={{ color: '#727A8F' }}>with</Text> {(`${item.services[0].employeeFirstName} ${item.services[0].employeeLastName}`).toUpperCase()}
+            <Text style={{ color: '#727A8F' }}>with</Text> {employee}
           </Text>
           <Text style={styles.serviceTimeContainer}>
             <Icon name="clockO" style={styles.serviceClockIcon} />

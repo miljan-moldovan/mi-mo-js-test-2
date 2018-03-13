@@ -1,4 +1,4 @@
-// @flow
+Þ// @flow
 import React from 'react';
 import {
   Image,
