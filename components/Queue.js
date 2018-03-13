@@ -367,6 +367,7 @@ class Queue extends React.Component {
           onPressSummary={this.handlePressSummary}
           isWaiting={this.props.isWaiting}
           isCheckedIn={this.state.appointment ? this.state.appointment.checkedIn : false}
+          hide={this.hideDialog}
         />
         {this.renderNotification()}
       </View>
