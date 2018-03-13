@@ -8,6 +8,7 @@ export default {
     Exception: 5,
     NotFound: 6,
     NetworkError: 99,
+    UnknownError: 100,
   },
   // Must clean cache after doing these requests
   cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup', 'postClientNote',

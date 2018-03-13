@@ -32,6 +32,7 @@ import ServiceIcons from './ServiceIcons';
 import Icon from '../components/UI/Icon';
 
 import type { QueueItem } from '../models';
+
 const chevron = require('../assets/images/icons/icon_caret_right.png');
 
 class Queue extends React.Component {
@@ -44,17 +45,20 @@ class Queue extends React.Component {
     isVisible: false,
     client: null,
     services: null,
-    data: []
+    data: [],
   }
   componentWillMount() {
-    const { data, searchClient, searchProvider, filterText } = this.props;
+    const {
+      data, searchClient, searchProvider, filterText,
+    } = this.props;
     this.setState({ data });
-    if (searchClient || searchProvider)
-      this.searchText(filterText, searchClient, searchProvider);
+    if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
   }
-  componentWillReceiveProps({ data, searchClient, searchProvider, filterText }) {
+  componentWillReceiveProps({
+    data, searchClient, searchProvider, filterText,
+  }) {
     if (data !== this.props.data) {
-      this.setState({ data: data });
+      this.setState({ data });
     }
     // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
     if (searchClient != this.props.searchClient ||
@@ -65,8 +69,7 @@ class Queue extends React.Component {
   }
   onChangeFilterResultCount = () => {
     console.log('onChangeFilterResultCount', this.state.data.length);
-    if (this.props.onChangeFilterResultCount)
-      this.props.onChangeFilterResultCount(this.state.data.length);
+    if (this.props.onChangeFilterResultCount) { this.props.onChangeFilterResultCount(this.state.data.length); }
   }
   searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
     const { data } = this.props;
@@ -75,35 +78,30 @@ class Queue extends React.Component {
     if (query === '' || (!searchClient && !searchProvider)) {
       this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
     }
-    let text = query.toLowerCase();
+    const text = query.toLowerCase();
     // search by the client full name
-    let filteredData = data.filter(({ client, services }) => {
+    const filteredData = data.filter(({ client, services }) => {
       if (searchClient) {
-        const fullName = (client.name||'')+' '+(client.middleName||'')+' '+(client.lastName||'');
+        const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
         // if this row is a match, we don't need to check providers
-        if (fullName.toLowerCase().match(text))
-          return true;
+        if (fullName.toLowerCase().match(text)) { return true; }
       }
       if (searchProvider) {
         for (let i = 0; i < services.length; i++) {
           const { employeeFirstName, employeeLastName } = services[i];
-          const fullName = (employeeFirstName||'')+' '+(employeeLastName||'');
+          const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
           // if this provider is a match, we don't need to check other providers
-          if (fullName.toLowerCase().match(text))
-            return true;
+          if (fullName.toLowerCase().match(text)) { return true; }
         }
       }
       return false;
     });
     // if no match, set empty array
-    if (!filteredData || !filteredData.length)
-      this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined);
+    if (!filteredData || !filteredData.length) { this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined); }
     // if the matched numbers are equal to the original data, keep it the same
-    else if (filteredData.length === data.length)
-      this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined);
+    else if (filteredData.length === data.length) { this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined); }
     // else, set the filtered data
-    else
-      this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined);
+    else { this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined); }
   };
 
   handlePressSummary = {
@@ -304,7 +302,9 @@ class Queue extends React.Component {
   }
   renderNotification = () => {
     const { notificationType, notificationItem, notificationVisible } = this.state;
-    let notificationColor, notificationButton, notificationText;
+    let notificationColor,
+      notificationButton,
+      notificationText;
     switch (notificationType) {
       case 'service':
         const client = notificationItem.client || {};
@@ -346,7 +346,7 @@ class Queue extends React.Component {
           </View>
         ) : null}
         <FlatList
-          style={{marginTop: 5}}
+          style={{ marginTop: 5 }}
           renderItem={this.renderItem}
           data={this.state.data}
           keyExtractor={this._keyExtractor}
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    marginTop: 5
+    marginTop: 5,
     // marginBottom: 12
   },
   serviceTimeContainer: {
@@ -504,24 +504,24 @@ const styles = StyleSheet.create({
     marginTop: 22,
     marginHorizontal: 16,
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerTitle: {
     fontFamily: 'Roboto-Regular',
     fontWeight: '500',
     color: '#4D5067',
-    fontSize: 14
+    fontSize: 14,
   },
   headerCount: {
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    fontSize: 11
+    fontSize: 11,
   },
   chevron: {
     position: 'absolute',
     top: 22,
     right: 10,
     fontSize: 15,
-    color: '#115ECD'
-  }
+    color: '#115ECD',
+  },
 });

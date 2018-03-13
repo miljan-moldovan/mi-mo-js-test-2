@@ -18,7 +18,6 @@ import {
   TextInput
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-// import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Icon from './UI/Icon';
 
 
@@ -39,7 +38,7 @@ export default class QueueHeader extends React.Component {
     const { navigation } = this.props;
     ActionSheetIOS.showActionSheetWithOptions(
       {
-        options: ['Turn Away', 'Combine', 'Cancel'],
+        options: ['Turn Away', 'Combine', 'Cancel', '[DEV] Client Merge'],
         cancelButtonIndex: 2,
       },
       (buttonIndex) => {
@@ -49,6 +48,9 @@ export default class QueueHeader extends React.Component {
             break;
           case 1:
             navigation.navigate('QueueCombine');
+            break;
+          case 3:
+            navigation.navigate('ClientMerge');
             break;
           default:
             break;
@@ -79,9 +81,9 @@ export default class QueueHeader extends React.Component {
           <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', height: '100%', bottom: 0}}>
             <Text style={styles.headerTitle}>Queue</Text>
           </View>
-          <View style={{ flexDirection: 'row', height: '100%', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto' }}>
-            <QueueNavButton icon="ellipsisH" onPress={this.onActionPress} style={{marginRight: 19}} />
-            <QueueNavButton icon="search" onPress={this.onSearchPress} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto', height: '100%', top: 3 }}>
+            <QueueNavButton icon="ellipsisH" onPress={this.onActionPress} style={{paddingLeft: 7, paddingRight: 10, marginRight: 5}} />
+            <QueueNavButton icon="search" onPress={this.onSearchPress} style={{paddingHorizontal: 6, marginRight: -4 }} />
           </View>
         </SafeAreaView>
       )

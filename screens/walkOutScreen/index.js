@@ -8,6 +8,7 @@ const mapStateToProps = state => ({
   reasonTypes: state.walkoutReducer.reasonTypes,
   isLoading: state.walkoutReducer.isLoading,
   error: state.walkoutReducer.error,
+  formCache: state.formCache,
 });
 
 const mapActionsToProps = dispatch => ({
