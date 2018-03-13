@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: 'OpenSans-Regular',
-    fontSize: 17,
+    fontFamily: 'Roboto',
+    fontSize: 14,
     color: '#fff',
-    marginLeft: 22,
+    marginLeft: 5,
   },
 });
 

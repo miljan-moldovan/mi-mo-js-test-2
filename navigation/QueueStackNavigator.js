@@ -9,6 +9,7 @@ import SalonSearchBar from '../components/SalonSearchBar';
 
 import QueueScreen from './../screens/QueueScreen';
 import QueueCombineScreen from './../screens/QueueCombineScreen';
+import ClientMergeScreen from './../screens/ClientMergeScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
@@ -28,6 +29,7 @@ import WalkOutScreen from '../screens/walkOutScreen';
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
 
+// import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
@@ -45,14 +47,17 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: 'Queue',
       },
     },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    Service: {
+      screen: ModifyServiceScreen,
+    },
     Walkout: {
       screen: WalkOutScreen,
       navigationOptions: {
         headerTitle: 'Walkout',
       },
-    },
-    AppointmentDetails: {
-      screen: AppointmentDetailsScreen,
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
@@ -120,6 +125,9 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueCombine: {
       screen: QueueCombineScreen,
+    },
+    ClientMerge: {
+      screen: ClientMergeScreen
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -192,10 +200,11 @@ const QueueStackNavigator = StackNavigator(
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#115ECD',
-        paddingLeft: 10,
-        paddingRight: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 14,
+        paddingTop: 20,
         // height: 44,
-        height: 35,
+        // height: 35,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,

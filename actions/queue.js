@@ -2,6 +2,7 @@
 // queue constants from webend redux
 
 import axios from 'axios';
+
 import {
   QUEUE,
   QUEUE_RECEIVED,
@@ -22,7 +23,7 @@ import {
   COMBINE_CLIENT,
   GROUP_LEAD_UPDATE,
   UNCOMBINE,
-  UPDATE_GROUPS
+  UPDATE_GROUPS,
 } from './constants';
 import apiWrapper from '../utilities/apiWrapper';
 

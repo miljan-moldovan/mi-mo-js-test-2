@@ -14,4 +14,4 @@ const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
 });
 
-export default connect(mapStateToProps, mapActionsToProps)(ModifyServiceScreen);
+export default (ModifyServiceScreen);

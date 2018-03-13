@@ -8,7 +8,6 @@ const initialState = {
 
 export default (state: Object = initialState, action: Object) => {
   const { type, data, error } = action;
-  console.log('***** formCache.reducer', type, data, error);
 
   switch (type) {
     case STORE_FORM:

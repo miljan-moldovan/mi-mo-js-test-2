@@ -15,7 +15,7 @@ import {
   Animated,
   Dimensions,
   ActionSheetIOS,
-  TextInput
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 
@@ -26,6 +26,8 @@ import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 // import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
 import * as settingsActions from '../actions/settings.js';
+import checkinActions from '../actions/checkin';
+import serviceActions from '../actions/service';
 import walkInActions from '../actions/walkIn';
 import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
@@ -48,16 +50,18 @@ const initialLayout = {
 class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
-    const { searchMode, searchText, onChangeSearchMode, onChangeSearchText } = params;
+    const {
+      searchMode, searchText, onChangeSearchMode, onChangeSearchText,
+    } = params;
     return {
       header:
-        <QueueHeader
-          navigation={navigation}
-          onChangeSearchMode={onChangeSearchMode}
-          onChangeSearchText={onChangeSearchText}
-          searchMode={searchMode}
-          searchText={searchText}
-        />
+  <QueueHeader
+    navigation={navigation}
+    onChangeSearchMode={onChangeSearchMode}
+    onChangeSearchText={onChangeSearchText}
+    searchMode={searchMode}
+    searchText={searchText}
+  />,
     };
   };
   state = {
@@ -88,15 +92,16 @@ class QueueScreen extends React.Component {
       onChangeSearchMode: this.onChangeSearchMode,
       onChangeSearchText: this.onChangeSearchText,
       searchMode: this.state.searchMode,
-      searchText: this.state.searchText
+      searchText: this.state.searchText,
     });
   }
+
   onChangeSearchMode = (searchMode) => {
     console.log('onChangeSearchMode', searchMode);
-    this.setState({ searchMode, searchType: searchMode ? SEARCH_CLIENTS : '', searchText: '' }, () => this.props.navigation.setParams({searchMode, searchText: ''}));
+    this.setState({ searchMode, searchType: searchMode ? SEARCH_CLIENTS : '', searchText: '' }, () => this.props.navigation.setParams({ searchMode, searchText: '' }));
   }
   onChangeSearchText = (searchText) => {
-    this.setState({searchText}, () => this.props.navigation.setParams({searchText}));
+    this.setState({ searchText }, () => this.props.navigation.setParams({ searchText }));
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.error) {
@@ -107,6 +112,7 @@ class QueueScreen extends React.Component {
   _refreshData = () => {
     this.props.actions.receiveQueue();
   }
+
   _onRefresh = () => {
     // this._refreshData();
     // this.setState({ refreshing: true });
@@ -134,7 +140,7 @@ class QueueScreen extends React.Component {
       </View>
     );
     // }
-  _renderBar = (props) => (
+  _renderBar = props => (
     <View>
       <TabBar
         {...props}
@@ -149,6 +155,7 @@ class QueueScreen extends React.Component {
       </View>
     </View>
   )
+
   _renderScene = ({ route }) => {
     const {
       navigation, waitingQueue, serviceQueue, groups, loading,
@@ -174,23 +181,30 @@ class QueueScreen extends React.Component {
     console.log('handleSearchProviders');
     this.setState({ searchType: SEARCH_PROVIDERS });
   }
-  updateSearchWaitingCount = (searchWaitingCount) => this.setState({ searchWaitingCount });
-  updateSearchServiceCount = (searchServiceCount) => this.setState({ searchServiceCount });
+  updateSearchWaitingCount = searchWaitingCount => this.setState({ searchWaitingCount });
+  updateSearchServiceCount = searchServiceCount => this.setState({ searchServiceCount });
 
   _renderSearchResults = () => {
-    const { navigation, waitingQueue, serviceQueue, groups, loading } = this.props;
-    const { searchType, searchWaitingCount, searchServiceCount, searchText: filterText } = this.state;
+    const {
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
+    const {
+      searchType, searchWaitingCount, searchServiceCount, searchText: filterText,
+    } = this.state;
     const p = {
-      groups, navigation, loading, filterText,
+      groups,
+      navigation,
+      loading,
+      filterText,
       searchClient: searchType === SEARCH_CLIENTS,
       searchProvider: searchType === SEARCH_PROVIDERS,
     };
-    const active = { backgroundColor: 'white'};
+    const active = { backgroundColor: 'white' };
     const activeText = { color: '#115ECD' };
     console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <ScrollView style={{marginTop: 40}}>
+        <ScrollView style={{ marginTop: 40 }}>
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
@@ -198,7 +212,7 @@ class QueueScreen extends React.Component {
                 <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
               </View>
               <Text style={styles.searchEmptyText}>
-                Results matching <Text style={{color: 'black'}}>“{filterText}”</Text> were not found.
+                Results matching <Text style={{ color: 'black' }}>“{filterText}”</Text> were not found.
               </Text>
               <Text style={styles.searchEmptyTextSmall}>
                 Check your spelling and try again or tap on one of the suggestions below
@@ -208,13 +222,13 @@ class QueueScreen extends React.Component {
           <Queue
             onChangeFilterResultCount={this.updateSearchWaitingCount}
             data={waitingQueue}
-            headerTitle={ searchWaitingCount || searchServiceCount ? "Waiting" : undefined }
+            headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
             {...p}
           />
           <Queue
             onChangeFilterResultCount={this.updateSearchServiceCount}
             data={serviceQueue}
-            headerTitle={ searchWaitingCount || searchServiceCount ? "In Service" : undefined }
+            headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
             {...p}
           />
         </ScrollView>
@@ -223,22 +237,23 @@ class QueueScreen extends React.Component {
           <View style={styles.searchType}>
             <TouchableOpacity
               style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
-              onPress={this.handleSearchClients}>
+              onPress={this.handleSearchClients}
+            >
               <Text style={[styles.searchTypeText, searchType === SEARCH_CLIENTS ? activeText : null]}>Client</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.searchProvider, searchType === SEARCH_PROVIDERS ? active : null]}
-              onPress={this.handleSearchProviders}>
+              onPress={this.handleSearchProviders}
+            >
               <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-    )
+    );
   }
 
   _handleIndexChange = (index) => {
-    console.log('_handleIndexChange ', index);
     this.setState({ index });
   };
 
@@ -264,8 +279,7 @@ class QueueScreen extends React.Component {
   render() {
     // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
     // console.log('QueueScreen.render', this.props.settings);
-    if (this.state.searchMode)
-      return this._renderSearchResults();
+    if (this.state.searchMode) { return this._renderSearchResults(); }
 
     return (
       <View style={styles.container}>
@@ -286,7 +300,7 @@ class QueueScreen extends React.Component {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
             <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
-              <Icon style={styles.walkinButtonIcon} name="signIn" />
+              <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
             </TouchableOpacity>
           )
         }
@@ -333,14 +347,14 @@ const mapStateToProps = (state, ownProps) => ({
   walkInState: state.walkInReducer.walkInState,
   settings: state.settings,
 });
-
 const mapActionsToProps = dispatch => ({
   actions: bindActionCreators({ ...actions }, dispatch),
   settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  checkinActions: bindActionCreators({ ...checkinActions }, dispatch),
+  serviceActions: bindActionCreators({ ...serviceActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
-
 
 const styles = StyleSheet.create({
   container: {
@@ -575,7 +589,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: '100%'
+    width: '100%',
   },
   searchType: {
     marginHorizontal: 16,
@@ -587,7 +601,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     fontFamily: 'Roboto-Regular',
-    color: 'white'
+    color: 'white',
   },
   searchClient: {
     borderTopLeftRadius: 4,
@@ -596,7 +610,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   searchProvider: {
     borderTopRightRadius: 4,
@@ -605,20 +619,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   searchEmpty: {
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    padding: 60
+    padding: 60,
   },
   searchEmptyText: {
     fontSize: 13,
     fontWeight: '500',
     color: '#727A8F',
     fontFamily: 'Roboto-Regular',
-    marginVertical: 20
+    marginVertical: 20,
   },
   searchEmptyTextSmall: {
     fontSize: 11,
@@ -636,6 +650,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderColor: '#E3E4E5',
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 });
