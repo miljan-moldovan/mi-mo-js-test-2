@@ -25,8 +25,7 @@ import Icon from './UI/Icon';
 import apiWrapper from '../utilities/apiWrapper';
 
 const QueueNavButton = ({ icon, onPress, style }) => (
-  <TouchableOpacity onPress={onPress} style={[{height: '100%'},style]}>
-    {/* <FontAwesome style={styles.navButton}>{icon}</FontAwesome> */}
+  <TouchableOpacity onPress={onPress} style={[{height: '100%', justifyContent: 'center'},style]}>
     <Icon name={icon} type="light" style={styles.navButton} />
   </TouchableOpacity>
 );
@@ -63,22 +62,24 @@ export default class QueueHeader extends React.Component {
   render() {
     return this.props.searchMode ? (
         <SafeAreaView style={styles.headerContainer}>
-          <View style={styles.searchContainer}>
-            {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
-            <Icon name="search" type="light" style={styles.searchIcon} />
-            <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
-          </View>
-          <TouchableOpacity onPress={this.onSearchCancel}>
-            <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginBottom: 6, marginLeft: 6 }]}>Cancel</Text>
-          </TouchableOpacity>
+
+            <View style={styles.searchContainer}>
+              {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
+              <Icon name="search" type="light" style={styles.searchIcon} />
+              <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
+            </View>
+            <TouchableOpacity onPress={this.onSearchCancel}>
+              <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginLeft: 6 }]}>Cancel</Text>
+            </TouchableOpacity>
+
         </SafeAreaView>
       ) : (
         <SafeAreaView style={[styles.headerContainer]}>
-          <QueueNavButton icon="bars" style={{marginLeft: 6, marginRight: 'auto'}} />
+          <QueueNavButton icon="bars" style={{marginLeft: 6, marginRight: 'auto', alignSelf: 'center', height: '100%'}} />
           <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', height: '100%', bottom: 0}}>
             <Text style={styles.headerTitle}>Queue</Text>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto', height: '100%', top: 3 }}>
+          <View style={{ flexDirection: 'row', height: '100%', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto' }}>
             <QueueNavButton icon="ellipsisH" onPress={this.onActionPress} style={{marginRight: 19}} />
             <QueueNavButton icon="search" onPress={this.onSearchPress} />
           </View>
@@ -86,7 +87,23 @@ export default class QueueHeader extends React.Component {
       )
   }
 }
-
+/*
+{
+  alignItems: 'center',
+  backgroundColor: '#115ECD',
+  borderBottomWidth: 0,
+  borderWidth: 0,
+  elevation: 0,
+  flexDirection: 'row',
+  height: 44,
+  justifyContent: 'center',
+  // paddingHorizontal: 19,
+  paddingLeft: 10,
+  paddingRight: 10,
+  shadowColor: 'transparent',
+  backgroundColor: 'red'
+},
+*/
 const styles = StyleSheet.create({
   headerContainer: {
     alignItems: 'center',
@@ -95,39 +112,27 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     elevation: 0,
     flexDirection: 'row',
-    height: 35,
+    height: 44,
     justifyContent: 'center',
     // paddingHorizontal: 19,
     paddingLeft: 10,
     paddingRight: 10,
     shadowColor: 'transparent',
+    // backgroundColor: 'red'
   },
-  // headerStyle: {
-  //   backgroundColor: '#115ECD',
-  //   paddingLeft: 10,
-  //   paddingRight: 10,
-  //   height: 35,
-  //   borderWidth: 0,
-  //   shadowColor: 'transparent',
-  //   elevation: 0,
-  //   borderBottomWidth: 0,
-  //   justifyContent: 'center',
-  //   // alignItems: 'center'
-  // },
   headerTitle: {
     fontFamily: 'Roboto-Regular',
     fontSize: 17,
     color: '#fff',
     fontWeight: '500',
-    // backgroundColor: 'red',
-    height: '100%'
+    alignSelf: 'center'
   },
   searchContainer: {
     borderRadius: 10,
     backgroundColor: 'rgba(12,70,153,1)',
     height: 36,
     marginHorizontal: 6,
-    marginBottom: 6,
+    // marginBottom: 6,
     alignItems: 'center',
     // justifyContent: 'center',
     flexDirection: 'row',

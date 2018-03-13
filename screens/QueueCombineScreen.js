@@ -19,6 +19,8 @@ import {
 import { Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { SafeAreaView } from 'react-navigation';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 import { connect } from 'react-redux';
 import * as actions from '../actions/queue.js';
@@ -168,7 +170,7 @@ class QueueCombineScreen extends React.Component {
        />
     )
     return (
-      <ScrollView style={styles.container}>
+      <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.searchContainer}>
           <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome>
           <TextInput style={styles.search} onChangeText={this.changeSearchText} value={this.state.searchText} placeholder="Search" returnKeyType="search" />
@@ -188,7 +190,7 @@ class QueueCombineScreen extends React.Component {
           filterText={searchText}
          />
         {combinedFirst ? null : uncombined}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 }

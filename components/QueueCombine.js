@@ -31,6 +31,10 @@ class QueueCombineItem extends React.PureComponent {
   _onPress = () => {
     this.props.onPressItem(this.props.id);
   };
+  _onPressSelectLeader = () => {
+    console.log('_onPressSelectLeader', this.props.id);
+    // this.props.onPressSelectLeader(this.props.id);
+  }
   getLabelForItem = (item: QueueItem) => {
     let label, iconName;
     if (item.status < 6 && item.status !== 4) {
@@ -53,9 +57,11 @@ class QueueCombineItem extends React.PureComponent {
     const { type, item } = this.props;
     if (type === "uncombine")
       return (
-        <View style={[styles.dollarSignContainer, item.isGroupLeader ? null : { backgroundColor : 'transparent'}]}>
-          <Text style={[styles.dollarSign, item.isGroupLeader ? null : { color : '#00E480' }]}>$</Text>
-        </View>
+        <TouchableOpacity onPress={this._onPressSelectLeader} style={{height: '100%', backgroundColor: 'rgba(255,0,0,0.3)'}}>
+          <View style={[styles.dollarSignContainer, item.isGroupLeader ? null : { backgroundColor : 'transparent'}]}>
+            <Text style={[styles.dollarSign, item.isGroupLeader ? null : { color : '#00E480' }]}>$</Text>
+          </View>
+        </TouchableOpacity>
       )
     return null;
   }

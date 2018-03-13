@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
-import Swipeable from 'react-native-swipeable';
 
 import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
