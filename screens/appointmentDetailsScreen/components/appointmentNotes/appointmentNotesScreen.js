@@ -291,6 +291,7 @@ export default class AppointmentNotesScreen extends Component {
     const { navigate } = this.props.navigation;
     const { item } = this.props.navigation.state.params;
     navigate('AppointmentNote', {
+      mode: 'modal',
       actionType: 'update',
       note,
       appointment: this.props.appointment,
@@ -546,7 +547,7 @@ export default class AppointmentNotesScreen extends Component {
                     containerStyles={{ marginVertical: 2 }}
                     bodyStyles={{ minHeight: 57 }}
                     key={index}
-                    backgroundColor={item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
+                    backgroundColor={!item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
                     headerChildren={[
                       <View style={styles.noteTags} key={Math.random().toString()}>
                         <View style={styles.noteHeaderLeft}>
@@ -586,7 +587,7 @@ export default class AppointmentNotesScreen extends Component {
                       >
                         <Text
                           key={Math.random().toString()}
-                          style={[styles.noteText, { color: item.isDeleted ? '#2E3032' : '#58595B' }]}
+                          style={[styles.noteText, { color: !item.isDeleted ? '#2E3032' : '#58595B' }]}
                         >
                           {item.text}
                         </Text>
@@ -619,7 +620,9 @@ export default class AppointmentNotesScreen extends Component {
           rootStyle={{ right: 16, bottom: 16, backgroundColor: '#727A8F' }}
           handlePress={() => {
             const { navigate } = this.props.navigation;
-            navigate('AppointmentNote', { actionType: 'new', ...this.props, appointment: this.props.appointment });
+            navigate('AppointmentNote', {
+ mode: 'modal', actionType: 'new', ...this.props, appointment: this.props.appointment,
+});
           }}
         >
           <SalonIcon

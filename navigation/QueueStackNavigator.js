@@ -39,8 +39,17 @@ import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
 import AppointmentNoteScreen from './../screens/appointmentNote';
 import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
+
+import ProductsScreen from './../screens/productsScreen';
+
 const QueueStackNavigator = StackNavigator(
   {
+    // Products: {
+    //   screen: ProductsScreen,
+    //   navigationOptions: rootProps => ({
+    //     header: props => (<View />),
+    //   }),
+    // },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -67,49 +76,11 @@ const QueueStackNavigator = StackNavigator(
     },
     AppointmentNote: {
       screen: AppointmentNoteScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
-        headerLeft: HeaderLateral({
-          key: Math.random().toString(),
-          ...rootProps,
-          handlePress: () => { rootProps.navigation.state.params.handleGoBack(); },
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          key: Math.random().toString(),
-          params: rootProps.navigation.state.params,
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
-            </View>
-          ),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-          />),
-      }),
+      navigationOptions: {
+        headerMode: 'none',
+        gesturesEnabled: false,
+        header: props => (<View />),
+      },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
@@ -127,7 +98,7 @@ const QueueStackNavigator = StackNavigator(
       screen: QueueCombineScreen,
     },
     ClientMerge: {
-      screen: ClientMergeScreen
+      screen: ClientMergeScreen,
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -230,4 +201,23 @@ const QueueStackNavigator = StackNavigator(
     },
   },
 );
+//
+//
+// const QueueStackNavigator = StackNavigator({
+//   Main: { screen: MainStack },
+//   AppointmentNote: {
+//     screen: AppointmentNoteScreen,
+//     navigationOptions: {
+//       gesturesEnabled: false,
+//       headerStyle: {
+//         backgroundColor: 'transparent',
+//         borderBottomWidth: 0,
+//       },
+//     },
+//   },
+// }, {
+//   mode: 'modal',
+//   headerMode: 'none',
+//
+// });
 export default QueueStackNavigator;

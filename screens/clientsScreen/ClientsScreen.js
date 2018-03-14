@@ -7,7 +7,7 @@ import {
 import PropTypes from 'prop-types';
 
 import SideMenuItem from '../../components/SideMenuItem';
-import ClientList from '../../components/clientList';
+import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
 import ClientsHeader from './components/ClientsHeader';
@@ -163,13 +163,13 @@ class ClientsScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.salonSearchHeaderActions.setHeader(<ClientsHeader {...props} />);
-
-    if (this.props.navigation.state && this.props.navigation.state.params) {
-      if (this.props.navigation.state.params.header) {
-        this.props.salonSearchHeaderActions.setHeader(this.props.navigation.state.params.header);
-      }
-    }
+    // this.props.salonSearchHeaderActions.setHeader(<ClientsHeader {...props} />);
+    //
+    // if (this.props.navigation.state && this.props.navigation.state.params) {
+    //   if (this.props.navigation.state.params.header) {
+    //     this.props.salonSearchHeaderActions.setHeader(this.props.navigation.state.params.header);
+    //   }
+    // }
 
     this.props.clientsActions.getClients().then((response) => {
       if (response.data.error) {
@@ -279,7 +279,8 @@ class ClientsScreen extends React.Component {
 
         <SalonSearchHeader
           filterList={searchText => this.filterList(searchText)}
-        />
+        >{<ClientsHeader {...this.props} />}
+        </SalonSearchHeader>
 
         <View style={styles.clientsList}>
           { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&

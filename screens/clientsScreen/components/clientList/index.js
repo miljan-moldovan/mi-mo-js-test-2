@@ -5,8 +5,8 @@ import { View,
   SectionList,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import ClientListItem from '../../components/clientList/clientListItem';
-import ClientListHeader from '../../components/clientList/clientListHeader';
+import ClientListItem from './clientListItem';
+import ClientListHeader from './clientListHeader';
 
 const ITEM_HEIGHT = 60;
 const HEADER_HEIGHT = 30;

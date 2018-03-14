@@ -1,6 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
-
+import { StyleSheet, View, ViewPropTypes } from 'react-native';
+import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
 
@@ -11,20 +11,20 @@ const styles = StyleSheet.create({
   headerContainer: {
     overflow: 'hidden',
     backgroundColor: '#115ECD',
-    height: 120,
+    height: 115,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
   header: {
     backgroundColor: '#115ECD',
-    height: 65,
+    height: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 25,
+    paddingTop: 24,
     paddingHorizontal: 10,
-    paddingBottom: 5,
+    paddingBottom: 8,
   },
   topSearchBar: {
     flex: 1,
@@ -125,10 +125,10 @@ class SalonSearchHeader extends React.Component {
 
   render() {
     return (
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer, this.props.headerContainerStyle]}>
 
         { !this.props.salonSearchHeaderState.showFilter &&
-          this.props.salonSearchHeaderState.header
+          this.props.children
         }
 
         <View style={[styles.topSearchBar, {
@@ -138,7 +138,14 @@ class SalonSearchHeader extends React.Component {
         >
           <SalonSearchBar
             placeHolderText="Search"
-            marginVertical={!this.props.salonSearchHeaderState.showFilter ? 0 : 30}
+            containerStyle={{
+              paddingTop: 4,
+              paddingBottom: 4,
+              paddingLeft: !this.props.salonSearchHeaderState.showFilter ? 7 : 15,
+              paddingRight: !this.props.salonSearchHeaderState.showFilter ? 7 : 2,
+              paddingVertical: 5,
+            }}
+            marginVertical={!this.props.salonSearchHeaderState.showFilter ? 0 : 0}
             placeholderTextColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
             showCancel={this.props.salonSearchHeaderState.showFilter}
             searchIconPosition="left"
@@ -160,7 +167,7 @@ class SalonSearchHeader extends React.Component {
           />
         </View>
 
-        { this.props.salonSearchHeaderState.showFilter &&
+        {this.props.hasFilter && this.props.salonSearchHeaderState.showFilter &&
         <View style={styles.filterBarContainer}>
 
           <View style={styles.filterBar}>
@@ -182,5 +189,12 @@ class SalonSearchHeader extends React.Component {
     );
   }
 }
+SalonSearchHeader.propTypes = {
+  hasFilter: PropTypes.bool,
+  headerContainerStyle: ViewPropTypes.style,
+};
 
+SalonSearchHeader.defaultProps = {
+  hasFilter: true,
+};
 export default SalonSearchHeader;

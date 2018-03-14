@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
-
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -9,14 +9,13 @@ const styles = StyleSheet.create({
   headerContainer: {
     overflow: 'hidden',
     backgroundColor: '#115ECD',
-    height: 120,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
   header: {
     backgroundColor: '#115ECD',
-    height: 65,
+    height: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -70,11 +69,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   leftButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   rightButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -85,53 +86,55 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
-  rightButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
   leftButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  backIcon: {
+    fontSize: 30,
+    marginLeft: 10,
+    textAlign: 'center',
+    color: '#FFFFFF',
+  },
 });
 
 
-export default class AppointmentNoteHeader extends React.Component {
+export default class ProductsHeader extends React.Component {
+  constructor(props) {
+    super(props);
+
+    console.log(props);
+  }
+
   render() {
     return (<View style={styles.header}>
 
       <TouchableOpacity
         style={styles.leftButton}
-        onPress={() => { this.props.rootProps.navigation.state.params.handleGoBack(); }}
+        onPress={() => { this.props.goBack(); }}
       >
         <View style={styles.leftButtonContainer}>
-          <Text style={styles.leftButtonText}>
-            Cancel
-          </Text>
+
+          { this.props.showCancel &&
+            <Text style={styles.leftButtonText}>
+              Cancel
+            </Text>
+          }
+
+          { this.props.showArrow &&
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
+          }
+
         </View>
       </TouchableOpacity>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Clients</Text>
+        <Text style={styles.titleText}>{this.props.title}</Text>
       </View>
-      <TouchableOpacity
-        style={styles.rightButton}
-        onPress={() => { this.props.rootProps.navigation.state.params.handlePress(); }}
-      >
-        <View style={styles.rightButtonContainer}>
-          <Text style={styles.rightButtonText}>
-            Save
-          </Text>
-        </View>
-      </TouchableOpacity>
+
+      <View style={styles.rightButton} />
             </View>);
   }
 }
