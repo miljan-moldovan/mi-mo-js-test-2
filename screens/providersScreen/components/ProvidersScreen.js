@@ -4,24 +4,35 @@ import React from 'react';
 import {
   StyleSheet,
   View,
+  TouchableOpacity,
   ActivityIndicator,
   FlatList,
   Text,
 } from 'react-native';
 
 import { connect } from 'react-redux';
-import apiWrapper from '../../utilities/apiWrapper';
+import apiWrapper from '../../../utilities/apiWrapper';
 
-import SalonSearchBar from '../../components/SalonSearchBar';
-import SideMenuItem from '../../components/SideMenuItem';
-import SalonAvatar from '../../components/SalonAvatar';
-import ProviderList from '../../components/providerList';
+import SalonSearchBar from '../../../components/SalonSearchBar';
+import SideMenuItem from '../../../components/SideMenuItem';
+import SalonAvatar from '../../../components/SalonAvatar';
+import ProviderList from '../../../components/providerList';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import Icon from '../../components/UI/Icon';
+import Icon from '../../../components/UI/Icon';
 
-const mockDataProviders = require('../../mockData/providers.json');
+const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+  'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+const mockDataProviders = require('../../../mockData/providers.json');
 
 const styles = StyleSheet.create({
+  headerTitle: {
+    fontSize: 17,
+    lineHeight: 22,
+    paddingTop: 14,
+    fontFamily: 'Roboto-Medium',
+    color: 'white',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
@@ -56,24 +67,40 @@ const styles = StyleSheet.create({
   },
   timeLeftText: {
     fontSize: 11,
+    textAlign: 'right',
     fontFamily: 'Roboto-Light',
     color: '#0C4699',
-
+  },
+  letterListContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  letterListText: {
+    fontSize: 11,
+    lineHeight: 13,
+    fontFamily: 'Roboto-Regular',
+    color: '#727A8F',
   },
 });
 
-const iconAppointMenu = require('../../assets/images/sidemenu/icon_appoint_menu.png');
+const iconAppointMenu = require('../../../assets/images/sidemenu/icon_appoint_menu.png');
 
 class ProviderScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Providers"
-        icon={iconAppointMenu}
-      />
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={styles.headerTitle}>Providers</Text>
+      </View>
     ),
-  };
+    headerLeft: (
+      <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
+        <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text>
+      </TouchableOpacity>
+    ),
+    headerRight: (null),
+  });
 
   static flexFilter(list, info) {
     let matchesFilter = [];
@@ -212,7 +239,20 @@ class ProviderScreen extends React.Component {
           }}
           // filterList={searchText => this.filterList(searchText)}
         />
-        <FlatList style={{ backgroundColor: 'white' }} data={this.state.providers} renderItem={this.renderItem} />
+        <View style={{ flexDirection: 'row' }}>
+          <FlatList
+            style={{ backgroundColor: 'white' }}
+            data={this.state.providers}
+            renderItem={this.renderItem}
+          />
+          <View style={styles.letterListContainer}>
+            {letters.map(item => (
+              <TouchableOpacity key={Math.random()} onPress={item => alert(`pressed ${item}`)}>
+                <Text style={styles.letterListText}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       </View>
     );
   }

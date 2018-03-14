@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import walkInActions from '../../actions/walkIn';
-import ProvidersScreen from './ProvidersScreen';
+import ProvidersScreen from './components/ProvidersScreen';
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,

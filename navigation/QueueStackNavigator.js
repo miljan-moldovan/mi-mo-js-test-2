@@ -143,17 +143,6 @@ const QueueStackNavigator = StackNavigator(
     },
     Providers: {
       screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-        header: props => (
-          <ImageHeader
-            {...props}
-          />),
-      }),
     },
     Promotions: {
       screen: PromotionsScreen,
