@@ -220,10 +220,8 @@ class ServicesScreen extends React.Component {
       return;
     }
     const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
-    if (onChangeService)
-      {onChangeService(service);}
-    if (dismissOnSelect)
-      {this.props.navigation.goBack();}
+    if (onChangeService) { onChangeService(service); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   _renderItem = ({ item, index }) => (
@@ -244,7 +242,7 @@ class ServicesScreen extends React.Component {
             this._handleOnChangeService(item);
           } else {
             this.props.walkInActions.selectService(item);
-            if(params !== undefined && params.actionType === 'update') {
+            if (params !== undefined && params.actionType === 'update') {
               navigate('WalkIn');
             } else {
               this.props.walkInActions.setCurrentStep(3);

@@ -6,6 +6,7 @@ import cookie from './apiServicesResources/cookie';
 import settings from './apiServicesResources/settings';
 import note from './apiServicesResources/note';
 import services from './apiServicesResources/services';
+import employees from './apiServicesResources/employees';
 
 const conf = {
   ...queue.resources,
@@ -16,6 +17,7 @@ const conf = {
   ...settings.resources,
   ...note.resources,
   ...services.resources,
+  ...employees.resources,
 };
 
 export default {
