@@ -65,7 +65,8 @@ class QueueCombineScreen extends React.Component {
     queueData: [],
     groupData: [],
     combinedFirst: false,
-    searchText: ''
+    searchText: '',
+    groupLeader: ''
   }
   componentWillMount() {
     this.prepareQueueData();
@@ -121,25 +122,32 @@ class QueueCombineScreen extends React.Component {
     });
   }
 
-  onChangeCombineClients = (combinedClients) => {
+  onChangeCombineClients = (combinedClients, groupLeader) => {
+    if (combinedClients === null && groupLeader !== undefined && groupLeader !== null) {
+      // update only groupLeader
+      this.setState({ groupLeader });
+      return;
+    }
     if (combinedClients && combinedClients.length > 1) {
       this.props.navigation.setParams({ onPressDone: this.onFinishCombineClients });
     } else {
       this.props.navigation.setParams({ onPressDone: undefined });
     }
-    this.setState({ combinedClients });
+    this.setState({ combinedClients, groupLeader });
   }
   onFinishCombineClients = () => {
-    const { combinedClients, queueData } = this.state;
+    const { combinedClients, queueData, groupLeader } = this.state;
     const combinedData = [];
     this.props.startCombine();
+    console.log('onFinishCombineClients');
     combinedClients.forEach((id, index)=> {
       const queueItem = queueData.find((item)=> item.id === id)
       const clientName = queueItem.client.name +' '+ queueItem.client.lastName;
       // for now the first client will always be the group lead
-      combinedData.push({id, groupLead: index === 0});
+      combinedData.push({ id, groupLead: id == groupLeader });
       this.props.combineClient({ id, clientName });
     });
+    console.log('onFinishCombineClients', groupLeader, combinedData);
     this.props.navigation.setParams({ onPressDone: undefined });
     this.props.finishCombine(combinedData);
     // this.props.navigation.goBack();

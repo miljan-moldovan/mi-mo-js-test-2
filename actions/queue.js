@@ -134,11 +134,11 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
       }
     });
     console.log('finishCombine1', data);
-    let response = await apiWrapper.doRequest('postQueueGroup', {
-      body: JSON.stringify(data)
-    });
-    console.log('finishCombine response', response);
-    dispatch(receiveQueue());
+    // let response = await apiWrapper.doRequest('postQueueGroup', {
+    //   body: JSON.stringify(data)
+    // });
+    // console.log('finishCombine response', response);
+    // dispatch(receiveQueue());
   } catch (error) {
     console.log(error);
     dispatch({type: QUEUE_FAILED, error});

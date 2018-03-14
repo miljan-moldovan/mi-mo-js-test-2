@@ -32,8 +32,8 @@ class QueueCombineItem extends React.PureComponent {
     this.props.onPressItem(this.props.id);
   };
   _onPressSelectLeader = () => {
-    console.log('_onPressSelectLeader', this.props.id);
-    // this.props.onPressSelectLeader(this.props.id);
+    // console.log('_onPressSelectLeader', this.props.id);
+    this.props.onPressSelectLeader(this.props.id);
   }
   getLabelForItem = (item: QueueItem) => {
     let label, iconName;
@@ -54,20 +54,20 @@ class QueueCombineItem extends React.PureComponent {
     );
   }
   renderPaymentIcon = () => {
-    const { type, item } = this.props;
-    if (type === "uncombine")
+    const { selected, item, type, groupLeader } = this.props;
+    if (type === "uncombine" || selected)
       return (
-        <TouchableOpacity onPress={this._onPressSelectLeader} style={{height: '100%', backgroundColor: 'rgba(255,0,0,0.3)'}}>
-          <View style={[styles.dollarSignContainer, item.isGroupLeader ? null : { backgroundColor : 'transparent'}]}>
-            <Text style={[styles.dollarSign, item.isGroupLeader ? null : { color : '#00E480' }]}>$</Text>
+        <TouchableOpacity onPress={this._onPressSelectLeader} style={styles.dollarSignContainerTouchable}>
+          <View style={[styles.dollarSignContainer, groupLeader ? null : { backgroundColor : 'transparent'}]}>
+            <Text style={[styles.dollarSign, groupLeader ? null : { color : '#00E480' }]}>$</Text>
           </View>
         </TouchableOpacity>
       )
     return null;
   }
   renderCheckContainer = () => {
-    const { selected } = this.props;
-    if (this.props.type === "combine")
+    const { selected, type } = this.props;
+    if (type === "combine")
       return (
         <View style={styles.checkContainer}>
           <Icon
@@ -90,6 +90,9 @@ class QueueCombineItem extends React.PureComponent {
       first = index == 0 ? styles.itemContainerCombinedFirst : styles.itemContainerCombined;
     }
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
+    const firstService = item.services[0] || {};
+    const serviceName = (firstService.serviceName || '').toUpperCase();
+    const employee = ((firstService.employeeFirstName||'')+' '+(firstService.employeeLastName||'')).toUpperCase();
 
     return (
       <TouchableOpacity style={[styles.itemContainer, type == "uncombine" ? {'backgroundColor': 'white'} : null, first]} key={item.id} onPress={this._onPress}>
@@ -98,9 +101,9 @@ class QueueCombineItem extends React.PureComponent {
           <View>
             <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
             <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
-              {item.services[0].serviceName.toUpperCase()}
+              {serviceName}
               {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
-              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {(item.services[0].employeeFirstName+' '+item.services[0].employeeLastName).toUpperCase()}
+              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {employee}
             </Text>
             {label}
           </View>
@@ -116,6 +119,7 @@ export class QueueCombine extends React.Component {
   state = {
     refreshing: false,
     data: [],
+    groupLeader: '',
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
@@ -168,25 +172,44 @@ export class QueueCombine extends React.Component {
     this.setState((state) => {
       const selected = new Map(state.selected);
       selected.set(id, !selected.get(id)); // toggle
+      const selectedArray = [];
+      selected.forEach((value, key)=> {
+        if (value)
+          selectedArray.push(key);
+      });
 
-      if (this.props.onChangeCombineClients) {
-        const selectedArray = [];
-        selected.forEach((value, key)=> {
-          if (value)
-            selectedArray.push(key);
-        });
-        this.props.onChangeCombineClients(selectedArray);
+      let { groupLeader } = this.state;
+
+      if (selectedArray.length == 0) {
+        // if no one is selected, clear group leader
+        groupLeader = '';
+      } else if (groupLeader == '') {
+        // if no groupLeader is selected, set current item as the leader (so the first person selected will be the default leader)
+        groupLeader = id;
+      } else if (!selectedArray.includes(groupLeader)) {
+        // if the previous group leader was unselected, the first selected person from the list will be the leader
+        groupLeader = selectedArray[0];
       }
-
-      return {selected};
+      console.log('_onPressItem groupLeader', groupLeader);
+      if (this.props.onChangeCombineClients) {
+        this.props.onChangeCombineClients(selectedArray, groupLeader);
+      }
+      return { selected, groupLeader };
     });
   };
+  _onPressSelectLeader = (id: string) => {
+    console.log('_onPressSelectLeader', id);
+    this.setState({ groupLeader: id });
+    this.props.onChangeCombineClients(null, id);
+  }
 
   renderItem = ({ item, index }) => (
     <QueueCombineItem
       id={item.id}
       onPressItem={this._onPressItem}
+      onPressSelectLeader={this._onPressSelectLeader}
       selected={!!this.state.selected.get(item.id)}
+      groupLeader={item.id == this.state.groupLeader}
       item={item}
       type="combine"
     />
@@ -248,12 +271,17 @@ export class QueueUncombine extends React.Component {
       return {selected};
     });
   };
-
+  _onPressSelectLeader = (id: string) => {
+    console.log('_onPressSelectLeader not implemented');
+    // this.setState({ groupLeader: id });
+  }
   renderItem = ({ item, index }) => (
     <QueueCombineItem
       id={item.id}
       onPressItem={this._onPressItem}
+      onPressSelectLeader={this._onPressSelectLeader}
       selected={!!this.state.selected.get(item.id)}
+      // groupLeader={item.id == this.state.groupLeader}
       item={item.queueItem}
       type="uncombine"
       index={index}
@@ -493,6 +521,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#727A8F'
   },
+  dollarSignContainerTouchable: {
+    marginLeft: 'auto',
+    // marginRight: 12,
+    height: '100%',
+    backgroundColor: 'rgba(255,0,0,0.2)'
+  },
   dollarSignContainer: {
     backgroundColor: '#00E480',
     borderColor: '#00E480',
@@ -500,10 +534,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 4,
     paddingVertical: 2,
-    marginLeft: 'auto',
-    marginTop: 12,
+    marginLeft: 20,
     marginRight: 12,
-    marginBottom: 'auto'
+    marginTop: 12,
+
+    marginBottom: 'auto',
   },
   dollarSign: {
     color: 'white',
