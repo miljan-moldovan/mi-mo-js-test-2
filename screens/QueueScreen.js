@@ -261,7 +261,16 @@ class QueueScreen extends React.Component {
     const { navigate } = this.props.navigation;
 
     this.props.walkInActions.setEstimatedTime(17);
-    navigate('WalkIn');
+    //navigate('WalkIn');
+    navigate('Clients', { onChangeClient: this.handleChangeClient });
+  }
+
+  handleChangeClient = () => {
+    this.props.navigation.navigate('Providers', { onChangeProvider: this.handleChangeProvider });
+  }
+
+  handleChangeProvider = () => {
+    this.props.navigation.navigate('WalkIn');
   }
 
   _handleWalkOutPress = () => {
