@@ -40,20 +40,6 @@ import AppointmentNoteHeader from '../screens/appointmentNote/components/appoint
 
 const QueueStackNavigator = StackNavigator(
   {
-    Providers: {
-      screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-        header: props => (
-          <ImageHeader
-            {...props}
-          />),
-      }),
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -155,20 +141,20 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
       }),
     },
-    // Providers: {
-    //   screen: ProvidersScreen,
-    //   navigationOptions: rootProps => ({
-    //     headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-    //     headerStyle: {
-    //       backgroundColor: 'transparent',
-    //     },
-    //     headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-    //     header: props => (
-    //       <ImageHeader
-    //         {...props}
-    //       />),
-    //   }),
-    // },
+    Providers: {
+      screen: ProvidersScreen,
+      navigationOptions: rootProps => ({
+        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
+        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
+        header: props => (
+          <ImageHeader
+            {...props}
+          />),
+      }),
+    },
     Promotions: {
       screen: PromotionsScreen,
       navigationOptions: rootProps => ({
