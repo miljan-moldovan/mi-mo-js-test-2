@@ -16,6 +16,9 @@ const HeaderLateral = (props) => {
   handlePress = props.params ?
     props.params.handlePress : handlePress;
 
+  handlePress = props.navigationParams ?
+    props.navigationParams.onNavigateBack : handlePress;
+
   return (
     <TouchableOpacity style={styles.buttonContainer} onPress={handlePress}>
       {props.button}

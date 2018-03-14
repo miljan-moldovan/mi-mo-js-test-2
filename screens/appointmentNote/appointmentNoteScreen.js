@@ -139,7 +139,6 @@ class AppointmentNoteScreen extends Component {
 
   shouldSave = false
 
-
   goBack() {
     if (this.props.navigation.state.params.actionType === 'new') {
       const { appointment } = this.props.navigation.state.params;
@@ -163,7 +162,6 @@ class AppointmentNoteScreen extends Component {
 
     return true;
   }
-
 
   saveNote() {
     if (this.isNoteValid()) {
@@ -210,6 +208,7 @@ class AppointmentNoteScreen extends Component {
         actionType: 'update',
         dismissOnSelect: this.dismissOnSelect,
         onChangeProvider: this.onChangeProvider,
+        onNavigateBack: this.handleOnNavigateBack,
         ...this.props,
       });
     } else {
@@ -217,14 +216,20 @@ class AppointmentNoteScreen extends Component {
         actionType: 'new',
         dismissOnSelect: this.dismissOnSelect,
         onChangeProvider: this.onChangeProvider,
+        onNavigateBack: this.handleOnNavigateBack,
         ...this.props,
       });
     }
   }
 
+  handleOnNavigateBack = () => {
+    console.log('handleOnNavigateBack');
+    this.setState({ isVisible: true });
+  }
 
   dismissOnSelect() {
     const { navigate } = this.props.navigation;
+    this.setState({ isVisible: true });
     navigate('AppointmentNoteScreen');
   }
 
@@ -271,7 +276,7 @@ class AppointmentNoteScreen extends Component {
                   note.forSales = !this.state.forSales;
                   this.shouldSave = true;
                   this.setState({ note, forSales: !this.state.forSales });
-                 }}
+                }}
                 value={this.state.forSales}
                 text="Sales"
               />,
@@ -280,11 +285,11 @@ class AppointmentNoteScreen extends Component {
                   style={{ height: 43 }}
                   textStyle={{ color: '#000000' }}
                   onChange={(state) => {
-      const note = this.state.note;
-      note.forAppointment = !this.state.forAppointment;
-      this.shouldSave = true;
-      this.setState({ note, forAppointment: !this.state.forAppointment });
-     }}
+                    const note = this.state.note;
+                    note.forAppointment = !this.state.forAppointment;
+                    this.shouldSave = true;
+                    this.setState({ note, forAppointment: !this.state.forAppointment });
+                  }}
                   value={this.state.forAppointment}
                   text="Appointment"
                 />,
