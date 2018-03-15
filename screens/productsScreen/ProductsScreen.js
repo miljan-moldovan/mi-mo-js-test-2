@@ -3,23 +3,18 @@ import React from 'react';
 import {
   StyleSheet,
   View,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import SideMenuItem from '../../components/SideMenuItem';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
-
 import ProductList from './components/productList';
 import CategoryProductsList from './components/categoryProductsList';
-import ProductsHeader from './components/ProductsHeader';
 import ProductCategoryList from './components/productCategoryList';
 
 const styles = StyleSheet.create({
-  highlightStyle: {
-    color: '#000',
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-  },
   container: {
     flex: 1,
     backgroundColor: '#333',
@@ -30,113 +25,68 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     flexDirection: 'column',
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  title: {
-    color: 'white',
-    fontSize: 20,
-    fontFamily: 'Roboto',
-    padding: 20,
-    marginTop: 20,
-    alignSelf: 'center',
-    backgroundColor: 'transparent',
-  },
-  phoneToolBar: {
-    flex: 0.4,
-    backgroundColor: 'rgba(0, 0, 0, 0.40)',
-  },
-  productsHeader: {
-    flex: 1.6,
-    backgroundColor: 'rgba(0, 0, 0, 0.30)',
-    flexDirection: 'column',
-  },
   productsList: {
     flex: 9,
     backgroundColor: 'white',
   },
-  productList: {
-
-  },
-  productsHeaderTopSection: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  backIconContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButtonCoontainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitleContainer: {
-    flex: 3,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    marginTop: 20,
+  leftButtonText: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 14,
     fontFamily: 'Roboto',
-    fontWeight: '700',
     backgroundColor: 'transparent',
-  },
-  backText: {
-    marginTop: 20,
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-  },
-  newProductContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  newProduct: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-    alignSelf: 'center',
-    alignItems: 'center',
   },
   backIcon: {
-    marginTop: 20,
-    width: 15,
-    height: 15,
+    fontSize: 30,
+    marginLeft: 10,
+    textAlign: 'left',
+    color: '#FFFFFF',
   },
-  productsBarBottomSection: {
-    flex: 1,
-    flexDirection: 'row',
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'right',
   },
 });
 
 
 class ProductsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Products"
-        icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
-      />
-    ),
+  static navigationOptions = ({ navigation }) => {
+    const headerConfig = navigation.state.params &&
+    navigation.state.params.headerConfig ? navigation.state.params.headerConfig : {};
+    return headerConfig;
   };
 
+  _renderHeader = (navigation, defaultProps, ignoreNav = false) => {
+    const { leftButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+    const { rightButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+    const { leftButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+    const { rightButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+    const { title } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+    const { subTitle } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+
+    return {
+      header: props => (<SalonSearchHeader
+        title={title}
+        subTitle={subTitle}
+        leftButton={leftButton}
+        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+        rightButton={rightButton}
+        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+        hasFilter={false}
+        containerStyle={{
+          paddingHorizontal: 20,
+        }}
+      />),
+    };
+  };
 
   static flexFilter(list, info) {
     let matchesFilter = [];
@@ -163,13 +113,10 @@ class ProductsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.props.productsActions.setShowCategoryProducts(false);
-
     this.props.productsActions.getProducts().then((response) => {
       if (response.data.error) {
         this.goBack();
-        alert(response.data.error.message);
       } else {
         const products = response.data.products;
         this.props.productsActions.setProducts(products);
@@ -181,16 +128,41 @@ class ProductsScreen extends React.Component {
   }
 
   state = {
-    title: 'Products',
-    showCancel: true,
-    showArrow: false,
+    prevHeaderProps: {
+
+    },
+    headerProps: {
+      title: 'Products',
+      subTitle: null,
+      leftButtonOnPress: () => { this.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    },
+    defaultHeaderProps: {
+      title: 'Products',
+      subTitle: null,
+      leftButtonOnPress: () => { this.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    },
+  }
+
+  componentWillMount() {
+    const headerConfig = this._renderHeader(this.props.navigation, this.state.defaultHeaderProps);
+    this.props.navigation.setParams({ headerConfig });
+  }
+
+  setHeaderData(props, ignoreNav = false) {
+    this.setState({ prevHeaderProps: this.state.headerProps });
+    const headerConfig = this._renderHeader(this.props.navigation, props, ignoreNav);
+    this.props.navigation.setParams({ headerConfig });
+    this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
+    this.setState({ headerProps: props });
   }
 
   goBack = () => {
     if (this.props.productsState.showCategoryProducts) {
       this.props.productsActions.setFilteredProducts(this.props.productsState.products);
       this.props.productsActions.setShowCategoryProducts(false);
-      this.setState({ title: 'Products', showCancel: true, showArrow: false });
+      this.setHeaderData(this.state.prevHeaderProps);
     } else {
       this.props.navigation.goBack();
     }
@@ -202,13 +174,30 @@ class ProductsScreen extends React.Component {
     }
     const { onChangeProduct, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeProduct) { onChangeProduct(product); }
+
     if (dismissOnSelect) { this.goBack(); }
   }
+
+  // onChangeProduct = () => {
+  //   const { navigate } = this.props.navigation;
+  //
+  //   navigate('Services', {
+  //     ...this.props,
+  //     headerProps: {
+  //       title: 'Services',
+  //       subTitle: 'subtitulo services',
+  //       leftButtonOnPress: (navigation) => { navigation.goBack(); },
+  //       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+  //     },
+  //   });
+  // }
 
   filterProducts = (searchText) => {
     const productsCategories = JSON.parse(JSON.stringify(this.props.productsState.products));
 
     if (searchText && searchText.length > 0) {
+      this.setHeaderData(this.state.headerProps);
+
       const criteria = [
         { Field: 'name', Values: [searchText.toLowerCase()] },
       ];
@@ -225,6 +214,7 @@ class ProductsScreen extends React.Component {
 
       this.props.productsActions.setFilteredProducts(filtered);
     } else {
+      this.setHeaderData(this.state.defaultHeaderProps);
       this.props.productsActions.setFilteredProducts(productsCategories);
     }
 
@@ -240,13 +230,24 @@ class ProductsScreen extends React.Component {
   }
 
   filterList = (searchText) => {
-    this.setState({ title: 'Products', showCancel: true, showArrow: false });
     this.props.productsActions.setShowCategoryProducts(false);
     this.filterProducts(searchText);
   }
 
   handlePressProductCategory = (item) => {
-    this.setState({ title: item.name, showCancel: false, showArrow: true });
+    this.setHeaderData({
+      title: item.name,
+      subTitle: null,
+      leftButton:
+  <TouchableOpacity
+    style={{ flex: 1 }}
+    onPress={() => { this.goBack(); }}
+  >
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+  </TouchableOpacity>,
+    }, true);
     this.props.productsActions.setShowCategoryProducts(true);
     this.props.productsActions.setCategoryProducts(item.products);
   }
@@ -257,28 +258,11 @@ class ProductsScreen extends React.Component {
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeProduct) { onChangeProduct = this.handleOnChangeProduct; }
 
+    // const onChangeProduct = this.onChangeProduct;
+
     return (
       <View style={styles.container}>
-
-        <SalonSearchHeader
-          hasFilter={false}
-          containerStyle={{
-            paddingHorizontal: 20,
-          }}
-          headerContainerStyle={{
-            height: this.props.salonSearchHeaderState.showFilter ? 70 : 115,
-          }}
-          filterList={searchText => this.filterList(searchText)}
-        >{<ProductsHeader
-          title={this.state.title}
-          goBack={this.goBack}
-          showArrow={this.state.showArrow}
-          showCancel={this.state.showCancel}
-        />}
-        </SalonSearchHeader>
-
         <View style={styles.productsList}>
-
           { (!this.props.productsState.showCategoryProducts
             && !this.props.salonSearchHeaderState.showFilter
             && this.props.productsState.filtered.length > 0) &&

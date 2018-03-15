@@ -1,17 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, ViewPropTypes } from 'react-native';
+import { StyleSheet, View, ViewPropTypes, Text, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    marginHorizontal: 22,
-  },
   headerContainer: {
-    overflow: 'hidden',
     backgroundColor: '#115ECD',
     height: 115,
+    width: '100%',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
@@ -72,11 +69,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   leftButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   rightButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -125,10 +124,34 @@ class SalonSearchHeader extends React.Component {
 
   render() {
     return (
-      <View style={[styles.headerContainer, this.props.headerContainerStyle]}>
+      <View style={[styles.headerContainer, this.props.headerContainerStyle,
+        { height: this.props.salonSearchHeaderState.showFilter ? 70 : 115 }]}
+      >
 
         { !this.props.salonSearchHeaderState.showFilter &&
-          this.props.children
+          <View style={styles.header}>
+
+            <View style={styles.leftButton}>
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={() => { this.props.leftButtonOnPress(); }}
+              >
+                {this.props.leftButton}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleText}>{this.props.title}</Text>
+              {this.props.subTitle && <Text style={styles.subTitleText}>{this.props.subTitle}</Text>}
+            </View>
+            <View style={styles.rightButton}>
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={() => { this.props.rightButtonOnPress(); }}
+              >
+                {this.props.rightButton}
+              </TouchableOpacity>
+            </View>
+          </View>
         }
 
         <View style={[styles.topSearchBar, {
@@ -155,7 +178,7 @@ class SalonSearchHeader extends React.Component {
             backgroundColor={!this.props.salonSearchHeaderState.showFilter ? 'rgba(142, 142, 147, 0.24)' : '#0C4699'}
             onChangeText={(searchText) => {
                 this.props.salonSearchHeaderActions.setSearchText(searchText);
-                this.props.filterList(searchText);
+                this.props.salonSearchHeaderState.filterList(searchText);
                 if (searchText && searchText.length > 0) {
                   this.props.salonSearchHeaderActions.setShowFilter(true);
                 } else {

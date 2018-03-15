@@ -5,7 +5,6 @@ import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
-import SalonSearchBar from '../components/SalonSearchBar';
 
 import QueueScreen from './../screens/QueueScreen';
 import QueueCombineScreen from './../screens/QueueCombineScreen';
@@ -28,8 +27,8 @@ import WalkOutScreen from '../screens/walkOutScreen';
 
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
+import SalonSearchHeader from '../components/SalonSearchHeader';
 
-// import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
@@ -37,24 +36,25 @@ import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/ap
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
 import AppointmentNoteScreen from './../screens/appointmentNote';
-import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
-
 
 import ProductsScreen from './../screens/productsScreen';
 
+
 const QueueStackNavigator = StackNavigator(
   {
-    // Products: {
-    //   screen: ProductsScreen,
-    //   navigationOptions: rootProps => ({
-    //     header: props => (<View />),
-    //   }),
-    // },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    Products: {
+      screen: ProductsScreen,
+
+    },
+    Services: {
+      screen: ServicesScreen,
+
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
@@ -110,12 +110,6 @@ const QueueStackNavigator = StackNavigator(
         }),
       }),
     },
-    Services: {
-      screen: ServicesScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
-      }),
-    },
     Providers: {
       screen: ProvidersScreen,
       navigationOptions: rootProps => ({
@@ -158,9 +152,6 @@ const QueueStackNavigator = StackNavigator(
     },
     Clients: {
       screen: ClientsScreen,
-      navigationOptions: rootProps => ({
-        header: props => (<View />),
-      }),
     },
     NewClient: {
       screen: NewClientScreen,
@@ -216,23 +207,4 @@ const QueueStackNavigator = StackNavigator(
     },
   },
 );
-//
-//
-// const QueueStackNavigator = StackNavigator({
-//   Main: { screen: MainStack },
-//   AppointmentNote: {
-//     screen: AppointmentNoteScreen,
-//     navigationOptions: {
-//       gesturesEnabled: false,
-//       headerStyle: {
-//         backgroundColor: 'transparent',
-//         borderBottomWidth: 0,
-//       },
-//     },
-//   },
-// }, {
-//   mode: 'modal',
-//   headerMode: 'none',
-//
-// });
 export default QueueStackNavigator;

@@ -4,10 +4,7 @@ export const SET_SHOW_FILTER = 'salonSearchHeader/SET_SHOW_FILTER';
 export const SET_TITLE = 'salonSearchHeader/SET_TITLE';
 export const SET_SUBTITLE_TITLE = 'salonSearchHeader/SET_SUBTITLE_TITLE';
 export const SET_SEARCH_TEXT = 'salonSearchHeader/SET_SEARCH_TEXT';
-// export const SET_LEFT_BUTTON = 'salonSearchHeader/SET_LEFT_BUTTON';
-// export const SET_LEFT_BUTTON_ONPRESS = 'salonSearchHeader/SET_LEFT_BUTTON_ONPRESS';
-// export const SET_RIGHT_BUTTON = 'salonSearchHeader/SET_RIGHT_BUTTON';
-// export const SET_RIGHT_BUTTON_ONPRESS = 'salonSearchHeader/SET_RIGHT_BUTTON_ONPRESS';
+export const SET_FILTER_ACTION = 'salonSearchHeader/SET_FILTER_ACTION';
 
 
 const initialState = {
@@ -17,15 +14,18 @@ const initialState = {
   title: 'Clients',
   subTitle: null,
   searchText: '',
-  // leftButton: 'Cancel',
-  // leftButtonOnPress: () => {},
-  // rightButtonOnPress: () => {},
-  // rightButton: 'Add',
+  filterList: () => {},
 };
 
 export function salonSearchHeaderReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case SET_FILTER_ACTION:
+      return {
+        ...state,
+        error: null,
+        filterList: data.filterList,
+      };
     case SET_FILTER_TYPES:
       return {
         ...state,
@@ -62,30 +62,6 @@ export function salonSearchHeaderReducer(state = initialState, action) {
         error: null,
         searchText: data.searchText,
       };
-    // case SET_LEFT_BUTTON:
-    //   return {
-    //     ...state,
-    //     error: null,
-    //     leftButton: data.leftButton,
-    //   };
-    // case SET_LEFT_BUTTON_ONPRESS:
-    //   return {
-    //     ...state,
-    //     error: null,
-    //     leftButtonOnPress: data.leftButtonOnPress,
-    //   };
-    // case SET_RIGHT_BUTTON:
-    //   return {
-    //     ...state,
-    //     error: null,
-    //     rightButton: data.rightButton,
-    //   };
-    // case SET_RIGHT_BUTTON_ONPRESS:
-    //   return {
-    //     ...state,
-    //     error: null,
-    //     rightButtonOnPress: data.rightButtonOnPress,
-    //   };
     default:
       return state;
   }
@@ -132,34 +108,13 @@ function setSearchText(searchText) {
     data: { searchText },
   };
 }
-//
-//
-// function setLeftButton(leftButton) {
-//   return {
-//     type: SET_LEFT_BUTTON,
-//     data: { leftButton },
-//   };
-// }
-//
-// function setLeftButtonOnPress(leftButtonOnPress) {
-//   return {
-//     type: SET_LEFT_BUTTON_ONPRESS,
-//     data: { leftButtonOnPress },
-//   };
-// }
-// function setRightButton(rightButton) {
-//   return {
-//     type: SET_RIGHT_BUTTON,
-//     data: { rightButton },
-//   };
-// }
-//
-// function setRightButtonOnPress(rightButtonOnPress) {
-//   return {
-//     type: SET_RIGHT_BUTTON_ONPRESS,
-//     data: { rightButtonOnPress },
-//   };
-// }
+
+function setFilterAction(filterList) {
+  return {
+    type: SET_FILTER_ACTION,
+    data: { filterList },
+  };
+}
 
 
 const salonSearchHeaderActions = {
@@ -169,10 +124,7 @@ const salonSearchHeaderActions = {
   setTitle,
   setSubTitle,
   setSearchText,
-  // setLeftButton,
-  // setLeftButtonOnPress,
-  // setRightButton,
-  // setRightButtonOnPress,
+  setFilterAction,
 };
 
 export default salonSearchHeaderActions;

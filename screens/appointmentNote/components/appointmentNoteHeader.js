@@ -120,7 +120,7 @@ export default class AppointmentNoteHeader extends React.Component {
         </View>
       </TouchableOpacity>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Clients</Text>
+        <Text style={styles.titleText}>New Note</Text>
       </View>
       <TouchableOpacity
         style={styles.rightButton}

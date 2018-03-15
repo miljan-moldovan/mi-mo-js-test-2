@@ -86,7 +86,6 @@ class ClientListItem extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.boldWords);
     this.setState({
       client: nextProps.client,
       name: `${nextProps.client.name} ${nextProps.client.lastName}`,
