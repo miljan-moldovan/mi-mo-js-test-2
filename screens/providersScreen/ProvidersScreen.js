@@ -7,23 +7,18 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   Text,
 } from 'react-native';
-
-import { connect } from 'react-redux';
-import apiWrapper from '../../../utilities/apiWrapper';
-
-import SalonSearchBar from '../../../components/SalonSearchBar';
-import SideMenuItem from '../../../components/SideMenuItem';
-import SalonAvatar from '../../../components/SalonAvatar';
-import ProviderList from '../../../components/providerList';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import Icon from '../../../components/UI/Icon';
+
+import apiWrapper from '../../utilities/apiWrapper';
+import SalonSearchBar from '../../components/SalonSearchBar';
+import SalonAvatar from '../../components/SalonAvatar';
+import ProviderList from '../../components/providerList';
 
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
-const mockDataProviders = require('../../../mockData/providers.json');
 
 const styles = StyleSheet.create({
   headerTitle: {
@@ -35,7 +30,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#F1F1F1',
+    backgroundColor: 'white',
     flexDirection: 'column',
   },
   itemRow: {
@@ -72,9 +67,11 @@ const styles = StyleSheet.create({
     color: '#0C4699',
   },
   letterListContainer: {
+    paddingTop: 34,
+    alignSelf: 'stretch',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: 'white',
   },
   letterListText: {
@@ -84,8 +81,6 @@ const styles = StyleSheet.create({
     color: '#727A8F',
   },
 });
-
-const iconAppointMenu = require('../../../assets/images/sidemenu/icon_appoint_menu.png');
 
 class ProviderScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -125,22 +120,18 @@ class ProviderScreen extends React.Component {
     return matches;
   }
 
+  static alphabetFilter = (list, letter) => this.list.filter(item => item.name.indexOf(letter) === 0);
+
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
       providers: [],
+      refreshing: false,
     };
   }
 
   componentWillMount() {
-    apiWrapper.doRequest('getEmployees', {})
-      .then((providers) => {
-        this.setState({ providers, loading: false });
-      })
-      .catch((err) => {
-        console.warn(err);
-      });
+    this.props.providersActions.getProviders({});
   }
 
   _handleOnChangeProvider = (provider) => {
@@ -159,10 +150,10 @@ class ProviderScreen extends React.Component {
         { Field: 'lastName', Values: [searchText.toLowerCase()] },
       ];
 
-      const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
-      this.props.clientsActions.setFilteredClients(filtered);
+      const filtered = ProvidersScreen.flexFilter(this.props.providersState.providers, criteria);
+      this.props.providersActions.setFilteredClients(filtered);
     } else {
-      this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
+      this.props.providersActions.setFilteredClients(this.props.providersState.providers);
     }
 
     this.props.navigation.setParams({
@@ -174,13 +165,25 @@ class ProviderScreen extends React.Component {
     this.filterProviders(searchText);
   }
 
+  filterByLetter = (letter) => {
+    const filtered = this.props.providersState.providers.filter(item => item.name.indexOf(letter) === 0);
+
+    this.props.providersActions.setFilteredProviders(filtered);
+    this.setState({ providers: this.props.providersState.filtered });
+  }
+
+  onRefresh = () => {
+    console.log('refreshing');
+  }
+
   renderItem = ({ item, index }) => {
     let fullName = item.name;
     fullName += item.middleName ? ` ${item.middleName}${item.lastName}` : ` ${item.lastName}`;
 
     return (
-      <View
+      <TouchableOpacity
         style={styles.itemRow}
+        onPress={() => this._handleOnChangeProvider(item)}
         key={index}
       >
         <View style={styles.inputRow}>
@@ -201,19 +204,12 @@ class ProviderScreen extends React.Component {
           <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 
   render() {
     const { state } = this.props.navigation;
-    if (this.state.loading) {
-      return (
-        <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
-          <ActivityIndicator size="small" color="rgba(0,0,0,.3)" />
-        </View>
-      );
-    }
     let onChangeProvider = null;
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeProvider) {
@@ -239,18 +235,62 @@ class ProviderScreen extends React.Component {
           }}
           // filterList={searchText => this.filterList(searchText)}
         />
+
         <View style={{ flexDirection: 'row' }}>
-          <FlatList
-            style={{ backgroundColor: 'white' }}
-            data={this.state.providers}
-            renderItem={this.renderItem}
-          />
+          <View style={{ flexDirection: 'column', flex: 1 }}>
+            <TouchableOpacity
+              onPress={() => {}}
+              style={styles.itemRow}
+              key={Math.random()}
+            >
+              <View style={styles.inputRow}>
+                <SalonAvatar
+                  wrapperStyle={styles.providerRound}
+                  width={30}
+                  borderWidth={1}
+                  borderColor="transparent"
+                  image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+                />
+                <Text style={styles.providerName}>First Available</Text>
+              </View>
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <Text style={[styles.timeLeftText]}>21m</Text>
+              </View>
+              <View style={{ flex: 1, alignItems: 'center' }} />
+            </TouchableOpacity>
+            { this.props.providersState.isLoading ?
+              (
+                <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
+                  <ActivityIndicator size="small" color="rgba(0,0,0,.3)" />
+                </View>
+              )
+              : (
+                <FlatList
+                  style={{ backgroundColor: 'white' }}
+                  data={this.props.providersState.currentData}
+                  renderItem={this.renderItem}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refreshing}
+                      onRefresh={this.onRefresh}
+                    />
+                  }
+                />
+              )
+            }
+
+          </View>
           <View style={styles.letterListContainer}>
             {letters.map(item => (
-              <TouchableOpacity key={Math.random()} onPress={item => alert(`pressed ${item}`)}>
+              <TouchableOpacity
+                key={item}
+                onPress={() => {
+                  this.filterByLetter(item);
+                }}
+              >
                 <Text style={styles.letterListText}>{item}</Text>
               </TouchableOpacity>
-            ))}
+              ))}
           </View>
         </View>
       </View>
