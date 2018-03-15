@@ -16,51 +16,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     flex: 1,
   },
-  selectedProvider: {
-    flexDirection: 'row',
-    backgroundColor: '#F6F6F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  selectedProviderName: {
-    color: '#1D1D26',
-    fontSize: 18,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  CategoryServicesListContainer: {
-    flex: 9,
+  categoryServicesListContainer: {
+    flex: 1,
     backgroundColor: '#FFF',
     flexDirection: 'column',
   },
-  sizeLabelText: {
-    fontSize: 11,
-    lineHeight: 22,
-    marginRight: 9,
-    width: 30,
-    color: '#0C4699',
-    textAlign: 'left',
-    fontFamily: 'Roboto-Regular',
-  },
-  priceLabelText: {
+  serviceName: {
+    color: '#110A24',
     fontSize: 14,
-    lineHeight: 22,
-    marginRight: 10,
-    width: 50,
-    color: '#727A8F',
-    textAlign: 'right',
-    fontFamily: 'Roboto-Regular',
+    width: 300,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    marginBottom: 4,
   },
   inputRow: {
-    height: 44,
-    width: 110,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   checkIcon: {
     fontSize: 15,
-    marginLeft: 2,
+    marginLeft: 10,
     textAlign: 'center',
     color: '#1DBF12',
   },
@@ -71,8 +47,6 @@ class CategoryServicesList extends React.Component {
     super(props);
     this.state = {
       categoryServices: props.categoryServices,
-      //  selectedProvider: props.walkInState.selectedProvider,
-      selectable: props.selectable,
       refresh: false,
     };
   }
@@ -83,8 +57,6 @@ class CategoryServicesList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-    //  selectedProvider: this.props.walkInState.selectedProvider,
-      selectable: nextProps.selectable,
       refresh: true,
     });
   }
@@ -98,33 +70,35 @@ class CategoryServicesList extends React.Component {
         borderTopWidth: 0,
       }}
     >
-      {[<InputButton
-        noIcon
-        key={Math.random().toString()}
-        style={{ flex: 1 }}
-        labelStyle={{ color: '#110A24' }}
-        onPress={this.props.onChangeService ? this.props.onChangeService : () => {}}
-        label={elem.item.name}
-        children={
-          <View style={styles.inputRow}>
-            <Text style={styles.sizeLabelText}>{elem.item.size}</Text>
-            <Text style={styles.priceLabelText}>{elem.item.price}</Text>
-            <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-            </FontAwesome>
-          </View>
+      {[
+        <InputButton
+          noIcon
+          key={Math.random().toString()}
+          style={{ flex: 1 }}
+          labelStyle={{ color: '#110A24' }}
+          onPress={this.props.onChangeService ? () => { this.props.servicesActions.setSelectedService(elem.item); this.props.onChangeService(elem.item); } : () => {}}
+          label={elem.item.name}
+          children={
+            <View style={styles.inputRow}>
+              {elem.item === this.props.servicesState.selectedService &&
+                <FontAwesome style={styles.checkIcon}>
+                  {Icons.checkCircle}
+                </FontAwesome>
+            }
+            </View>
           }
-      />]}
+        />]}
     </InputGroup>
   )
 
   render() {
     return (
 
-      <View style={styles.CategoryServicesListContainer}>
+      <View style={styles.categoryServicesListContainer}>
         <FlatList
           style={styles.categoryServicesList}
           data={this.state.categoryServices}
-          extraData={this.state.refresh}
+          extraData={this.props}
           keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />

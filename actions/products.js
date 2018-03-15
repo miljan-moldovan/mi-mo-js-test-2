@@ -9,6 +9,7 @@ export const GET_PRODUCTS = 'products/GET_PRODUCTS';
 export const GET_PRODUCTS_SUCCESS = 'products/GET_PRODUCTS_SUCCESS';
 export const GET_PRODUCTS_FAILED = 'products/GET_PRODUCTS_FAILED';
 export const GET_CATEGORY_PRODUCTS = 'products/GET_CATEGORY_PRODUCTS';
+export const SET_SELECTED_PRODUCT = 'products/SET_SELECTED_PRODUCT';
 
 
 const getProductsSuccess = products => ({
@@ -62,12 +63,20 @@ function setFilteredProducts(filtered) {
   };
 }
 
+function setSelectedProduct(selectedProduct) {
+  return {
+    type: SET_SELECTED_PRODUCT,
+    data: { selectedProduct },
+  };
+}
+
 const productsActions = {
   setProducts,
   setFilteredProducts,
   getProducts,
   setShowCategoryProducts,
   setCategoryProducts,
+  setSelectedProduct,
 };
 
 export default productsActions;

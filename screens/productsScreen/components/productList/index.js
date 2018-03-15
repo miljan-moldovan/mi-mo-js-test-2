@@ -186,11 +186,12 @@ class ProductList extends React.Component {
 
       renderItem = obj => (
         <ProductListItem
+          {...this.props}
           key={Math.random().toString()}
           product={obj.item}
           height={ITEM_HEIGHT}
           boldWords={this.state.boldWords}
-          onPress={this.props.onChangeProduct ? this.props.onChangeProduct : () => {}}
+          onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(elem.item); this.props.onChangeProduct(elem.item); } : () => {}}
         />)
 
       renderLetterGuide = () => {

@@ -93,10 +93,13 @@ class ServiceListItem extends React.PureComponent {
             >
               {this.state.name}
             </WordHighlighter>
-            <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-            </FontAwesome>
+            {this.props.service === this.props.servicesState.selectedService &&
+              <FontAwesome style={styles.checkIcon}>
+                {Icons.checkCircle}
+              </FontAwesome>
+            }
           </View>
-          </TouchableHighlight>,
+        </TouchableHighlight>,
       ]}
       </InputGroup>
     );

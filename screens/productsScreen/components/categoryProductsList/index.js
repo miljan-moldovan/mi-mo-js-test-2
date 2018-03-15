@@ -103,15 +103,18 @@ class CategoryProductsList extends React.Component {
         key={Math.random().toString()}
         style={{ flex: 1 }}
         labelStyle={{ color: '#110A24' }}
-        onPress={this.props.onChangeProduct ? this.props.onChangeProduct : () => {}}
+        onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(elem.item); this.props.onChangeProduct(elem.item); } : () => {}}
         label={elem.item.name}
         children={
           <View style={styles.inputRow}>
             <Text style={styles.sizeLabelText}>{elem.item.size}</Text>
             <Text style={styles.priceLabelText}>{elem.item.price}</Text>
-            <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-            </FontAwesome>
+            {elem.item === this.props.productsState.selectedProduct &&
+              <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
+              </FontAwesome>
+            }
           </View>
+
           }
       />]}
     </InputGroup>

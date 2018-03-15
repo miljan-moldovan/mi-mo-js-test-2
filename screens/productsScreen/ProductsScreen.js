@@ -144,6 +144,8 @@ class ProductsScreen extends React.Component {
 
   componentWillMount() {
     this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
+    const selectedProduct = this.props.navigation.state.params ? this.props.navigation.state.params.selectedProduct : null;
+    this.props.productsActions.setSelectedProduct(selectedProduct);
   }
 
   setHeaderData(props, ignoreNav = false) {
@@ -173,11 +175,12 @@ class ProductsScreen extends React.Component {
     if (dismissOnSelect) { this.goBack(); }
   }
 
-  // onChangeProduct = () => {
+  // onChangeProduct = (selectedProduct) => {
   //   const { navigate } = this.props.navigation;
   //
   //   navigate('Services', {
   //     ...this.props,
+  //     selectedProduct,
   //     headerProps: {
   //       title: 'Services',
   //       subTitle: 'subtitulo services',
@@ -271,6 +274,7 @@ class ProductsScreen extends React.Component {
             && this.props.salonSearchHeaderState.showFilter
             && this.props.productsState.filtered.length > 0) &&
             <ProductList
+              {...this.props}
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.productListContainer}
               products={this.props.productsState.filtered}
@@ -281,6 +285,7 @@ class ProductsScreen extends React.Component {
           { (this.props.productsState.showCategoryProducts
             && this.props.productsState.filtered.length > 0) &&
             <CategoryProductsList
+              {...this.props}
               onChangeProduct={onChangeProduct}
               categoryProducts={this.props.productsState.categoryProducts}
             />
