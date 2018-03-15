@@ -53,12 +53,9 @@ const styles = StyleSheet.create({
 
 class ProductsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerConfig = navigation.state.params &&
-    navigation.state.params.headerConfig ? navigation.state.params.headerConfig : {};
-    return headerConfig;
-  };
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
 
-  _renderHeader = (navigation, defaultProps, ignoreNav = false) => {
     const { leftButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
@@ -146,14 +143,12 @@ class ProductsScreen extends React.Component {
   }
 
   componentWillMount() {
-    const headerConfig = this._renderHeader(this.props.navigation, this.state.defaultHeaderProps);
-    this.props.navigation.setParams({ headerConfig });
+    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
   }
 
   setHeaderData(props, ignoreNav = false) {
     this.setState({ prevHeaderProps: this.state.headerProps });
-    const headerConfig = this._renderHeader(this.props.navigation, props, ignoreNav);
-    this.props.navigation.setParams({ headerConfig });
+    this.props.navigation.setParams({ defaultProps: props, ignoreNav });
     this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
     this.setState({ headerProps: props });
   }

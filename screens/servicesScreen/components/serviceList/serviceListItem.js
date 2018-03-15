@@ -4,7 +4,6 @@ import {
   View,
   TouchableHighlight,
   StyleSheet,
-  Text,
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -22,16 +21,17 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginLeft: 5,
+    marginHorizontal: 5,
     flexDirection: 'row',
     backgroundColor: '#FFF',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    width: 330,
   },
   serviceName: {
     color: '#110A24',
     fontSize: 14,
-    width: 222,
+    width: 300,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     marginBottom: 4,
@@ -41,25 +41,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
-  sizeLabelText: {
-    fontSize: 11,
-    lineHeight: 22,
-    width: 51,
-    color: '#0C4699',
-    textAlign: 'left',
-    fontFamily: 'Roboto-Regular',
-  },
-  priceLabelText: {
-    fontSize: 14,
-    lineHeight: 22,
-    width: 50,
-    color: '#727A8F',
-    textAlign: 'right',
-    fontFamily: 'Roboto-Regular',
-  },
   checkIcon: {
     fontSize: 15,
-    marginLeft: 5,
+    marginLeft: 10,
     textAlign: 'center',
     color: '#1DBF12',
   },
@@ -109,13 +93,8 @@ class ServiceListItem extends React.PureComponent {
             >
               {this.state.name}
             </WordHighlighter>
-
-            <View style={styles.inputRow}>
-              <Text style={[styles.sizeLabelText]}>{this.state.service.size}</Text>
-              <Text style={[styles.priceLabelText]}>{this.state.service.price}</Text>
-              <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-              </FontAwesome>
-            </View>
+            <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
+            </FontAwesome>
           </View>
           </TouchableHighlight>,
       ]}
