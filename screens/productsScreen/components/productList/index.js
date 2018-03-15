@@ -249,6 +249,7 @@ class ProductList extends React.Component {
                   getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
+                  extraData={this.props}
                   renderSectionHeader={item => ProductList.renderSection(item)}
                   ItemSeparatorComponent={() => ProductList.renderSeparator()}
 

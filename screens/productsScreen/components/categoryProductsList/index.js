@@ -71,8 +71,6 @@ class CategoryProductsList extends React.Component {
     super(props);
     this.state = {
       categoryProducts: props.categoryProducts,
-      //  selectedProvider: props.walkInState.selectedProvider,
-      selectable: props.selectable,
       refresh: false,
     };
   }
@@ -83,8 +81,6 @@ class CategoryProductsList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-    //  selectedProvider: this.props.walkInState.selectedProvider,
-      selectable: nextProps.selectable,
       refresh: true,
     });
   }
@@ -127,7 +123,7 @@ class CategoryProductsList extends React.Component {
         <FlatList
           style={styles.categoryProductsList}
           data={this.state.categoryProducts}
-          extraData={this.state.refresh}
+          extraData={this.props}
           keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />
