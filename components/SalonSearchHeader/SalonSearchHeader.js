@@ -125,7 +125,7 @@ class SalonSearchHeader extends React.Component {
   render() {
     return (
       <View style={[styles.headerContainer, this.props.headerContainerStyle,
-        { height: this.props.salonSearchHeaderState.showFilter ? 70 : 115 }]}
+        { height: this.props.salonSearchHeaderState.showFilter && !this.props.hasFilter ? 70 : 115 }]}
       >
 
         { !this.props.salonSearchHeaderState.showFilter &&

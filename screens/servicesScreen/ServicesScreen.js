@@ -5,6 +5,8 @@ import {
   View,
   Text,
   TouchableOpacity,
+  RefreshControl,
+  ScrollView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -53,12 +55,9 @@ const styles = StyleSheet.create({
 
 class ServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerConfig = navigation.state.params &&
-    navigation.state.params.headerConfig ? navigation.state.params.headerConfig : {};
-    return headerConfig;
-  };
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
 
-  _renderHeader = (navigation, defaultProps, ignoreNav = false) => {
     const { leftButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
@@ -114,6 +113,13 @@ class ServicesScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.setState({ refreshing: true });
+    this.getServices();
+  }
+
+  getServices() {
+    this.setState({ refreshing: true });
+
     this.props.servicesActions.setShowCategoryServices(false);
     this.props.servicesActions.getServices().then((response) => {
       if (response.data.error) {
@@ -122,6 +128,7 @@ class ServicesScreen extends React.Component {
         const services = response.data.services;
         this.props.servicesActions.setServices(services);
         this.props.servicesActions.setFilteredServices(services);
+        this.setState({ refreshing: false });
       }
     }).catch((error) => {
       console.log(error);
@@ -129,6 +136,7 @@ class ServicesScreen extends React.Component {
   }
 
   state = {
+    refreshing: false,
     prevHeaderProps: {
 
     },
@@ -147,14 +155,13 @@ class ServicesScreen extends React.Component {
   }
 
   componentWillMount() {
-    const headerConfig = this._renderHeader(this.props.navigation, this.state.defaultHeaderProps);
-    this.props.navigation.setParams({ headerConfig });
+    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
   }
 
   setHeaderData(props, ignoreNav = false) {
     this.setState({ prevHeaderProps: this.state.headerProps });
-    const headerConfig = this._renderHeader(this.props.navigation, props, ignoreNav);
-    this.props.navigation.setParams({ headerConfig });
+    this.props.navigation.setParams({ defaultProps: props, ignoreNav });
+
     this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
     this.setState({ headerProps: props });
   }
@@ -266,7 +273,19 @@ class ServicesScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.servicesList}>
-          { (!this.props.servicesState.showCategoryServices
+
+
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.getNotes}
+              />
+          }
+          >
+
+
+            { (!this.props.servicesState.showCategoryServices
             && !this.props.salonSearchHeaderState.showFilter
             && this.props.servicesState.filtered.length > 0) &&
             <ServiceCategoryList
@@ -275,7 +294,7 @@ class ServicesScreen extends React.Component {
             />
           }
 
-          { (!this.props.servicesState.showCategoryServices
+            { (!this.props.servicesState.showCategoryServices
             && this.props.salonSearchHeaderState.showFilter
             && this.props.servicesState.filtered.length > 0) &&
             <ServiceList
@@ -286,7 +305,7 @@ class ServicesScreen extends React.Component {
             />
           }
 
-          { (this.props.servicesState.showCategoryServices
+            { (this.props.servicesState.showCategoryServices
             && this.props.servicesState.filtered.length > 0) &&
             <CategoryServicesList
               onChangeService={onChangeService}
@@ -294,8 +313,8 @@ class ServicesScreen extends React.Component {
             />
           }
 
+          </ScrollView>
         </View>
-
       </View>
     );
   }

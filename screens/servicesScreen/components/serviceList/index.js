@@ -1,9 +1,9 @@
 import React from 'react';
 import { View,
-  Text,
-  TouchableHighlight,
   SectionList,
-  StyleSheet } from 'react-native';
+  StyleSheet,
+
+} from 'react-native';
 import { connect } from 'react-redux';
 import ServiceListItem from './serviceListItem';
 import ServiceListHeader from './serviceListHeader';
@@ -20,29 +20,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#E7E7E7',
-  },
-  serviceList: {
-    backgroundColor: '#FFF',
-    flex: 10,
-  },
-  listContainer: {
-    flex: 9,
-    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
     height: '100%',
-  },
-  list: {
-    flex: 10,
-    backgroundColor: '#FFF',
-    height: '100%',
-  },
-  guideContainer: {
-    flex: 1 / 2,
-    flexDirection: 'column',
-    backgroundColor: '#EFEFEF',
-  },
-  letterContainer: {
-    backgroundColor: 'transparent',
   },
   topBar: {
     height: HEADER_HEIGHT,
@@ -51,23 +30,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-  foundLetter: {
-    color: '#727A8F',
-    fontSize: 11,
-    marginTop: 5,
-    textAlign: 'center',
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  letter: {
-    color: '#727A8F',
-    fontSize: 11,
-    marginTop: 5,
-    textAlign: 'center',
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-
 });
 
 class ServiceList extends React.Component {
@@ -131,9 +93,7 @@ class ServiceList extends React.Component {
     const services = props.services.sort(ServiceList.compareByName);
 
     this.state = {
-      services,
       dataSource: ServiceList.services(services),
-      letterGuide: [],
       boldWords: props.boldWords,
     };
   }
@@ -201,31 +161,25 @@ class ServiceList extends React.Component {
         return (
           <View style={styles.container}>
 
-            <View style={styles.listContainer}>
-              <View style={styles.list}>
-                <SectionList
-                  keyExtractor={this.keyExtractor}
-                  key={Math.random().toString()}
-                  style={{ height: '100%', flex: 1 }}
-                  enableEmptySections
-                  keyboardShouldPersistTaps="always"
-                  initialNumToRender={this.state.dataSource.length}
-                  ref={(ref) => { this.sectionListRef = ref; }}
-                  sections={this.state.dataSource}
-                  renderItem={this.renderItem}
-                  stickySectionHeadersEnabled
-                  getItemLayout={(data, index) => (
+            <SectionList
+              keyExtractor={this.keyExtractor}
+              key={Math.random().toString()}
+              enableEmptySections
+              keyboardShouldPersistTaps="always"
+              initialNumToRender={this.state.dataSource.length}
+              ref={(ref) => { this.sectionListRef = ref; }}
+              sections={this.state.dataSource}
+              renderItem={this.renderItem}
+              stickySectionHeadersEnabled
+              getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
-                  renderSectionHeader={item => ServiceList.renderSection(item)}
-                  ItemSeparatorComponent={() => ServiceList.renderSeparator()}
-
-                />
-              </View>
-              <ListLetterFilter
-                onPress={(letter) => { this.scrollToIndex(letter); }}
-              />
-            </View>
+              renderSectionHeader={item => ServiceList.renderSection(item)}
+              ItemSeparatorComponent={() => ServiceList.renderSeparator()}
+            />
+            <ListLetterFilter
+              onPress={(letter) => { this.scrollToIndex(letter); }}
+            />
           </View>
         );
       }

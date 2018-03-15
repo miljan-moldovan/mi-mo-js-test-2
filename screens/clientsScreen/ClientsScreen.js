@@ -81,12 +81,9 @@ const styles = StyleSheet.create({
 
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const headerConfig = navigation.state.params &&
-    navigation.state.params.headerConfig ? navigation.state.params.headerConfig : {};
-    return headerConfig;
-  };
+    const defaultProps = navigation.state.params ? navigation.state.params.defaultProps : {};
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
 
-  _renderHeader = (navigation, defaultProps, ignoreNav = false) => {
     const { leftButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
@@ -108,7 +105,7 @@ class ClientsScreen extends React.Component {
         leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
         rightButton={rightButton}
         rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-        hasFilter={false}
+        hasFilter
         containerStyle={{
           paddingHorizontal: 20,
         }}
@@ -147,15 +144,14 @@ class ClientsScreen extends React.Component {
   }
 
   componentWillMount() {
-    const headerConfig = this._renderHeader(this.props.navigation, this.state.defaultHeaderProps);
-    this.props.navigation.setParams({ headerConfig });
+    this.props.salonSearchHeaderActions.setShowFilter(false);
+    this.props.navigation.setParams({ defaultHeaderProps: this.state.defaultHeaderProps, ignoreNav: false });
   }
 
   constructor(props) {
     super(props);
+    this.props.navigation.setParams({ defaultHeaderProps: this.state.headerProps, ignoreNav: false });
 
-    const headerConfig = this._renderHeader(this.props.navigation, this.state.headerProps);
-    this.props.navigation.setParams({ headerConfig });
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
     this.props.clientsActions.getClients().then((response) => {
