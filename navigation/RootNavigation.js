@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import SalesScreen from './../screens/SalesScreen';
 
 import ScorecardScreen from './../screens/ScorecardScreen';
+import SettingsScreen from './../screens/SettingsScreen';
 
 import SideMenu from './../components/SideMenu';
 
@@ -24,6 +25,7 @@ import ClientsStackNavigator from './ClientsStackNavigator';
 const RootDrawerNavigator = DrawerNavigator(
   {
     Queue: { screen: QueueStackNavigator },
+    Settings: { screen: SettingsScreen },
     Clients: { screen: ClientsStackNavigator },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentStackNavigator },
