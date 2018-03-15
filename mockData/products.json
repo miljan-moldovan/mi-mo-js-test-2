@@ -1,0 +1,121 @@
+[{
+		"products": [{
+				"name": "AG Blonde Dry Shampoo",
+				"id": 100,
+				"size": "4.2 oz",
+				"price": "$23.95",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AG Renew Shampoo",
+				"id": 101,
+				"size": "10 oz",
+				"price": "$27.95",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AG Renew Shampoo",
+				"id": 102,
+				"size": "1 L",
+				"price": "$44.95",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AG Fast Food Shampoo",
+				"id": 103,
+				"size": "10 oz",
+				"price": "$21.95",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AG Fast Food Shampoo",
+				"id": 104,
+				"size": "1 lt",
+				"price": "$54.95",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AG Refuel Shampoo",
+				"id": 105,
+				"size": "10 oz",
+				"price": "$21.95",
+				"updateStamp": null,
+				"isDeleted": false
+			}
+		],
+		"name": "AG HAIR",
+		"id": 1,
+		"updateStamp": null,
+		"isDeleted": false
+	},
+	{
+		"products": [{
+				"name": "AMK Color pHerfection Shampoo",
+				"id": 200,
+				"size": "3.4 oz",
+				"price": "$9",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AMK Perk Up Dry Shampoo",
+				"id": 201,
+				"size": "1 oz",
+				"price": "$24",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AMK Balancing Shampoo",
+				"id": 202,
+				"size": "8 oz",
+				"price": "$8",
+				"updateStamp": null,
+				"isDeleted": false
+			},
+			{
+				"name": "AMK Triple Rx Shampoo",
+				"id": 203,
+				"size": "3.4 oz",
+				"price": "$10",
+				"updateStamp": null,
+				"isDeleted": false
+			}
+		],
+		"name": "AMIKA",
+		"id": 2,
+		"updateStamp": null,
+		"isDeleted": false
+	}, {
+		"products": [			{
+						"name": "ARDELL Rx Shampoo",
+						"id": 300,
+						"size": "3.4 oz",
+						"price": "$10",
+						"updateStamp": null,
+						"isDeleted": false
+					}],
+		"name": "ARDELL",
+		"id": 3,
+		"updateStamp": null,
+		"isDeleted": false
+	}, {
+		"products": [			{
+						"name": "BABEL LASH Color pHerfection Shampoo",
+						"id": 400,
+						"size": "3.4 oz",
+						"price": "$10",
+						"updateStamp": null,
+						"isDeleted": false
+					}],
+		"name": "BABEL LASH",
+		"id": 4,
+		"updateStamp": null,
+		"isDeleted": false
+	}
+]

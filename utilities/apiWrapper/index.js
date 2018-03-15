@@ -1,11 +1,14 @@
-import { NetInfo } from 'react-native';
+import { NetInfo, AsyncStorage } from 'react-native';
 import OfflineFirstAPI from 'react-native-offline-api';
 import apiOptions from './apiOptions';
 import apiServices from './apiServices';
 import apiConstants from './apiConstants';
 import ApiError from './apiError';
 
-const api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
+const URLKEY = '@APISettings:url';
+const STOREKEY = '@APISettings:store';
+
+let api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
 
 function getHeader() {
   const header = {
@@ -104,9 +107,27 @@ function doRequest(key, parameters, options = {
     delay = options.delay;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let count = 1;
 
+    // bypass default URL if it exists in the store
+    let apiURL, store;
+    try {
+      apiURL = await AsyncStorage.getItem(URLKEY);
+      store = await AsyncStorage.getItem(STOREKEY);
+      if (apiURL !== null || store !== null) {
+        fetchData.headers['X-SU-store-key'] = store;
+        // setting option domains parameter during fetch doesn't work, so we need to reset the API
+        // fetchData.domains = { default: apiURL };
+        apiOptions.conf.domains = { default: apiURL };
+        api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
+      }
+    } catch (error) {
+      // Error retrieving data, keep default settings
+      console.log('APIWrapper no store found');
+    }
+
+    
     const attempt = () => api.fetch(
       key,
       fetchData,

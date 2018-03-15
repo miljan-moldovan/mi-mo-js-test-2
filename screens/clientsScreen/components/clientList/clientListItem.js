@@ -8,7 +8,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import { connect } from 'react-redux';
-import WordHighlighter from '../wordHighlighter';
+import WordHighlighter from '../../../../components/wordHighlighter';
 
 const styles = StyleSheet.create({
   phoneIconLeft: {
@@ -86,7 +86,6 @@ class ClientListItem extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.boldWords);
     this.setState({
       client: nextProps.client,
       name: `${nextProps.client.name} ${nextProps.client.lastName}`,

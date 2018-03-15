@@ -5,11 +5,13 @@ import { View,
   SectionList,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import ClientListItem from '../../components/clientList/clientListItem';
-import ClientListHeader from '../../components/clientList/clientListHeader';
+import ServiceListItem from './serviceListItem';
+import ServiceListHeader from './serviceListHeader';
 
-const ITEM_HEIGHT = 60;
-const HEADER_HEIGHT = 30;
+import ListLetterFilter from '../../../../components/listLetterFilter';
+
+const ITEM_HEIGHT = 43;
+const HEADER_HEIGHT = 38;
 
 const abecedary = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -20,7 +22,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#E7E7E7',
   },
-  clientList: {
+  serviceList: {
     backgroundColor: '#FFF',
     flex: 10,
   },
@@ -65,9 +67,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
+
 });
 
-class ClientList extends React.Component {
+class ServiceList extends React.Component {
   static compareByName(a, b) {
     if (a.name < b.name) { return -1; }
     if (a.name > b.name) { return 1; }
@@ -82,26 +85,26 @@ class ClientList extends React.Component {
   }
 
 
-  static clients(clients) {
-    const clientsLetters = [];
+  static services(services) {
+    const servicesLetters = [];
 
     // {data: [...], title: ...},
 
-    for (let i = 0; i < clients.length; i += 1) {
-      const client = clients[i];
-      const result = ClientList.getByValue(
-        clientsLetters,
-        client.name.substring(0, 1).toUpperCase(), 'title',
+    for (let i = 0; i < services.length; i += 1) {
+      const serviceCategory = services[i];
+      const result = ServiceList.getByValue(
+        servicesLetters,
+        serviceCategory.name, 'title',
       );
 
       if (result) {
-        result.data.push(client);
+        result.data.concat(serviceCategory.services);
       } else {
-        clientsLetters.push({ data: [client], title: client.name.substring(0, 1).toUpperCase() });
+        servicesLetters.push({ data: serviceCategory.services, title: serviceCategory.name });
       }
     }
 
-    return clientsLetters;
+    return servicesLetters;
   }
 
   static renderSeparator() {
@@ -116,32 +119,32 @@ class ClientList extends React.Component {
 
 
   static renderSection(item) {
-    return (<View style={styles.topBar}>
-      <ClientListHeader header={item.section.title} />
-            </View>);
+    return (<View key={Math.random().toString()} style={styles.topBar}>
+      <ServiceListHeader header={item.section.title} />
+    </View>);
   }
 
 
   constructor(props) {
     super(props);
 
-    const clients = props.clients.sort(ClientList.compareByName);
+    const services = props.services.sort(ServiceList.compareByName);
 
     this.state = {
-      clients,
-      dataSource: ClientList.clients(clients),
+      services,
+      dataSource: ServiceList.services(services),
       letterGuide: [],
       boldWords: props.boldWords,
     };
   }
 
     state:{
-      clients:[]
+      services:[]
     };
 
 
     componentWillMount() {
-      this.setState({ letterGuide: this.renderLetterGuide() });
+    //  this.setState({ letterGuide: this.renderLetterGuide() });
     }
 
     componentDidMount() {
@@ -152,18 +155,18 @@ class ClientList extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-      const clients = nextProps.clients.sort(ClientList.compareByName);
+      const services = nextProps.services.sort(ServiceList.compareByName);
       this.setState({
-        dataSource: ClientList.clients(clients),
+        dataSource: ServiceList.services(services),
         boldWords: nextProps.boldWords,
       });
     }
 
-      scrollToIndex = (section, letter) => {
+      scrollToIndex = (letter) => {
         let total = 0;
 
         for (let i = 0; i < abecedary.length; i += 1) {
-          const letterClients = ClientList.getByValue(
+          const letterServices = ServiceList.getByValue(
             this.state.dataSource,
             abecedary[i], 'title',
           );
@@ -173,9 +176,9 @@ class ClientList extends React.Component {
             break;
           }
 
-          if (letterClients) {
+          if (letterServices) {
             total += HEADER_HEIGHT;
-            total += letterClients.data.length * ITEM_HEIGHT;
+            total += letterServices.data.length * ITEM_HEIGHT;
           }
         }
 
@@ -183,47 +186,16 @@ class ClientList extends React.Component {
         this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
       }
 
+      keyExtractor = (item, index) => item.id;
+
       renderItem = obj => (
-        <View key={Math.random().toString()} style={{ height: ITEM_HEIGHT }}>
-          <ClientListItem
-            client={obj.item}
-            boldWords={this.state.boldWords}
-            onPress={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
-          />
-        </View>)
-
-      renderLetterGuide = () => {
-        const clientsLetters = [];
-
-        for (let i = 0; i < this.state.clients.length; i += 1) {
-          const client = this.state.clients[i];
-          if (clientsLetters.indexOf(client.name.substring(0, 1).toUpperCase()) === -1) {
-            clientsLetters.push(client.name.substring(0, 1).toUpperCase());
-          }
-        }
-
-        const letterGuide = [];
-
-        for (let i = 0; i < abecedary.length; i += 1) {
-          const letter = abecedary[i];
-
-          let letterComponent = <Text style={styles.letter}>{letter}</Text>;
-
-          if (clientsLetters.indexOf(letter) > -1) {
-            letterComponent = <Text style={styles.foundLetter}>{letter}</Text>;
-          }
-
-          letterGuide.push(<TouchableHighlight
-            underlayColor="transparent"
-            key={Math.random().toString()}
-            onPress={() => { this.scrollToIndex((i), letter); }}
-          >
-            <View style={styles.letterContainer}>{letterComponent}</View>
-                           </TouchableHighlight>);
-        }
-
-        return (letterGuide);
-      }
+        <ServiceListItem
+          key={Math.random().toString()}
+          service={obj.item}
+          height={ITEM_HEIGHT}
+          boldWords={this.state.boldWords}
+          onPress={this.props.onChangeService ? this.props.onChangeService : () => {}}
+        />)
 
       render() {
         return (
@@ -232,6 +204,7 @@ class ClientList extends React.Component {
             <View style={styles.listContainer}>
               <View style={styles.list}>
                 <SectionList
+                  keyExtractor={this.keyExtractor}
                   key={Math.random().toString()}
                   style={{ height: '100%', flex: 1 }}
                   enableEmptySections
@@ -244,14 +217,14 @@ class ClientList extends React.Component {
                   getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
-                  renderSectionHeader={item => ClientList.renderSection(item)}
-                  ItemSeparatorComponent={() => ClientList.renderSeparator()}
+                  renderSectionHeader={item => ServiceList.renderSection(item)}
+                  ItemSeparatorComponent={() => ServiceList.renderSeparator()}
 
                 />
               </View>
-              {<View style={styles.guideContainer}>
-                {this.state.letterGuide}
-               </View>}
+              <ListLetterFilter
+                onPress={(letter) => { this.scrollToIndex(letter); }}
+              />
             </View>
           </View>
         );
@@ -259,7 +232,7 @@ class ClientList extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  servicesState: state.serviceReducer,
 });
 
-export default connect(mapStateToProps)(ClientList);
+export default connect(mapStateToProps)(ServiceList);

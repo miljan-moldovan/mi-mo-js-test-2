@@ -11,7 +11,6 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import SalonDateTxt from '../../components/SalonDateTxt';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
 
 const styles = StyleSheet.create({
@@ -125,7 +124,7 @@ export const InputButton = props => (
   >
     { props.label && typeof props.label === 'string'
     ? (
-      <Text style={styles.labelText}>{props.label}</Text>
+      <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
     ) : props.label }
     <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
       {
@@ -144,7 +143,8 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-  style: View.propTypes.style,
+  style: ViewPropTypes.style,
+  labelStyle: Text.propTypes.style,
   label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
@@ -152,6 +152,7 @@ InputButton.propTypes = {
 };
 InputButton.defaultProps = {
   style: {},
+  labelStyle: {},
   label: false,
   value: false,
   noIcon: false,
@@ -234,7 +235,7 @@ export class InputDate extends React.Component {
             this.setState({ showModal: !this.state.showModal });
           }}
           noIcon
-          placeholder={this.props.placeholder}
+          label={this.props.placeholder}
           value={this.props.selectedDate}
         />
         <TouchableOpacity

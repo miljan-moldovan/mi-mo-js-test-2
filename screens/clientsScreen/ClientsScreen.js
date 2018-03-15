@@ -3,22 +3,16 @@ import React from 'react';
 import {
   StyleSheet,
   View,
+  Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
 import SideMenuItem from '../../components/SideMenuItem';
-import ClientList from '../../components/clientList';
+import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
-import ClientsHeader from './components/ClientsHeader';
-
 
 const styles = StyleSheet.create({
-  highlightStyle: {
-    color: '#000',
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-  },
   container: {
     flex: 1,
     backgroundColor: '#333',
@@ -29,12 +23,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     flexDirection: 'column',
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
   title: {
     color: 'white',
     fontSize: 20,
@@ -43,10 +31,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignSelf: 'center',
     backgroundColor: 'transparent',
-  },
-  phoneToolBar: {
-    flex: 0.4,
-    backgroundColor: 'rgba(0, 0, 0, 0.40)',
   },
   clientsHeader: {
     flex: 1.6,
@@ -57,85 +41,87 @@ const styles = StyleSheet.create({
     flex: 9,
     backgroundColor: 'white',
   },
-  clientList: {
-
-  },
-  clientsHeaderTopSection: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  backIconContainer: {
+  leftButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
-  backButtonCoontainer: {
+  rightButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
-  headerTitleContainer: {
-    flex: 3,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    marginTop: 20,
+  leftButtonText: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 14,
     fontFamily: 'Roboto',
-    fontWeight: '700',
     backgroundColor: 'transparent',
   },
-  backText: {
-    marginTop: 20,
+  rightButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Roboto',
-    fontWeight: '700',
     backgroundColor: 'transparent',
+    textAlign: 'right',
   },
-  newClientContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  newClient: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-    alignSelf: 'center',
-    alignItems: 'center',
-  },
-  backIcon: {
-    marginTop: 20,
-    width: 15,
-    height: 15,
-  },
-  clientsBarBottomSection: {
-    flex: 1,
+  rightButtonContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
 });
 
 
 class ClientsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Clients"
-        icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
-      />
-    ),
+  static navigationOptions = ({ navigation }) => {
+    const headerConfig = navigation.state.params &&
+    navigation.state.params.headerConfig ? navigation.state.params.headerConfig : {};
+    return headerConfig;
   };
 
+  _renderHeader = (navigation, defaultProps, ignoreNav = false) => {
+    const { leftButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+    const { rightButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+    const { leftButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+    const { rightButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+    const { title } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+    const { subTitle } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+
+    return {
+      header: props => (<SalonSearchHeader
+        title={title}
+        subTitle={subTitle}
+        leftButton={leftButton}
+        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+        rightButton={rightButton}
+        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+        hasFilter={false}
+        containerStyle={{
+          paddingHorizontal: 20,
+        }}
+      />),
+      drawerLabel: props => (
+        <SideMenuItem
+          {...props}
+          title="Clients"
+          icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
+        />
+      ),
+    };
+  };
 
   static flexFilter(list, info) {
     let matchesFilter = [];
@@ -160,23 +146,23 @@ class ClientsScreen extends React.Component {
     return matches;
   }
 
+  componentWillMount() {
+    const headerConfig = this._renderHeader(this.props.navigation, this.state.defaultHeaderProps);
+    this.props.navigation.setParams({ headerConfig });
+  }
+
   constructor(props) {
     super(props);
 
-    this.props.salonSearchHeaderActions.setHeader(<ClientsHeader {...props} />);
-
-    if (this.props.navigation.state && this.props.navigation.state.params) {
-      if (this.props.navigation.state.params.header) {
-        this.props.salonSearchHeaderActions.setHeader(this.props.navigation.state.params.header);
-      }
-    }
+    const headerConfig = this._renderHeader(this.props.navigation, this.state.headerProps);
+    this.props.navigation.setParams({ headerConfig });
+    this.props.salonSearchHeaderActions.setShowFilter(false);
 
     this.props.clientsActions.getClients().then((response) => {
       if (response.data.error) {
         this.props.navigation.goBack();
-        alert(response.data.error.message);
       } else {
-        const clients = response.data.clients;
+        const { clients } = response.data;
         this.props.clientsActions.setClients(clients);
         this.props.clientsActions.setFilteredClients(clients);
         const suggestionList = this.getSuggestionsList(clients);
@@ -186,6 +172,16 @@ class ClientsScreen extends React.Component {
     });
   }
 
+  state = {
+    headerProps: {
+      title: 'Clients',
+      subTitle: null,
+      leftButtonOnPress: () => { this.props.navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+      rightButtonOnPress: () => { this.props.navigation.navigate('NewClientScreen'); },
+    },
+  }
 
   getSuggestionsList = (clients) => {
     let suggestions = [];
@@ -276,11 +272,6 @@ class ClientsScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-
-        <SalonSearchHeader
-          filterList={searchText => this.filterList(searchText)}
-        />
-
         <View style={styles.clientsList}>
           { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
             <ClientList

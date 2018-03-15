@@ -260,9 +260,17 @@ class QueueScreen extends React.Component {
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
-    this.props.walkInActions.setEstimatedTime(17);
+    //this.props.walkInActions.setEstimatedTime(17);
     //navigate('WalkIn');
-    navigate('Clients', { onChangeClient: this.handleChangeClient });
+    navigate('Clients', {
+      onChangeClient: this.handleChangeClient,
+      headerProps: {
+        title: 'Walking',
+        subTitle: 'step 1 of 3',
+        leftButton: <Text style={styles.leftButtonText}>Back</Text>,
+        leftButtonOnPress: (navigation) => { navigation.goBack(); },
+      },
+    });
   }
 
   handleChangeClient = () => {
@@ -270,6 +278,18 @@ class QueueScreen extends React.Component {
   }
 
   handleChangeProvider = () => {
+    this.props.navigation.navigate('Services', {
+      onChangeService: this.handleChangeService,
+      headerProps: {
+        title: 'Walking',
+        subTitle: 'step 2 of 3',
+        leftButton: <Text style={styles.leftButtonText}>Back</Text>,
+        leftButtonOnPress: (navigation) => { navigation.goBack(); },
+      },
+    });
+  }
+
+  handleChangeService = () => {
     this.props.navigation.navigate('WalkIn');
   }
 
@@ -309,7 +329,7 @@ class QueueScreen extends React.Component {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
             <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
-              <Icon style={styles.walkinButtonIcon} name="signIn" />
+              <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
             </TouchableOpacity>
           )
         }
