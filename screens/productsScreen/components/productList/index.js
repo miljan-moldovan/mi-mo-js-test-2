@@ -191,7 +191,7 @@ class ProductList extends React.Component {
           product={obj.item}
           height={ITEM_HEIGHT}
           boldWords={this.state.boldWords}
-          onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(elem.item); this.props.onChangeProduct(elem.item); } : () => {}}
+          onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(obj.item); this.props.onChangeProduct(obj.item); } : () => {}}
         />)
 
       renderLetterGuide = () => {
