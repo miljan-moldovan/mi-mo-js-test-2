@@ -83,6 +83,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  inputNumber: {
+    borderColor: '#1DBF12',
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 101,
+    height: 28,
+    borderRadius: 5,
+  },
+  inputNumberButton: {
+    width: 50,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputNumberLabelText: {
+    fontSize: 32,
+    color: '#1DBF12',
+    fontFamily: 'Roboto-Light',
+    lineHeight: 40,
+  },
 });
 
 export const SectionTitle = props => (
@@ -388,6 +410,61 @@ export class PromotionInput extends React.Component {
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
       </TouchableOpacity>
+    );
+  }
+}
+
+
+export class InputNumber extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: props.value,
+    };
+  }
+
+  handleSubstractPress = () => {
+    const min = this.props.min ? this.props.min : 0;
+    if (this.state.value > min) {
+      this.setState({ value: this.state.value - 1 });
+    }
+  }
+
+  handleAddPress = () => {
+    if (this.props.max) {
+      if (this.state.value < this.props.max) {
+        this.setState({ value: this.state.value + 1 });
+      }
+    } else {
+      this.setState({ value: this.state.value + 1 });
+    }
+  }
+
+  render() {
+    return (
+      <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
+        <Text style={[styles.labelText, this.props.textStyle]}>{this.state.value}  {this.state.value > 1 ? this.props.pluralText : this.props.singularText}</Text>
+
+        <View style={[styles.inputNumber, this.props.inputNumberStyle]}>
+          <TouchableOpacity
+            style={[styles.inputNumberButton, {
+              borderRightColor: '#1DBF12',
+              borderRightWidth: 1,
+              borderRightRadius: 5,
+            }]}
+            onPress={this.handleSubstractPress}
+          >
+            <Text style={[styles.inputNumberLabelText]}>-</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.inputNumberButton]}
+            onPress={this.handleAddPress}
+          >
+            <Text style={[styles.inputNumberLabelText]}>+</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   }
 }
