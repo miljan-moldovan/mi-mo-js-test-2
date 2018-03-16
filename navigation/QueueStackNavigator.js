@@ -46,17 +46,14 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: 'Queue',
       },
     },
-    AppointmentDetails: {
-      screen: AppointmentDetailsScreen,
-    },
-    Service: {
-      screen: ModifyServiceScreen,
-    },
     Walkout: {
       screen: WalkOutScreen,
       navigationOptions: {
         headerTitle: 'Walkout',
       },
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
@@ -109,6 +106,9 @@ const QueueStackNavigator = StackNavigator(
             params={rootProps.navigation.state.params}
           />),
       }),
+    },
+    Service: {
+      screen: ModifyServiceScreen,
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
