@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params ? navigation.state.params.defaultProps : {};
@@ -145,12 +144,12 @@ class ClientsScreen extends React.Component {
 
   componentWillMount() {
     this.props.salonSearchHeaderActions.setShowFilter(false);
-    this.props.navigation.setParams({ defaultHeaderProps: this.state.defaultHeaderProps, ignoreNav: false });
+    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
   }
 
   constructor(props) {
     super(props);
-    this.props.navigation.setParams({ defaultHeaderProps: this.state.headerProps, ignoreNav: false });
+    this.props.navigation.setParams({ defaultProps: this.state.headerProps, ignoreNav: false });
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
@@ -170,6 +169,15 @@ class ClientsScreen extends React.Component {
 
   state = {
     headerProps: {
+      title: 'Clients',
+      subTitle: null,
+      leftButtonOnPress: () => { this.props.navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+      rightButtonOnPress: () => { this.props.navigation.navigate('NewClientScreen'); },
+    },
+
+    defaultHeaderProps: {
       title: 'Clients',
       subTitle: null,
       leftButtonOnPress: () => { this.props.navigation.goBack(); },

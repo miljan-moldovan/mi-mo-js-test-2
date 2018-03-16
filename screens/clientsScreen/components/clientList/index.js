@@ -8,12 +8,12 @@ import { connect } from 'react-redux';
 import ClientListItem from './clientListItem';
 import ClientListHeader from './clientListHeader';
 
-// import ListLetterFilter from '../../../../components/listLetterFilter';
+import ListLetterFilter from '../../../../components/listLetterFilter';
 
 const ITEM_HEIGHT = 60;
 const HEADER_HEIGHT = 30;
 
-const abecedary = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 const styles = StyleSheet.create({
@@ -78,15 +78,21 @@ class ClientList extends React.Component {
 
     for (let i = 0; i < clients.length; i += 1) {
       const client = clients[i];
+
+      let firstLetter = client.name.substring(0, 1).toUpperCase();
+      const isNumber = !isNaN(parseInt(firstLetter, 10));
+      firstLetter = isNumber ? '#' : firstLetter;
+
+
       const result = ClientList.getByValue(
         clientsLetters,
-        client.name.substring(0, 1).toUpperCase(), 'title',
+        firstLetter, 'title',
       );
 
       if (result) {
         result.data.push(client);
       } else {
-        clientsLetters.push({ data: [client], title: client.name.substring(0, 1).toUpperCase() });
+        clientsLetters.push({ data: [client], title: firstLetter });
       }
     }
 
@@ -148,8 +154,9 @@ class ClientList extends React.Component {
       });
     }
 
-      scrollToIndex = (section, letter) => {
+      scrollToIndex = (letter) => {
         let total = 0;
+        let found = false;
 
         for (let i = 0; i < abecedary.length; i += 1) {
           const letterClients = ClientList.getByValue(
@@ -159,6 +166,7 @@ class ClientList extends React.Component {
 
           if (letter.toUpperCase() === abecedary[i]) {
             total += HEADER_HEIGHT;
+            found = letterClients;
             break;
           }
 
@@ -168,8 +176,9 @@ class ClientList extends React.Component {
           }
         }
 
-
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        if (found) {
+          this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        }
       }
 
       renderItem = obj => (
@@ -232,6 +241,9 @@ class ClientList extends React.Component {
                 )}
               renderSectionHeader={item => ClientList.renderSection(item)}
               ItemSeparatorComponent={() => ClientList.renderSeparator()}
+            />
+            <ListLetterFilter
+              onPress={(letter) => { this.scrollToIndex(letter); }}
             />
           </View>
         );

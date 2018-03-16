@@ -110,6 +110,10 @@ class ProductsScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.getProducts();
+  }
+
+  getProducts = (callback) => {
     this.props.productsActions.setShowCategoryProducts(false);
     this.props.productsActions.getProducts().then((response) => {
       if (response.data.error) {
@@ -118,6 +122,9 @@ class ProductsScreen extends React.Component {
         const products = response.data.products;
         this.props.productsActions.setProducts(products);
         this.props.productsActions.setFilteredProducts(products);
+        if (callback) {
+          callback();
+        }
       }
     }).catch((error) => {
       console.log(error);
@@ -172,23 +179,9 @@ class ProductsScreen extends React.Component {
     const { onChangeProduct, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeProduct) { onChangeProduct(product); }
 
-    if (dismissOnSelect) { this.goBack(); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
-  // onChangeProduct = (selectedProduct) => {
-  //   const { navigate } = this.props.navigation;
-  //
-  //   navigate('Services', {
-  //     ...this.props,
-  //     selectedProduct,
-  //     headerProps: {
-  //       title: 'Services',
-  //       subTitle: 'subtitulo services',
-  //       leftButtonOnPress: (navigation) => { navigation.goBack(); },
-  //       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-  //     },
-  //   });
-  // }
 
   filterProducts = (searchText) => {
     const productsCategories = JSON.parse(JSON.stringify(this.props.productsState.products));
@@ -256,8 +249,6 @@ class ProductsScreen extends React.Component {
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeProduct) { onChangeProduct = this.handleOnChangeProduct; }
 
-    // const onChangeProduct = this.onChangeProduct;
-
     return (
       <View style={styles.container}>
         <View style={styles.productsList}>
@@ -265,6 +256,7 @@ class ProductsScreen extends React.Component {
             && !this.props.salonSearchHeaderState.showFilter
             && this.props.productsState.filtered.length > 0) &&
             <ProductCategoryList
+              onRefresh={this.getProducts}
               handlePressProductCategory={this.handlePressProductCategory}
               productCategories={this.props.productsState.filtered}
             />
@@ -275,6 +267,7 @@ class ProductsScreen extends React.Component {
             && this.props.productsState.filtered.length > 0) &&
             <ProductList
               {...this.props}
+              onRefresh={this.getProducts}
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.productListContainer}
               products={this.props.productsState.filtered}
@@ -286,6 +279,7 @@ class ProductsScreen extends React.Component {
             && this.props.productsState.filtered.length > 0) &&
             <CategoryProductsList
               {...this.props}
+              onRefresh={this.getProducts}
               onChangeProduct={onChangeProduct}
               categoryProducts={this.props.productsState.categoryProducts}
             />

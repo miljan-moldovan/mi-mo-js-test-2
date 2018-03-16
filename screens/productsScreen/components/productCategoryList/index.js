@@ -2,6 +2,7 @@
 import React from 'react';
 import { View,
   StyleSheet,
+  RefreshControl,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -39,21 +40,11 @@ class ProductCategoryList extends React.Component {
     super(props);
     this.state = {
       productCategories: props.productCategories,
-      selectable: props.selectable,
-      refresh: false,
+      refreshing: false,
     };
   }
 
-  state = {
 
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      selectable: nextProps.selectable,
-      refresh: true,
-    });
-  }
   _keyExtractor = (item, index) => item.id;
 
 
@@ -78,14 +69,28 @@ class ProductCategoryList extends React.Component {
     );
   }
 
+  onRefreshFinish = () => {
+    this.setState({ refreshing: false });
+  }
+
   render() {
     return (
 
       <View style={styles.productCategoryListContainer}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                this.setState({ refreshing: true });
+                this.props.onRefresh(this.onRefreshFinish);
+              }
+            }
+            />
+        }
           style={styles.productCategoriesList}
           data={this.state.productCategories}
-          extraData={this.state.refresh}
+          extraData={this.props}
           keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />
