@@ -29,11 +29,11 @@ import type { QueueItem } from '../models';
 
 class QueueCombineItem extends React.PureComponent {
   _onPress = () => {
-    this.props.onPressItem(this.props.id);
+    this.props.onPressItem(this.props.id, this.props.groupId);
   };
   _onPressSelectLeader = () => {
     // console.log('_onPressSelectLeader', this.props.id);
-    this.props.onPressSelectLeader(this.props.id);
+    this.props.onPressSelectLeader(this.props.id, this.props.groupId);
   }
   getLabelForItem = (item: QueueItem) => {
     let label, iconName;
@@ -252,41 +252,51 @@ export class QueueUncombine extends React.Component {
     // emulate refresh call
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
-  _onPressItem = (id: string) => {
-    console.log('_onPressItem', id);
-    // updater functions are preferred for transactional updates
-    this.setState((state) => {
-      const selected = new Map(state.selected);
-      selected.set(id, !selected.get(id)); // toggle
-
-      if (this.props.onChangeCombineClients) {
-        const selectedArray = [];
-        selected.forEach((value, key)=> {
-          if (value)
-            selectedArray.push(key);
-        });
-        this.props.onChangeCombineClients(selectedArray);
-      }
-
-      return {selected};
-    });
-  };
-  _onPressSelectLeader = (id: string) => {
-    console.log('_onPressSelectLeader not implemented');
-    // this.setState({ groupLeader: id });
+  // _onPressItem = (id: string) => {
+  //   console.log('_onPressItem', id);
+  //   // updater functions are preferred for transactional updates
+  //   this.setState((state) => {
+  //     const selected = new Map(state.selected);
+  //     selected.set(id, !selected.get(id)); // toggle
+  //
+  //     if (this.props.onChangeCombineClients) {
+  //       const selectedArray = [];
+  //       selected.forEach((value, key)=> {
+  //         if (value)
+  //           selectedArray.push(key);
+  //       });
+  //       this.props.onChangeCombineClients(selectedArray);
+  //     }
+  //
+  //     return {selected};
+  //   });
+  // };
+  _onPressSelectLeader = (id: string, groupId: string) => {
+    console.log('_onPressSelectLeader', id, groupId);
+    if (this.props.onChangeLeader)
+      this.props.onChangeLeader(id, groupId);
   }
-  renderItem = ({ item, index }) => (
-    <QueueCombineItem
-      id={item.id}
-      onPressItem={this._onPressItem}
-      onPressSelectLeader={this._onPressSelectLeader}
-      selected={!!this.state.selected.get(item.id)}
-      // groupLeader={item.id == this.state.groupLeader}
-      item={item.queueItem}
-      type="uncombine"
-      index={index}
-    />
-  );
+  renderItem = ({ item, index, section }) => {
+
+    const groupLeader = this.props.groupLeaders[section.groupId] ?
+            item.id === this.props.groupLeaders[section.groupId] :
+            item.isGroupLeader;
+    // console.log('*** QueueUncombine renderItem', this.props.groupLeaders[section.groupId], item.isGroupLeader, groupLeader, item);
+    return (
+      <QueueCombineItem
+        id={item.id}
+        groupId={section.groupId}
+        onPressItem={this._onPressSelectLeader}
+        onPressSelectLeader={this._onPressSelectLeader}
+        selected={!!this.state.selected.get(item.id)}
+        // if a temporary group leader is set, use it. Otherwise, use item status.
+        groupLeader={groupLeader}
+        item={item.queueItem}
+        type="uncombine"
+        index={index}
+      />
+    );
+  }
   renderSectionHeader = ({section}) => {
     console.log('renderSectionHeader', section);
     const { loading } = this.props;
@@ -523,9 +533,7 @@ const styles = StyleSheet.create({
   },
   dollarSignContainerTouchable: {
     marginLeft: 'auto',
-    // marginRight: 12,
     height: '100%',
-    backgroundColor: 'rgba(255,0,0,0.2)'
   },
   dollarSignContainer: {
     backgroundColor: '#00E480',

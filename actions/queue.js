@@ -134,11 +134,28 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
       }
     });
     console.log('finishCombine1', data);
-    // let response = await apiWrapper.doRequest('postQueueGroup', {
-    //   body: JSON.stringify(data)
-    // });
-    // console.log('finishCombine response', response);
-    // dispatch(receiveQueue());
+    let response = await apiWrapper.doRequest('postQueueGroup', {
+      body: JSON.stringify(data)
+    });
+    console.log('finishCombine response', response);
+    dispatch(receiveQueue());
+  } catch (error) {
+    console.log(error);
+    dispatch({type: QUEUE_FAILED, error});
+  }
+}
+export const updateGroupLeaders = (groups: Object) => async (dispatch: Object => void) => {
+  try {
+    dispatch({type: QUEUE});
+    console.log('updateGroupLeaders', groups);
+    for (let groupId in groups) {
+      let clientQueueId = groups[groupId];
+      let response = await apiWrapper.doRequest('putQueueGroupLeader', { //putQueueGroupLeader
+        path: { groupId, clientQueueId }
+      });
+    }
+    console.log('updateGroupLeaders done');
+    dispatch(receiveQueue());
   } catch (error) {
     console.log(error);
     dispatch({type: QUEUE_FAILED, error});
@@ -148,13 +165,6 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
 export function combineClient(data) {
   return {
     type: COMBINE_CLIENT,
-    data
-  }
-}
-
-export function updateGroupLead(data) {
-  return {
-    type: GROUP_LEAD_UPDATE,
     data
   }
 }

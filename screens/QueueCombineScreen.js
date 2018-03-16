@@ -34,7 +34,6 @@ class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     const { onPressDone, loading } = params;
-
     return {
       header: (
           <SafeAreaView style={{justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19 }}>
@@ -64,6 +63,7 @@ class QueueCombineScreen extends React.Component {
     combinedClients: [],
     queueData: [],
     groupData: [],
+    groupLeadersTmp: {},
     combinedFirst: false,
     searchText: '',
     groupLeader: ''
@@ -84,6 +84,8 @@ class QueueCombineScreen extends React.Component {
     if (loading !== undefined && loading !== this.props.loading) {
       console.log('nextProps.loading', loading);
       this.props.navigation.setParams({ loading });
+      if (!loading)
+        this.updateNavButtons();
     }
   }
   prepareQueueData = (nextProps = {}) => {
@@ -107,7 +109,7 @@ class QueueCombineScreen extends React.Component {
         }
       });
       // make sure the group leader is the first item
-      groupClients.sort((a, b) => a.isGroupLeader ? -1 : 0);
+      groupClients.sort((a, b) => (a.isGroupLeader ? -1 : 1));
       groupData.push({
         groupId,
         title: group.groupLeadName,
@@ -128,33 +130,71 @@ class QueueCombineScreen extends React.Component {
       this.setState({ groupLeader });
       return;
     }
-    if (combinedClients && combinedClients.length > 1) {
-      this.props.navigation.setParams({ onPressDone: this.onFinishCombineClients });
+    this.setState({ combinedClients, groupLeader }, this.updateNavButtons);
+  }
+  updateNavButtons = () => {
+    const { combinedClients } = this.state;
+    if ((combinedClients && combinedClients.length > 1) || this.getUpdatedGroupLeaders()) {
+      this.props.navigation.setParams({ onPressDone: this.saveData });
     } else {
       this.props.navigation.setParams({ onPressDone: undefined });
     }
-    this.setState({ combinedClients, groupLeader });
   }
-  onFinishCombineClients = () => {
-    const { combinedClients, queueData, groupLeader } = this.state;
-    const combinedData = [];
-    this.props.startCombine();
-    console.log('onFinishCombineClients');
-    combinedClients.forEach((id, index)=> {
-      const queueItem = queueData.find((item)=> item.id === id)
-      const clientName = queueItem.client.name +' '+ queueItem.client.lastName;
-      // for now the first client will always be the group lead
-      combinedData.push({ id, groupLead: id == groupLeader });
-      this.props.combineClient({ id, clientName });
-    });
-    console.log('onFinishCombineClients', groupLeader, combinedData);
-    this.props.navigation.setParams({ onPressDone: undefined });
-    this.props.finishCombine(combinedData);
-    // this.props.navigation.goBack();
+  saveData = () => {
+    const { combinedClients, queueData, groupLeader, groupData } = this.state;
+    // combine any selected clients and create a new group
+    if (combinedClients && combinedClients.length > 1) {
+      const combinedData = [];
+      this.props.startCombine();
+      console.log('saveData');
+      combinedClients.forEach((id, index)=> {
+        const queueItem = queueData.find((item)=> item.id === id)
+        const clientName = queueItem.client.name +' '+ queueItem.client.lastName;
+        // for now the first client will always be the group lead
+        combinedData.push({ id, groupLead: id == groupLeader });
+        this.props.combineClient({ id, clientName });
+      });
+      console.log('saveData', groupLeader, combinedData);
+      this.props.navigation.setParams({ onPressDone: undefined });
+      this.props.finishCombine(combinedData);
+    }
+    const groupLeadersNew = this.getUpdatedGroupLeaders();
+    if (groupLeadersNew)
+      this.props.updateGroupLeaders(groupLeadersNew);
+
+  }
+  getUpdatedGroupLeaders = () => {
+    const { groupLeadersTmp, groupData } = this.state;
+    // check if any of the groups has changed leaders
+    if (groupLeadersTmp) {
+      // created map of groupId: groupLeader
+      const groupLeadersOld = {};
+      groupData.forEach((group) => {
+        let groupLeader = group.data.find((item)=> item.isGroupLeader)
+        groupLeadersOld[group.groupId] = groupLeader.id;
+      })
+      const groupLeadersNew = {};
+      for (let groupId in groupLeadersTmp) {
+        const newGroupLeader = groupLeadersTmp[groupId];
+        if (newGroupLeader && newGroupLeader != groupLeadersOld[groupId]) {
+          groupLeadersNew[groupId] = newGroupLeader;
+        }
+      }
+      if (Object.keys(groupLeadersNew).length)
+        return groupLeadersNew;
+    }
+    return false;
   }
   onUncombineClients = (groupId) => {
     // Alert.alert('onUncombineClients', groupId);
     this.props.uncombine(groupId);
+  }
+  // change group leader for existing groups. Will only be applied if user clicks on 'Done'.
+  onChangeGroupLeader = (clientId, groupId) => {
+    this.setState({ groupLeadersTmp: {
+      ...this.state.groupLeadersTmp,
+      [groupId]: clientId
+    }}, this.updateNavButtons);
   }
   toggleSort = () => {
     LayoutAnimation.spring();
@@ -165,7 +205,7 @@ class QueueCombineScreen extends React.Component {
   changeSearchText = searchText => this.setState({ searchText });
 
   render() {
-    const { searchText, combinedFirst, queueData, groupData } = this.state;
+    const { searchText, combinedFirst, queueData, groupData, groupLeadersTmp } = this.state;
     console.log('groups', groupData);
     console.log('queueData', queueData);
 
@@ -174,6 +214,8 @@ class QueueCombineScreen extends React.Component {
         data={groupData}
         navigation={this.props.navigation}
         onUncombineClients={this.onUncombineClients}
+        onChangeLeader={this.onChangeGroupLeader}
+        groupLeaders={groupLeadersTmp} // overrides leaders in groupData - used for leader selection
         loading={this.props.loading}
        />
     )
