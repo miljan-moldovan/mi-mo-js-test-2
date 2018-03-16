@@ -13,6 +13,7 @@ import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
 import checkinReducer from './checkin';
 import serviceReducer from './service';
+import productsReducer from './products';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -30,4 +31,5 @@ export default combineReducers({
   salonSearchHeaderReducer,
   checkinReducer,
   serviceReducer,
+  productsReducer,
 });

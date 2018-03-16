@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 10,
-    paddingVertical: 5,
   },
   searchBar: {
     borderWidth: 1,
@@ -25,7 +24,7 @@ const styles = StyleSheet.create({
   },
   searchIconLeft: {
     fontSize: 15,
-    marginLeft: 10,
+    marginLeft: 8,
     textAlign: 'center',
   },
   searchBarInput: {
@@ -45,7 +44,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancelSearch: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: 'Roboto',
     alignSelf: 'center',
     backgroundColor: 'transparent',
