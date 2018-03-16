@@ -28,18 +28,28 @@ class WalkInScreen extends Component {
     super(props);
     this.state = {
       services: [],
+      client: null,
     };
   }
 
-  handleAddService= () => {
-    const service = {
-      provider: null,
-      service: null,
+  componentWillMount() {
+    const { newAppointment } = this.props.navigation.state.params;
+    //debugger
+    if (newAppointment) {
+      this.handleAddService(newAppointment.provider, newAppointment.service);
+      this.setState( { client: newAppointment.client })
+    }
+  }
+
+  handleAddService= (provider=null, service=null) => {
+    const newService = {
+      provider,
+      service,
       start: moment(),
       end: moment().add(1, 'hours'),
     };
     const { services } = this.state;
-    services.push(service);
+    services.push(newService);
     this.setState({ services });
   }
 
@@ -55,16 +65,33 @@ class WalkInScreen extends Component {
     this.setState({ services });
   }
 
+  getFullName = () => {
+    let fullName = '';
+    const { client } = this.state
+    if (client) {
+      if (client.name) {
+        fullName = client.name;
+      }
+      if (client.lastName) {
+        fullName = fullName ? `${fullName} ${client.lastName}` : client.lastName;
+      }
+    }
+    return fullName;
+  }
+
   render() {
+    const fullName = this.getFullName();
+    const email = this.state.client && this.state.client.email ? this.client.email : '';
+    const phone = this.state.client && this.state.client.phone ? this.client.phone : '';
     return (
       <ScrollView style={styles.container}>
         <SectionTitle value="CLIENT" />
         <InputGroup>
-          <InputButton label="Client" value="Alex" />
+          <InputButton label="Client" value={fullName} />
           <InputDivider />
-          <InputLabel label="Email" value="a@a.com" />
+          <InputLabel label="Email" value={email} />
           <InputDivider />
-          <InputLabel label="Phone" value="222222" />
+          <InputLabel label="Phone" value={phone} />
         </InputGroup>
         <SectionTitle value="SERVICE AND PROVIDER" />
         <ServiceSection

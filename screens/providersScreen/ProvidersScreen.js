@@ -83,19 +83,44 @@ const styles = StyleSheet.create({
 });
 
 class ProviderScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={styles.headerTitle}>Providers</Text>
-      </View>
-    ),
-    headerLeft: (
-      <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
-        <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text>
-      </TouchableOpacity>
-    ),
-    headerRight: (null),
-  });
+  static navigationOptions = ({ navigation }) => {
+    const defaultProps = navigation.state.params ? navigation.state.params.defaultProps : {};
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
+
+    const { leftButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
+      <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text>
+    </TouchableOpacity> };
+    const { rightButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: null };
+    const { leftButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: navigation.goBack };
+    const { rightButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: null };
+    const { title } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: 'Providers' };
+    const { subTitle } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: '' };
+
+    return {
+      headerTitle: (
+        <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.headerTitle}>{title}</Text>
+        </View>
+      ),
+      headerLeft: (
+        leftButton
+      ),
+      headerRight: (null),
+      drawerLabel: props => (
+        <SideMenuItem
+          {...props}
+          title="Clients"
+          icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
+        />
+      ),
+    };
+  };
 
   static flexFilter(list, info) {
     let matchesFilter = [];
