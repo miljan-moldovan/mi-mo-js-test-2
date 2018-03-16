@@ -71,8 +71,6 @@ class CategoryProductsList extends React.Component {
     super(props);
     this.state = {
       categoryProducts: props.categoryProducts,
-      //  selectedProvider: props.walkInState.selectedProvider,
-      selectable: props.selectable,
       refresh: false,
     };
   }
@@ -83,8 +81,6 @@ class CategoryProductsList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-    //  selectedProvider: this.props.walkInState.selectedProvider,
-      selectable: nextProps.selectable,
       refresh: true,
     });
   }
@@ -103,15 +99,18 @@ class CategoryProductsList extends React.Component {
         key={Math.random().toString()}
         style={{ flex: 1 }}
         labelStyle={{ color: '#110A24' }}
-        onPress={this.props.onChangeProduct ? this.props.onChangeProduct : () => {}}
+        onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(elem.item); this.props.onChangeProduct(elem.item); } : () => {}}
         label={elem.item.name}
         children={
           <View style={styles.inputRow}>
             <Text style={styles.sizeLabelText}>{elem.item.size}</Text>
             <Text style={styles.priceLabelText}>{elem.item.price}</Text>
-            <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-            </FontAwesome>
+            {elem.item === this.props.productsState.selectedProduct &&
+              <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
+              </FontAwesome>
+            }
           </View>
+
           }
       />]}
     </InputGroup>
@@ -124,7 +123,7 @@ class CategoryProductsList extends React.Component {
         <FlatList
           style={styles.categoryProductsList}
           data={this.state.categoryProducts}
-          extraData={this.state.refresh}
+          extraData={this.props}
           keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />

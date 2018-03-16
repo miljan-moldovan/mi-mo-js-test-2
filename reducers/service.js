@@ -8,6 +8,7 @@ import servicesActions, {
   GET_SHOW_CATEGORY_SERVICES,
   SET_CATEGORY_SERVICES,
   GET_CATEGORY_SERVICES,
+  SET_SELECTED_SERVICE,
 } from '../actions/service';
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
   services: [],
   showCategoryServices: false,
   categoryServices: [],
+  selectedService: {},
 };
 
 export default function serviceReducer(state = initialState, action) {
@@ -66,6 +68,12 @@ export default function serviceReducer(state = initialState, action) {
         ...state,
         error: null,
         services: data.services,
+      };
+    case SET_SELECTED_SERVICE:
+      return {
+        ...state,
+        error: null,
+        selectedService: data.selectedService,
       };
     case SET_FILTERED_SERVICES:
       return {

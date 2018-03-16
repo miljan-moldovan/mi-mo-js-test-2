@@ -9,7 +9,7 @@ export const GET_SERVICES = 'services/GET_SERVICES';
 export const GET_SERVICES_SUCCESS = 'services/GET_SERVICES_SUCCESS';
 export const GET_SERVICES_FAILED = 'services/GET_SERVICES_FAILED';
 export const GET_CATEGORY_SERVICES = 'services/GET_CATEGORY_SERVICES';
-
+export const SET_SELECTED_SERVICE = 'services/SET_SELECTED_SERVICE';
 
 const getServicesSuccess = services => ({
   type: GET_SERVICES_SUCCESS,
@@ -32,6 +32,14 @@ function setServices(services) {
   return {
     type: SET_SERVICES,
     data: { services },
+  };
+}
+
+
+function setSelectedService(selectedService) {
+  return {
+    type: SET_SELECTED_SERVICE,
+    data: { selectedService },
   };
 }
 
@@ -62,6 +70,7 @@ const servicesActions = {
   getServices,
   setShowCategoryServices,
   setCategoryServices,
+  setSelectedService,
 };
 
 export default servicesActions;

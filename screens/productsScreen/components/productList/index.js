@@ -186,11 +186,12 @@ class ProductList extends React.Component {
 
       renderItem = obj => (
         <ProductListItem
+          {...this.props}
           key={Math.random().toString()}
           product={obj.item}
           height={ITEM_HEIGHT}
           boldWords={this.state.boldWords}
-          onPress={this.props.onChangeProduct ? this.props.onChangeProduct : () => {}}
+          onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(obj.item); this.props.onChangeProduct(obj.item); } : () => {}}
         />)
 
       renderLetterGuide = () => {
@@ -248,6 +249,7 @@ class ProductList extends React.Component {
                   getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
+                  extraData={this.props}
                   renderSectionHeader={item => ProductList.renderSection(item)}
                   ItemSeparatorComponent={() => ProductList.renderSeparator()}
 

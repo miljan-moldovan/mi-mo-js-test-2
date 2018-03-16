@@ -98,29 +98,29 @@ class ServiceList extends React.Component {
     };
   }
 
-    state:{
-      services:[]
-    };
+  state:{
+    services:[],
+  };
 
 
-    componentWillMount() {
+  componentWillMount() {
     //  this.setState({ letterGuide: this.renderLetterGuide() });
-    }
+  }
 
-    componentDidMount() {
-      const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
-      wait.then(() => {
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
-      });
-    }
+  componentDidMount() {
+    const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
+    wait.then(() => {
+      this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
+    });
+  }
 
-    componentWillReceiveProps(nextProps) {
-      const services = nextProps.services.sort(ServiceList.compareByName);
-      this.setState({
-        dataSource: ServiceList.services(services),
-        boldWords: nextProps.boldWords,
-      });
-    }
+  componentWillReceiveProps(nextProps) {
+    const services = nextProps.services.sort(ServiceList.compareByName);
+    this.setState({
+      dataSource: ServiceList.services(services),
+      boldWords: nextProps.boldWords,
+    });
+  }
 
       scrollToIndex = (letter) => {
         let total = 0;
@@ -153,8 +153,14 @@ class ServiceList extends React.Component {
           key={Math.random().toString()}
           service={obj.item}
           height={ITEM_HEIGHT}
+          {...this.props}
           boldWords={this.state.boldWords}
-          onPress={this.props.onChangeService ? this.props.onChangeService : () => {}}
+          onPress={this.props.onChangeService ?
+            () => {
+              this.props.servicesActions.setSelectedService(obj.item);
+              this.props.onChangeService(obj.item);
+            } : () => {}
+          }
         />)
 
       render() {
@@ -174,6 +180,7 @@ class ServiceList extends React.Component {
               getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
+              extraData={this.props}
               renderSectionHeader={item => ServiceList.renderSection(item)}
               ItemSeparatorComponent={() => ServiceList.renderSeparator()}
             />

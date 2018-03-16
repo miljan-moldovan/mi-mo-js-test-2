@@ -8,6 +8,7 @@ import productsActions, {
   GET_SHOW_CATEGORY_PRODUCTS,
   SET_CATEGORY_PRODUCTS,
   GET_CATEGORY_PRODUCTS,
+  SET_SELECTED_PRODUCT,
 } from '../actions/products';
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
   products: [],
   showCategoryProducts: false,
   categoryProducts: [],
+  selectedProduct: {},
 };
 
 export default function productsReducer(state = initialState, action) {
@@ -72,6 +74,12 @@ export default function productsReducer(state = initialState, action) {
         ...state,
         error: null,
         filtered: data.filtered,
+      };
+    case SET_SELECTED_PRODUCT:
+      return {
+        ...state,
+        error: null,
+        selectedProduct: data.selectedProduct,
       };
     default:
       return state;

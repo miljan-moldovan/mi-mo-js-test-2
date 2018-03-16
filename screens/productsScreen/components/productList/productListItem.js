@@ -113,8 +113,10 @@ class ProductListItem extends React.PureComponent {
             <View style={styles.inputRow}>
               <Text style={[styles.sizeLabelText]}>{this.state.product.size}</Text>
               <Text style={[styles.priceLabelText]}>{this.state.product.price}</Text>
-              <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-              </FontAwesome>
+              {this.props.product === this.props.productsState.selectedProduct &&
+                <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
+                </FontAwesome>
+              }
             </View>
           </View>
           </TouchableHighlight>,
