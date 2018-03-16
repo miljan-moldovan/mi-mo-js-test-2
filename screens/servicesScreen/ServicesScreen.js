@@ -185,7 +185,7 @@ class ServicesScreen extends React.Component {
     const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeService) { onChangeService(service); }
 
-    if (dismissOnSelect) { this.goBack(); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   filterServices = (searchText) => {

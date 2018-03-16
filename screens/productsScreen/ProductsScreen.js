@@ -179,7 +179,7 @@ class ProductsScreen extends React.Component {
     const { onChangeProduct, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeProduct) { onChangeProduct(product); }
 
-    if (dismissOnSelect) { this.goBack(); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
 
