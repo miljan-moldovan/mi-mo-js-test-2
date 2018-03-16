@@ -13,7 +13,7 @@ import {
   InputDivider,
   SectionTitle,
 } from '../../../components/formHelpers';
-import ServiceSection from '../../../components/formHelpers/serviceSection';
+import ServiceSection from './serviceSection';
 
 
 const styles = StyleSheet.create({
@@ -36,17 +36,29 @@ class WalkInScreen extends Component {
     const { newAppointment } = this.props.navigation.state.params;
     //debugger
     if (newAppointment) {
-      this.handleAddService(newAppointment.provider, newAppointment.service);
-      this.setState( { client: newAppointment.client })
+      this.handleAddService(_, newAppointment.provider, newAppointment.service);
+      this.setState({ client: newAppointment.client })
     }
   }
 
-  handleAddService= (provider=null, service=null) => {
+  getFullName = () => {
+    let fullName = '';
+    const { client } = this.state
+    if (client) {
+      if (client.name) {
+        fullName = client.name;
+      }
+      if (client.lastName) {
+        fullName = fullName ? `${fullName} ${client.lastName}` : client.lastName;
+      }
+    }
+    return fullName;
+  }
+
+  handleAddService= (_, provider = null, service = null) => {
     const newService = {
       provider,
       service,
-      start: moment(),
-      end: moment().add(1, 'hours'),
     };
     const { services } = this.state;
     services.push(newService);
@@ -63,20 +75,6 @@ class WalkInScreen extends Component {
     const { services } = this.state;
     services[index] = service;
     this.setState({ services });
-  }
-
-  getFullName = () => {
-    let fullName = '';
-    const { client } = this.state
-    if (client) {
-      if (client.name) {
-        fullName = client.name;
-      }
-      if (client.lastName) {
-        fullName = fullName ? `${fullName} ${client.lastName}` : client.lastName;
-      }
-    }
-    return fullName;
   }
 
   render() {

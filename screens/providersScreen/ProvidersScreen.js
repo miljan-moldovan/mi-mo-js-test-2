@@ -80,6 +80,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     color: '#727A8F',
   },
+  headerSubTitle: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
 });
 
 class ProviderScreen extends React.Component {
@@ -106,6 +111,7 @@ class ProviderScreen extends React.Component {
       headerTitle: (
         <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.headerTitle}>{title}</Text>
+          { subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null }
         </View>
       ),
       headerLeft: (

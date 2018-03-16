@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
-import DateTimePicker from 'react-native-modal-datetime-picker';
-import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,33 +93,10 @@ class ServiceSection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: new Date(),
       service: null,
       index: 0,
       type: '',
-      isDateTimePickerVisible: false,
     };
-  }
-
-  hideDateTimePicker =() => {
-    this.setState({ isDateTimePickerVisible: false });
-  }
-
-  showDateTimePicker =(date, service, index, type) => {
-    this.setState({
-      isDateTimePickerVisible: true,
-      date: date.toDate(),
-      service,
-      index,
-      type,
-    });
-  }
-
-  handleDateSelection=(date) => {
-    const newService = this.state.service;
-    newService[this.state.type] = moment(date.getTime());
-    this.props.onUpdate(this.state.index, newService);
-    this.hideDateTimePicker();
   }
 
   handleProviderSelection = (provider, service, index) => {
@@ -185,14 +160,6 @@ class ServiceSection extends Component {
         </TouchableOpacity>
       </View>
       <View style={styles.serviceDataContainer}>
-        <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
-          <View style={styles.innerRow}>
-            {this.renderProvider(service.provider)}
-            <View style={styles.dataContainer}>
-              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
-            </View>
-          </View>
-        </TouchableOpacity>
         <TouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
             {this.renderServiceInfo(service.service)}
@@ -201,19 +168,11 @@ class ServiceSection extends Component {
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.start, service, index, 'start')}>
-          <View style={styles.innerRow}>
-            <Text style={styles.label}>Start</Text>
-            <View style={styles.dataContainer}>
-              <Text style={styles.textData}>{service.start.format('hh:mm a')}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.end, service, index, 'end')}>
+        <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
           <View style={styles.lastInnerRow}>
-            <Text style={styles.label}>End</Text>
+            {this.renderProvider(service.provider)}
             <View style={styles.dataContainer}>
-              <Text style={styles.textData}>{service.end.format('hh:mm a')}</Text>
+              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
         </TouchableOpacity>
@@ -231,13 +190,6 @@ class ServiceSection extends Component {
             <Text style={styles.textLabel}>add Service</Text>
           </View>
         </TouchableOpacity>
-        <DateTimePicker
-          isVisible={this.state.isDateTimePickerVisible}
-          onConfirm={this.handleDateSelection}
-          onCancel={this.hideDateTimePicker}
-          mode="time"
-          date={this.state.date}
-        />
       </View>
     );
   }
