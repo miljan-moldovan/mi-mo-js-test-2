@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import {
-  View,
   StyleSheet,
   ScrollView,
+  Text
 } from 'react-native';
-import moment from 'moment';
 
 import {
   InputLabel,
@@ -14,16 +13,36 @@ import {
   SectionTitle,
 } from '../../../components/formHelpers';
 import ServiceSection from './serviceSection';
-
+import HeaderRight from '../../../components/HeaderRight';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F8F8',
   },
+  headerButton: {
+    color: '#fff',
+    fontFamily: 'Roboto',
+    fontSize: 14,
+  },
 });
 
 class WalkInScreen extends Component {
+  static navigationOptions = ({ navigation }) => {
+    const handlePress = navigation.state.params && navigation.state.params.walkin ? navigation.state.params.walkin : ()=>{};
+    //const { name, lastName } = navigation.state.params.item.client;
+    return {
+      // headerTitle: `${name} ${lastName}`,
+      headerRight:
+  <HeaderRight
+    button={(
+      <Text style={styles.headerButton}>Done</Text>
+      )}
+    handlePress={handlePress}
+  />,
+    };
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -34,11 +53,18 @@ class WalkInScreen extends Component {
 
   componentWillMount() {
     const { newAppointment } = this.props.navigation.state.params;
-    //debugger
     if (newAppointment) {
-      this.handleAddService(_, newAppointment.provider, newAppointment.service);
+      this.handleAddService(_, newAppointment.provider, newAppointment.service, false, true);
       this.setState({ client: newAppointment.client })
     }
+    const { navigation } = this.props;
+    // We can only set the function after the component has been initialized
+    navigation.setParams({
+      walkin: () => {
+        this.handleWalkin();
+        navigation.navigate('Queue');
+      },
+    });
   }
 
   getFullName = () => {
@@ -55,10 +81,26 @@ class WalkInScreen extends Component {
     return fullName;
   }
 
-  handleAddService= (_, provider = null, service = null) => {
+  handleWalkin = () => {
+    const { services, client } = this.state;
+    const service = services[0];
+    const params = {
+      clientId: client.id,
+      email: client.email,
+      phone: client.phone,
+      isFirstAvailable: service.isFirstAvailable,
+      providerId: service.provider.id,
+      isProviderRequested: service.isProviderRequested,
+    };
+    this.props.walkInActions.postWalkinClient(params);
+  }
+
+  handleAddService= (_, provider = null, service = null, isFirstAvailable = false, isProviderRequested = false) => {
     const newService = {
       provider,
       service,
+      isFirstAvailable,
+      isProviderRequested,
     };
     const { services } = this.state;
     services.push(newService);

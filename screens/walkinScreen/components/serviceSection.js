@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
+import { InputSwitch } from '../../../components/formHelpers';
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -48,6 +50,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     color: '#110A24',
     fontSize: 14,
+  },
+  textSwitch: {
+    fontFamily: 'Roboto',
+    color: '#110A24',
+    fontSize: 14,
+    marginLeft: 16,
   },
   serviceRow: {
     flexDirection: 'row',
@@ -97,6 +105,10 @@ class ServiceSection extends Component {
       index: 0,
       type: '',
     };
+  }
+
+  handleSwitch = (service) => {
+    alert('Not implemented');
   }
 
   handleProviderSelection = (provider, service, index) => {
@@ -169,13 +181,14 @@ class ServiceSection extends Component {
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
-          <View style={styles.lastInnerRow}>
+          <View style={styles.innerRow}>
             {this.renderProvider(service.provider)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
         </TouchableOpacity>
+        <InputSwitch textStyle={styles.textSwitch} onChange={this.handleSwitch} text="Provider is Requested?" value={service.isProviderRequested} />
       </View>
     </View>
   )
