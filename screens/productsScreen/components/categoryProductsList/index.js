@@ -3,6 +3,7 @@ import React from 'react';
 import { View,
   StyleSheet,
   Text,
+  RefreshControl,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -71,19 +72,10 @@ class CategoryProductsList extends React.Component {
     super(props);
     this.state = {
       categoryProducts: props.categoryProducts,
-      refresh: false,
+      refreshing: false,
     };
   }
 
-  state = {
-
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      refresh: true,
-    });
-  }
   _keyExtractor = (item, index) => item.id;
 
   renderItem = elem => (
@@ -116,11 +108,25 @@ class CategoryProductsList extends React.Component {
     </InputGroup>
   )
 
+  onRefreshFinish = () => {
+    this.setState({ refreshing: false });
+  }
+
   render() {
     return (
 
       <View style={styles.CategoryProductsListContainer}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                  this.setState({ refreshing: true });
+                  this.props.onRefresh(this.onRefreshFinish);
+                }
+              }
+            />
+          }
           style={styles.categoryProductsList}
           data={this.state.categoryProducts}
           extraData={this.props}

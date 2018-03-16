@@ -2,7 +2,7 @@
 import React from 'react';
 import { View,
   StyleSheet,
-  Text,
+  RefreshControl,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -47,19 +47,10 @@ class CategoryServicesList extends React.Component {
     super(props);
     this.state = {
       categoryServices: props.categoryServices,
-      refresh: false,
+      refreshing: false,
     };
   }
 
-  state = {
-
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      refresh: true,
-    });
-  }
   _keyExtractor = (item, index) => item.id;
 
   renderItem = elem => (
@@ -91,11 +82,25 @@ class CategoryServicesList extends React.Component {
     </InputGroup>
   )
 
+  onRefreshFinish = () => {
+    this.setState({ refreshing: false });
+  }
+
   render() {
     return (
 
       <View style={styles.categoryServicesListContainer}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                  this.setState({ refreshing: true });
+                  this.props.onRefresh(this.onRefreshFinish);
+                }
+              }
+            />
+          }
           style={styles.categoryServicesList}
           data={this.state.categoryServices}
           extraData={this.props}

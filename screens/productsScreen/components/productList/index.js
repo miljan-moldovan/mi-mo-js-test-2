@@ -1,17 +1,18 @@
 import React from 'react';
 import { View,
-  Text,
-  TouchableHighlight,
   SectionList,
+  RefreshControl,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import ProductListItem from './productListItem';
 import ProductListHeader from './productListHeader';
 
+import ListLetterFilter from '../../../../components/listLetterFilter';
+
 const ITEM_HEIGHT = 43;
 const HEADER_HEIGHT = 38;
 
-const abecedary = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 const styles = StyleSheet.create({
@@ -20,28 +21,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#E7E7E7',
   },
-  productList: {
-    backgroundColor: '#FFF',
-    flex: 10,
-  },
-  listContainer: {
-    flex: 9,
-    flexDirection: 'row',
-    height: '100%',
-  },
-  list: {
-    flex: 10,
-    backgroundColor: '#FFF',
-    height: '100%',
-  },
-  guideContainer: {
-    flex: 1 / 2,
-    flexDirection: 'column',
-    backgroundColor: '#EFEFEF',
-  },
-  letterContainer: {
-    backgroundColor: 'transparent',
-  },
   topBar: {
     height: HEADER_HEIGHT,
     flexDirection: 'column',
@@ -49,23 +28,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-  foundLetter: {
-    color: '#727A8F',
-    fontSize: 11,
-    marginTop: 5,
-    textAlign: 'center',
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  letter: {
-    color: '#727A8F',
-    fontSize: 11,
-    marginTop: 5,
-    textAlign: 'center',
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-
 });
 
 class ProductList extends React.Component {
@@ -76,12 +38,14 @@ class ProductList extends React.Component {
   }
 
   static getByValue(arr, value, attr) {
+    const results = [];
     for (let i = 0, iLen = arr.length; i < iLen; i += 1) {
-      if (arr[i][attr] === value) return arr[i];
+      if (arr[i][attr] === value) {
+        results.push(arr[i]);
+      }
     }
-    return null;
+    return results.length > 0 ? results : null;
   }
-
 
   static products(products) {
     const productsLetters = [];
@@ -90,15 +54,20 @@ class ProductList extends React.Component {
 
     for (let i = 0; i < products.length; i += 1) {
       const productCategory = products[i];
+
+      let firstLetter = productCategory.name.substring(0, 1).toUpperCase();
+      const isNumber = !isNaN(parseInt(firstLetter, 10));
+      firstLetter = isNumber ? '#' : firstLetter;
+
       const result = ProductList.getByValue(
         productsLetters,
         productCategory.name, 'title',
       );
 
       if (result) {
-        result.data.concat(productCategory.products);
+        result[0].data.concat(productCategory.products);
       } else {
-        productsLetters.push({ data: productCategory.products, title: productCategory.name });
+        productsLetters.push({ data: productCategory.products, title: productCategory.name, firstLetter });
       }
     }
 
@@ -129,21 +98,15 @@ class ProductList extends React.Component {
     const products = props.products.sort(ProductList.compareByName);
 
     this.state = {
-      products,
       dataSource: ProductList.products(products),
-      letterGuide: [],
       boldWords: props.boldWords,
+      refreshing: false,
     };
   }
-
     state:{
-      products:[]
+      products:[],
     };
 
-
-    componentWillMount() {
-      this.setState({ letterGuide: this.renderLetterGuide() });
-    }
 
     componentDidMount() {
       const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
@@ -160,29 +123,6 @@ class ProductList extends React.Component {
       });
     }
 
-      scrollToIndex = (section, letter) => {
-        let total = 0;
-
-        for (let i = 0; i < abecedary.length; i += 1) {
-          const letterProducts = ProductList.getByValue(
-            this.state.dataSource,
-            abecedary[i], 'title',
-          );
-
-          if (letter.toUpperCase() === abecedary[i]) {
-            total += HEADER_HEIGHT;
-            break;
-          }
-
-          if (letterProducts) {
-            total += HEADER_HEIGHT;
-            total += letterProducts.data.length * ITEM_HEIGHT;
-          }
-        }
-
-
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
-      }
 
       renderItem = obj => (
         <ProductListItem
@@ -194,71 +134,77 @@ class ProductList extends React.Component {
           onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(obj.item); this.props.onChangeProduct(obj.item); } : () => {}}
         />)
 
-      renderLetterGuide = () => {
-        const productsLetters = [];
+      keyExtractor = (item, index) => item.id;
 
-        for (let i = 0; i < this.state.products.length; i += 1) {
-          const product = this.state.products[i];
-          if (productsLetters.indexOf(product.name.substring(0, 1).toUpperCase()) === -1) {
-            productsLetters.push(product.name.substring(0, 1).toUpperCase());
-          }
-        }
-
-        const letterGuide = [];
-
-        for (let i = 0; i < abecedary.length; i += 1) {
-          const letter = abecedary[i];
-
-          let letterComponent = <Text style={styles.letter}>{letter}</Text>;
-
-          if (productsLetters.indexOf(letter) > -1) {
-            letterComponent = <Text style={styles.foundLetter}>{letter}</Text>;
-          }
-
-          letterGuide.push(<TouchableHighlight
-            underlayColor="transparent"
-            key={Math.random().toString()}
-            onPress={() => { this.scrollToIndex((i), letter); }}
-          >
-            <View style={styles.letterContainer}>{letterComponent}</View>
-          </TouchableHighlight>);
-        }
-
-        return (letterGuide);
+      onRefreshFinish = () => {
+        this.setState({ refreshing: false });
       }
 
-      keyExtractor = (item, index) => item.id;
+      scrollToIndex = (letter) => {
+        let total = 0;
+        let found = false;
+
+        for (let i = 0; i < abecedary.length; i += 1) {
+          const letterProducts = ProductList.getByValue(
+            this.state.dataSource,
+            abecedary[i], 'firstLetter',
+          );
+
+          if (letter.toUpperCase() === abecedary[i]) {
+            total += HEADER_HEIGHT;
+            found = letterProducts;
+          }
+
+          if (letterProducts && !found) {
+            for (let x = 0; x < letterProducts.length; x += 1) {
+              total += HEADER_HEIGHT;
+              total += letterProducts[x].data.length * ITEM_HEIGHT;
+            }
+          }
+        }
+
+        if (found) {
+          this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        }
+      }
 
       render() {
         return (
           <View style={styles.container}>
 
-            <View style={styles.listContainer}>
-              <View style={styles.list}>
-                <SectionList
-                  keyExtractor={this.keyExtractor}
-                  key={Math.random().toString()}
-                  style={{ height: '100%', flex: 1 }}
-                  enableEmptySections
-                  keyboardShouldPersistTaps="always"
-                  initialNumToRender={this.state.dataSource.length}
-                  ref={(ref) => { this.sectionListRef = ref; }}
-                  sections={this.state.dataSource}
-                  renderItem={this.renderItem}
-                  stickySectionHeadersEnabled
-                  getItemLayout={(data, index) => (
+            <SectionList
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={() => {
+                          this.setState({ refreshing: true });
+                          this.props.onRefresh(this.onRefreshFinish);
+                        }
+                      }
+                />
+                  }
+              keyExtractor={this.keyExtractor}
+              key={Math.random().toString()}
+              style={{ height: '100%', flex: 1 }}
+              enableEmptySections
+              keyboardShouldPersistTaps="always"
+              initialNumToRender={this.state.dataSource.length}
+              ref={(ref) => { this.sectionListRef = ref; }}
+              sections={this.state.dataSource}
+              renderItem={this.renderItem}
+              stickySectionHeadersEnabled
+              getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
-                  extraData={this.props}
-                  renderSectionHeader={item => ProductList.renderSection(item)}
-                  ItemSeparatorComponent={() => ProductList.renderSeparator()}
+              extraData={this.props}
+              renderSectionHeader={item => ProductList.renderSection(item)}
+              ItemSeparatorComponent={() => ProductList.renderSeparator()}
+            />
 
-                />
-              </View>
-              {/* <View style={styles.guideContainer}>
-                {this.state.letterGuide}
-              </View> */}
-            </View>
+            <ListLetterFilter
+              onPress={(letter) => { this.scrollToIndex(letter); }}
+            />
+
           </View>
         );
       }

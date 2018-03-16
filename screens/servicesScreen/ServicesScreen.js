@@ -116,9 +116,7 @@ class ServicesScreen extends React.Component {
     this.getServices();
   }
 
-  getServices() {
-    this.setState({ refreshing: true });
-
+  getServices = (callback) => {
     this.props.servicesActions.setShowCategoryServices(false);
     this.props.servicesActions.getServices().then((response) => {
       if (response.data.error) {
@@ -127,7 +125,9 @@ class ServicesScreen extends React.Component {
         const services = response.data.services;
         this.props.servicesActions.setServices(services);
         this.props.servicesActions.setFilteredServices(services);
-        this.setState({ refreshing: false });
+        if (callback) {
+          callback();
+        }
       }
     }).catch((error) => {
       console.log(error);
@@ -135,7 +135,6 @@ class ServicesScreen extends React.Component {
   }
 
   state = {
-    refreshing: false,
     prevHeaderProps: {
 
     },
@@ -189,25 +188,22 @@ class ServicesScreen extends React.Component {
     if (dismissOnSelect) { this.goBack(); }
   }
 
-  // onChangeService = (selectedService) => {
-  // //  console.log('lalala');
-  // //  this.props.servicesActions.setSelectedService(selectedService);
-  //
-  //   const { navigate } = this.props.navigation;
-  //
-  //   navigate('Clients', {
-  //     ...this.props,
-  //     selectedService,
-  //     headerProps: {
-  //       title: 'Clients',
-  //       subTitle: 'subtitulo',
-  //       leftButtonOnPress: (navigation) => { navigation.goBack(); },
-  //       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-  //       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-  //       rightButtonOnPress: (navigation) => { navigation.navigate('NewClientScreen'); },
-  //     },
-  //   });
-  // }
+  onChangeService = (selectedService) => {
+    const { navigate } = this.props.navigation;
+
+    navigate('Clients', {
+      ...this.props,
+      selectedService,
+      headerProps: {
+        title: 'Clients',
+        subTitle: 'subtitulo',
+        leftButtonOnPress: (navigation) => { navigation.goBack(); },
+        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+        rightButtonOnPress: (navigation) => { navigation.navigate('NewClientScreen'); },
+      },
+    });
+  }
 
   filterServices = (searchText) => {
     const servicesCategories = JSON.parse(JSON.stringify(this.props.servicesState.services));
@@ -270,38 +266,32 @@ class ServicesScreen extends React.Component {
   }
 
   render() {
-    let onChangeService = null;
-    const { state } = this.props.navigation;
-    // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
+    // let onChangeService = null;
+    // const { state } = this.props.navigation;
+    // // make sure we only pass a callback to the component if we have one for the screen
+    // if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
 
-    // const onChangeService = this.onChangeService;
+    const onChangeService = this.onChangeService;
 
     return (
       <View style={styles.container}>
         <View style={styles.servicesList}>
-          <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={this.getNotes}
-              />
-          }
-          >
-            { (!this.props.servicesState.showCategoryServices
+          { (!this.props.servicesState.showCategoryServices
             && !this.props.salonSearchHeaderState.showFilter
             && this.props.servicesState.filtered.length > 0) &&
             <ServiceCategoryList
+              onRefresh={this.getServices}
               handlePressServiceCategory={this.handlePressServiceCategory}
               serviceCategories={this.props.servicesState.filtered}
             />
           }
 
-            { (!this.props.servicesState.showCategoryServices
+          { (!this.props.servicesState.showCategoryServices
             && this.props.salonSearchHeaderState.showFilter
             && this.props.servicesState.filtered.length > 0) &&
             <ServiceList
               {...this.props}
+              onRefresh={this.getServices}
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.serviceListContainer}
               services={this.props.servicesState.filtered}
@@ -309,16 +299,15 @@ class ServicesScreen extends React.Component {
             />
           }
 
-            { (this.props.servicesState.showCategoryServices
+          { (this.props.servicesState.showCategoryServices
             && this.props.servicesState.filtered.length > 0) &&
             <CategoryServicesList
               {...this.props}
+              onRefresh={this.getServices}
               onChangeService={onChangeService}
               categoryServices={this.props.servicesState.categoryServices}
             />
           }
-
-          </ScrollView>
         </View>
       </View>
     );

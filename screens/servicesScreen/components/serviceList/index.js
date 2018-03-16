@@ -2,7 +2,7 @@ import React from 'react';
 import { View,
   SectionList,
   StyleSheet,
-
+  RefreshControl,
 } from 'react-native';
 import { connect } from 'react-redux';
 import ServiceListItem from './serviceListItem';
@@ -13,7 +13,7 @@ import ListLetterFilter from '../../../../components/listLetterFilter';
 const ITEM_HEIGHT = 43;
 const HEADER_HEIGHT = 38;
 
-const abecedary = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 const styles = StyleSheet.create({
@@ -40,10 +40,13 @@ class ServiceList extends React.Component {
   }
 
   static getByValue(arr, value, attr) {
+    const results = [];
     for (let i = 0, iLen = arr.length; i < iLen; i += 1) {
-      if (arr[i][attr] === value) return arr[i];
+      if (arr[i][attr] === value) {
+        results.push(arr[i]);
+      }
     }
-    return null;
+    return results.length > 0 ? results : null;
   }
 
 
@@ -54,15 +57,24 @@ class ServiceList extends React.Component {
 
     for (let i = 0; i < services.length; i += 1) {
       const serviceCategory = services[i];
+
+      let firstLetter = serviceCategory.name.substring(0, 1).toUpperCase();
+      const isNumber = !isNaN(parseInt(firstLetter, 10));
+      firstLetter = isNumber ? '#' : firstLetter;
+
       const result = ServiceList.getByValue(
         servicesLetters,
         serviceCategory.name, 'title',
       );
 
       if (result) {
-        result.data.concat(serviceCategory.services);
+        result[0].data.concat(serviceCategory.services);
       } else {
-        servicesLetters.push({ data: serviceCategory.services, title: serviceCategory.name });
+        servicesLetters.push({
+          data: serviceCategory.services,
+          title: serviceCategory.name,
+          firstLetter,
+        });
       }
     }
 
@@ -95,17 +107,13 @@ class ServiceList extends React.Component {
     this.state = {
       dataSource: ServiceList.services(services),
       boldWords: props.boldWords,
+      refreshing: false,
     };
   }
 
   state:{
-    services:[],
+    services:[]
   };
-
-
-  componentWillMount() {
-    //  this.setState({ letterGuide: this.renderLetterGuide() });
-  }
 
   componentDidMount() {
     const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
@@ -124,26 +132,30 @@ class ServiceList extends React.Component {
 
       scrollToIndex = (letter) => {
         let total = 0;
+        let found = false;
 
         for (let i = 0; i < abecedary.length; i += 1) {
           const letterServices = ServiceList.getByValue(
             this.state.dataSource,
-            abecedary[i], 'title',
+            abecedary[i], 'firstLetter',
           );
 
           if (letter.toUpperCase() === abecedary[i]) {
             total += HEADER_HEIGHT;
-            break;
+            found = letterServices;
           }
 
-          if (letterServices) {
-            total += HEADER_HEIGHT;
-            total += letterServices.data.length * ITEM_HEIGHT;
+          if (letterServices && !found) {
+            for (let x = 0; x < letterServices.length; x += 1) {
+              total += HEADER_HEIGHT;
+              total += letterServices[x].data.length * ITEM_HEIGHT;
+            }
           }
         }
 
-
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        if (found) {
+          this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        }
       }
 
       keyExtractor = (item, index) => item.id;
@@ -163,33 +175,47 @@ class ServiceList extends React.Component {
           }
         />)
 
-      render() {
-        return (
-          <View style={styles.container}>
+        onRefreshFinish = () => {
+          this.setState({ refreshing: false });
+        }
 
-            <SectionList
-              keyExtractor={this.keyExtractor}
-              key={Math.random().toString()}
-              enableEmptySections
-              keyboardShouldPersistTaps="always"
-              initialNumToRender={this.state.dataSource.length}
-              ref={(ref) => { this.sectionListRef = ref; }}
-              sections={this.state.dataSource}
-              renderItem={this.renderItem}
-              stickySectionHeadersEnabled
-              getItemLayout={(data, index) => (
+        render() {
+          return (
+            <View style={styles.container}>
+
+              <SectionList
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={() => {
+                      this.setState({ refreshing: true });
+                      this.props.onRefresh(this.onRefreshFinish);
+                    }
+                  }
+                  />
+              }
+                keyExtractor={this.keyExtractor}
+                key={Math.random().toString()}
+                enableEmptySections
+                keyboardShouldPersistTaps="always"
+                initialNumToRender={this.state.dataSource.length}
+                ref={(ref) => { this.sectionListRef = ref; }}
+                sections={this.state.dataSource}
+                renderItem={this.renderItem}
+                stickySectionHeadersEnabled
+                getItemLayout={(data, index) => (
                     { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                   )}
-              extraData={this.props}
-              renderSectionHeader={item => ServiceList.renderSection(item)}
-              ItemSeparatorComponent={() => ServiceList.renderSeparator()}
-            />
-            <ListLetterFilter
-              onPress={(letter) => { this.scrollToIndex(letter); }}
-            />
-          </View>
-        );
-      }
+                extraData={this.props}
+                renderSectionHeader={item => ServiceList.renderSection(item)}
+                ItemSeparatorComponent={() => ServiceList.renderSeparator()}
+              />
+              <ListLetterFilter
+                onPress={(letter) => { this.scrollToIndex(letter); }}
+              />
+            </View>
+          );
+        }
 }
 
 const mapStateToProps = state => ({
