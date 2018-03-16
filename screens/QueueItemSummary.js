@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, TouchableOpacity, Text, ScrollView, FlatList, Modal } from 'react-native';
+import { View, StyleSheet, Animated, TouchableOpacity, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import Icon from '../components/UI/Icon';
-import IconDB from '../components/UI/IconDB';
 import ListItem from './QueueListItemSummary';
 import SalonIcon from '../components/SalonIcon';
 
@@ -115,6 +114,10 @@ const styles = StyleSheet.create({
   btnDisabled: {
     backgroundColor: '#C0C1C6',
   },
+  hideBtn: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
 });
 
 class QueueItemSummary extends Component {
@@ -161,6 +164,8 @@ class QueueItemSummary extends Component {
     if (this.props.isWaiting) {
       const btnCheckInStyle =
         this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
+      const otherButtonsStyle =
+        !this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
       return (
           <View style={styles.btnContainer}>
             <TouchableOpacity
@@ -174,33 +179,45 @@ class QueueItemSummary extends Component {
                 <Text style={styles.btnbottomText}>Check-in</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.walkOut}>
+            <TouchableOpacity
+              onPress={this.props.onPressSummary.walkOut}
+              disabled={!this.props.isCheckedIn}
+            >
               <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
+                <View style={otherButtonsStyle}>
                   <SalonIcon icon="walkout" size={16} />
                 </View>
                 <Text style={styles.btnbottomText}>Walk-out</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.modify}>
+            <TouchableOpacity
+              onPress={this.props.onPressSummary.modify}
+              disabled={!this.props.isCheckedIn}
+            >
               <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
+                <View style={otherButtonsStyle}>
                   <SalonIcon icon="modify" size={16} />
                 </View>
                 <Text style={styles.btnbottomText}>Modify</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.returning}>
+            <TouchableOpacity
+              onPress={this.props.onPressSummary.returning}
+              disabled={!this.props.isCheckedIn}
+            >
               <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
+                <View style={otherButtonsStyle}>
                   <SalonIcon icon="returning" size={16} />
                 </View>
                 <Text style={styles.btnbottomText}>Returning</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.props.onPressSummary.toService}>
+            <TouchableOpacity
+              onPress={this.props.onPressSummary.toService}
+              disabled={!this.props.isCheckedIn}
+            >
               <View style={styles.btnGroup}>
-                <View style={styles.btnBottom}>
+                <View style={otherButtonsStyle}>
                   <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
                 </View>
                 <Text style={styles.btnbottomText}>To Service</Text>
@@ -265,6 +282,9 @@ class QueueItemSummary extends Component {
           visible={this.state.isVisible}
         >
           <View style={styles.container}>
+            <TouchableWithoutFeedback onPress={this.props.hide}>
+              <View style={styles.hideBtn} />
+            </TouchableWithoutFeedback>
             <Animated.View style={[
               styles.content,
               {
