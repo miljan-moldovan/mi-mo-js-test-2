@@ -188,23 +188,6 @@ class ServicesScreen extends React.Component {
     if (dismissOnSelect) { this.goBack(); }
   }
 
-  onChangeService = (selectedService) => {
-    const { navigate } = this.props.navigation;
-
-    navigate('Clients', {
-      ...this.props,
-      selectedService,
-      headerProps: {
-        title: 'Clients',
-        subTitle: 'subtitulo',
-        leftButtonOnPress: (navigation) => { navigation.goBack(); },
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-        rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-        rightButtonOnPress: (navigation) => { navigation.navigate('NewClientScreen'); },
-      },
-    });
-  }
-
   filterServices = (searchText) => {
     const servicesCategories = JSON.parse(JSON.stringify(this.props.servicesState.services));
 
@@ -266,12 +249,10 @@ class ServicesScreen extends React.Component {
   }
 
   render() {
-    // let onChangeService = null;
-    // const { state } = this.props.navigation;
-    // // make sure we only pass a callback to the component if we have one for the screen
-    // if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
-
-    const onChangeService = this.onChangeService;
+    let onChangeService = null;
+    const { state } = this.props.navigation;
+    // make sure we only pass a callback to the component if we have one for the screen
+    if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
 
     return (
       <View style={styles.container}>

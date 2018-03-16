@@ -182,20 +182,6 @@ class ProductsScreen extends React.Component {
     if (dismissOnSelect) { this.goBack(); }
   }
 
-  onChangeProduct = (selectedProduct) => {
-    const { navigate } = this.props.navigation;
-
-    navigate('Services', {
-      ...this.props,
-      selectedProduct,
-      headerProps: {
-        title: 'Services',
-        subTitle: 'subtitulo services',
-        leftButtonOnPress: (navigation) => { navigation.goBack(); },
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-      },
-    });
-  }
 
   filterProducts = (searchText) => {
     const productsCategories = JSON.parse(JSON.stringify(this.props.productsState.products));
@@ -258,12 +244,10 @@ class ProductsScreen extends React.Component {
   }
 
   render() {
-    // let onChangeProduct = null;
-    // const { state } = this.props.navigation;
-    // // make sure we only pass a callback to the component if we have one for the screen
-    // if (state.params && state.params.onChangeProduct) { onChangeProduct = this.handleOnChangeProduct; }
-
-    const onChangeProduct = this.onChangeProduct;
+    let onChangeProduct = null;
+    const { state } = this.props.navigation;
+    // make sure we only pass a callback to the component if we have one for the screen
+    if (state.params && state.params.onChangeProduct) { onChangeProduct = this.handleOnChangeProduct; }
 
     return (
       <View style={styles.container}>
