@@ -46,16 +46,19 @@ class WalkInScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      services: [],
+      service: null,
+      provider: null,
       client: null,
+      isProviderRequested: false,
+      isFirstAvailable: false,
     };
   }
 
   componentWillMount() {
     const { newAppointment } = this.props.navigation.state.params;
     if (newAppointment) {
-      this.handleAddService(_, newAppointment.provider, newAppointment.service, false, true);
-      this.setState({ client: newAppointment.client })
+      const { client, provider, service } = newAppointment;
+      this.setState({ client, provider, service })
     }
     const { navigation } = this.props;
     // We can only set the function after the component has been initialized
@@ -82,41 +85,35 @@ class WalkInScreen extends Component {
   }
 
   handleWalkin = () => {
-    const { services, client } = this.state;
-    const service = services[0];
+    const {
+      service,
+      provider,
+      client,
+      isProviderRequested,
+      isFirstAvailable,
+    } = this.state;
     const params = {
       clientId: client.id,
       email: client.email,
       phone: client.phone,
-      isFirstAvailable: service.isFirstAvailable,
-      providerId: service.provider.id,
-      isProviderRequested: service.isProviderRequested,
+      isFirstAvailable,
+      providerId: provider.id,
+      isProviderRequested,
+      serviceId: service.id,
     };
     this.props.walkInActions.postWalkinClient(params);
   }
 
-  handleAddService= (_, provider = null, service = null, isFirstAvailable = false, isProviderRequested = false) => {
-    const newService = {
-      provider,
-      service,
-      isFirstAvailable,
-      isProviderRequested,
-    };
-    const { services } = this.state;
-    services.push(newService);
-    this.setState({ services });
+  handleUpdateService= (service) => {
+    this.setState({ service });
   }
 
-  handleRemoveService= (index) => {
-    const { services } = this.state;
-    services.splice(index, 1);
-    this.setState({ services });
+  handleUpdateProvider= (provider) => {
+    this.setState({ provider });
   }
 
-  handleUpdateService= (index, service) => {
-    const { services } = this.state;
-    services[index] = service;
-    this.setState({ services });
+  handleUpdateIsProviderRequested= () => {
+    this.setState({ isProviderRequested: !this.state.isProviderRequested });
   }
 
   render() {
@@ -135,11 +132,14 @@ class WalkInScreen extends Component {
         </InputGroup>
         <SectionTitle value="SERVICE AND PROVIDER" />
         <ServiceSection
-          services={this.state.services}
-          onAdd={this.handleAddService}
+          service={this.state.service}
+          provider={this.state.provider}
           navigate={this.props.navigation.navigate}
           onRemove={this.handleRemoveService}
-          onUpdate={this.handleUpdateService}
+          onUpdateService={this.handleUpdateService}
+          onUpdateProvider={this.handleUpdateProvider}
+          onUpdateIsProviderRequested={this.handleUpdateIsProviderRequested}
+          isProviderRequested={this.state.isProviderRequested}
         />
       </ScrollView>
     );

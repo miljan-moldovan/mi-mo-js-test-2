@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
-import { InputSwitch } from '../../../components/formHelpers';
+import { InputSwitch, InputDivider, InputGroup, InputButton } from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -51,14 +51,8 @@ const styles = StyleSheet.create({
     color: '#110A24',
     fontSize: 14,
   },
-  textSwitch: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-    marginLeft: 16,
-  },
   serviceRow: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderColor: '#C0C1C6',
@@ -98,48 +92,32 @@ const styles = StyleSheet.create({
 });
 
 class ServiceSection extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      service: null,
-      index: 0,
-      type: '',
-    };
+  handleProviderSelection = (newProvider) => {
+    this.props.onUpdateProvider(newProvider);
   }
 
-  handleSwitch = (service) => {
-    alert('Not implemented');
-  }
-
-  handleProviderSelection = (provider, service, index) => {
-    const newService = service;
-    newService.provider = provider;
-    this.props.onUpdate(index, newService);
-  }
-
-  handlePressProvider = (service, index) => {
+  handlePressProvider = () => {
     this.props.navigate('Providers', {
       actionType: 'update',
       dismissOnSelect: true,
-      onChangeProvider: provider => this.handleProviderSelection(provider, service, index),
+      onChangeProvider: this.handleProviderSelection,
     });
   }
 
-  handleServiceSelection = (data, service, index) => {
-    const newService = service;
-    newService.service = data;
-    this.props.onUpdate(index, newService);
+  handleServiceSelection = (newService) => {
+    this.props.onUpdateService(newService);
   }
 
-  handlePressService = (service, index) => {
+  handlePressService = () => {
     this.props.navigate('Services', {
       actionType: 'update',
       dismissOnSelect: true,
-      onChangeService: data => this.handleServiceSelection(data, service, index),
+      onChangeService: this.handleServiceSelection,
     });
   }
 
-  renderProvider = (provider) => {
+  renderProvider = () => {
+    const { provider } = this.props;
     if (provider) {
       return (
         <Text style={styles.textData}>{`${provider.name} ${provider.lastName}`}</Text>
@@ -150,7 +128,8 @@ class ServiceSection extends Component {
     );
   }
 
-  renderServiceInfo = (service) => {
+  renderService = () => {
+    const { service } = this.props;
     if (service) {
       return (
         <Text style={styles.textData}>{service.name}</Text>
@@ -161,49 +140,21 @@ class ServiceSection extends Component {
     );
   }
 
-  renderService = (service, index) => (
-    <View style={styles.serviceRow} key={index}>
-      <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => this.props.onRemove(index)}>
-          <View style={styles.row}>
-            <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
-            <Text style={styles.textLabel}>service</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.serviceDataContainer}>
-        <TouchableOpacity onPress={() => this.handlePressService(service, index)}>
-          <View style={styles.innerRow}>
-            {this.renderServiceInfo(service.service)}
-            <View style={styles.dataContainer}>
-              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
-          <View style={styles.innerRow}>
-            {this.renderProvider(service.provider)}
-            <View style={styles.dataContainer}>
-              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <InputSwitch textStyle={styles.textSwitch} onChange={this.handleSwitch} text="Provider is Requested?" value={service.isProviderRequested} />
-      </View>
-    </View>
-  )
-
   render() {
+    const { service, provider } = this.props;
     return (
-      <View style={styles.container}>
-        {this.props.services.map((service, index) => this.renderService(service, index))}
-        <TouchableOpacity onPress={this.props.onAdd}>
-          <View style={styles.addRow}>
-            <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
-            <Text style={styles.textLabel}>add Service</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      <InputGroup>
+        <InputButton label={this.renderService()} onPress={this.handlePressService} />
+        <InputDivider />
+        <InputButton label={this.renderProvider()} onPress={this.handlePressProvider} />
+        <InputDivider />
+        <InputSwitch
+          textStyle={styles.textLabel}
+          onChange={this.props.onUpdateIsProviderRequested}
+          text="Provider is Requested?"
+          value={this.props.isProviderRequested}
+        />
+      </InputGroup>
     );
   }
 }
