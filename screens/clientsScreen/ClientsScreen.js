@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   clientsList: {
     flex: 9,
-    backgroundColor: 'white',
+    backgroundColor: '#F8F8F8',
   },
   leftButton: {
     flex: 1,
@@ -155,7 +155,7 @@ class ClientsScreen extends React.Component {
 
     this.props.clientsActions.getClients().then((response) => {
       if (response.data.error) {
-        this.props.navigation.goBack();
+        // this.props.navigation.goBack();
       } else {
         const { clients } = response.data;
         this.props.clientsActions.setClients(clients);
