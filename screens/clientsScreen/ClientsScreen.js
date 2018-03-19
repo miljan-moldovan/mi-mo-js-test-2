@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
 
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params ? navigation.state.params.defaultProps : {};
-    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
+    const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
 
     const { leftButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
