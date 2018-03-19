@@ -6,62 +6,30 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginHorizontal: 22,
   },
-  headerContainer: {
-    overflow: 'hidden',
-    backgroundColor: '#115ECD',
-    height: 120,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   header: {
     backgroundColor: '#115ECD',
-    height: 65,
+    height: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 25,
-    paddingHorizontal: 10,
-    paddingBottom: 5,
-  },
-  topSearchBar: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  topSearchBarText: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 30,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-  },
-  filterBarContainer: {
-    backgroundColor: '#115ECD',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterBar: {
-    flex: 1,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 30,
+    paddingLeft: 16,
+    paddingRight: 20,
+    paddingBottom: 8,
   },
   titleText: {
     fontFamily: 'Roboto',
     color: '#fff',
     fontSize: 17,
-    fontWeight: '700',
+    paddingTop: 15,
+    paddingRight: 7,
   },
   subTitleText: {
     fontFamily: 'Roboto',
     color: '#fff',
     fontSize: 10,
+    paddingRight: 5,
+    paddingBottom: 3,
   },
   titleContainer: {
     flex: 2,
@@ -82,12 +50,14 @@ const styles = StyleSheet.create({
   leftButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
+    // marginLeft: 6,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   rightButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
+    //  marginRight: 10,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'center',
@@ -121,7 +91,7 @@ export default class AppointmentNoteHeader extends React.Component {
       </TouchableOpacity>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Rebook</Text>
-        <Text style={styles.subTitleText}>Jeffrey Arnold</Text>
+        <Text style={styles.subTitleText}>{this.props.rootProps.navigation.state.params.appointment.client.fullName}</Text>
       </View>
       <TouchableOpacity
         style={styles.rightButton}

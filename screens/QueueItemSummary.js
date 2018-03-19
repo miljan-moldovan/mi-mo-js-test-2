@@ -235,7 +235,7 @@ class QueueItemSummary extends Component {
             <Text style={styles.btnbottomText}>To Waiting</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+        <TouchableOpacity onPress={this.props.onPressSummary.rebook}>
           <View style={styles.btnGroup}>
             <View style={styles.btnBottom}>
               <Icon name="undo" size={16} color="#fff" type="solid" />

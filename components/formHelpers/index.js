@@ -418,40 +418,38 @@ export class PromotionInput extends React.Component {
 export class InputNumber extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      value: props.value,
-    };
   }
 
   handleSubstractPress = () => {
     const min = this.props.min ? this.props.min : 0;
-    if (this.state.value > min) {
-      this.setState({ value: this.state.value - 1 });
+    if (this.props.value > min) {
+      const value = this.props.value - 1;
+      this.props.onChange('subtract', value);
     }
   }
 
   handleAddPress = () => {
     if (this.props.max) {
-      if (this.state.value < this.props.max) {
-        this.setState({ value: this.state.value + 1 });
+      if (this.props.value < this.props.max) {
+        const value = this.props.value + 1;
+        this.props.onChange('add', value);
       }
     } else {
-      this.setState({ value: this.state.value + 1 });
+      const value = this.props.value + 1;
+      this.props.onChange('add', value);
     }
   }
 
   render() {
     return (
       <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
-        <Text style={[styles.labelText, this.props.textStyle]}>{this.state.value}  {this.state.value > 1 ? this.props.pluralText : this.props.singularText}</Text>
+        <Text style={[styles.labelText, this.props.textStyle]}>{this.props.value}  {this.props.value > 1 ? this.props.pluralText : this.props.singularText}</Text>
 
         <View style={[styles.inputNumber, this.props.inputNumberStyle]}>
           <TouchableOpacity
             style={[styles.inputNumberButton, {
               borderRightColor: '#1DBF12',
               borderRightWidth: 1,
-              borderRightRadius: 5,
             }]}
             onPress={this.handleSubstractPress}
           >

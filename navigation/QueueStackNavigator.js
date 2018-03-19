@@ -42,14 +42,6 @@ import RebookDialogScreen from './../screens/rebookDialogScreen';
 
 const QueueStackNavigator = StackNavigator(
   {
-    RebookDialog: {
-      screen: RebookDialogScreen,
-      navigationOptions: {
-        headerMode: 'none',
-        gesturesEnabled: false,
-        header: props => (<View />),
-      },
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -90,7 +82,14 @@ const QueueStackNavigator = StackNavigator(
         header: props => (<View />),
       },
     },
-
+    RebookDialog: {
+      screen: RebookDialogScreen,
+      navigationOptions: {
+        headerMode: 'none',
+        gesturesEnabled: false,
+        header: props => (<View />),
+      },
+    },
     NewAppointment: {
       screen: NewAppointmentScreen,
     },
