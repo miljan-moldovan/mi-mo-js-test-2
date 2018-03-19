@@ -80,7 +80,14 @@ const styles = StyleSheet.create({
 
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
+      title: 'Clients',
+      subTitle: null,
+      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+      rightButtonOnPress: () => { navigation.navigate('NewClientScreen'); },
+    };
     const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
 
     const { leftButton } = navigation.state.params &&
@@ -169,15 +176,6 @@ class ClientsScreen extends React.Component {
 
   state = {
     headerProps: {
-      title: 'Clients',
-      subTitle: null,
-      leftButtonOnPress: () => { this.props.navigation.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { this.props.navigation.navigate('NewClientScreen'); },
-    },
-
-    defaultHeaderProps: {
       title: 'Clients',
       subTitle: null,
       leftButtonOnPress: () => { this.props.navigation.goBack(); },

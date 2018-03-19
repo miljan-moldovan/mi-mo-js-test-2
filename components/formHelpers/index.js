@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   inputRow: {
+    flex: 1,
     height: 44,
     paddingRight: 16,
     alignSelf: 'stretch',
@@ -141,7 +142,7 @@ InputGroup.defaultProps = {
 
 export const InputButton = props => (
   <TouchableOpacity
-    style={[styles.inputRow, {justifyContent: 'center'}]}
+    style={[styles.inputRow, { justifyContent: 'center' }]}
     onPress={props.onPress}
   >
     { props.label && typeof props.label === 'string'
