@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   inputRow: {
-    height: 44,
+    height: 43,
     paddingRight: 16,
     alignSelf: 'stretch',
     flexDirection: 'row',
@@ -96,7 +96,7 @@ SectionTitle.propTypes = {
 };
 
 export const SectionDivider = props => (
-  <View style={[{ height: 35 }, props.style]} />
+  <View style={[{ height: 38 }, props.style]} />
 );
 
 
@@ -120,7 +120,7 @@ InputGroup.defaultProps = {
 
 export const InputButton = props => (
   <TouchableOpacity
-    style={[styles.inputRow, {justifyContent: 'center'}]}
+    style={[styles.inputRow, { justifyContent: 'center' }]}
     onPress={props.onPress}
   >
     { props.label && typeof props.label === 'string'

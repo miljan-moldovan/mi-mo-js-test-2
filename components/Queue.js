@@ -118,6 +118,7 @@ class Queue extends React.Component {
     // emulate refresh call
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
+
   getButtonsForItem = (item) => {
     const {
       noShow, returnLater, clientReturned, service, walkout, checkin,
@@ -264,7 +265,7 @@ class Queue extends React.Component {
     const groupLeaderName = this.getGroupLeaderName(item);
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = (`${firstService.employeeFirstName||''} ${firstService.employeeLastName||''}`).toUpperCase();
+    const employee = (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase();
     return (
       <TouchableOpacity
         style={styles.itemContainer}

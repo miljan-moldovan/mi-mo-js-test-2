@@ -403,6 +403,23 @@ export default class AppointmentDetails extends React.Component {
     });
   }
 
+  handleAddProduct = () => {
+    this.props.navigation.navigate('Product', {
+      client: this.state.appointment.client,
+      dismissOnSelect: true,
+      onChangeProduct: data => this.handleProductSelection(data),
+    });
+  }
+
+  handlePressProduct = (product) => {
+    this.props.navigation.navigate('Product', {
+      product,
+      client: this.state.appointment.client,
+      dismissOnSelect: true,
+      onChangeProduct: data => this.handleProductSelection(data),
+    });
+  }
+
   handleServiceSelection = (data) => {
     const { appointment } = this.state;
     appointment.services.push(data);
@@ -460,7 +477,7 @@ export default class AppointmentDetails extends React.Component {
             />
             <Text style={styles.titleText}>Products</Text>
             <ProductCard />
-            <AddButton onPress={() => alert('add prod')} title="Add Product" />
+            <AddButton onPress={this.handleAddProduct} title="Add Product" />
             <View style={{ alignSelf: 'stretch' }}>
               <InputButton
                 style={{
@@ -470,7 +487,9 @@ export default class AppointmentDetails extends React.Component {
                   borderBottomColor: '#C0C1C6',
                 }}
                 label="Recommendations"
-                onPress={() => alert('not implementeited')}
+                onPress={() => {
+                  this.props.navigation.navigate('Recommendations');
+                }}
               />
             </View>
             <View style={{

@@ -134,10 +134,12 @@ class ServicesScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    const { params } = this.props.navigation.state;
+
     this._renderItem = this._renderItem.bind(this);
 
     this.state = {
-      activeListItem: null,
+      activeListItem: 'selectedService' in params ? params.selectedService : null,
       activeData: null,
       storedData: null,
       parentList: null,

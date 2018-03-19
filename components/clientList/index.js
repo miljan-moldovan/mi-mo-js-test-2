@@ -118,7 +118,7 @@ class ClientList extends React.Component {
   static renderSection(item) {
     return (<View style={styles.topBar}>
       <ClientListHeader header={item.section.title} />
-            </View>);
+    </View>);
   }
 
 
@@ -135,29 +135,24 @@ class ClientList extends React.Component {
     };
   }
 
-    state:{
-      clients:[]
-    };
+  componentWillMount() {
+    this.setState({ letterGuide: this.renderLetterGuide() });
+  }
 
+  componentDidMount() {
+    const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
+    wait.then(() => {
+      this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
+    });
+  }
 
-    componentWillMount() {
-      this.setState({ letterGuide: this.renderLetterGuide() });
-    }
-
-    componentDidMount() {
-      const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
-      wait.then(() => {
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
-      });
-    }
-
-    componentWillReceiveProps(nextProps) {
-      const clients = nextProps.clients.sort(ClientList.compareByName);
-      this.setState({
-        dataSource: ClientList.clients(clients),
-        boldWords: nextProps.boldWords,
-      });
-    }
+  componentWillReceiveProps(nextProps) {
+    const clients = nextProps.clients.sort(ClientList.compareByName);
+    this.setState({
+      dataSource: ClientList.clients(clients),
+      boldWords: nextProps.boldWords,
+    });
+  }
 
       scrollToIndex = (section, letter) => {
         let total = 0;
@@ -219,7 +214,7 @@ class ClientList extends React.Component {
             onPress={() => { this.scrollToIndex((i), letter); }}
           >
             <View style={styles.letterContainer}>{letterComponent}</View>
-                           </TouchableHighlight>);
+          </TouchableHighlight>);
         }
 
         return (letterGuide);
@@ -251,7 +246,7 @@ class ClientList extends React.Component {
               </View>
               {<View style={styles.guideContainer}>
                 {this.state.letterGuide}
-               </View>}
+              </View>}
             </View>
           </View>
         );

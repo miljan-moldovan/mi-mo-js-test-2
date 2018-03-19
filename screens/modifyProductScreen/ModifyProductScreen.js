@@ -25,17 +25,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ModifyServiceScreen extends React.Component {
+export default class ModifyProductScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: 'service' in rootProps.navigation.state.params ?
-      'Add Service' : 'Modify Service',
+    headerTitle: rootProps.navigation.state.params.actionType === 'new' ?
+      'Add Product' : 'Modify Product',
   });
   constructor(props) {
     super(props);
-    const { params } = this.props.navigation.state;
 
     this.state = {
-      service: 'service' in params ? params.service : null,
       selectedService: null,
       selectedProvider: null,
     };
@@ -47,7 +45,6 @@ export default class ModifyServiceScreen extends React.Component {
         <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
             navigate={this.props.navigation.navigate}
-            selectedService={this.state.selectedService}
             onChange={(service) => {
               this.setState({ selectedService: service });
             }}
@@ -58,11 +55,6 @@ export default class ModifyServiceScreen extends React.Component {
             onChange={(provider) => {
               this.setState({ selectedProvider: provider });
             }}
-          />
-          <InputDivider />
-          <InputSwitch
-            onChange={value => alert(`Switched to ${value}`)}
-            text="Provider is requested?"
           />
         </InputGroup>
         <SectionDivider />
@@ -75,6 +67,7 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <InputLabel label="Discount" value="20%" />
+          <InputDivider />
           <InputLabel label="Price" value="$40" />
         </InputGroup>
         <SectionDivider />
@@ -84,7 +77,7 @@ export default class ModifyServiceScreen extends React.Component {
               fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
               }}
             >
-              Remove Service
+              Remove Product
             </Text>
           </TouchableOpacity>
         </InputGroup>

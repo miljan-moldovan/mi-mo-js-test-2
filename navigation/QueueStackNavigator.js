@@ -31,6 +31,8 @@ import HeaderLeftText from '../components/HeaderLeftText';
 
 // import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
+import ModifyProductScreen from '../screens/modifyProductScreen';
+import RecommendationsScreen from '../screens/recommendationsScreen';
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
@@ -110,6 +112,12 @@ const QueueStackNavigator = StackNavigator(
     },
     Service: {
       screen: ModifyServiceScreen,
+    },
+    Product: {
+      screen: ModifyProductScreen,
+    },
+    Recommendations: {
+      screen: RecommendationsScreen,
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
