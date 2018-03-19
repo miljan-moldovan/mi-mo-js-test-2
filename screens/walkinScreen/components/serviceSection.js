@@ -161,10 +161,6 @@ class ServiceSection extends Component {
 
 
 ServiceSection.propTypes = {
-  services: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onAdd: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
 };
 

@@ -65,7 +65,8 @@ class WalkInScreen extends Component {
     navigation.setParams({
       walkin: () => {
         this.handleWalkin();
-        navigation.navigate('Queue');
+        debugger
+        navigation.navigate('Main');
       },
     });
   }
@@ -116,6 +117,19 @@ class WalkInScreen extends Component {
     this.setState({ isProviderRequested: !this.state.isProviderRequested });
   }
 
+
+  handleUpdateClient= (client) => {
+    this.setState({ client });
+  }
+
+  handlePressClient = () => {
+    this.props.navigation.navigate('Clients', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeClient: this.handleClientSelection,
+    });
+  }
+
   render() {
     const fullName = this.getFullName();
     const email = this.state.client && this.state.client.email ? this.client.email : '';
@@ -124,7 +138,7 @@ class WalkInScreen extends Component {
       <ScrollView style={styles.container}>
         <SectionTitle value="CLIENT" />
         <InputGroup>
-          <InputButton label="Client" value={fullName} />
+          <InputButton label="Client" value={fullName} onPress={this.handlePressClient} />
           <InputDivider />
           <InputLabel label="Email" value={email} />
           <InputDivider />
