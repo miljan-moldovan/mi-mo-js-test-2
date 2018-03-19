@@ -51,9 +51,9 @@ function selectPromotion(promotion) {
   };
 }
 
-const postWalkinClientsSuccess = reasonTypes => ({
+const postWalkinClientsSuccess = appointment => ({
   type: POST_WALKIN_CLIENT_SUCCESS,
-  data: { reasonTypes },
+  data: { appointment },
 });
 
 const postWalkinClientFailed = error => ({

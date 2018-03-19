@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
+import SalonAvatar from '../../../components/SalonAvatar';
 import { InputSwitch, InputDivider, InputGroup, InputButton } from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
@@ -120,7 +121,16 @@ class ServiceSection extends Component {
     const { provider } = this.props;
     if (provider) {
       return (
-        <Text style={styles.textData}>{`${provider.name} ${provider.lastName}`}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <SalonAvatar
+            wrapperStyle={{ marginRight: 5 }}
+            width={26}
+            borderWidth={1}
+            borderColor="transparent"
+            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+          />
+          <Text style={styles.textData}>{`${provider.name} ${provider.lastName}`}</Text>
+        </View>
       );
     }
     return (

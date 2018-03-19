@@ -65,7 +65,6 @@ class WalkInScreen extends Component {
     navigation.setParams({
       walkin: () => {
         this.handleWalkin();
-        debugger
         navigation.navigate('Main');
       },
     });

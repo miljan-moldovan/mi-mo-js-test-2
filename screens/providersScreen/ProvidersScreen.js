@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     lineHeight: 22,
-    paddingTop: 14,
     fontFamily: 'Roboto-Medium',
     color: 'white',
   },
@@ -93,13 +92,13 @@ class ProviderScreen extends React.Component {
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
 
     const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
-      <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text>
-    </TouchableOpacity> };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text> };
     const { rightButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: null };
     const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: navigation.goBack };
+    navigation.state.params.headerProps && !ignoreNav
+    && navigation.state.params.headerProps.leftButtonOnPress
+      ? navigation.state.params.headerProps : { leftButtonOnPress: () => navigation.goBack() };
     const { rightButtonOnPress } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: null };
     const { title } = navigation.state.params &&
@@ -109,13 +108,15 @@ class ProviderScreen extends React.Component {
 
     return {
       headerTitle: (
-        <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.headerTitle}>{title}</Text>
           { subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null }
         </View>
       ),
       headerLeft: (
-        leftButton
+        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={leftButtonOnPress}>
+          { leftButton }
+        </TouchableOpacity>
       ),
       headerRight: (null),
       drawerLabel: props => (
