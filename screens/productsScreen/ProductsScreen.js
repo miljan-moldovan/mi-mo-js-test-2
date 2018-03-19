@@ -5,16 +5,14 @@ import {
   View,
   Text,
   TouchableOpacity,
-  RefreshControl,
-  ScrollView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import SalonSearchHeader from '../../components/SalonSearchHeader';
-import ServiceList from './components/serviceList';
-import CategoryServicesList from './components/categoryServicesList';
-import ServiceCategoryList from './components/serviceCategoryList';
+import ProductList from './components/productList';
+import CategoryProductsList from './components/categoryProductsList';
+import ProductCategoryList from './components/productCategoryList';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,12 +20,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     flexDirection: 'column',
   },
-  serviceListContainer: {
+  productListContainer: {
     flex: 1,
     backgroundColor: '#333',
     flexDirection: 'column',
   },
-  servicesList: {
+  productsList: {
     flex: 9,
     backgroundColor: 'white',
   },
@@ -53,7 +51,7 @@ const styles = StyleSheet.create({
 });
 
 
-class ServicesScreen extends React.Component {
+class ProductsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
@@ -87,7 +85,6 @@ class ServicesScreen extends React.Component {
     };
   };
 
-
   static flexFilter(list, info) {
     let matchesFilter = [];
     const matches = [];
@@ -113,18 +110,18 @@ class ServicesScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.getServices();
+    this.getProducts();
   }
 
-  getServices = (callback) => {
-    this.props.servicesActions.setShowCategoryServices(false);
-    this.props.servicesActions.getServices().then((response) => {
+  getProducts = (callback) => {
+    this.props.productsActions.setShowCategoryProducts(false);
+    this.props.productsActions.getProducts().then((response) => {
       if (response.data.error) {
         this.goBack();
       } else {
-        const services = response.data.services;
-        this.props.servicesActions.setServices(services);
-        this.props.servicesActions.setFilteredServices(services);
+        const products = response.data.products;
+        this.props.productsActions.setProducts(products);
+        this.props.productsActions.setFilteredProducts(products);
         if (callback) {
           callback();
         }
@@ -139,13 +136,13 @@ class ServicesScreen extends React.Component {
 
     },
     headerProps: {
-      title: 'Services',
+      title: 'Products',
       subTitle: null,
       leftButtonOnPress: () => { this.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
     },
     defaultHeaderProps: {
-      title: 'Services',
+      title: 'Products',
       subTitle: null,
       leftButtonOnPress: () => { this.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
@@ -153,43 +150,41 @@ class ServicesScreen extends React.Component {
   }
 
   componentWillMount() {
-    const selectedService = this.props.navigation.state.params ? this.props.navigation.state.params.selectedService : null;
-
-    this.props.servicesActions.setSelectedService(selectedService);
-
-    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false, selectedService });
+    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
+    const selectedProduct = this.props.navigation.state.params ? this.props.navigation.state.params.selectedProduct : null;
+    this.props.productsActions.setSelectedProduct(selectedProduct);
   }
 
   setHeaderData(props, ignoreNav = false) {
     this.setState({ prevHeaderProps: this.state.headerProps });
     this.props.navigation.setParams({ defaultProps: props, ignoreNav });
-
     this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
     this.setState({ headerProps: props });
   }
 
   goBack = () => {
-    if (this.props.servicesState.showCategoryServices) {
-      this.props.servicesActions.setFilteredServices(this.props.servicesState.services);
-      this.props.servicesActions.setShowCategoryServices(false);
+    if (this.props.productsState.showCategoryProducts) {
+      this.props.productsActions.setFilteredProducts(this.props.productsState.products);
+      this.props.productsActions.setShowCategoryProducts(false);
       this.setHeaderData(this.state.prevHeaderProps);
     } else {
       this.props.navigation.goBack();
     }
   }
 
-  handleOnChangeService = (service) => {
+  handleOnChangeProduct = (product) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeService) { onChangeService(service); }
+    const { onChangeProduct, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeProduct) { onChangeProduct(product); }
 
     if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
-  filterServices = (searchText) => {
-    const servicesCategories = JSON.parse(JSON.stringify(this.props.servicesState.services));
+
+  filterProducts = (searchText) => {
+    const productsCategories = JSON.parse(JSON.stringify(this.props.productsState.products));
 
     if (searchText && searchText.length > 0) {
       this.setHeaderData(this.state.headerProps);
@@ -200,18 +195,18 @@ class ServicesScreen extends React.Component {
 
       const filtered = [];
 
-      for (let i = 0; i < servicesCategories.length; i += 1) {
-        const servicesCategory = servicesCategories[i];
-        servicesCategory.services = ServicesScreen.flexFilter(servicesCategory.services, criteria);
-        if (servicesCategory.services.length > 0) {
-          filtered.push(servicesCategory);
+      for (let i = 0; i < productsCategories.length; i += 1) {
+        const productsCategory = productsCategories[i];
+        productsCategory.products = ProductsScreen.flexFilter(productsCategory.products, criteria);
+        if (productsCategory.products.length > 0) {
+          filtered.push(productsCategory);
         }
       }
 
-      this.props.servicesActions.setFilteredServices(filtered);
+      this.props.productsActions.setFilteredProducts(filtered);
     } else {
       this.setHeaderData(this.state.defaultHeaderProps);
-      this.props.servicesActions.setFilteredServices(servicesCategories);
+      this.props.productsActions.setFilteredProducts(productsCategories);
     }
 
     this.props.navigation.setParams({
@@ -221,16 +216,16 @@ class ServicesScreen extends React.Component {
 
   onPressItem = (item) => {
     this.props.salonSearchHeaderActions.setSearchText(item);
-    this.filterServices(item);
+    this.filterProducts(item);
     this.props.salonSearchHeaderActions.setShowFilter(false);
   }
 
   filterList = (searchText) => {
-    this.props.servicesActions.setShowCategoryServices(false);
-    this.filterServices(searchText);
+    this.props.productsActions.setShowCategoryProducts(false);
+    this.filterProducts(searchText);
   }
 
-  handlePressServiceCategory = (item) => {
+  handlePressProductCategory = (item) => {
     this.setHeaderData({
       title: item.name,
       subTitle: null,
@@ -244,71 +239,73 @@ class ServicesScreen extends React.Component {
     </FontAwesome>
   </TouchableOpacity>,
     }, true);
-    this.props.servicesActions.setShowCategoryServices(true);
-    this.props.servicesActions.setCategoryServices(item.services);
+    this.props.productsActions.setShowCategoryProducts(true);
+    this.props.productsActions.setCategoryProducts(item.products);
   }
 
   render() {
-    let onChangeService = null;
+    let onChangeProduct = null;
     const { state } = this.props.navigation;
     // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
+    if (state.params && state.params.onChangeProduct) { onChangeProduct = this.handleOnChangeProduct; }
 
     return (
       <View style={styles.container}>
-        <View style={styles.servicesList}>
-          { (!this.props.servicesState.showCategoryServices
+        <View style={styles.productsList}>
+          { (!this.props.productsState.showCategoryProducts
             && !this.props.salonSearchHeaderState.showFilter
-            && this.props.servicesState.filtered.length > 0) &&
-            <ServiceCategoryList
-              onRefresh={this.getServices}
-              handlePressServiceCategory={this.handlePressServiceCategory}
-              serviceCategories={this.props.servicesState.filtered}
+            && this.props.productsState.filtered.length > 0) &&
+            <ProductCategoryList
+              onRefresh={this.getProducts}
+              handlePressProductCategory={this.handlePressProductCategory}
+              productCategories={this.props.productsState.filtered}
             />
           }
 
-          { (!this.props.servicesState.showCategoryServices
+          { (!this.props.productsState.showCategoryProducts
             && this.props.salonSearchHeaderState.showFilter
-            && this.props.servicesState.filtered.length > 0) &&
-            <ServiceList
+            && this.props.productsState.filtered.length > 0) &&
+            <ProductList
               {...this.props}
-              onRefresh={this.getServices}
+              onRefresh={this.getProducts}
               boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.serviceListContainer}
-              services={this.props.servicesState.filtered}
-              onChangeService={onChangeService}
+              style={styles.productListContainer}
+              products={this.props.productsState.filtered}
+              onChangeProduct={onChangeProduct}
             />
           }
 
-          { (this.props.servicesState.showCategoryServices
-            && this.props.servicesState.filtered.length > 0) &&
-            <CategoryServicesList
+          { (this.props.productsState.showCategoryProducts
+            && this.props.productsState.filtered.length > 0) &&
+            <CategoryProductsList
               {...this.props}
-              onRefresh={this.getServices}
-              onChangeService={onChangeService}
-              categoryServices={this.props.servicesState.categoryServices}
+              onRefresh={this.getProducts}
+              onChangeProduct={onChangeProduct}
+              categoryProducts={this.props.productsState.categoryProducts}
             />
           }
+
         </View>
+
       </View>
     );
   }
 }
 
-ServicesScreen.propTypes = {
+ProductsScreen.propTypes = {
   navigation: PropTypes.shape({
     goBack: PropTypes.func,
     state: PropTypes.shape({
       params: PropTypes.shape({
-        onChangeService: PropTypes.func,
+        onChangeProduct: PropTypes.func,
         dismissOnSelect: PropTypes.bool,
       }),
     }),
   }),
 };
 
-ServicesScreen.defaultProps = {
+ProductsScreen.defaultProps = {
   navigation: null,
 };
 
-export default ServicesScreen;
+export default ProductsScreen;

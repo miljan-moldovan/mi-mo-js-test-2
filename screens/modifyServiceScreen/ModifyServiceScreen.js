@@ -35,9 +35,8 @@ export default class ModifyServiceScreen extends React.Component {
     const { params } = this.props.navigation.state;
 
     this.state = {
-      service: 'service' in params ? params.service : null,
-      selectedService: null,
-      selectedProvider: null,
+      selectedService: 'service' in params ? params.service : null,
+      selectedProvider: 'service' in params ? params.service.employeeId : null,
     };
   }
 
@@ -55,6 +54,7 @@ export default class ModifyServiceScreen extends React.Component {
           <InputDivider />
           <ProviderInput
             navigate={this.props.navigation.navigate}
+            selectedProvider={this.state.selectedProvider}
             onChange={(provider) => {
               this.setState({ selectedProvider: provider });
             }}

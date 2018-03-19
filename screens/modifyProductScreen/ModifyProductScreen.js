@@ -12,6 +12,7 @@ import {
   InputDivider,
   InputSwitch,
   ServiceInput,
+  ProductInput,
   ProviderInput,
   SectionDivider,
   PromotionInput,
@@ -34,7 +35,7 @@ export default class ModifyProductScreen extends React.Component {
     super(props);
 
     this.state = {
-      selectedService: null,
+      selectedProduct: null,
       selectedProvider: null,
     };
   }
@@ -43,10 +44,11 @@ export default class ModifyProductScreen extends React.Component {
     return (
       <View style={styles.container}>
         <InputGroup style={{ marginTop: 16 }}>
-          <ServiceInput
+          <ProductInput
             navigate={this.props.navigation.navigate}
-            onChange={(service) => {
-              this.setState({ selectedService: service });
+            selectedProduct={this.state.selectedProduct}
+            onChange={(product) => {
+              this.setState({ selectedProduct: product });
             }}
           />
           <InputDivider />

@@ -81,22 +81,55 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     color: '#727A8F',
   },
+  headerSubTitle: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
 });
 
 class ProviderScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={styles.headerTitle}>Providers</Text>
-      </View>
-    ),
-    headerLeft: (
-      <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
-        <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text>
-      </TouchableOpacity>
-    ),
-    headerRight: (null),
-  });
+  static navigationOptions = ({ navigation }) => {
+    const defaultProps = navigation.state.params ? navigation.state.params.defaultProps : {};
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
+
+    const { leftButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : {
+        leftButton: <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
+          <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text>
+        </TouchableOpacity>,
+      };
+    const { rightButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: null };
+    const { leftButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: navigation.goBack };
+    const { rightButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: null };
+    const { title } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: 'Providers' };
+    const { subTitle } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: '' };
+
+    return {
+      headerTitle: (
+        <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.headerTitle}>{title}</Text>
+          { subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null }
+        </View>
+      ),
+      headerLeft: (
+        leftButton
+      ),
+      headerRight: (null),
+      drawerLabel: props => (
+        <SideMenuItem
+          {...props}
+          title="Clients"
+          icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
+        />
+      ),
+    };
+  };
 
   static flexFilter(list, info) {
     let matchesFilter = [];
@@ -220,7 +253,7 @@ class ProviderScreen extends React.Component {
         />
         <WordHighlighter
           highlight={this.state.searchText}
-          style={styles.providerName}
+          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
           highlightStyle={{ color: '#1DBF12' }}
         >
           {item.fullName}

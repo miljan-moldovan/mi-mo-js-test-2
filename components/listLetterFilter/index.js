@@ -27,17 +27,15 @@ const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', '
 
 const keyExtractor = item => item;
 
-const renderItem = ({ item }) => (
-  <TouchableOpacity style={styles.rowItem}>
-    <Text style={styles.text}>{item}</Text>
-  </TouchableOpacity>
-);
+const renderItem = (elem, props) => (<TouchableOpacity style={styles.rowItem} onPress={() => { props.onPress(elem.item); }}>
+  <Text style={styles.text}>{elem.item}</Text>
+                                     </TouchableOpacity>);
 
 const listLetterFilter = props => (
   <FlatList
     style={styles.container}
     data={abecedary}
-    renderItem={renderItem}
+    renderItem={elem => renderItem(elem, props)}
     keyExtractor={keyExtractor}
     bounces={false}
   />

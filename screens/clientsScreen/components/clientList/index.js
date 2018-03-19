@@ -5,39 +5,28 @@ import { View,
   SectionList,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import ClientListItem from '../../components/clientList/clientListItem';
-import ClientListHeader from '../../components/clientList/clientListHeader';
+import ClientListItem from './clientListItem';
+import ClientListHeader from './clientListHeader';
+
+import ListLetterFilter from '../../../../components/listLetterFilter';
 
 const ITEM_HEIGHT = 60;
 const HEADER_HEIGHT = 30;
 
-const abecedary = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     backgroundColor: '#E7E7E7',
   },
-  clientList: {
-    backgroundColor: '#FFF',
-    flex: 10,
-  },
-  listContainer: {
-    flex: 9,
-    flexDirection: 'row',
-    height: '100%',
-  },
-  list: {
-    flex: 10,
-    backgroundColor: '#FFF',
-    height: '100%',
-  },
   guideContainer: {
-    flex: 1 / 2,
+    flex: 1,
+    height: '100%',
     flexDirection: 'column',
-    backgroundColor: '#EFEFEF',
+    backgroundColor: '#FFFFFF',
   },
   letterContainer: {
     backgroundColor: 'transparent',
@@ -89,15 +78,21 @@ class ClientList extends React.Component {
 
     for (let i = 0; i < clients.length; i += 1) {
       const client = clients[i];
+
+      let firstLetter = client.name.substring(0, 1).toUpperCase();
+      const isNumber = !isNaN(parseInt(firstLetter, 10));
+      firstLetter = isNumber ? '#' : firstLetter;
+
+
       const result = ClientList.getByValue(
         clientsLetters,
-        client.name.substring(0, 1).toUpperCase(), 'title',
+        firstLetter, 'title',
       );
 
       if (result) {
         result.data.push(client);
       } else {
-        clientsLetters.push({ data: [client], title: client.name.substring(0, 1).toUpperCase() });
+        clientsLetters.push({ data: [client], title: firstLetter });
       }
     }
 
@@ -118,7 +113,7 @@ class ClientList extends React.Component {
   static renderSection(item) {
     return (<View style={styles.topBar}>
       <ClientListHeader header={item.section.title} />
-    </View>);
+            </View>);
   }
 
 
@@ -154,8 +149,9 @@ class ClientList extends React.Component {
     });
   }
 
-      scrollToIndex = (section, letter) => {
+      scrollToIndex = (letter) => {
         let total = 0;
+        let found = false;
 
         for (let i = 0; i < abecedary.length; i += 1) {
           const letterClients = ClientList.getByValue(
@@ -165,6 +161,7 @@ class ClientList extends React.Component {
 
           if (letter.toUpperCase() === abecedary[i]) {
             total += HEADER_HEIGHT;
+            found = letterClients;
             break;
           }
 
@@ -174,8 +171,9 @@ class ClientList extends React.Component {
           }
         }
 
-
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        if (found) {
+          this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+        }
       }
 
       renderItem = obj => (
@@ -214,7 +212,7 @@ class ClientList extends React.Component {
             onPress={() => { this.scrollToIndex((i), letter); }}
           >
             <View style={styles.letterContainer}>{letterComponent}</View>
-          </TouchableHighlight>);
+                           </TouchableHighlight>);
         }
 
         return (letterGuide);
@@ -224,30 +222,24 @@ class ClientList extends React.Component {
         return (
           <View style={styles.container}>
 
-            <View style={styles.listContainer}>
-              <View style={styles.list}>
-                <SectionList
-                  key={Math.random().toString()}
-                  style={{ height: '100%', flex: 1 }}
-                  enableEmptySections
-                  keyboardShouldPersistTaps="always"
-                  initialNumToRender={this.state.dataSource.length}
-                  ref={(ref) => { this.sectionListRef = ref; }}
-                  sections={this.state.dataSource}
-                  renderItem={this.renderItem}
-                  stickySectionHeadersEnabled
-                  getItemLayout={(data, index) => (
-                    { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
-                  )}
-                  renderSectionHeader={item => ClientList.renderSection(item)}
-                  ItemSeparatorComponent={() => ClientList.renderSeparator()}
-
-                />
-              </View>
-              {<View style={styles.guideContainer}>
-                {this.state.letterGuide}
-              </View>}
-            </View>
+            <SectionList
+              key={Math.random().toString()}
+              enableEmptySections
+              keyboardShouldPersistTaps="always"
+              initialNumToRender={this.state.dataSource.length}
+              ref={(ref) => { this.sectionListRef = ref; }}
+              sections={this.state.dataSource}
+              renderItem={this.renderItem}
+              stickySectionHeadersEnabled
+              getItemLayout={(data, index) => (
+                  { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
+                )}
+              renderSectionHeader={item => ClientList.renderSection(item)}
+              ItemSeparatorComponent={() => ClientList.renderSeparator()}
+            />
+            <ListLetterFilter
+              onPress={(letter) => { this.scrollToIndex(letter); }}
+            />
           </View>
         );
       }

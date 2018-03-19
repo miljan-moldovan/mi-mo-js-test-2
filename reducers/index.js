@@ -14,6 +14,7 @@ import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux'
 import checkinReducer from './checkin';
 import serviceReducer from './service';
 import { providersReducer } from '../screens/providersScreen/redux';
+import productsReducer from './products';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -32,4 +33,5 @@ export default combineReducers({
   checkinReducer,
   serviceReducer,
   providersReducer,
+  productsReducer,
 });

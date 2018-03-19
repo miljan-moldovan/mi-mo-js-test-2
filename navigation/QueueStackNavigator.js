@@ -5,7 +5,6 @@ import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
-import SalonSearchBar from '../components/SalonSearchBar';
 
 import QueueScreen from './../screens/QueueScreen';
 import QueueCombineScreen from './../screens/QueueCombineScreen';
@@ -28,8 +27,8 @@ import WalkOutScreen from '../screens/walkOutScreen';
 
 import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
+import SalonSearchHeader from '../components/SalonSearchHeader';
 
-// import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
 import RecommendationsScreen from '../screens/recommendationsScreen';
@@ -39,7 +38,9 @@ import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/ap
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
 import AppointmentNoteScreen from './../screens/appointmentNote';
-import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
+
+import ProductsScreen from './../screens/productsScreen';
+
 
 const QueueStackNavigator = StackNavigator(
   {
@@ -48,6 +49,20 @@ const QueueStackNavigator = StackNavigator(
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    Products: {
+      screen: ProductsScreen,
+
+    },
+    Services: {
+      screen: ServicesScreen,
+
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+    },
+    Service: {
+      screen: ModifyServiceScreen,
     },
     Walkout: {
       screen: WalkOutScreen,
@@ -66,49 +81,11 @@ const QueueStackNavigator = StackNavigator(
     },
     AppointmentNote: {
       screen: AppointmentNoteScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
-        headerLeft: HeaderLateral({
-          key: Math.random().toString(),
-          ...rootProps,
-          handlePress: () => { rootProps.navigation.state.params.handleGoBack(); },
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          key: Math.random().toString(),
-          params: rootProps.navigation.state.params,
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
-            </View>
-          ),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-          />),
-      }),
+      navigationOptions: {
+        headerMode: 'none',
+        gesturesEnabled: false,
+        header: props => (<View />),
+      },
     },
     Service: {
       screen: ModifyServiceScreen,
@@ -135,7 +112,7 @@ const QueueStackNavigator = StackNavigator(
       screen: QueueCombineScreen,
     },
     ClientMerge: {
-      screen: ClientMergeScreen
+      screen: ClientMergeScreen,
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -145,12 +122,6 @@ const QueueStackNavigator = StackNavigator(
           ...rootProps,
           handlePress: () => rootProps.navigation.goBack(),
         }),
-      }),
-    },
-    Services: {
-      screen: ServicesScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
       }),
     },
     Providers: {
@@ -169,9 +140,6 @@ const QueueStackNavigator = StackNavigator(
     },
     Clients: {
       screen: ClientsScreen,
-      navigationOptions: rootProps => ({
-        header: props => (<View />),
-      }),
     },
     NewClient: {
       screen: NewClientScreen,

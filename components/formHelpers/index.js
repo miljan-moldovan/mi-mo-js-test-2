@@ -11,7 +11,7 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import SalonDateTxt from '../../components/SalonDateTxt';
+import SalonAvatar from '../../components/SalonAvatar';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
 
 const styles = StyleSheet.create({
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 43,
     color: '#110A24',
     fontFamily: 'Roboto-Medium',
   },
@@ -83,6 +83,12 @@ const styles = StyleSheet.create({
   dateCancelStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  providerRound: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    marginRight: 10,
   },
 });
 
@@ -125,7 +131,7 @@ export const InputButton = props => (
   >
     { props.label && typeof props.label === 'string'
     ? (
-      <Text style={styles.labelText}>{props.label}</Text>
+      <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
     ) : props.label }
     <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
       {
@@ -144,7 +150,8 @@ export const InputButton = props => (
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
-  style: View.propTypes.style,
+  style: ViewPropTypes.style,
+  labelStyle: Text.propTypes.style,
   label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
@@ -152,6 +159,7 @@ InputButton.propTypes = {
 };
 InputButton.defaultProps = {
   style: {},
+  labelStyle: {},
   label: false,
   value: false,
   noIcon: false,
@@ -234,7 +242,7 @@ export class InputDate extends React.Component {
             this.setState({ showModal: !this.state.showModal });
           }}
           noIcon
-          placeholder={this.props.placeholder}
+          label={this.props.placeholder}
           value={this.props.selectedDate}
         />
         <TouchableOpacity
@@ -280,7 +288,7 @@ export class ServiceInput extends React.Component {
     super(props);
 
     this.state = {
-      selectedService: null,
+      selectedService: 'selectedService' in this.props ? this.props.selectedService : null,
     };
   }
 
@@ -291,6 +299,7 @@ export class ServiceInput extends React.Component {
 
   handlePress = () => {
     this.props.navigate('Services', {
+      selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
       dismissOnSelect: true,
       onChangeService: service => this.handleServiceSelection(service),
@@ -298,7 +307,7 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    const value = this.state.selectedService ? this.state.selectedService.name : null;
+    const value = this.props.selectedService ? this.props.selectedService.serviceName : null;
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -320,16 +329,18 @@ export class ProviderInput extends React.Component {
 
     this.state = {
       selectedProvider: null,
+      selectedProviderId: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
 
   handleProviderSelection = (provider) => {
-    this.setState({ selectedProvider: provider });
+    this.setState({ selectedProvider: provider, selectedProviderId: provider.id });
     this.props.onChange(provider);
   }
 
   handlePress = () => {
     this.props.navigate('Providers', {
+      selectedProvider: this.state.selectedProviderId,
       actionType: 'update',
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
@@ -344,8 +355,19 @@ export class ProviderInput extends React.Component {
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Provider</Text>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          <Text style={[styles.inputText]}>{value}</Text>
+        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+          {value !== null && (
+            <View style={{ flexDirection: 'row' }}>
+              <SalonAvatar
+                wrapperStyle={styles.providerRound}
+                width={30}
+                borderWidth={1}
+                borderColor="transparent"
+                image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+              />
+              <Text style={[styles.inputText]}>{value}</Text>
+            </View>
+          )}
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
       </TouchableOpacity>
@@ -383,6 +405,45 @@ export class PromotionInput extends React.Component {
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Promotion</Text>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
+    );
+  }
+}
+
+export class ProductInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedProduct: 'selectedProduct' in this.props ? this.props.selectedProduct : null,
+    };
+  }
+
+  handleProductSelection = (product) => {
+    this.setState({ selectedProduct: product });
+    this.props.onChange(product);
+  }
+
+  handlePress = () => {
+    this.props.navigate('Products', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeProduct: product => this.handleProductSelection(product),
+    });
+  }
+
+  render() {
+    const value = this.state.selectedProduct ? this.state.selectedProduct.name : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, { justifyContent: 'center' }]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Product</Text>
         <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <Text style={[styles.inputText]}>{value}</Text>
         </View>

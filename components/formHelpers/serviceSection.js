@@ -46,6 +46,11 @@ const styles = StyleSheet.create({
     color: '#110A24',
     fontSize: 14,
   },
+  textLabel: {
+    fontFamily: 'Roboto',
+    color: '#110A24',
+    fontSize: 14,
+  },
   serviceRow: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -175,7 +180,7 @@ class ServiceSection extends Component {
         <TouchableOpacity onPress={() => this.props.onRemove(index)}>
           <View style={styles.row}>
             <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
-            <Text style={styles.textData}>service</Text>
+            <Text style={styles.textLabel}>service</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -223,7 +228,7 @@ class ServiceSection extends Component {
         <TouchableOpacity onPress={this.props.onAdd}>
           <View style={styles.addRow}>
             <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
-            <Text style={styles.textData}>add Service</Text>
+            <Text style={styles.textLabel}>add Service</Text>
           </View>
         </TouchableOpacity>
         <DateTimePicker
