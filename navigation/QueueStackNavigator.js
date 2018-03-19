@@ -120,32 +120,6 @@ const QueueStackNavigator = StackNavigator(
     },
     Providers: {
       screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLateral({
-          key: Math.random().toString(),
-          navigationParams: rootProps.navigation.state.params,
-          handlePress: () => { rootProps.navigation.goBack(); },
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
-            </View>
-          ),
-        }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-        header: props => (
-          <ImageHeader
-            {...props}
-          />),
-      }),
     },
     Promotions: {
       screen: PromotionsScreen,

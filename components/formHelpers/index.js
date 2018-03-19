@@ -141,12 +141,13 @@ InputGroup.defaultProps = {
 
 export const InputButton = props => (
   <TouchableOpacity
-    style={[styles.inputRow, props.style, { justifyContent: 'center' }]}
+    style={[styles.inputRow, {justifyContent: 'center'}]}
     onPress={props.onPress}
   >
-    { props.label && (
+    { props.label && typeof props.label === 'string'
+    ? (
       <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
-    )}
+    ) : props.label }
     <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
       {
         typeof props.value === 'string'
@@ -166,7 +167,7 @@ InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   style: ViewPropTypes.style,
   labelStyle: Text.propTypes.style,
-  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
+  label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,

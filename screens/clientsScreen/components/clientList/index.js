@@ -113,7 +113,7 @@ class ClientList extends React.Component {
   static renderSection(item) {
     return (<View style={styles.topBar}>
       <ClientListHeader header={item.section.title} />
-    </View>);
+            </View>);
   }
 
 
@@ -217,7 +217,7 @@ class ClientList extends React.Component {
             onPress={() => { this.scrollToIndex((i), letter); }}
           >
             <View style={styles.letterContainer}>{letterComponent}</View>
-          </TouchableHighlight>);
+                           </TouchableHighlight>);
         }
 
         return (letterGuide);

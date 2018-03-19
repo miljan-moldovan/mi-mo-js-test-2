@@ -1,6 +1,3 @@
-import apiConstants from '../apiConstants';
-
-
 const resources = {
   getReasonTypes: {
     path: 'QueueStatus/RemovalReasonTypes',
