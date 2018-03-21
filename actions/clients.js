@@ -21,7 +21,12 @@ const getClientsFailed = error => ({
 
 const getClients = () => (dispatch) => {
   dispatch({ type: GET_CLIENTS });
-  return apiWrapper.doRequest('getClients', {})
+  return apiWrapper.doRequest('getClients', {
+    query: {
+      fromAllStores: false,
+      'nameFilter.FilterRule': 'none',
+    },
+  })
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));
 };

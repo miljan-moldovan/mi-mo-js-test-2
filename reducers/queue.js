@@ -24,6 +24,7 @@ import {
   UNCOMBINE,
   UPDATE_GROUPS,
 } from '../actions/constants';
+import { POST_WALKIN_CLIENT_SUCCESS } from '../actions/walkIn';
 
 const initialState = {
   loading: false,
@@ -447,6 +448,12 @@ export default (state = initialState, action) => {
         waitingQueue: updatedWaitingItems,
         serviceQueue: updatedServiceItems
       };
+    case POST_WALKIN_CLIENT_SUCCESS:
+      updatedWaitingQueue = state.waitingQueue.push(data.appointment);
+      return {
+        ...state,
+        waitingQueue: updatedWaitingQueue,
+      }
     default:
       return state;
   }

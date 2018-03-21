@@ -1,18 +1,18 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import walkInActions from '../../actions/walkIn';
+import productsActions from '../../actions/products';
+import ProductsScreen from './ProductsScreen';
 import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
-import WalkInScreen from './components/WalkInScreen';
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
+  productsState: state.productsReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
 });
 
 const mapActionsToProps = dispatch => ({
-  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  productsActions: bindActionCreators({ ...productsActions }, dispatch),
   salonSearchHeaderActions: bindActionCreators({ ...salonSearchHeaderActions }, dispatch),
-
 });
 
-export default connect(mapStateToProps, mapActionsToProps)(WalkInScreen);
+export default connect(mapStateToProps, mapActionsToProps)(ProductsScreen);

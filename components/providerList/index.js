@@ -7,7 +7,7 @@ import { View,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import SalonAvatar from '../SalonAvatar';
-
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   itemSeparator: {
@@ -182,6 +182,10 @@ class ProviderList extends React.Component {
       }
       this.setState({ refresh: false });
     }
+    const image = apiWrapper.doRequest('getEmployeePhoto', { path: { id: provider.id } })
+      .then((pic) => {
+      debugger//eslint-disable-line
+      });
 
     return (
       <TouchableHighlight
@@ -223,7 +227,7 @@ class ProviderList extends React.Component {
               width={44}
               borderWidth={5}
               borderColor={isSelected ? '#66D7A2' : 'transparent'}
-              image={{ uri: provider.imagePath }}
+              image={{ uri: '' }}
             />
           </View>
           <View style={styles.providerData}>

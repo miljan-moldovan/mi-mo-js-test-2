@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import walkInActions from '../../actions/walkIn';
+import providersActions from './redux';
 import ProvidersScreen from './ProvidersScreen';
 
 const mapStateToProps = state => ({
-  walkInState: state.walkInReducer,
+  providersState: state.providersReducer,
 });
 
 const mapActionsToProps = dispatch => ({
-  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  providersActions: bindActionCreators({ ...providersActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(ProvidersScreen);

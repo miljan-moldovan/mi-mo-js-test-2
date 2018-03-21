@@ -15,6 +15,7 @@ import SideMenu from './../components/SideMenu';
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
 import appointmentNoteActions from '../actions/appointmentNotes';
+import salonSearchHeaderActions from './../components/SalonSearchHeader/redux';
 
 import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
@@ -56,10 +57,12 @@ const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
   appointmentNoteState: state.appointmentNoteReducer,
+  salonSearchHeaderState: state.salonSearchHeaderReducer,
 });
 const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
+  salonSearchHeaderActions: bindActionCreators({ ...salonSearchHeaderActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);
