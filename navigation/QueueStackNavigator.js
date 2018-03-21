@@ -36,11 +36,11 @@ import RecommendationsScreen from '../screens/recommendationsScreen';
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
-import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import NewAppointmentScreen from '../screens/NewAppointmentScreen';
 import AppointmentNoteScreen from './../screens/appointmentNote';
 
 import ProductsScreen from './../screens/productsScreen';
-
+import RebookDialogScreen from './../screens/rebookDialogScreen';
 
 const QueueStackNavigator = StackNavigator(
   {
@@ -61,9 +61,9 @@ const QueueStackNavigator = StackNavigator(
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
     },
-    Service: {
-      screen: ModifyServiceScreen,
-    },
+    // Service: {
+    //   screen: ModifyServiceScreen,
+    // },
     Walkout: {
       screen: WalkOutScreen,
       navigationOptions: {
@@ -95,6 +95,14 @@ const QueueStackNavigator = StackNavigator(
     },
     Recommendations: {
       screen: RecommendationsScreen,
+    },
+    RebookDialog: {
+      screen: RebookDialogScreen,
+      navigationOptions: {
+        headerMode: 'none',
+        gesturesEnabled: false,
+        header: props => (<View />),
+      },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,

@@ -55,7 +55,12 @@ const styles = StyleSheet.create({
 
 class ServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
+      title: 'Services',
+      subTitle: null,
+      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    };
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
 
     const { leftButton } = navigation.state.params &&

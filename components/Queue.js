@@ -106,6 +106,7 @@ class Queue extends React.Component {
 
   handlePressSummary = {
     checkIn: () => alert('Not Implemented'),
+    rebook: () => this.handlePressRebook(),
     walkOut: () => alert('Not Implemented'),
     modify: () => this.handlePressModify(),
     returning: () => alert('Not Implemented'),
@@ -248,9 +249,21 @@ class Queue extends React.Component {
     }
   }
 
+  handlePressRebook = () => {
+    const { appointment } = this.state;
+    this.hideDialog();
+    if (appointment !== null) {
+      this.props.navigation.navigate('RebookDialog', {
+        appointment,
+        ...this.props,
+      });
+    }
+  }
+
   hideDialog = () => {
     this.setState({ isVisible: false });
   }
+
   getGroupLeaderName = (item: QueueItem) => {
     const { groups } = this.props;
     if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
