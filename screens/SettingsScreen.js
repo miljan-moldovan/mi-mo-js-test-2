@@ -89,7 +89,7 @@ export default class SettingsScreen extends React.Component {
           </Item>
           <View style={{flexDirection: 'row'}}>
             <Button rounded bordered onPress={ this.saveSettings } style={{padding: 20, marginTop: 20, marginRight: 20}}><Text>Save</Text></Button>
-            <Button rounded bordered onPress={ this.clearSettings } style={{padding: 20, marginTop: 20}}><Text>Clear</Text></Button>            
+            <Button rounded bordered onPress={ this.clearSettings } style={{padding: 20, marginTop: 20}}><Text>Clear</Text></Button>
           </View>
 
         </KeyboardAvoidingView>

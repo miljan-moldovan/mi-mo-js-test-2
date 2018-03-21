@@ -293,7 +293,7 @@ class Queue extends React.Component {
           <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
             {serviceName}
             {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
-            <Text style={{ color: '#727A8F' }}>with</Text> {employee}
+            <Text style={{ color: '#727A8F' }}> with</Text> {employee}
           </Text>
           <Text style={styles.serviceTimeContainer}>
             <Icon name="clockO" style={styles.serviceClockIcon} />

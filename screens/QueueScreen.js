@@ -23,8 +23,8 @@ import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-// import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import * as actions from '../actions/queue.js';
 import * as settingsActions from '../actions/settings.js';
 import checkinActions from '../actions/checkin';
@@ -210,7 +210,7 @@ class QueueScreen extends React.Component {
     console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <ScrollView style={{ marginTop: 40 }}>
+        <KeyboardAwareScrollView style={{marginTop: 40}}>
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
@@ -237,7 +237,7 @@ class QueueScreen extends React.Component {
             headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
             {...p}
           />
-        </ScrollView>
+        </KeyboardAwareScrollView>
         <View style={styles.searchTypeContainer}>
           {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
           <View style={styles.searchType}>
@@ -673,9 +673,13 @@ const styles = StyleSheet.create({
   },
   searchType: {
     marginHorizontal: 16,
-    marginVertical: 10,
+    marginTop: 7,
+    marginBottom: 9,
     height: 27,
     flexDirection: 'row',
+    borderRadius: 4,
+    borderColor: 'white',
+    borderWidth: 1,
   },
   searchTypeText: {
     fontSize: 13,
@@ -684,19 +688,19 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   searchClient: {
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-    borderColor: 'white',
-    borderWidth: 1,
+    borderTopLeftRadius: 2,
+    borderBottomLeftRadius: 2,
+    borderColor: 'transparent',
+    borderWidth: 2,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   searchProvider: {
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
-    borderColor: 'white',
-    borderWidth: 1,
+    borderTopRightRadius: 2,
+    borderBottomRightRadius: 2,
+    borderColor: 'transparent',
+    borderWidth: 2,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
