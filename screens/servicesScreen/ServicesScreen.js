@@ -1,211 +1,113 @@
+// @flow
 import React from 'react';
 import {
-  Image,
   StyleSheet,
+  View,
   Text,
   TouchableOpacity,
-  View,
-  FlatList,
+  RefreshControl,
+  ScrollView,
 } from 'react-native';
-import SideMenuItem from '../../components/SideMenuItem';
+import PropTypes from 'prop-types';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-const services = require('../../mockData/services.json');
+import SalonSearchHeader from '../../components/SalonSearchHeader';
+import ServiceList from './components/serviceList';
+import CategoryServicesList from './components/categoryServicesList';
+import ServiceCategoryList from './components/serviceCategoryList';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#333',
+    flexDirection: 'column',
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+  serviceListContainer: {
+    flex: 1,
+    backgroundColor: '#333',
+    flexDirection: 'column',
   },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-
+  servicesList: {
+    flex: 9,
+    backgroundColor: 'white',
   },
-  title: {
-    color: 'white',
-    fontSize: 20,
-    fontFamily: 'OpenSans-SemiBold',
-    // padding: 20,
-    marginTop: 20,
-    marginBottom: 4,
-    alignSelf: 'center',
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
-  titleContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  backIcon: {
+    fontSize: 30,
+    marginLeft: 10,
+    textAlign: 'left',
+    color: '#FFFFFF',
   },
-  subTitle: {
-    color: '#ffffff',
-    fontSize: 12,
-
-  },
-  seachBar: {
-    flexDirection: 'row',
-    flex: 4,
-    marginHorizontal: 10,
-    marginVertical: 5,
-    alignItems: 'center',
-  },
-  loginButton: {
-    width: 250,
-    height: 65,
-    marginTop: 17,
-    marginBottom: 18,
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    borderColor: 'white',
-    alignItems: 'center',
-  },
-  loginButtonText: {
-    color: 'rgba(48,120,164,1)',
-    fontSize: 18,
-    fontFamily: 'OpenSans-Regular',
-    textAlign: 'center',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    letterSpacing: 2,
-  },
-  listContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  listItemInactive: {
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(29,29,38,.2)',
-  },
-  listItemActive: {
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    backgroundColor: 'rgba(29,29,38,.03)',
-    borderLeftWidth: 6,
-    borderLeftColor: '#00B782',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(29,29,38,.2)',
-  },
-  listText: {
-    fontSize: 18,
-    color: '#242424',
-  },
-  durationText: {
-    fontSize: 12,
-    color: '#3D3C3B',
-    opacity: 0.5,
-  },
-  caretIcon: {
-    height: 12,
-    width: 6,
-    alignSelf: 'flex-end',
-  },
-  sectionNavigate: {
-    height: 50,
-    alignSelf: 'stretch',
-    padding: 10,
-    borderBottomWidth: 3,
-    backgroundColor: '#F3F3F4',
-    borderBottomColor: 'rgba(5,5,5,.1)',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'right',
   },
 });
 
 
 class ServicesScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Services"
-        icon={require('../../assets/images/sidemenu/icon_sales_menu.png')}
-      />
-    ),
+  static navigationOptions = ({ navigation }) => {
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
+      title: 'Services',
+      subTitle: null,
+      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    };
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
+
+    const { leftButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+    const { rightButton } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+    const { leftButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+    const { rightButtonOnPress } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+    const { title } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+    const { subTitle } = navigation.state.params &&
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+
+    return {
+      header: props => (<SalonSearchHeader
+        title={title}
+        subTitle={subTitle}
+        leftButton={leftButton}
+        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+        rightButton={rightButton}
+        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+        hasFilter={false}
+        containerStyle={{
+          paddingHorizontal: 20,
+        }}
+      />),
+    };
   };
 
-  constructor(props) {
-    super(props);
 
-    this._renderItem = this._renderItem.bind(this);
+  static flexFilter(list, info) {
+    let matchesFilter = [];
+    const matches = [];
 
-    this.state = {
-      activeListItem: null,
-      activeData: null,
-      storedData: null,
-      parentList: null,
-    };
-  }
-
-  componentWillMount() {
-    this.setState({ activeData: services });
-  }
-
-  mapData(data, parent = false) {
-    return data.map((item) => {
-      const mapped = {
-        data: item,
-        key: item.id,
-      };
-
-      for (key in item) {
-        if (typeof item[key] === 'object') {
-          mapped.data.children = this.mapData(item[key]);
-        }
-      }
-
-      return mapped;
-    });
-  }
-
-  hasMappedChildren(data) {
-    for (key in data) {
-      if (typeof data[key] === 'object') {
-        if (typeof data[key].data !== undefined && typeof data[key].key !== undefined) { return true; }
-      }
-    }
-
-    return false;
-  }
-
-  _filterServices(searchText) {
-    if (searchText.length === 0) {
-      this.setState({ activeData: this.state.storedData, storedData: null, searchText });
-    } else {
-      const criteria = [
-        { Field: 'name', Values: [searchText.toLowerCase()] },
-      ];
-
-      const toStore = this.state.storedData === null ? this.state.activeData : this.state.storedData;
-
-      const filtered = this.flexFilter(toStore, criteria);
-
-      this.setState({ storedData: toStore, searchText, activeData: filtered });
-    }
-  }
-
-  flexFilter(list, info) {
-    let matchesFilter,
-      matches = [];
-
-    matchesFilter = function (item) {
+    matchesFilter = function match(item) {
       let count = 0;
-      for (let n = 0; n < info.length; n++) {
-        if (item.data[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
-          count++;
+      for (let n = 0; n < info.length; n += 1) {
+        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+          count += 1;
         }
       }
       return count > 0;
     };
 
-    for (let i = 0; i < list.length; i++) {
+    for (let i = 0; i < list.length; i += 1) {
       if (matchesFilter(list[i])) {
         matches.push(list[i]);
       }
@@ -214,121 +116,204 @@ class ServicesScreen extends React.Component {
     return matches;
   }
 
-  _handleOnChangeService = (service) => {
-    console.log('service', service);
+  constructor(props) {
+    super(props);
+    this.getServices();
+  }
+
+  getServices = (callback) => {
+    this.props.servicesActions.setShowCategoryServices(false);
+    this.props.servicesActions.getServices().then((response) => {
+      if (response.data.error) {
+        this.goBack();
+      } else {
+        const services = response.data.services;
+        this.props.servicesActions.setServices(services);
+        this.props.servicesActions.setFilteredServices(services);
+        if (callback) {
+          callback();
+        }
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  state = {
+    prevHeaderProps: {
+
+    },
+    headerProps: {
+      title: 'Services',
+      subTitle: null,
+      leftButtonOnPress: () => { this.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    },
+    defaultHeaderProps: {
+      title: 'Services',
+      subTitle: null,
+      leftButtonOnPress: () => { this.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    },
+  }
+
+  componentWillMount() {
+    const selectedService = this.props.navigation.state.params ? this.props.navigation.state.params.selectedService : null;
+
+    this.props.servicesActions.setSelectedService(selectedService);
+
+    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false, selectedService });
+  }
+
+  setHeaderData(props, ignoreNav = false) {
+    this.setState({ prevHeaderProps: this.state.headerProps });
+    this.props.navigation.setParams({ defaultProps: props, ignoreNav });
+
+    this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
+    this.setState({ headerProps: props });
+  }
+
+  goBack = () => {
+    if (this.props.servicesState.showCategoryServices) {
+      this.props.servicesActions.setFilteredServices(this.props.servicesState.services);
+      this.props.servicesActions.setShowCategoryServices(false);
+      this.setHeaderData(this.state.prevHeaderProps);
+    } else {
+      this.props.navigation.goBack();
+    }
+  }
+
+  handleOnChangeService = (service) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
     const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
-    if (onChangeService)
-      {onChangeService(service);}
-    if (dismissOnSelect)
-      {this.props.navigation.goBack();}
+    if (this.props.navigation.state.params && onChangeService) { onChangeService(service); }
+
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
-  _renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={item.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
-      onPress={() => {
-        const { navigate } = this.props.navigation;
-        const { params } = this.props.navigation.state;
-        if (this.hasMappedChildren(item)) {
-          this.setState({
-            prevData: this.state.activeData,
-            activeData: item.services,
-            parentList: item,
-          });
+  filterServices = (searchText) => {
+    const servicesCategories = JSON.parse(JSON.stringify(this.props.servicesState.services));
 
-          this.props.walkInActions.setCurrentStep(2);
-        } else if (params && params.onChangeService) {
-            this._handleOnChangeService(item);
-          } else {
-            this.props.walkInActions.selectService(item);
-            if(params !== undefined && params.actionType === 'update') {
-              navigate('WalkIn');
-            } else {
-              this.props.walkInActions.setCurrentStep(3);
-              navigate('Providers');
-            }
-          }
-        this.setState({ activeListItem: item.id });
-      }}
-      key={index}
-      underlayColor="#ffffff"
-      activeOpacity={2}
-    >
-      <View>
-        <View style={{
-          flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
-          }}
-        >
-          <View style={{ flex: 1, flexDirection: 'column' }}>
-            <Text style={item.id === this.state.activeListItem ? [styles.listText, { fontFamily: 'OpenSans-Bold' }] : styles.listText}>{item.name}</Text>
-            { item.duration !== undefined && <Text style={styles.durationText}>{item.duration}m</Text>}
-          </View>
-          { item.services !== undefined ? (
-            <Image style={styles.caretIcon} source={require('../../assets/images/icons/icon_caret_right.png')} />
-            ) : null }
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+    if (searchText && searchText.length > 0) {
+      this.setHeaderData(this.state.headerProps);
 
-  renderList() {
-    if (this.state.parentList !== null) {
-      return (
-        <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: 'white' }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                prevData: this.state.activeData,
-                activeData: this.state.prevData,
-                parentList: null,
-              });
-            }}
-            underlayColor="#ffffff"
-            activeOpacity={2}
-          >
-            <View style={styles.sectionNavigate}>
-              <View style={{
-                flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
-                }}
-              >
-                <Image style={[styles.caretIcon, { alignSelf: 'center', marginRight: 5 }]} source={require('../../assets/images/icons/icon_caret_left.png')} />
-                <Text style={{
-                  fontFamily: 'OpenSans-SemiBold', fontSize: 13, alignSelf: 'center', lineHeight: 25,
-                  }}
-                >{this.state.parentList.name.toUpperCase()}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <FlatList
-            style={{ flex: 1, alignSelf: 'stretch', backgroundColor: 'white' }}
-            data={this.state.activeData}
-            renderItem={this._renderItem}
-            // keyExtractor={this._keyExtractor}
-          />
-        </View>
-      );
+      const criteria = [
+        { Field: 'name', Values: [searchText.toLowerCase()] },
+      ];
+
+      const filtered = [];
+
+      for (let i = 0; i < servicesCategories.length; i += 1) {
+        const servicesCategory = servicesCategories[i];
+        servicesCategory.services = ServicesScreen.flexFilter(servicesCategory.services, criteria);
+        if (servicesCategory.services.length > 0) {
+          filtered.push(servicesCategory);
+        }
+      }
+
+      this.props.servicesActions.setFilteredServices(filtered);
+    } else {
+      this.setHeaderData(this.state.defaultHeaderProps);
+      this.props.servicesActions.setFilteredServices(servicesCategories);
     }
-    return (
-      <FlatList
-        style={{ flex: 1, alignSelf: 'stretch', backgroundColor: 'white' }}
-        data={this.state.activeData}
-        renderItem={this._renderItem}
-      />
-    );
+
+    this.props.navigation.setParams({
+      searchText: this.props.salonSearchHeaderState.searchText,
+    });
+  }
+
+  onPressItem = (item) => {
+    this.props.salonSearchHeaderActions.setSearchText(item);
+    this.filterServices(item);
+    this.props.salonSearchHeaderActions.setShowFilter(false);
+  }
+
+  filterList = (searchText) => {
+    this.props.servicesActions.setShowCategoryServices(false);
+    this.filterServices(searchText);
+  }
+
+  handlePressServiceCategory = (item) => {
+    this.setHeaderData({
+      title: item.name,
+      subTitle: null,
+      leftButton:
+  <TouchableOpacity
+    style={{ flex: 1 }}
+    onPress={() => { this.goBack(); }}
+  >
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+  </TouchableOpacity>,
+    }, true);
+    this.props.servicesActions.setShowCategoryServices(true);
+    this.props.servicesActions.setCategoryServices(item.services);
   }
 
   render() {
+    let onChangeService = null;
+    const { state } = this.props.navigation;
+    // make sure we only pass a callback to the component if we have one for the screen
+    if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
+
     return (
       <View style={styles.container}>
-        <View style={styles.listContainer}>
-          {this.renderList()}
+        <View style={styles.servicesList}>
+          { (!this.props.servicesState.showCategoryServices
+            && !this.props.salonSearchHeaderState.showFilter
+            && this.props.servicesState.filtered.length > 0) &&
+            <ServiceCategoryList
+              onRefresh={this.getServices}
+              handlePressServiceCategory={this.handlePressServiceCategory}
+              serviceCategories={this.props.servicesState.filtered}
+            />
+          }
+
+          { (!this.props.servicesState.showCategoryServices
+            && this.props.salonSearchHeaderState.showFilter
+            && this.props.servicesState.filtered.length > 0) &&
+            <ServiceList
+              {...this.props}
+              onRefresh={this.getServices}
+              boldWords={this.props.salonSearchHeaderState.searchText}
+              style={styles.serviceListContainer}
+              services={this.props.servicesState.filtered}
+              onChangeService={onChangeService}
+            />
+          }
+
+          { (this.props.servicesState.showCategoryServices
+            && this.props.servicesState.filtered.length > 0) &&
+            <CategoryServicesList
+              {...this.props}
+              onRefresh={this.getServices}
+              onChangeService={onChangeService}
+              categoryServices={this.props.servicesState.categoryServices}
+            />
+          }
         </View>
       </View>
     );
   }
 }
+
+ServicesScreen.propTypes = {
+  navigation: PropTypes.shape({
+    goBack: PropTypes.func,
+    state: PropTypes.shape({
+      params: PropTypes.shape({
+        onChangeService: PropTypes.func,
+        dismissOnSelect: PropTypes.bool,
+      }),
+    }),
+  }),
+};
+
+ServicesScreen.defaultProps = {
+  navigation: null,
+};
+
 export default ServicesScreen;

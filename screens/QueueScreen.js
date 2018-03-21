@@ -79,6 +79,11 @@ class QueueScreen extends React.Component {
       { key: WAITING, title: 'Waiting' },
       { key: SERVICED, title: 'In Service' },
     ],
+    newAppointment: {
+      service: null,
+      client: null,
+      provider: null,
+    }
   }
   searchWaitingRef = null;
   searchServicingRef = null;
@@ -261,8 +266,82 @@ class QueueScreen extends React.Component {
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
-    this.props.walkInActions.setEstimatedTime(17);
-    navigate('WalkIn');
+    //this.props.walkInActions.setEstimatedTime(17);
+    //navigate('WalkIn');
+    this.setState({ newAppointment: {
+      client: null,
+      service: null,
+      provider: null,
+    }});
+    navigate('Clients', {
+      onChangeClient: this.handleChangeClient,
+      headerProps: {
+        title: 'Walking',
+        subTitle: 'step 1 of 3',
+        leftButton:
+        <View style={styles.backContainer}>
+          <FontAwesome style={styles.backIcon}>
+            {Icons.angleLeft}
+          </FontAwesome>
+          <Text style={styles.leftButtonText}>
+            Back
+          </Text>
+        </View>,
+        leftButtonOnPress: (navigation) => { navigation.goBack(); },
+      },
+    });
+  }
+
+  handleChangeClient = (client) => {
+    const { newAppointment } = this.state;
+    newAppointment.client = client;
+    this.setState({ newAppointment });
+    this.props.navigation.navigate('Services', {
+      onChangeService: this.handleChangeService,
+      headerProps: {
+        title: 'Walking',
+        subTitle: 'step 2 of 3',
+        leftButton:
+        <View style={styles.backContainer}>
+          <FontAwesome style={styles.backIcon}>
+            {Icons.angleLeft}
+          </FontAwesome>
+          <Text style={styles.leftButtonText}>
+            Back
+          </Text>
+        </View>,
+        leftButtonOnPress: (navigation) => { navigation.goBack(); },
+      },
+    });
+  }
+
+  handleChangeProvider = (provider) => {
+    const { newAppointment } = this.state;
+    newAppointment.provider = provider;
+    this.setState({ newAppointment });
+    this.props.navigation.navigate('WalkIn', { newAppointment });
+  }
+
+  handleChangeService = (service) => {
+    const { newAppointment } = this.state;
+    newAppointment.service = service;
+    this.setState({ newAppointment });
+    this.props.navigation.navigate('Providers', {
+      onChangeProvider: this.handleChangeProvider,
+      headerProps: {
+        title: 'Walking',
+        subTitle: 'step 3 of 3',
+        leftButton:
+        <View style={styles.backContainer}>
+          <FontAwesome style={styles.backIcon}>
+            {Icons.angleLeft}
+          </FontAwesome>
+          <Text style={styles.leftButtonText}>
+            Back
+          </Text>
+        </View>,
+      },
+    });
   }
 
   _handleWalkOutPress = () => {
@@ -656,5 +735,19 @@ const styles = StyleSheet.create({
     borderColor: '#E3E4E5',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  leftButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+  },
+  backIcon: {
+    fontSize: 30,
+    color: '#fff',
+    marginRight: 8,
+  },
+  backContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });

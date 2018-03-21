@@ -106,6 +106,7 @@ class Queue extends React.Component {
 
   handlePressSummary = {
     checkIn: () => alert('Not Implemented'),
+    rebook: () => this.handlePressRebook(),
     walkOut: () => alert('Not Implemented'),
     modify: () => this.handlePressModify(),
     returning: () => alert('Not Implemented'),
@@ -247,9 +248,21 @@ class Queue extends React.Component {
     }
   }
 
+  handlePressRebook = () => {
+    const { appointment } = this.state;
+    this.hideDialog();
+    if (appointment !== null) {
+      this.props.navigation.navigate('RebookDialog', {
+        appointment,
+        ...this.props,
+      });
+    }
+  }
+
   hideDialog = () => {
     this.setState({ isVisible: false });
   }
+
   getGroupLeaderName = (item: QueueItem) => {
     const { groups } = this.props;
     if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
@@ -264,7 +277,7 @@ class Queue extends React.Component {
     const groupLeaderName = this.getGroupLeaderName(item);
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = ((firstService.employeeFirstName||'')+' '+(firstService.employeeLastName||'')).toUpperCase();
+    const employee = (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase();
     return (
       <TouchableOpacity
         style={styles.itemContainer}
@@ -369,6 +382,7 @@ class Queue extends React.Component {
           onPressSummary={this.handlePressSummary}
           isWaiting={this.props.isWaiting}
           isCheckedIn={this.state.appointment ? this.state.appointment.checkedIn : false}
+          hide={this.hideDialog}
         />
         {this.renderNotification()}
       </View>

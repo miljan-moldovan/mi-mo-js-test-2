@@ -84,13 +84,13 @@ export default class AppointmentFormula extends React.Component {
                 onChangeClient: this.handleClientSelection,
               });
             }}
-            placeholder="Entered by"
+            label="Entered by"
             value="Your Cousin"
           />
           <InputDivider />
           <InputButton
             onPress={() => {}}
-            placeholder="Type"
+            label="Type"
             value="Nail"
           />
           <InputDivider />
@@ -102,7 +102,7 @@ export default class AppointmentFormula extends React.Component {
         <InputGroup>
           <InputButton
             onPress={() => {}}
-            placeholder="Associated appt."
+            label="Associated appt."
           />
           <InputDivider />
           <InputDate
@@ -117,7 +117,7 @@ export default class AppointmentFormula extends React.Component {
           <InputDivider />
           <InputButton
             onPress={() => {}}
-            placeholder="Provider"
+            label="Provider"
             value="BJ Penn"
           />
         </InputGroup>
@@ -125,7 +125,7 @@ export default class AppointmentFormula extends React.Component {
         <InputGroup>
           <InputButton
             onPress={() => {}}
-            placeholder="Copy formula to"
+            label="Copy formula to"
           />
         </InputGroup>
       </View>

@@ -8,7 +8,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import { connect } from 'react-redux';
-import WordHighlighter from '../wordHighlighter';
+import WordHighlighter from '../../../../components/wordHighlighter';
 
 const styles = StyleSheet.create({
   phoneIconLeft: {
@@ -86,7 +86,6 @@ class ClientListItem extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.boldWords);
     this.setState({
       client: nextProps.client,
       name: `${nextProps.client.name} ${nextProps.client.lastName}`,
@@ -103,14 +102,9 @@ class ClientListItem extends React.PureComponent {
         onPress={() => { this.props.onPress(this.props.client); }}
       >
         <View style={styles.container}>
-
           <View style={styles.dataContainer}>
-
-
             <View style={styles.topContainer}>
-
               <View style={styles.clientNameContainer}>
-
                 <WordHighlighter
                   highlight={this.props.boldWords}
                   highlightStyle={styles.highlightStyle}
@@ -119,9 +113,7 @@ class ClientListItem extends React.PureComponent {
                   {this.state.name}
                 </WordHighlighter>
               </View>
-
             </View>
-
             <View style={styles.bottomContainer}>
               {this.props.client.phone &&
               <FontAwesome style={styles.phoneIconLeft}>{Icons.mobile}</FontAwesome>}
@@ -134,7 +126,6 @@ class ClientListItem extends React.PureComponent {
                 {this.props.client.phone}
               </WordHighlighter>
             }
-
               {this.props.client.email &&
               <WordHighlighter
                 highlight={this.props.boldWords}

@@ -8,12 +8,14 @@ import { bindActionCreators } from 'redux';
 import SalesScreen from './../screens/SalesScreen';
 
 import ScorecardScreen from './../screens/ScorecardScreen';
+import SettingsScreen from './../screens/SettingsScreen';
 
 import SideMenu from './../components/SideMenu';
 
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
 import appointmentNoteActions from '../actions/appointmentNotes';
+import salonSearchHeaderActions from './../components/SalonSearchHeader/redux';
 
 import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
@@ -23,6 +25,7 @@ import ClientsStackNavigator from './ClientsStackNavigator';
 const RootDrawerNavigator = DrawerNavigator(
   {
     Queue: { screen: QueueStackNavigator },
+    Settings: { screen: SettingsScreen },
     Clients: { screen: ClientsStackNavigator },
     Sales: { screen: SalesScreen },
     Appointments: { screen: AppointmentStackNavigator },
@@ -54,10 +57,12 @@ const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
   appointmentNoteState: state.appointmentNoteReducer,
+  salonSearchHeaderState: state.salonSearchHeaderReducer,
 });
 const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
+  salonSearchHeaderActions: bindActionCreators({ ...salonSearchHeaderActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);
