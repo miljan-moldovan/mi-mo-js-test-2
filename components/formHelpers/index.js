@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     backgroundColor: 'white',
-    borderTopWidth: 1 / 2,
-    borderBottomWidth: 1 / 2,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#C0C1C6',
     borderBottomColor: '#C0C1C6',
     alignSelf: 'stretch',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   inputDivider: {
-    height: 1,
+    height: StyleSheet.hairlineWidth,
     backgroundColor: '#C0C1C6',
     alignSelf: 'stretch',
   },
