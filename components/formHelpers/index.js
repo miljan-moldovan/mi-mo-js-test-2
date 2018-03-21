@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     marginRight: 10,
+  },
   inputNumber: {
     borderColor: '#1DBF12',
     borderWidth: 1,

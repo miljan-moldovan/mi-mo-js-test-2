@@ -29,15 +29,31 @@ export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = rootProps => ({
     headerTitle: 'service' in rootProps.navigation.state.params ?
       'Add Service' : 'Modify Service',
+    headerRight: (
+      <TouchableOpacity
+        onPress={rootProps.navigation.state.params.onSave}
+      >
+        <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>
+      </TouchableOpacity>
+    ),
   });
+
   constructor(props) {
     super(props);
     const { params } = this.props.navigation.state;
 
+    this.props.navigation.setParams({ ...params, onSave: this.onSave.bind(this) });
     this.state = {
       selectedService: 'service' in params ? params.service : null,
       selectedProvider: 'service' in params ? params.service.employeeId : null,
+      selectedPromotion: 'promotion' in params ? params.promotion : null,
+      providerRequested: false,
     };
+  }
+
+  onSave = () => {
+    this.props.appointmentDetailsActions.addService(this.state);
+    this.props.navigation.goBack();
   }
 
   render() {
@@ -61,7 +77,8 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <InputSwitch
-            onChange={value => alert(`Switched to ${value}`)}
+            value={this.state.providerRequested}
+            onChange={providerRequested => this.setState({ providerRequested })}
             text="Provider is requested?"
           />
         </InputGroup>

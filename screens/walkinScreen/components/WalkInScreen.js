@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   ScrollView,
-  Text
+  Text,
 } from 'react-native';
 
 import {
@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
 
 class WalkInScreen extends Component {
   static navigationOptions = ({ navigation }) => {
-    const handlePress = navigation.state.params && navigation.state.params.walkin ? navigation.state.params.walkin : ()=>{};
-    //const { name, lastName } = navigation.state.params.item.client;
+    const handlePress = navigation.state.params && navigation.state.params.walkin ? navigation.state.params.walkin : () => {};
+    // const { name, lastName } = navigation.state.params.item.client;
     return {
       // headerTitle: `${name} ${lastName}`,
       headerRight:
@@ -58,7 +58,7 @@ class WalkInScreen extends Component {
     const { newAppointment } = this.props.navigation.state.params;
     if (newAppointment) {
       const { client, provider, service } = newAppointment;
-      this.setState({ client, provider, service })
+      this.setState({ client, provider, service });
     }
     const { navigation } = this.props;
     // We can only set the function after the component has been initialized
@@ -72,7 +72,7 @@ class WalkInScreen extends Component {
 
   getFullName = () => {
     let fullName = '';
-    const { client } = this.state
+    const { client } = this.state;
     if (client) {
       if (client.name) {
         fullName = client.name;

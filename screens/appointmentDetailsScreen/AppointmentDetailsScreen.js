@@ -77,19 +77,19 @@ export default class AppointmentDetailsScreen extends React.Component {
     }
     return ({
       headerTitle: (
-        <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
           <Text style={styles.headerTitle}>{title}</Text>
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
+        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
           <Text style={{ fontSize: 14, color: '#fff' }}>
             <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
           </Text>
         </TouchableOpacity>
       ),
       headerRight: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={() => alert('Not Implemented')}>
+        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => alert('Not Implemented')}>
           <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
         </TouchableOpacity>
       ),
@@ -112,9 +112,13 @@ export default class AppointmentDetailsScreen extends React.Component {
         { key: '2', title: 'Formulas', icon: 'eyedropper' },
       ],
     };
+
+
+    debugger//eslint-disable-line
+    this.props.appointmentDetailsActions.setAppointment(this.state.appointment);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     // apiWrapper.doRequest('clientFormulas', { path: { id: 306 } })
     //   .then((res) => {
     //     debugger//eslint-disable-line

@@ -33,7 +33,7 @@ import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
 import RecommendationsScreen from '../screens/recommendationsScreen';
 
-import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/NewAppointmentScreen';
