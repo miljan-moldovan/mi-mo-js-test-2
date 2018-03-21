@@ -34,11 +34,11 @@ import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
-import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import NewAppointmentScreen from '../screens/NewAppointmentScreen';
 import AppointmentNoteScreen from './../screens/appointmentNote';
 
 import ProductsScreen from './../screens/productsScreen';
-
+import RebookDialogScreen from './../screens/rebookDialogScreen';
 
 const QueueStackNavigator = StackNavigator(
   {
@@ -76,6 +76,14 @@ const QueueStackNavigator = StackNavigator(
     },
     AppointmentNote: {
       screen: AppointmentNoteScreen,
+      navigationOptions: {
+        headerMode: 'none',
+        gesturesEnabled: false,
+        header: props => (<View />),
+      },
+    },
+    RebookDialog: {
+      screen: RebookDialogScreen,
       navigationOptions: {
         headerMode: 'none',
         gesturesEnabled: false,

@@ -3,7 +3,7 @@
  * https://github.com/facebook/react-native
  * @flow
  */
-
+console.disableYellowBox = true;
 import React, { Component } from 'react';
 import {
   Platform,
@@ -14,6 +14,8 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
+import OfflineNotice from './components/OfflineNotice';
+
 
 import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
@@ -60,6 +62,7 @@ export default class App extends Component<{}> {
     return (
       <Provider store={store}>
         <View style={styles.container}>
+          <OfflineNotice />
           {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
           <RootNavigation />

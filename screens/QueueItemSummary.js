@@ -167,63 +167,62 @@ class QueueItemSummary extends Component {
       const otherButtonsStyle =
         !this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
       return (
-          <View style={styles.btnContainer}>
-            <TouchableOpacity
-              onPress={this.props.onPressSummary.checkIn}
-              disabled={this.props.isCheckedIn}
-            >
-              <View style={styles.btnGroup}>
-                <View style={btnCheckInStyle}>
-                  <SalonIcon icon="checkin" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Check-in</Text>
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            onPress={this.props.onPressSummary.checkIn}
+            disabled={this.props.isCheckedIn}
+          >
+            <View style={styles.btnGroup}>
+              <View style={btnCheckInStyle}>
+                <SalonIcon icon="checkin" size={16} />
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this.props.onPressSummary.walkOut}
-              disabled={!this.props.isCheckedIn}
-            >
-              <View style={styles.btnGroup}>
-                <View style={otherButtonsStyle}>
-                  <SalonIcon icon="walkout" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Walk-out</Text>
+              <Text style={styles.btnbottomText}>Check-in</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.props.onPressSummary.walkOut}
+            disabled={!this.props.isCheckedIn}
+          >
+            <View style={styles.btnGroup}>
+              <View style={otherButtonsStyle}>
+                <SalonIcon icon="walkout" size={16} />
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this.props.onPressSummary.modify}
-              disabled={!this.props.isCheckedIn}
-            >
-              <View style={styles.btnGroup}>
-                <View style={otherButtonsStyle}>
-                  <SalonIcon icon="modify" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Modify</Text>
+              <Text style={styles.btnbottomText}>Walk-out</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.props.onPressSummary.modify}
+          >
+            <View style={styles.btnGroup}>
+              <View style={otherButtonsStyle}>
+                <SalonIcon icon="modify" size={16} />
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this.props.onPressSummary.returning}
-              disabled={!this.props.isCheckedIn}
-            >
-              <View style={styles.btnGroup}>
-                <View style={otherButtonsStyle}>
-                  <SalonIcon icon="returning" size={16} />
-                </View>
-                <Text style={styles.btnbottomText}>Returning</Text>
+              <Text style={styles.btnbottomText}>Modify</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.props.onPressSummary.returning}
+            disabled={!this.props.isCheckedIn}
+          >
+            <View style={styles.btnGroup}>
+              <View style={otherButtonsStyle}>
+                <SalonIcon icon="returning" size={16} />
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this.props.onPressSummary.toService}
-              disabled={!this.props.isCheckedIn}
-            >
-              <View style={styles.btnGroup}>
-                <View style={otherButtonsStyle}>
-                  <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
-                </View>
-                <Text style={styles.btnbottomText}>To Service</Text>
+              <Text style={styles.btnbottomText}>Returning</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.props.onPressSummary.toService}
+            disabled={!this.props.isCheckedIn}
+          >
+            <View style={styles.btnGroup}>
+              <View style={otherButtonsStyle}>
+                <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
               </View>
-            </TouchableOpacity>
-          </View>
+              <Text style={styles.btnbottomText}>To Service</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       );
     }
     return (
@@ -236,7 +235,7 @@ class QueueItemSummary extends Component {
             <Text style={styles.btnbottomText}>To Waiting</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+        <TouchableOpacity onPress={this.props.onPressSummary.rebook}>
           <View style={styles.btnGroup}>
             <View style={styles.btnBottom}>
               <Icon name="undo" size={16} color="#fff" type="solid" />
@@ -302,7 +301,7 @@ class QueueItemSummary extends Component {
               <View style={styles.body}>
                 <View style={styles.row}>
                   <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-                  <TouchableOpacity onPress={()=>alert("Not implemented")}>
+                  <TouchableOpacity onPress={() => alert('Not implemented')}>
                     <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
                   </TouchableOpacity>
                 </View>
