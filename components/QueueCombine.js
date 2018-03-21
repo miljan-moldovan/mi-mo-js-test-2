@@ -545,7 +545,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 12,
     marginTop: 12,
-
     marginBottom: 'auto',
   },
   dollarSign: {

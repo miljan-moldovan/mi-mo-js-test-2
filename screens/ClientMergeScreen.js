@@ -21,13 +21,13 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { SafeAreaView } from 'react-navigation';
 
 import { connect } from 'react-redux';
-import * as actions from '../actions/queue.js';
+import * as actions from '../actions/clients.js';
 import { ClientMerge } from '../components/ClientMerge';
 
 const mergeClients = require('../mockData/mergeClients.json');
 
 
-export default class ClientMergeScreen extends React.Component {
+class ClientMergeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     const { onPressDone, loading } = params;
@@ -62,7 +62,12 @@ export default class ClientMergeScreen extends React.Component {
     mainClient: null,
   }
   componentWillMount() {
-
+    // this.loadClients();
+  }
+  loadClients() {
+    const { params = {} } = this.props.navigation.state;
+    const clientId = params.clientId || 1832;
+    this.props.getMergeableClients(clientId);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -74,31 +79,46 @@ export default class ClientMergeScreen extends React.Component {
     }
 
     if (loading !== undefined && loading !== this.props.loading) {
-      console.log('nextProps.loading', loading);
+      // console.log('nextProps.loading', loading);
       this.props.navigation.setParams({ loading });
     }
   }
 
   onChangeMergeClients = (mergedClients, mainClient) => {
-    console.log('onChangeMergeClients', mergedClients);
-    if (mergedClients && mergedClients.length > 1) {
-      this.props.navigation.setParams({ onPressDone: this.onFinishMergeClients });
+    // console.log('onChangeMergeClients', mergedClients, mainClient);
+    if (mergedClients) {
+      if (mergedClients && mergedClients.length > 1) {
+        this.props.navigation.setParams({ onPressDone: this.onFinishMergeClients });
+      } else {
+        this.props.navigation.setParams({ onPressDone: undefined });
+      }
+      this.setState({ mergedClients, mainClient });
     } else {
-      this.props.navigation.setParams({ onPressDone: undefined });
+      // mergedClients is null, so no changes were made - only update mainClient
+      this.setState({ mainClient });
     }
-    this.setState({ mergedClients, mainClient });
+
   }
   onFinishMergeClients = () => {
     const { mergedClients, mainClient } = this.state;
-    Alert.alert('Merge clients', mergedClients.join(', ')+' with client '+mainClient);
-    // call action
-    // this.props.finishCombine(combinedData);
-    // this.props.navigation.goBack();
+    this.props.mergeClients(mainClient, mergedClients, (success) => {
+      if (success) {
+        Alert.alert('Success', 'Clients were successfully merged.');
+        this.props.navigation.goBack();
+      } else {
+        Alert.alert('Error', 'Error merging clients. Please try again.')
+      }
+
+    });
   }
 
   render() {
-    return (
+    return this.props.loading ?
+    (
+      <ActivityIndicator />
+    ) : (
       <ClientMerge
+        // data={this.props.mergeableClients}
         data={mergeClients}
         navigation={this.props.navigation}
         onChangeMergeClients={this.onChangeMergeClients}
@@ -106,7 +126,13 @@ export default class ClientMergeScreen extends React.Component {
     );
   }
 }
-
+const mapStateToProps = ({ clientsReducer: clients }, ownProps) => ({
+  mergeableClients: clients.mergeableClients,
+  loading: clients.isLoading,
+  waitingMerge: clients.waitingMerge,
+  error: clients.error,
+});
+export default connect(mapStateToProps, actions)(ClientMergeScreen);
 
 const styles = StyleSheet.create({
   container: {

@@ -1,3 +1,4 @@
+// @flow
 import clientsActions, {
   SET_CLIENTS,
   SET_FILTERED_CLIENTS,
@@ -6,11 +7,18 @@ import clientsActions, {
   GET_CLIENTS,
   GET_CLIENTS_SUCCESS,
   GET_CLIENTS_FAILED,
+  GET_MERGEABLE_CLIENTS,
+  GET_MERGEABLE_CLIENTS_SUCCESS,
+  GET_MERGEABLE_CLIENTS_FAILED,
+  MERGE_CLIENTS,
+  MERGE_CLIENTS_SUCCESS,
+  MERGE_CLIENTS_FAILED
 } from '../actions/clients';
 
 const initialState = {
   filtered: [],
   clients: [],
+  mergeableClients: [],
   suggestionsList: [],
   filteredSuggestions: [],
 };
@@ -61,6 +69,42 @@ export default function clientsReducer(state = initialState, action) {
         error: null,
         filteredSuggestions: data.filteredSuggestions,
       };
+    case GET_MERGEABLE_CLIENTS:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_MERGEABLE_CLIENTS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        mergeableClients: data.mergeableClients,
+        error: null,
+      };
+    case GET_MERGEABLE_CLIENTS_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: data.error,
+        mergeableClients: [],
+      };
+      case MERGE_CLIENTS:
+        return {
+          ...state,
+          waitingMerge: true,
+        };
+      case MERGE_CLIENTS_SUCCESS:
+        return {
+          ...state,
+          waitingMerge: false,
+          error: null,
+        };
+      case MERGE_CLIENTS_FAILED:
+        return {
+          ...state,
+          waitingMerge: false,
+          error: data.error,
+        };
     default:
       return state;
   }

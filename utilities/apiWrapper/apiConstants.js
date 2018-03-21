@@ -12,7 +12,7 @@ export default {
   },
   // Must clean cache after doing these requests
   cleanCache: ['postQueue', 'postQueueGroup', 'deleteQueueGroup', 'postClientNote',
-    'putClientNote', 'postUndeleteClientNote', 'deleteClientNote', 'putQueueGroupLeader'],
+    'putClientNote', 'postUndeleteClientNote', 'deleteClientNote', 'putQueueGroupLeader', 'postMergeClients'],
   // Must clean these Dependencies cache after doing these requests
   cacheCleaningDependencies: {
     postQueue: ['getQueue'],
@@ -23,6 +23,7 @@ export default {
     putClientNote: ['getClientNotes'],
     postUndeleteClientNote: ['getClientNotes'],
     deleteClientNote: ['getClientNotes'],
+    postMergeClients: ['getQueue', 'getQueueGroups', 'getMergeableClients'],
   },
   // Global expiration time
   expiration: 5 * 60 * 1000,
