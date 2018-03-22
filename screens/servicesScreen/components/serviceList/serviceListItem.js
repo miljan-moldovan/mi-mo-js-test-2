@@ -54,7 +54,7 @@ class ServiceListItem extends React.PureComponent {
     super(props);
     this.state = {
       service: props.service,
-      name: `${props.service.serviceName}`,
+      name: `${props.service.name}`,
       boldWords: props.boldWords,
       onPress: props.onPress,
     };
@@ -63,7 +63,7 @@ class ServiceListItem extends React.PureComponent {
   componentWillReceiveProps(nextProps) {
     this.setState({
       service: nextProps.service,
-      name: `${nextProps.service.serviceName}`,
+      name: `${nextProps.service.name}`,
       boldWords: nextProps.boldWords,
       onPress: nextProps.onPress,
     });

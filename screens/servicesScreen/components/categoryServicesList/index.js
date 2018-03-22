@@ -68,7 +68,7 @@ class CategoryServicesList extends React.Component {
           style={{ flex: 1 }}
           labelStyle={{ color: '#110A24' }}
           onPress={this.props.onChangeService ? () => { this.props.servicesActions.setSelectedService(elem.item); this.props.onChangeService(elem.item); } : () => {}}
-          label={elem.item.serviceName}
+          label={elem.item.name}
           children={
             <View style={styles.inputRow}>
               {elem.item === this.props.servicesState.selectedService &&

@@ -207,7 +207,7 @@ class QueueScreen extends React.Component {
     };
     const active = { backgroundColor: 'white' };
     const activeText = { color: '#115ECD' };
-    console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
+
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
         <KeyboardAwareScrollView style={{ marginTop: 40 }}>
@@ -283,11 +283,11 @@ class QueueScreen extends React.Component {
         leftButton:
   <View style={styles.backContainer}>
     <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
+      {Icons.angleLeft}
+    </FontAwesome>
     <Text style={styles.leftButtonText}>
             Back
-          </Text>
+    </Text>
   </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
@@ -306,11 +306,11 @@ class QueueScreen extends React.Component {
         leftButton:
   <View style={styles.backContainer}>
     <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
+      {Icons.angleLeft}
+    </FontAwesome>
     <Text style={styles.leftButtonText}>
             Back
-          </Text>
+    </Text>
   </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
@@ -336,11 +336,11 @@ class QueueScreen extends React.Component {
         leftButton:
   <View style={styles.backContainer}>
     <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
+      {Icons.angleLeft}
+    </FontAwesome>
     <Text style={styles.leftButtonText}>
             Back
-          </Text>
+    </Text>
   </View>,
       },
     });

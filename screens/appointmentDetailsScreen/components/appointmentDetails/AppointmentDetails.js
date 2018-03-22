@@ -190,16 +190,22 @@ SalonAppointmentTime.propTypes = {
   appointment: PropTypes.shape(AppointmentModel).isRequired,
 };
 
-const ServiceCard = props => (
-  <SalonCard
-    backgroundColor="white"
-    containerStyles={{ marginHorizontal: 0 }}
-    bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
-    bodyChildren={[
-      <TouchableOpacity style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
-        <View key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }}>
-          <Text style={[styles.serviceTitle, { flex: 1 }]}>{props.service.serviceName}</Text>
-          {props.service.promoId > 0
+const ServiceCard = (props) => {
+  const name = 'name' in props.service ? props.service.name : props.service.serviceName;
+
+  return (
+    <SalonCard
+      {...console.log('djoy props', props)}
+      backgroundColor="white"
+      containerStyles={{ marginHorizontal: 0 }}
+      bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
+      bodyChildren={[
+        <TouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
+          <View key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }}>
+            <Text style={[styles.serviceTitle, { flex: 1 }]}>
+              {name}
+            </Text>
+            {props.service.promoId > 0
           ? (
             <View>
               <Text style={[styles.price, styles.lineThrough]}>{`$${props.service.price}`}</Text>
@@ -210,43 +216,44 @@ const ServiceCard = props => (
             <Text style={[styles.price]}>{`$${props.service.price}`}</Text>
           )
         }
-          <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
-        </View>
-        <View
-          key={Math.random()}
-          style={{
+            <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
+          </View>
+          <View
+            key={Math.random()}
+            style={{
           flex: 1, flexDirection: 'row',
         }}
-        >
-          <View style={{
+          >
+            <View style={{
             flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flex: 1, marginTop: 5,
             }}
-          >
-            <SalonAvatar
-              wrapperStyle={styles.providerRound}
-              width={26}
-              borderWidth={1}
-              borderColor="transparent"
-              hasBadge
-              badgeComponent={
-                <FontAwesome style={{
+            >
+              <SalonAvatar
+                wrapperStyle={styles.providerRound}
+                width={26}
+                borderWidth={1}
+                borderColor="transparent"
+                hasBadge
+                badgeComponent={
+                  <FontAwesome style={{
                   color: '#1DBF12', fontSize: 10,
                 }}
-                >{Icons.lock}
-                </FontAwesome>
+                  >{Icons.lock}
+                  </FontAwesome>
               }
-              image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
-            />
-            <Text style={[styles.employeeText, { marginLeft: 8 }]}>{`${props.service.employeeFirstName} ${props.service.employeeLastName}`}</Text>
-          </View>
-          {this.promoId > 0 && (
+                image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+              />
+              <Text style={[styles.employeeText, { marginLeft: 8 }]}>{`${props.service.employeeFirstName} ${props.service.employeeLastName}`}</Text>
+            </View>
+            {this.promoId > 0 && (
             <Text style={styles.promoDescription}>FIRST CUSTOMER -50%</Text>
         )}
-        </View>
-      </TouchableOpacity>,
+          </View>
+        </TouchableOpacity>,
     ]}
-  />
-);
+    />
+  );
+};
 
 const ProductCard = props => (
   <SalonCard
@@ -254,23 +261,25 @@ const ProductCard = props => (
     containerStyles={{ marginHorizontal: 0 }}
     bodyStyles={{ paddingVertical: 10 }}
     bodyChildren={[
-      <View key={Math.random()} style={{ flex: 1, alignSelf: 'flex-start' }}>
-        <Text style={styles.serviceTitle}>Dry Shampoo</Text>
-        <Text style={styles.employeeText}>Dynamo Humm</Text>
-      </View>,
-      <View
-        key={Math.random()}
-        style={{
-        flex: 1, alignSelf: 'flex-start', justifyContent: 'flex-end', flexDirection: 'row',
-        }}
-      >
-        <View>
-          <Text style={styles.price}>$15</Text>
+      <TouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }} onPress={props.onPress}>
+        <View key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }}>
+          <Text style={styles.serviceTitle}>{props.product.product.name}</Text>
+          <Text style={styles.employeeText}>{props.product.provider.fullName}</Text>
         </View>
-        <View>
-          <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
+        <View
+          key={Math.random()}
+          style={{
+            flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignSelf: 'flex-start',
+          }}
+        >
+          <View>
+            <Text style={styles.price}>{props.product.product.price}</Text>
+          </View>
+          <View>
+            <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
+          </View>
         </View>
-      </View>,
+      </TouchableOpacity>,
     ]}
   />
 );
@@ -412,9 +421,10 @@ export default class AppointmentDetails extends React.Component {
     });
   }
 
-  handlePressProduct = (product) => {
+  handlePressProduct = (product, index) => {
     this.props.navigation.navigate('Product', {
       product,
+      index,
       client: this.state.appointment.client,
       dismissOnSelect: true,
       onChangeProduct: data => this.handleProductSelection(data),
@@ -471,14 +481,24 @@ export default class AppointmentDetails extends React.Component {
             />
             <Text style={styles.titleText}>Services</Text>
             {appointmentDetailsState.services.map((item, index) => (
-              <ServiceCard key={Math.random()} onPress={() => this.handlePressService(item, index)} service={item} />
+              <ServiceCard
+                key={Math.random()}
+                onPress={() => this.handlePressService(item, index)}
+                service={item}
+              />
             ))}
             <AddButton
               onPress={this.handleAddService}
               title="Add Service"
             />
             <Text style={styles.titleText}>Products</Text>
-            <ProductCard />
+            {appointmentDetailsState.products.map((item, index) => (
+              <ProductCard
+                key={Math.random()}
+                onPress={() => this.handlePressProduct(item, index)}
+                product={item}
+              />
+            ))}
             <AddButton onPress={this.handleAddProduct} title="Add Product" />
             <View style={{ alignSelf: 'stretch' }}>
               <InputButton

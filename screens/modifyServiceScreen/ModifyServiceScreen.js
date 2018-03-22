@@ -17,6 +17,7 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = rootProps => ({
     headerTitle: 'service' in rootProps.navigation.state.params ?
-      'Add Service' : 'Modify Service',
+      'Modify Service' : 'Add Service',
     headerRight: (
       <TouchableOpacity
         onPress={rootProps.navigation.state.params.onSave}
@@ -48,9 +49,15 @@ export default class ModifyServiceScreen extends React.Component {
       index: 'index' in params ? params.index : null,
       service: 'service' in params ? params.service : null,
       selectedService: 'service' in params ? params.service : null,
-      selectedProvider: 'service' in params ? params.service.employeeId : null,
+      selectedProvider: 'service' in params ? {
+        id: params.service.employeeId,
+        name: params.service.employeeFirstName,
+        lastName: params.service.employeeLastName,
+      } : null,
       selectedPromotion: 'promotion' in params ? params.promotion : null,
       providerRequested: false,
+      price: 'service' in params ? params.service.price : 0,
+      discount: '0',
     };
   }
 
@@ -67,8 +74,27 @@ export default class ModifyServiceScreen extends React.Component {
           <ServiceInput
             navigate={this.props.navigation.navigate}
             selectedService={this.state.selectedService}
-            onChange={(service) => {
-              this.setState({ selectedService: service });
+            onChange={(selected) => {
+              this.setState({
+                service: { name: selected.name },
+                selectedService: selected,
+              });
+
+              apiWrapper.doRequest('getService', {
+                path: {
+                  id: selected.id,
+                },
+              })
+                .then((service) => {
+                  this.setState({
+                    price: service.price,
+                    selectedService: selected,
+                    service: { ...this.state.service, ...service, name: selected.name },
+                  });
+                })
+                .catch((err) => {
+                  console.warn(err);
+                });
             }}
           />
           <InputDivider />
@@ -85,6 +111,7 @@ export default class ModifyServiceScreen extends React.Component {
                   employeeLastName: provider.lastName,
                   employeeFullName: provider.fullName,
                 },
+                selectedProvider: provider,
               });
             }}
           />
@@ -104,20 +131,28 @@ export default class ModifyServiceScreen extends React.Component {
             }}
           />
           <InputDivider />
-          <InputLabel label="Discount" value="20%" />
-          <InputLabel label="Price" value="$40" />
+          <InputLabel label="Discount" value={`${this.state.discount}`} />
+          <InputLabel label="Price" value={`$${this.state.price}`} />
         </InputGroup>
         <SectionDivider />
-        <InputGroup>
-          <TouchableOpacity style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{
-              fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+        {this.state.index !== null && (
+          <InputGroup>
+            <TouchableOpacity
+              style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
+              onPress={() => {
+                this.props.appointmentDetailsActions.removeService(this.state.index);
+                this.props.navigation.goBack();
               }}
             >
+              <Text style={{
+              fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+              }}
+              >
               Remove Service
-            </Text>
-          </TouchableOpacity>
-        </InputGroup>
+              </Text>
+            </TouchableOpacity>
+          </InputGroup>
+      )}
       </View>
     );
   }

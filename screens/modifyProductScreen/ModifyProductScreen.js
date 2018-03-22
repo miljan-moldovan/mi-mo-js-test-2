@@ -18,6 +18,7 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,16 +29,34 @@ const styles = StyleSheet.create({
 
 export default class ModifyProductScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: rootProps.navigation.state.params.actionType === 'new' ?
-      'Add Product' : 'Modify Product',
+    headerTitle: 'product' in rootProps.navigation.state.params ?
+      'Modify Product' : 'Add Product',
+    headerRight: (
+      <TouchableOpacity
+        onPress={rootProps.navigation.state.params.onSave}
+      >
+        <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>
+      </TouchableOpacity>
+    ),
   });
+
   constructor(props) {
     super(props);
+    const { params } = this.props.navigation.state;
+    this.props.navigation.setParams({ onSave: this.onSave.bind(this) });
 
     this.state = {
-      selectedProduct: null,
-      selectedProvider: null,
+      index: 'index' in params ? params.index : null,
+      selectedProduct: 'product' in params ? params.product.product : null,
+      selectedProvider: 'product' in params ? params.product.provider : null,
+      price: 'product' in params ? params.product.price : '$0',
+      discount: 0,
     };
+  }
+
+  onSave = () => {
+    this.props.appointmentDetailsActions.addProduct({ product: this.state.selectedProduct, provider: this.state.selectedProvider }, this.state.index);
+    this.props.navigation.goBack();
   }
 
   render() {
@@ -47,15 +66,16 @@ export default class ModifyProductScreen extends React.Component {
           <ProductInput
             navigate={this.props.navigation.navigate}
             selectedProduct={this.state.selectedProduct}
-            onChange={(product) => {
-              this.setState({ selectedProduct: product });
+            onChange={(selectedProduct) => {
+              this.setState({ selectedProduct, price: selectedProduct.price });
             }}
           />
           <InputDivider />
           <ProviderInput
             navigate={this.props.navigation.navigate}
-            onChange={(provider) => {
-              this.setState({ selectedProvider: provider });
+            selectedProvider={this.state.selectedProvider}
+            onChange={(selectedProvider) => {
+              this.setState({ selectedProvider });
             }}
           />
         </InputGroup>
@@ -68,21 +88,29 @@ export default class ModifyProductScreen extends React.Component {
             }}
           />
           <InputDivider />
-          <InputLabel label="Discount" value="20%" />
+          <InputLabel label="Discount" value={this.state.discount} />
           <InputDivider />
-          <InputLabel label="Price" value="$40" />
+          <InputLabel label="Price" value={this.state.price} />
         </InputGroup>
         <SectionDivider />
-        <InputGroup>
-          <TouchableOpacity style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{
-              fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+        {this.state.index !== null && (
+          <InputGroup>
+            <TouchableOpacity
+              style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
+              onPress={() => {
+                this.props.appointmentDetailsActions.removeProduct(this.state.index);
+                this.props.navigation.goBack();
               }}
             >
-              Remove Product
-            </Text>
-          </TouchableOpacity>
-        </InputGroup>
+              <Text style={{
+                fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+                }}
+              >
+                Remove Product
+              </Text>
+            </TouchableOpacity>
+          </InputGroup>
+        )}
       </View>
     );
   }

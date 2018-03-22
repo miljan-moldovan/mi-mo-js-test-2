@@ -329,7 +329,7 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    const value = this.props.selectedService ? this.props.selectedService.serviceName : null;
+    const value = this.props.selectedService ? this.props.selectedService.name : null;
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -350,8 +350,7 @@ export class ProviderInput extends React.Component {
     super(props);
 
     this.state = {
-      selectedProvider: null,
-      selectedProviderId: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
+      selectedProvider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
 
@@ -362,7 +361,7 @@ export class ProviderInput extends React.Component {
 
   handlePress = () => {
     this.props.navigate('Providers', {
-      selectedProvider: this.state.selectedProviderId,
+      selectedProvider: this.state.selectedProvider,
       actionType: 'update',
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
