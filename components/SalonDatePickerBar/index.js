@@ -80,34 +80,41 @@ export default class SalonDatePickerBar extends Component {
   constructor(props) {
     super(props);
 
-    const startingDate = this.getInitialStartingDate();
+    const date = this.getInitialDate();
     const selectedDate = moment(this.props.selectedDate);
 
     this.state = {
-      startingDate,
+      date,
       selectedDate,
     };
   }
 
   getPreviousDay= () => {
-    const previousDayStartDate = this.state.startingDate
+    const previousDayStartDate = this.state.date
       .subtract(1, 'day');
 
-    this.setState({ startingDate: previousDayStartDate });
+    this.setState({ date: previousDayStartDate });
+
+    this.props.onDateChange(previousDayStartDate);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ date: nextProps.selectedDate });
   }
 
   getNextDay = () => {
-    const nextDayStartDate = this.state.startingDate.add(1, 'day');
-    this.setState({ startingDate: nextDayStartDate });
+    const nextDayStartDate = this.state.date.add(1, 'day');
+    this.setState({ date: nextDayStartDate });
+    this.props.onDateChange(nextDayStartDate);
   }
 
     goToToday = () => {
-      this.setState({ startingDate: moment() });
+      this.setState({ date: moment() });
     }
 
-    getInitialStartingDate = () => {
-      if (this.props.startingDate) {
-        return moment(this.props.startingDate);
+    getInitialDate = () => {
+      if (this.props.date) {
+        return moment(this.props.date);
       }
       return moment();
     }
@@ -121,7 +128,7 @@ export default class SalonDatePickerBar extends Component {
 
     setSelectedDate(date) {
       const mDate = moment(date);
-      this.onDateSelected(mDate);
+      this.onCalendarSelected(mDate);
     }
 
     render= () => (
@@ -148,15 +155,15 @@ export default class SalonDatePickerBar extends Component {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.dateButton} onPress={this.props.onDateSelected}>
+            <TouchableOpacity style={styles.dateButton} onPress={this.props.onCalendarSelected}>
               <View style={styles.dateContainer}>
                 <Text style={styles.date} >
-                  {moment(this.state.startingDate).format('dddd, MMM. YYYY')}
+                  {moment(this.state.date).format('dddd, MMM. DD')}
                 </Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.iconContainer} onPress={this.props.onDateSelected}>
+            <TouchableOpacity style={styles.iconContainer} onPress={this.props.onCalendarSelected}>
               <View>
                 <FontAwesome style={styles.calendarIconStyle}>{Icons.calendar}</FontAwesome>
               </View>

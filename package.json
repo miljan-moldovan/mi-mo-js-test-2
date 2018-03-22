@@ -15,7 +15,7 @@
     "prop-types": "15.6.0",
     "react": "16.2.0",
     "react-native": "0.52.1",
-    "react-native-calendars": "^1.17.1",
+    "react-native-calendars": "^1.17.6",
     "react-native-fontawesome": "^5.7.0",
     "react-native-keyboard-aware-scroll-view": "^0.4.4",
     "react-native-keyboard-spacer": "^0.4.1",
