@@ -394,9 +394,10 @@ export default class AppointmentDetails extends React.Component {
     });
   }
 
-  handlePressService = (service) => {
+  handlePressService = (service, index) => {
     this.props.navigation.navigate('Service', {
       service,
+      index,
       client: this.state.appointment.client,
       dismissOnSelect: true,
       onChangeService: data => this.handleServiceSelection(data),
@@ -431,7 +432,7 @@ export default class AppointmentDetails extends React.Component {
       return null;
     }
     const { appointmentDetailsState } = this.props;
-    debugger//eslint-disable-line
+
     const { appointment } = this.state;
     const { client } = appointment;
     const label = this.getLabelForItem(appointment);
@@ -469,8 +470,8 @@ export default class AppointmentDetails extends React.Component {
               ]}
             />
             <Text style={styles.titleText}>Services</Text>
-            {appointmentDetailsState.services.map(item => (
-              <ServiceCard key={Math.random()} onPress={() => this.handlePressService(item)} service={item} />
+            {appointmentDetailsState.services.map((item, index) => (
+              <ServiceCard key={Math.random()} onPress={() => this.handlePressService(item, index)} service={item} />
             ))}
             <AddButton
               onPress={this.handleAddService}

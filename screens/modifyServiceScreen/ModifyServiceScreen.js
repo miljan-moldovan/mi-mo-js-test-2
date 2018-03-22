@@ -43,7 +43,10 @@ export default class ModifyServiceScreen extends React.Component {
     const { params } = this.props.navigation.state;
 
     this.props.navigation.setParams({ ...params, onSave: this.onSave.bind(this) });
+
     this.state = {
+      index: 'index' in params ? params.index : null,
+      service: 'service' in params ? params.service : null,
       selectedService: 'service' in params ? params.service : null,
       selectedProvider: 'service' in params ? params.service.employeeId : null,
       selectedPromotion: 'promotion' in params ? params.promotion : null,
@@ -52,7 +55,8 @@ export default class ModifyServiceScreen extends React.Component {
   }
 
   onSave = () => {
-    this.props.appointmentDetailsActions.addService(this.state);
+    const { service, index } = this.state;
+    this.props.appointmentDetailsActions.addService({ service, index });
     this.props.navigation.goBack();
   }
 
@@ -72,7 +76,16 @@ export default class ModifyServiceScreen extends React.Component {
             navigate={this.props.navigation.navigate}
             selectedProvider={this.state.selectedProvider}
             onChange={(provider) => {
-              this.setState({ selectedProvider: provider });
+              this.setState({
+                service: {
+                  ...this.state.service,
+                  employeeId: provider.id,
+                  employeeFirstName: provider.name,
+                  employeeMiddleName: provider.middleName,
+                  employeeLastName: provider.lastName,
+                  employeeFullName: provider.fullName,
+                },
+              });
             }}
           />
           <InputDivider />

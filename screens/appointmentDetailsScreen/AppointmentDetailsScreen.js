@@ -113,8 +113,6 @@ export default class AppointmentDetailsScreen extends React.Component {
       ],
     };
 
-
-    debugger//eslint-disable-line
     this.props.appointmentDetailsActions.setAppointment(this.state.appointment);
   }
 

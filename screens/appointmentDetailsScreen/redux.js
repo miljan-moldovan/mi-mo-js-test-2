@@ -22,7 +22,13 @@ export function appointmentDetailsReducer(state = initialState, action) {
       };
     case ADD_SERVICE:
       const { services } = state;
-      services.push(data.service);
+      console.log('data shit', data);
+      if ('index' in data && data.index !== null) {
+        services[data.index] = data.service;
+      } else {
+        services.push(data.service);
+      }
+
       return {
         ...state,
         services,
@@ -38,9 +44,9 @@ const setAppointment = appointment => ({
   data: { appointment },
 });
 
-const addService = service => ({
+const addService = ({ service, index }) => ({
   type: ADD_SERVICE,
-  data: { service },
+  data: { service, index },
 });
 
 const appointmentDetailsActions = {
