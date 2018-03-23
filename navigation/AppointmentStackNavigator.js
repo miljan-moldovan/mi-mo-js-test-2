@@ -28,14 +28,19 @@ import AppointmentNoteHeader from '../screens/appointmentNote/components/appoint
 
 import ModifyServiceScreen from './../screens/modifyServiceScreen';
 
+import FilterOptionsScreen from './../screens/filterOptionsScreen';
+
 const AppointmentStackNavigator = StackNavigator(
   {
+    // Main: {
+    //   screen: FilterOptionsScreen,
+    // },
+    FilterOptions: {
+      screen: FilterOptionsScreen,
+    },
     Appointments: {
       screen: AppointmentScreen,
     },
-    // AppointmentDetails: {
-    //   screen: AppointmentDetailsScreen,
-    // },
     AppointmentFormula: {
       screen: AppointmentFormula,
     },
