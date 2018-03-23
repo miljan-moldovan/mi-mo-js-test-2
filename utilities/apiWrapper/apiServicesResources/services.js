@@ -11,6 +11,11 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  getService: {
+    path: 'Services/:id',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
 };
 
 export default { resources };

@@ -24,7 +24,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
 import * as settingsActions from '../actions/settings.js';
 import checkinActions from '../actions/checkin';
@@ -83,7 +83,7 @@ class QueueScreen extends React.Component {
       service: null,
       client: null,
       provider: null,
-    }
+    },
   }
   searchWaitingRef = null;
   searchServicingRef = null;
@@ -207,10 +207,10 @@ class QueueScreen extends React.Component {
     };
     const active = { backgroundColor: 'white' };
     const activeText = { color: '#115ECD' };
-    console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
+
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <KeyboardAwareScrollView style={{marginTop: 40}}>
+        <KeyboardAwareScrollView style={{ marginTop: 40 }}>
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
@@ -266,27 +266,29 @@ class QueueScreen extends React.Component {
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
-    //this.props.walkInActions.setEstimatedTime(17);
-    //navigate('WalkIn');
-    this.setState({ newAppointment: {
-      client: null,
-      service: null,
-      provider: null,
-    }});
+    // this.props.walkInActions.setEstimatedTime(17);
+    // navigate('WalkIn');
+    this.setState({
+      newAppointment: {
+        client: null,
+        service: null,
+        provider: null,
+      },
+    });
     navigate('Clients', {
       onChangeClient: this.handleChangeClient,
       headerProps: {
         title: 'Walking',
         subTitle: 'step 1 of 3',
         leftButton:
-        <View style={styles.backContainer}>
-          <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
-          <Text style={styles.leftButtonText}>
+  <View style={styles.backContainer}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
             Back
-          </Text>
-        </View>,
+    </Text>
+  </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
@@ -302,14 +304,14 @@ class QueueScreen extends React.Component {
         title: 'Walking',
         subTitle: 'step 2 of 3',
         leftButton:
-        <View style={styles.backContainer}>
-          <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
-          <Text style={styles.leftButtonText}>
+  <View style={styles.backContainer}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
             Back
-          </Text>
-        </View>,
+    </Text>
+  </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
@@ -332,14 +334,14 @@ class QueueScreen extends React.Component {
         title: 'Walking',
         subTitle: 'step 3 of 3',
         leftButton:
-        <View style={styles.backContainer}>
-          <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
-          <Text style={styles.leftButtonText}>
+  <View style={styles.backContainer}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
             Back
-          </Text>
-        </View>,
+    </Text>
+  </View>,
       },
     });
   }

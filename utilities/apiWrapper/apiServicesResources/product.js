@@ -6,6 +6,11 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  getProduct: {
+    path: 'Products/:id',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
 };
 
 export default {
