@@ -40,6 +40,11 @@ import AppointmentNoteScreen from './../screens/appointmentNote';
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
 
+import AppointmentScreen from '../screens/AppointmentsScreen.js';
+
+
+import apptBookViewOptions from './../screens/apptBookViewOptions';
+
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
@@ -50,11 +55,15 @@ const QueueStackNavigator = StackNavigator(
     },
     Products: {
       screen: ProductsScreen,
-
     },
     Services: {
       screen: ServicesScreen,
-
+    },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
+    },
+    Appointment: {
+      screen: AppointmentScreen,
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
