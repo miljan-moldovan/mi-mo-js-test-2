@@ -4,7 +4,7 @@ import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 import moment from 'moment';
 
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   calendarContainer: {
@@ -142,7 +142,7 @@ export default class SalonDatePickerBar extends Component {
         <View style={styles.datesStrip}>
           <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', paddingLeft: 27 }]} onPress={this.getPreviousDay}>
             <View>
-              <FontAwesome style={styles.iconStyle}>{Icons.angleLeft}</FontAwesome>
+              <Icon name="angleLeft" size={25} color="#727A8F" type="solid" />
             </View>
           </TouchableOpacity>
 
@@ -165,13 +165,13 @@ export default class SalonDatePickerBar extends Component {
 
             <TouchableOpacity style={styles.iconContainer} onPress={this.props.onCalendarSelected}>
               <View>
-                <FontAwesome style={styles.calendarIconStyle}>{Icons.calendar}</FontAwesome>
+                <Icon name="calendar" size={20} color="#115ECD" type="solid" />
               </View>
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', paddingRight: 27 }]} onPress={this.getNextDay}>
             <View>
-              <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+              <Icon name="angleRight" size={25} color="#727A8F" type="solid" />
             </View>
           </TouchableOpacity>
         </View>

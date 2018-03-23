@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { LocaleConfig } from 'react-native-calendars';
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   panelTopSection: {
     backgroundColor: '#FFFFFF',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     flexDirection: 'column',
     height: 345,
@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
   iconStyle: {
-    fontSize: 35,
+    width: 35,
+    height: 15,
     color: '#727A8F',
   },
   weekJumpContainer: {
@@ -120,8 +121,6 @@ export default class SalonDatePickerSlide extends React.Component {
       selected: nextProps.selectedDate,
     });
 
-    debugger //eslint-disable-line
-
     if (nextProps.visible) {
       this._panel.transitionTo(this.props.draggableRange.top, () => {});
     }
@@ -130,10 +129,9 @@ export default class SalonDatePickerSlide extends React.Component {
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => {
-    debugger //eslint-disable-line
-
     this.setState({ visible: false });
     this._panel.transitionTo(this.props.draggableRange.bottom, () => {});
+    this.props.onHide();
   }
 
   onDayPress = (day) => {
@@ -154,6 +152,12 @@ export default class SalonDatePickerSlide extends React.Component {
     this.setState({
       selected: day,
     });
+
+    this.props.onDateSelected(moment(day));
+
+    setTimeout(() => {
+      this.hidePanel();
+    }, 10);
   }
 
   render() {
@@ -174,19 +178,19 @@ export default class SalonDatePickerSlide extends React.Component {
             <View style={styles.panelTopArrow}>
               <TouchableOpacity onPress={this.hidePanel}>
                 <View>
-                  <FontAwesome style={styles.iconStyle}>{Icons.angleDown}</FontAwesome>
+                  <Image source={require('../../assets/images/icons/chevronDown.png')} style={styles.iconStyle} />
                 </View>
               </TouchableOpacity>
             </View>
 
             <View style={styles.panelTopSection}>
               <Calendar
+                ref={(calendar) => { this.calendar = calendar; }}
                 onDayPress={this.onDayPress}
                 monthFormat="MMMM yyyy"
                 style={{ width: '95%' }}
                 markedDates={{
-                  [this.state.selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' },
-                //  [moment().format('YYYY-MM-DD')]: { selected: true, marked: true, dotColor: 'orange' },
+                  [this.state.selected]: { selected: true },
                 }}
                 theme={{
                   textSectionTitleColor: '#115ECD',
@@ -205,6 +209,7 @@ export default class SalonDatePickerSlide extends React.Component {
                   textMonthFontSize: 18,
                   textDayHeaderFontSize: 16,
                 }}
+                hideExtraDays
               />
             </View>
             <View style={styles.panelBottomSection}>

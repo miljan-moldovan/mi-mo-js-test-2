@@ -61,8 +61,12 @@ class AppointmentsScreen extends React.Component {
         <SalonDatePickerSlide
           visible={this.state.visible}
           selectedDate={moment(this.state.selectedDate).format('YYYY-MM-DD')}
+          onHide={() => {
+            this.setState({ visible: false });
+          }}
           onDateSelected={(date) => {
-          this.setState({ selectedDate: date });
+            debugger //eslint-disable-line
+          this.setState({ selectedDate: date, visible: false });
         }}
         />
       </View>
