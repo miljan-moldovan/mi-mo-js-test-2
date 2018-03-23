@@ -38,9 +38,9 @@ const icons = {
 const SalonIcon = props => (
   <Image
     style={{
-      height: props.size ? props.size : 30,
-      width: props.size ? props.size : 30,
-      tintColor: props.tintColor ? props.tintColor : false,
+      height: 'size' in props ? props.size : 30,
+      width: 'size' in props ? props.size : 30,
+      tintColor: 'tintColor' in props ? props.tintColor : 'transparent',
       resizeMode: 'contain',
     }}
     {...props}
@@ -54,6 +54,6 @@ SalonIcon.propTypes = {
   tintColor: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 SalonIcon.defaultProps = {
-  tintColor: false,
+  tintColor: 'transparent',
 };
 export default SalonIcon;

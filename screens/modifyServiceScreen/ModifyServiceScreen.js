@@ -17,6 +17,7 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,38 +28,97 @@ const styles = StyleSheet.create({
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: rootProps.navigation.state.params.actionType === 'new' ?
-      'Add Service' : 'Modify Service',
+    headerTitle: 'service' in rootProps.navigation.state.params ?
+      'Modify Service' : 'Add Service',
+    headerRight: (
+      <TouchableOpacity
+        onPress={rootProps.navigation.state.params.onSave}
+      >
+        <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>
+      </TouchableOpacity>
+    ),
   });
+
   constructor(props) {
     super(props);
+    const { params } = this.props.navigation.state;
+
+    this.props.navigation.setParams({ ...params, onSave: this.onSave.bind(this) });
 
     this.state = {
-      selectedService: null,
-      selectedProvider: null,
+      index: 'index' in params ? params.index : null,
+      service: 'service' in params ? params.service : null,
+      selectedService: 'service' in params ? params.service : null,
+      selectedProvider: 'service' in params ? {
+        id: params.service.employeeId,
+        name: params.service.employeeFirstName,
+        lastName: params.service.employeeLastName,
+      } : null,
+      selectedPromotion: 'promotion' in params ? params.promotion : null,
+      providerRequested: false,
+      price: 'service' in params ? params.service.price : 0,
+      discount: '0',
     };
+  }
+
+  onSave = () => {
+    const { service, index } = this.state;
+    this.props.appointmentDetailsActions.addService({ service, index });
+    this.props.navigation.goBack();
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <InputGroup>
+        <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
             navigate={this.props.navigation.navigate}
-            onChange={(service) => {
-              this.setState({ selectedService: service });
+            selectedService={this.state.selectedService}
+            onChange={(selected) => {
+              this.setState({
+                service: { name: selected.name },
+                selectedService: selected,
+              });
+
+              apiWrapper.doRequest('getService', {
+                path: {
+                  id: selected.id,
+                },
+              })
+                .then((service) => {
+                  this.setState({
+                    price: service.price,
+                    selectedService: selected,
+                    service: { ...this.state.service, ...service, name: selected.name },
+                  });
+                })
+                .catch((err) => {
+                  console.warn(err);
+                });
             }}
           />
           <InputDivider />
           <ProviderInput
             navigate={this.props.navigation.navigate}
+            selectedProvider={this.state.selectedProvider}
             onChange={(provider) => {
-              this.setState({ selectedProvider: provider });
+              this.setState({
+                service: {
+                  ...this.state.service,
+                  employeeId: provider.id,
+                  employeeFirstName: provider.name,
+                  employeeMiddleName: provider.middleName,
+                  employeeLastName: provider.lastName,
+                  employeeFullName: provider.fullName,
+                },
+                selectedProvider: provider,
+              });
             }}
           />
           <InputDivider />
           <InputSwitch
-            onChange={value => alert(`Switched to ${value}`)}
+            value={this.state.providerRequested}
+            onChange={providerRequested => this.setState({ providerRequested })}
             text="Provider is requested?"
           />
         </InputGroup>
@@ -71,20 +131,28 @@ export default class ModifyServiceScreen extends React.Component {
             }}
           />
           <InputDivider />
-          <InputLabel label="Discount" value="20%" />
-          <InputLabel label="Price" value="$40" />
+          <InputLabel label="Discount" value={`${this.state.discount}`} />
+          <InputLabel label="Price" value={`$${this.state.price}`} />
         </InputGroup>
         <SectionDivider />
-        <InputGroup>
-          <TouchableOpacity style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{
-              fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+        {this.state.index !== null && (
+          <InputGroup>
+            <TouchableOpacity
+              style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
+              onPress={() => {
+                this.props.appointmentDetailsActions.removeService(this.state.index);
+                this.props.navigation.goBack();
               }}
             >
+              <Text style={{
+              fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+              }}
+              >
               Remove Service
-            </Text>
-          </TouchableOpacity>
-        </InputGroup>
+              </Text>
+            </TouchableOpacity>
+          </InputGroup>
+      )}
       </View>
     );
   }
