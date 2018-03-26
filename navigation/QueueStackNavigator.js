@@ -45,6 +45,9 @@ import AppointmentScreen from '../screens/AppointmentsScreen.js';
 
 import apptBookViewOptions from './../screens/apptBookViewOptions';
 
+
+import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
+
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
@@ -52,6 +55,9 @@ const QueueStackNavigator = StackNavigator(
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    ApptBookSetEmployeeOrder: {
+      screen: apptBookSetEmployeeOrder,
     },
     Products: {
       screen: ProductsScreen,

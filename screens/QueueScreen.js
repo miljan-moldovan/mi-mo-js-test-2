@@ -83,7 +83,7 @@ class QueueScreen extends React.Component {
       service: null,
       client: null,
       provider: null,
-    }
+    },
   }
   searchWaitingRef = null;
   searchServicingRef = null;
@@ -210,7 +210,7 @@ class QueueScreen extends React.Component {
     console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <KeyboardAwareScrollView style={{marginTop: 40}}>
+        <KeyboardAwareScrollView style={{ marginTop: 40 }}>
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
@@ -266,27 +266,29 @@ class QueueScreen extends React.Component {
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
-    //this.props.walkInActions.setEstimatedTime(17);
-    //navigate('WalkIn');
-    this.setState({ newAppointment: {
-      client: null,
-      service: null,
-      provider: null,
-    }});
+    // this.props.walkInActions.setEstimatedTime(17);
+    // navigate('WalkIn');
+    this.setState({
+      newAppointment: {
+        client: null,
+        service: null,
+        provider: null,
+      },
+    });
     navigate('Clients', {
       onChangeClient: this.handleChangeClient,
       headerProps: {
         title: 'Walking',
         subTitle: 'step 1 of 3',
         leftButton:
-        <View style={styles.backContainer}>
-          <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
-          <Text style={styles.leftButtonText}>
+  <View style={styles.backContainer}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
             Back
-          </Text>
-        </View>,
+    </Text>
+  </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
@@ -302,14 +304,14 @@ class QueueScreen extends React.Component {
         title: 'Walking',
         subTitle: 'step 2 of 3',
         leftButton:
-        <View style={styles.backContainer}>
-          <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
-          <Text style={styles.leftButtonText}>
+  <View style={styles.backContainer}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
             Back
-          </Text>
-        </View>,
+    </Text>
+  </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
@@ -332,14 +334,14 @@ class QueueScreen extends React.Component {
         title: 'Walking',
         subTitle: 'step 3 of 3',
         leftButton:
-        <View style={styles.backContainer}>
-          <FontAwesome style={styles.backIcon}>
-            {Icons.angleLeft}
-          </FontAwesome>
-          <Text style={styles.leftButtonText}>
+  <View style={styles.backContainer}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
             Back
-          </Text>
-        </View>,
+    </Text>
+  </View>,
       },
     });
   }
