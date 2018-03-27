@@ -2,7 +2,7 @@ import apiConstants from '../apiConstants';
 
 const resources = {
   getAppointmentsByDate: {
-    path: 'Appointments/ByDate/:date',
+    path: 'Appointment/:date',
     method: 'get',
     expiration: apiConstants.expiration,
   },

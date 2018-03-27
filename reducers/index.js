@@ -16,6 +16,7 @@ import checkinReducer from './checkin';
 import serviceReducer from './service';
 import { providersReducer } from '../screens/providersScreen/redux';
 import productsReducer from './products';
+import appointmentReducer from './appointment';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -35,4 +36,5 @@ export default combineReducers({
   serviceReducer,
   providersReducer,
   productsReducer,
+  appointmentReducer,
 });

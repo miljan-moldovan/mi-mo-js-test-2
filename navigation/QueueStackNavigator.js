@@ -39,9 +39,13 @@ import AppointmentNoteScreen from './../screens/appointmentNote';
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
+import SalonCalendar from './../components/SalonCalendar';
 
 const QueueStackNavigator = StackNavigator(
   {
+    SalonCalendar: {
+      screen: SalonCalendar,
+    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
