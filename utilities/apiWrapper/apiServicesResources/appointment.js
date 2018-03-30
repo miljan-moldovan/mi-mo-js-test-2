@@ -4,7 +4,8 @@ const resources = {
   getAppointmentsByDate: {
     path: 'Appointment/:date',
     method: 'get',
-    expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
+    disableCache: true,
   },
 };
 

@@ -40,7 +40,7 @@ const renderItems = (item, key) => (
       image="https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742"
       hasBadge
       badgeComponent={
-        <Icon name="birthdayCake" type="light" size={12} color="#115ECD"/>
+        <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
       }
     />
     <Text numberOfLines={1} style={styles.text}>{`${item.name} ${item.lastName[0]}.`}</Text>

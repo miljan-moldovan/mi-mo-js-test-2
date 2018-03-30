@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet, Animated } from 'react-native';
+import moment from 'moment';
 
 import HeaderTop from './headerTop';
 import FirstAvBtn from './firstAvailableBtn';
@@ -7,50 +8,18 @@ import TimeHeader from './timeColumn';
 import AvHeader from './availabilityColumn';
 import AppointmentBlock from './appointmentBlock';
 
-const hours = [
-  '09:00',
-  '09:15',
-  '09:30',
-  '09:45',
-  '10:00',
-  '10:15',
-  '10:30',
-  '10:45',
-  '11:00',
-  '11:15',
-  '11:30',
-  '11:45',
-  '12:00',
-  '12:15',
-  '12:30',
-  '12:45',
-  '13:00',
-  '13:15',
-  '13:30',
-  '13:45',
-  '14:00',
-  '14:15',
-  '14:30',
-  '14:45',
-  '15:00',
-  '15:15',
-  '15:30',
-  '15:45',
-  '16:00',
-  '16:15',
-  '16:30',
-  '16:45',
-  '17:00',
-];
 const styles = StyleSheet.create({
-  panResponder: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
   },
-  headerCell2: {
+  header: {
+    width: 500,
+    height: 100,
+    backgroundColor: 'white',
+    zIndex: 1,
+  },
+  headerCell: {
     height: 30,
     width: 130,
     borderColor: '#C0C1C6',
@@ -58,8 +27,29 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     backgroundColor: '#fff',
   },
+  headerCellDisabled: {
+    height: 30,
+    width: 130,
+    borderColor: '#C0C1C6',
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    backgroundColor: '#ccc',
+  },
   row: {
     flexDirection: 'row',
+  },
+  scrollView: {
+    marginLeft: 138,
+  },
+  fixedColumn: {
+    position: 'absolute',
+    paddingTop: 140,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+  },
+  firstAvBtn: {
+    position: 'absolute',
+    top: 100,
   },
 });
 
@@ -68,12 +58,8 @@ export default class SalonCalendar extends Component {
     super(props);
     this.state = {
       headerLeftY: new Animated.Value(0),
+      isEnabled: true,
     };
-  }
-
-  componentWillMount() {
-    this.props.providersActions.getProviders();
-    this.props.appointmentActions.getAppoinments('2018-03-20');
   }
 
   onScrollVertical = (ev) => {
@@ -86,25 +72,41 @@ export default class SalonCalendar extends Component {
     ).start();
   }
 
-  renderRow = provider => (
-    <View style={styles.headerCell2} key={provider.id} />
-  );
+  handleOnDrag = () => {
+    this.setState({ isEnabled: false });
+  }
+
+  renderRow = (providerScheudle, hour, key) => {
+    const time = moment(this.props.startTime, 'HH:mm').add(hour * 15, 'm');
+    const style = providerScheudle && providerScheudle.scheduledIntervals
+    && providerScheudle.scheduledIntervals.length > 0
+    && time.isSameOrAfter(moment(providerScheudle.scheduledIntervals[0].start, 'HH:mm'))
+    && time.isSameOrBefore(moment(providerScheudle.scheduledIntervals[0].end, 'HH:mm')) ? styles.headerCell : styles.headerCellDisabled;
+    return (
+      <View style={style} key={key} />
+    );
+  }
 
   renderCell = hour => (
-    <View style={{ flexDirection: 'row' }} key={hour}>
-      {this.props.providersState.providers.map(provider => this.renderRow(provider))}
+    <View style={styles.row} key={hour}>
+      {this.props.providers.map(provider =>
+        this.renderRow(this.props.dataSource[provider.id], hour, provider.id))}
     </View>
   );
 
   render() {
+    const { startTime, endTime } = this.props;
+    const duration = moment(endTime).diff(moment(startTime), 'hours') * 4;
+    const hours = Array.from(Array(duration).keys());
     return (
-      <View style={{backgroundColor: 'white', flex: 1}}>
-        <View style={{ width: 500, height: 100, backgroundColor: 'white', zIndex: 1 }} />
+      <View style={styles.container}>
+        <View style={styles.header} />
         <ScrollView
-          style={{ marginLeft: 138 }}
+          style={styles.scrollView}
           horizontal
           ref={(scrollView1) => { this.horizontalView = scrollView1; }}
           bounces={false}
+          scrollEnabled={this.state.isEnabled}
         >
           <ScrollView
             ref={(scrollView) => { this.verticalView = scrollView; }}
@@ -112,22 +114,33 @@ export default class SalonCalendar extends Component {
             scrollEventThrottle={50}
             stickyHeaderIndices={[0]}
             bounces={false}
+            scrollEnabled={this.state.isEnabled}
           >
             <View>
-              <HeaderTop dataSource={this.props.providersState.providers} />
+              <HeaderTop dataSource={this.props.providers} />
             </View>
             {hours.map(hour => this.renderCell(hour))}
-            {this.props.appointmentState.appointments ?
-            this.props.appointmentState.appointments.map(appointment =>
-              <AppointmentBlock providers={this.props.providersState.providers} appointment={appointment} initialTime={hours[0]} />) : null}
+            {this.props.appointments ?
+            this.props.appointments.map((appointment) => {
+              if (appointment.employee) {
+                return (
+                  <AppointmentBlock
+                    providers={this.props.providers}
+                    appointment={appointment}
+                    initialTime={startTime}
+                    onDrag={this.handleOnDrag}
+                  />);
+            }
+              return null;
+            }) : null}
           </ScrollView>
         </ScrollView>
-        <Animated.View style={{ position: 'absolute', top: this.state.headerLeftY, paddingTop: 140, backgroundColor: 'white', flexDirection: 'row' }}>
-          <TimeHeader dataSource={hours} />
+        <Animated.View style={[styles.fixedColumn, { top: this.state.headerLeftY }]}>
+          <TimeHeader dataSource={hours} startTime={startTime} />
           <AvHeader dataSource={hours} />
         </Animated.View>
-        <FirstAvBtn rootStyles={{ position: 'absolute', top: 100 }} />
+        <FirstAvBtn rootStyles={styles.firstAvBtn} />
       </View>
-    )
+    );
   }
 }

@@ -40,11 +40,12 @@ import AppointmentNoteScreen from './../screens/appointmentNote';
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
 import SalonCalendar from './../components/SalonCalendar';
+import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 
 const QueueStackNavigator = StackNavigator(
   {
     SalonCalendar: {
-      screen: SalonCalendar,
+      screen: AppointmentCalendarScreen,
     },
     Main: {
       screen: QueueScreen,
