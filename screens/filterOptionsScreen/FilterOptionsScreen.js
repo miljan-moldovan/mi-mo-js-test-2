@@ -4,11 +4,18 @@ import {
   Text,
   FlatList,
   StyleSheet,
+  RefreshControl,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import WordHighlighter from '../../components/wordHighlighter';
+import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
-import apiWrapper from '../../utilities/apiWrapper';
+import SalonAvatar from '../../components/SalonAvatar';
+// import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,11 +37,52 @@ const styles = StyleSheet.create({
     color: '#110A24',
     fontFamily: 'Roboto-Medium',
   },
+  itemRow: {
+    height: 43,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    backgroundColor: 'white',
+    // borderBottomWidth: StyleSheet.hairlineWidth,
+    // borderBottomColor: '#C0C1C6',
+  },
+  inputRow: {
+    flex: 9,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  providerName: {
+    fontSize: 14,
+    marginLeft: 7,
+    color: '#110A24',
+    fontFamily: 'Roboto-Medium',
+  },
+  providerRound: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
 });
 
 export default class FilterOptionsScreen extends React.Component {
   static navigationOptions = rootProps => ({
     title: 'Filter Options',
+    leftButton: (
+      <HeaderLateral>
+        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
+          Cancel
+        </Text>
+      </HeaderLateral>
+    ),
+    rightButton: (
+      <HeaderLateral>
+        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto-Medium' }}>
+          Done
+        </Text>
+      </HeaderLateral>
+    ),
   });
 
   constructor(props) {
@@ -46,14 +94,62 @@ export default class FilterOptionsScreen extends React.Component {
   }
 
   componentWillMount() {
-    apiWrapper.doRequest('getEmployees', {})
-      .then((providers) => {
-        this.setState({ activeData: providers });
-      })
-      .catch((err) => {
-        console.warn(err);
-      });
+    this.props.providersActions.getProviders({
+      filterRule: 'none',
+      maxCount: 100,
+      sortOrder: 'asc',
+      sortField: 'fullName',
+    });
   }
+
+  onRefresh = () => {
+    this.props.providersActions.getProviders({
+      filterRule: 'none',
+      maxCount: 100,
+      sortOrder: 'asc',
+      sortField: 'fullName',
+    });
+  }
+
+  renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={styles.itemRow}
+      onPress={() => this._handleOnChangeProvider(item)}
+      key={index}
+    >
+      <View style={styles.inputRow}>
+        <SalonAvatar
+          wrapperStyle={styles.providerRound}
+          width={30}
+          borderWidth={1}
+          borderColor="transparent"
+          image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+        />
+        <WordHighlighter
+          highlight={this.state.searchText}
+          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+          highlightStyle={{ color: '#1DBF12' }}
+        >
+          {item.fullName}
+        </WordHighlighter>
+      </View>
+      <View style={{ flex: 1, alignItems: 'center' }}>
+        {this.state.selectedProvider === item.id && (
+        <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+
+  renderSeparator = () => (
+    <View
+      style={{
+        height: StyleSheet.hairlineWidth,
+        width: '100%',
+        backgroundColor: '#C0C1C6',
+      }}
+    />
+  );
 
   render() {
     return (
@@ -94,14 +190,30 @@ export default class FilterOptionsScreen extends React.Component {
         <View style={styles.row}>
           <Text style={styles.rowText}>View all providers</Text>
         </View>
-        <FlatList
-          data={this.state.activeData}
-          renderItem={({ item }) => (
-            <View key={item.id} style={styles.row}>
-              <Text style={styles.rowText}>{item.fullName}</Text>
+        {this.props.providersState.isLoading
+          ? (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator />
             </View>
-          )}
-        />
+          ) : (
+            <FlatList
+              data={this.props.providersState.currentData}
+              ItemSeparatorComponent={this.renderSeparator}
+              // renderItem={({ item }) => (
+              //   <View key={item.id} style={styles.row}>
+              //     <Text style={styles.rowText}>{item.fullName}</Text>
+              //   </View>
+              // )}
+              renderItem={this.renderItem}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+            />
+          )
+        }
       </View>
     );
   }
