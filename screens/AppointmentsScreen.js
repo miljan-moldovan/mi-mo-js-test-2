@@ -17,19 +17,13 @@ import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 import SideMenuItem from '../components/SideMenuItem';
-import SalonDatePickerBar from '../components/SalonDatePickerBar';
-import SalonDatePickerSlide from '../components/slidePanels/SalonDatePickerSlide';
-import moment from 'moment';
 
 
 class AppointmentsScreen extends React.Component {
   static navigationOptions = {
 
   };
-  state = {
-    visible: false,
-    selectedDate: moment(),
-  }
+
 
   render() {
     return (
@@ -37,16 +31,6 @@ class AppointmentsScreen extends React.Component {
         <Image
           style={styles.backgroundImage}
           source={require('../assets/images/login/blue.png')}
-        />
-
-        <SalonDatePickerBar
-          style={{ marginTop: 5 }}
-          calendarColor="#FFFFFF"
-          onCalendarSelected={() => this.setState({ visible: true })}
-          onDateChange={(date) => {
-            this.setState({ selectedDate: date });
-          }}
-          selectedDate={this.state.selectedDate}
         />
 
 
@@ -58,17 +42,7 @@ class AppointmentsScreen extends React.Component {
           <Text style={styles.loginButtonText}>LOGOUT</Text>{ this.state.waitingLogin && <ActivityIndicator /> }
         </Button>
 
-        <SalonDatePickerSlide
-          visible={this.state.visible}
-          selectedDate={moment(this.state.selectedDate).format('YYYY-MM-DD')}
-          onHide={() => {
-            this.setState({ visible: false });
-          }}
-          onDateSelected={(date) => {
-            debugger //eslint-disable-line
-          this.setState({ selectedDate: date, visible: false });
-        }}
-        />
+
       </View>
     );
   }
