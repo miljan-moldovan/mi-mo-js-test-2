@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
+import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
   state = {
@@ -15,6 +16,25 @@ export default class AppointmentScreen extends Component {
 
   componentWillMount() {
     this.props.appointmentCalendarActions.getAppoinmentsCalendar('2018-03-20');
+  }
+
+  gotToSales = () => {
+    alert('Not Implemented');
+  }
+
+  gotToQueue = () => {
+    alert('Not Implemented');
+  }
+
+  gotToApptBook = () => {
+  }
+
+  gotToClients = () => {
+    this.props.navigation.navigate('Clients');
+  }
+
+  gotToScoreCard = () => {
+    alert('Not Implemented');
   }
 
   render() {
@@ -62,6 +82,26 @@ export default class AppointmentScreen extends Component {
           onDateSelected={(date) => {
             this.setState({ selectedDate: date, visible: false });
           }}
+        />
+
+        <BottomTabBar
+          tabs={[
+          {
+            icon: 'lineChart', title: 'Sales', callback: this.gotToSales,
+          },
+          {
+           icon: 'calendar', title: 'Appt. Book', callback: this.gotToApptBook,
+          },
+          {
+           icon: 'signIn', title: 'Queue', callback: this.gotToQueue,
+          },
+          {
+           icon: 'driversLicense', title: 'Clients', callback: this.gotToClients,
+          },
+          {
+           icon: 'clipboard', title: 'ScoreCard', callback: this.gotToScoreCard,
+          },
+        ]}
         />
       </View>
     );

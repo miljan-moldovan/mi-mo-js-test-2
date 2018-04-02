@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '700',
     backgroundColor: 'transparent',
-    marginTop: 3,
+    marginTop: 4,
   },
   numberContainer: {
     zIndex: 9999,
@@ -62,6 +62,7 @@ export default class ChangeViewFloatingButton extends Component {
           width: 70,
           height: 70,
           backgroundColor: '#1DBF12',
+          marginBottom: 25,
         }}
       >
         {this.state.week &&
