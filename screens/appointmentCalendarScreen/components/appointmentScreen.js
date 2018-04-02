@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
 import SalonCalendar from '../../../components/SalonCalendar';
+import ChangeViewFloatingButton from './changeViewFloatingButton';
 
 export default class AppointmentScreen extends Component {
   componentWillMount() {
@@ -9,7 +10,9 @@ export default class AppointmentScreen extends Component {
   }
 
   render() {
-    const { startTime, endTime, providerAppointments, isLoading } = this.props.appointmentScreenState;
+    const {
+      startTime, endTime, providerAppointments, isLoading,
+    } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
     return (
@@ -25,6 +28,8 @@ export default class AppointmentScreen extends Component {
               providers={providers}
             />
       }
+
+        <ChangeViewFloatingButton />
       </View>
     );
   }

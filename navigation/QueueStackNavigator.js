@@ -42,6 +42,14 @@ import RebookDialogScreen from './../screens/rebookDialogScreen';
 import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 
+import AppointmentScreen from '../screens/AppointmentsScreen.js';
+
+
+import apptBookViewOptions from './../screens/apptBookViewOptions';
+
+
+import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
+
 const QueueStackNavigator = StackNavigator(
   {
     SalonCalendar: {
@@ -53,13 +61,20 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: 'Queue',
       },
     },
+    ApptBookSetEmployeeOrder: {
+      screen: apptBookSetEmployeeOrder,
+    },
     Products: {
       screen: ProductsScreen,
-
     },
     Services: {
       screen: ServicesScreen,
-
+    },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
+    },
+    Appointment: {
+      screen: AppointmentScreen,
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,

@@ -18,6 +18,8 @@ import serviceReducer from './service';
 import { providersReducer } from '../screens/providersScreen/redux';
 import productsReducer from './products';
 import appointmentReducer from './appointment';
+import apptBookViewOptionsReducer from './apptBookViewOptions';
+import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -39,4 +41,6 @@ export default combineReducers({
   productsReducer,
   appointmentReducer,
   appointmentScreenReducer,
+  apptBookViewOptionsReducer,
+  apptBookSetEmployeeOrderReducer,
 });
