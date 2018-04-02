@@ -15,14 +15,7 @@ import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
-
-import SalonRoomList from './components/SalonRoomList';
-import SalonResourceList from './components/SalonResourceList';
-
-const TAB_PROVIDERS = 0;
-const TAB_RESOURCES = 1;
-const TAB_ROOMS = 2;
-const TAB_DESK_STAFF = 3;
+// import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -73,9 +66,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class FilterOptionsScreen extends React.Component {
+export default class FilterByPositionScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    title: 'Filter Options',
+    title: 'Filter By Position',
     leftButton: (
       <HeaderLateral>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
@@ -96,7 +89,7 @@ export default class FilterOptionsScreen extends React.Component {
     super(props);
 
     this.state = {
-      activeTab: TAB_PROVIDERS,
+      activeData: [],
     };
   }
 
@@ -109,10 +102,6 @@ export default class FilterOptionsScreen extends React.Component {
     });
   }
 
-  onPressTab = (ev, index) => {
-    this.setState({ activeTab: index });
-  }
-
   onRefresh = () => {
     this.props.providersActions.getProviders({
       filterRule: 'none',
@@ -120,61 +109,6 @@ export default class FilterOptionsScreen extends React.Component {
       sortOrder: 'asc',
       sortField: 'fullName',
     });
-  }
-
-  renderActiveTab = () => {
-    switch (this.state.activeTab) {
-      case TAB_PROVIDERS:
-        return (
-          <View style={styles.container}>
-            <View style={styles.row}>
-              <Text style={styles.rowText}>View all providers</Text>
-            </View>
-            {this.props.providersState.isLoading
-              ? (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  <ActivityIndicator />
-                </View>
-              ) : (
-                <FlatList
-                  data={this.props.providersState.currentData}
-                  ItemSeparatorComponent={this.renderSeparator}
-                  // renderItem={({ item }) => (
-                  //   <View key={item.id} style={styles.row}>
-                  //     <Text style={styles.rowText}>{item.fullName}</Text>
-                  //   </View>
-                  // )}
-                  renderItem={this.renderItem}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.onRefresh}
-                    />
-                  }
-                />
-              )
-            }
-          </View>
-        );
-      case TAB_RESOURCES:
-        return (
-          <SalonResourceList />
-        );
-      case TAB_ROOMS:
-        return (
-          <SalonRoomList />
-        );
-      case TAB_DESK_STAFF:
-        return (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Desk Staff Tab</Text>
-          </View>
-        );
-      default:
-        break;
-    }
-
-    return null;
   }
 
   renderItem = ({ item, index }) => (
@@ -228,7 +162,7 @@ export default class FilterOptionsScreen extends React.Component {
             backgroundColor="rgba(142,142,147,0.24)"
           // backgroundColor="#F1F1F1"
             borderColor="transparent"
-            placeHolderText="Start typing to search"
+            placeholderText="Start typing to search"
             onChangeText={this.onChangeText}
           />
         </View>
@@ -240,24 +174,31 @@ export default class FilterOptionsScreen extends React.Component {
             borderBottomWidth: StyleSheet.hairlineWidth,
             borderBottomColor: '#C0C1C6',
           }}
-        >
-          <SalonFlatPicker
-            selectedIndex={this.state.activeTab}
-            onItemPress={this.onPressTab}
-            rootStyle={{
-              flex: 0,
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-            }}
-            containerStyle={{ backgroundColor: 'white' }}
-            selectedColor="#115ECD"
-            unSelectedTextColor="#115ECD"
-            dataSource={['Providers', 'Resources', 'Rooms', 'Desk Staff']}
-          />
-        </View>
-        <View style={{ flex: 1, flexDirection: 'column' }}>
-          {this.renderActiveTab()}
-        </View>
+        />
+        {this.props.providersState.isLoading
+          ? (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <FlatList
+              data={this.props.providersState.currentData}
+              ItemSeparatorComponent={this.renderSeparator}
+              // renderItem={({ item }) => (
+              //   <View key={item.id} style={styles.row}>
+              //     <Text style={styles.rowText}>{item.fullName}</Text>
+              //   </View>
+              // )}
+              renderItem={this.renderItem}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+            />
+          )
+        }
       </View>
     );
   }

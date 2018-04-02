@@ -13,7 +13,7 @@ let api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
 function getHeader() {
   const header = {
     'Content-Type': 'application/json',
-    'X-SU-store-key': '4',
+    'X-SU-store-key': '1',
     'X-SU-user-name': 'Imported',
   };
   return header;
@@ -111,7 +111,8 @@ function doRequest(key, parameters, options = {
     let count = 1;
 
     // bypass default URL if it exists in the store
-    let apiURL, store;
+    let apiURL,
+      store;
     try {
       apiURL = await AsyncStorage.getItem(URLKEY);
       store = await AsyncStorage.getItem(STOREKEY);
@@ -127,7 +128,7 @@ function doRequest(key, parameters, options = {
       console.log('APIWrapper no store found');
     }
 
-    
+
     const attempt = () => api.fetch(
       key,
       fetchData,

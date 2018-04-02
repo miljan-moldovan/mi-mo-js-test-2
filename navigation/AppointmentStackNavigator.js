@@ -29,6 +29,7 @@ import AppointmentNoteHeader from '../screens/appointmentNote/components/appoint
 import ModifyServiceScreen from './../screens/modifyServiceScreen';
 
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
+import FilterByPositionScreen from './../screens/filterByPositionScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -37,6 +38,9 @@ const AppointmentStackNavigator = StackNavigator(
     // },
     FilterOptions: {
       screen: FilterOptionsScreen,
+    },
+    FilterByPosition: {
+      screen: FilterByPositionScreen,
     },
     Appointments: {
       screen: AppointmentScreen,
