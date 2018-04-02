@@ -11,6 +11,7 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import SalonAvatar from '../../components/SalonAvatar';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
 
 const styles = StyleSheet.create({
@@ -20,8 +21,8 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     backgroundColor: 'white',
-    borderTopWidth: 1 / 2,
-    borderBottomWidth: 1 / 2,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#C0C1C6',
     borderBottomColor: '#C0C1C6',
     alignSelf: 'stretch',
@@ -30,8 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   inputRow: {
-    flex: 1,
-    height: 44,
+    height: 43,
     paddingRight: 16,
     alignSelf: 'stretch',
     flexDirection: 'row',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   inputDivider: {
-    height: 1,
+    height: StyleSheet.hairlineWidth,
     backgroundColor: '#C0C1C6',
     alignSelf: 'stretch',
   },
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 43,
     color: '#110A24',
     fontFamily: 'Roboto-Medium',
   },
@@ -83,6 +83,12 @@ const styles = StyleSheet.create({
   dateCancelStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  providerRound: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    marginRight: 10,
   },
   inputNumber: {
     borderColor: '#1DBF12',
@@ -118,7 +124,7 @@ SectionTitle.propTypes = {
 };
 
 export const SectionDivider = props => (
-  <View style={[{ height: 35 }, props.style]} />
+  <View style={[{ height: 38 }, props.style]} />
 );
 
 
@@ -305,7 +311,7 @@ export class ServiceInput extends React.Component {
     super(props);
 
     this.state = {
-      selectedService: null,
+      selectedService: 'selectedService' in this.props ? this.props.selectedService : null,
     };
   }
 
@@ -316,6 +322,7 @@ export class ServiceInput extends React.Component {
 
   handlePress = () => {
     this.props.navigate('Services', {
+      selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
       dismissOnSelect: true,
       onChangeService: service => this.handleServiceSelection(service),
@@ -323,7 +330,7 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    const value = this.state.selectedService ? this.state.selectedService.name : null;
+    const value = this.props.selectedService ? this.props.selectedService.name : null;
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -344,17 +351,18 @@ export class ProviderInput extends React.Component {
     super(props);
 
     this.state = {
-      selectedProvider: null,
+      selectedProvider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
 
   handleProviderSelection = (provider) => {
-    this.setState({ selectedProvider: provider });
+    this.setState({ selectedProvider: provider, selectedProviderId: provider.id });
     this.props.onChange(provider);
   }
 
   handlePress = () => {
     this.props.navigate('Providers', {
+      selectedProvider: this.state.selectedProvider,
       actionType: 'update',
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
@@ -369,8 +377,19 @@ export class ProviderInput extends React.Component {
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Provider</Text>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          <Text style={[styles.inputText]}>{value}</Text>
+        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+          {value !== null && (
+            <View style={{ flexDirection: 'row' }}>
+              <SalonAvatar
+                wrapperStyle={styles.providerRound}
+                width={30}
+                borderWidth={1}
+                borderColor="transparent"
+                image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+              />
+              <Text style={[styles.inputText]}>{value}</Text>
+            </View>
+          )}
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
       </TouchableOpacity>
@@ -417,6 +436,44 @@ export class PromotionInput extends React.Component {
   }
 }
 
+export class ProductInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedProduct: 'selectedProduct' in this.props ? this.props.selectedProduct : null,
+    };
+  }
+
+  handleProductSelection = (product) => {
+    this.setState({ selectedProduct: product });
+    this.props.onChange(product);
+  }
+
+  handlePress = () => {
+    this.props.navigate('Products', {
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeProduct: product => this.handleProductSelection(product),
+    });
+  }
+
+  render() {
+    const value = this.state.selectedProduct ? this.state.selectedProduct.name : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, { justifyContent: 'center' }]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Product</Text>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
+    );
+  }
+}
 
 export class InputNumber extends React.Component {
   constructor(props) {

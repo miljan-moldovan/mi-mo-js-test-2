@@ -30,8 +30,10 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import SalonSearchHeader from '../components/SalonSearchHeader';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
+import ModifyProductScreen from '../screens/modifyProductScreen';
+import RecommendationsScreen from '../screens/recommendationsScreen';
 
-import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/NewAppointmentScreen';
@@ -79,14 +81,17 @@ const QueueStackNavigator = StackNavigator(
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
     },
-    Service: {
-      screen: ModifyServiceScreen,
-    },
+    // Service: {
+    //   screen: ModifyServiceScreen,
+    // },
     Walkout: {
       screen: WalkOutScreen,
       navigationOptions: {
         headerTitle: 'Walkout',
       },
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
@@ -101,6 +106,15 @@ const QueueStackNavigator = StackNavigator(
         gesturesEnabled: false,
         header: props => (<View />),
       },
+    },
+    Service: {
+      screen: ModifyServiceScreen,
+    },
+    Product: {
+      screen: ModifyProductScreen,
+    },
+    Recommendations: {
+      screen: RecommendationsScreen,
     },
     RebookDialog: {
       screen: RebookDialogScreen,

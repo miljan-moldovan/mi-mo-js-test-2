@@ -24,7 +24,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
 import * as settingsActions from '../actions/settings.js';
 import checkinActions from '../actions/checkin';
@@ -207,7 +207,7 @@ class QueueScreen extends React.Component {
     };
     const active = { backgroundColor: 'white' };
     const activeText = { color: '#115ECD' };
-    console.log('_renderSearchResults searchType', searchType, p.searchClient, p.searchProvider);
+
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
         <KeyboardAwareScrollView style={{ marginTop: 40 }}>

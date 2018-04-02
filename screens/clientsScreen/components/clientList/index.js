@@ -130,29 +130,24 @@ class ClientList extends React.Component {
     };
   }
 
-    state:{
-      clients:[]
-    };
+  componentWillMount() {
+    this.setState({ letterGuide: this.renderLetterGuide() });
+  }
 
+  componentDidMount() {
+    const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
+    wait.then(() => {
+      this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
+    });
+  }
 
-    componentWillMount() {
-      this.setState({ letterGuide: this.renderLetterGuide() });
-    }
-
-    componentDidMount() {
-      const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
-      wait.then(() => {
-        this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
-      });
-    }
-
-    componentWillReceiveProps(nextProps) {
-      const clients = nextProps.clients.sort(ClientList.compareByName);
-      this.setState({
-        dataSource: ClientList.clients(clients),
-        boldWords: nextProps.boldWords,
-      });
-    }
+  componentWillReceiveProps(nextProps) {
+    const clients = nextProps.clients.sort(ClientList.compareByName);
+    this.setState({
+      dataSource: ClientList.clients(clients),
+      boldWords: nextProps.boldWords,
+    });
+  }
 
       scrollToIndex = (letter) => {
         let total = 0;

@@ -119,6 +119,7 @@ class Queue extends React.Component {
     // emulate refresh call
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
+
   getButtonsForItem = (item) => {
     const {
       noShow, returnLater, clientReturned, service, walkout, checkin,
