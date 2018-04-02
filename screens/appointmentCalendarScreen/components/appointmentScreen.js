@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 
 import SalonCalendar from '../../../components/SalonCalendar';
 
@@ -9,18 +9,22 @@ export default class AppointmentScreen extends Component {
   }
 
   render() {
-    const { startTime, endTime, providerAppointments } = this.props.appointmentScreenState;
+    const { startTime, endTime, providerAppointments, isLoading } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
     return (
       <View style={{ flex: 1 }}>
-        <SalonCalendar
-          startTime={startTime}
-          endTime={endTime}
-          dataSource={providerAppointments}
-          appointments={appointments}
-          providers={providers}
-        />
+        {
+          isLoading ?
+            <ActivityIndicator size="large" color="#0000ff" /> :
+            <SalonCalendar
+              startTime={startTime}
+              endTime={endTime}
+              dataSource={providerAppointments}
+              appointments={appointments}
+              providers={providers}
+            />
+      }
       </View>
     );
   }

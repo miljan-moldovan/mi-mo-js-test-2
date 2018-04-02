@@ -44,12 +44,14 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
       let appointment;
       for (let i = 0; i < providers.length; i += 1) {
         schedule = response[providers[i].id];
-        schedule.provider = providers[i];
-        if (schedule.scheduledIntervals && schedule.scheduledIntervals.length > 0) {
-          newTime = moment(schedule.scheduledIntervals[0].start, 'HH:mm');
-          startTime = startTime && startTime.isBefore(newTime) ? startTime : newTime;
-          newTime = moment(schedule.scheduledIntervals[0].end, 'HH:mm');
-          endTime = endTime && endTime.isAfter(newTime) ? endTime : newTime;
+        if (schedule) {
+          schedule.provider = providers[i];
+          if (schedule.scheduledIntervals && schedule.scheduledIntervals.length > 0) {
+            newTime = moment(schedule.scheduledIntervals[0].start, 'HH:mm');
+            startTime = startTime && startTime.isBefore(newTime) ? startTime : newTime;
+            newTime = moment(schedule.scheduledIntervals[0].end, 'HH:mm');
+            endTime = endTime && endTime.isAfter(newTime) ? endTime : newTime;
+          }
         }
       }
       for (let i = 0; i < appointmentResponse.length; i += 1) {
@@ -62,9 +64,11 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
           schedule.appointments.push(appointment);
         }
       }
+      debugger
       dispatch(getProvidersScheduleSuccess(startTime, endTime, response));
     })
     .catch((err) => {
+      debugger
       console.log(err);
     });
 };
@@ -124,6 +128,7 @@ export default function appoinmentScreenReducer(state = initialState, action) {
         isLoading: true,
       };
     case GET_APPOINTMENTS_CALENDAR_SUCCESS:
+    debugger
       return {
         ...state,
         isLoading: false,

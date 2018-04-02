@@ -81,7 +81,7 @@ class appointmentBlock extends Component {
   }
 
   handleOnLongPress = () => {
-    this.props.onDrag();
+    //this.props.onDrag();
     this.setState({ isActive: true });
   }
 
