@@ -4,7 +4,8 @@ import { Image, View, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
 import AppointmentScreen from '../screens/AppointmentsScreen.js';
-import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+// import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
@@ -33,9 +34,10 @@ import FilterByPositionScreen from './../screens/filterByPositionScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
-    // Main: {
-    //   screen: FilterOptionsScreen,
-    // },
+    Main: {
+      screen: NewAppointmentScreen,
+    },
+
     FilterOptions: {
       screen: FilterOptionsScreen,
     },

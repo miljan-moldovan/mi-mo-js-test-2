@@ -36,7 +36,7 @@ import RecommendationsScreen from '../screens/recommendationsScreen';
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
-import NewAppointmentScreen from '../screens/NewAppointmentScreen';
+import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import AppointmentNoteScreen from './../screens/appointmentNote';
 
 import ProductsScreen from './../screens/productsScreen';

@@ -195,7 +195,6 @@ const ServiceCard = (props) => {
 
   return (
     <SalonCard
-      {...console.log('djoy props', props)}
       backgroundColor="white"
       containerStyles={{ marginHorizontal: 0 }}
       bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}

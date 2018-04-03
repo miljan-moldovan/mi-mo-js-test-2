@@ -305,6 +305,46 @@ export class InputSwitch extends React.Component {
   }
 }
 
+export class ClientInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedClient: 'selectedClient' in this.props ? this.props.selectedClient : null,
+    };
+  }
+
+  handleClientSelection = (client) => {
+    this.setState({ selectedClient: client });
+    this.props.onChange(client);
+  }
+
+  handlePress = () => {
+    this.props.navigate('ChangeClient', {
+      selectedClient: 'selectedClient' in this.state ? this.state.selectedClient : null,
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeClient: client => this.handleClientSelection(client),
+    });
+  }
+
+  render() {
+    const value = this.props.selectedClient ? this.props.selectedClient.name : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, { justifyContent: 'center' }]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Client</Text>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
+    );
+  }
+}
+
 export class ServiceInput extends React.Component {
   constructor(props) {
     super(props);
@@ -350,6 +390,7 @@ export class ProviderInput extends React.Component {
     super(props);
 
     this.state = {
+      labelText: 'labelText' in this.props ? this.props.labelText : 'Provider',
       selectedProvider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
@@ -375,7 +416,7 @@ export class ProviderInput extends React.Component {
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
-        <Text style={[styles.labelText]}>Provider</Text>
+        <Text style={[styles.labelText]}>{this.state.labelText}</Text>
         <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
