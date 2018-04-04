@@ -16,6 +16,7 @@ const visibleHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   container: {
+    zIndex: 99999,
     position: 'absolute',
     top: 0,
     left: 0,

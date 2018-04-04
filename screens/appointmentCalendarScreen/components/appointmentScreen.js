@@ -6,11 +6,13 @@ import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
+import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
   state = {
     visible: false,
+    visibleNewAppointment: false,
     selectedDate: moment(),
   }
 
@@ -27,6 +29,7 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToApptBook = () => {
+    this.setState({ visibleNewAppointment: true });
   }
 
   gotToClients = () => {
@@ -81,6 +84,14 @@ export default class AppointmentScreen extends Component {
           }}
           onDateSelected={(date) => {
             this.setState({ selectedDate: date, visible: false });
+          }}
+        />
+
+        <SalonNewAppointmentSlide
+          navigation={this.props.navigation}
+          visible={this.state.visibleNewAppointment}
+          onHide={() => {
+            this.setState({ visibleNewAppointment: false });
           }}
         />
 
