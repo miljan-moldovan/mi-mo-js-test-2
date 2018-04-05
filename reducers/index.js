@@ -11,11 +11,15 @@ import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
 import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/components/appointmentFormulas/redux';
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
+import appointmentScreenReducer from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
 
 import checkinReducer from './checkin';
 import serviceReducer from './service';
 import { providersReducer } from '../screens/providersScreen/redux';
 import productsReducer from './products';
+import appointmentReducer from './appointment';
+import apptBookViewOptionsReducer from './apptBookViewOptions';
+import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -35,4 +39,8 @@ export default combineReducers({
   serviceReducer,
   providersReducer,
   productsReducer,
+  appointmentReducer,
+  appointmentScreenReducer,
+  apptBookViewOptionsReducer,
+  apptBookSetEmployeeOrderReducer,
 });

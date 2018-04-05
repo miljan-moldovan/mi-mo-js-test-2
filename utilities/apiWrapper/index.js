@@ -13,7 +13,7 @@ let api = new OfflineFirstAPI(apiOptions.conf, apiServices.conf);
 function getHeader() {
   const header = {
     'Content-Type': 'application/json',
-    'X-SU-store-key': '4',
+    'X-SU-store-key': '1',
     'X-SU-user-name': 'Imported',
   };
   return header;
@@ -127,7 +127,7 @@ function doRequest(key, parameters, options = {
       console.log('APIWrapper no store found');
     }
 
-    
+
     const attempt = () => api.fetch(
       key,
       fetchData,
