@@ -35,36 +35,45 @@ const styles = StyleSheet.create({
     width: 129,
     borderRadius: 4,
     borderWidth: 1,
+    zIndex: 99,
   },
 });
 
 class appointmentBlock extends Component {
   constructor(props) {
     super(props);
-    const { fromTime, toTime } = props.appointment;
+    this.scrollValue = 0;
+    const { toTime, fromTime } = props.appointment;
     const start = moment(fromTime, 'HH:mm');
-    const end = moment(toTime, 'HH:mm');
     const top = 40 + (moment.duration(start.diff(props.initialTime)).asMinutes() / 15) * 30;
+    const end = moment(toTime, 'HH:mm');
     const left = props.providers.findIndex(
       provider => provider.id === props.appointment.employee.id) * 130;
+    const height = (moment.duration(end.diff(start)).asMinutes() / 15) * 30 - 1;
     this.animatedValueX = left;
     this.animatedValueY = top;
     this.state = {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
       top,
+      height,
       isActive: false,
+      isScrolling: false,
     };
     this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
     this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
-
     this.panResponder = PanResponder.create({
+      onPanResponderTerminationRequest: () => false,
       onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive,
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.isActive,
-      onPanResponderMove:  Animated.event([null, {
-        dx: this.state.pan.x,
-        dy: this.state.pan.y,
-      }]),
+      onPanResponderMove: (e, gesture) => {
+        this.moveX = gesture.dx;
+        this.moveY = gesture.dy;
+        return Animated.event([null, {
+          dx: this.state.pan.x,
+          dy: this.state.pan.y,
+        }])(e, gesture);
+      },
       onPanResponderGrant: () => {
         if (this.state.isActive) {
           this.state.pan.setOffset({ x: this.animatedValueX, y: this.animatedValueY });
@@ -80,10 +89,112 @@ class appointmentBlock extends Component {
     });
   }
 
-  handleOnLongPress = () => {
-    //this.props.onDrag();
-    this.setState({ isActive: true });
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.hasOwnProperty('isActive') ? nextState.isActive : this.state.isActive;
   }
+  setIsScrolling = isScrolling => this.setState({ isScrolling })
+
+  loopScroll = () => {
+    if (!this.state.isScrolling) {
+      return null
+    }
+      this.props.onScrollX(this.props.calendarOffset.x + this.state.isScrolling);
+      requestAnimationFrame(this.loopScroll);
+  }
+
+  handleOnLongPress = () => {
+    this.setState({ isActive: true }, this.scrollAnimation);
+    //this.offset = this.props.calendarOffset,
+    this.props.onDrag();
+  }
+
+  scrollAnimation = () => {
+    let dx = 0;
+    let dy = 0;
+    const boundLength = 10;
+    const maxScrollChange = 15;
+    const cardWidth = 130;
+    if (this.state.isActive) {
+      if (this.moveX && this.moveY) {
+        if (Math.abs(this.moveX) >= Math.abs(this.moveY)) {
+          const scrollHorizontalBoundRight = (this.props.calendarMeasure.width
+            + this.props.calendarOffset.x) - boundLength - cardWidth;
+          const scrollHorizontalBoundLeft = this.props.calendarOffset.x + boundLength;
+          const moveX = this.moveX + this.state.pan.x._offset + this.state.pan.x._value;
+          if (scrollHorizontalBoundRight < moveX) {
+            dx = moveX - scrollHorizontalBoundRight;
+          } else if (scrollHorizontalBoundLeft > moveX) {
+            dx = moveX - scrollHorizontalBoundLeft;
+          }
+          if (Math.abs(dx) > 0) {
+            dx = Math.abs(dx) > boundLength ? boundLength * Math.sign(dx) : dx;
+            dx = dx * maxScrollChange / boundLength;
+            this.props.onScrollX(this.props.calendarOffset.x + dx, () => {
+              this.state.pan.setOffset({
+                x: this.state.pan.x._offset + dx,
+                y: this.state.pan.y._offset,
+              });
+              this.state.pan.setValue({ x: this.state.pan.x._value, y: this.state.pan.y._value });
+            });
+          }
+        } else {
+          const scrollVerticalBoundTop = (this.props.calendarMeasure.height
+            + this.props.calendarOffset.y) - boundLength - this.state.height;
+          const scrollVerticalBoundBottom = this.props.calendarOffset.y + boundLength;
+          const moveY = this.moveY + this.state.pan.y._offset + this.state.pan.y._value;
+          if (scrollVerticalBoundTop < moveY) {
+            dy = moveY - scrollVerticalBoundTop;
+          } else if (scrollVerticalBoundBottom > moveY) {
+            dy = moveY - scrollVerticalBoundBottom;
+          }
+          if (Math.abs(dy) > 0) {
+            dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
+            dy = dy * maxScrollChange / boundLength;
+              console.log("BACON", scrollVerticalBoundTop, this.props.calendarMeasure.height, ' - ', this.props.calendarOffset.y, ' - ', this.state.pan.y._offset, this.state.pan.y._value, ' - ', dy);
+            this.props.onScrollY(this.props.calendarOffset.y + dy, () => {
+              debugger
+              this.state.pan.setOffset({
+                x: this.state.pan.x._offset,
+                y: this.state.pan.y._offset + dy,
+              });
+              this.state.pan.setValue({ x: this.state.pan.x._value, y: this.state.pan.y._value });
+            });
+          }
+        }
+      }
+      requestAnimationFrame(this.scrollAnimation);
+    }
+  }
+
+  // scrollAnimation = () => {
+  //   const boundLength = 30;
+  //   const maxScrollChange = 15;
+  //   const cardWidth = 130;
+  //   const scrollHorizontalBoundRight = this.props.calendarMeasure.width + this.props.calendarOffset.x - boundLength - cardWidth;
+  //   const scrollHorizontalBoundLeft = this.props.calendarOffset.x + boundLength;
+  //   const moveX = this.moveX + this.state.pan.x._offset + this.state.pan.x._value;
+  //   if (this.state.isActive) {
+  //     if ((this.moveX === undefined && this.moveX !== 0) || (scrollHorizontalBoundRight > moveX && scrollHorizontalBoundLeft < moveX)) {
+  //       requestAnimationFrame(this.scrollAnimation);
+  //     }
+  //     let dx = 0;
+  //     if (scrollHorizontalBoundRight < moveX) {
+  //       dx = moveX - scrollHorizontalBoundRight;
+  //     }
+  //     if (scrollHorizontalBoundLeft > moveX) {
+  //       dx = moveX - scrollHorizontalBoundLeft;
+  //     }
+  //     dx = Math.abs(dx) > boundLength ? boundLength * Math.sign(dx) : dx;
+  //     dx = dx * maxScrollChange / boundLength;
+  //     //this.offset.x += dx;
+  //     // this.props.onScrollX(this.offset.x);
+  //     this.props.onScrollX(this.props.calendarOffset.x + dx, () => {
+  //       this.state.pan.setOffset({ x: this.state.pan.x._offset + dx, y: this.state.pan.y._offset });
+  //       this.state.pan.setValue({ x: this.state.pan.x._value, y: this.state.pan.y._value });
+  //     });
+  //     requestAnimationFrame(this.scrollAnimation);
+  //   }
+  // }
 
   render() {
     const color = Math.floor(Math.random() * 4);
@@ -94,9 +205,7 @@ class appointmentBlock extends Component {
       toTime,
       id,
     } = this.props.appointment;
-    const start = moment(fromTime, 'HH:mm');
-    const end = moment(toTime, 'HH:mm');
-    const height = (moment.duration(end.diff(start)).asMinutes() / 15) * 30 - 1;
+    const { height } = this.state;
     const borderColor = this.state.isActive ? colors[color].header : colors[color].border;
     const contentColor = this.state.isActive ? colors[color].header : colors[color].content;
     const serviceTextColor = this.state.isActive ? '#fff' : '#1D1E29';

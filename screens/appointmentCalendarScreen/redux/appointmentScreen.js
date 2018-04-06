@@ -58,13 +58,14 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
         appointment = appointmentResponse[i];
         if (appointment.employee) {
           schedule = response[appointment.employee.id];
-          if (!schedule.appointments) {
-            schedule.appointments = [];
+          if (schedule) {
+            if (!schedule.appointments) {
+              schedule.appointments = [];
+            }
+            schedule.appointments.push(appointment);
           }
-          schedule.appointments.push(appointment);
         }
       }
-      debugger
       dispatch(getProvidersScheduleSuccess(startTime, endTime, response));
     })
     .catch((err) => {
@@ -128,7 +129,6 @@ export default function appoinmentScreenReducer(state = initialState, action) {
         isLoading: true,
       };
     case GET_APPOINTMENTS_CALENDAR_SUCCESS:
-    debugger
       return {
         ...state,
         isLoading: false,
