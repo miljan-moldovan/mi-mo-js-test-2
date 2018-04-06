@@ -91,7 +91,14 @@ export default class SalonCalendar extends Component {
 
   measureScrollX = ({ nativeEvent: { layout: { x, y, width, height } } }) => {
     if (this.state.isEnabled) {
-
+      this.setState({
+        calendarMeasure: {
+          ...this.state.calendarMeasure,
+          x,
+          width,
+        },
+      });
+    }
   }
 
   measureScrollY = ({ nativeEvent: { layout: { x, y, width, height } } }) => {
@@ -139,7 +146,7 @@ export default class SalonCalendar extends Component {
             ref={(scrollView) => { this.verticalView = scrollView; }}
             onScroll={this.handleScrollVertical}
             scrollEventThrottle={50}
-            stickyHeaderIndices={[0]}
+            //stickyHeaderIndices={[0]}
             bounces={false}
             scrollEnabled={this.state.isEnabled}
             removeClippedSubviews={false}
