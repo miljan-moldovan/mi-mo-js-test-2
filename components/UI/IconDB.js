@@ -499,6 +499,7 @@ const Icons = {
   paw: '\uf1b0',
   paypal: '\uf1ed',
   pen: '\uf304',
+  penAlt: '\uf305',
   pencil: '\uf040',
   pencilSquare: '\uf14b',
   pencilSquareO: '\uf044',

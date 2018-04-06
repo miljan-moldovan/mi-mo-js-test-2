@@ -7,12 +7,15 @@ import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
+import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
+
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
   state = {
     visible: false,
     visibleNewAppointment: false,
+    visibleAppointment: false,
     selectedDate: moment(),
   }
 
@@ -29,7 +32,7 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToApptBook = () => {
-    this.setState({ visibleNewAppointment: true });
+    this.setState({ visibleNewAppointment: true, visibleAppointment: false });
   }
 
   gotToClients = () => {
@@ -37,7 +40,7 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToScoreCard = () => {
-    alert('Not Implemented');
+    this.setState({ visibleAppointment: true, visibleNewAppointment: false });
   }
 
   render() {
@@ -46,6 +49,8 @@ export default class AppointmentScreen extends Component {
     } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
+
+    debugger //eslint-disable-line
     return (
       <View style={{ flex: 1 }}>
 
@@ -92,6 +97,14 @@ export default class AppointmentScreen extends Component {
           visible={this.state.visibleNewAppointment}
           onHide={() => {
             this.setState({ visibleNewAppointment: false });
+          }}
+        />
+
+        <SalonAppointmentSlide
+          navigation={this.props.navigation}
+          visible={this.state.visibleAppointment}
+          onHide={() => {
+            this.setState({ visibleAppointment: false });
           }}
         />
 
