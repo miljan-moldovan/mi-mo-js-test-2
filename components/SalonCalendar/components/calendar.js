@@ -60,48 +60,67 @@ export default class SalonCalendar extends Component {
     this.state = {
       headerLeftY: new Animated.Value(0),
       isEnabled: true,
-      calendarMeasure: null,
+      calendarMeasure: { x: 0, y: 0, width: 0, height: 0 },
       calendarOffset: { x: 0, y: 0 },
     };
   }
 
   handleScrollVertical = (ev) => {
     //this.setState({ calendarOffset: { y: ev.nativeEvent.contentOffset.y } });
-    Animated.timing(
-      this.state.headerLeftY,
-      {
-        toValue: -ev.nativeEvent.contentOffset.y,
-        duration: 300,
-      },
-    ).start();
+    // Animated.timing(
+    //   this.state.headerLeftY,
+    //   {
+    //     toValue: -ev.nativeEvent.contentOffset.y,
+    //     duration: 300,
+    //   },
+    // ).start();
+    if (this.state.isEnabled) {
+      this.setState({ calendarOffset: { ...this.state.calendarOffset, y: ev.nativeEvent.contentOffset.y } });
+    }
   }
 
   handleHorizontalScroll = (ev) => {
-    if (this.state.isEnabled)
-      this.setState({ calendarOffset: { x: ev.nativeEvent.contentOffset.x } });
+    if (this.state.isEnabled) {
+      this.setState({ calendarOffset: { ...this.state.calendarOffset, x: ev.nativeEvent.contentOffset.x } });
+    }
   }
 
   handleOnDrag = () => {
     this.setState({ isEnabled: false });
   }
 
-  measureScroll = ({ nativeEvent: { layout: { x, y, width, height } } }) => {
+  measureScrollX = ({ nativeEvent: { layout: { x, y, width, height } } }) => {
+    if (this.state.isEnabled) {
     this.setState({
       calendarMeasure: {
+        ...this.state.calendarMeasure,
         x,
-        y,
         width,
-        height,
       },
     });
   }
-
-  handleScrollX = (dx) => {
-    this.horizontalView.scrollTo({ x: dx, y: 0, animated: false });
   }
 
-  handleScrollY = (y) => {
-    this.verticalView.scrollTo({ x: 0, y, animated: true });
+  measureScrollY = ({ nativeEvent: { layout: { x, y, width, height } } }) => {
+    if (this.state.isEnabled) {
+      this.setState({
+        calendarMeasure: {
+          ...this.state.calendarMeasure,
+          y,
+          height,
+        },
+      });
+    }
+  }
+
+  handleScrollX = (dx, callback) => {
+    this.horizontalView.scrollTo({ x: dx, y: 0, animated: false });
+    this.setState({ calendarOffset: { ...this.state.calendarOffset, x: dx } }), callback();
+  }
+
+  handleScrollY = (dy, callback) => {
+    this.verticalView.scrollTo({ x: 0, y: dy, animated: false });
+    this.setState({ calendarOffset: { ...this.state.calendarOffset, y: dy } }), callback();
   }
 
   render() {
@@ -118,7 +137,7 @@ export default class SalonCalendar extends Component {
           ref={(scrollView1) => { this.horizontalView = scrollView1; }}
           bounces={false}
           scrollEnabled={this.state.isEnabled}
-          onLayout={this.measureScroll}
+          onLayout={this.measureScrollX}
           onScroll={this.handleHorizontalScroll}
           scrollEventThrottle={50}
           removeClippedSubviews={false}
@@ -127,10 +146,11 @@ export default class SalonCalendar extends Component {
             ref={(scrollView) => { this.verticalView = scrollView; }}
             onScroll={this.handleScrollVertical}
             scrollEventThrottle={50}
-            stickyHeaderIndices={[0]}
+            //stickyHeaderIndices={[0]}
             bounces={false}
             scrollEnabled={this.state.isEnabled}
             removeClippedSubviews={false}
+            onLayout={this.measureScrollY}
           >
             <View>
               <HeaderTop dataSource={providers} />
