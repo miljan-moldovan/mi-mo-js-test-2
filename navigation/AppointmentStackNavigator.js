@@ -28,7 +28,7 @@ import AppointmentNoteScreen from './../screens/appointmentNote';
 import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
 import ModifyServiceScreen from './../screens/modifyServiceScreen';
-
+import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
 
@@ -37,7 +37,9 @@ const AppointmentStackNavigator = StackNavigator(
     Main: {
       screen: NewAppointmentScreen,
     },
-
+    ModifyApptService: {
+      screen: ModifyApptServiceScreen,
+    },
     FilterOptions: {
       screen: FilterOptionsScreen,
     },

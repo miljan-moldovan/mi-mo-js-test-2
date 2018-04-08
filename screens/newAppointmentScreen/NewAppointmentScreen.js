@@ -175,7 +175,10 @@ const ServiceCard = ({ data, ...props }) => (
     backgroundColor="white"
     bodyChildren={
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          style={{ flexDirection: 'row' }}
+          onPress={props.onPress}
+        >
           <Text style={styles.serviceTitle}>Corrective Color</Text>
           <View style={{
               flexDirection: 'row',
@@ -193,7 +196,7 @@ const ServiceCard = ({ data, ...props }) => (
             >{Icons.angleRight}
             </FontAwesome>
           </View>
-        </View>
+        </TouchableOpacity>
         <View style={{
           flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
         }}
@@ -277,9 +280,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   deleteMainService = () => {
     const { mainServices } = this.state;
-    console.log('bfr', mainServices);
     mainServices.splice(0, 1);
-    console.log('after', mainServices);
     this.setState({ mainServices });
   }
 
@@ -291,6 +292,10 @@ export default class NewAppointmentScreen extends React.Component {
 
   onPressGuest = () => alert('Not Implemented');
 
+  onPressService = (service) => {
+    this.props.navigation.navigate('ModifyApptService', { service });
+  }
+
   onChangeRecurring = isRecurring => this.setState({ isRecurring });
 
   onChangeProvider = (selectedProvider) => {
@@ -298,12 +303,10 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   onChangeClient = (selectedClient) => {
-    console.log(selectedClient);
     this.setState({ selectedClient });
   }
 
   onChangeGuestNumber = (action, guestNumber) => {
-    console.log(action, guestNumber);
     this.setState({ guestNumber });
   }
 
@@ -386,6 +389,7 @@ export default class NewAppointmentScreen extends React.Component {
           <SubTitle title="Main Client" />
           {this.state.mainServices.map(item => (
             <ServiceCard
+              onPress={this.onPressService}
               onPressDelete={this.deleteMainService}
               key={Math.random().toString()}
               data={item}
@@ -402,6 +406,7 @@ export default class NewAppointmentScreen extends React.Component {
           <Guest onPress={this.onPressGuest} />
           {this.state.guestServices.map(item => (
             <ServiceCard
+              onPress={this.onPressService}
               onPressDelete={this.deleteGuestService}
               key={Math.random().toString()}
               data={item}

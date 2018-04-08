@@ -114,6 +114,27 @@ const styles = StyleSheet.create({
   },
 });
 
+export const RemoveButton = ({ title, onPress }) => (
+  <TouchableOpacity
+    style={{
+        height: 44,
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFFF',
+      }}
+    onPress={onPress}
+  >
+    <Text style={{
+        fontSize: 14,
+        lineHeight: 22,
+        color: '#D1242A',
+        fontFamily: 'Roboto-Medium',
+      }}
+    >{title}
+    </Text>
+  </TouchableOpacity>
+);
 export const SectionTitle = props => (
   <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
@@ -374,7 +395,7 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    const value = this.props.selectedService ? this.props.selectedService.name : null;
+    const value = this.state.selectedService ? this.state.selectedService.name : null;
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
