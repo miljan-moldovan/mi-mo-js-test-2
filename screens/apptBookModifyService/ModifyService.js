@@ -124,6 +124,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             label="Assigned Room"
             value="None"
           />
+          <InputDivider />
           <InputButton
             onPress={() => alert('Not Implemented')}
             label="Assigned Resource"
