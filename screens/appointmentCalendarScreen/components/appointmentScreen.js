@@ -23,6 +23,7 @@ export default class AppointmentScreen extends Component {
               dataSource={providerAppointments}
               appointments={appointments}
               providers={providers}
+              onDrop={this.props.appointmentActions.postAppointmentMove}
             />
       }
       </View>

@@ -67,13 +67,13 @@ export default class SalonCalendar extends Component {
 
   handleScrollVertical = (ev) => {
     //this.setState({ calendarOffset: { y: ev.nativeEvent.contentOffset.y } });
-    // Animated.timing(
-    //   this.state.headerLeftY,
-    //   {
-    //     toValue: -ev.nativeEvent.contentOffset.y,
-    //     duration: 300,
-    //   },
-    // ).start();
+    Animated.timing(
+      this.state.headerLeftY,
+      {
+        toValue: -ev.nativeEvent.contentOffset.y,
+        duration: 300,
+      },
+    ).start();
     if (this.state.isEnabled) {
       this.setState({ calendarOffset: { ...this.state.calendarOffset, y: ev.nativeEvent.contentOffset.y } });
     }
@@ -123,6 +123,10 @@ export default class SalonCalendar extends Component {
     this.setState({ calendarOffset: { ...this.state.calendarOffset, y: dy } }), callback();
   }
 
+  handleDrop = (appointmentId, params) => {
+    this.props.onDrop(appointmentId, params);
+  }
+
   render() {
     const { startTime, endTime, providers, dataSource } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
@@ -146,7 +150,7 @@ export default class SalonCalendar extends Component {
             ref={(scrollView) => { this.verticalView = scrollView; }}
             onScroll={this.handleScrollVertical}
             scrollEventThrottle={50}
-            //stickyHeaderIndices={[0]}
+            stickyHeaderIndices={[0]}
             bounces={false}
             scrollEnabled={this.state.isEnabled}
             removeClippedSubviews={false}
@@ -174,6 +178,7 @@ export default class SalonCalendar extends Component {
                     onScrollX={this.handleScrollX}
                     onScrollY={this.handleScrollY}
                     calendarOffset={calendarOffset}
+                    onDrop={this.handleDrop}
                   />);
             }
               return null;
