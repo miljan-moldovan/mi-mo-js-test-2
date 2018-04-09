@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
+import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -9,6 +10,49 @@ import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePicke
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
+  static navigationOptions = rootProps => ({
+    headerTitle: (
+      <View style={{
+      flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+      }}
+      >
+        <Text style={{
+          fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+        }}
+        >All Providers
+        </Text>
+        <Icon
+          name="caretDown"
+          type="solid"
+          color="white"
+        />
+      </View>
+    ),
+    headerLeft: (
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Icon
+          name="bars"
+          type="regular"
+          color="white"
+        />
+      </View>
+    ),
+    headerRight: (
+      <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+        <Icon
+          name="ellipsisH"
+          type="regular"
+          color="white"
+        />
+        <Icon
+          name="calendar"
+          type="regular"
+          color="white"
+        />
+      </View>
+    ),
+  });
+
   state = {
     visible: false,
     selectedDate: moment(),
