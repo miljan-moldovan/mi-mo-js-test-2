@@ -164,7 +164,7 @@ const Icons = {
   circleO: '\uf10c',
   circleONotch: '\uf1ce',
   circleThin: '\uf1db',
-  clipboard: '\uf0ea',
+  clipboard: '\uf328',
   clockO: '\uf017',
   clone: '\uf24d',
   close: '\uf00d',

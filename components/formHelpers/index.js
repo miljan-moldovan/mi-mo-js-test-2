@@ -317,12 +317,13 @@ export class InputSwitch extends React.Component {
   render() {
     return (
       <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
-        <Text style={[styles.labelText, this.props.textStyle]}>{this.props.text}</Text>
-
+        { !this.props.textRight ? <Text style={[styles.labelText, this.props.textStyle]}>{this.props.text}</Text> : null }
         <Switch
           onChange={() => { this.setState({ value: !this.state.value }); this.props.onChange(this.state.value); }}
           value={this.state.value}
+          style={this.props.switchStyle}
         />
+        { this.props.textRight ? <Text style={[styles.labelText, this.props.textStyle]}>{this.props.text}</Text> : null }
       </View>
     );
   }
