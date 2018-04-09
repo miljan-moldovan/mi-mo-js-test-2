@@ -1555,7 +1555,7 @@
 				INFOPLIST_FILE = SalonUltimateRN/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.salonultimate.iospos1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.salonultimate.iospos;
 				PRODUCT_NAME = SalonUltimateRN;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1576,7 +1576,7 @@
 				INFOPLIST_FILE = SalonUltimateRN/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.salonultimate.iospos1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.salonultimate.iospos;
 				PRODUCT_NAME = SalonUltimateRN;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
