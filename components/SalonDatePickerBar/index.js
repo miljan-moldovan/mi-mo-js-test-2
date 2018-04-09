@@ -8,7 +8,7 @@ import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   calendarContainer: {
-    zIndex: 9999,
+    zIndex: 99999,
     overflow: 'hidden',
     height: 60,
     flexDirection: 'row',

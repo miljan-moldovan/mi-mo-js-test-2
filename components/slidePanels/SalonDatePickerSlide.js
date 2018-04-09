@@ -1,8 +1,6 @@
 import React from 'react';
 import { Image, Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { LocaleConfig } from 'react-native-calendars';
+import { LocaleConfig, Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
 

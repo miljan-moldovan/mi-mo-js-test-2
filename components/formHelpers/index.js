@@ -127,10 +127,25 @@ export const SectionDivider = props => (
   <View style={[{ height: 38 }, props.style]} />
 );
 
+SectionDivider.propTypes = {
+  style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+};
 
-export const InputDivider = () => (
-  <View style={styles.inputDivider} />
+SectionDivider.defaultProps = {
+  style: false,
+};
+
+export const InputDivider = props => (
+  <View style={[styles.inputDivider, props.style]} />
 );
+
+InputDivider.propTypes = {
+  style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+};
+
+InputDivider.defaultProps = {
+  style: false,
+};
 
 export const InputGroup = props => (
   <View style={[styles.inputGroup, props.style]}>
@@ -148,7 +163,7 @@ InputGroup.defaultProps = {
 
 export const InputButton = props => (
   <TouchableOpacity
-    style={[styles.inputRow, { justifyContent: 'center' }]}
+    style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
     onPress={props.onPress}
   >
     { props.label && typeof props.label === 'string'
@@ -166,7 +181,7 @@ export const InputButton = props => (
       {props.children}
     </View>
     {!props.noIcon && (
-      <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      <FontAwesome style={[styles.iconStyle, props.iconStyle]}>{Icons.angleRight}</FontAwesome>
     )}
   </TouchableOpacity>
 );
@@ -178,6 +193,7 @@ InputButton.propTypes = {
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,
+  iconStyle: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 InputButton.defaultProps = {
   style: {},
@@ -186,6 +202,7 @@ InputButton.defaultProps = {
   value: false,
   noIcon: false,
   children: null,
+  iconStyle: {},
 };
 
 export const InputLabel = props => (
