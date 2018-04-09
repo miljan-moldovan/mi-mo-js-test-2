@@ -31,11 +31,16 @@ import ModifyServiceScreen from './../screens/modifyServiceScreen';
 import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
+import EndsOnScreen from './../screens/endsOnScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
     Main: {
-      screen: NewAppointmentScreen,
+      // screen: NewAppointmentScreen,
+      screen: EndsOnScreen,
+    },
+    EndsOn: {
+      screen: EndsOnScreen,
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,
