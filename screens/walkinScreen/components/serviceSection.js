@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import { InputSwitch, InputDivider, InputGroup, InputButton } from '../../../components/formHelpers';
+import apiWrapper from '../../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -119,6 +121,9 @@ class ServiceSection extends Component {
 
   renderProvider = () => {
     const { provider } = this.props;
+    console.log(JSON.stringify(provider));
+    const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
+
     if (provider) {
       return (
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -127,9 +132,9 @@ class ServiceSection extends Component {
             width={26}
             borderWidth={1}
             borderColor="transparent"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+            image={{ uri: apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0) }}
           />
-          <Text style={styles.textData}>{`${provider.name} ${provider.lastName}`}</Text>
+          <Text style={styles.textData}>{`${providerName}`}</Text>
         </View>
       );
     }

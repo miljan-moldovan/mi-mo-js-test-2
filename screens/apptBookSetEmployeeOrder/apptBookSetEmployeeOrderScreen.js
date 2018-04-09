@@ -12,6 +12,8 @@ import fetchFormCache from '../../utilities/fetchFormCache';
 import ApptBookSetEmployeeOrderHeader from './components/apptBookSetEmployeeOrderHeader';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
+import apiWrapper from '../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   modal: {
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
 
 class RowComponent extends React.Component {
   render() {
-    const fullName = this.props.data;
+    const { fullName, id } = this.props.employee;
 
     return (
       <TouchableHighlight
@@ -72,7 +74,7 @@ class RowComponent extends React.Component {
             width={30}
             borderWidth={1}
             borderColor="transparent"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+            image={{ uri: apiWrapper.getEmployeePhoto(id) }}
           />
           <Text style={{ fontSize: 14, flex: 1, color: '#110A24' }}>{fullName}</Text>
           <Icon name="bars" size={20} color="#C0C1C6" type="solid" />
@@ -93,6 +95,7 @@ class ApptBookSetEmployeeOrderScreen extends Component {
   state = {
     isVisible: true,
     employees: {},
+    orderEmployees: {},
     order: Object.keys({}),
   };
 
@@ -119,13 +122,13 @@ class ApptBookSetEmployeeOrderScreen extends Component {
 
         for (let i = 0; i < orderEmployees.length; i++) {
           const employee = orderEmployees[i];
-          employees[employee.id] = employee.fullName;
+          employees[employee.id] = employee;
           orderIds.push(employee.id.toString());
         }
 
         this.props.apptBookSetEmployeeOrderActions.setEmployees(orderEmployees);
         this.props.apptBookSetEmployeeOrderActions.setFilteredEmployees(employees);
-        this.setState({ employees, order: orderIds });
+        this.setState({ employees, order: orderIds, orderEmployees });
       })
       .catch((err) => {
         console.log(err);
@@ -178,7 +181,7 @@ class ApptBookSetEmployeeOrderScreen extends Component {
           <SortableListView
             style={{ flex: 1, marginBottom: 0 }}
 
-            renderRow={row => <RowComponent data={row} />}
+            renderRow={row => <RowComponent employee={row} />}
             order={this.state.order}
             data={this.state.employees}
             onRowMoved={(e) => {

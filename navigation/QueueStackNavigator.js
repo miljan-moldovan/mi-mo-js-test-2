@@ -54,14 +54,14 @@ import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 
 const QueueStackNavigator = StackNavigator(
   {
-    SalonCalendar: {
-      screen: AppointmentCalendarScreen,
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    SalonCalendar: {
+      screen: AppointmentCalendarScreen,
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,

@@ -278,7 +278,7 @@ class Queue extends React.Component {
     const groupLeaderName = this.getGroupLeaderName(item);
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase();
+    const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
     return (
       <TouchableOpacity
         style={styles.itemContainer}

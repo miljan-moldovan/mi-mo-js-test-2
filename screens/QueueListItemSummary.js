@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import apiWrapper from '../utilities/apiWrapper';
 
 import SalonAvatar from '../components/SalonAvatar';
 
@@ -58,12 +59,29 @@ const styles = StyleSheet.create({
   providerRound: {
     width: 26,
     marginRight: 14.5,
-  }
+  },
+  firstAvailable: {
+    backgroundColor: '#C3D6F2',
+    borderRadius: 13,
+    height: 26,
+    width: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  firstAvailableText: {
+    marginLeft: 5,
+    color: '#115ECD',
+    fontSize: 9,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    fontWeight: 'bold',
+  },
 });
 const queueListItemSummary = props => (
   <View>
     <View style={styles.serviceContainer}>
-      <TouchableOpacity onPress={()=>alert("Not implemented")}>
+      <TouchableOpacity onPress={() => alert('Not implemented')}>
         <View style={[styles.row, styles.rowBorderBottom]}>
           <Text style={styles.textMedium}>{props.service.serviceName}</Text>
           <View style={styles.iconContainer}>
@@ -71,19 +89,19 @@ const queueListItemSummary = props => (
           </View>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={()=>alert("Not implemented")}>
+      <TouchableOpacity onPress={() => alert('Not implemented')}>
         <View style={styles.row}>
           <SalonAvatar
             wrapperStyle={styles.providerRound}
             width={26}
-            image="https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742"
+            image={{ uri: apiWrapper.getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
             hasBadge
             badgeComponent={
               <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
-                  {Icons.lock}
+                {Icons.lock}
               </FontAwesome>}
           />
-          <Text style={styles.textNormal}>{`${props.service.employeeFirstName} ${props.service.employeeLastName}`}</Text>
+          <Text style={styles.textNormal}>{!props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available'}</Text>
           <View style={styles.iconContainer}>
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
           </View>

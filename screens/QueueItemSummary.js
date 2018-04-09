@@ -174,7 +174,7 @@ class QueueItemSummary extends Component {
           >
             <View style={styles.btnGroup}>
               <View style={btnCheckInStyle}>
-                <SalonIcon icon="checkin" size={16} />
+                <Icon name="check" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>Check-in</Text>
             </View>
@@ -185,7 +185,7 @@ class QueueItemSummary extends Component {
           >
             <View style={styles.btnGroup}>
               <View style={otherButtonsStyle}>
-                <SalonIcon icon="walkout" size={16} />
+                <Icon name="signOut" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>Walk-out</Text>
             </View>
@@ -195,7 +195,7 @@ class QueueItemSummary extends Component {
           >
             <View style={styles.btnGroup}>
               <View style={otherButtonsStyle}>
-                <SalonIcon icon="modify" size={16} />
+                <Icon name="penAlt" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>Modify</Text>
             </View>
@@ -206,7 +206,7 @@ class QueueItemSummary extends Component {
           >
             <View style={styles.btnGroup}>
               <View style={otherButtonsStyle}>
-                <SalonIcon icon="returning" size={16} />
+                <Icon name="undo" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>Returning</Text>
             </View>
@@ -217,7 +217,7 @@ class QueueItemSummary extends Component {
           >
             <View style={styles.btnGroup}>
               <View style={otherButtonsStyle}>
-                <SalonIcon icon="startService" size={16} style={styles.iconStartService} />
+                <Icon name="play" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>To Service</Text>
             </View>
@@ -273,6 +273,7 @@ class QueueItemSummary extends Component {
 
   render() {
     const { translateYAnim } = this.state;
+    console.log(JSON.stringify(this.props.services));
     if (this.state.isVisible) {
       return (
         <Modal

@@ -18,6 +18,7 @@ import SalonCard from '../../../../components/SalonCard';
 import { InputButton } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
+import apiWrapper from '../../../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -192,6 +193,9 @@ SalonAppointmentTime.propTypes = {
 
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
+  const providerName = !props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available';
+
+  console.log(JSON.stringify(props.service));
 
   return (
     <SalonCard
@@ -241,9 +245,10 @@ const ServiceCard = (props) => {
                   >{Icons.lock}
                   </FontAwesome>
               }
-                image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+                image={{ uri: apiWrapper.getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
+
               />
-              <Text style={[styles.employeeText, { marginLeft: 8 }]}>{`${props.service.employeeFirstName} ${props.service.employeeLastName}`}</Text>
+              <Text style={[styles.employeeText, { marginLeft: 8 }]}>{providerName}</Text>
             </View>
             {this.promoId > 0 && (
             <Text style={styles.promoDescription}>FIRST CUSTOMER -50%</Text>

@@ -15,6 +15,8 @@ import {
   SectionTitle,
 } from '../../../components/formHelpers';
 import ListLetterFilter from '../../../components/listLetterFilter';
+import apiWrapper from '../../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   itemSeparator: {
@@ -208,7 +210,8 @@ class ProviderList extends React.Component {
           width={32}
           borderWidth={1}
           borderColor={isSelected ? '#66D7A2' : 'transparent'}
-          image={{ uri: provider.imagePath }}
+          image={{ uri: apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0) }}
+
         />
         <Text style={isSelected ? styles.selectedProviderName : styles.providerName}>
           {fullName}
@@ -217,7 +220,7 @@ class ProviderList extends React.Component {
           <Text style={styles.providerMinutes}>{provider.minutes}</Text>
           <Text style={styles.providerMin}>min</Text>
         </View>
-      </View>)
+      </View>);
     return (<InputButton label={itemLabel} noIcon />);
     // return (
     //   <TouchableHighlight
@@ -253,28 +256,28 @@ class ProviderList extends React.Component {
     //
     //       <View style={isSelected ? styles.selectedLeftBar : styles.leftBar} />
     //
-          // <View style={styles.providerImageContainer}>
-          //   <SalonAvatar
-          //     wrapperStyle={styles.providerRound}
-          //     width={44}
-          //     borderWidth={5}
-          //     borderColor={isSelected ? '#66D7A2' : 'transparent'}
-          //     image={{ uri: provider.imagePath }}
-          //   />
-          // </View>
-          // <View style={styles.providerData}>
-          //   <Text style={isSelected ? styles.selectedProviderName : styles.providerName}>
-          //     {fullName}
-          //   </Text>
-          //   <Text style={isSelected ? styles.selectedProviderPrice : styles.providerPrice}>
-          //     {price}
-          //   </Text>
-          // </View>
-          // <View style={styles.providerTime}>
-          //   <Text style={styles.providerWaiting}>Waiting</Text>
-          //   <Text style={styles.providerMinutes}>{provider.minutes}</Text>
-          //   <Text style={styles.providerMin}>min</Text>
-          // </View>
+    // <View style={styles.providerImageContainer}>
+    //   <SalonAvatar
+    //     wrapperStyle={styles.providerRound}
+    //     width={44}
+    //     borderWidth={5}
+    //     borderColor={isSelected ? '#66D7A2' : 'transparent'}
+    //     image={{ uri: provider.imagePath }}
+    //   />
+    // </View>
+    // <View style={styles.providerData}>
+    //   <Text style={isSelected ? styles.selectedProviderName : styles.providerName}>
+    //     {fullName}
+    //   </Text>
+    //   <Text style={isSelected ? styles.selectedProviderPrice : styles.providerPrice}>
+    //     {price}
+    //   </Text>
+    // </View>
+    // <View style={styles.providerTime}>
+    //   <Text style={styles.providerWaiting}>Waiting</Text>
+    //   <Text style={styles.providerMinutes}>{provider.minutes}</Text>
+    //   <Text style={styles.providerMin}>min</Text>
+    // </View>
     //     </View>
     //   </TouchableHighlight>
     // );

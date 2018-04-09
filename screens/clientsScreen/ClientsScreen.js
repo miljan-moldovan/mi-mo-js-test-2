@@ -11,6 +11,7 @@ import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
+import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,6 +76,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  searchClients: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchClientsTitle: {
+    color: '#727A8F',
+    fontSize: 13,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  searchClientsText: {
+    color: '#727A8F',
+    fontSize: 11,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  searchIconContainer: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    paddingTop: 5,
+    paddingRight: 0,
   },
 });
 
@@ -160,18 +184,18 @@ class ClientsScreen extends React.Component {
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
-    this.props.clientsActions.getClients().then((response) => {
-      if (response.data.error) {
-        // this.props.navigation.goBack();
-      } else {
-        const { clients } = response.data;
-        this.props.clientsActions.setClients(clients);
-        this.props.clientsActions.setFilteredClients(clients);
-        const suggestionList = this.getSuggestionsList(clients);
-        this.props.clientsActions.setSuggestionsList(suggestionList);
-        this.props.clientsActions.setFilteredSuggestions(suggestionList);
-      }
-    });
+    // this.props.clientsActions.getClients().then((response) => {
+    //   if (response.data.error) {
+    //     // this.props.navigation.goBack();
+    //   } else {
+    //     const { clients } = response.data;
+    //     this.props.clientsActions.setClients(clients);
+    //     this.props.clientsActions.setFilteredClients(clients);
+    //     const suggestionList = this.getSuggestionsList(clients);
+    //     this.props.clientsActions.setSuggestionsList(suggestionList);
+    //     this.props.clientsActions.setFilteredSuggestions(suggestionList);
+    //   }
+    // });
   }
 
   state = {
@@ -275,6 +299,26 @@ class ClientsScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
+
+          {this.props.clientsState.filtered.length === 0 &&
+
+            <View style={styles.searchClients}>
+              <Icon name="circle" size={100} color="#C0C1C6" type="solid" />
+              <View style={styles.searchIconContainer}>
+                <Icon
+                  style={styles.subIcon}
+                  name="search"
+                  size={50}
+                  color="#C0C1C6"
+                  type="solid"
+                />
+              </View>
+
+              <Text style={styles.searchClientsTitle}>Search for clients above.</Text>
+              <Text style={styles.searchClientsText}>Type name, code, phone number or email</Text>
+            </View>
+          }
+
           { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
             <ClientList
               boldWords={this.props.salonSearchHeaderState.searchText}
