@@ -8,17 +8,12 @@ import TimeHeader from './timeColumn';
 import AvHeader from './availabilityColumn';
 import AppointmentBlock from './appointmentBlock';
 import CalendarCells from './calendarCells';
+import CurrentTime from './currentTime';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     flex: 1,
-  },
-  header: {
-    width: 500,
-    height: 100,
-    backgroundColor: 'white',
-    zIndex: 1,
   },
   headerCell: {
     height: 30,
@@ -44,13 +39,12 @@ const styles = StyleSheet.create({
   },
   fixedColumn: {
     position: 'absolute',
-    paddingTop: 140,
+    paddingTop: 40,
     backgroundColor: 'white',
     flexDirection: 'row',
   },
   firstAvBtn: {
     position: 'absolute',
-    top: 100,
   },
 });
 
@@ -131,10 +125,9 @@ export default class SalonCalendar extends Component {
     const { startTime, endTime, providers, dataSource } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
     const duration = moment(endTime).diff(moment(startTime), 'hours') * 4;
-    const hours = Array.from(Array(duration).keys());
+    const hours = duration ? Array.from(Array(duration).keys()) : [];
     return (
       <View style={styles.container}>
-        <View style={styles.header} />
         <ScrollView
           style={styles.scrollView}
           horizontal
@@ -190,6 +183,7 @@ export default class SalonCalendar extends Component {
           <AvHeader dataSource={hours} />
         </Animated.View>
         <FirstAvBtn rootStyles={styles.firstAvBtn} />
+        <CurrentTime startTime={startTime} />
       </View>
     );
   }

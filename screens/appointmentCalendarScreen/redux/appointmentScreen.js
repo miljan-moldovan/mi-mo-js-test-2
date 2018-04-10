@@ -69,7 +69,6 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
       dispatch(getProvidersScheduleSuccess(startTime, endTime, response));
     })
     .catch((err) => {
-      debugger
       console.log(err);
     });
 };

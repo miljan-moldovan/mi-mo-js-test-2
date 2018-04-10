@@ -41,13 +41,11 @@ export default function appoinmentReducer(state = initialState, action) {
         isMoving: true,
       };
     case POST_APPOINTMENT_MOVE_SUCCESS:
-    debugger
       return {
         ...state,
         isMoving: false,
       };
     case POST_APPOINTMENT_MOVE_FAILED:
-    debugger
       return {
         ...state,
         isMoving: false,

@@ -49,8 +49,6 @@ export default class AppointmentScreen extends Component {
     } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
-
-    debugger //eslint-disable-line
     return (
       <View style={{ flex: 1 }}>
 
