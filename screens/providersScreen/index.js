@@ -5,6 +5,7 @@ import ProvidersScreen from './ProvidersScreen';
 
 const mapStateToProps = state => ({
   providersState: state.providersReducer,
+  salonSearchHeaderState: state.salonSearchHeaderReducer,
 });
 
 const mapActionsToProps = dispatch => ({

@@ -1,10 +1,10 @@
 [
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Ferraro",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -13,11 +13,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasia",
+    "firstName": "Anastasia",
     "middleName": null,
     "lastName": "Molloy",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -26,11 +26,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasia",
+    "firstName": "Anastasia",
     "middleName": null,
     "lastName": "Burns",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -39,11 +39,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Alicea",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -52,11 +52,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anagha",
+    "firstName": "Anagha",
     "middleName": null,
     "lastName": "Dharmadhikari",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -65,11 +65,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anabel",
+    "firstName": "Anabel",
     "middleName": null,
     "lastName": "Prohm",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "n/a",
     "attributes": [],
@@ -78,11 +78,11 @@
     "isDeleted": false
   },
   {
-    "name": "Analesa",
+    "firstName": "Analesa",
     "middleName": null,
     "lastName": "O'Grady",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -91,11 +91,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasiya",
+    "firstName": "Anastasiya",
     "middleName": null,
     "lastName": "Kelly",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -104,11 +104,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasia",
+    "firstName": "Anastasia",
     "middleName": null,
     "lastName": "Tsikhanava",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -117,11 +117,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Sousa",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -130,11 +130,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Lorgeree",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -143,11 +143,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Hartmann",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -156,11 +156,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Orzechowski",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -169,11 +169,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Sakkis",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -182,11 +182,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "McWilliams",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David Salon at the Pinehills",
     "attributes": [],
@@ -195,11 +195,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasia",
+    "firstName": "Anastasia",
     "middleName": null,
     "lastName": "Littlefield Wedding",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -208,11 +208,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "York",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -221,11 +221,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Shahroodi",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -234,11 +234,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasia",
+    "firstName": "Anastasia",
     "middleName": null,
     "lastName": "Powers",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David Salon at Exit 5",
     "attributes": [],
@@ -247,11 +247,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Brewer Wedding",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David Salon at the Pinehills",
     "attributes": [],
@@ -260,11 +260,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Doherty",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -273,11 +273,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Fokas",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -286,11 +286,11 @@
     "isDeleted": false
   },
   {
-    "name": "Ana",
+    "firstName": "Ana",
     "middleName": null,
     "lastName": "Ramos",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "n/a",
     "attributes": [],
@@ -299,11 +299,11 @@
     "isDeleted": false
   },
   {
-    "name": "ana",
+    "firstName": "ana",
     "middleName": null,
     "lastName": "nelson",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],
@@ -312,11 +312,11 @@
     "isDeleted": false
   },
   {
-    "name": "Anastasia",
+    "firstName": "Anastasia",
     "middleName": null,
     "lastName": "Blood",
     "phone": "354 - 874 - 7041",
-    "address": "75205",
+    "zip": "75205",
     "email": "email@example.com",
     "visit": "Charles David in Hanover",
     "attributes": [],

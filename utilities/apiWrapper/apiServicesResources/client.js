@@ -11,6 +11,16 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  getMergeableClients: {
+    path: 'Clients/:id/MergeableClients',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
+  postMergeClients: {
+    path: 'Clients/:id/Merge',
+    method: 'post',
+    disableCache: true,
+  },
 };
 
 export default {

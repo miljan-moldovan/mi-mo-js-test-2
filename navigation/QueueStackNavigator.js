@@ -30,8 +30,10 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import SalonSearchHeader from '../components/SalonSearchHeader';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
+import ModifyProductScreen from '../screens/modifyProductScreen';
+import RecommendationsScreen from '../screens/recommendationsScreen';
 
-import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
+import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/NewAppointmentScreen';
@@ -41,6 +43,14 @@ import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
 import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
+
+import AppointmentScreen from '../screens/AppointmentsScreen.js';
+
+
+import apptBookViewOptions from './../screens/apptBookViewOptions';
+
+
+import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 
 const QueueStackNavigator = StackNavigator(
   {
@@ -53,25 +63,35 @@ const QueueStackNavigator = StackNavigator(
         headerTitle: 'Queue',
       },
     },
+    ApptBookSetEmployeeOrder: {
+      screen: apptBookSetEmployeeOrder,
+    },
     Products: {
       screen: ProductsScreen,
-
     },
     Services: {
       screen: ServicesScreen,
-
+    },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
+    },
+    Appointment: {
+      screen: AppointmentScreen,
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
     },
-    Service: {
-      screen: ModifyServiceScreen,
-    },
+    // Service: {
+    //   screen: ModifyServiceScreen,
+    // },
     Walkout: {
       screen: WalkOutScreen,
       navigationOptions: {
         headerTitle: 'Walkout',
       },
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
@@ -86,6 +106,15 @@ const QueueStackNavigator = StackNavigator(
         gesturesEnabled: false,
         header: props => (<View />),
       },
+    },
+    Service: {
+      screen: ModifyServiceScreen,
+    },
+    Product: {
+      screen: ModifyProductScreen,
+    },
+    Recommendations: {
+      screen: RecommendationsScreen,
     },
     RebookDialog: {
       screen: RebookDialogScreen,

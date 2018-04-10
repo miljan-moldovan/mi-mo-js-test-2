@@ -1,5 +1,11 @@
 import apiWrapper from '../../utilities/apiWrapper';
 
+const alphabeticFilter = (a, b) => {
+  if (a.fullName < b.fullName) return -1;
+  if (a.fullName > b.fullName) return 1;
+  return 0;
+};
+
 export const GET_PROVIDERS = 'providers/GET_PROVIDERS';
 export const GET_PROVIDERS_SUCCESS = 'providers/GET_PROVIDERS_SUCCESS';
 export const GET_PROVIDERS_ERROR = 'providers/GET_PROVIDERS_ERROR';
@@ -63,9 +69,13 @@ const getProvidersError = error => ({
 const getProviders = params => (dispatch) => {
   dispatch({ type: GET_PROVIDERS });
 
-  return apiWrapper.doRequest('getEmployees', {})
+  return apiWrapper.doRequest('getEmployees', {
+    query: {
+      ...params,
+    },
+  })
     .then((providers) => {
-      dispatch(getProvidersSuccess(providers));
+      dispatch(getProvidersSuccess(providers.sort(alphabeticFilter)));
     })
     .catch((err) => {
       dispatch(getProvidersError(err));

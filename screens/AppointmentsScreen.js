@@ -18,13 +18,12 @@ import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
 import SideMenuItem from '../components/SideMenuItem';
 
+
 class AppointmentsScreen extends React.Component {
   static navigationOptions = {
 
   };
-  state = {
 
-  }
 
   render() {
     return (
@@ -33,13 +32,17 @@ class AppointmentsScreen extends React.Component {
           style={styles.backgroundImage}
           source={require('../assets/images/login/blue.png')}
         />
+
+
         <Text style={styles.title}>Appointments Screen placeholder</Text>
-        <Button rounded bordered style={styles.loginButton} onPress={() => this.props.navigation.navigate('NewAppointment')}>
+        <Button rounded bordered style={styles.loginButton}>
           <Text style={styles.loginButtonText}>New Appointment</Text>
         </Button>
         <Button rounded bordered style={styles.loginButton} onPress={this.props.logout}>
           <Text style={styles.loginButtonText}>LOGOUT</Text>{ this.state.waitingLogin && <ActivityIndicator /> }
         </Button>
+
+
       </View>
     );
   }

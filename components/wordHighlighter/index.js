@@ -8,16 +8,14 @@ import {
 
 import sectionString from './sectionString';
 
-var textIndex = 0;
+let textIndex = 0;
 
 export default class WordHighlighter extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
   render() {
-
     const {
       highlight,
       caseSensitive,
@@ -27,9 +25,9 @@ export default class WordHighlighter extends React.Component {
 
     const sections = sectionString(highlight, children, caseSensitive);
     const renderedText = sections.map((section) => {
-      var style = (section.highlight == true ? highlightStyle : null);
-      var index = textIndex++;
-      return <Text key={"text-highlight-element-" + index} style={style}>{section.text}</Text>;
+      const style = (section.highlight == true ? highlightStyle : null);
+      const index = textIndex++;
+      return <Text key={`text-highlight-element-${index}`} style={style}>{section.text}</Text>;
     });
 
     return (
