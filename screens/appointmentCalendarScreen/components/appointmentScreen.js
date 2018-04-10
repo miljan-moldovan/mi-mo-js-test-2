@@ -10,48 +10,100 @@ import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePicke
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
-  static navigationOptions = rootProps => ({
-    headerTitle: (
-      <View style={{
-      flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-      }}
-      >
-        <Text style={{
-          fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    let title = 'All Providers';
+
+    if (params && 'filterProvider' in params) {
+      title = params.filterProvider.name;
+    }
+
+    return {
+      headerTitle: (
+        <TouchableOpacity
+          style={{
+          flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
         }}
-        >All Providers
-        </Text>
-        <Icon
-          name="caretDown"
-          type="solid"
-          color="white"
-        />
-      </View>
-    ),
-    headerLeft: (
-      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Icon
-          name="bars"
-          type="regular"
-          color="white"
-        />
-      </View>
-    ),
-    headerRight: (
-      <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-        <Icon
-          name="ellipsisH"
-          type="regular"
-          color="white"
-        />
-        <Icon
-          name="calendar"
-          type="regular"
-          color="white"
-        />
-      </View>
-    ),
-  });
+          onPress={() => navigation.state.params.onPressTitle()}
+        >
+          <Text style={{
+            fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+          }}
+          >{title}
+          </Text>
+          <Icon
+            name="caretDown"
+            type="solid"
+            color="white"
+          />
+        </TouchableOpacity>
+      ),
+      headerLeft: (
+        <TouchableOpacity
+          style={{ alignItems: 'center', justifyContent: 'center' }}
+          onPress={() => navigation.state.params.onPressMenu()}
+        >
+          <Icon
+            name="bars"
+            type="regular"
+            color="white"
+            size={20}
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: (
+        <View
+          style={{
+          flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
+        }}
+        >
+          <TouchableOpacity
+            onPress={() => navigation.state.params.onPressEllipsis()}
+            style={{
+            flex: 1,
+            marginHorizontal: 5,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          >
+            <Icon
+              name="ellipsisH"
+              type="regular"
+              color="white"
+              size={20}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.state.params.onPressCalendar()}
+            style={{
+            flex: 1,
+            marginHorizontal: 5,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          >
+            <Icon
+              name="calendar"
+              type="regular"
+              color="white"
+              size={20}
+            />
+          </TouchableOpacity>
+        </View>
+      ),
+    };
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.props.navigation.setParams({
+      onPressMenu: this.onPressMenu,
+      onPressEllipsis: this.onPressEllipsis,
+      onPressCalendar: this.onPressCalendar,
+      onPressTitle: this.onPressTitle,
+    });
+  }
 
   state = {
     visible: false,
@@ -61,6 +113,19 @@ export default class AppointmentScreen extends Component {
   componentWillMount() {
     this.props.appointmentCalendarActions.getAppoinmentsCalendar('2018-03-20');
   }
+
+  componentDidMount() {
+  }
+
+  onPressMenu = () => alert('Not Implemented');
+
+  onPressEllipsis = () => alert('Not Implemented');
+
+  onPressCalendar = () => alert('Not Implemented');
+
+  onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
+
+  selectFilterProvider = provider => this.props.navigation.setParams({ filterProvider: provider });
 
   gotToSales = () => {
     alert('Not Implemented');

@@ -261,4 +261,13 @@ export default class FilterOptionsScreen extends React.Component {
       </View>
     );
   }
+
+  _handleOnChangeProvider = (provider) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
 }

@@ -20,6 +20,9 @@ import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
 
+import SalonCalendar from './../components/SalonCalendar';
+import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
+
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
@@ -36,8 +39,10 @@ import EndsOnScreen from './../screens/endsOnScreen';
 const AppointmentStackNavigator = StackNavigator(
   {
     Main: {
-      // screen: NewAppointmentScreen,
-      screen: EndsOnScreen,
+      screen: AppointmentCalendarScreen,
+    },
+    SalonCalendar: {
+      screen: AppointmentCalendarScreen,
     },
     EndsOn: {
       screen: EndsOnScreen,
