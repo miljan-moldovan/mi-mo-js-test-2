@@ -8,17 +8,12 @@ import TimeHeader from './timeColumn';
 import AvHeader from './availabilityColumn';
 import AppointmentBlock from './appointmentBlock';
 import CalendarCells from './calendarCells';
+import CurrentTime from './currentTime';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     flex: 1,
-  },
-  header: {
-    width: 500,
-    height: 100,
-    backgroundColor: 'white',
-    zIndex: 1,
   },
   headerCell: {
     height: 30,
@@ -44,13 +39,12 @@ const styles = StyleSheet.create({
   },
   fixedColumn: {
     position: 'absolute',
-    paddingTop: 140,
+    paddingTop: 40,
     backgroundColor: 'white',
     flexDirection: 'row',
   },
   firstAvBtn: {
     position: 'absolute',
-    top: 100,
   },
 });
 
@@ -67,13 +61,13 @@ export default class SalonCalendar extends Component {
 
   handleScrollVertical = (ev) => {
     //this.setState({ calendarOffset: { y: ev.nativeEvent.contentOffset.y } });
-    // Animated.timing(
-    //   this.state.headerLeftY,
-    //   {
-    //     toValue: -ev.nativeEvent.contentOffset.y,
-    //     duration: 300,
-    //   },
-    // ).start();
+    Animated.timing(
+      this.state.headerLeftY,
+      {
+        toValue: -ev.nativeEvent.contentOffset.y,
+        duration: 300,
+      },
+    ).start();
     if (this.state.isEnabled) {
       this.setState({ calendarOffset: { ...this.state.calendarOffset, y: ev.nativeEvent.contentOffset.y } });
     }
@@ -123,14 +117,17 @@ export default class SalonCalendar extends Component {
     this.setState({ calendarOffset: { ...this.state.calendarOffset, y: dy } }), callback();
   }
 
+  handleDrop = (appointmentId, params) => {
+    this.props.onDrop(appointmentId, params);
+  }
+
   render() {
     const { startTime, endTime, providers, dataSource } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
     const duration = moment(endTime).diff(moment(startTime), 'hours') * 4;
-    const hours = Array.from(Array(duration).keys());
+    const hours = duration ? Array.from(Array(duration).keys()) : [];
     return (
       <View style={styles.container}>
-        <View style={styles.header} />
         <ScrollView
           style={styles.scrollView}
           horizontal
@@ -146,7 +143,7 @@ export default class SalonCalendar extends Component {
             ref={(scrollView) => { this.verticalView = scrollView; }}
             onScroll={this.handleScrollVertical}
             scrollEventThrottle={50}
-            //stickyHeaderIndices={[0]}
+            stickyHeaderIndices={[0]}
             bounces={false}
             scrollEnabled={this.state.isEnabled}
             removeClippedSubviews={false}
@@ -174,6 +171,7 @@ export default class SalonCalendar extends Component {
                     onScrollX={this.handleScrollX}
                     onScrollY={this.handleScrollY}
                     calendarOffset={calendarOffset}
+                    onDrop={this.handleDrop}
                   />);
             }
               return null;
@@ -185,6 +183,7 @@ export default class SalonCalendar extends Component {
           <AvHeader dataSource={hours} />
         </Animated.View>
         <FirstAvBtn rootStyles={styles.firstAvBtn} />
+        <CurrentTime startTime={startTime} />
       </View>
     );
   }
