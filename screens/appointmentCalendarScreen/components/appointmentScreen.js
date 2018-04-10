@@ -22,78 +22,102 @@ export default class AppointmentScreen extends Component {
     }
 
     return {
-      headerTitle: (
-        <TouchableOpacity
-          style={{
-          flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+      header: (
+        <View style={{
+          height: 63,
+          paddingBottom: 10,
+          backgroundColor: '#115ECD',          
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
         }}
-          onPress={() => navigation.state.params.onPressTitle()}
         >
-          <Text style={{
+          <TouchableOpacity
+            style={{
+              flex: 1 / 5,
+              alignItems: 'flex-start',
+              justifyContent: 'flex-end',
+              marginLeft: 16,
+            }}
+            onPress={() => navigation.state.params.onPressMenu()}
+          >
+            <Icon
+              name="bars"
+              type="regular"
+              color="white"
+              size={19}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flex: 3 / 5,
+              alignSelf: 'stretch',
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+            }}
+            onPress={() => navigation.state.params.onPressTitle()}
+          >
+            <Text style={{
             fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
           }}
-          >{title}
-          </Text>
-          <Icon
-            name="caretDown"
-            type="solid"
-            color="white"
-          />
-        </TouchableOpacity>
-      ),
-      headerLeft: (
-        <TouchableOpacity
-          style={{ alignItems: 'center', justifyContent: 'center' }}
-          onPress={() => navigation.state.params.onPressMenu()}
-        >
-          <Icon
-            name="bars"
-            type="regular"
-            color="white"
-            size={20}
-          />
-        </TouchableOpacity>
-      ),
-      headerRight: (
-        <View
-          style={{
-          flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
-        }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.state.params.onPressEllipsis()}
-            style={{
-            flex: 1,
-            marginHorizontal: 5,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          >
+            >{title}
+            </Text>
             <Icon
-              name="ellipsisH"
+              style={{ marginLeft: 5 }}
+              name="caretDown"
               type="regular"
               color="white"
-              size={20}
+              size={17}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.state.params.onPressCalendar()}
+          <View
             style={{
-            flex: 1,
-            marginHorizontal: 5,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+              flex: 1 / 5,
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingRight: 16,
+              flexDirection: 'row',
+            }}
           >
-            <Icon
-              name="calendar"
-              type="regular"
-              color="white"
-              size={20}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.state.params.onPressEllipsis()}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon
+                name="ellipsisH"
+                type="regular"
+                color="white"
+                size={22}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.state.params.onPressCalendar()}
+              style={{
+                marginLeft: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon
+                name="calendar"
+                type="regular"
+                color="white"
+                size={19}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       ),
+      // headerLeft: (
+
+      // ),
+      // headerRight: (
+
+      // ),
     };
   };
 
