@@ -3,6 +3,9 @@ import apiWrapper from '../utilities/apiWrapper';
 export const GET_APPOINTMENTS = 'appointment/GET_APPOINTMENTS';
 export const GET_APPOINTMENTS_SUCCESS = 'appointment/GET_APPOINTMENTS_SUCCESS';
 export const GET_APPOINTMENTS_FAILED = 'appointment/GET_APPOINTMENTS_FAILED';
+export const POST_APPOINTMENT_MOVE = 'appointment/POST_APPOINTMENT_MOVE';
+export const POST_APPOINTMENT_MOVE_SUCCESS = 'appointment/POST_APPOINTMENT_MOVE_SUCCESS';
+export const POST_APPOINTMENT_MOVE_FAILED = 'appointment/POST_APPOINTMENT_MOVE_FAILED';
 
 const getAppointmentsSuccess = appointmentResponse => ({
   type: GET_APPOINTMENTS_SUCCESS,
@@ -11,6 +14,16 @@ const getAppointmentsSuccess = appointmentResponse => ({
 
 const getAppointmentsFailed = error => ({
   type: GET_APPOINTMENTS_FAILED,
+  data: { error },
+});
+
+const postAppointmentMoveSuccess = response => ({
+  type: POST_APPOINTMENT_MOVE_SUCCESS,
+  data: { response },
+});
+
+const postAppointmentMoveFailed = error => ({
+  type: POST_APPOINTMENT_MOVE_FAILED,
   data: { error },
 });
 
@@ -25,8 +38,23 @@ const getAppoinments = date => (dispatch) => {
     .catch(error => dispatch(getAppointmentsFailed(error)));
 };
 
+const postAppointmentMove = (appointmentId, params) => (dispatch) => {
+  dispatch({ type: POST_APPOINTMENT_MOVE });
+  return apiWrapper.doRequest('postAppointmentMove', {
+    path: {
+      appointmentId,
+    },
+    body: {
+      ...params,
+    },
+  })
+    .then(response => dispatch(postAppointmentMoveSuccess(response)))
+    .catch(error => dispatch(postAppointmentMoveFailed(error)));
+};
+
 const appointmentActions = {
   getAppoinments,
+  postAppointmentMove,
 };
 
 export default appointmentActions;

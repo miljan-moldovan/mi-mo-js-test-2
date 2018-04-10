@@ -1486,6 +1486,7 @@
 			baseConfigurationReference = 4CF4B2181BF81C4AA75496A1 /* Pods-SalonUltimateRNTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1507,6 +1508,7 @@
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SalonUltimateRN.app/SalonUltimateRN";
 			};
 			name = Debug;
@@ -1516,6 +1518,7 @@
 			baseConfigurationReference = 7FFE3B4710D3873E0555F5B5 /* Pods-SalonUltimateRNTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = FMPG38UD6Y;
@@ -1534,6 +1537,7 @@
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SalonUltimateRN.app/SalonUltimateRN";
 			};
 			name = Release;

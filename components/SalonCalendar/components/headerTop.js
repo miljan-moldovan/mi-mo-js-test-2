@@ -49,7 +49,6 @@ const renderItems = (item, key) => (
 );
 
 const headerTop = ({ dataSource }) => {
-  console.log(dataSource)
   return (
     <View style={styles.container}>
       {dataSource.map((item, index) => renderItems(item, index))}

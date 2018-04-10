@@ -40,7 +40,8 @@ lane :beta do
     workspace: "./ios/SalonUltimateRN.xcworkspace",
     scheme: "SalonUltimateRN",
     export_method: "development",
-    export_xcargs: "-allowProvisioningUpdates"
+    export_xcargs: "-allowProvisioningUpdates",
+    silent: true
   )
 
   # upload to Beta by Crashlytics

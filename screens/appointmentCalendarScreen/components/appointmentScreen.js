@@ -7,6 +7,9 @@ import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
+import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
+import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
+
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
@@ -107,6 +110,8 @@ export default class AppointmentScreen extends Component {
 
   state = {
     visible: false,
+    visibleNewAppointment: false,
+    visibleAppointment: false,
     selectedDate: moment(),
   }
 
@@ -136,6 +141,7 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToApptBook = () => {
+    this.setState({ visibleNewAppointment: true, visibleAppointment: false });
   }
 
   gotToClients = () => {
@@ -143,7 +149,7 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToScoreCard = () => {
-    alert('Not Implemented');
+    this.setState({ visibleAppointment: true, visibleNewAppointment: false });
   }
 
   render() {
@@ -173,6 +179,7 @@ export default class AppointmentScreen extends Component {
               dataSource={providerAppointments}
               appointments={appointments}
               providers={providers}
+              onDrop={this.props.appointmentActions.postAppointmentMove}
             />
       }
 
@@ -190,6 +197,22 @@ export default class AppointmentScreen extends Component {
           }}
           onDateSelected={(date) => {
             this.setState({ selectedDate: date, visible: false });
+          }}
+        />
+
+        <SalonNewAppointmentSlide
+          navigation={this.props.navigation}
+          visible={this.state.visibleNewAppointment}
+          onHide={() => {
+            this.setState({ visibleNewAppointment: false });
+          }}
+        />
+
+        <SalonAppointmentSlide
+          navigation={this.props.navigation}
+          visible={this.state.visibleAppointment}
+          onHide={() => {
+            this.setState({ visibleAppointment: false });
           }}
         />
 
