@@ -42,9 +42,11 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     backgroundColor: 'white',
     flexDirection: 'row',
+    zIndex: 1,
   },
   firstAvBtn: {
     position: 'absolute',
+    zIndex: 9
   },
 });
 
@@ -60,14 +62,7 @@ export default class SalonCalendar extends Component {
   }
 
   handleScrollVertical = (ev) => {
-    //this.setState({ calendarOffset: { y: ev.nativeEvent.contentOffset.y } });
-    Animated.timing(
-      this.state.headerLeftY,
-      {
-        toValue: -ev.nativeEvent.contentOffset.y,
-        duration: 300,
-      },
-    ).start();
+    this.setState({ headerLeftY: -ev.nativeEvent.contentOffset.y });
     if (this.state.isEnabled) {
       this.setState({ calendarOffset: { ...this.state.calendarOffset, y: ev.nativeEvent.contentOffset.y } });
     }
@@ -122,10 +117,8 @@ export default class SalonCalendar extends Component {
   }
 
   render() {
-    const { startTime, endTime, providers, dataSource } = this.props;
+    const { apptGridSettings, providers, dataSource } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
-    const duration = moment(endTime).diff(moment(startTime), 'hours') * 4;
-    const hours = duration ? Array.from(Array(duration).keys()) : [];
     return (
       <View style={styles.container}>
         <ScrollView
@@ -136,7 +129,6 @@ export default class SalonCalendar extends Component {
           scrollEnabled={this.state.isEnabled}
           onLayout={this.measureScrollX}
           onScroll={this.handleHorizontalScroll}
-          scrollEventThrottle={50}
           removeClippedSubviews={false}
         >
           <ScrollView
@@ -153,19 +145,19 @@ export default class SalonCalendar extends Component {
               <HeaderTop dataSource={providers} />
             </View>
             <CalendarCells
-              hours={hours}
               dataSource={dataSource}
               providers={providers}
-              startTime={startTime}
+              apptGridSettings={apptGridSettings}
             />
             {this.props.appointments ?
             this.props.appointments.map((appointment) => {
               if (appointment.employee) {
                 return (
                   <AppointmentBlock
+                    key={appointment.id}
                     providers={providers}
                     appointment={appointment}
-                    initialTime={startTime}
+                    apptGridSettings={apptGridSettings}
                     onDrag={this.handleOnDrag}
                     calendarMeasure={calendarMeasure}
                     onScrollX={this.handleScrollX}
@@ -178,12 +170,15 @@ export default class SalonCalendar extends Component {
             }) : null}
           </ScrollView>
         </ScrollView>
-        <Animated.View style={[styles.fixedColumn, { top: this.state.headerLeftY }]}>
-          <TimeHeader dataSource={hours} startTime={startTime} />
-          <AvHeader dataSource={hours} />
-        </Animated.View>
+        <View style={[styles.fixedColumn, { top: this.state.headerLeftY }]}>
+          <TimeHeader apptGridSettings={apptGridSettings} />
+          <AvHeader
+            apptGridSettings={apptGridSettings}
+            providers={providers}
+            timeSchedules={dataSource} />
+          <CurrentTime apptGridSettings={apptGridSettings} />
+        </View>
         <FirstAvBtn rootStyles={styles.firstAvBtn} />
-        <CurrentTime startTime={startTime} />
       </View>
     );
   }
