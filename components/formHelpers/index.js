@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   inputRow: {
-    height: 43,
+    height: 43.5,
     paddingRight: 16,
     alignSelf: 'stretch',
     flexDirection: 'row',
@@ -114,6 +114,27 @@ const styles = StyleSheet.create({
   },
 });
 
+export const RemoveButton = ({ title, onPress }) => (
+  <TouchableOpacity
+    style={{
+        height: 44,
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFFF',
+      }}
+    onPress={onPress}
+  >
+    <Text style={{
+        fontSize: 14,
+        lineHeight: 22,
+        color: '#D1242A',
+        fontFamily: 'Roboto-Medium',
+      }}
+    >{title}
+    </Text>
+  </TouchableOpacity>
+);
 export const SectionTitle = props => (
   <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
@@ -206,7 +227,7 @@ InputButton.defaultProps = {
 };
 
 export const InputLabel = props => (
-  <View style={[styles.inputRow, { justifyContent: 'center' }]}>
+  <View style={[styles.inputRow, { justifyContent: 'center' }, props.style]}>
     <Text style={[styles.labelText]}>{props.label}</Text>
     <View style={{ flex: 1, alignItems: 'flex-end' }}>
       <Text style={[styles.inputText]}>{props.value}</Text>
@@ -276,7 +297,7 @@ export class InputDate extends React.Component {
           selectedDate={this.props.selectedDate}
         />
         <InputButton
-          style={{ width: '90%' }}
+          style={{ flex: 1 }}
           onPress={() => {
             this.setState({ showModal: !this.state.showModal });
           }}
@@ -284,16 +305,18 @@ export class InputDate extends React.Component {
           label={this.props.placeholder}
           value={this.props.selectedDate}
         />
-        <TouchableOpacity
-          onPress={() => {
-            this.props.onPress(null);
-          }}
-          style={styles.dateCancelButtonStyle}
-        >
-          <View style={styles.dateCancelStyle}>
-            <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
-          </View>
-        </TouchableOpacity>
+        {!this.props.noIcon && (
+          <TouchableOpacity
+            onPress={() => {
+              this.props.onPress(null);
+            }}
+            style={styles.dateCancelButtonStyle}
+          >
+            <View style={styles.dateCancelStyle}>
+              <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -323,6 +346,49 @@ export class InputSwitch extends React.Component {
   }
 }
 
+export class ClientInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedClient: 'selectedClient' in this.props ? this.props.selectedClient : null,
+    };
+  }
+
+  handleClientSelection = (client) => {
+    this.setState({ selectedClient: client });
+    this.props.onChange(client);
+  }
+
+  handlePress = () => {
+    this.props.navigate('ChangeClient', {
+      selectedClient: 'selectedClient' in this.state ? this.state.selectedClient : null,
+      actionType: 'update',
+      dismissOnSelect: true,
+      onChangeClient: client => this.handleClientSelection(client),
+    });
+  }
+
+  render() {
+    const value = this.props.selectedClient ? this.props.selectedClient.name : null;
+    return (
+      <TouchableOpacity
+        style={[styles.inputRow, { justifyContent: 'center' }]}
+        onPress={this.handlePress}
+      >
+        <Text style={[styles.labelText]}>Client</Text>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <Text style={[styles.inputText]}>{value}</Text>
+        </View>
+        {'extraComponents' in this.props && (
+          <View style={{ marginHorizontal: 5, flexDirection: 'row' }}>{this.props.extraComponents}</View>
+        )}
+        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+      </TouchableOpacity>
+    );
+  }
+}
+
 export class ServiceInput extends React.Component {
   constructor(props) {
     super(props);
@@ -347,7 +413,7 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    const value = this.props.selectedService ? this.props.selectedService.name : null;
+    const value = this.state.selectedService ? this.state.selectedService.name : null;
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -368,6 +434,7 @@ export class ProviderInput extends React.Component {
     super(props);
 
     this.state = {
+      labelText: 'labelText' in this.props ? this.props.labelText : 'Provider',
       selectedProvider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
@@ -393,7 +460,7 @@ export class ProviderInput extends React.Component {
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
-        <Text style={[styles.labelText]}>Provider</Text>
+        <Text style={[styles.labelText]}>{this.state.labelText}</Text>
         <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
@@ -517,11 +584,24 @@ export class InputNumber extends React.Component {
     }
   }
 
+  renderCounterComponent = () => this.props.counterComponent(this.props.value)
+
   render() {
+    const text = this.props.value > 1 ? this.props.pluralText : this.props.singularText;
+    const valueText = `${this.props.value} ${text}`;
+    const countComponent = 'label' in this.props ? (
+      <InputLabel
+        style={{ flex: 1 }}
+        label={this.props.label}
+        value={valueText}
+      />
+    ) : (
+      <Text style={[styles.labelText, this.props.textStyle]}>{valueText}</Text>
+    );
+
     return (
       <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
-        <Text style={[styles.labelText, this.props.textStyle]}>{this.props.value}  {this.props.value > 1 ? this.props.pluralText : this.props.singularText}</Text>
-
+        {countComponent}
         <View style={[styles.inputNumber, this.props.inputNumberStyle]}>
           <TouchableOpacity
             style={[styles.inputNumberButton, {

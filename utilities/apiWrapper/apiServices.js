@@ -8,6 +8,7 @@ import note from './apiServicesResources/note';
 import services from './apiServicesResources/services';
 import employees from './apiServicesResources/employees';
 import product from './apiServicesResources/product';
+import salon from './apiServicesResources/salon';
 
 const conf = {
   ...queue.resources,
@@ -20,6 +21,7 @@ const conf = {
   ...services.resources,
   ...employees.resources,
   ...product.resources,
+  ...salon.resources,
 };
 
 export default {

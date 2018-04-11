@@ -195,7 +195,6 @@ const ServiceCard = (props) => {
 
   return (
     <SalonCard
-      {...console.log('djoy props', props)}
       backgroundColor="white"
       containerStyles={{ marginHorizontal: 0 }}
       bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
@@ -285,14 +284,14 @@ const ProductCard = props => (
 );
 
 const CircularIcon = props => (
-  <View style={{
+  <View style={[{
     height: props.size,
     width: props.size,
     borderRadius: props.size / 2,
     backgroundColor: props.backgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
-  }}
+  }, props.style]}
   >
     <FontAwesome style={{
       color: props.color,
@@ -318,7 +317,7 @@ CircularIcon.defaultProps = {
   icon: 'plus',
 };
 
-const AddButton = props => (
+export const AddButton = props => (
   <TouchableOpacity
     onPress={props.onPress}
     style={{
@@ -328,7 +327,7 @@ const AddButton = props => (
       padding: 12,
     }}
   >
-    <CircularIcon />
+    <CircularIcon style={props.iconStyle} />
     <Text style={styles.addButtonText}> {props.title}</Text>
   </TouchableOpacity>
 );

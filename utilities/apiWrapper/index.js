@@ -111,7 +111,8 @@ function doRequest(key, parameters, options = {
     let count = 1;
 
     // bypass default URL if it exists in the store
-    let apiURL, store;
+    let apiURL,
+      store;
     try {
       apiURL = await AsyncStorage.getItem(URLKEY);
       store = await AsyncStorage.getItem(STOREKEY);

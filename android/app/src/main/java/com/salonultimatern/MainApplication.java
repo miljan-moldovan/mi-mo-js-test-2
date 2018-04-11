@@ -3,6 +3,7 @@ package com.salonultimatern;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.zyu.ReactNativeWheelPickerPackage;
 import com.beefe.picker.PickerViewPackage;
 import io.sentry.RNSentryPackage;
 import com.actionsheet.ActionSheetPackage;
@@ -28,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativeWheelPickerPackage(),
             new PickerViewPackage(),
             new RNSentryPackage(MainApplication.this),
             new ActionSheetPackage(),
