@@ -116,7 +116,7 @@ export default class ApptBookSetEmployeeOrderHeader extends React.Component {
 
       <TouchableOpacity
         style={styles.leftButton}
-        onPress={() => { this.props.rootProps.navigation.state.params.handleGoBack(); }}
+        onPress={() => { this.props.params.handleGoBack(); }}
       >
         <View style={styles.leftButtonContainer}>
           <Text style={styles.leftButtonText}>
@@ -129,7 +129,7 @@ export default class ApptBookSetEmployeeOrderHeader extends React.Component {
       </View>
       <TouchableOpacity
         style={styles.rightButton}
-        onPress={() => { this.props.rootProps.navigation.state.params.handlePress(); }}
+        onPress={() => { this.props.params.handlePress(); }}
       >
         <View style={styles.rightButtonContainer}>
           <Text style={styles.rightButtonText}>

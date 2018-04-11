@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import AppointmentModel from '../../../../utilities/models/appointments';
 
@@ -176,17 +177,26 @@ const caretRight = (
   <FontAwesome style={styles.timeCaretIcon}>{Icons.angleRight}</FontAwesome>
 );
 
-const SalonAppointmentTime = props => (
-  <View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
+const SalonAppointmentTime = (props) => {
+  let estimatedTime = moment(props.appointment.estimatedTime, 'hh:mm:ss').isValid()
+    ? moment(props.appointment.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(props.appointment.estimatedTime, 'hh:mm:ss').minutes()
+    : 0;
+
+  if (props.appointment.estimatedTime && props.appointment.estimatedTime[0] === '-') {
+    estimatedTime *= (-1);
+  }
+
+  const timeCheckedIn = props.appointment.status === 5 ? 0 : estimatedTime;
+  return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}> {props.appointment.startTime}</Text>
+      <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
       {caretRight}
       <Text style={styles.serviceTime}>REM Wait</Text>
-      <Text style={styles.serviceRemainingWaitTime}> 7m</Text>
+      <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
     </View>
-  </View>
-);
+          </View>);
+};
 SalonAppointmentTime.propTypes = {
   appointment: PropTypes.shape(AppointmentModel).isRequired,
 };
@@ -199,7 +209,6 @@ const ServiceCard = (props) => {
 
   return (
     <SalonCard
-      {...console.log('djoy props', props)}
       backgroundColor="white"
       containerStyles={{ marginHorizontal: 0 }}
       bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
@@ -290,14 +299,14 @@ const ProductCard = props => (
 );
 
 const CircularIcon = props => (
-  <View style={{
+  <View style={[{
     height: props.size,
     width: props.size,
     borderRadius: props.size / 2,
     backgroundColor: props.backgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
-  }}
+  }, props.style]}
   >
     <FontAwesome style={{
       color: props.color,
@@ -323,7 +332,7 @@ CircularIcon.defaultProps = {
   icon: 'plus',
 };
 
-const AddButton = props => (
+export const AddButton = props => (
   <TouchableOpacity
     onPress={props.onPress}
     style={{
@@ -333,7 +342,7 @@ const AddButton = props => (
       padding: 12,
     }}
   >
-    <CircularIcon />
+    <CircularIcon style={props.iconStyle} />
     <Text style={styles.addButtonText}> {props.title}</Text>
   </TouchableOpacity>
 );

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, TouchableOpacity, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import moment from 'moment';
 import Icon from '../components/UI/Icon';
 import ListItem from './QueueListItemSummary';
 import SalonIcon from '../components/SalonIcon';
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   angleIcon: {
     fontSize: 12,
-    marginHorizontal: 8,
+    marginHorizontal: 10,
     color: '#111415',
   },
   timeText: {
@@ -272,6 +272,17 @@ class QueueItemSummary extends Component {
   }
 
   render() {
+    const item = this.props.item ? this.props.item : {};
+    let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+      ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
+      : 0;
+
+    if (item.estimatedTime && item.estimatedTime[0] === '-') {
+      estimatedTime *= (-1);
+    }
+
+    const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
+
     const { translateYAnim } = this.state;
     console.log(JSON.stringify(this.props.services));
     if (this.state.isVisible) {
@@ -308,10 +319,10 @@ class QueueItemSummary extends Component {
                 </View>
                 <View style={[styles.row, { marginTop: 8 }]}>
                   <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
-                  <Text style={styles.timeText}>11:57 AM</Text>
+                  <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
                   <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
                   <Text style={styles.remTimeText}>{'REM wait '}
-                    <Text style={styles.underlineText}>7m</Text>
+                    <Text style={styles.underlineText}> {timeCheckedIn}m</Text>
                   </Text>
                 </View>
                 <ScrollView style={styles.listContainer}>

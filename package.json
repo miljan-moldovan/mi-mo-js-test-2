@@ -10,6 +10,7 @@
   "dependencies": {
     "@yfuks/react-native-action-sheet": "0.0.4",
     "axios": "^0.17.1",
+    "lodash": "4.17.5",
     "moment": "^2.20.1",
     "native-base": "^2.3.7",
     "prop-types": "15.6.0",
@@ -30,6 +31,7 @@
     "react-native-svg": "^6.2.2",
     "react-native-swipeable": "^0.6.0",
     "react-native-touch-id": "^4.0.0",
+    "react-native-wheel-datepicker": "^2.2.2",
     "react-navigation": "^1.0.0-beta.27",
     "react-redux": "5.0.6",
     "redux": "^3.7.2",

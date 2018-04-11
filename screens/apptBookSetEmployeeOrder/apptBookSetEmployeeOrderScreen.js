@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     right: 0,
     marginHorizontal: 0,
     marginVertical: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: '#F1F1F1',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -85,6 +85,10 @@ class RowComponent extends React.Component {
 }
 
 class ApptBookSetEmployeeOrderScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    header: (<ApptBookSetEmployeeOrderHeader params={navigation.state.params} />),
+  })
+
   static compareByOrder(a, b) {
     if (a.appointmentOrder < b.appointmentOrder) { return -1; }
     if (a.appointmentOrder > b.appointmentOrder) { return 1; }
@@ -93,11 +97,12 @@ class ApptBookSetEmployeeOrderScreen extends Component {
 
 
   state = {
-    isVisible: true,
+    isVisibleEmployeeOrder: true,
     employees: {},
     orderEmployees: {},
     order: Object.keys({}),
   };
+
 
   componentWillMount() {
     this.getEmployees();
@@ -108,9 +113,6 @@ class ApptBookSetEmployeeOrderScreen extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
-  }
 
   getEmployees = () => {
     this.props.apptBookSetEmployeeOrderActions.getEmployees({})
@@ -155,45 +157,40 @@ class ApptBookSetEmployeeOrderScreen extends Component {
   shouldSave = false
 
   goBack() {
-    this.setState({ isVisible: false });
+    this.setState({ isVisibleEmployeeOrder: false });
+    this.props.navigation.state.params.onNavigateBack();
     this.props.navigation.goBack();
   }
 
   handleOnNavigateBack = () => {
-    this.setState({ isVisible: true });
+    this.setState({ isVisibleEmployeeOrder: true });
   }
 
   dismissOnSelect() {
     const { navigate } = this.props.navigation;
-    this.setState({ isVisible: true });
+    this.setState({ isVisibleEmployeeOrder: true });
     navigate('ApptBookSetEmployeeOrder');
   }
 
 
   render() {
     return (
-      <Modal
-        isVisible={this.state.isVisible}
-        style={styles.modal}
-      >
-        <View style={styles.container}>
-          <ApptBookSetEmployeeOrderHeader rootProps={this.props} />
-          <SortableListView
-            style={{ flex: 1, marginBottom: 0 }}
+      <View style={styles.container}>
+        <SortableListView
+          style={{ flex: 1, marginBottom: 0 }}
 
-            renderRow={row => <RowComponent employee={row} />}
-            order={this.state.order}
-            data={this.state.employees}
-            onRowMoved={(e) => {
-              let order = this.state.order;
+          renderRow={row => <RowComponent employee={row} />}
+          order={this.state.order}
+          data={this.state.employees}
+          onRowMoved={(e) => {
+            let order = this.state.order;
 
-              order = order.splice(e.to, 0, order.splice(e.from, 1)[0]);
-            }}
+            order = order.splice(e.to, 0, order.splice(e.from, 1)[0]);
+          }}
 
-            disableAnimatedScrolling
-          />
-        </View>
-      </Modal>
+          disableAnimatedScrolling
+        />
+      </View>
     );
   }
 }

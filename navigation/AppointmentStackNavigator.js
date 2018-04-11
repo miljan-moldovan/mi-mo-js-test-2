@@ -4,7 +4,8 @@ import { Image, View, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
 import AppointmentScreen from '../screens/AppointmentsScreen.js';
-import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+// import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen';
@@ -19,6 +20,9 @@ import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
 
+import SalonCalendar from './../components/SalonCalendar';
+import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
+
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
@@ -27,15 +31,34 @@ import AppointmentNoteScreen from './../screens/appointmentNote';
 import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
 
 import ModifyServiceScreen from './../screens/modifyServiceScreen';
+import ModifyApptServiceScreen from './../screens/apptBookModifyService';
+import FilterOptionsScreen from './../screens/filterOptionsScreen';
+import FilterByPositionScreen from './../screens/filterByPositionScreen';
+import EndsOnScreen from './../screens/endsOnScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
+    Main: {
+      screen: AppointmentCalendarScreen,
+    },
+    SalonCalendar: {
+      screen: AppointmentCalendarScreen,
+    },
+    EndsOn: {
+      screen: EndsOnScreen,
+    },
+    ModifyApptService: {
+      screen: ModifyApptServiceScreen,
+    },
+    FilterOptions: {
+      screen: FilterOptionsScreen,
+    },
+    FilterByPosition: {
+      screen: FilterByPositionScreen,
+    },
     Appointments: {
       screen: AppointmentScreen,
     },
-    // AppointmentDetails: {
-    //   screen: AppointmentDetailsScreen,
-    // },
     AppointmentFormula: {
       screen: AppointmentFormula,
     },

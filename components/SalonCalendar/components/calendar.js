@@ -8,17 +8,12 @@ import TimeHeader from './timeColumn';
 import AvHeader from './availabilityColumn';
 import AppointmentBlock from './appointmentBlock';
 import CalendarCells from './calendarCells';
+import CurrentTime from './currentTime';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     flex: 1,
-  },
-  header: {
-    width: 500,
-    height: 100,
-    backgroundColor: 'white',
-    zIndex: 1,
   },
   headerCell: {
     height: 30,
@@ -44,13 +39,14 @@ const styles = StyleSheet.create({
   },
   fixedColumn: {
     position: 'absolute',
-    paddingTop: 140,
+    paddingTop: 40,
     backgroundColor: 'white',
     flexDirection: 'row',
+    zIndex: 1,
   },
   firstAvBtn: {
     position: 'absolute',
-    top: 100,
+    zIndex: 9
   },
 });
 
@@ -66,14 +62,7 @@ export default class SalonCalendar extends Component {
   }
 
   handleScrollVertical = (ev) => {
-    //this.setState({ calendarOffset: { y: ev.nativeEvent.contentOffset.y } });
-    // Animated.timing(
-    //   this.state.headerLeftY,
-    //   {
-    //     toValue: -ev.nativeEvent.contentOffset.y,
-    //     duration: 300,
-    //   },
-    // ).start();
+    this.setState({ headerLeftY: -ev.nativeEvent.contentOffset.y });
     if (this.state.isEnabled) {
       this.setState({ calendarOffset: { ...this.state.calendarOffset, y: ev.nativeEvent.contentOffset.y } });
     }
@@ -123,14 +112,15 @@ export default class SalonCalendar extends Component {
     this.setState({ calendarOffset: { ...this.state.calendarOffset, y: dy } }), callback();
   }
 
+  handleDrop = (appointmentId, params) => {
+    this.props.onDrop(appointmentId, params);
+  }
+
   render() {
-    const { startTime, endTime, providers, dataSource } = this.props;
+    const { apptGridSettings, providers, dataSource } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
-    const duration = moment(endTime).diff(moment(startTime), 'hours') * 4;
-    const hours = Array.from(Array(duration).keys());
     return (
       <View style={styles.container}>
-        <View style={styles.header} />
         <ScrollView
           style={styles.scrollView}
           horizontal
@@ -139,14 +129,13 @@ export default class SalonCalendar extends Component {
           scrollEnabled={this.state.isEnabled}
           onLayout={this.measureScrollX}
           onScroll={this.handleHorizontalScroll}
-          scrollEventThrottle={50}
           removeClippedSubviews={false}
         >
           <ScrollView
             ref={(scrollView) => { this.verticalView = scrollView; }}
             onScroll={this.handleScrollVertical}
             scrollEventThrottle={50}
-            //stickyHeaderIndices={[0]}
+            stickyHeaderIndices={[0]}
             bounces={false}
             scrollEnabled={this.state.isEnabled}
             removeClippedSubviews={false}
@@ -156,34 +145,39 @@ export default class SalonCalendar extends Component {
               <HeaderTop dataSource={providers} />
             </View>
             <CalendarCells
-              hours={hours}
               dataSource={dataSource}
               providers={providers}
-              startTime={startTime}
+              apptGridSettings={apptGridSettings}
             />
             {this.props.appointments ?
             this.props.appointments.map((appointment) => {
               if (appointment.employee) {
                 return (
                   <AppointmentBlock
+                    key={appointment.id}
                     providers={providers}
                     appointment={appointment}
-                    initialTime={startTime}
+                    apptGridSettings={apptGridSettings}
                     onDrag={this.handleOnDrag}
                     calendarMeasure={calendarMeasure}
                     onScrollX={this.handleScrollX}
                     onScrollY={this.handleScrollY}
                     calendarOffset={calendarOffset}
+                    onDrop={this.handleDrop}
                   />);
             }
               return null;
             }) : null}
           </ScrollView>
         </ScrollView>
-        <Animated.View style={[styles.fixedColumn, { top: this.state.headerLeftY }]}>
-          <TimeHeader dataSource={hours} startTime={startTime} />
-          <AvHeader dataSource={hours} />
-        </Animated.View>
+        <View style={[styles.fixedColumn, { top: this.state.headerLeftY }]}>
+          <TimeHeader apptGridSettings={apptGridSettings} />
+          <AvHeader
+            apptGridSettings={apptGridSettings}
+            providers={providers}
+            timeSchedules={dataSource} />
+          <CurrentTime apptGridSettings={apptGridSettings} />
+        </View>
         <FirstAvBtn rootStyles={styles.firstAvBtn} />
       </View>
     );

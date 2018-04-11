@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import moment from 'moment';
+import { times } from 'lodash';
 
 const styles = StyleSheet.create({
   row: {
@@ -26,12 +27,12 @@ const styles = StyleSheet.create({
 
 class CalendarCells extends Component {
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate() {
     return false;
   }
 
   renderCell = (providerScheudle, hour, key) => {
-    const time = moment(this.props.startTime, 'HH:mm').add(hour * 15, 'm');
+    const time = moment(this.props.apptGridSettings.startTime, 'HH:mm').add(hour * 15, 'm');
     const style = providerScheudle && providerScheudle.scheduledIntervals
     && providerScheudle.scheduledIntervals.length > 0
     && time.isSameOrAfter(moment(providerScheudle.scheduledIntervals[0].start, 'HH:mm'))
@@ -49,10 +50,10 @@ class CalendarCells extends Component {
   );
 
   render() {
-    const { hours } = this.props;
+    const { apptGridSettings } = this.props;
     return (
       <View>
-        {hours.map(hour => this.renderColumn(hour))}
+        {times(apptGridSettings.numOfRow, index => this.renderColumn(index))}
       </View>
     );
   }

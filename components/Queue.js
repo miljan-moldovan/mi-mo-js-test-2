@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
@@ -279,6 +280,21 @@ class Queue extends React.Component {
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
     const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
+
+    let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+      ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
+      : 0;
+
+    if (item.estimatedTime && item.estimatedTime[0] === '-') {
+      estimatedTime *= (-1);
+    }
+
+    const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
+    const isAppointment = item.queueType === 1;
+    const isBookedByWeb = item.queueType === 2;
+
+    console.log(JSON.stringify(item));
+
     return (
       <TouchableOpacity
         style={styles.itemContainer}
@@ -286,19 +302,39 @@ class Queue extends React.Component {
         key={item.id}
       >
         <View style={styles.itemSummary}>
-          <View style={{ flexDirection: 'row', marginTop: 11 }}>
+          <View style={{ flexDirection: 'row', marginTop: 11, alignItems: 'center' }}>
+
+            {isBookedByWeb &&
+              <View style={{
+                backgroundColor: '#115ECD',
+                width: 16,
+                height: 14,
+                borderRadius: 8,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 5,
+                marginTop: 2,
+              }}
+              >
+                <Text style={{ fontWeight: '700', color: '#FFFFFF', fontSize: 8 }}>O</Text>
+              </View>
+            }
+
             <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
             <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
           </View>
           <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
             {serviceName}
-            {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
             <Text style={{ color: '#727A8F' }}> with</Text> {employee}
+            {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
+
           </Text>
           <Text style={styles.serviceTimeContainer}>
             <Icon name="clockO" style={styles.serviceClockIcon} />
-            <Text style={styles.serviceTime}> {item.startTime}</Text> > REM Wait <Text style={styles.serviceRemainingWaitTime}>7m</Text>
+            <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  >  REM Wait <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
+            {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
           </Text>
+
         </View>
         {label}
         {/* <Image source={chevron} style={styles.chevron} /> */}
@@ -382,6 +418,7 @@ class Queue extends React.Component {
           onDonePress={this.hideDialog}
           onPressSummary={this.handlePressSummary}
           isWaiting={this.props.isWaiting}
+          item={this.state.appointment}
           isCheckedIn={this.state.appointment ? this.state.appointment.checkedIn : false}
           hide={this.hideDialog}
         />
@@ -541,5 +578,12 @@ const styles = StyleSheet.create({
     right: 10,
     fontSize: 15,
     color: '#115ECD',
+  },
+  apptLabel: {
+    paddingLeft: 5,
+    fontSize: 10,
+    height: 10,
+    width: 10,
+    color: '#53646F',
   },
 });

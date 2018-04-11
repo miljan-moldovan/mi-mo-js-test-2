@@ -5,7 +5,8 @@ const resources = {
   getQueue: {
     path: 'Queue',
     method: 'get',
-    expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
+    disableCache: true,
   },
   getQueueById: {
     path: 'Queue/:id/',
