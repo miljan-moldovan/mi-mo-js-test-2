@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     borderRadius: 4,
-    height: 30,
+    height: 26,
     borderWidth: 1,
     overflow: 'hidden',
     flexDirection: 'row',
@@ -85,9 +85,9 @@ function renderBtn(
 }
 
 const salonFlatPicker = props => (
-  <View style={styles.container}>
+  <View style={[styles.container, props.rootStyle]}>
     {props.title ? <Text style={styles.titleStyle}>{props.title}</Text> : null }
-    <View style={[styles.pickerContainer, { borderColor: props.selectedColor }]}>
+    <View style={[styles.pickerContainer, props.containerStyle, { borderColor: props.selectedColor }]}>
       {props.dataSource.map((data, index) =>
         renderBtn(
           data, index, index === props.selectedIndex,

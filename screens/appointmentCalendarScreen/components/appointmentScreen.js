@@ -1,17 +1,159 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
+import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
+import SalonAvatar from '../../../components/SalonAvatar';
 
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    let title = (
+      <Text style={{
+        fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+      }}
+      >All Providers
+      </Text>);
+
+    if (params && 'filterProvider' in params) {
+      title = (
+        <View style={{ flexDirection: 'row' }}>
+          <SalonAvatar
+            wrapperStyle={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              marginRight: 6,
+            }}
+            width={20}
+            borderWidth={3}
+            borderColor="white"
+            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+          />
+          <Text style={{
+          fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+        }}
+          >{params.filterProvider.fullName}
+          </Text>
+        </View>
+      );
+    }
+
+    return {
+      header: (
+        <View style={{
+          height: 63,
+          paddingBottom: 10,
+          backgroundColor: '#115ECD',
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+        }}
+        >
+          <TouchableOpacity
+            style={{
+              flex: 1 / 5,
+              alignItems: 'flex-start',
+              justifyContent: 'flex-end',
+              marginLeft: 16,
+            }}
+            onPress={() => navigation.state.params.onPressMenu()}
+          >
+            <Icon
+              name="bars"
+              type="regular"
+              color="white"
+              size={19}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flex: 3 / 5,
+              alignSelf: 'stretch',
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+            }}
+            onPress={() => navigation.state.params.onPressTitle()}
+          >
+            {title}
+            <Icon
+              style={{ marginLeft: 5 }}
+              name="caretDown"
+              type="regular"
+              color="white"
+              size={17}
+            />
+          </TouchableOpacity>
+          <View
+            style={{
+              flex: 1 / 5,
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingRight: 16,
+              flexDirection: 'row',
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.state.params.onPressEllipsis()}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon
+                name="ellipsisH"
+                type="regular"
+                color="white"
+                size={22}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.state.params.onPressCalendar()}
+              style={{
+                marginLeft: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon
+                name="calendar"
+                type="regular"
+                color="white"
+                size={19}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ),
+      // headerLeft: (
+
+      // ),
+      // headerRight: (
+
+      // ),
+    };
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.props.navigation.setParams({
+      onPressMenu: this.onPressMenu,
+      onPressEllipsis: this.onPressEllipsis,
+      onPressCalendar: this.onPressCalendar,
+      onPressTitle: this.onPressTitle,
+    });
+  }
+
   state = {
     visible: false,
     visibleNewAppointment: false,
@@ -22,6 +164,19 @@ export default class AppointmentScreen extends Component {
   componentWillMount() {
     this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
   }
+
+  componentDidMount() {
+  }
+
+  onPressMenu = () => alert('Not Implemented');
+
+  onPressEllipsis = () => alert('Not Implemented');
+
+  onPressCalendar = () => alert('Not Implemented');
+
+  onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
+
+  selectFilterProvider = provider => this.props.navigation.setParams({ filterProvider: provider });
 
   gotToSales = () => {
     alert('Not Implemented');
@@ -77,9 +232,9 @@ export default class AppointmentScreen extends Component {
       }
 
         <ChangeViewFloatingButton handlePress={(isWeek) => {
-          const message = isWeek ? 'week' : 'day';
-          alert(`TODO ${message}`);
-        }}
+            const message = isWeek ? 'week' : 'day';
+            alert(`TODO ${message}`);
+          }}
         />
 
         <SalonDatePickerSlide
