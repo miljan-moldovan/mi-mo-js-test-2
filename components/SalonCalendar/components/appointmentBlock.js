@@ -44,12 +44,13 @@ class appointmentBlock extends Component {
     super(props);
     this.scrollValue = 0;
     const { toTime, fromTime } = props.appointment;
+    const { startTime, step } = props.apptGridSettings;
     const start = moment(fromTime, 'HH:mm');
-    const top = 40 + (moment.duration(start.diff(props.initialTime)).asMinutes() / 15) * 30;
+    const top = 40 + (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
     const left = props.providers.findIndex(
       provider => provider.id === props.appointment.employee.id) * 130;
-    const height = (moment.duration(end.diff(start)).asMinutes() / 15) * 30 - 1;
+    const height = (moment.duration(end.diff(start)).asMinutes() / step) * 30 - 1;
     this.animatedValueX = left;
     this.animatedValueY = top;
     this.state = {
@@ -99,8 +100,8 @@ class appointmentBlock extends Component {
         const newFromTime = moment(fromTime, 'HH:mm').add((yOffset/30) * 15, 'minutes').format('HH:mm');
         this.props.onDrop(this.props.appointment.id,{
           date: this.props.appointment.date,
-          fromTime: newFromTime,
-          provider: this.props.appointment.employee.id,
+          newTime: newFromTime,
+          employeeId: provider.id,
         });
         Animated.parallel([
           Animated.spring(
@@ -143,7 +144,6 @@ class appointmentBlock extends Component {
   }
 
   scrollAnimation = () => {
-    console.log(this.state.pan.y, "BACONT!", this.state.height)
     let dx = 0;
     let dy = 0;
     const boundLength = 30;
@@ -151,8 +151,7 @@ class appointmentBlock extends Component {
     const cardWidth = 130;
     const scrollVerticalBoundTop1 = (this.props.calendarMeasure.height
       + this.props.calendarOffset.y) - boundLength - this.state.height;
-      console.log("BACONTOP", scrollVerticalBoundTop1)
-    if (this.state.isActive) {
+      if (this.state.isActive) {
       if (this.moveX && this.moveY) {
         if (Math.abs(this.moveX) >= Math.abs(this.moveY)) {
           const scrollHorizontalBoundRight = (this.props.calendarMeasure.width
@@ -181,16 +180,13 @@ class appointmentBlock extends Component {
           const scrollVerticalBoundBottom = this.props.calendarOffset.y + boundLength;
           const moveY = this.moveY + this.state.pan.y._offset + this.state.pan.y._value;
           if (scrollVerticalBoundTop < moveY) {
-            console.log("BACONB", moveY, scrollVerticalBoundTop)
             dy = moveY - scrollVerticalBoundTop;
           } else if (scrollVerticalBoundBottom > moveY) {
-            console.log("BACONT", moveY, scrollVerticalBoundBottom)
             dy = moveY - scrollVerticalBoundBottom;
           }
           if (Math.abs(dy) > 0) {
             dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
             dy = dy * maxScrollChange / boundLength;
-              console.log("BACON", scrollVerticalBoundTop, this.props.calendarMeasure.height, ' - ', this.props.calendarOffset.y, ' - ', this.state.pan.y._offset, this.state.pan.y._value, ' - ', dy);
             this.props.onScrollY(this.props.calendarOffset.y + dy, () => {
               this.state.pan.setOffset({
                 x: this.state.pan.x._offset,
@@ -228,7 +224,7 @@ class appointmentBlock extends Component {
       shadowRadius: 4,
     } : null
     return (
-      <Animated.View style={this.state.isActive?{ position: 'absolute'} :{ position: 'absolute'}} key={id}>
+      <Animated.View style={this.state.isActive ? { position: 'absolute' } : { position: 'absolute' }}>
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.container,

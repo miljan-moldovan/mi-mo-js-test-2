@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { groupBy, keyBy, times } from 'lodash';
 
 import {
   GET_APPOINTMENTS_SUCCESS,
@@ -14,9 +15,9 @@ export const GET_APPOINTMENTS_CALENDAR_FAILED = 'appointmentCalendar/GET_APPOINT
 export const GET_PROVIDERS_CALENDAR = 'appointmentCalendar/GET_PROVIDERS';
 export const GET_PROVIDERS_CALENDAR_FAILED = 'appointmentCalendar/GET_PROVIDERS_FAILED';
 
-const getProvidersScheduleSuccess = (startTime, endTime, dictionary) => ({
+const getProvidersScheduleSuccess = (apptGridSettings, dictionary) => ({
   type: GET_APPOINTMENTS_CALENDAR_SUCCESS,
-  data: { startTime, endTime, dictionary },
+  data: { apptGridSettings, dictionary },
 });
 
 const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch) => {
@@ -66,7 +67,14 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
           }
         }
       }
-      dispatch(getProvidersScheduleSuccess(startTime, endTime, response));
+      const step = 15;
+      const apptGridSettings = {
+        startTime,
+        endTime,
+        numOfRow: endTime.diff(startTime, 'minutes') / step,
+        step,
+      };
+      dispatch(getProvidersScheduleSuccess(apptGridSettings, response));
     })
     .catch((err) => {
       console.log(err);
@@ -115,8 +123,12 @@ const initialState = {
   isLoading: false,
   error: null,
   providerAppointments: [],
-  startTime: '',
-  endTime: '',
+  apptGridSettings: {
+    startTime: moment('07:00', 'HH:mm'),
+    endTime: moment('21:00', 'HH:mm'),
+    numOfRow: 0,
+    step: 15
+  },
 };
 
 export default function appoinmentScreenReducer(state = initialState, action) {
@@ -132,8 +144,7 @@ export default function appoinmentScreenReducer(state = initialState, action) {
         ...state,
         isLoading: false,
         error: null,
-        startTime: data.startTime,
-        endTime: data.endTime,
+        apptGridSettings: data.apptGridSettings,
         providerAppointments: data.dictionary,
       };
     default:

@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 34.5,
+    left: 2,
   },
   lineStyle: {
     flex: 1,
@@ -34,8 +35,8 @@ class CurrentTime extends Component {
   constructor(props) {
     super(props);
     const currentTime = moment();
-    let dTime = currentTime.diff(this.props.startTime, 'seconds');
-    dTime = (dTime / (15 * 60)) * 30;
+    let dTime = currentTime.diff(this.props.apptGridSettings.startTime, 'minutes');
+    dTime = (dTime / this.props.apptGridSettings.step) * 30;
     this.state = {
       currentTime: currentTime.format('HH:mm'),
       top: new Animated.Value(dTime),
@@ -49,8 +50,8 @@ class CurrentTime extends Component {
 
   updateTime = () => {
     const currentTime = moment();
-    let dTime = currentTime.diff(this.props.startTime, 'seconds');
-    dTime = (dTime / (15 * 60)) * 30;
+    let dTime = currentTime.diff(this.props.apptGridSettings.startTime, 'minutes');
+    dTime = (dTime / this.props.apptGridSettings.step) * 30;
     Animated.timing(this.state.top, {
       toValue: dTime,
       duration: 300,

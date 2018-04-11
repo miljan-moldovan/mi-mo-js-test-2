@@ -20,7 +20,7 @@ export default class AppointmentScreen extends Component {
   }
 
   componentWillMount() {
-    this.props.appointmentCalendarActions.getAppoinmentsCalendar('2018-03-20');
+    this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
   }
 
   gotToSales = () => {
@@ -43,9 +43,14 @@ export default class AppointmentScreen extends Component {
     this.setState({ visibleAppointment: true, visibleNewAppointment: false });
   }
 
+  handleDateChange = (date) => {
+    this.props.appointmentCalendarActions.getAppoinmentsCalendar(date.format('YYYY-MM-DD'));
+    this.setState({ selectedDate: date });
+  }
+
   render() {
     const {
-      startTime, endTime, providerAppointments, isLoading,
+      apptGridSettings, providerAppointments, isLoading,
     } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
@@ -55,9 +60,7 @@ export default class AppointmentScreen extends Component {
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           onCalendarSelected={() => this.setState({ visible: true })}
-          onDateChange={(date) => {
-            this.setState({ selectedDate: date });
-          }}
+          onDateChange={this.handleDateChange}
           selectedDate={this.state.selectedDate}
         />
 
@@ -65,8 +68,7 @@ export default class AppointmentScreen extends Component {
           isLoading ?
             <ActivityIndicator size="large" color="#0000ff" /> :
             <SalonCalendar
-              startTime={startTime}
-              endTime={endTime}
+              apptGridSettings={apptGridSettings}
               dataSource={providerAppointments}
               appointments={appointments}
               providers={providers}
