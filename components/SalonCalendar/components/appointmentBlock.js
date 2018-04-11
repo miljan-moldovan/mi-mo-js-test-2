@@ -180,16 +180,13 @@ class appointmentBlock extends Component {
           const scrollVerticalBoundBottom = this.props.calendarOffset.y + boundLength;
           const moveY = this.moveY + this.state.pan.y._offset + this.state.pan.y._value;
           if (scrollVerticalBoundTop < moveY) {
-            console.log("BACONB", moveY, scrollVerticalBoundTop)
             dy = moveY - scrollVerticalBoundTop;
           } else if (scrollVerticalBoundBottom > moveY) {
-            console.log("BACONT", moveY, scrollVerticalBoundBottom)
             dy = moveY - scrollVerticalBoundBottom;
           }
           if (Math.abs(dy) > 0) {
             dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
             dy = dy * maxScrollChange / boundLength;
-              console.log("BACON", scrollVerticalBoundTop, this.props.calendarMeasure.height, ' - ', this.props.calendarOffset.y, ' - ', this.state.pan.y._offset, this.state.pan.y._value, ' - ', dy);
             this.props.onScrollY(this.props.calendarOffset.y + dy, () => {
               this.state.pan.setOffset({
                 x: this.state.pan.x._offset,
