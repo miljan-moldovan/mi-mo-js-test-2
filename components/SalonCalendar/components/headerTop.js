@@ -37,6 +37,7 @@ const renderItems = (item, key) => (
     <SalonAvatar
       wrapperStyle={styles.avatarStyle}
       width={24}
+      borderWidth={0}
       image="https://vignette.wikia.nocookie.net/animal-jam-clans-1/images/1/16/Beautiful-Girl-9.jpg/revision/latest?cb=20160630192742"
       hasBadge
       badgeComponent={
