@@ -62,8 +62,8 @@ class appointmentBlock extends Component {
       isScrolling: false,
       opacity: new Animated.Value(0)
     };
-    this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
-    this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
+    // this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
+    // this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
       onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive,
@@ -78,7 +78,7 @@ class appointmentBlock extends Component {
       },
       onPanResponderGrant: () => {
         if (this.state.isActive) {
-          this.state.pan.setOffset({ x: this.animatedValueX, y: this.animatedValueY });
+          this.state.pan.setOffset({ x: this.state.left, y: this.state.top });
           this.state.pan.setValue({ x: 0, y: 0 });
         }
       },
@@ -114,7 +114,7 @@ class appointmentBlock extends Component {
               toValue: 0
             }
           )
-        ]).start(() => this.setState({ isActive: false }));
+        ]).start(() => this.setState({ isActive: false, left: this.state.left + xOffset, top: this.state.top + yOffset }));
       },
     });
   }
@@ -134,6 +134,7 @@ class appointmentBlock extends Component {
 
   handleOnLongPress = () => {
     this.setState({ isActive: true }, this.scrollAnimation);
+    this.offset = { x: this.props.calendarOffset.x, y: this.props.calendarOffset.y }
     this.props.onDrag();
     Animated.timing(
       this.state.opacity,
@@ -149,15 +150,14 @@ class appointmentBlock extends Component {
     const boundLength = 30;
     const maxScrollChange = 15;
     const cardWidth = 130;
-    const scrollVerticalBoundTop1 = (this.props.calendarMeasure.height
-      + this.props.calendarOffset.y) - boundLength - this.state.height;
-      if (this.state.isActive) {
+    if (this.state.isActive) {
       if (this.moveX && this.moveY) {
         if (Math.abs(this.moveX) >= Math.abs(this.moveY)) {
+          const maxWidth = this.props.providers.length * 130 - this.props.calendarMeasure.width;
           const scrollHorizontalBoundRight = (this.props.calendarMeasure.width
-            + this.props.calendarOffset.x) - boundLength - cardWidth;
-          const scrollHorizontalBoundLeft = this.props.calendarOffset.x + boundLength;
-          const moveX = this.moveX + this.state.pan.x._offset + this.state.pan.x._value;
+            + this.offset.x) - boundLength - cardWidth;
+          const scrollHorizontalBoundLeft = this.offset.x + boundLength;
+          const moveX = this.moveX + this.state.pan.x._offset;
           if (scrollHorizontalBoundRight < moveX) {
             dx = moveX - scrollHorizontalBoundRight;
           } else if (scrollHorizontalBoundLeft > moveX) {
@@ -166,7 +166,22 @@ class appointmentBlock extends Component {
           if (Math.abs(dx) > 0) {
             dx = Math.abs(dx) > boundLength ? boundLength * Math.sign(dx) : dx;
             dx = dx * maxScrollChange / boundLength;
-            this.props.onScrollX(this.props.calendarOffset.x + dx, () => {
+            this.offset.x += dx;
+            if (this.offset.x > maxWidth) {
+              this.offset.x =  maxWidth;
+            }
+            if (this.offset.x < 0) {
+              this.offset.x = 0;
+            }
+            const cordiantesX = this.state.pan.x._offset + this.state.pan.x._value + dx;
+            if (cordiantesX + cardWidth > maxWidth + this.props.calendarMeasure.width) {
+              dx = maxWidth + this.props.calendarMeasure.width
+              - this.state.pan.x._offset - this.state.pan.x._value - cardWidth;
+            }
+            if (cordiantesX < 0) {
+              dx = 0;
+            }
+            this.props.onScrollX(this.offset.x, () => {
               this.state.pan.setOffset({
                 x: this.state.pan.x._offset + dx,
                 y: this.state.pan.y._offset,
@@ -175,10 +190,11 @@ class appointmentBlock extends Component {
             });
           }
         } else {
+          const maxHeigth = this.props.apptGridSettings.numOfRow * 30 - this.props.calendarMeasure.height;
           const scrollVerticalBoundTop = (this.props.calendarMeasure.height
-            + this.props.calendarOffset.y) - boundLength - this.state.height;
-          const scrollVerticalBoundBottom = this.props.calendarOffset.y + boundLength;
-          const moveY = this.moveY + this.state.pan.y._offset + this.state.pan.y._value;
+            + this.offset.y) - boundLength - this.state.height - 40;
+          const scrollVerticalBoundBottom = this.offset.y + boundLength + 40;
+          const moveY = this.moveY + this.state.pan.y._offset;
           if (scrollVerticalBoundTop < moveY) {
             dy = moveY - scrollVerticalBoundTop;
           } else if (scrollVerticalBoundBottom > moveY) {
@@ -187,7 +203,22 @@ class appointmentBlock extends Component {
           if (Math.abs(dy) > 0) {
             dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
             dy = dy * maxScrollChange / boundLength;
-            this.props.onScrollY(this.props.calendarOffset.y + dy, () => {
+            this.offset.y += dy;
+            if (this.offset.y > maxHeigth) {
+              this.offset.y = maxHeigth;
+            }
+            if (this.offset.y < 0) {
+              this.offset.y = 0;
+            }
+            const cordiantesY = this.state.pan.y._offset + this.state.pan.y._value + dy;
+            if (cordiantesY + this.state.height > maxHeigth + this.props.calendarMeasure.height) {
+              dy = maxHeigth + this.props.calendarMeasure.height
+              - this.state.pan.y._offset - this.state.pan.y._value - this.state.height;
+            }
+            if (cordiantesY < 40) {
+              dy = 0;
+            }
+            this.props.onScrollY(this.offset.y, () => {
               this.state.pan.setOffset({
                 x: this.state.pan.x._offset,
                 y: this.state.pan.y._offset + dy,
