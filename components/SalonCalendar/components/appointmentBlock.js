@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
     width: 129,
     borderRadius: 4,
     borderWidth: 1,
-    zIndex: 99,
   },
 });
 
@@ -255,7 +254,7 @@ class appointmentBlock extends Component {
       shadowRadius: 4,
     } : null
     return (
-      <Animated.View style={this.state.isActive ? { position: 'absolute' } : { position: 'absolute' }}>
+      <Animated.View style={this.state.isActive ? { position: 'absolute', zIndex: 1 } : { position: 'absolute', zIndex: 0 }}>
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.container,
@@ -271,7 +270,7 @@ class appointmentBlock extends Component {
           {...this.panResponder.panHandlers}
           key={id}
           style={[styles.container,
-            { height, borderColor, backgroundColor: contentColor, zIndex: 99  },
+            { height, borderColor, backgroundColor: contentColor  },
             this.state.pan.getLayout(), shadow]}
         >
           <TouchableOpacity

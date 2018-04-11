@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Dimensions } from 'react-native';
 import moment from 'moment';
+
+const windowsWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
@@ -9,10 +11,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 34.5,
-    left: 2,
+    zIndex: 1,
   },
   lineStyle: {
-    flex: 1,
+    width: windowsWidth,
     height: 1,
     backgroundColor: '#1DBF12',
   },
