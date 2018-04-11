@@ -9,16 +9,42 @@ import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
+import SalonAvatar from '../../../components/SalonAvatar';
 
 import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
-    let title = 'All Providers';
+    let title = (
+      <Text style={{
+        fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+      }}
+      >All Providers
+      </Text>);
 
     if (params && 'filterProvider' in params) {
-      title = params.filterProvider.name;
+      title = (
+        <View style={{ flexDirection: 'row' }}>
+          <SalonAvatar
+            wrapperStyle={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              marginRight: 6,
+            }}
+            width={20}
+            borderWidth={3}
+            borderColor="white"
+            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+          />
+          <Text style={{
+          fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+        }}
+          >{params.filterProvider.fullName}
+          </Text>
+        </View>
+      );
     }
 
     return {
@@ -26,7 +52,7 @@ export default class AppointmentScreen extends Component {
         <View style={{
           height: 63,
           paddingBottom: 10,
-          backgroundColor: '#115ECD',          
+          backgroundColor: '#115ECD',
           flexDirection: 'row',
           alignItems: 'flex-end',
           justifyContent: 'space-between',
@@ -58,11 +84,7 @@ export default class AppointmentScreen extends Component {
             }}
             onPress={() => navigation.state.params.onPressTitle()}
           >
-            <Text style={{
-            fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
-          }}
-            >{title}
-            </Text>
+            {title}
             <Icon
               style={{ marginLeft: 5 }}
               name="caretDown"
@@ -208,9 +230,9 @@ export default class AppointmentScreen extends Component {
       }
 
         <ChangeViewFloatingButton handlePress={(isWeek) => {
-          const message = isWeek ? 'week' : 'day';
-          alert(`TODO ${message}`);
-        }}
+            const message = isWeek ? 'week' : 'day';
+            alert(`TODO ${message}`);
+          }}
         />
 
         <SalonDatePickerSlide
