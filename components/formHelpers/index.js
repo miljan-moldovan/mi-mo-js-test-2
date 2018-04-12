@@ -288,7 +288,7 @@ export class InputDate extends React.Component {
 
   render() {
     return (
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', flex: 1 }}>
         <SalonDatePicker
           isVisible={this.state.showModal}
           onPress={(selectedDate) => {
@@ -456,7 +456,11 @@ export class ProviderInput extends React.Component {
 
   render() {
     console.log(JSON.stringify(this.state.selectedProvider));
-    const value = this.state.selectedProvider.id ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available';
+    const value = this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available') : '';
+
+
+    const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(!this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
+
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -471,7 +475,7 @@ export class ProviderInput extends React.Component {
                 width={30}
                 borderWidth={1}
                 borderColor="transparent"
-                image={{ uri: apiWrapper.getEmployeePhoto(this.state.selectedProvider.id ? this.state.selectedProvider.id : 0) }}
+                image={{ uri: employeePhoto }}
               />
               <Text style={[styles.inputText]}>{value}</Text>
             </View>

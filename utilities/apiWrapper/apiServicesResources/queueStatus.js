@@ -20,6 +20,36 @@ const resources = {
     method: 'put',
     disableCache: true,
   },
+  putNoShow: {
+    path: 'QueueStatus/NoShow/:clientQueueItemId',
+    method: 'put',
+    disableCache: true,
+  },
+  putReturnLater: {
+    path: 'QueueStatus/ReturnLater/:clientQueueItemId',
+    method: 'put',
+    disableCache: true,
+  },
+  putReturned: {
+    path: 'QueueStatus/Returned/:clientQueueItemId',
+    method: 'put',
+    disableCache: true,
+  },
+  putToWaiting: {
+    path: 'QueueStatus/ToWaiting/:clientQueueItemId',
+    method: 'put',
+    disableCache: true,
+  },
+  putFinish: {
+    path: 'QueueStatus/Finish/:clientQueueItemId',
+    method: 'put',
+    disableCache: true,
+  },
+  putUndoFinish: {
+    path: 'QueueStatus/UndoFinish/:clientQueueItemId',
+    method: 'put',
+    disableCache: true,
+  },
 };
 
 export default {

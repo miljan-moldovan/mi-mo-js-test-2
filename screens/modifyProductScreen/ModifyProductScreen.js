@@ -18,19 +18,39 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
-import apiWrapper from '../../utilities/apiWrapper';
+import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
 });
 
 export default class ModifyProductScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: 'product' in rootProps.navigation.state.params ?
-      'Modify Product' : 'Add Product',
+    headerTitle: <Text style={styles.titleText}>{'product' in rootProps.navigation.state.params ?
+        'Modify Product' : 'Add Product'}
+    </Text>,
+    headerLeft:
+
+  <TouchableOpacity
+    onPress={() => { rootProps.navigation.goBack(); }}
+  >
+    <Icon
+      name="angleLeft"
+      type="regular"
+      color="white"
+      size={19}
+    />
+  </TouchableOpacity>,
+
     headerRight: (
       <TouchableOpacity
         onPress={rootProps.navigation.state.params.onSave}

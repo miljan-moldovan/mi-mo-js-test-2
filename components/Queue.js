@@ -106,12 +106,14 @@ class Queue extends React.Component {
   };
 
   handlePressSummary = {
-    checkIn: () => alert('Not Implemented'),
+    checkIn: () => this.handlePressCheckIn(),
     rebook: () => this.handlePressRebook(),
-    walkOut: () => alert('Not Implemented'),
-    modify: () => this.handlePressModify(),
-    returning: () => alert('Not Implemented'),
-    toService: () => alert('Not Implemented'),
+    walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
+    modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
+    returning: returned => this.handleReturning(returned),
+    toService: () => this.handleStartService(),
+    toWaiting: () => this.handleToWaiting(),
+    finish: finish => this.handlePressFinish(finish),
   }
 
   _onRefresh = () => {
@@ -242,11 +244,11 @@ class Queue extends React.Component {
     }
   }
 
-  handlePressModify = () => {
+  handlePressModify = (isWaiting, onPressSummary) => {
     const { appointment } = this.state;
     this.hideDialog();
     if (appointment !== null) {
-      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment } });
+      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary });
     }
   }
 
@@ -259,6 +261,67 @@ class Queue extends React.Component {
         ...this.props,
       });
     }
+  }
+
+  handlePressCheckIn = () => {
+    const { appointment } = this.state;
+    this.props.checkInClient(appointment.id);
+    this.hideDialog();
+  }
+
+  handlePressWalkOut = (isActiveWalkOut) => {
+    const { appointment } = this.state;
+
+    if (isActiveWalkOut) {
+      // this.props.walkOut(appointment.id);
+
+      if (appointment !== null) {
+        this.props.navigation.navigate('Walkout', {
+          appointment,
+          ...this.props,
+        });
+      }
+    } else {
+      this.props.noShow(appointment.id);
+    }
+
+    this.hideDialog();
+  }
+
+  handleReturning = (returned) => {
+    const { appointment } = this.state;
+
+    if (returned) {
+      this.props.returned(appointment.id);
+    } else {
+      this.props.returnLater(appointment.id);
+    }
+
+    this.hideDialog();
+  }
+
+  handleStartService = () => {
+    const { appointment } = this.state;
+    this.props.startService(appointment.id);
+    this.hideDialog();
+  }
+
+  handleToWaiting = () => {
+    const { appointment } = this.state;
+    this.props.toWaiting(appointment.id);
+    this.hideDialog();
+  }
+
+  handlePressFinish = (finish) => {
+    const { appointment } = this.state;
+
+    if (!finish) {
+      this.props.undoFinishService(appointment.id);
+    } else {
+      this.props.finishService(appointment.id);
+    }
+
+    this.hideDialog();
   }
 
   hideDialog = () => {
@@ -291,9 +354,7 @@ class Queue extends React.Component {
 
     const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
     const isAppointment = item.queueType === 1;
-    const isBookedByWeb = item.queueType === 2;
-
-    console.log(JSON.stringify(item));
+    const isBookedByWeb = item.queueType === 3;
 
     return (
       <TouchableOpacity
@@ -331,7 +392,7 @@ class Queue extends React.Component {
           </Text>
           <Text style={styles.serviceTimeContainer}>
             <Icon name="clockO" style={styles.serviceClockIcon} />
-            <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  >  REM Wait <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
+            <Text style={styles.serviceTime}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')}</Text>  >  REM Wait <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
             {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
           </Text>
 
@@ -343,7 +404,6 @@ class Queue extends React.Component {
     );
   }
   showNotification = (item, type) => {
-    console.log('showNotification', type);
     this.setState({
       notificationVisible: true,
       notificationType: type,
@@ -419,7 +479,7 @@ class Queue extends React.Component {
           onPressSummary={this.handlePressSummary}
           isWaiting={this.props.isWaiting}
           item={this.state.appointment}
-          isCheckedIn={this.state.appointment ? this.state.appointment.checkedIn : false}
+          appointment={this.state.appointment}
           hide={this.hideDialog}
         />
         {this.renderNotification()}

@@ -18,23 +18,44 @@ import {
   InputLabel,
 } from '../../components/formHelpers';
 import apiWrapper from '../../utilities/apiWrapper';
+import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
 });
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: 'service' in rootProps.navigation.state.params ?
-      'Modify Service' : 'Add Service',
+    headerTitle: <Text style={styles.titleText}>{'service' in rootProps.navigation.state.params ?
+      'Modify Service' : 'Add Service'}
+    </Text>,
+    headerLeft:
+
+  <TouchableOpacity
+    onPress={() => { rootProps.navigation.goBack(); }}
+  >
+    <Icon
+      name="angleLeft"
+      type="regular"
+      color="white"
+      size={26}
+    />
+  </TouchableOpacity>,
+
     headerRight: (
       <TouchableOpacity
         onPress={rootProps.navigation.state.params.onSave}
       >
-        <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>
+        <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
       </TouchableOpacity>
     ),
   });
@@ -50,9 +71,9 @@ export default class ModifyServiceScreen extends React.Component {
       service: 'service' in params ? params.service : null,
       selectedService: 'service' in params ? params.service : null,
       selectedProvider: 'service' in params ? {
-        id: params.service.employeeId,
-        name: params.service.employeeFirstName,
-        lastName: params.service.employeeLastName,
+        id: !params.service.isFirstAvailable ? params.service.employeeId : 0,
+        name: !params.service.isFirstAvailable ? params.service.employeeFirstName : 'First',
+        lastName: !params.service.isFirstAvailable ? params.service.employeeLastName : 'Available',
       } : null,
       selectedPromotion: 'promotion' in params ? params.promotion : null,
       providerRequested: false,

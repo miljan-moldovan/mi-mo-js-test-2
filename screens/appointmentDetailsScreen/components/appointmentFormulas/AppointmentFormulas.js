@@ -424,9 +424,9 @@ export default class AppointmentFormulas extends Component {
             backgroundColor: '#727A8F',
           }}
           handlePress={() => {
-            // const { navigate } = this.props.navigation;
-            // navigate('AppointmentFormula');
-            alert('Screen Not Implemented');
+            const { navigate } = this.props.navigation;
+            navigate('AppointmentFormula');
+          //  alert('Screen Not Implemented');
           }}
         >
           <SalonIcon tintColor="#FFFFFF" icon="plus" size={21} />

@@ -50,15 +50,14 @@ import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 const QueueStackNavigator = StackNavigator(
   {
-
-    // SalonCalendar: {
-    //   screen: AppointmentCalendarScreen,
-    // },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
+    },
+    SalonCalendar: {
+      screen: AppointmentCalendarScreen,
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
@@ -83,9 +82,6 @@ const QueueStackNavigator = StackNavigator(
     // },
     Walkout: {
       screen: WalkOutScreen,
-      navigationOptions: {
-        headerTitle: 'Walkout',
-      },
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
@@ -176,14 +172,6 @@ const QueueStackNavigator = StackNavigator(
     },
     TurnAway: {
       screen: TurnAwayScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: 'Turn Away',
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>,
-      }),
     },
   },
   {

@@ -190,7 +190,7 @@ const SalonAppointmentTime = (props) => {
   return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
+      <Text style={styles.serviceTime}> {moment(props.appointment.enteredTime, 'hh:mm:ss').format('LT')}</Text>
       {caretRight}
       <Text style={styles.serviceTime}>REM Wait</Text>
       <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
@@ -204,8 +204,6 @@ SalonAppointmentTime.propTypes = {
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
   const providerName = !props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available';
-
-  console.log(JSON.stringify(props.service));
 
   return (
     <SalonCard
@@ -355,6 +353,7 @@ const BottomButton = props => (
   <TouchableOpacity
     style={styles.bottomButtonWrapper}
     onPress={props.onPress}
+    disabled={props.disabled}
   >
     <FontAwesome style={styles.bottomButtonIcon}>{Icons[props.icon]}</FontAwesome>
     <Text style={styles.bottomButtonText}>{props.title}</Text>
@@ -451,6 +450,73 @@ export default class AppointmentDetails extends React.Component {
     this.setState({ appointment });
   }
 
+
+  renderBtnContainer = () => {
+    let isActiveCheckin,
+      isDisabledCheckin;
+    let isActiveReturnLater,
+      isDisabledReturnLater;
+    let returned;
+    let isActiveWalkOut,
+      isDisabledWalkOut;
+    let isActiveStart,
+      isDisabledStart;
+    let isActiveWaiting,
+      isActiveFinish = true;
+
+    if (this.props.appointment) {
+      isDisabledWalkOut = true;
+      if (this.props.appointment.status === 0 || this.props.appointment.status === 1) {
+        isActiveStart = true;
+        isDisabledStart = false;
+      } else {
+        isDisabledStart = true;
+      }
+      returned = this.props.appointment.status === 5;
+      isActiveWalkOut = !(this.props.appointment.queueType === 1);
+
+      if (this.props.appointment.status === 1) {
+        isDisabledReturnLater = true;
+        isActiveCheckin = true;
+      } else {
+        isActiveReturnLater = true;
+        isDisabledCheckin = true;
+      }
+
+
+      if (this.props.appointment.status === 6) {
+        isActiveWaiting = true;
+        isActiveFinish = true;
+      } else {
+        isActiveFinish = false;
+        isActiveWaiting = false;
+      }
+    }
+    const otherBtnStyle = styles.btnBottom;
+
+    if (this.props.isWaiting) {
+      return (
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <BottomButton disabled={!this.props.appointment.checkedIn} icon="check" onPress={() => { this.props.onPressSummary.checkIn(); this.props.navigation.goBack(); }} title="Check In" />
+          <BottomButton disabled={false} icon="signOut" onPress={() => { this.props.onPressSummary.walkOut(isActiveWalkOut); this.props.navigation.goBack(); }} title={isActiveWalkOut ? 'Walk-out' : 'No Show'} />
+          <BottomButton disabled={isDisabledReturnLater} icon="undo" onPress={() => { this.props.onPressSummary.returning(returned); this.props.navigation.goBack(); }} title={returned ? 'Returned' : 'Return later'} />
+          <BottomButton disabled={returned} icon="play" onPress={() => { this.props.onPressSummary.toService(); this.props.navigation.goBack(); }} title="To Service" />
+        </View>
+      );
+    }
+    return (
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+
+        <BottomButton disabled={!isActiveWaiting} icon="hourglassHalf" onPress={() => { this.props.onPressSummary.toWaiting(); this.props.navigation.goBack(); }} title="To Waiting" />
+        <BottomButton disabled={false} icon="undo" onPress={() => { this.props.onPressSummary.rebook(); this.props.navigation.goBack(); }} title="Rebook" />
+        <BottomButton disabled={false} icon="checkSquare" onPress={() => { this.props.onPressSummary.finish(isActiveFinish); this.props.navigation.goBack(); }} title={isActiveFinish ? 'Finish' : 'Undo finish'} />
+        <BottomButton disabled={false} icon="pldollaray" onPress={() => { this.props.onPressSummary.checkout(); this.props.navigation.goBack(); }} title="Checkout" />
+
+
+      </View>
+    );
+  }
+
   render() {
     if (this.state.appointment === null) {
       return null;
@@ -545,12 +611,10 @@ export default class AppointmentDetails extends React.Component {
           rootStyle={{ minHeight: 44 }}
           containerStyle={{ height: 44, paddingHorizontal: 0, paddingVertical: 0 }}
         >
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <BottomButton icon="check" onPress={() => alert('pressed button')} title="Check In" />
-            <BottomButton icon="signOut" onPress={() => alert('pressed button')} title="Walk Out" />
-            <BottomButton icon="refresh" onPress={() => alert('pressed button')} title="Returning" />
-            <BottomButton icon="play" onPress={() => alert('pressed button')} title="To Service" />
-          </View>
+
+          {this.renderBtnContainer()}
+
+
         </SalonFixedBottom>
       </View>
     );

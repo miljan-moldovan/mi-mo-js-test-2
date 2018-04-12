@@ -161,62 +161,100 @@ class QueueItemSummary extends Component {
   )
 
   renderBtnContainer = () => {
+    let isActiveCheckin,
+      isDisabledCheckin;
+    let isActiveReturnLater,
+      isDisabledReturnLater;
+    let returned;
+    let isActiveWalkOut,
+      isDisabledWalkOut;
+    let isActiveStart,
+      isDisabledStart;
+    let isActiveWaiting,
+      isActiveFinish = true;
+
+    if (this.props.appointment) {
+      isDisabledWalkOut = true;
+      if (this.props.appointment.status === 0 || this.props.appointment.status === 1) {
+        isActiveStart = true;
+        isDisabledStart = false;
+      } else {
+        isDisabledStart = true;
+      }
+      returned = this.props.appointment.status === 5;
+      isActiveWalkOut = !(this.props.appointment.queueType === 1);
+
+      if (this.props.appointment.status === 1 && !this.props.appointment.checkedIn) {
+        isDisabledReturnLater = true;
+        isActiveCheckin = true;
+      } else {
+        isActiveReturnLater = false;
+        isDisabledCheckin = false;
+      }
+
+
+      if (this.props.appointment.status === 6) {
+        isActiveWaiting = true;
+        isActiveFinish = true;
+      } else {
+        isActiveFinish = false;
+        isActiveWaiting = false;
+      }
+    }
+    const otherBtnStyle = styles.btnBottom;
+
     if (this.props.isWaiting) {
-      const btnCheckInStyle =
-        this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
-      const otherButtonsStyle =
-        !this.props.isCheckedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom;
       return (
         <View style={styles.btnContainer}>
           <TouchableOpacity
             onPress={this.props.onPressSummary.checkIn}
-            disabled={this.props.isCheckedIn}
+            disabled={!this.props.appointment.checkedIn}
           >
             <View style={styles.btnGroup}>
-              <View style={btnCheckInStyle}>
+              <View style={!this.props.appointment.checkedIn ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}>
                 <Icon name="check" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>Check-in</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={this.props.onPressSummary.walkOut}
-            disabled={!this.props.isCheckedIn}
+            onPress={() => this.props.onPressSummary.walkOut(isActiveWalkOut)}
           >
             <View style={styles.btnGroup}>
-              <View style={otherButtonsStyle}>
+              <View style={styles.btnBottom}>
                 <Icon name="signOut" size={16} color="#fff" type="solid" />
               </View>
-              <Text style={styles.btnbottomText}>Walk-out</Text>
+              <Text style={styles.btnbottomText}>{isActiveWalkOut ? 'Walk-out' : 'No Show'} </Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={this.props.onPressSummary.modify}
+            onPress={() => this.props.onPressSummary.modify(this.props.isWaiting, this.props.onPressSummary)}
           >
             <View style={styles.btnGroup}>
-              <View style={otherButtonsStyle}>
+              <View style={otherBtnStyle}>
                 <Icon name="penAlt" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>Modify</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={this.props.onPressSummary.returning}
-            disabled={!this.props.isCheckedIn}
+            onPress={() => this.props.onPressSummary.returning(returned)}
+            disabled={isDisabledReturnLater}
           >
             <View style={styles.btnGroup}>
-              <View style={otherButtonsStyle}>
+              <View style={isDisabledReturnLater ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}>
                 <Icon name="undo" size={16} color="#fff" type="solid" />
               </View>
-              <Text style={styles.btnbottomText}>Returning</Text>
+              <Text style={styles.btnbottomText}>{returned ? 'Returned' : 'Return later'}</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={this.props.onPressSummary.toService}
-            disabled={!this.props.isCheckedIn}
+            disabled={returned}
           >
             <View style={styles.btnGroup}>
-              <View style={otherButtonsStyle}>
+
+              <View style={returned ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}>
                 <Icon name="play" size={16} color="#fff" type="solid" />
               </View>
               <Text style={styles.btnbottomText}>To Service</Text>
@@ -227,9 +265,9 @@ class QueueItemSummary extends Component {
     }
     return (
       <View style={styles.btnContainer}>
-        <TouchableOpacity onPress={this.props.onPressSummary.checkIn}>
+        <TouchableOpacity onPress={this.props.onPressSummary.toWaiting} disabled={!isActiveWaiting}>
           <View style={styles.btnGroup}>
-            <View style={styles.btnBottom}>
+            <View style={isActiveWaiting ? styles.btnBottom : [styles.btnBottom, styles.btnDisabled]}>
               <Icon name="hourglassHalf" size={16} color="#fff" type="solid" />
             </View>
             <Text style={styles.btnbottomText}>To Waiting</Text>
@@ -243,23 +281,27 @@ class QueueItemSummary extends Component {
             <Text style={styles.btnbottomText}>Rebook</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.props.onPressSummary.modify}>
+        <TouchableOpacity
+          onPress={() => this.props.onPressSummary.modify(this.props.isWaiting, this.props.onPressSummary)}
+        >
           <View style={styles.btnGroup}>
-            <View style={styles.btnBottom}>
-              <SalonIcon icon="modify" size={16} />
+            <View style={otherBtnStyle}>
+              <Icon name="penAlt" size={16} color="#fff" type="solid" />
             </View>
             <Text style={styles.btnbottomText}>Modify</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.props.onPressSummary.returning}>
+        <TouchableOpacity
+          onPress={() => this.props.onPressSummary.finish(isActiveFinish)}
+        >
           <View style={styles.btnGroup}>
             <View style={styles.btnBottom}>
-              <Icon name="checkSquare" size={16} color="#fff" type="regular" />
+              <Icon name="checkSquare" size={16} color="#fff" type="solid" />
             </View>
-            <Text style={styles.btnbottomText}>Finish</Text>
+            <Text style={styles.btnbottomText}>{isActiveFinish ? 'Finish' : 'Undo finish'}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.props.onPressSummary.toService}>
+        <TouchableOpacity onPress={this.props.onPressSummary.checkout}>
           <View style={styles.btnGroup}>
             <View style={styles.btnBottom}>
               <Icon name="dollar" size={16} color="#fff" type="regular" />
@@ -319,7 +361,7 @@ class QueueItemSummary extends Component {
                 </View>
                 <View style={[styles.row, { marginTop: 8 }]}>
                   <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
-                  <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
+                  <Text style={styles.timeText}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')}</Text>
                   <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
                   <Text style={styles.remTimeText}>{'REM wait '}
                     <Text style={styles.underlineText}> {timeCheckedIn}m</Text>

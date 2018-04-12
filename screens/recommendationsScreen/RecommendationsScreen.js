@@ -8,23 +8,20 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
-import {
-  InputGroup,
-  InputDivider,
-  InputSwitch,
-  ServiceInput,
-  ProviderInput,
-  SectionDivider,
-  PromotionInput,
-  InputLabel,
-} from '../../components/formHelpers';
-import ServiceIcons from '../../components/ServiceIcons';
 import SalonCard from '../../components/SalonCard';
+import Icon from '../../components/UI/Icon';
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
   },
 });
 
@@ -113,6 +110,22 @@ export default class RecommendationsScreen extends React.Component {
     headerTitle: 'Recommendations',
   });
 
+  static navigationOptions = rootProps => ({
+    headerTitle: <Text style={styles.titleText}>Recommended</Text>,
+    headerLeft:
+  <TouchableOpacity
+    onPress={() => { rootProps.navigation.goBack(); }}
+  >
+    <Icon
+      name="angleLeft"
+      type="regular"
+      color="white"
+      size={19}
+    />
+  </TouchableOpacity>,
+
+  });
+
   constructor(props) {
     super(props);
 
@@ -123,11 +136,13 @@ export default class RecommendationsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Services</Text>
-        <ProductCard />
-        <AddButton title="Add product recommendation" onPress={() => alert('add')} />
-        <Text>Products</Text>
-        <ProductCard />
+        <View style={{ marginTop: 16, marginHorizontal: 10 }}>
+          <Text>Services</Text>
+          <ProductCard />
+          <AddButton title="Add product recommendation" onPress={() => alert('add')} />
+          <Text>Products</Text>
+          <ProductCard />
+        </View>
       </View>
     );
   }
