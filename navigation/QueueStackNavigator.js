@@ -45,18 +45,15 @@ import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 
 import AppointmentScreen from '../screens/AppointmentsScreen.js';
-
-
-import apptBookViewOptions from './../screens/apptBookViewOptions';
-
-
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
+import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 const QueueStackNavigator = StackNavigator(
   {
-    SalonCalendar: {
-      screen: AppointmentCalendarScreen,
-    },
+
+    // SalonCalendar: {
+    //   screen: AppointmentCalendarScreen,
+    // },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
@@ -66,14 +63,14 @@ const QueueStackNavigator = StackNavigator(
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
     },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
+    },
     Products: {
       screen: ProductsScreen,
     },
     Services: {
       screen: ServicesScreen,
-    },
-    ApptBookViewOptions: {
-      screen: apptBookViewOptions,
     },
     Appointment: {
       screen: AppointmentScreen,

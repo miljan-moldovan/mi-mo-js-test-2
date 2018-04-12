@@ -69,7 +69,6 @@ export default class AppointmentFormula extends React.Component {
 
   handleClientSelection = (client) => {
     console.log('selected client', client);
-    debugger //eslint-disable-line
   }
 
   render() {

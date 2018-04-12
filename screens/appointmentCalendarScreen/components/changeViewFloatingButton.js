@@ -50,7 +50,7 @@ export default class ChangeViewFloatingButton extends Component {
     this.setState({ week: !this.state.week });
 
     if (this.props.handlePress) {
-      this.props.handlePress(!this.state.week);
+      this.props.handlePress(this.state.week);
     }
   }
 

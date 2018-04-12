@@ -22,6 +22,9 @@ import ClientsScreen from './../screens/clientsScreen';
 
 import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
+import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
+import apptBookViewOptions from './../screens/apptBookViewOptions';
+
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
@@ -43,6 +46,12 @@ const AppointmentStackNavigator = StackNavigator(
     },
     SalonCalendar: {
       screen: AppointmentCalendarScreen,
+    },
+    ApptBookSetEmployeeOrder: {
+      screen: apptBookSetEmployeeOrder,
+    },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
     },
     EndsOn: {
       screen: EndsOnScreen,

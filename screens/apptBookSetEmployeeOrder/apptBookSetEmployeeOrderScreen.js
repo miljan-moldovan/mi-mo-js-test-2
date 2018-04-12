@@ -12,6 +12,8 @@ import fetchFormCache from '../../utilities/fetchFormCache';
 import ApptBookSetEmployeeOrderHeader from './components/apptBookSetEmployeeOrderHeader';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
+import apiWrapper from '../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   modal: {
@@ -24,7 +26,7 @@ const styles = StyleSheet.create({
     right: 0,
     marginHorizontal: 0,
     marginVertical: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: '#F1F1F1',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
 
 class RowComponent extends React.Component {
   render() {
-    const fullName = this.props.data;
+    const { fullName, id } = this.props.employee;
 
     return (
       <TouchableHighlight
@@ -72,7 +74,7 @@ class RowComponent extends React.Component {
             width={30}
             borderWidth={1}
             borderColor="transparent"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+            image={{ uri: apiWrapper.getEmployeePhoto(id) }}
           />
           <Text style={{ fontSize: 14, flex: 1, color: '#110A24' }}>{fullName}</Text>
           <Icon name="bars" size={20} color="#C0C1C6" type="solid" />
@@ -83,6 +85,10 @@ class RowComponent extends React.Component {
 }
 
 class ApptBookSetEmployeeOrderScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    header: (<ApptBookSetEmployeeOrderHeader params={navigation.state.params} />),
+  })
+
   static compareByOrder(a, b) {
     if (a.appointmentOrder < b.appointmentOrder) { return -1; }
     if (a.appointmentOrder > b.appointmentOrder) { return 1; }
@@ -91,10 +97,12 @@ class ApptBookSetEmployeeOrderScreen extends Component {
 
 
   state = {
-    isVisible: true,
+    isVisibleEmployeeOrder: true,
     employees: {},
+    orderEmployees: {},
     order: Object.keys({}),
   };
+
 
   componentWillMount() {
     this.getEmployees();
@@ -105,9 +113,6 @@ class ApptBookSetEmployeeOrderScreen extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
-  }
 
   getEmployees = () => {
     this.props.apptBookSetEmployeeOrderActions.getEmployees({})
@@ -119,13 +124,13 @@ class ApptBookSetEmployeeOrderScreen extends Component {
 
         for (let i = 0; i < orderEmployees.length; i++) {
           const employee = orderEmployees[i];
-          employees[employee.id] = employee.fullName;
+          employees[employee.id] = employee;
           orderIds.push(employee.id.toString());
         }
 
         this.props.apptBookSetEmployeeOrderActions.setEmployees(orderEmployees);
         this.props.apptBookSetEmployeeOrderActions.setFilteredEmployees(employees);
-        this.setState({ employees, order: orderIds });
+        this.setState({ employees, order: orderIds, orderEmployees });
       })
       .catch((err) => {
         console.log(err);
@@ -152,45 +157,40 @@ class ApptBookSetEmployeeOrderScreen extends Component {
   shouldSave = false
 
   goBack() {
-    this.setState({ isVisible: false });
+    this.setState({ isVisibleEmployeeOrder: false });
+    this.props.navigation.state.params.onNavigateBack();
     this.props.navigation.goBack();
   }
 
   handleOnNavigateBack = () => {
-    this.setState({ isVisible: true });
+    this.setState({ isVisibleEmployeeOrder: true });
   }
 
   dismissOnSelect() {
     const { navigate } = this.props.navigation;
-    this.setState({ isVisible: true });
+    this.setState({ isVisibleEmployeeOrder: true });
     navigate('ApptBookSetEmployeeOrder');
   }
 
 
   render() {
     return (
-      <Modal
-        isVisible={this.state.isVisible}
-        style={styles.modal}
-      >
-        <View style={styles.container}>
-          <ApptBookSetEmployeeOrderHeader rootProps={this.props} />
-          <SortableListView
-            style={{ flex: 1, marginBottom: 0 }}
+      <View style={styles.container}>
+        <SortableListView
+          style={{ flex: 1, marginBottom: 0 }}
 
-            renderRow={row => <RowComponent data={row} />}
-            order={this.state.order}
-            data={this.state.employees}
-            onRowMoved={(e) => {
-              let order = this.state.order;
+          renderRow={row => <RowComponent employee={row} />}
+          order={this.state.order}
+          data={this.state.employees}
+          onRowMoved={(e) => {
+            let order = this.state.order;
 
-              order = order.splice(e.to, 0, order.splice(e.from, 1)[0]);
-            }}
+            order = order.splice(e.to, 0, order.splice(e.from, 1)[0]);
+          }}
 
-            disableAnimatedScrolling
-          />
-        </View>
-      </Modal>
+          disableAnimatedScrolling
+        />
+      </View>
     );
   }
 }

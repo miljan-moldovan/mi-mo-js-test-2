@@ -18,6 +18,7 @@ import SalonAvatar from '../../components/SalonAvatar';
 import ProviderList from '../../components/providerList';
 import WordHighlighter from '../../components/wordHighlighter';
 
+
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -251,7 +252,7 @@ class ProviderScreen extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
           highlight={this.state.searchText}
@@ -316,7 +317,7 @@ class ProviderScreen extends React.Component {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={() => this._handleOnChangeProvider({ isFirstAvailable: true })}
               style={styles.itemRow}
               key={Math.random()}
             >
@@ -326,7 +327,7 @@ class ProviderScreen extends React.Component {
                   width={30}
                   borderWidth={1}
                   borderColor="transparent"
-                  image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+                  image={{ uri: apiWrapper.getEmployeePhoto(0) }}
                 />
                 <Text style={styles.providerName}>First Available</Text>
               </View>

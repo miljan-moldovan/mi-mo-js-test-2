@@ -4,6 +4,8 @@ import moment from 'moment';
 
 import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
+import SalonDayCalendar from '../../../components/SalonDayCalendar';
+import SalonWeekCalendar from '../../../components/SalonWeekCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
@@ -146,6 +148,20 @@ export default class AppointmentScreen extends Component {
   constructor(props) {
     super(props);
 
+    let filterProvider = false;
+    if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
+      filterProvider = this.props.navigation.state.params.filterProvider;
+    }
+
+    this.state = {
+      visible: false,
+      filterProvider,
+      visibleNewAppointment: false,
+      visibleAppointment: false,
+      selectedDate: moment(),
+      calendarPickerMode: 'day',
+    };
+
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -154,15 +170,12 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-  state = {
-    visible: false,
-    visibleNewAppointment: false,
-    visibleAppointment: false,
-    selectedDate: moment(),
-  }
+  
 
   componentWillMount() {
-    this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
+    if (!this.state.filterProvider) {
+      this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
+    }
   }
 
   componentDidMount() {
@@ -170,13 +183,16 @@ export default class AppointmentScreen extends Component {
 
   onPressMenu = () => alert('Not Implemented');
 
-  onPressEllipsis = () => alert('Not Implemented');
+  onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
   onPressCalendar = () => alert('Not Implemented');
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
 
-  selectFilterProvider = provider => this.props.navigation.setParams({ filterProvider: provider });
+  selectFilterProvider = filterProvider => {
+    this.props.navigation.setParams({ filterProvider })
+    this.setState({ filterProvider })
+  };
 
   gotToSales = () => {
     alert('Not Implemented');
@@ -198,22 +214,78 @@ export default class AppointmentScreen extends Component {
     this.setState({ visibleAppointment: true, visibleNewAppointment: false });
   }
 
-  handleDateChange = (date) => {
-    this.props.appointmentCalendarActions.getAppoinmentsCalendar(date.format('YYYY-MM-DD'));
-    this.setState({ selectedDate: date });
+  handleDateChange = (startDate, endDate) => {
+    if (this.state.filterProvider) {
+      if (startDate === endDate) {
+        this.props.appointmentCalendarActions.setProviderScheduleDates([moment(startDate)]);
+        this.props.appointmentCalendarActions.getProviderCalendar(
+          this.state.filterProvider.id,
+          startDate.format('YYYY-MM-DD'),
+          startDate.format('YYYY-MM-DD'),
+        );
+      } else {
+        const diff = endDate.diff(startDate, 'days');
+        const dates = [];
+        for (let i = 0; i <= diff; i += 1) {
+          dates.push(moment(startDate.add(1, 'days')));
+        }
+        this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
+        // debugger //eslint-disable-line
+        this.props.appointmentCalendarActions.getProviderCalendar(
+          this.props.navigation.state.params.filterProvider.id,
+          startDate.format('YYYY-MM-DD'),
+          startDate.add(1, 'weeks').format('YYYY-MM-DD'),
+        );
+      }
+    }
+    // this.props.appointmentCalendarActions.getAppoinmentsCalendar(startDate.format('YYYY-MM-DD'));
+    this.setState({ selectedDate: startDate });
   }
 
   render() {
     const {
-      apptGridSettings, providerAppointments, isLoading,
+      apptGridSettings, providerAppointments, isLoading, dates,
     } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
+
+    let calendar = (
+      <SalonCalendar
+        apptGridSettings={apptGridSettings}
+        dataSource={providerAppointments}
+        appointments={appointments}
+        providers={providers}
+        onDrop={this.props.appointmentActions.postAppointmentMove}
+      />
+    );
+
+    if (this.state.filterProvider) {
+      calendar = this.state.calendarPickerMode === 'week' ? (
+        <SalonWeekCalendar
+          apptGridSettings={apptGridSettings}
+          dataSource={providerAppointments}
+          appointments={appointments}
+          displayMode={this.state.calendarPickerMode}
+          dates={dates}
+          onDrop={this.props.appointmentActions.postAppointmentMove}
+        />
+      ) : (
+        <SalonDayCalendar
+          apptGridSettings={apptGridSettings}
+          dataSource={providerAppointments}
+          appointments={appointments}
+          displayMode={this.state.calendarPickerMode}
+          dates={dates}
+          onDrop={this.props.appointmentActions.postAppointmentMove}
+        />
+      );
+    }
     return (
       <View style={{ flex: 1 }}>
 
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
+          mode={this.state.calendarPickerMode}
           onCalendarSelected={() => this.setState({ visible: true })}
           onDateChange={this.handleDateChange}
           selectedDate={this.state.selectedDate}
@@ -221,23 +293,17 @@ export default class AppointmentScreen extends Component {
 
         {
           isLoading ?
-            <ActivityIndicator size="large" color="#0000ff" /> :
-            <SalonCalendar
-              apptGridSettings={apptGridSettings}
-              dataSource={providerAppointments}
-              appointments={appointments}
-              providers={providers}
-              onDrop={this.props.appointmentActions.postAppointmentMove}
-            />
+            <ActivityIndicator size="large" color="#0000ff" /> : <View style={{ flex: 1 }}>{calendar}</View>
       }
 
         <ChangeViewFloatingButton handlePress={(isWeek) => {
-            const message = isWeek ? 'week' : 'day';
-            alert(`TODO ${message}`);
-          }}
+          const calendarPickerMode = isWeek ? 'week' : 'day';
+          this.setState({ calendarPickerMode });
+        }}
         />
 
         <SalonDatePickerSlide
+          mode={this.state.calendarPickerMode}
           visible={this.state.visible}
           selectedDate={moment(this.state.selectedDate).format('YYYY-MM-DD')}
           onHide={() => {

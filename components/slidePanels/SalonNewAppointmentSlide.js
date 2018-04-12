@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
+    width: '90%',
   //  height: 300,
   },
   btnTop: {
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    width: 382,
+    width: '100%',
     marginTop: 17,
   },
   panelTop: {
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   whiteButtonContainer: {
-    width: 182,
+    width: '100%',
     height: 53,
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
     marginBottom: 1,
+    width: '90%',
   },
   middleSectionDivider: { width: '95%', backgroundColor: '#DDE6F4' },
   apptGroup: {
@@ -222,6 +223,7 @@ const styles = StyleSheet.create({
     height: 61,
     paddingLeft: 0,
     paddingRight: 0,
+    width: '90%',
   },
   lengthGroup: {
     borderBottomColor: 'transparent',
@@ -231,6 +233,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: '#F1F1F1',
     height: 36,
+    width: '90%',
   },
   otherOptionsLabels: { color: '#115ECD', fontSize: 16 },
 });
@@ -455,7 +458,7 @@ export default class SalonDatePickerSlide extends React.Component {
                   </View>
                   <View style={styles.btnBottom}>
                     <TouchableOpacity
-                      style={{ marginRight: 18 }}
+                      style={{ width: '46%' }}
                       onPress={() => { alert('Not implemented'); }}
                     >
                       <View style={styles.whiteButtonContainer}>
@@ -464,7 +467,9 @@ export default class SalonDatePickerSlide extends React.Component {
                         </Text>
                       </View>
                     </TouchableOpacity>
+                    <View style={{ width: '8%' }} />
                     <TouchableOpacity
+                      style={{ width: '46%' }}
                       onPress={() => { alert('Not implemented'); }}
                     >
                       <View style={styles.whiteButtonContainer}>
