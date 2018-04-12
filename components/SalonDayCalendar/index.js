@@ -1,3 +1,3 @@
-import SalonWeekCalendar from './components/calendar';
+import SalonDayCalendar from './components/calendar';
 
-export default SalonWeekCalendar;
+export default SalonDayCalendar;

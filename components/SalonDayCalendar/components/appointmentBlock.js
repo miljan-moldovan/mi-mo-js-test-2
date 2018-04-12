@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   container: {
     position: 'absolute',
-    width: 50,
+    width: 323,
     overflow: 'hidden',
     borderRadius: 4,
     borderWidth: 1,
@@ -49,7 +49,7 @@ class appointmentBlock extends Component {
     const start = moment(fromTime, 'HH:mm');
     const top = 40 + (start.diff(startTime, 'minutes') / step) * 40;
     const end = moment(toTime, 'HH:mm');
-    const left = props.dates.findIndex(date => moment(date).format('YYYY-MM-DD') === moment(props.appointment.date).format('YYYY-MM-DD')) * 45;
+    const left = 0;
     const height = (moment.duration(end.diff(start)).asMinutes() / step) * 40 - 1;
     this.animatedValueX = left;
     this.animatedValueY = top;

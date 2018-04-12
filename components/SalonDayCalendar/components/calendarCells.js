@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     height: 40,
-    width: 45,
+    width: 323,
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
     borderBottomWidth: 1,
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
   headerCellDisabled: {
     height: 40,
-    width: 45,
+    width: 323,
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
     borderBottomWidth: 1,
@@ -31,7 +31,7 @@ class CalendarCells extends Component {
   }
 
   renderCell = (providerScheudle, hour, key) => {
-    const time = moment(this.props.apptGridSettings.startTime, 'HH:mm').add(hour * 15, 'm');
+    const time = moment(this.props.apptGridSettings.startTime, 'HH:mm').add(hour * 30, 'm');
     const style = providerScheudle && providerScheudle.scheduledIntervals
     && providerScheudle.scheduledIntervals.length > 0
     && time.isSameOrAfter(moment(providerScheudle.scheduledIntervals[0].start, 'HH:mm'))

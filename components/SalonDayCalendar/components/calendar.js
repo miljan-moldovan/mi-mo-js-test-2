@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class SalonWeekCalendar extends Component {
+export default class SalonDayCalendar extends Component {
   constructor(props) {
     super(props);
 
@@ -156,9 +156,6 @@ export default class SalonWeekCalendar extends Component {
             removeClippedSubviews={false}
             onLayout={this.measureScrollY}
           >
-            <View>
-              <HeaderTop dataSource={dates} />
-            </View>
             <CalendarCells
               dataSource={dataSource}
               dates={dates}
