@@ -4,14 +4,14 @@ import {
   GET_APPOINTMENTS_FAILED,
   POST_APPOINTMENT_MOVE,
   POST_APPOINTMENT_MOVE_SUCCESS,
-  POST_APPOINTMENT_MOVE_FAILED
+  POST_APPOINTMENT_MOVE_FAILED,
 } from '../actions/appointment';
 
 const initialState = {
   isMoving: false,
   isLoading: false,
   error: null,
-  appointments: []
+  appointments: [],
 };
 
 export default function appoinmentReducer(state = initialState, action) {
@@ -27,7 +27,7 @@ export default function appoinmentReducer(state = initialState, action) {
         ...state,
         isLoading: false,
         error: null,
-        appointments: data.appointmentResponse
+        appointments: data.appointmentResponse,
       };
     case GET_APPOINTMENTS_FAILED:
       return {

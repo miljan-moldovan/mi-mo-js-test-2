@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
+import SalonWeekCalendar from '../../../components/SalonWeekCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
@@ -163,7 +164,7 @@ export default class AppointmentScreen extends Component {
   }
 
   componentWillMount() {
-    this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
+    // this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
   }
 
   componentDidMount() {
@@ -200,16 +201,45 @@ export default class AppointmentScreen extends Component {
   }
 
   handleDateChange = (startDate, endDate) => {
-    this.props.appointmentCalendarActions.getAppoinmentsCalendar(startDate.format('YYYY-MM-DD'));
+    if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
+      const diff = endDate.diff(startDate, 'days');
+      const dates = [];
+      for (let i = 0; i <= diff; i += 1) {
+        dates.push(moment(startDate.add(1, 'days')));
+      }
+      this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
+      // debugger //eslint-disable-line
+      this.props.appointmentCalendarActions.getProviderCalendar(
+        this.props.navigation.state.params.filterProvider.id,
+        startDate.format('YYYY-MM-DD'),
+        startDate.add(1, 'weeks').format('YYYY-MM-DD'),
+      );
+    }
+    // this.props.appointmentCalendarActions.getAppoinmentsCalendar(startDate.format('YYYY-MM-DD'));
     this.setState({ selectedDate: startDate });
   }
 
   render() {
     const {
-      apptGridSettings, providerAppointments, isLoading,
+      apptGridSettings, providerAppointments, isLoading, dates,
     } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.providersState;
+
+    let calendar = null;
+
+    if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
+      calendar = (
+        <SalonWeekCalendar
+          apptGridSettings={apptGridSettings}
+          dataSource={providerAppointments}
+          appointments={appointments}
+          displayMode={this.state.calendarPickerMode}
+          dates={dates}
+          onDrop={this.props.appointmentActions.postAppointmentMove}
+        />
+      );
+    }
     return (
       <View style={{ flex: 1 }}>
 
@@ -223,14 +253,7 @@ export default class AppointmentScreen extends Component {
 
         {
           isLoading ?
-            <ActivityIndicator size="large" color="#0000ff" /> :
-            <SalonCalendar
-              apptGridSettings={apptGridSettings}
-              dataSource={providerAppointments}
-              appointments={appointments}
-              providers={providers}
-              onDrop={this.props.appointmentActions.postAppointmentMove}
-            />
+            <ActivityIndicator size="large" color="#0000ff" /> : <View style={{ flex: 1 }}>{calendar}</View>
       }
 
         <ChangeViewFloatingButton handlePress={(isWeek) => {

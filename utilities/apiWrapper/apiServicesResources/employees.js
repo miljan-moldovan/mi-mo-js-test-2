@@ -4,7 +4,7 @@ const resources = {
   getEmployees: {
     path: 'Employees',
     method: 'get',
-    //expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
     disableCache: true,
   },
   getEmployeePhoto: {
@@ -15,7 +15,18 @@ const resources = {
   getEmployeeSchedule: {
     path: 'Employees/Schedule/:date',
     method: 'get',
-    //expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
+    disableCache: true,
+  },
+  getEmployeeAppointments: {
+    path: 'Appointment/:dateFrom/:dateTo/Employee/:id/Appointments',
+    method: 'get',
+    // expiration: apiConstants.expiration,
+    disableCache: true,
+  },
+  getEmployeeScheduleRange: {
+    path: 'Employees/:id/Schedule/:startDate/:endDate',
+    method: 'get',
     disableCache: true,
   },
 };
