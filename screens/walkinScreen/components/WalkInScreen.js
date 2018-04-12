@@ -43,6 +43,8 @@ class WalkInScreen extends Component {
     };
   };
 
+  saving = false
+
   constructor(props) {
     super(props);
     this.state = {
@@ -51,6 +53,7 @@ class WalkInScreen extends Component {
       client: null,
       isProviderRequested: false,
       isFirstAvailable: false,
+
     };
   }
 
@@ -65,7 +68,7 @@ class WalkInScreen extends Component {
     navigation.setParams({
       walkin: () => {
         this.handleWalkin();
-        navigation.navigate('Main');
+        // navigation.navigate('Main');
       },
     });
   }
@@ -85,23 +88,29 @@ class WalkInScreen extends Component {
   }
 
   handleWalkin = () => {
-    const {
-      service,
-      provider,
-      client,
-      isProviderRequested,
-      isFirstAvailable,
-    } = this.state;
-    const params = {
-      clientId: client.id,
-      email: client.email,
-      phone: client.phone,
-      isFirstAvailable: provider.isFirstAvailable,
-      providerId: provider.id,
-      isProviderRequested,
-      serviceId: service.id,
-    };
-    this.props.walkInActions.postWalkinClient(params);
+    if (!this.saving) {
+      this.saving = true;
+      const {
+        service,
+        provider,
+        client,
+        isProviderRequested,
+        isFirstAvailable,
+      } = this.state;
+      const params = {
+        clientId: client.id,
+        email: client.email,
+        phone: client.phone,
+        isFirstAvailable: provider.isFirstAvailable,
+        providerId: provider.id,
+        isProviderRequested,
+        serviceId: service.id,
+      };
+      this.props.walkInActions.postWalkinClient(params).then(() => {
+        this.saving = false;
+        this.props.navigation.navigate('Main');
+      });
+    }
   }
 
   handleUpdateService= (service) => {

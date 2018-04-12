@@ -9,6 +9,7 @@ import services from './apiServicesResources/services';
 import employees from './apiServicesResources/employees';
 import product from './apiServicesResources/product';
 import salon from './apiServicesResources/salon';
+import turnAway from './apiServicesResources/turnAway';
 
 const conf = {
   ...queue.resources,
@@ -22,6 +23,7 @@ const conf = {
   ...employees.resources,
   ...product.resources,
   ...salon.resources,
+  ...salon.turnAway,
 };
 
 export default {
