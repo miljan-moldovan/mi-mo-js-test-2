@@ -3,6 +3,7 @@ import {
   View, Image, StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import Icon from './../UI/Icon';
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -94,8 +95,11 @@ export default class SalonAvatar extends React.Component {
             borderColor: this.state.borderColor,
           }}
         >
+          <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={this.state.width} color="#4D5067" type="solid" />
+
           <Image
             style={{
+              zIndex: 9999,
               width: this.state.width,
               height: this.state.width,
               borderRadius: this.state.width / 2,

@@ -47,7 +47,7 @@ export default class ModifyServiceScreen extends React.Component {
       name="angleLeft"
       type="regular"
       color="white"
-      size={19}
+      size={26}
     />
   </TouchableOpacity>,
 
@@ -71,9 +71,9 @@ export default class ModifyServiceScreen extends React.Component {
       service: 'service' in params ? params.service : null,
       selectedService: 'service' in params ? params.service : null,
       selectedProvider: 'service' in params ? {
-        id: params.service.employeeId,
-        name: params.service.employeeFirstName,
-        lastName: params.service.employeeLastName,
+        id: !params.service.isFirstAvailable ? params.service.employeeId : 0,
+        name: !params.service.isFirstAvailable ? params.service.employeeFirstName : 'First',
+        lastName: !params.service.isFirstAvailable ? params.service.employeeLastName : 'Available',
       } : null,
       selectedPromotion: 'promotion' in params ? params.promotion : null,
       providerRequested: false,

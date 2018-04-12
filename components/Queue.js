@@ -109,7 +109,7 @@ class Queue extends React.Component {
     checkIn: () => this.handlePressCheckIn(),
     rebook: () => this.handlePressRebook(),
     walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
-    modify: () => this.handlePressModify(),
+    modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
     returning: returned => this.handleReturning(returned),
     toService: () => this.handleStartService(),
     toWaiting: () => this.handleToWaiting(),
@@ -244,11 +244,11 @@ class Queue extends React.Component {
     }
   }
 
-  handlePressModify = () => {
+  handlePressModify = (isWaiting, onPressSummary) => {
     const { appointment } = this.state;
     this.hideDialog();
     if (appointment !== null) {
-      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment } });
+      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary });
     }
   }
 

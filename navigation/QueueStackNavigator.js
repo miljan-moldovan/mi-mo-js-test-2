@@ -45,12 +45,8 @@ import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 
 import AppointmentScreen from '../screens/AppointmentsScreen.js';
-
-
-import apptBookViewOptions from './../screens/apptBookViewOptions';
-
-
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
+import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 const QueueStackNavigator = StackNavigator(
   {
@@ -66,14 +62,14 @@ const QueueStackNavigator = StackNavigator(
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
     },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
+    },
     Products: {
       screen: ProductsScreen,
     },
     Services: {
       screen: ServicesScreen,
-    },
-    ApptBookViewOptions: {
-      screen: apptBookViewOptions,
     },
     Appointment: {
       screen: AppointmentScreen,
@@ -176,21 +172,6 @@ const QueueStackNavigator = StackNavigator(
     },
     TurnAway: {
       screen: TurnAwayScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <Text style={{
- fontFamily: 'Roboto',
-        color: '#fff',
-        fontSize: 17,
-        fontWeight: '700',
-}}
-        > Turn Away
-        </Text >,
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Done</Text>,
-      }),
     },
   },
   {
