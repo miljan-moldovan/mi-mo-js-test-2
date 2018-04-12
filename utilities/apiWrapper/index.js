@@ -171,5 +171,4 @@ function getEmployeePhoto(employeeId) {
   return `${apiOptions.conf.domains.default}/api/Employees/${employeeId}/Photo`;
 }
 
-
 export default { doRequest, getEmployeePhoto };
