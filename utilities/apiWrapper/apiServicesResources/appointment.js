@@ -23,6 +23,11 @@ const resources = {
     method: 'post',
     expiration: apiConstants.expiration,
   },
+  postAppointmentResize: {
+    path: 'Appointment/:appointmentId/Resize',
+    method: 'post',
+    disableCache: true,
+  },
 };
 
 export default {

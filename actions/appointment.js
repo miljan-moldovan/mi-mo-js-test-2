@@ -6,6 +6,9 @@ export const GET_APPOINTMENTS_FAILED = 'appointment/GET_APPOINTMENTS_FAILED';
 export const POST_APPOINTMENT_MOVE = 'appointment/POST_APPOINTMENT_MOVE';
 export const POST_APPOINTMENT_MOVE_SUCCESS = 'appointment/POST_APPOINTMENT_MOVE_SUCCESS';
 export const POST_APPOINTMENT_MOVE_FAILED = 'appointment/POST_APPOINTMENT_MOVE_FAILED';
+export const POST_APPOINTMENT_RESIZE = 'appointment/POST_APPOINTMENT_RESIZE';
+export const POST_APPOINTMENT_RESIZE_SUCCESS = 'appointment/POST_APPOINTMENT_RESIZE_SUCCESS';
+export const POST_APPOINTMENT_RESIZE_FAILED = 'appointment/POST_APPOINTMENT_RESIZE_FAILED';
 
 const getAppointmentsSuccess = appointmentResponse => ({
   type: GET_APPOINTMENTS_SUCCESS,
@@ -24,6 +27,16 @@ const postAppointmentMoveSuccess = response => ({
 
 const postAppointmentMoveFailed = error => ({
   type: POST_APPOINTMENT_MOVE_FAILED,
+  data: { error },
+});
+
+const postAppointmentResizeSuccess = response => ({
+  type: POST_APPOINTMENT_RESIZE_SUCCESS,
+  data: { response },
+});
+
+const postAppointmentResizeFailed = error => ({
+  type: POST_APPOINTMENT_RESIZE_FAILED,
   data: { error },
 });
 
@@ -52,9 +65,24 @@ const postAppointmentMove = (appointmentId, params) => (dispatch) => {
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
 
+const postAppointmentResize = (appointmentId, params) => (dispatch) => {
+  dispatch({ type: POST_APPOINTMENT_RESIZE });
+  return apiWrapper.doRequest('postAppointmentResize', {
+    path: {
+      appointmentId,
+    },
+    body: {
+      ...params,
+    },
+  })
+    .then(response => dispatch(postAppointmentResizeSuccess(response)))
+    .catch(error => dispatch(postAppointmentResizeFailed(error)));
+};
+
 const appointmentActions = {
   getAppoinments,
   postAppointmentMove,
+  postAppointmentResize,
 };
 
 export default appointmentActions;
