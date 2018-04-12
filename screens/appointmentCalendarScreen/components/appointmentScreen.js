@@ -207,15 +207,18 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToApptBook = () => {
-    this.setState({ visibleNewAppointment: true, visibleAppointment: false });
+    // this.setState({ visibleNewAppointment: true, visibleAppointment: false });
+    alert('Not Implemented');
   }
 
   gotToClients = () => {
-    this.props.navigation.navigate('Clients');
+    // this.props.navigation.navigate('Clients');
+    alert('Not Implemented');
   }
 
   gotToScoreCard = () => {
-    this.setState({ visibleAppointment: true, visibleNewAppointment: false });
+    // this.setState({ visibleAppointment: true, visibleNewAppointment: false });
+    alert('Not Implemented');
   }
 
   handleDateChange = (startDate, endDate) => {
@@ -234,7 +237,7 @@ export default class AppointmentScreen extends Component {
           dates.push(moment(startDate.add(1, 'days')));
         }
         this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
-        // 
+        //
         this.props.appointmentCalendarActions.getProviderCalendar(
           this.props.navigation.state.params.filterProvider.id,
           startDate.format('YYYY-MM-DD'),
