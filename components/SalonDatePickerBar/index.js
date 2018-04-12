@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
+    marginLeft: 5,
   },
   angleContainer: {
-    width: 80,
+    width: 45,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -59,20 +59,21 @@ const styles = StyleSheet.create({
     color: '#727A8F',
   },
   today: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#115ECD',
     fontFamily: 'Roboto-bold',
   },
   todayContainer: {
-    height: 45,
-    width: 68,
+    height: 40,
+    width: 64,
     backgroundColor: '#F4F7FC',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
+  //  marginRight: 15,
   },
   dateButton: {
-    width: 150,
+    width: 160,
   },
 });
 
@@ -81,55 +82,70 @@ export default class SalonDatePickerBar extends Component {
   constructor(props) {
     super(props);
 
-    const date = this.getInitialDate();
+    const startDate = this.getInitialDate();
     const selectedDate = moment(this.props.selectedDate);
-
+    const { mode } = this.props;
     this.state = {
-      date,
+      startDate,
       selectedDate,
+      mode,
     };
   }
 
-  getPreviousDay= () => {
-    const previousDayStartDate = this.state.date
-      .subtract(1, 'day');
+  state = {
+    mode: 'day',
+  };
 
-    this.setState({ date: previousDayStartDate });
+  getPrevious= () => {
+    let previousDayStartDate = this.state.startDate.clone();
+    previousDayStartDate = previousDayStartDate.subtract(1, this.state.mode);
 
-    this.props.onDateChange(previousDayStartDate);
+    this.setState({ startDate: previousDayStartDate });
+
+    let endDate = previousDayStartDate.clone();
+    endDate = this.state.mode === 'week' ? endDate.add(6, 'day') : previousDayStartDate;
+
+    this.props.onDateChange(previousDayStartDate, endDate);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ date: nextProps.selectedDate });
+    this.setState({ startDate: nextProps.selectedDate, mode: nextProps.mode });
   }
 
-  getNextDay = () => {
-    const nextDayStartDate = this.state.date.add(1, 'day');
-    this.setState({ date: nextDayStartDate });
-    this.props.onDateChange(nextDayStartDate);
+  getNext = () => {
+    let nextDayStartDate = this.state.startDate.clone();
+    nextDayStartDate = nextDayStartDate.add(1, this.state.mode);
+
+    this.setState({ startDate: nextDayStartDate });
+    let endDate = nextDayStartDate.clone();
+    endDate = this.state.mode === 'week' ? endDate.add(6, 'day') : nextDayStartDate.clone();
+    this.props.onDateChange(nextDayStartDate, endDate);
   }
 
     goToToday = () => {
-      this.setState({ date: moment() });
+      this.setState({ startDate: moment() });
     }
 
     getInitialDate = () => {
+      if (this.props.startDate) {
+        return moment(this.props.startDate);
+      }
       if (this.props.date) {
         return moment(this.props.date);
       }
       return moment();
     }
 
-    getSelectedDate(date) {
-      if (this.state.selectedDate.valueOf() === 0) {
-        return;
-      }
-      return this.state.selectedDate;
-    }
+    // getSelectedDate(date) {
+    //   if (this.state.selectedDate.valueOf() === 0) {
+    //     return;
+    //   }
+    //   return this.state.selectedDate;
+    // }
 
     setSelectedDate(date) {
       const mDate = moment(date);
-      this.onCalendarSelected(mDate);
+      this.props.onCalendarSelected(mDate);
     }
 
     render= () => (
@@ -141,7 +157,7 @@ export default class SalonDatePickerBar extends Component {
         ]}
       >
         <View style={styles.datesStrip}>
-          <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', paddingLeft: 27 }]} onPress={this.getPreviousDay}>
+          <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', paddingLeft: 25 }]} onPress={this.getPrevious}>
             <View>
               <Icon name="angleLeft" size={25} color="#727A8F" type="solid" />
             </View>
@@ -158,9 +174,15 @@ export default class SalonDatePickerBar extends Component {
 
             <TouchableOpacity style={styles.dateButton} onPress={this.props.onCalendarSelected}>
               <View style={styles.dateContainer}>
-                <Text style={styles.date} >
-                  {moment(this.state.date).format('dddd, MMM. DD')}
+                {this.state.mode === 'week' && <Text style={styles.date} >
+                  {`${moment(this.state.startDate).format('ddd MM/DD')} - ${moment(this.state.startDate).add(6, 'day').format('ddd MM/DD')}`}
                 </Text>
+                }
+
+                {this.state.mode === 'day' && <Text style={styles.date} >
+                  {moment(this.state.startDate).format('dddd, MMM. DD')}
+                </Text>
+                }
               </View>
             </TouchableOpacity>
 
@@ -170,7 +192,7 @@ export default class SalonDatePickerBar extends Component {
               </View>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', paddingRight: 27 }]} onPress={this.getNextDay}>
+          <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', paddingRight: 25 }]} onPress={this.getNext}>
             <View>
               <Icon name="angleRight" size={25} color="#727A8F" type="solid" />
             </View>

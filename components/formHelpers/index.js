@@ -13,6 +13,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -454,7 +455,8 @@ export class ProviderInput extends React.Component {
   }
 
   render() {
-    const value = this.state.selectedProvider ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : null;
+    console.log(JSON.stringify(this.state.selectedProvider));
+    const value = this.state.selectedProvider.id ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available';
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -469,7 +471,7 @@ export class ProviderInput extends React.Component {
                 width={30}
                 borderWidth={1}
                 borderColor="transparent"
-                image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+                image={{ uri: apiWrapper.getEmployeePhoto(this.state.selectedProvider.id ? this.state.selectedProvider.id : 0) }}
               />
               <Text style={[styles.inputText]}>{value}</Text>
             </View>

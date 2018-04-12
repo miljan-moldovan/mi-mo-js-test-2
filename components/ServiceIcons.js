@@ -19,6 +19,7 @@ const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
     {item.newLocal ? newLocal : null}
     {item.birthday ? birthday : null}
     {item.groupId && groupLeaderName ? (<Group leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
+    {/*  (<Group leader leaderName="L C" />) */ }
     {item.attributes && item.attributes.length ? tag : null}
   </View>
 );
@@ -27,6 +28,7 @@ export default ServiceIcons;
 const styles = StyleSheet.create({
   clientGroupContainer: {
     borderColor: '#00E480',
+    backgroundColor: '#F0FEFD',
     borderRadius: 4,
     marginRight: 3,
     borderWidth: 1,

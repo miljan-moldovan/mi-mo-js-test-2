@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import AppointmentModel from '../../../../utilities/models/appointments';
 
@@ -18,6 +19,7 @@ import SalonCard from '../../../../components/SalonCard';
 import { InputButton } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
+import apiWrapper from '../../../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -175,23 +177,35 @@ const caretRight = (
   <FontAwesome style={styles.timeCaretIcon}>{Icons.angleRight}</FontAwesome>
 );
 
-const SalonAppointmentTime = props => (
-  <View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
+const SalonAppointmentTime = (props) => {
+  let estimatedTime = moment(props.appointment.estimatedTime, 'hh:mm:ss').isValid()
+    ? moment(props.appointment.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(props.appointment.estimatedTime, 'hh:mm:ss').minutes()
+    : 0;
+
+  if (props.appointment.estimatedTime && props.appointment.estimatedTime[0] === '-') {
+    estimatedTime *= (-1);
+  }
+
+  const timeCheckedIn = props.appointment.status === 5 ? 0 : estimatedTime;
+  return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}> {props.appointment.startTime}</Text>
+      <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
       {caretRight}
       <Text style={styles.serviceTime}>REM Wait</Text>
-      <Text style={styles.serviceRemainingWaitTime}> 7m</Text>
+      <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
     </View>
-  </View>
-);
+          </View>);
+};
 SalonAppointmentTime.propTypes = {
   appointment: PropTypes.shape(AppointmentModel).isRequired,
 };
 
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
+  const providerName = !props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available';
+
+  console.log(JSON.stringify(props.service));
 
   return (
     <SalonCard
@@ -240,9 +254,10 @@ const ServiceCard = (props) => {
                   >{Icons.lock}
                   </FontAwesome>
               }
-                image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+                image={{ uri: apiWrapper.getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
+
               />
-              <Text style={[styles.employeeText, { marginLeft: 8 }]}>{`${props.service.employeeFirstName} ${props.service.employeeLastName}`}</Text>
+              <Text style={[styles.employeeText, { marginLeft: 8 }]}>{providerName}</Text>
             </View>
             {this.promoId > 0 && (
             <Text style={styles.promoDescription}>FIRST CUSTOMER -50%</Text>

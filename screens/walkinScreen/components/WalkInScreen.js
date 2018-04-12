@@ -96,7 +96,7 @@ class WalkInScreen extends Component {
       clientId: client.id,
       email: client.email,
       phone: client.phone,
-      isFirstAvailable,
+      isFirstAvailable: provider.isFirstAvailable,
       providerId: provider.id,
       isProviderRequested,
       serviceId: service.id,

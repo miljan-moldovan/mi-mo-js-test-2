@@ -28,7 +28,7 @@ const renderItems = (key, apptGridSettings, timeSchedules, providers) => {
   const currentTimeBlock = moment(apptGridSettings.startTime, 'HH:mm').add(timeElapsed, 'minutes');
   for (let i = 0; i < providers.length; i += 1) {
     const provider = timeSchedules[providers[i].id];
-    if (provider && provider.scheduledIntervals && provider.scheduledIntervals.length > 0) {
+    if (provider.scheduledIntervals && provider.scheduledIntervals.length > 0) {
       const providerStartMoment = moment(provider.scheduledIntervals[0].start, 'HH:mm');
       const providerEndMoment = moment(provider.scheduledIntervals[0].end, 'HH:mm');
       if (currentTimeBlock.isSameOrAfter(providerStartMoment)
