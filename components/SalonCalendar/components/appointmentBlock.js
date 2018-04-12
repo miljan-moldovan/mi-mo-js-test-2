@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import moment from 'moment';
 
+import ResizeButton from './resizeButtons';
+
 const colors = [
   { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
   { header: '#9e2fff', content: '#e2b2ff', border: '#b684ee' },
@@ -55,18 +57,19 @@ class appointmentBlock extends Component {
     this.state = {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
-      top,
-      height,
+      top: new Animated.Value(top),
+      height: new Animated.Value(height),
       isActive: false,
       isScrolling: false,
+      isResizeing: false,
       opacity: new Animated.Value(0)
     };
     // this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
     // this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.isActive,
+      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive && !this.state.isResizeing,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.isActive && !this.state.isResizeing,
       onPanResponderMove: (e, gesture) => {
         this.moveX = gesture.dx;
         this.moveY = gesture.dy;
@@ -77,7 +80,7 @@ class appointmentBlock extends Component {
       },
       onPanResponderGrant: () => {
         if (this.state.isActive) {
-          this.state.pan.setOffset({ x: this.state.left, y: this.state.top });
+          this.state.pan.setOffset({ x: this.state.left, y: this.state.top._value });
           this.state.pan.setValue({ x: 0, y: 0 });
         }
       },
@@ -85,7 +88,7 @@ class appointmentBlock extends Component {
         this.moveX = null;
         this.moveY = null;
         const dx = this.state.pan.x._value + this.state.pan.x._offset - this.state.left;
-        const dy = this.state.pan.y._value + this.state.pan.y._offset - this.state.top;
+        const dy = this.state.pan.y._value + this.state.pan.y._offset - this.state.top._value;
         const remainderX = dx % 130;
         const remainderY = dy % 30;
         const x = 130 - remainderX > 130 / 2 ?
@@ -113,7 +116,9 @@ class appointmentBlock extends Component {
               toValue: 0
             }
           )
-        ]).start(() => this.setState({ isActive: false, left: this.state.left + xOffset, top: this.state.top + yOffset }));
+        ]).start(() => this.setState({ isActive: false, left: this.state.left + xOffset, top: this.state.top._value + yOffset }), () => {
+          this.props.onDrag(true);
+        });
       },
     });
   }
@@ -134,7 +139,7 @@ class appointmentBlock extends Component {
   handleOnLongPress = () => {
     this.setState({ isActive: true }, this.scrollAnimation);
     this.offset = { x: this.props.calendarOffset.x, y: this.props.calendarOffset.y }
-    this.props.onDrag();
+    this.props.onDrag(false);
     Animated.timing(
       this.state.opacity,
       {
@@ -231,6 +236,42 @@ class appointmentBlock extends Component {
     }
   }
 
+  resizeTop = (size) => {
+    const { height } = this.state;
+    if (height._value - size >= 30) {
+      this.setState({ height: new Animated.Value(height._value - size), top: new Animated.Value(this.state.top._value + size) });
+      this.state.pan.setValue({ x: this.state.pan.x._value, y: this.state.pan.y._value + size });
+    }
+  }
+
+  resizeBottom = (size) => {
+    const { height } = this.state;
+    if (height._value + size >= 30) {
+      this.setState({ height: new Animated.Value(height._value + size) });
+    }
+  }
+
+  handleResizeReleaseTop = () => {
+    const { height, top, pan } = this.state;
+    const remainderH = height._value % 30;
+    const remainderT = top._value % 30;
+    const newSize = remainderH < 30 / 2 ? height._value - remainderH : height._value + 30 - remainderH;
+    const newTop = remainderH < 30 / 2 ? top._value + remainderH : top._value - 30 + remainderH;
+    Animated.parallel([Animated.spring(this.state.height, { toValue: newSize }),
+    Animated.spring(this.state.top, { toValue: newTop }),
+    Animated.spring(
+      this.state.pan,
+      { toValue: { x: pan.x._value, y: newTop } }
+    )]).start(() => this.setState({ isResizeing: false }));
+  }
+
+  handleResizeReleaseBottom = () => {
+    const { height } = this.state;
+    const remainder = this.state.height._value % 30;
+    const newSize = remainder < 30 / 2 ? height._value - remainder : height._value + 30 - remainder;
+    Animated.spring(this.state.height, { toValue: newSize }).start(() => this.setState({ isResizeing: false }));
+  }
+
   render() {
     const color = Math.floor(Math.random() * 4);
     const {
@@ -240,6 +281,7 @@ class appointmentBlock extends Component {
       toTime,
       id,
     } = this.props.appointment;
+    const cardWidth = 130;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const { height } = this.state;
@@ -293,6 +335,22 @@ class appointmentBlock extends Component {
               </Text>
             </View>
           </TouchableOpacity>
+          {this.state.isActive ?
+            <ResizeButton
+              onPress={() => this.setState({ isResizeing: true })}
+              onRelease={this.handleResizeReleaseBottom}
+              onResize={this.resizeBottom}
+              color={colors[color].header}
+              position={{ left: 2, bottom: -12}}
+            /> : null }
+          {this.state.isActive ?
+            <ResizeButton
+              onPress={() => this.setState({ isResizeing: true })}
+              onRelease={this.handleResizeReleaseTop}
+              onResize={this.resizeTop}
+              color={colors[color].header}
+              position={{ right: 2, top: -12 }}
+            /> : null }
         </Animated.View>
       </Animated.View>
     );

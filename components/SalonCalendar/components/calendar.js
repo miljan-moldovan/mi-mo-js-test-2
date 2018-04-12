@@ -74,8 +74,8 @@ export default class SalonCalendar extends Component {
     }
   }
 
-  handleOnDrag = () => {
-    this.setState({ isEnabled: false });
+  handleOnDrag = (isEnabled) => {
+    this.setState({ isEnabled });
   }
 
   measureScrollX = ({ nativeEvent: { layout: { x, y, width, height } } }) => {

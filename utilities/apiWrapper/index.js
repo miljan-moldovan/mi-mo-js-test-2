@@ -167,5 +167,8 @@ function doRequest(key, parameters, options = {
   });
 }
 
+function getEmployeePhoto(employeeId) {
+  return `${apiOptions.conf.domains.default}/api/Employees/${employeeId}/Photo`;
+}
 
-export default { doRequest };
+export default { doRequest, getEmployeePhoto };
