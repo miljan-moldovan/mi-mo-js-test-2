@@ -3,9 +3,13 @@ import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-nativ
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
+import HeaderLateral from '../../../components/HeaderLateral';
 import HeaderRight from '../../../components/HeaderRight';
 import reasonTypeModel from '../../../utilities/models/reasonType';
 import fetchFormCache from '../../../utilities/fetchFormCache';
+import SalonAvatar from '../../../components/SalonAvatar';
+import apiWrapper from '../../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -96,14 +100,33 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 14,
   },
+  providerRound: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    marginRight: 10,
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
 });
 
 class WalkoutScreen extends Component {
   static navigationOptions = ({ navigation }) => {
-    const handlePress = navigation.state.params && navigation.state.params.walkout ? navigation.state.params.walkout : ()=>{};
-    //const { name, lastName } = navigation.state.params.item.client;
+    const handlePress = navigation.state.params && navigation.state.params.walkout ? navigation.state.params.walkout : () => {};
+    // const { name, lastName } = navigation.state.params.item.client;
     return {
-      // headerTitle: `${name} ${lastName}`,
+      headerTitle: <Text style={styles.titleText}>Walkout</Text>,
+      headerLeft:
+  <HeaderRight
+    button={(
+      <Text style={styles.headerButton}>Cancel</Text>
+            )}
+    handlePress={() => { navigation.goBack(); }}
+  />,
       headerRight:
   <HeaderRight
     button={(
@@ -126,12 +149,15 @@ class WalkoutScreen extends Component {
 
   componentWillMount() {
     this.props.walkoutActions.getRemovalReasonTypes();
-    const { clientQueueItemId } = this.props.navigation.state.params;
-    const cachedForm = fetchFormCache('WalkoutScreen', clientQueueItemId.toString(), this.props.formCache);
-    if (clientQueueItemId === cachedForm.clientQueueItemId) {
+    const { id } = this.props.navigation.state.params.appointment;
+    const service = this.props.navigation.state.params.appointment.services[0];
+    const employeeId = service.employeeId;
+
+    const cachedForm = fetchFormCache('WalkoutScreen', id.toString(), this.props.formCache);
+    if (id === cachedForm.id) {
       this.setState({ ...cachedForm });
     } else {
-      this.setState({ clientQueueItemId });
+      this.setState({ id, employeeId });
     }
   }
 
@@ -140,8 +166,11 @@ class WalkoutScreen extends Component {
     // We can only set the function after the component has been initialized
     navigation.setParams({
       walkout: () => {
-        this.handleWalkout();
-        navigation.goBack();
+        const { removalReasonTypeId } = this.state;
+        if (removalReasonTypeId > -1) {
+          this.handleWalkout();
+          navigation.goBack();
+        }
       },
     });
   }
@@ -151,8 +180,8 @@ class WalkoutScreen extends Component {
   }
 
   handleWalkout = () => {
-    const { clientQueueItemId } = this.state;
-    this.props.walkoutActions.putWalkout(clientQueueItemId, this.state);
+    const { id } = this.state;
+    this.props.walkoutActions.putWalkout(id, this.state);
   }
 
   handleOnchangeText = otherReason => this.setState({ otherReason })
@@ -168,15 +197,50 @@ class WalkoutScreen extends Component {
     return null;
   }
 
+  onChangeProvider = (provider) => {
+    this.props.appointmentNotesActions.selectProvider(provider);
+    const note = this.state.note;
+    note.author = `${provider.name} ${provider.lastName}`;
+    this.setState({ note, isVisible: true });
+  }
+
+  handlePressProvider = () => {
+    const { navigate } = this.props.navigation;
+
+    navigate('Providers', {
+      actionType: 'new',
+      dismissOnSelect: this.dismissOnSelect,
+      onChangeProvider: this.onChangeProvider,
+      ...this.props,
+    });
+  }
+
+  dismissOnSelect() {
+    const { navigate } = this.props.navigation;
+    this.setState({ isVisible: true });
+    navigate('AppointmentNoteScreen');
+  }
+
   render() {
+    const { appointment } = this.props.navigation.state.params;
+    const service = appointment.services[0];
+
+    const fullName = !service.isFirstAvailable ? `${service.employeeFirstName} ${service.employeeLastName}` : 'First Available';
+
     return (
       <View style={styles.container}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={this.handlePressProvider}>
           <View style={[styles.row, styles.borderTop]}>
             <Text style={styles.label}>Provider</Text>
             <View style={styles.rowRightContainer}>
-              <View style={styles.imageContainer} />
-              <Text style={styles.textData}>Rebecca Knowles</Text>
+              <SalonAvatar
+                wrapperStyle={styles.providerRound}
+                width={30}
+                borderWidth={1}
+                borderColor="transparent"
+                image={{ uri: apiWrapper.getEmployeePhoto(!service.isFirstAvailable ? service.employeeId : 0) }}
+              />
+              <Text style={styles.textData}>{fullName}</Text>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>

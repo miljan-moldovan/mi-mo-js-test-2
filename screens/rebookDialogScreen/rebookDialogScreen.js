@@ -83,7 +83,7 @@ class RebookDialogScreen extends Component {
     if (operation === 'add') {
       this.setState({ date: moment(this.state.date, 'YYYY-MM-DD').add(1, 'weeks'), weeks });
     } else {
-      debugger //eslint-disable-line
+      
       this.setState({ date: moment(this.state.date, 'YYYY-MM-DD').subtract(1, 'weeks'), weeks });
     }
   }

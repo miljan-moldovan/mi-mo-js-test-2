@@ -54,17 +54,15 @@ import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 
 const QueueStackNavigator = StackNavigator(
   {
-
-    SalonCalendar: {
-      screen: AppointmentCalendarScreen,
-    },
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
     },
-
+    SalonCalendar: {
+      screen: AppointmentCalendarScreen,
+    },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
     },
@@ -88,9 +86,6 @@ const QueueStackNavigator = StackNavigator(
     // },
     Walkout: {
       screen: WalkOutScreen,
-      navigationOptions: {
-        headerTitle: 'Walkout',
-      },
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
@@ -182,7 +177,14 @@ const QueueStackNavigator = StackNavigator(
     TurnAway: {
       screen: TurnAwayScreen,
       navigationOptions: rootProps => ({
-        headerTitle: 'Turn Away',
+        headerTitle: <Text style={{
+ fontFamily: 'Roboto',
+        color: '#fff',
+        fontSize: 17,
+        fontWeight: '700',
+}}
+        > Turn Away
+        </Text >,
         headerLeft: HeaderLeftText({
           ...rootProps,
           handlePress: () => rootProps.navigation.goBack(),

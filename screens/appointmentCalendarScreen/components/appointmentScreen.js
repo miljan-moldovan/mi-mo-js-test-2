@@ -162,6 +162,9 @@ export default class AppointmentScreen extends Component {
       calendarPickerMode: 'day',
     };
 
+    console.log('lalala: ', 'constructor');
+
+
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -170,9 +173,10 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-  
 
   componentWillMount() {
+    console.log('lalala: ', this.state.selectedDate);
+
     if (!this.state.filterProvider) {
       this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
     }
@@ -189,9 +193,9 @@ export default class AppointmentScreen extends Component {
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
 
-  selectFilterProvider = filterProvider => {
-    this.props.navigation.setParams({ filterProvider })
-    this.setState({ filterProvider })
+  selectFilterProvider = (filterProvider) => {
+    this.props.navigation.setParams({ filterProvider });
+    this.setState({ filterProvider });
   };
 
   gotToSales = () => {
@@ -230,7 +234,7 @@ export default class AppointmentScreen extends Component {
           dates.push(moment(startDate.add(1, 'days')));
         }
         this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
-        // debugger //eslint-disable-line
+        // 
         this.props.appointmentCalendarActions.getProviderCalendar(
           this.props.navigation.state.params.filterProvider.id,
           startDate.format('YYYY-MM-DD'),
@@ -309,8 +313,9 @@ export default class AppointmentScreen extends Component {
           onHide={() => {
             this.setState({ visible: false });
           }}
-          onDateSelected={(date) => {
-            this.setState({ selectedDate: date, visible: false });
+          onDateSelected={(startDate, endDate) => {
+            this.setState({ selectedDate: startDate, visible: false });
+            this.handleDateChange(startDate, endDate);
           }}
         />
 

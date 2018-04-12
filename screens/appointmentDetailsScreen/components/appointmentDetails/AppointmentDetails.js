@@ -190,7 +190,7 @@ const SalonAppointmentTime = (props) => {
   return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
+      <Text style={styles.serviceTime}> {moment(props.appointment.enteredTime, 'hh:mm:ss').format('LT')}</Text>
       {caretRight}
       <Text style={styles.serviceTime}>REM Wait</Text>
       <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
@@ -204,8 +204,6 @@ SalonAppointmentTime.propTypes = {
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
   const providerName = !props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available';
-
-  console.log(JSON.stringify(props.service));
 
   return (
     <SalonCard

@@ -109,7 +109,7 @@ class TurnAwayScreen extends Component {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
-    navigate('ClientsSearch', {
+    navigate('Clients', {
       actionType: 'update',
       dismissOnSelect: true,
       onChangeClient: this.handleClientSelection,
