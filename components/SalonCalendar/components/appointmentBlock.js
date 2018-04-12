@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import moment from 'moment';
 
+import ResizeButton from './resizeButtons';
+
 const colors = [
   { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
   { header: '#9e2fff', content: '#e2b2ff', border: '#b684ee' },
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
     width: 129,
     borderRadius: 4,
     borderWidth: 1,
-    zIndex: 99,
   },
 });
 
@@ -56,18 +57,19 @@ class appointmentBlock extends Component {
     this.state = {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
-      top,
-      height,
+      top: new Animated.Value(top),
+      height: new Animated.Value(height),
       isActive: false,
       isScrolling: false,
+      isResizeing: false,
       opacity: new Animated.Value(0)
     };
-    this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
-    this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
+    // this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
+    // this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.isActive,
+      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive && !this.state.isResizeing,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.isActive && !this.state.isResizeing,
       onPanResponderMove: (e, gesture) => {
         this.moveX = gesture.dx;
         this.moveY = gesture.dy;
@@ -78,7 +80,7 @@ class appointmentBlock extends Component {
       },
       onPanResponderGrant: () => {
         if (this.state.isActive) {
-          this.state.pan.setOffset({ x: this.animatedValueX, y: this.animatedValueY });
+          this.state.pan.setOffset({ x: this.state.left, y: this.state.top._value });
           this.state.pan.setValue({ x: 0, y: 0 });
         }
       },
@@ -86,7 +88,7 @@ class appointmentBlock extends Component {
         this.moveX = null;
         this.moveY = null;
         const dx = this.state.pan.x._value + this.state.pan.x._offset - this.state.left;
-        const dy = this.state.pan.y._value + this.state.pan.y._offset - this.state.top;
+        const dy = this.state.pan.y._value + this.state.pan.y._offset - this.state.top._value;
         const remainderX = dx % 130;
         const remainderY = dy % 30;
         const x = 130 - remainderX > 130 / 2 ?
@@ -114,7 +116,9 @@ class appointmentBlock extends Component {
               toValue: 0
             }
           )
-        ]).start(() => this.setState({ isActive: false }));
+        ]).start(() => this.setState({ isActive: false, left: this.state.left + xOffset, top: this.state.top._value + yOffset }), () => {
+          this.props.onDrag(true);
+        });
       },
     });
   }
@@ -134,7 +138,8 @@ class appointmentBlock extends Component {
 
   handleOnLongPress = () => {
     this.setState({ isActive: true }, this.scrollAnimation);
-    this.props.onDrag();
+    this.offset = { x: this.props.calendarOffset.x, y: this.props.calendarOffset.y }
+    this.props.onDrag(false);
     Animated.timing(
       this.state.opacity,
       {
@@ -149,15 +154,14 @@ class appointmentBlock extends Component {
     const boundLength = 30;
     const maxScrollChange = 15;
     const cardWidth = 130;
-    const scrollVerticalBoundTop1 = (this.props.calendarMeasure.height
-      + this.props.calendarOffset.y) - boundLength - this.state.height;
-      if (this.state.isActive) {
+    if (this.state.isActive) {
       if (this.moveX && this.moveY) {
         if (Math.abs(this.moveX) >= Math.abs(this.moveY)) {
+          const maxWidth = this.props.providers.length * 130 - this.props.calendarMeasure.width;
           const scrollHorizontalBoundRight = (this.props.calendarMeasure.width
-            + this.props.calendarOffset.x) - boundLength - cardWidth;
-          const scrollHorizontalBoundLeft = this.props.calendarOffset.x + boundLength;
-          const moveX = this.moveX + this.state.pan.x._offset + this.state.pan.x._value;
+            + this.offset.x) - boundLength - cardWidth;
+          const scrollHorizontalBoundLeft = this.offset.x + boundLength;
+          const moveX = this.moveX + this.state.pan.x._offset;
           if (scrollHorizontalBoundRight < moveX) {
             dx = moveX - scrollHorizontalBoundRight;
           } else if (scrollHorizontalBoundLeft > moveX) {
@@ -166,7 +170,22 @@ class appointmentBlock extends Component {
           if (Math.abs(dx) > 0) {
             dx = Math.abs(dx) > boundLength ? boundLength * Math.sign(dx) : dx;
             dx = dx * maxScrollChange / boundLength;
-            this.props.onScrollX(this.props.calendarOffset.x + dx, () => {
+            this.offset.x += dx;
+            if (this.offset.x > maxWidth) {
+              this.offset.x =  maxWidth;
+            }
+            if (this.offset.x < 0) {
+              this.offset.x = 0;
+            }
+            const cordiantesX = this.state.pan.x._offset + this.state.pan.x._value + dx;
+            if (cordiantesX + cardWidth > maxWidth + this.props.calendarMeasure.width) {
+              dx = maxWidth + this.props.calendarMeasure.width
+              - this.state.pan.x._offset - this.state.pan.x._value - cardWidth;
+            }
+            if (cordiantesX < 0) {
+              dx = 0;
+            }
+            this.props.onScrollX(this.offset.x, () => {
               this.state.pan.setOffset({
                 x: this.state.pan.x._offset + dx,
                 y: this.state.pan.y._offset,
@@ -175,10 +194,11 @@ class appointmentBlock extends Component {
             });
           }
         } else {
+          const maxHeigth = this.props.apptGridSettings.numOfRow * 30 - this.props.calendarMeasure.height;
           const scrollVerticalBoundTop = (this.props.calendarMeasure.height
-            + this.props.calendarOffset.y) - boundLength - this.state.height;
-          const scrollVerticalBoundBottom = this.props.calendarOffset.y + boundLength;
-          const moveY = this.moveY + this.state.pan.y._offset + this.state.pan.y._value;
+            + this.offset.y) - boundLength - this.state.height - 40;
+          const scrollVerticalBoundBottom = this.offset.y + boundLength + 40;
+          const moveY = this.moveY + this.state.pan.y._offset;
           if (scrollVerticalBoundTop < moveY) {
             dy = moveY - scrollVerticalBoundTop;
           } else if (scrollVerticalBoundBottom > moveY) {
@@ -187,7 +207,22 @@ class appointmentBlock extends Component {
           if (Math.abs(dy) > 0) {
             dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
             dy = dy * maxScrollChange / boundLength;
-            this.props.onScrollY(this.props.calendarOffset.y + dy, () => {
+            this.offset.y += dy;
+            if (this.offset.y > maxHeigth) {
+              this.offset.y = maxHeigth;
+            }
+            if (this.offset.y < 0) {
+              this.offset.y = 0;
+            }
+            const cordiantesY = this.state.pan.y._offset + this.state.pan.y._value + dy;
+            if (cordiantesY + this.state.height > maxHeigth + this.props.calendarMeasure.height) {
+              dy = maxHeigth + this.props.calendarMeasure.height
+              - this.state.pan.y._offset - this.state.pan.y._value - this.state.height;
+            }
+            if (cordiantesY < 40) {
+              dy = 0;
+            }
+            this.props.onScrollY(this.offset.y, () => {
               this.state.pan.setOffset({
                 x: this.state.pan.x._offset,
                 y: this.state.pan.y._offset + dy,
@@ -201,6 +236,42 @@ class appointmentBlock extends Component {
     }
   }
 
+  resizeTop = (size) => {
+    const { height } = this.state;
+    if (height._value - size >= 30) {
+      this.setState({ height: new Animated.Value(height._value - size), top: new Animated.Value(this.state.top._value + size) });
+      this.state.pan.setValue({ x: this.state.pan.x._value, y: this.state.pan.y._value + size });
+    }
+  }
+
+  resizeBottom = (size) => {
+    const { height } = this.state;
+    if (height._value + size >= 30) {
+      this.setState({ height: new Animated.Value(height._value + size) });
+    }
+  }
+
+  handleResizeReleaseTop = () => {
+    const { height, top, pan } = this.state;
+    const remainderH = height._value % 30;
+    const remainderT = top._value % 30;
+    const newSize = remainderH < 30 / 2 ? height._value - remainderH : height._value + 30 - remainderH;
+    const newTop = remainderH < 30 / 2 ? top._value + remainderH : top._value - 30 + remainderH;
+    Animated.parallel([Animated.spring(this.state.height, { toValue: newSize }),
+    Animated.spring(this.state.top, { toValue: newTop }),
+    Animated.spring(
+      this.state.pan,
+      { toValue: { x: pan.x._value, y: newTop } }
+    )]).start(() => this.setState({ isResizeing: false }));
+  }
+
+  handleResizeReleaseBottom = () => {
+    const { height } = this.state;
+    const remainder = this.state.height._value % 30;
+    const newSize = remainder < 30 / 2 ? height._value - remainder : height._value + 30 - remainder;
+    Animated.spring(this.state.height, { toValue: newSize }).start(() => this.setState({ isResizeing: false }));
+  }
+
   render() {
     const color = Math.floor(Math.random() * 4);
     const {
@@ -210,6 +281,7 @@ class appointmentBlock extends Component {
       toTime,
       id,
     } = this.props.appointment;
+    const cardWidth = 130;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const { height } = this.state;
@@ -224,7 +296,7 @@ class appointmentBlock extends Component {
       shadowRadius: 4,
     } : null
     return (
-      <Animated.View style={this.state.isActive ? { position: 'absolute' } : { position: 'absolute' }}>
+      <Animated.View style={this.state.isActive ? { position: 'absolute', zIndex: 1 } : { position: 'absolute', zIndex: 0 }}>
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.container,
@@ -240,7 +312,7 @@ class appointmentBlock extends Component {
           {...this.panResponder.panHandlers}
           key={id}
           style={[styles.container,
-            { height, borderColor, backgroundColor: contentColor, zIndex: 99  },
+            { height, borderColor, backgroundColor: contentColor  },
             this.state.pan.getLayout(), shadow]}
         >
           <TouchableOpacity
@@ -263,6 +335,22 @@ class appointmentBlock extends Component {
               </Text>
             </View>
           </TouchableOpacity>
+          {this.state.isActive ?
+            <ResizeButton
+              onPress={() => this.setState({ isResizeing: true })}
+              onRelease={this.handleResizeReleaseBottom}
+              onResize={this.resizeBottom}
+              color={colors[color].header}
+              position={{ left: 2, bottom: -12}}
+            /> : null }
+          {this.state.isActive ?
+            <ResizeButton
+              onPress={() => this.setState({ isResizeing: true })}
+              onRelease={this.handleResizeReleaseTop}
+              onResize={this.resizeTop}
+              color={colors[color].header}
+              position={{ right: 2, top: -12 }}
+            /> : null }
         </Animated.View>
       </Animated.View>
     );

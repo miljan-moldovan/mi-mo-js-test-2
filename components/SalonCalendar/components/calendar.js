@@ -74,8 +74,8 @@ export default class SalonCalendar extends Component {
     }
   }
 
-  handleOnDrag = () => {
-    this.setState({ isEnabled: false });
+  handleOnDrag = (isEnabled) => {
+    this.setState({ isEnabled });
   }
 
   measureScrollX = ({ nativeEvent: { layout: { x, y, width, height } } }) => {
@@ -175,7 +175,8 @@ export default class SalonCalendar extends Component {
           <AvHeader
             apptGridSettings={apptGridSettings}
             providers={providers}
-            timeSchedules={dataSource} />
+            timeSchedules={dataSource}
+          />
           <CurrentTime apptGridSettings={apptGridSettings} />
         </View>
         <FirstAvBtn rootStyles={styles.firstAvBtn} />
