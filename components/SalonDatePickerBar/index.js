@@ -127,6 +127,9 @@ export default class SalonDatePickerBar extends Component {
     }
 
     getInitialDate = () => {
+      if (this.props.startDate) {
+        return moment(this.props.startDate);
+      }
       if (this.props.date) {
         return moment(this.props.date);
       }
@@ -142,7 +145,7 @@ export default class SalonDatePickerBar extends Component {
 
     setSelectedDate(date) {
       const mDate = moment(date);
-      this.onCalendarSelected(mDate);
+      this.props.onCalendarSelected(mDate);
     }
 
     render= () => (

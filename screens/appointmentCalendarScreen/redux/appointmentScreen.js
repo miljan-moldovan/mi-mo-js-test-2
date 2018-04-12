@@ -148,7 +148,7 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
       }
     }
 
-    const step = 15;
+    const step = 30;
     const apptGridSettings = {
       startTime,
       endTime,
