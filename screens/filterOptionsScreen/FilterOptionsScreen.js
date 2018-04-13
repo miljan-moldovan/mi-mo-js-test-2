@@ -127,9 +127,12 @@ export default class FilterOptionsScreen extends React.Component {
       case TAB_PROVIDERS:
         return (
           <View style={styles.container}>
-            <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.row}
+              onPress={() => this._handleOnChangeProvider('all')}
+            >
               <Text style={styles.rowText}>View all providers</Text>
-            </View>
+            </TouchableOpacity>
             {this.props.providersState.isLoading
               ? (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

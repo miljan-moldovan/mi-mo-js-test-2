@@ -45,11 +45,11 @@ class appointmentBlock extends Component {
     super(props);
     this.scrollValue = 0;
     const { toTime, fromTime } = props.appointment;
-    const { startTime, step } = props.apptGridSettings;
+    const { startTime, step } = this.props.apptGridSettings;
     const start = moment(fromTime, 'HH:mm');
     const top = 40 + (start.diff(startTime, 'minutes') / step) * 40;
     const end = moment(toTime, 'HH:mm');
-    const left = 0;
+    const left = 0;// this.props.dates.findIndex(date => moment(date).format('YYYY-MM-DD') === moment(this.props.appointment.date).format('YYYY-MM-DD')) * 45;
     const height = (moment.duration(end.diff(start)).asMinutes() / step) * 40 - 1;
     this.animatedValueX = left;
     this.animatedValueY = top;
@@ -61,8 +61,9 @@ class appointmentBlock extends Component {
       height,
       isActive: false,
       isScrolling: false,
-      opacity: new Animated.Value(0),
+      opacity: new Animated.Value(1),
     };
+
     this.state.pan.x.addListener(value => this.animatedValueX = value.value);
     this.state.pan.y.addListener(value => this.animatedValueY = value.value);
     this.panResponder = PanResponder.create({

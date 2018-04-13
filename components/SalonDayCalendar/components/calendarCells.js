@@ -43,10 +43,9 @@ class CalendarCells extends Component {
 
   renderColumn = hour => (
     <View style={styles.row} key={hour}>
-      {this.props.dates.map(date =>
-        this.renderCell(this.props.dataSource[moment(date).format('YYYY-MM-DD')], hour, Math.random()))}
+      {this.renderCell(this.props.dataSource[moment(this.props.dates[0]).format('YYYY-MM-DD')], hour, Math.random())}
     </View>
-  );
+  )
 
   render() {
     const { apptGridSettings } = this.props;

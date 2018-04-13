@@ -209,6 +209,8 @@ export default class SalonDatePickerSlide extends React.Component {
                   textDayHeaderFontSize: 16,
                 }}
                 hideExtraDays
+                onPressArrowLeft={this.props.onPressArrowLeft}
+                onPressArrowRight={this.props.onPressArrowRight}
               />
             </View>
             <View style={styles.panelBottomSection}>
