@@ -70,7 +70,21 @@ class RebookDialogScreen extends Component {
   }
 
   saveRebook() {
-    alert('Not Implemented. Endpoint missing.');
+    // /alert('Not Implemented. Endpoint missing.');
+    const { appointment } = this.props.navigation.state.params;
+
+    this.props.rebookDialogActions.postRebook(appointment.id, {
+      weeksCount: this.state.weeks,
+      updatePreferences: this.state.updateRebookingPref,
+      appointmentIds: [
+        appointment.id,
+      ],
+    })
+      .then((response) => {
+        this.goBack();
+      }).catch((error) => {
+        console.log(error);
+      });
   }
 
   dismissOnSelect() {
@@ -83,7 +97,6 @@ class RebookDialogScreen extends Component {
     if (operation === 'add') {
       this.setState({ date: moment(this.state.date, 'YYYY-MM-DD').add(1, 'weeks'), weeks });
     } else {
-      debugger //eslint-disable-line
       this.setState({ date: moment(this.state.date, 'YYYY-MM-DD').subtract(1, 'weeks'), weeks });
     }
   }

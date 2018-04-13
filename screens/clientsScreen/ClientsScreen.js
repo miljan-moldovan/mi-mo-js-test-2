@@ -184,18 +184,18 @@ class ClientsScreen extends React.Component {
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
-    // this.props.clientsActions.getClients().then((response) => {
-    //   if (response.data.error) {
-    //     // this.props.navigation.goBack();
-    //   } else {
-    //     const { clients } = response.data;
-    //     this.props.clientsActions.setClients(clients);
-    //     this.props.clientsActions.setFilteredClients(clients);
-    //     const suggestionList = this.getSuggestionsList(clients);
-    //     this.props.clientsActions.setSuggestionsList(suggestionList);
-    //     this.props.clientsActions.setFilteredSuggestions(suggestionList);
-    //   }
-    // });
+    this.props.clientsActions.getClients().then((response) => {
+      if (response.data.error) {
+        // this.props.navigation.goBack();
+      } else {
+        const { clients } = response.data;
+        this.props.clientsActions.setClients(clients);
+        this.props.clientsActions.setFilteredClients(clients);
+        const suggestionList = this.getSuggestionsList(clients);
+        this.props.clientsActions.setSuggestionsList(suggestionList);
+        this.props.clientsActions.setFilteredSuggestions(suggestionList);
+      }
+    });
   }
 
   state = {
@@ -300,7 +300,7 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.clientsList}>
 
-          {this.props.clientsState.filtered.length === 0 &&
+          {false && this.props.clientsState.filtered.length === 0 &&
 
             <View style={styles.searchClients}>
               <Icon name="circle" size={100} color="#C0C1C6" type="solid" />

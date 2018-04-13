@@ -20,6 +20,9 @@ import {
 
 import fetchFormCache from '../../utilities/fetchFormCache';
 import AppointmentNoteHeader from './components/appointmentNoteHeader';
+import SalonAvatar from '../../components/SalonAvatar';
+import apiWrapper from '../../utilities/apiWrapper';
+
 
 const styles = StyleSheet.create({
   modal: {
@@ -39,6 +42,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
+    width: '100%',
+    height: '100%',
   },
 });
 
@@ -115,7 +120,10 @@ class AppointmentNoteScreen extends Component {
   onChangeProvider = (provider) => {
     this.props.appointmentNotesActions.selectProvider(provider);
     const note = this.state.note;
-    note.author = `${provider.name} ${provider.lastName}`;
+
+    const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
+
+    note.author = providerName;
     this.setState({ note, isVisible: true });
   }
 
@@ -244,13 +252,22 @@ class AppointmentNoteScreen extends Component {
           <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
             <View style={{ marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 }} />
             <InputGroup style={{ flexDirection: 'row', height: 44 }}>
-              {[<InputButton
-                style={{ flex: 1 }}
-                labelStyle={{ color: '#110A24' }}
-                onPress={this.handlePressProvider}
-                placeholder="Added by"
-                label={this.state.note.author}
-              />]}
+              {[
+                <InputButton
+                  style={{ flex: 1 }}
+                  labelStyle={{ color: '#110A24' }}
+                  onPress={this.handlePressProvider}
+                  placeholder="Added by"
+                  label={this.state.note.author}
+                >{this.props.appointmentNotesState.selectedProvider &&
+                <SalonAvatar
+                  wrapperStyle={styles.providerRound}
+                  width={30}
+                  borderWidth={1}
+                  borderColor="transparent"
+                  image={{ uri: apiWrapper.getEmployeePhoto(!this.props.appointmentNotesState.selectedProvider.isFirstAvailable ? this.props.appointmentNotesState.selectedProvider.id : 0) }}
+                />}
+                </InputButton>]}
             </InputGroup>
             <SectionTitle value="NOTE" style={{ height: 38 }} />
             <InputGroup>
@@ -269,7 +286,7 @@ class AppointmentNoteScreen extends Component {
             <SectionTitle value="TYPES" style={{ height: 37 }} />
             <InputGroup >
               {[<InputSwitch
-                style={{ height: 43 }}
+                style={{ height: 43, flex: 1 }}
                 textStyle={{ color: '#000000' }}
                 onChange={(state) => {
                   const note = this.state.note;
@@ -313,8 +330,9 @@ class AppointmentNoteScreen extends Component {
             </InputGroup>
             <SectionDivider style={{ height: 37 }} />
 
-            <InputGroup style={{ flexDirection: 'row' }}>
+            <InputGroup style={{ flex: 1, flexDirection: 'row' }}>
               {[<InputDate
+                style={{ flex: 1 }}
                 placeholder="Expire Date"
                 onPress={(selectedDate) => {
                 const { note } = this.state;

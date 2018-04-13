@@ -9,11 +9,32 @@ import {
   QUEUE_UPDATE_ITEM,
   QUEUE_DELETE_ITEM,
   CLIENT_CHECKED_IN,
+  CLIENT_CHECKED_IN_FAILED,
+  CLIENT_CHECKED_IN_RECEIVED,
   CLIENT_RETURNED_LATER,
+  CLIENT_RETURNED_LATER_FAILED,
+  CLIENT_RETURNED_LATER_RECEIVED,
+  CLIENT_RETURNED,
+  CLIENT_RETURNED_RECEIVED,
+  CLIENT_RETURNED_FAILED,
   CLIENT_WALKED_OUT,
+  CLIENT_WALKED_OUT_RECEIVED,
+  CLIENT_WALKED_OUT_FAILED,
+  CLIENT_NO_SHOW,
+  CLIENT_NO_SHOW_RECEIVED,
+  CLIENT_NO_SHOW_FAILED,
   CLIENT_START_SERVICE,
+  CLIENT_START_SERVICE_FAILED,
+  CLIENT_START_SERVICE_RECEIVED,
   CLIENT_FINISH_SERVICE,
+  CLIENT_FINISH_SERVICE_FAILED,
+  CLIENT_FINISH_SERVICE_RECEIVED,
+  CLIENT_UNDOFINISH_SERVICE,
+  CLIENT_UNDOFINISH_SERVICE_FAILED,
+  CLIENT_UNDOFINISH_SERVICE_RECEIVED,
   CLIENT_TO_WAITING,
+  CLIENT_TO_WAITING_RECEIVED,
+  CLIENT_TO_WAITING_FAILED,
   TIME_UPDATE,
   ROW_EXPANDED,
   START_COMBINE,
@@ -37,42 +58,42 @@ const initialState = {
   combiningClients: [],
   groups: {},
   lastGroupId: 0,
-  updatedGroups: []
+  updatedGroups: [],
 };
 
 export default (state = initialState, action) => {
-  const {type, data, error} = action;
+  const { type, data, error } = action;
   console.log('***** queue.reducer', type, data, error);
 
-  switch(type) {
+  switch (type) {
     case QUEUE:
       return {
         ...state,
         error: null,
         queueLength: 0,
-        loading: true
+        loading: true,
       };
     case QUEUE_RECEIVED:
       const waitingQueue = [];
       const serviceQueue = [];
       const initialGroups = {};
       data.map((item: QueueItem) => {
-        item.client.fullName = (item.client.name ?
-          item.client.name[0].toUpperCase() + item.client.name.toLowerCase().slice(1, item.client.name.length) : '') + ' ' +
-          (item.client.lastName ?
-          item.client.lastName[0].toUpperCase() + item.client.lastName.toLowerCase().slice(1, item.client.lastName.length) : '');
+        item.client.fullName = `${item.client.name ?
+          item.client.name[0].toUpperCase() + item.client.name.toLowerCase().slice(1, item.client.name.length) : ''} ${
+          item.client.lastName ?
+            item.client.lastName[0].toUpperCase() + item.client.lastName.toLowerCase().slice(1, item.client.lastName.length) : ''}`;
 
         if (item.groupId) {
           if (! initialGroups[item.groupId]) {
             console.log('init group', item.groupId);
             initialGroups[item.groupId] = {
               clients: [],
-              groupLeadName: null
+              groupLeadName: null,
             };
           }
           initialGroups[item.groupId].clients.push({
             id: item.id,
-            isGroupLeader: item.isGroupLeader
+            isGroupLeader: item.isGroupLeader,
           });
           if (item.isGroupLeader) {
             console.log('here', item.client.fullName, item.groupId);
@@ -87,14 +108,13 @@ export default (state = initialState, action) => {
         item.background = helpers.getLabelColor(item);
         if (item.status < 6 && item.status !== 4) {
           item.processTime = item.progressTime;
-        //   item.estimatedTime = helpers.getEstimatedWaitTime(item);
-        //   item.expectedStartTime = helpers.getExpectedStartTime(item);
+          //   item.estimatedTime = helpers.getEstimatedWaitTime(item);
+          //   item.expectedStartTime = helpers.getExpectedStartTime(item);
           waitingQueue.push(item);
-
         } else {
         //   item.startTime = helpers.formatServiceStartTime(item.servicedTimeAt);
           item.processTime = item.progressTime;
-        //   item.estimatedTime = helpers.getEstimatedServiceTime(item);
+          //   item.estimatedTime = helpers.getEstimatedServiceTime(item);
           item.completed = helpers.getProcentCompleted(item);
           serviceQueue.push(item);
         }
@@ -111,51 +131,51 @@ export default (state = initialState, action) => {
         waitingQueue,
         serviceQueue,
         combiningClients: [],
-        combining: false
+        combining: false,
       };
     case QUEUE_FAILED:
       return {
         ...state,
         loading: false,
         queueLength: 0,
-        error
+        error,
       };
     case QUEUE_DELETE_ITEM:
-      const waitingQueueDeletedIndex = state.waitingQueue.findIndex((item) => item.id == data.id);
+      const waitingQueueDeletedIndex = state.waitingQueue.findIndex(item => item.id == data.id);
       if (waitingQueueDeletedIndex !== -1) {
         state.waitingQueue.splice(waitingQueueDeletedIndex, 1);
       }
-      const serviceQueueDeletedIndex = state.serviceQueue.findIndex((item) => item.id == data.id);
+      const serviceQueueDeletedIndex = state.serviceQueue.findIndex(item => item.id == data.id);
       if (serviceQueueDeletedIndex !== -1) {
         state.serviceQueue.splice(serviceQueueDeletedIndex, 1);
       }
       console.log('QUEUE_DELETE_ITEM', waitingQueueDeletedIndex, serviceQueueDeletedIndex, state.waitingQueue, state.serviceQueue);
       return {
         ...state,
-        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : state.waitingQueue,
-        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : state.serviceQueue,
-      }
+        waitingQueue: waitingQueueIndex !== -1 ? [...state.waitingQueue] : state.waitingQueue,
+        serviceQueue: serviceQueueIndex !== -1 ? [...state.serviceQueue] : state.serviceQueue,
+      };
     case QUEUE_UPDATE_ITEM:
       const { queueItem } = data;
-      const waitingQueueIndex = state.waitingQueue.findIndex((item) => item.id == queueItem.id);
+      const waitingQueueIndex = state.waitingQueue.findIndex(item => item.id == queueItem.id);
       if (waitingQueueIndex !== -1) {
         state.waitingQueue[waitingQueueIndex] = queueItem;
       }
-      const serviceQueueIndex = state.serviceQueue.findIndex((item) => item.id == queueItem.id);
+      const serviceQueueIndex = state.serviceQueue.findIndex(item => item.id == queueItem.id);
       if (serviceQueueIndex !== -1) {
         state.serviceQueue[serviceQueueIndex] = queueItem;
       }
       console.log('QUEUE_UPDATE_ITEM', waitingQueueIndex, serviceQueueIndex, state.waitingQueue, state.serviceQueue);
       return {
         ...state,
-        waitingQueue: waitingQueueIndex !== -1 ? [ ...state.waitingQueue ] : state.waitingQueue,
-        serviceQueue: serviceQueueIndex !== -1 ? [ ...state.serviceQueue ] : state.serviceQueue,
-      }
+        waitingQueue: waitingQueueIndex !== -1 ? [...state.waitingQueue] : state.waitingQueue,
+        serviceQueue: serviceQueueIndex !== -1 ? [...state.serviceQueue] : state.serviceQueue,
+      };
     case ROW_EXPANDED:
       return {
         ...state,
-        expandedRow: state.expandedRow === data.id ? null : data.id
-      }
+        expandedRow: state.expandedRow === data.id ? null : data.id,
+      };
     case CLIENT_CHECKED_IN:
       const itemsCheckedIn = state.waitingQueue.map((item) => {
         if (item.id === data.id) {
@@ -164,42 +184,102 @@ export default (state = initialState, action) => {
           item.enteredTime = helpers.getSecondsPassedSinceMidnight();
           item.background = helpers.getLabelColor(item);
           item.processTime = helpers.getWaitTime(item);
-          item.estimatedTime = helpers.getEstimatedWaitTime(item);
-          item.expectedStartTime = helpers.getExpectedStartTime(item);
-          item = {...item};
+          // item.estimatedTime = helpers.getEstimatedWaitTime(item);
+          //  item.expectedStartTime = helpers.getExpectedStartTime(item);
+          item = { ...item };
         }
         return item;
       });
 
       return {
         ...state,
-        waitingQueue: itemsCheckedIn
+        waitingQueue: itemsCheckedIn,
+      };
+    case CLIENT_CHECKED_IN_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_CHECKED_IN_FAILED:
+      return {
+        ...state,
       };
     case CLIENT_RETURNED_LATER:
       const itemsReturnLater = state.waitingQueue.map((item) => {
         if (item.id === data.id) {
           item.status = item.status === 0 ? 5 : 0;
-          item = {...item};
+          item = { ...item };
         }
         return item;
       });
 
       return {
         ...state,
-        waitingQueue: itemsReturnLater
+        waitingQueue: itemsReturnLater,
       };
-    case CLIENT_WALKED_OUT:
-      const itemsWalkOut = state.waitingQueue.filter((item) => {
-        return item.id !== data.id;
+
+    case CLIENT_RETURNED_LATER_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_RETURNED_LATER_FAILED:
+      return {
+        ...state,
+      };
+    case CLIENT_RETURNED:
+      const itemsReturned = state.waitingQueue.map((item) => {
+        if (item.id === data.id) {
+          item.status = item.status === 0 ? 5 : 0;
+          item = { ...item };
+        }
+        return item;
       });
 
       return {
         ...state,
+        waitingQueue: itemsReturned,
+      };
+
+    case CLIENT_RETURNED_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_RETURNED_FAILED:
+      return {
+        ...state,
+      };
+    case CLIENT_WALKED_OUT:
+      const itemsWalkOut = state.waitingQueue.filter(item => item.id !== data.id);
+
+      return {
+        ...state,
         expandedRow: null,
-        waitingQueue: itemsWalkOut
+        waitingQueue: itemsWalkOut,
+      };
+    case CLIENT_WALKED_OUT_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_WALKED_OUT_FAILED:
+      return {
+        ...state,
+      };
+    case CLIENT_NO_SHOW:
+      const itemsNoShow = state.waitingQueue.filter(item => item.id !== data.id);
+      return {
+        ...state,
+        expandedRow: null,
+        waitingQueue: itemsNoShow,
+      };
+    case CLIENT_NO_SHOW_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_NO_SHOW_FAILED:
+      return {
+        ...state,
       };
     case CLIENT_START_SERVICE:
-      const newServicedItem = state.waitingQueue.find((item) => item.id === data.id);
+      const newServicedItem = state.waitingQueue.find(item => item.id === data.id);
 
       newServicedItem.servicedTime = helpers.getSecondsPassedSinceMidnight();
       newServicedItem.startTime = helpers.formatServiceStartTime(newServicedItem.servicedTime);
@@ -211,14 +291,22 @@ export default (state = initialState, action) => {
       newServicedItem.estimatedTime = helpers.getEstimatedServiceTime(newServicedItem);
       newServicedItem.completed = helpers.getProcentCompleted(newServicedItem);
 
-      const waitingItemsStartService = state.waitingQueue.filter((item) => item.id !== data.id);
+      const waitingItemsStartService = state.waitingQueue.filter(item => item.id !== data.id);
       const serviceItemsStartService = state.serviceQueue.concat(newServicedItem);
 
       return {
         ...state,
         expandedRow: null,
         waitingQueue: waitingItemsStartService,
-        serviceQueue: serviceItemsStartService
+        serviceQueue: serviceItemsStartService,
+      };
+    case CLIENT_START_SERVICE_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_START_SERVICE_FAILED:
+      return {
+        ...state,
       };
     case CLIENT_FINISH_SERVICE:
       const itemsFinishService = state.serviceQueue.map((item) => {
@@ -226,11 +314,11 @@ export default (state = initialState, action) => {
           if (item.status === 6) {
             item.status = 7;
             item.finishService = helpers.getSecondsPassedSinceMidnight();
-            item = {...item};
+            item = { ...item };
           } else {
             item.status = 6;
             item.finishService = null;
-            item = {...item};
+            item = { ...item };
           }
         }
         return item;
@@ -238,46 +326,90 @@ export default (state = initialState, action) => {
 
       return {
         ...state,
-        serviceQueue: itemsFinishService
+        serviceQueue: itemsFinishService,
       };
+    case CLIENT_FINISH_SERVICE_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_FINISH_SERVICE_FAILED:
+      return {
+        ...state,
+      };
+
+    case CLIENT_UNDOFINISH_SERVICE:
+      const itemsUndoFinishService = state.serviceQueue.map((item) => {
+        if (item.id === data.id) {
+          if (item.status === 6) {
+            item.status = 7;
+            item.finishService = helpers.getSecondsPassedSinceMidnight();
+            item = { ...item };
+          } else {
+            item.status = 6;
+            item.finishService = null;
+            item = { ...item };
+          }
+        }
+        return item;
+      });
+
+      return {
+        ...state,
+        serviceQueue: itemsUndoFinishService,
+      };
+    case CLIENT_UNDOFINISH_SERVICE_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_UNDOFINISH_SERVICE_FAILED:
+      return {
+        ...state,
+      };
+
     case CLIENT_TO_WAITING:
-      const newWaitingItem = state.serviceQueue.find((item) => item.id === data.id);
+      const newWaitingItem = state.serviceQueue.find(item => item.id === data.id);
 
       newWaitingItem.checked_in = true;
       newWaitingItem.serviced = false;
       newWaitingItem.status = 0;
       newWaitingItem.background = helpers.getLabelColor(newWaitingItem);
       newWaitingItem.processTime = helpers.getWaitTime(newWaitingItem);
-      newWaitingItem.estimatedTime = helpers.getEstimatedWaitTime(newWaitingItem);
-      newWaitingItem.expectedStartTime = helpers.getExpectedStartTime(newWaitingItem);
+      //  newWaitingItem.estimatedTime = helpers.getEstimatedWaitTime(newWaitingItem);
+      //    newWaitingItem.expectedStartTime = helpers.getExpectedStartTime(newWaitingItem);
 
-      const serviceItemsToWaiting = state.serviceQueue.filter((item) => item.id !== data.id);
+      const serviceItemsToWaiting = state.serviceQueue.filter(item => item.id !== data.id);
       const waitingItemsToWaiting = state.waitingQueue.concat(newWaitingItem);
 
       return {
         ...state,
         waitingQueue: waitingItemsToWaiting,
-        serviceQueue: serviceItemsToWaiting
+        serviceQueue: serviceItemsToWaiting,
+      };
+    case CLIENT_TO_WAITING_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_TO_WAITING_FAILED:
+      return {
+        ...state,
       };
     case START_COMBINE:
       return {
         ...state,
         combining: true,
-        expandedRow: null
+        expandedRow: null,
       };
     case CANCEL_COMBINE:
-      const groupsNew = {...state.groups};
+      const groupsNew = { ...state.groups };
       state.updatedGroups.map((groupId) => {
-        const groupOld = state.waitingQueue.filter((queue) => queue.groupId === groupId)
-          .concat(state.serviceQueue.filter((queue) => queue.groupId === groupId));
+        const groupOld = state.waitingQueue.filter(queue => queue.groupId === groupId)
+          .concat(state.serviceQueue.filter(queue => queue.groupId === groupId));
 
-        groupsNew[groupId] = groupOld.map((client) => {
-          return {
-            id: client.id,
-            clientName: client.client.name + ' ' + client.client.lastName,
-            groupLead: client.groupLead
-          };
-        });
+        groupsNew[groupId] = groupOld.map(client => ({
+          id: client.id,
+          clientName: `${client.client.name} ${client.client.lastName}`,
+          groupLead: client.groupLead,
+        }));
 
         return groupId;
       });
@@ -287,29 +419,29 @@ export default (state = initialState, action) => {
         combiningClients: [],
         updatedGroups: [],
         groups: groupsNew,
-        combining: false
+        combining: false,
       };
     case COMBINE_CLIENT:
       let newCombiningClints = [];
-      if (state.combiningClients.find((client) => client.id === data.id)) {
-        newCombiningClints = state.combiningClients.filter((client) => client.id !== data.id);
+      if (state.combiningClients.find(client => client.id === data.id)) {
+        newCombiningClints = state.combiningClients.filter(client => client.id !== data.id);
       } else {
         newCombiningClints = state.combiningClients.concat({
           id: data.id,
-          clientName: data.clientName
+          clientName: data.clientName,
         });
       }
-      const isGroupLeadExist = newCombiningClints.find((item) => item.groupLead);
+      const isGroupLeadExist = newCombiningClints.find(item => item.groupLead);
       if (!isGroupLeadExist && newCombiningClints.length) {
-        newCombiningClints[0]['groupLead'] = true;
+        newCombiningClints[0].groupLead = true;
       }
       return {
         ...state,
-        combiningClients: newCombiningClints
+        combiningClients: newCombiningClints,
       };
     case GROUP_LEAD_UPDATE:
       if (data.groupId) {
-        const groupsEdit = {...state.groups};
+        const groupsEdit = { ...state.groups };
         groupsEdit[data.groupId].map((client) => {
           if (client.id === data.id) {
             client.groupLead = true;
@@ -319,49 +451,50 @@ export default (state = initialState, action) => {
           return client;
         });
 
-        const updatedGroupsNew = state.updatedGroups.concat(data.groupId)
+        const updatedGroupsNew = state.updatedGroups.concat(data.groupId);
         return {
           ...state,
           groups: groupsEdit,
-          updatedGroups: updatedGroupsNew
-        };
-      } else {
-        const updatedCombiningClints = state.combiningClients.map((client) => {
-          client.groupLead = false;
-          client = {...client};
-          return client;
-        });
-        const payingClient = updatedCombiningClints.find((client) => client.id === data.id);
-
-        payingClient.groupLead = true;
-
-        return {
-          ...state,
-          combiningClients: updatedCombiningClints
+          updatedGroups: updatedGroupsNew,
         };
       }
+      const updatedCombiningClints = state.combiningClients.map((client) => {
+        client.groupLead = false;
+        client = { ...client };
+        return client;
+      });
+      const payingClient = updatedCombiningClints.find(client => client.id === data.id);
+
+      payingClient.groupLead = true;
+
+      return {
+        ...state,
+        combiningClients: updatedCombiningClints,
+      };
+
     case FINISH_COMBINE:
       const newLastGroupId = state.lastGroupId + 1;
-      const updatedGroups = {...state.groups};
+      const updatedGroups = { ...state.groups };
       updatedGroups[newLastGroupId] = state.combiningClients;
 
-      const groupLeadName = state.combiningClients.find((client) => client.groupLead).clientName;
+      const groupLeadName = state.combiningClients.find(client => client.groupLead).clientName;
 
       const addToGroup = (queue, client) => {
         if (queue.id === client.id) {
           queue.groupId = newLastGroupId;
           queue.groupLead = client.groupLead;
           queue.groupLeadName = groupLeadName;
-          queue = {...queue};
+          queue = { ...queue };
         }
         return queue;
       };
 
-      let updatedWaitingQueue = [], updatedServiceQueue = [];
+      let updatedWaitingQueue = [],
+        updatedServiceQueue = [];
 
       state.combiningClients.map((client) => {
-        updatedWaitingQueue = state.waitingQueue.map((queue) => addToGroup(queue, client));
-        updatedServiceQueue = state.serviceQueue.map((queue) => addToGroup(queue, client));
+        updatedWaitingQueue = state.waitingQueue.map(queue => addToGroup(queue, client));
+        updatedServiceQueue = state.serviceQueue.map(queue => addToGroup(queue, client));
         return client;
       });
 
@@ -372,10 +505,10 @@ export default (state = initialState, action) => {
         lastGroupId: newLastGroupId,
         waitingQueue: updatedWaitingQueue,
         serviceQueue: updatedServiceQueue,
-        combining: false
+        combining: false,
       };
     case UNCOMBINE:
-      const filtredGroups = {...state.groups};
+      const filtredGroups = { ...state.groups };
       delete filtredGroups[data.groupId];
 
       const removeGroup = (queue) => {
@@ -383,7 +516,7 @@ export default (state = initialState, action) => {
           queue.groupId = null;
           queue.groupLead = null;
           queue.groupLeadName = null;
-          queue = {...queue};
+          queue = { ...queue };
         }
         return queue;
       };
@@ -396,19 +529,20 @@ export default (state = initialState, action) => {
         groups: filtredGroups,
         waitingQueue: filtredWaitingQueue,
         serviceQueue: filtredServiceQueue,
-        combining: false
+        combining: false,
       };
     case UPDATE_GROUPS:
-      let newWaitingQueue = [], newServiceQueue = [];
+      let newWaitingQueue = [],
+        newServiceQueue = [];
       state.updatedGroups.map((groupId) => {
         const group = state.groups[groupId];
-        const groupLead = group.find((client) => client.groupLead);
+        const groupLead = group.find(client => client.groupLead);
 
         const updateGroup = (queue) => {
           if (queue.groupId === groupId) {
             queue.groupLead = queue.id === groupLead.id;
             queue.groupLeadName = groupLead.clientName;
-            queue = {...queue};
+            queue = { ...queue };
           }
           return queue;
         };
@@ -424,14 +558,14 @@ export default (state = initialState, action) => {
         combining: false,
         updatedGroups: [],
         waitingQueue: newWaitingQueue,
-        serviceQueue: newServiceQueue
+        serviceQueue: newServiceQueue,
       };
     case TIME_UPDATE:
       const updatedWaitingItems = state.waitingQueue.map((item) => {
         item.background = helpers.getLabelColor(item);
         item.processTime = helpers.getWaitTime(item);
         item.expectedStartTime = helpers.getExpectedStartTime(item);
-        item = {...item};
+        item = { ...item };
         return item;
       });
 
@@ -439,23 +573,22 @@ export default (state = initialState, action) => {
         item.background = helpers.getLabelColor(item);
         item.processTime = helpers.getWorkingTime(item);
         item.completed = helpers.getProcentCompleted(item);
-        item = {...item};
+        item = { ...item };
         return item;
       });
 
       return {
         ...state,
         waitingQueue: updatedWaitingItems,
-        serviceQueue: updatedServiceItems
+        serviceQueue: updatedServiceItems,
       };
     case POST_WALKIN_CLIENT_SUCCESS:
       updatedWaitingQueue = state.waitingQueue.push(data.appointment);
       return {
         ...state,
         waitingQueue: updatedWaitingQueue,
-      }
+      };
     default:
       return state;
   }
-
-}
+};

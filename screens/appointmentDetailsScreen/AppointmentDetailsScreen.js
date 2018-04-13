@@ -160,7 +160,7 @@ export default class AppointmentDetailsScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <AppointmentDetails appointment={this.state.appointment} navigation={this.props.navigation} />,
+    0: () => <AppointmentDetails onPressSummary={this.props.navigation.state.params.onPressSummary} isWaiting={this.props.navigation.state.params.isWaiting} appointment={this.state.appointment} navigation={this.props.navigation} />,
     1: () => <AppoinmentNotes notes={this.state.notes} appointment={this.state.appointment} navigation={this.props.navigation} />,
     2: () => <AppointmentFormulas formulas={this.state.formulas} appointment={this.state.appointment} navigation={this.props.navigation} />,
   });

@@ -162,6 +162,9 @@ export default class AppointmentScreen extends Component {
       calendarPickerMode: 'day',
     };
 
+    console.log('lalala: ', 'constructor');
+
+
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -210,15 +213,18 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToApptBook = () => {
-    this.setState({ visibleNewAppointment: true, visibleAppointment: false });
+    // this.setState({ visibleNewAppointment: true, visibleAppointment: false });
+    alert('Not Implemented');
   }
 
   gotToClients = () => {
-    this.props.navigation.navigate('Clients');
+    // this.props.navigation.navigate('Clients');
+    alert('Not Implemented');
   }
 
   gotToScoreCard = () => {
-    this.setState({ visibleAppointment: true, visibleNewAppointment: false });
+    // this.setState({ visibleAppointment: true, visibleNewAppointment: false });
+    alert('Not Implemented');
   }
 
   handleDateChange = (selectedDate, endDate) => {

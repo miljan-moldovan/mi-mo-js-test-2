@@ -15,6 +15,7 @@ const resources = {
   getEmployeeSchedule: {
     path: 'Employees/Schedule/:date',
     method: 'get',
+    expiration: apiConstants.expiration,
     // expiration: apiConstants.expiration,
     disableCache: true,
   },
