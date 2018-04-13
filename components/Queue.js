@@ -270,7 +270,7 @@ class Queue extends React.Component {
     const { appointment } = this.state;
     this.hideDialog();
     if (appointment !== null) {
-      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary });
+      setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
     }
   }
 
