@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const headerRight = props => (<TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
+const headerRight = props => (<TouchableOpacity disabled={props.disabled} style={styles.buttonContainer} onPress={props.handlePress}>
   {props.button}
 </TouchableOpacity>
 );
@@ -16,10 +16,12 @@ const headerRight = props => (<TouchableOpacity style={styles.buttonContainer} o
 headerRight.propTypes = {
   handlePress: PropTypes.func,
   button: PropTypes.element.isRequired,
+  disabled: PropTypes.boolean,
 };
 
 headerRight.defaultProps = {
   handlePress: null,
+  disabled: false,
 };
 
 export default headerRight;

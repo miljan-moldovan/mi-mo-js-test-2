@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 
 import DatePicker from '../../../components/modals/SalonDatePicker';
@@ -61,9 +61,33 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Roboto-Medium',
   },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
 });
 
 class TurnAwayScreen extends Component {
+  static navigationOptions = rootProps => ({
+    headerTitle: <Text style={styles.titleText}>Turn Away</Text>,
+    headerLeft:
+  <TouchableOpacity
+    onPress={() => { rootProps.navigation.goBack(); }}
+  >
+    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+  </TouchableOpacity>,
+
+    headerRight: (
+      <TouchableOpacity
+        onPress={rootProps.navigation.state.params ? rootProps.navigation.state.params.onDone : () => {}}
+      >
+        <Text style={{ fontSize: 14, color: 'white' }}>Done</Text>
+      </TouchableOpacity>
+    ),
+  });
+
   constructor(props) {
     super(props);
     this.state = {
@@ -72,6 +96,14 @@ class TurnAwayScreen extends Component {
       selectedClient: null,
       services: [],
     };
+
+    this.props.navigation.setParams({ onDone: this.onDone.bind(this) });
+  }
+
+
+  onDone = () => {
+    alert('Not Implemented');
+    this.props.navigation.goBack();
   }
 
   handleAddService= () => {
@@ -109,7 +141,7 @@ class TurnAwayScreen extends Component {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
-    navigate('ClientsSearch', {
+    navigate('Clients', {
       actionType: 'update',
       dismissOnSelect: true,
       onChangeClient: this.handleClientSelection,

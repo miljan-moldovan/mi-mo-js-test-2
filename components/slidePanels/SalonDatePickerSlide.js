@@ -138,7 +138,15 @@ export default class SalonDatePickerSlide extends React.Component {
       selected: day.dateString,
     });
 
-    this.props.onDateSelected(moment(day.dateString));
+    const startDate = moment(day.dateString);
+
+    let endDate = startDate.clone();
+    endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
+
+    console.log('startDate: ', startDate.format('YYYY-MM-DD'));
+    console.log('endDate: ', endDate.format('YYYY-MM-DD'));
+
+    this.props.onDateSelected(startDate, endDate);
 
     setTimeout(() => {
       this.hidePanel();
@@ -152,7 +160,12 @@ export default class SalonDatePickerSlide extends React.Component {
       selected: day,
     });
 
-    this.props.onDateSelected(moment(day));
+    const startDate = moment(day);
+
+    let endDate = startDate.clone();
+    endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
+
+    this.props.onDateSelected(startDate, endDate);
 
     setTimeout(() => {
       this.hidePanel();

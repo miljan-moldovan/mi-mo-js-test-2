@@ -4,6 +4,9 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import apiWrapper from '../../../utilities/apiWrapper';
+import SalonAvatar from '../../../components/SalonAvatar';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -148,9 +151,20 @@ class ServiceSection extends Component {
   }
 
   renderProvider = (provider) => {
+    console.log(provider);
+    const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
+    const providerPhoto = provider ? (apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
+
     if (provider) {
-      return (
-        <Text style={styles.textData}>{`${provider.name} ${provider.lastName}`}</Text>
+      return (<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+        <SalonAvatar
+          wrapperStyle={{ marginRight: 5 }}
+          width={26}
+          image={{ uri: providerPhoto }}
+        />
+        <Text style={styles.textData}>{providerName}</Text>
+      </View>
+
       );
     }
     return (

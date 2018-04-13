@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 16,
     paddingRight: 16,
+
   },
   dataContainer: {
     flex: 1,
@@ -48,10 +49,7 @@ const renderClient = (client, onCrossPress) => {
   if (client) {
     return (
       <View style={styles.clientContainer}>
-        <Text style={styles.textData}>{client.name}</Text>
-        <TouchableOpacity onPress={onCrossPress}>
-          <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-        </TouchableOpacity>
+        <Text style={styles.textData}>{`${client.name} ${client.lastName}`}</Text>
       </View>
     );
   }
@@ -59,17 +57,17 @@ const renderClient = (client, onCrossPress) => {
 };
 
 const clientRow = props => (
-  <View style={styles.row} >
-    <Text style={styles.label}>Client</Text>
-    <View style={styles.dataContainer}>
-      <View style={styles.buttonStyle}>
-        { renderClient(props.client, props.onCrossPress) }
-        <TouchableOpacity onPress={props.onPress}>
-          <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-        </TouchableOpacity>
+  <TouchableOpacity style={{ flex: 1 }} onPress={props.onPress}>
+    <View style={styles.row} >
+      <Text style={styles.label}>Client</Text>
+      <View style={styles.dataContainer}>
+        <View style={styles.buttonStyle}>
+          {renderClient(props.client, props.onCrossPress)}
+        </View>
       </View>
+      <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 clientRow.propTypes = {

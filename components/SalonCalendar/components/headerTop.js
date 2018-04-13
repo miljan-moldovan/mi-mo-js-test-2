@@ -47,7 +47,7 @@ const renderItems = (item, key) => {
         //   <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
         // }
       />
-      <Text numberOfLines={1} style={styles.text}>{`${item.name} ${item.lastName[0]}.`}</Text>
+      <Text numberOfLines={1} style={styles.text}>{`${item.firstName} ${item.lastName[0]}.`}</Text>
 
     </View>
   )

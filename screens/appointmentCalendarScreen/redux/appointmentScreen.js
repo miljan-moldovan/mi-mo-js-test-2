@@ -5,7 +5,7 @@ import {
   GET_APPOINTMENTS_SUCCESS,
 } from '../../../actions/appointment';
 
-import { GET_PROVIDERS_SUCCESS } from '../../providersScreen/redux';
+import { GET_EMPLOYEES_SUCCESS } from '../../../actions/apptBookSetEmployeeOrder';
 
 import apiWrapper from '../../../utilities/apiWrapper';
 
@@ -89,10 +89,10 @@ const getProvidersCalendarError = error => ({
 
 const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
   dispatch({ type: GET_PROVIDERS_CALENDAR });
-  return apiWrapper.doRequest('getEmployees', {})
-    .then((providers) => {
-      dispatch({ type: GET_PROVIDERS_SUCCESS, data: { providers } });
-      return dispatch(getProvidersSchedule(providers, date, appointmentResponse));
+  return apiWrapper.doRequest('getEmployeesAppointmentOrder', {})
+    .then((employees) => {
+      dispatch({ type: GET_EMPLOYEES_SUCCESS, data: { employees } });
+      return dispatch(getProvidersSchedule(employees, date, appointmentResponse));
     })
     .catch(err => dispatch(getProvidersCalendarError(err)));
 };

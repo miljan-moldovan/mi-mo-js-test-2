@@ -17,7 +17,6 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
-
   postEmployeesAppointmentOrder: {
     path: 'Employees/AppointmentOrder',
     method: 'post',
@@ -27,6 +26,11 @@ const resources = {
     path: 'Appointment/:appointmentId/Resize',
     method: 'post',
     disableCache: true,
+  },
+  postAppointmentBookRebook: {
+    path: 'AppointmentBook/Rebook/:appointmentId',
+    method: 'post',
+    expiration: apiConstants.expiration,
   },
 };
 

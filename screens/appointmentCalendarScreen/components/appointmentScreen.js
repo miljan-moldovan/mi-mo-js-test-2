@@ -163,6 +163,9 @@ export default class AppointmentScreen extends Component {
 
     };
 
+    console.log('lalala: ', 'constructor');
+
+
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -171,9 +174,9 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-
-
   componentWillMount() {
+    console.log('lalala: ', this.state.selectedDate);
+
     if (!this.state.filterProvider) {
       this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
     }
@@ -190,9 +193,9 @@ export default class AppointmentScreen extends Component {
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
 
-  selectFilterProvider = filterProvider => {
-    this.props.navigation.setParams({ filterProvider })
-    this.setState({ filterProvider })
+  selectFilterProvider = (filterProvider) => {
+    this.props.navigation.setParams({ filterProvider });
+    this.setState({ filterProvider });
   };
 
   gotToSales = () => {
@@ -204,15 +207,18 @@ export default class AppointmentScreen extends Component {
   }
 
   gotToApptBook = () => {
-    this.setState({ visibleNewAppointment: true, visibleAppointment: false });
+    // this.setState({ visibleNewAppointment: true, visibleAppointment: false });
+    alert('Not Implemented');
   }
 
   gotToClients = () => {
-    this.props.navigation.navigate('Clients');
+    // this.props.navigation.navigate('Clients');
+    alert('Not Implemented');
   }
 
   gotToScoreCard = () => {
-    this.setState({ visibleAppointment: true, visibleNewAppointment: false });
+    // this.setState({ visibleAppointment: true, visibleNewAppointment: false });
+    alert('Not Implemented');
   }
 
   handleDateChange = (startDate, endDate) => {
@@ -231,7 +237,7 @@ export default class AppointmentScreen extends Component {
           dates.push(moment(startDate.add(1, 'days')));
         }
         this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
-        // debugger //eslint-disable-line
+        //
         this.props.appointmentCalendarActions.getProviderCalendar(
           this.props.navigation.state.params.filterProvider.id,
           startDate.format('YYYY-MM-DD'),
@@ -249,14 +255,14 @@ export default class AppointmentScreen extends Component {
       apptGridSettings, providerAppointments, isLoading, dates,
     } = this.props.appointmentScreenState;
     const { appointments } = this.props.appointmentState;
-    const { providers } = this.props.providersState;
-
+    const { employees } = this.props.providersState;
+debugger
     let calendar = (
       <SalonCalendar
         apptGridSettings={apptGridSettings}
         dataSource={providerAppointments}
         appointments={appointments}
-        providers={providers}
+        providers={employees}
         onDrop={this.props.appointmentActions.postAppointmentMove}
         onResize={this.props.appointmentActions.postAppointmentResize}
       />
@@ -314,8 +320,9 @@ export default class AppointmentScreen extends Component {
           onHide={() => {
             this.setState({ visible: false });
           }}
-          onDateSelected={(date) => {
-            this.setState({ selectedDate: date, visible: false });
+          onDateSelected={(startDate, endDate) => {
+            this.setState({ selectedDate: startDate, visible: false });
+            this.handleDateChange(startDate, endDate);
           }}
         />
 

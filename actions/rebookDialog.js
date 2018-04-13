@@ -22,7 +22,7 @@ const postRebookFailed = error => ({
 
 const postRebook = (appointmentId, rebook) => (dispatch) => {
   dispatch({ type: POST_REBOOK });
-  return apiWrapper.doRequest('postRebook', {
+  return apiWrapper.doRequest('postAppointmentBookRebook', {
     path: {
       appointmentId,
     },
