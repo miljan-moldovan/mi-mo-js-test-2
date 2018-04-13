@@ -197,11 +197,17 @@ export default class AppointmentScreen extends Component {
       this.props.navigation.setParams({ filterProvider: null });
       this.setState({ filterProvider: null }, () => this.handleDateChange(this.state.selectedDate));
     } else {
+      const { selectedDate, endDate, calendarPickerMode } = this.state;
       this.props.navigation.setParams({ filterProvider });
-      this.setState({ filterProvider }, () => this.handleDateChange(this.state.selectedDate));
+      if(calendarPickerMode === 'week') {
+        this.setState({ filterProvider }, () => this.handleDateChange(selectedDate, endDate, calendarPickerMode));
+      }
+      if(calendarPickerMode === 'day') {
+        this.setState({ filterProvider }, () => this.handleDateChange(this.state.selectedDate));
+      }
+
     }
-    // const { selectedDate, endDate, calendarPickerMode } = this.state;
-    // this.handleDateChange(selectedDate, endDate, calendarPickerMode);
+
   };
 
   gotToSales = () => {
@@ -256,8 +262,7 @@ export default class AppointmentScreen extends Component {
         this.props.appointmentCalendarActions.setProviderScheduleDates([moment(selectedDate)]);
       }
     }
-    this.setState({ selectedDate, endDate });
-    this.getCalendarData();
+    this.setState({ selectedDate, endDate }, ()=> this.getCalendarData());
   }
 
   getCalendarData = () => {
@@ -345,8 +350,9 @@ export default class AppointmentScreen extends Component {
           <ChangeViewFloatingButton handlePress={(isWeek) => {
             const calendarPickerMode = isWeek ? 'week' : 'day';
             const { selectedDate, endDate } = this.state;
+            const newEndDate = calendarPickerMode === 'day' ? selectedDate : endDate;
             this.setState({ calendarPickerMode });
-            this.handleDateChange(selectedDate, endDate, calendarPickerMode);
+            this.handleDateChange(selectedDate, newEndDate, calendarPickerMode);
             // this.handleDateChange(this.state.selectedDate, null, calendarPickerMode);
           }}
         /> : null
