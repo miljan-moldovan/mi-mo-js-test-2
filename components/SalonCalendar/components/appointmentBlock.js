@@ -5,11 +5,18 @@ import moment from 'moment';
 import ResizeButton from './resizeButtons';
 
 const colors = [
-  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
   { header: '#9e2fff', content: '#e2b2ff', border: '#b684ee' },
-  { header: '#00c9c7', content: '#83f2f0', border: '#1ad9d8' },
-  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
+  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
+  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
   { header: '#0dce00', content: '#9fef99', border: '#2adb1e' },
+  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
+  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
+  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
+  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
+  { header: '#00c9c7', content: '#83f2f0', border: '#1ad9d8' },
+  { header: '#0dce00', content: '#9fef99', border: '#2adb1e' },
+  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
+  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
 ];
 
 const styles = StyleSheet.create({
@@ -97,7 +104,7 @@ class appointmentBlock extends Component {
           this.state.pan.y._value - remainderY : this.state.pan.y._value + 30 - remainderY;
         const xOffset = 130 - remainderX > 130 / 2 ? dx - remainderX : dx + 130 - remainderX;
         const yOffset = 30 - remainderY > 30 / 2 ? dy - remainderY : dy + 30 - remainderY;
-        const providerIndex = Math.abs(xOffset + this.state.left)/130;
+        const providerIndex = Math.abs(xOffset + this.state.left) / 130;
         const provider = this.props.providers[providerIndex];
         const newFromTime = moment(fromTime, 'HH:mm').add((yOffset/30) * 15, 'minutes').format('HH:mm');
         this.props.onDrop(this.props.appointment.id,{
@@ -116,9 +123,14 @@ class appointmentBlock extends Component {
               toValue: 0
             }
           )
-        ]).start(() => this.setState({ isActive: false, left: this.state.left + xOffset, top: this.state.top._value + yOffset }), () => {
+        ]).start(() => this.setState({
+          isActive: false,
+          left: this.state.left + xOffset,
+          top: new Animated.Value(this.state.top._value + yOffset)
+        },
+        () => {
           this.props.onDrag(true);
-        });
+        }));
       },
     });
   }
@@ -196,7 +208,7 @@ class appointmentBlock extends Component {
         } else {
           const maxHeigth = this.props.apptGridSettings.numOfRow * 30 - this.props.calendarMeasure.height;
           const scrollVerticalBoundTop = (this.props.calendarMeasure.height
-            + this.offset.y) - boundLength - this.state.height - 40;
+            + this.offset.y) - boundLength - this.state.height._value - 40;
           const scrollVerticalBoundBottom = this.offset.y + boundLength + 40;
           const moveY = this.moveY + this.state.pan.y._offset;
           if (scrollVerticalBoundTop < moveY) {
@@ -215,9 +227,9 @@ class appointmentBlock extends Component {
               this.offset.y = 0;
             }
             const cordiantesY = this.state.pan.y._offset + this.state.pan.y._value + dy;
-            if (cordiantesY + this.state.height > maxHeigth + this.props.calendarMeasure.height) {
+            if (cordiantesY + this.state.height._value > maxHeigth + this.props.calendarMeasure.height) {
               dy = maxHeigth + this.props.calendarMeasure.height
-              - this.state.pan.y._offset - this.state.pan.y._value - this.state.height;
+              - this.state.pan.y._offset - this.state.pan.y._value - this.state.height._value;
             }
             if (cordiantesY < 40) {
               dy = 0;
@@ -261,26 +273,37 @@ class appointmentBlock extends Component {
     Animated.spring(this.state.top, { toValue: newTop }),
     Animated.spring(
       this.state.pan,
-      { toValue: { x: pan.x._value, y: newTop } }
-    )]).start(() => this.setState({ isResizeing: false }));
+      { toValue: { x: pan.x._value, y: newTop - pan.y._offset } }
+    )]).start(() => {
+      this.setState({ isResizeing: false });
+      this.props.onResize(this.props.appointment.id,{
+        newLength: (this.state.height._value / 30) * this.props.apptGridSettings.step,
+      });
+    });
   }
 
   handleResizeReleaseBottom = () => {
     const { height } = this.state;
     const remainder = this.state.height._value % 30;
     const newSize = remainder < 30 / 2 ? height._value - remainder : height._value + 30 - remainder;
-    Animated.spring(this.state.height, { toValue: newSize }).start(() => this.setState({ isResizeing: false }));
+    Animated.spring(this.state.height, { toValue: newSize }).start(() => {
+      this.setState({ isResizeing: false });
+      this.props.onResize(this.props.appointment.id,{
+        newLength: (this.state.height._value / 30) * this.props.apptGridSettings.step,
+      });
+    });
   }
 
   render() {
-    const color = Math.floor(Math.random() * 4);
     const {
       client,
       service,
       fromTime,
       toTime,
       id,
+      mainServiceColor
     } = this.props.appointment;
+    const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const cardWidth = 130;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
@@ -342,6 +365,12 @@ class appointmentBlock extends Component {
               onResize={this.resizeBottom}
               color={colors[color].header}
               position={{ left: 2, bottom: -12}}
+              apptGridSettings={this.props.apptGridSettings}
+              height={height._value}
+              calendarMeasure={this.props.calendarMeasure}
+              calendarOffset={this.props.calendarOffset}
+              onScrollY={this.props.onScrollY}
+              top={this.state.top._value}
             /> : null }
           {this.state.isActive ?
             <ResizeButton
@@ -350,6 +379,12 @@ class appointmentBlock extends Component {
               onResize={this.resizeTop}
               color={colors[color].header}
               position={{ right: 2, top: -12 }}
+              apptGridSettings={this.props.apptGridSettings}
+              height={height._value}
+              calendarMeasure={this.props.calendarMeasure}
+              calendarOffset={this.props.calendarOffset}
+              onScrollY={this.props.onScrollY}
+              top={this.state.top._value}
             /> : null }
         </Animated.View>
       </Animated.View>

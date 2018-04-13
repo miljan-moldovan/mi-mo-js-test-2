@@ -116,6 +116,10 @@ export default class SalonCalendar extends Component {
     this.props.onDrop(appointmentId, params);
   }
 
+  handleResize = (appointmentId, params) => {
+    this.props.onResize(appointmentId, params);
+  }
+
   render() {
     const { apptGridSettings, providers, dataSource } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
@@ -164,6 +168,7 @@ export default class SalonCalendar extends Component {
                     onScrollY={this.handleScrollY}
                     calendarOffset={calendarOffset}
                     onDrop={this.handleDrop}
+                    onResize={this.handleResize}
                   />);
             }
               return null;

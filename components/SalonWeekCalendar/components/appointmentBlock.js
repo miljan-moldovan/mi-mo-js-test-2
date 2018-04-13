@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   container: {
     position: 'absolute',
-    width: 50,
+    width: 45,
     overflow: 'hidden',
     borderRadius: 4,
     borderWidth: 1,

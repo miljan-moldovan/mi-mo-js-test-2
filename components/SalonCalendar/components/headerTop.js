@@ -42,10 +42,10 @@ const renderItems = (item, key) => {
         width={24}
         borderWidth={0}
         image={{ uri }}
-        hasBadge
-        badgeComponent={
-          <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
-        }
+        // hasBadge
+        // badgeComponent={
+        //   <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
+        // }
       />
       <Text numberOfLines={1} style={styles.text}>{`${item.name} ${item.lastName[0]}.`}</Text>
 

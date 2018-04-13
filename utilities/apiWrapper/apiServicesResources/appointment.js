@@ -4,7 +4,7 @@ const resources = {
   getAppointmentsByDate: {
     path: 'Appointment/:date',
     method: 'get',
-    expiration: apiConstants.expiration,
+    //expiration: apiConstants.expiration,
     disableCache: true,
   },
   postAppointmentMove: {
@@ -15,12 +15,18 @@ const resources = {
   getEmployeesAppointmentOrder: {
     path: 'Employees/AppointmentOrder',
     method: 'get',
-    expiration: apiConstants.expiration,
+    //expiration: apiConstants.expiration,
+    disableCache: true,
   },
   postEmployeesAppointmentOrder: {
     path: 'Employees/AppointmentOrder',
     method: 'post',
     expiration: apiConstants.expiration,
+  },
+  postAppointmentResize: {
+    path: 'Appointment/:appointmentId/Resize',
+    method: 'post',
+    disableCache: true,
   },
   postAppointmentBookRebook: {
     path: 'AppointmentBook/Rebook/:appointmentId',

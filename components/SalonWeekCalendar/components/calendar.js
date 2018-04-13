@@ -16,16 +16,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerCell: {
-    height: 30,
-    width: 130,
+    height: 40,
+    width: 50,
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
     borderBottomWidth: 1,
     backgroundColor: '#fff',
   },
   headerCellDisabled: {
-    height: 30,
-    width: 130,
+    height: 40,
+    width: 50,
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
     borderBottomWidth: 1,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   scrollView: {
-    marginLeft: 53,
+    marginLeft: 50,
   },
   fixedColumn: {
     position: 'absolute',
