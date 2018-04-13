@@ -41,12 +41,14 @@ const baseSize = 600,
 
 class CircularCountdown extends Component {
   getStrokeColor() {
-    const { estimatedTime, processTime, status } = this.props;
-
-    switch (status) {
+    const {
+      estimatedTime, processTime, itemStatus, queueType,
+    } = this.props;
+    debugger //eslint-disable-line
+    switch (itemStatus) {
       case QUEUE_ITEM_NOT_ARRIVED:
         if (processTime != null && estimatedTime != null) {
-          if (processTime > estimatedTime + 15 * 60) { return danger; } else if (processTime > estimatedTime + 60) { return warning; }
+          if (processTime > estimatedTime + 15) { return danger; } else if (processTime > estimatedTime + 60) { return warning; }
           return normal;
         }
         return normal;
@@ -55,22 +57,17 @@ class CircularCountdown extends Component {
         return normal;
       case QUEUE_ITEM_CHECKEDIN:
         // FIXME fix once appointment API is defined
-        // if (QueueType == QueueTypes.PosAppointment || estimatedTime == null)
-        // {
-        //   if (processTime > 30 * 60)
-        //     return danger;
-        //   else if (processTime > 15 * 60)
-        //     return warning;
-        //   else
-        //     return normal;
-        // }
-        // else
-        // {
-        if (processTime > estimatedTime + 15 * 60) { return danger; } else if (processTime > estimatedTime + 60) { return warning; }
+      //  if (QueueType == QueueTypes.PosAppointment || estimatedTime == null) {
+        if (queueType == 1 || estimatedTime == null) {
+          if (processTime > 30) { return danger; } else if (processTime > 15) { return warning; }
+          return normal;
+        }
+
+        if (processTime > estimatedTime + 15) { return danger; } else if (processTime > estimatedTime + 60) { return warning; }
         return normal;
-        // }
+
       case QUEUE_ITEM_INSERVICE:
-        if (estimatedTime - processTime <= -15 * 60) { return danger; } else if (estimatedTime - processTime <= 0) { return warning; }
+        if (estimatedTime - processTime <= -15) { return danger; } else if (estimatedTime - processTime <= 0) { return warning; }
         return normal;
         // not implemented in mobile
         // case QUEUE_ITEM_FINISHED:
@@ -86,13 +83,11 @@ class CircularCountdown extends Component {
   }
   render() {
     const {
-      size, style, status, // FIXME: use props once API ready - estimatedTime, processTime,
+      size, estimatedTime, processTime, style, itemStatus,
     } = this.props;
-    const estimatedTime = 9,
-      processTime = 21;
     const strokeWidth = baseStrokeWidth * size / baseSize;
     const radius = baseRadius * size / baseSize; // ((baseSize - 15 - 20) * size/baseSize - strokeWidth/2)/2;
-    const progress = 0.5; // FIXME: after api is ready processTime / estimatedTime;
+    const progress = processTime / estimatedTime;
     const delay = (estimatedTime - processTime) / 60;
 
     const fill = 'transparent',
@@ -123,12 +118,12 @@ class CircularCountdown extends Component {
             strokeLinecap={strokeLinecap}
           />
         </Svg>
-        <View style={[styles.overlayContainer, { width: size, height: size + 50 }]}>
+        <View style={[styles.overlayContainer, { width: size + 10, height: size + 50 }]}>
           <View style={[styles.processTime, { width: size, height: size }]}>
             <Text style={[styles.processTimeText, { fontSize: 16, marginBottom: -4 }]}>{processTime}</Text>
             <Text style={styles.processTimeText}>min</Text>
           </View>
-          <Text style={styles.estimatedTime}>{estimatedTime}min est.</Text>
+          <Text style={styles.estimatedTime}>{estimatedTime} min est.</Text>
         </View>
       </View>
     );

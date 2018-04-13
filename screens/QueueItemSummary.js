@@ -157,7 +157,7 @@ class QueueItemSummary extends Component {
   keyExtractor = (item, index) => index;
 
   renderItem =({ item }) => (
-    <ListItem service={item} />
+    <ListItem {...this.props} onDonePress={this.props.onDonePress} service={item} />
   )
 
   renderBtnContainer = () => {
@@ -361,7 +361,7 @@ class QueueItemSummary extends Component {
                 </View>
                 <View style={[styles.row, { marginTop: 8 }]}>
                   <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
-                  <Text style={styles.timeText}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')}</Text>
+                  <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
                   <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
                   <Text style={styles.remTimeText}>{'REM wait '}
                     <Text style={styles.underlineText}> {timeCheckedIn}m</Text>
