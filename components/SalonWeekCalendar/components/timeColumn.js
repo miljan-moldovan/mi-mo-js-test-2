@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 });
 
 const renderItem = (key, apptGridSettings) => (
-  <View key={key} style={{ position: 'absolute', top: key * 30 - 6, justifyContent: 'center', alignItems: 'center', height: 12, width: 38}}>
+  <View key={key} style={{ position: 'absolute', top: key * 40 - 6, justifyContent: 'center', alignItems: 'center', height: 12, width: 38}}>
     <Text
       style={styles.textStyle}
     >
@@ -30,7 +30,7 @@ const renderItem = (key, apptGridSettings) => (
 );
 
 const timeColumn = ({ apptGridSettings }) => (
-  <View style={[styles.container, { height: apptGridSettings.numOfRow * 30 }]}>
+  <View style={[styles.container, { height: apptGridSettings.numOfRow * 40 }]}>
     {times(apptGridSettings.numOfRow, index => renderItem(index, apptGridSettings))}
   </View>
 );

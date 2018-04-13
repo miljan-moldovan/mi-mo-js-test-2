@@ -21,9 +21,9 @@ const getProviderScheduleSuccess = (apptGridSettings, dictionary) => ({
   data: { apptGridSettings, dictionary },
 });
 
-const getProvidersScheduleSuccess = (apptGridSettings, dictionary) => ({
+const getProvidersScheduleSuccess = (apptGridSettings, dictionary, providers) => ({
   type: GET_APPOINTMENTS_CALENDAR_SUCCESS,
-  data: { apptGridSettings, dictionary },
+  data: { apptGridSettings, dictionary, providers },
 });
 
 const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch) => {
@@ -80,7 +80,7 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
         numOfRow: endTime.diff(startTime, 'minutes') / step,
         step,
       };
-      dispatch(getProvidersScheduleSuccess(apptGridSettings, response));
+      dispatch(getProvidersScheduleSuccess(apptGridSettings, response, providers));
     })
     .catch((err) => {
       console.log(err);
@@ -97,8 +97,8 @@ const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
   return apiWrapper.doRequest('getEmployees', { query: { maxCount: 10000 }})
     .then((employees) => {
       const providers = orderBy(employees, 'appointmentOrder', 'asc');
-      dispatch({ type: GET_PROVIDERS_SUCCESS, data: { providers } });
-      return dispatch(getProvidersSchedule(employees, date, appointmentResponse));
+      //dispatch({ type: GET_PROVIDERS_SUCCESS, data: { providers } });
+      return dispatch(getProvidersSchedule(providers, date, appointmentResponse));
     })
     .catch(err => dispatch(getProvidersCalendarError(err)));
 };
@@ -171,7 +171,6 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
       startTime,
       numOfRow: endTime.diff(startTime, 'minutes') / step,
     };
-    // debugger //eslint-disable-line
     dispatch(getProviderScheduleSuccess(apptGridSettings, dictionary));
   })
   .catch((err) => {
@@ -220,6 +219,7 @@ const initialState = {
     numOfRow: 0,
     step: 15,
   },
+  providers: [],
 };
 
 export default function appoinmentScreenReducer(state = initialState, action) {
@@ -250,6 +250,7 @@ export default function appoinmentScreenReducer(state = initialState, action) {
         error: null,
         apptGridSettings: data.apptGridSettings,
         providerAppointments: data.dictionary,
+        providers: data.providers,
       };
     default:
       return state;

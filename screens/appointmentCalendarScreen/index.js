@@ -6,7 +6,6 @@ import AppointmentScreen from './components/appointmentScreen';
 
 const mapStateToProps = state => ({
   appointmentScreenState: state.appointmentScreenReducer,
-  providersState: state.providersReducer,
   appointmentState: state.appointmentReducer,
 });
 
