@@ -168,7 +168,7 @@ class appointmentBlock extends Component {
     const cardWidth = 130;
     if (this.state.isActive) {
       if (this.moveX && this.moveY) {
-        if (Math.abs(this.moveX) >= Math.abs(this.moveY)) {
+        if (Math.abs(this.moveX/this.props.calendarMeasure.width) >= Math.abs(this.moveY/this.props.calendarMeasure.height)) {
           const maxWidth = this.props.providers.length * 130 - this.props.calendarMeasure.width;
           const scrollHorizontalBoundRight = (this.props.calendarMeasure.width
             + this.offset.x) - boundLength - cardWidth;
