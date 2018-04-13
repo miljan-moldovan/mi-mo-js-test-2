@@ -221,13 +221,35 @@ class Queue extends React.Component {
           </View>
         );
       default:
+        console.log(JSON.stringify(item));
+
+        let processTime = moment(item.processTime, 'hh:mm:ss'),
+          progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
+          estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
+          processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+            ? processTime.minutes() + processTime.hours() * 60
+            : 0,
+          progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+            ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+            : 0,
+          estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+            ? estimatedTime.minutes() + estimatedTime.hours() * 60
+            : 0;
+        console.log('processTime', moment(item.processTime, 'hh:mm:ss').isValid());
+        console.log('processTime', processMinutes);
+        console.log('progressMaxTime', moment(item.progressMaxTime, 'hh:mm:ss').isValid());
+        console.log('progressMaxMinutes', progressMaxMinutes);
+        console.log('estimatedTime', moment(item.estimatedTime, 'hh:mm:ss').isValid());
+        console.log('estimatedTimeMinutes', estimatedTimeMinutes);
+        console.log('status', item.status);
         return (
           <CircularCountdown
             size={46}
-            estimatedTime={item.estimatedTime}
-            processTime={item.processTime}
+            estimatedTime={progressMaxMinutes}
+            processTime={processMinutes}
             itemStatus={item.status}
             style={styles.circularCountdown}
+            queueType={item.queueType}
           />
         );
     }
@@ -248,7 +270,7 @@ class Queue extends React.Component {
     const { appointment } = this.state;
     this.hideDialog();
     if (appointment !== null) {
-      this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary });
+      setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
     }
   }
 
@@ -392,7 +414,7 @@ class Queue extends React.Component {
           </Text>
           <Text style={styles.serviceTimeContainer}>
             <Icon name="clockO" style={styles.serviceClockIcon} />
-            <Text style={styles.serviceTime}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')}</Text>  >  REM Wait <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
+            <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  >  REM Wait <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
             {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
           </Text>
 
@@ -472,6 +494,7 @@ class Queue extends React.Component {
           }
         />
         <QueueItemSummary
+          {...this.props}
           isVisible={this.state.isVisible}
           client={this.state.client}
           services={this.state.services}

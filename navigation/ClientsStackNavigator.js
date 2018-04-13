@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
-import { View, StackNavigator } from 'react-navigation';
-
+import { StackNavigator } from 'react-navigation';
+import { View } from 'react-native';
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
 
@@ -11,9 +11,6 @@ const ClientsStackNavigator = StackNavigator(
   {
     Clients: {
       screen: ClientsScreen,
-      navigationOptions: rootProps => ({
-        header: props => (<View />),
-      }),
     },
   },
   {

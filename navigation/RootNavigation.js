@@ -1,7 +1,8 @@
 // @flow
 import React from 'react';
-import { Image, View, Text } from 'react-native';
-import { StackNavigator, DrawerNavigator } from 'react-navigation';
+// import { Image, View, Text } from 'react-native';
+// import { StackNavigator, DrawerNavigator } from 'react-navigation';
+import { TabNavigator, TabBarBottom } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -9,8 +10,8 @@ import SalesScreen from './../screens/SalesScreen';
 
 import ScorecardScreen from './../screens/ScorecardScreen';
 import SettingsScreen from './../screens/SettingsScreen';
-
-import SideMenu from './../components/SideMenu';
+import Icon from './../components/UI/Icon';
+// import SideMenu from './../components/SideMenu';
 
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
@@ -22,17 +23,60 @@ import LoginStackNavigator from './LoginStackNavigator';
 import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
 
-const RootDrawerNavigator = DrawerNavigator(
+const RootDrawerNavigator = TabNavigator(
   {
     Queue: { screen: QueueStackNavigator },
-    Settings: { screen: SettingsScreen },
+    'Appt. Book': { screen: AppointmentStackNavigator },
     Clients: { screen: ClientsStackNavigator },
     Sales: { screen: SalesScreen },
-    Appointments: { screen: AppointmentStackNavigator },
     Scorecard: { screen: ScorecardScreen },
+    Settings: { screen: SettingsScreen },
   },
   {
-    contentComponent: SideMenu,
+
+    navigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, tintColor }) => {
+        const { routeName } = navigation.state;
+        let iconName;
+
+        if (routeName === 'Sales') {
+          iconName = 'lineChart';
+        } else if (routeName === 'Queue') {
+          iconName = 'signIn';
+        } else if (routeName === 'Clients') {
+          iconName = 'driversLicense';
+        } else if (routeName === 'Appt. Book') {
+          iconName = 'calendar';
+        } else if (routeName === 'Scorecard') {
+          iconName = 'clipboard';
+        } else if (routeName === 'Settings') {
+          iconName = 'bars';
+        }
+
+        // You can return any component that you like here! We usually use an
+        // icon component from react-native-vector-icons
+        return <Icon name={iconName} size={23} color={tintColor} type="solid" />;
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: '#2560C6',
+      inactiveTintColor: '#737A8D',
+      labelStyle: {
+        fontFamily: 'Roboto',
+        fontWeight: '500',
+        textAlign: 'center',
+        fontSize: 10,
+      },
+      style: {
+        backgroundColor: '#F2F2F2',
+        borderTopColor: '#9D9D9D',
+        borderTopWidth: 1,
+      },
+    },
+    tabBarComponent: TabBarBottom,
+    tabBarPosition: 'bottom',
+    animationEnabled: true,
+    swipeEnabled: false,
   },
 );
 

@@ -13,7 +13,7 @@ import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAp
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
 
-import BottomTabBar from '../../../components/bottomTabBar';
+// import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -199,15 +199,13 @@ export default class AppointmentScreen extends Component {
     } else {
       const { selectedDate, endDate, calendarPickerMode } = this.state;
       this.props.navigation.setParams({ filterProvider });
-      if(calendarPickerMode === 'week') {
+      if (calendarPickerMode === 'week') {
         this.setState({ filterProvider }, () => this.handleDateChange(selectedDate, endDate, calendarPickerMode));
       }
-      if(calendarPickerMode === 'day') {
+      if (calendarPickerMode === 'day') {
         this.setState({ filterProvider }, () => this.handleDateChange(this.state.selectedDate));
       }
-
     }
-
   };
 
   gotToSales = () => {
@@ -262,7 +260,7 @@ export default class AppointmentScreen extends Component {
         this.props.appointmentCalendarActions.setProviderScheduleDates([moment(selectedDate)]);
       }
     }
-    this.setState({ selectedDate, endDate }, ()=> this.getCalendarData());
+    this.setState({ selectedDate, endDate }, () => this.getCalendarData());
   }
 
   getCalendarData = () => {
@@ -355,7 +353,7 @@ export default class AppointmentScreen extends Component {
             this.handleDateChange(selectedDate, newEndDate, calendarPickerMode);
             // this.handleDateChange(this.state.selectedDate, null, calendarPickerMode);
           }}
-        /> : null
+          /> : null
       }
 
         <SalonDatePickerSlide
@@ -393,26 +391,28 @@ export default class AppointmentScreen extends Component {
           }}
         />
 
-        <BottomTabBar
-          tabs={[
-          {
-            icon: 'lineChart', title: 'Sales', callback: this.gotToSales,
-          },
-          {
-           icon: 'calendar', title: 'Appt. Book', callback: this.gotToApptBook,
-          },
-          {
-           icon: 'signIn', title: 'Queue', callback: this.gotToQueue,
-          },
-          {
-           icon: 'driversLicense', title: 'Clients', callback: this.gotToClients,
-          },
-          {
-           icon: 'clipboard', title: 'ScoreCard', callback: this.gotToScoreCard,
-          },
-        ]}
-        />
       </View>
     );
   }
 }
+
+
+// <BottomTabBar
+//   tabs={[
+//   {
+//     icon: 'lineChart', title: 'Sales', callback: this.gotToSales,
+//   },
+//   {
+//    icon: 'calendar', title: 'Appt. Book', callback: this.gotToApptBook,
+//   },
+//   {
+//    icon: 'signIn', title: 'Queue', callback: this.gotToQueue,
+//   },
+//   {
+//    icon: 'driversLicense', title: 'Clients', callback: this.gotToClients,
+//   },
+//   {
+//    icon: 'clipboard', title: 'ScoreCard', callback: this.gotToScoreCard,
+//   },
+// ]}
+// />
