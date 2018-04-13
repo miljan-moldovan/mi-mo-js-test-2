@@ -132,6 +132,7 @@ export default class SalonDatePickerBar extends Component {
 
     goToToday = () => {
       this.setState({ startDate: moment() });
+      return this.setSelectedDate(moment());
     }
 
     getInitialDate = () => {
