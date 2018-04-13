@@ -111,7 +111,7 @@ export default class ApptBookViewOptionsHeader extends React.Component {
 
       <TouchableOpacity
         style={styles.leftButton}
-        onPress={() => { props.navigation.state.params.handleGoBack(); }}
+        onPress={() => { this.props.rootProps.navigation.state.params.handleGoBack(); }}
       >
         <View style={styles.leftButtonContainer}>
           <Text style={styles.leftButtonText}>
@@ -124,7 +124,7 @@ export default class ApptBookViewOptionsHeader extends React.Component {
       </View>
       <TouchableOpacity
         style={styles.rightButton}
-        onPress={() => { props.navigation.state.params.handlePress(); }}
+        onPress={() => { this.props.rootProps.navigation.state.params.handlePress(); }}
       >
         <View style={styles.rightButtonContainer}>
           <Text style={styles.rightButtonText}>
