@@ -47,6 +47,7 @@ export default class App extends Component<{}> {
           'appointmentFormulasReducer', 'appointmentNotesReducer', 'queue',
           'providersReducer',
           'clientsReducer',
+          'appoinmentScreenReducer',
         ],
         // whitelist: ['auth']
       },

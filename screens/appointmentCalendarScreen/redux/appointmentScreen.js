@@ -1,20 +1,25 @@
 import moment from 'moment';
-import { groupBy, keyBy, times } from 'lodash';
+import { orderBy } from 'lodash';
 
 import {
   GET_APPOINTMENTS_SUCCESS,
 } from '../../../actions/appointment';
 
-import { GET_EMPLOYEES_SUCCESS } from '../../../actions/apptBookSetEmployeeOrder';
+import { GET_PROVIDERS_SUCCESS } from '../../providersScreen/redux';
 
 import apiWrapper from '../../../utilities/apiWrapper';
 
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
+export const GET_PROVIDERS_CALENDAR = 'appointmentCalendar/GET_PROVIDERS_CALENDAR';
+export const GET_PROVIDER_CALENDAR_SUCCESS = 'appointmentCalendar/GET_PROVIDER_CALENDAR_SUCCESS';
 export const GET_APPOINTMENTS_CALENDAR = 'appointmentCalendar/GET_APPOINTMENTS';
 export const GET_APPOINTMENTS_CALENDAR_SUCCESS = 'appointmentCalendar/GET_APPOINTMENTS_CALENDAR_SUCCESS';
 export const GET_APPOINTMENTS_CALENDAR_FAILED = 'appointmentCalendar/GET_APPOINTMENTS_FAILED';
-export const GET_PROVIDERS_CALENDAR = 'appointmentCalendar/GET_PROVIDERS';
-export const GET_PROVIDERS_CALENDAR_FAILED = 'appointmentCalendar/GET_PROVIDERS_FAILED';
+
+const getProviderScheduleSuccess = (apptGridSettings, dictionary) => ({
+  type: GET_PROVIDER_CALENDAR_SUCCESS,
+  data: { apptGridSettings, dictionary },
+});
 
 const getProvidersScheduleSuccess = (apptGridSettings, dictionary) => ({
   type: GET_APPOINTMENTS_CALENDAR_SUCCESS,
@@ -83,15 +88,16 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
 };
 
 const getProvidersCalendarError = error => ({
-  type: GET_PROVIDERS_CALENDAR_FAILED,
+  type: w_FAILED,
   data: { error },
 });
 
 const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
   dispatch({ type: GET_PROVIDERS_CALENDAR });
-  return apiWrapper.doRequest('getEmployeesAppointmentOrder', {})
+  return apiWrapper.doRequest('getEmployees', { query: { maxCount: 10000 }})
     .then((employees) => {
-      dispatch({ type: GET_EMPLOYEES_SUCCESS, data: { employees } });
+      const providers = orderBy(employees, 'appointmentOrder', 'asc');
+      dispatch({ type: GET_PROVIDERS_SUCCESS, data: { providers } });
       return dispatch(getProvidersSchedule(employees, date, appointmentResponse));
     })
     .catch(err => dispatch(getProvidersCalendarError(err)));
@@ -99,6 +105,7 @@ const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
 
 const getProviderCalendar = (id, startDate, endDate) => (dispatch) => {
   dispatch({ type: GET_PROVIDERS_CALENDAR });
+  dispatch({ type: GET_APPOINTMENTS_CALENDAR });
   return apiWrapper.doRequest('getEmployeeAppointments', {
     path: { id, dateFrom: startDate, dateTo: endDate },
   })
@@ -113,7 +120,7 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
   path: { id, startDate, endDate },
 })
   .then((response) => {
-    const indexedArray = [];
+    const dictionary = {};
 
     let startTime;
     let endTime;
@@ -124,9 +131,11 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
       schedule = response[i];
       if (schedule) {
         schedule.provider = { id };
-        if (!indexedArray[moment(schedule.date).format('YYYY-MM-DD')]) {
-          indexedArray[moment(schedule.date).format('YYYY-MM-DD')] = schedule;
+        if (!dictionary[moment(schedule.date).format('YYYY-MM-DD')]) {
+          dictionary[moment(schedule.date).format('YYYY-MM-DD')] = schedule;
         }
+        // dictionary[moment(schedule.date).format('YYYY-MM-DD')].push(schedule);
+
         if (schedule.scheduledIntervals && schedule.scheduledIntervals.length > 0) {
           newTime = moment(schedule.scheduledIntervals[0].start, 'HH:mm');
           startTime = startTime && startTime.isBefore(newTime) ? startTime : newTime;
@@ -138,7 +147,7 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
     for (let i = 0; i < appointmentResponse.length; i += 1) {
       appointment = appointmentResponse[i];
       if (appointment.employee) {
-        schedule = indexedArray[moment(appointment.date).format('YYYY-MM-DD')];
+        schedule = dictionary[moment(appointment.date).format('YYYY-MM-DD')];
         if (schedule) {
           if (!schedule.appointments) {
             schedule.appointments = [];
@@ -149,13 +158,21 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
     }
 
     const step = 30;
+    if (!startTime) {
+      startTime = initialState.apptGridSettings.startTime;
+    }
+    if (!endTime) {
+      endTime = initialState.apptGridSettings.endTime;
+    }
+
     const apptGridSettings = {
-      startTime,
-      endTime,
-      numOfRow: endTime.diff(startTime, 'minutes') / step,
       step,
+      endTime,
+      startTime,
+      numOfRow: endTime.diff(startTime, 'minutes') / step,
     };
-    dispatch(getProvidersScheduleSuccess(apptGridSettings, indexedArray));
+    // debugger //eslint-disable-line
+    dispatch(getProviderScheduleSuccess(apptGridSettings, dictionary));
   })
   .catch((err) => {
     console.log(err);
@@ -196,6 +213,7 @@ const initialState = {
   error: null,
   dates: [moment()],
   providerAppointments: [],
+  providerSchedule: [],
   apptGridSettings: {
     startTime: moment('07:00', 'HH:mm'),
     endTime: moment('21:00', 'HH:mm'),
@@ -216,6 +234,14 @@ export default function appoinmentScreenReducer(state = initialState, action) {
       return {
         ...state,
         isLoading: true,
+      };
+    case GET_PROVIDER_CALENDAR_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        apptGridSettings: data.apptGridSettings,
+        providerSchedule: data.dictionary,
       };
     case GET_APPOINTMENTS_CALENDAR_SUCCESS:
       return {

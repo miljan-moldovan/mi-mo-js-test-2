@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headerCell: {
-    height: 40,
+    height: 30,
     width: 323,
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   headerCellDisabled: {
-    height: 40,
+    height: 30,
     width: 323,
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
@@ -31,6 +31,7 @@ class CalendarCells extends Component {
   }
 
   renderCell = (providerScheudle, hour, key) => {
+    debugger
     const time = moment(this.props.apptGridSettings.startTime, 'HH:mm').add(hour * 30, 'm');
     const style = providerScheudle && providerScheudle.scheduledIntervals
     && providerScheudle.scheduledIntervals.length > 0
@@ -43,10 +44,9 @@ class CalendarCells extends Component {
 
   renderColumn = hour => (
     <View style={styles.row} key={hour}>
-      {this.props.dates.map(date =>
-        this.renderCell(this.props.dataSource[moment(date).format('YYYY-MM-DD')], hour, Math.random()))}
+      {this.renderCell(this.props.dataSource[moment(this.props.dates[0]).format('YYYY-MM-DD')], hour, `${moment(this.props.dates[0]).format('YYYY-MM-DD')}${hour}`)}
     </View>
-  );
+  )
 
   render() {
     const { apptGridSettings } = this.props;

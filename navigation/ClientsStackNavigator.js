@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { StackNavigator } from 'react-navigation';
+import { View, StackNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';

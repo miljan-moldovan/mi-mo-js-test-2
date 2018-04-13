@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
   },
   fixedColumn: {
     position: 'absolute',
-    paddingTop: 40,
     backgroundColor: 'white',
     flexDirection: 'row',
     zIndex: 1,
@@ -55,7 +54,7 @@ export default class SalonDayCalendar extends Component {
     super(props);
 
     this.state = {
-      headerLeftY: new Animated.Value(1),
+      headerLeftY: new Animated.Value(0),
       isEnabled: true,
       calendarMeasure: {
         x: 0, y: 0, width: 0, height: 0,
@@ -150,7 +149,6 @@ export default class SalonDayCalendar extends Component {
             ref={(scrollView) => { this.verticalView = scrollView; }}
             onScroll={this.handleScrollVertical}
             scrollEventThrottle={50}
-            stickyHeaderIndices={[0]}
             bounces={false}
             scrollEnabled={this.state.isEnabled}
             removeClippedSubviews={false}
