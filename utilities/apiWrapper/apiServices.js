@@ -23,7 +23,7 @@ const conf = {
   ...employees.resources,
   ...product.resources,
   ...salon.resources,
-  ...salon.turnAway,
+  ...turnAway.resources,
 };
 
 export default {

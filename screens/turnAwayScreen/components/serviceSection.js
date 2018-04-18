@@ -125,6 +125,7 @@ class ServiceSection extends Component {
   handleProviderSelection = (provider, service, index) => {
     const newService = service;
     newService.provider = provider;
+    newService.myEmployeeId = provider.id;
     this.props.onUpdate(index, newService);
   }
 
@@ -139,6 +140,7 @@ class ServiceSection extends Component {
   handleServiceSelection = (data, service, index) => {
     const newService = service;
     newService.service = data;
+    newService.myServiceId = data.id;
     this.props.onUpdate(index, newService);
   }
 
@@ -210,19 +212,19 @@ class ServiceSection extends Component {
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.start, service, index, 'start')}>
+        <TouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'start')}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
             <View style={styles.dataContainer}>
-              <Text style={styles.textData}>{service.start.format('hh:mm a')}</Text>
+              <Text style={styles.textData}>{service.fromTime.format('hh:mm a')}</Text>
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.end, service, index, 'end')}>
+        <TouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'end')}>
           <View style={styles.lastInnerRow}>
             <Text style={styles.label}>End</Text>
             <View style={styles.dataContainer}>
-              <Text style={styles.textData}>{service.end.format('hh:mm a')}</Text>
+              <Text style={styles.textData}>{service.toTime.format('hh:mm a')}</Text>
             </View>
           </View>
         </TouchableOpacity>

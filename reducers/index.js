@@ -20,6 +20,7 @@ import productsReducer from './products';
 import appointmentReducer from './appointment';
 import apptBookViewOptionsReducer from './apptBookViewOptions';
 import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
+import turnAway from './turnAway';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -43,4 +44,5 @@ export default combineReducers({
   appointmentScreenReducer,
   apptBookViewOptionsReducer,
   apptBookSetEmployeeOrderReducer,
+  turnAway,
 });

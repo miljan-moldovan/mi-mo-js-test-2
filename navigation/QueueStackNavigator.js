@@ -48,6 +48,8 @@ import AppointmentScreen from '../screens/AppointmentsScreen.js';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from './../screens/apptBookViewOptions';
 
+import SettingsScreen from './../screens/SettingsScreen';
+
 const QueueStackNavigator = StackNavigator(
   {
     Main: {
@@ -171,6 +173,7 @@ const QueueStackNavigator = StackNavigator(
     TurnAway: {
       screen: TurnAwayScreen,
     },
+    Settings: { screen: SettingsScreen },
   },
   {
     navigationOptions: {

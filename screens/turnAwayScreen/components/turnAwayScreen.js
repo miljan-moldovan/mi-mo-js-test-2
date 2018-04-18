@@ -5,6 +5,7 @@ import moment from 'moment';
 import DatePicker from '../../../components/modals/SalonDatePicker';
 import ClientRow from './clientRow';
 import ServiceSection from './serviceSection';
+import fetchFormCache from '../../../utilities/fetchFormCache';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +92,7 @@ class TurnAwayScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: moment().format('DD MMMM YYYY'),
+      date: moment(),
       isModalVisible: false,
       selectedClient: null,
       services: [],
@@ -101,17 +102,62 @@ class TurnAwayScreen extends Component {
   }
 
 
-  onDone = () => {
-    alert('Not Implemented');
-    this.props.navigation.goBack();
+  componentWillMount() {
+    // let note = this.state.note;
+    //
+    // const cachedForm = fetchFormCache('TurnAwayScreen', this.props.formCache);
+    //
+    // if (cachedForm) {
+    //   note = cachedForm;
+    // }
+    //
+    // this.setState({
+    //   note,
+    // });
+
+
+  }
+
+  isTurnAwayValid = () => true
+
+  onDone() {
+    if (this.isTurnAwayValid()) {
+      const services = [];
+      for (let i = 0; i < this.state.services.length; i++) {
+        const service = this.state.services[i];
+        delete service.service;
+        delete service.provider;
+        service.toTime = service.toTime.format();
+        service.fromTime = service.fromTime.format();
+        services.push(service);
+      }
+
+      const turnAway = {
+        date: this.state.date.format('YYYY-MM-DD'),
+        reasonCode: 'providerUnavail',
+        reason: 'string',
+        myClientId: this.state.selectedClient.id,
+        isAppointmentBookTurnAway: true,
+        services,
+      };
+
+      this.props.turnAwayActions.postTurnAway(turnAway)
+        .then((response) => {
+          // this.getNotes();
+        }).catch((error) => {
+          console.log(error);
+        });
+    } else {
+      alert('Please fill all the fields');
+    }
   }
 
   handleAddService= () => {
     const service = {
       provider: null,
       service: null,
-      start: moment(),
-      end: moment().add(1, 'hours'),
+      fromTime: moment(),
+      toTime: moment().add(1, 'hours'),
     };
     const { services } = this.state;
     services.push(service);
@@ -135,7 +181,7 @@ class TurnAwayScreen extends Component {
   }
 
   handleSelectDate = (data) => {
-    this.setState({ date: moment(data).format('DD MMMM YYYY'), isModalVisible: false });
+    this.setState({ date: moment(data), isModalVisible: false });
   }
 
   handlePressClient = () => {
@@ -163,7 +209,7 @@ class TurnAwayScreen extends Component {
         <View style={[styles.row, styles.rowFirst]}>
           <Text style={styles.label}>Date</Text>
           <View style={styles.dataContainer}>
-            <Text onPress={this.handleDateModal} style={styles.textData}>{this.state.date}</Text>
+            <Text onPress={this.handleDateModal} style={styles.textData}>{this.state.date.format('DD MMMM YYYY')}</Text>
           </View>
         </View>
         <ClientRow

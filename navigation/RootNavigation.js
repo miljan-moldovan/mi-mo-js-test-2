@@ -26,11 +26,11 @@ import ClientsStackNavigator from './ClientsStackNavigator';
 const RootDrawerNavigator = TabNavigator(
   {
     Queue: { screen: QueueStackNavigator },
+    Sales: { screen: SalesScreen },
     'Appt. Book': { screen: AppointmentStackNavigator },
     Clients: { screen: ClientsStackNavigator },
-    Sales: { screen: SalesScreen },
     Scorecard: { screen: ScorecardScreen },
-    Settings: { screen: SettingsScreen },
+  //  Settings: { screen: SettingsScreen },
   },
   {
 

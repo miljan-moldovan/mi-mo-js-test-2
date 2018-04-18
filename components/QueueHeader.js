@@ -15,7 +15,7 @@ import {
   Animated,
   Dimensions,
   ActionSheetIOS,
-  TextInput
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import Icon from './UI/Icon';
@@ -23,16 +23,20 @@ import Icon from './UI/Icon';
 
 import apiWrapper from '../utilities/apiWrapper';
 
-const QueueNavButton = ({ icon, onPress, style }) => (
-  <TouchableOpacity onPress={onPress} style={[{height: '100%', justifyContent: 'center'},style]}>
-    <Icon name={icon} type="light" style={styles.navButton} />
+const QueueNavButton = ({
+  icon, onPress, style, type,
+}) => (
+  <TouchableOpacity onPress={onPress} style={[{ justifyContent: 'flex-end' }, style]}>
+    <View style={{ height: 20, width: 20 }}>
+      <Icon name={icon} type={type} style={styles.navButton} />
+    </View>
   </TouchableOpacity>
 );
 
 export default class QueueHeader extends React.Component {
   state = {
     searchMode: false,
-    searchText: ''
+    searchText: '',
   }
   onActionPress = () => {
     const { navigation } = this.props;
@@ -63,30 +67,48 @@ export default class QueueHeader extends React.Component {
   onChangeSearchText = (searchText: String) => this.props.onChangeSearchText(searchText);
   render() {
     return this.props.searchMode ? (
-        <SafeAreaView style={styles.headerContainer}>
+      <SafeAreaView style={styles.headerContainer}>
 
-            <View style={styles.searchContainer}>
-              {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
-              <Icon name="search" type="light" style={styles.searchIcon} />
-              <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
-            </View>
-            <TouchableOpacity onPress={this.onSearchCancel}>
-              <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginLeft: 6 }]}>Cancel</Text>
-            </TouchableOpacity>
+        <View style={styles.searchContainer}>
+          {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
+          <Icon name="search" type="light" style={styles.searchIcon} />
+          <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
+        </View>
+        <TouchableOpacity onPress={this.onSearchCancel}>
+          <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginLeft: 6 }]}>Cancel</Text>
+        </TouchableOpacity>
 
-        </SafeAreaView>
-      ) : (
-        <SafeAreaView style={[styles.headerContainer]}>
-          <QueueNavButton icon="bars" style={{marginLeft: 6, marginRight: 'auto', alignSelf: 'center', height: '100%'}} />
-          <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', height: '100%', bottom: 0}}>
-            <Text style={styles.headerTitle}>Queue</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 12, marginLeft: 'auto', height: '100%', top: 3 }}>
-            <QueueNavButton icon="ellipsisH" onPress={this.onActionPress} style={{paddingLeft: 7, paddingRight: 10, marginRight: 5}} />
-            <QueueNavButton icon="search" onPress={this.onSearchPress} style={{paddingHorizontal: 6, marginRight: -4 }} />
-          </View>
-        </SafeAreaView>
-      )
+      </SafeAreaView>
+    ) : (
+      <SafeAreaView style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
+        <QueueNavButton
+          type="regular"
+          icon="bars"
+          style={{
+ alignItems: 'flex-start', flex: 1, paddingLeft: 8, paddingTop: 5,
+}}
+          onPress={() => {
+            const { navigation } = this.props;
+            navigation.navigate('Settings');
+          }}
+        />
+        <View style={{
+ justifyContent: 'flex-end', alignItems: 'center', flex: 1, paddingRight: 6,
+}}
+        >
+          <Text style={styles.headerTitle}>Queue</Text>
+        </View>
+        <View style={{
+ flexDirection: 'row',
+justifyContent: 'flex-end',
+flex: 1,
+}}
+        >
+          <QueueNavButton type="solid" icon="ellipsisH" onPress={this.onActionPress} style={{ marginRight: 20, paddingTop: 5 }} />
+          <QueueNavButton type="regular" icon="search" onPress={this.onSearchPress} style={{ marginRight: 2, paddingTop: 5 }} />
+        </View>
+      </SafeAreaView>
+    );
   }
 }
 /*
@@ -127,7 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#fff',
     fontWeight: '500',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   searchContainer: {
     borderRadius: 10,
@@ -138,12 +160,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // justifyContent: 'center',
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
   },
   searchIcon: {
     marginLeft: 7,
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14
+    fontSize: 14,
   },
   search: {
     margin: 7,
@@ -156,7 +178,7 @@ const styles = StyleSheet.create({
   },
   navButton: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 16,
     // marginLeft: 10,
   },
 });

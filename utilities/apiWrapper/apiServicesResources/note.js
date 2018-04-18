@@ -19,7 +19,8 @@ const resources = {
   getClientNote: {
     path: 'Client/:clientId/Note/:id',
     method: 'get',
-    expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
+    disableCache: true,
   },
   putClientNote: {
     path: 'Client/:clientId/Note/:id',
