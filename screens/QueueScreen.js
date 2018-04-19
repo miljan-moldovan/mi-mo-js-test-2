@@ -2,24 +2,15 @@
 import React from 'react';
 import {
   Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   Alert,
-  Modal,
-  FlatList,
-  RefreshControl,
-  Animated,
   Dimensions,
-  ActionSheetIOS,
-  TextInput,
+  Animated,
 } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 
-import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
@@ -30,12 +21,9 @@ import * as settingsActions from '../actions/settings.js';
 import checkinActions from '../actions/checkin';
 import serviceActions from '../actions/service';
 import walkInActions from '../actions/walkIn';
-import SideMenuItem from '../components/SideMenuItem';
 import Queue from '../components/Queue';
 import QueueHeader from '../components/QueueHeader';
 import Icon from '../components/UI/Icon';
-
-import FloatingButton from '../components/FloatingButton';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
 
@@ -84,15 +72,23 @@ class QueueScreen extends React.Component {
       client: null,
       provider: null,
     },
+    colorAnimActive: new Animated.Value(0),
+    colorAnimInactive: new Animated.Value(0),
   }
   searchWaitingRef = null;
   searchServicingRef = null;
+
+  constructor(props) {
+    super(props);
+    this.animateText();
+  }
 
   componentWillMount() {
     this.props.actions.receiveQueue();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     // this._refreshData();
   }
+
   componentDidMount() {
     this.props.navigation.setParams({
       onChangeSearchMode: this.onChangeSearchMode,
@@ -103,7 +99,6 @@ class QueueScreen extends React.Component {
   }
 
   onChangeSearchMode = (searchMode) => {
-    console.log('onChangeSearchMode', searchMode);
     this.setState({ searchMode, searchType: searchMode ? SEARCH_CLIENTS : '', searchText: '' }, () => this.props.navigation.setParams({ searchMode, searchText: '' }));
   }
   onChangeSearchText = (searchText) => {
@@ -111,7 +106,6 @@ class QueueScreen extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.error) {
-      console.log('QueueScreen.componentWillReceiveProps error', nextProps.error);
       Alert.alert('Error', nextProps.error.toString());
     }
   }
@@ -127,25 +121,36 @@ class QueueScreen extends React.Component {
     // setTimeout(() => this.setState({ refreshing: false }), 500);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, focused }) =>
-    (
+  _renderLabel = ({ position, navigationState }) => ({ route, focused }) => {
+    const interpolateColorActive = this.state.colorAnimActive.interpolate({
+      inputRange: [0, 200],
+      outputRange: ['#FFFFFF', '#1963CE'],
+    });
+
+    const interpolateColorInactive = this.state.colorAnimInactive.interpolate({
+      inputRange: [0, 200],
+      outputRange: ['#1963CE', '#FFFFFF'],
+    });
+
+    return (
       <View style={styles.tabLabelContainer}>
         <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
-          <Text style={[styles.tabQueueCounterText, focused ? null : { color: '#fff' }]}>
+          <Animated.Text style={[styles.tabQueueCounterText, { color: focused ? interpolateColorActive : interpolateColorInactive }]}>
             {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
-          </Text>
+          </Animated.Text>
         </View>
-        <Text style={{
+        <Animated.Text style={{
             fontFamily: 'Roboto-Medium',
             fontSize: 12,
-            color: focused ? '#115ECD' : 'white',
+            color: focused ? interpolateColorActive : interpolateColorInactive,
           }}
         >
           {route.title}
-        </Text>
+        </Animated.Text>
       </View>
     );
-    // }
+  };
+  // }
   _renderBar = props => (
     <View>
       <TabBar
@@ -154,10 +159,11 @@ class QueueScreen extends React.Component {
         style={styles.tabContainer}
         renderLabel={this._renderLabel(props)}
         indicatorStyle={styles.indicator}
+        onTabPress={this.animateText}
       />
       <View style={styles.summaryBar}>
         <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
-        <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>25m</Text> Est. Wait</Text>
+        <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>25m </Text> Est. Wait</Text>
       </View>
     </View>
   )
@@ -180,11 +186,9 @@ class QueueScreen extends React.Component {
     }
   }
   handleSearchClients = () => {
-    console.log('handleSearchClients');
     this.setState({ searchType: SEARCH_CLIENTS });
   }
   handleSearchProviders = () => {
-    console.log('handleSearchProviders');
     this.setState({ searchType: SEARCH_PROVIDERS });
   }
   updateSearchWaitingCount = searchWaitingCount => this.setState({ searchWaitingCount });
@@ -266,8 +270,6 @@ class QueueScreen extends React.Component {
   _handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
-    // this.props.walkInActions.setEstimatedTime(17);
-    // navigate('WalkIn');
     this.setState({
       newAppointment: {
         client: null,
@@ -358,6 +360,20 @@ class QueueScreen extends React.Component {
     this.setState({ walkoutText: ev.nativeEvent.text });
   };
 
+  animateText = () => {
+    Animated.loop(Animated.timing(this.state.colorAnimActive, {
+      toValue: 200,
+      duration: 2000,
+    }), { iterations: 1 }).start();
+
+
+    Animated.loop(Animated.timing(this.state.colorAnimInactive, {
+      toValue: 200,
+      duration: 2000,
+    }), { iterations: 1 }).start();
+  }
+
+
   render() {
     // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
     // console.log('QueueScreen.render', this.props.settings);
@@ -376,6 +392,7 @@ class QueueScreen extends React.Component {
           renderHeader={this._renderBar}
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
+
           // swipeEnabled={false}
         />
         {

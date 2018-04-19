@@ -123,7 +123,12 @@ class ServicesScreen extends React.Component {
 
   getServices = (callback) => {
     this.props.servicesActions.setShowCategoryServices(false);
-    this.props.servicesActions.getServices().then((response) => {
+
+    const employeeId = this.props.navigation.state.params ? this.props.navigation.state.params.employeeId : null;
+
+    const params = employeeId ? { query: { employeeId } } : {};
+
+    this.props.servicesActions.getServices(params).then((response) => {
       if (response.data.error) {
         this.goBack();
       } else {

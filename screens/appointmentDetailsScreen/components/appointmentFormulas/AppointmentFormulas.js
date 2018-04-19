@@ -33,19 +33,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
     flexDirection: 'column',
   },
-  notesScroller: {
+  formulasScroller: {
     flex: 9,
     backgroundColor: '#F1F1F1',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
   },
-  noteHeaderLeft: {
+  formulaHeaderLeft: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     flex: 1,
   },
-  noteHeaderRight: {
+  formulaHeaderRight: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     flex: 1,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  notesContainer: {
+  formulasContainer: {
     paddingTop: 0,
     backgroundColor: 'transparent',
     flex: 1,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  noteTags: {
+  formulaTags: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     minHeight: 40,
     marginBottom: 40,
   },
-  noteText: {
+  formulaText: {
     color: '#2E3032',
     fontSize: 12,
     fontFamily: 'Roboto',
@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 16,
   },
-  noteAuthor: {
+  formulaAuthor: {
     color: '#2F3142',
     fontSize: 12,
     fontFamily: 'Roboto',
   },
-  noteBy: {
+  formulaBy: {
     paddingHorizontal: 5,
     color: '#4D5067',
     fontSize: 12,
@@ -248,25 +248,6 @@ export default class AppointmentFormulas extends Component {
     return existing;
   }
 
-  // filterNotes(searchText) {
-  //   if (searchText && searchText.length > 0) {
-  //     const criteria = [
-  //       { Field: 'provider', Values: [searchText.toLowerCase()] },
-  //       { Field: 'service', Values: [searchText.toLowerCase()] },
-  //       { Field: 'category', Values: [searchText.toLowerCase()] },
-  //       { Field: 'date', Values: [searchText.toLowerCase()] },
-  //     ];
-
-  //     const filtered = AppointmentFormulas.flexFilter(
-  //       this.props.appointmentFormulasState.formulas,
-  //       criteria,
-  //     );
-
-  //     this.props.appointmentFormulasActions.setFilteredFormulas(filtered);
-  //   } else {
-  //     this.props.appointmentFormulasActions.setFilteredFormulas(this.props.appointmentFormulasState.formulas);
-  //   }
-  // }
 
   onPressTagFilter = (value) => {
     const filterTypes = this.state.activeCategories;
@@ -277,12 +258,13 @@ export default class AppointmentFormulas extends Component {
       filterTypes.push(value);
     }
     this.setState({ activeCategories: filterTypes });
-    this.filterNotes(null, this.state.showDeleted);
+    this.filterFormulas(null, this.state.showDeleted);
   }
 
-  filterNotes(searchText, showDeleted) {
+  filterFormulas(searchText, showDeleted) {
+    debugger //eslint-disable-line
     const baseFormulas = showDeleted ? this.props.appointmentFormulasState.formulas :
-      this.props.appointmentFormulasState.formulas.filter(el => el.active === 1);
+      this.props.appointmentFormulasState.formulas.filter(el => !el.isDeleted);
 
     let tagFormulas = [];
     if (searchText && searchText.length > 0) {
@@ -338,7 +320,7 @@ export default class AppointmentFormulas extends Component {
               fontColor="#727A8F"
               borderColor="transparent"
               backgroundColor="rgba(142, 142, 147, 0.24)"
-              onChangeText={searchText => this.filterNotes(searchText)}
+              onChangeText={searchText => this.filterFormulas(searchText)}
             />
           </View>
           <View style={styles.tagsBar} >
@@ -368,7 +350,7 @@ export default class AppointmentFormulas extends Component {
             ))}
           </View>
         </View>
-        <View style={styles.notesScroller}>
+        <View style={styles.formulasScroller}>
           <ScrollView style={{ alignSelf: 'stretch' }}>
             <FlatList
               extraData={this.props}
@@ -380,8 +362,8 @@ export default class AppointmentFormulas extends Component {
                   key={index}
                   backgroundColor="#FFFFFF"
                   headerChildren={[
-                    <View style={styles.noteTags} key={Math.random().toString()}>
-                      <View style={styles.noteHeaderLeft}>
+                    <View style={styles.formulaTags} key={Math.random().toString()}>
+                      <View style={styles.formulaHeaderLeft}>
                         <SalonDateTxt
                           dateFormat="MMM. DD YYYY"
                           value={item.date}
@@ -407,8 +389,8 @@ export default class AppointmentFormulas extends Component {
                     </View>]}
                   bodyChildren={[
                     <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
-                      <Text style={styles.noteText}>
-                        <Text style={[styles.noteText, styles.boldText]}>{item.service}</Text>
+                      <Text style={styles.formulaText}>
+                        <Text style={[styles.formulaText, styles.boldText]}>{item.service}</Text>
                         <Text style={styles.italicText}> by</Text> {item.provider}
                       </Text>
                       <Text style={styles.formulaText}>Sport Clip Haircuts of Dallas/Knox St</Text>

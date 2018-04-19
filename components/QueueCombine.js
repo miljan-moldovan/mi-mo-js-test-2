@@ -15,7 +15,7 @@ import {
   RefreshControl,
   TouchableHighlight,
   LayoutAnimation,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -27,16 +27,37 @@ import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEU
 
 import type { QueueItem } from '../models';
 
+const groupColors = [
+  { font: '#00E480', background: '#F1FFF2' },
+  { font: '#A07FCC', background: '#F6F5FF' },
+  { font: '#F6A623', background: '#FDF7EC' },
+  { font: '#F5E000', background: '#FFFEEF' },
+  { font: '#0095F5', background: '#F5FFFE' },
+  { font: '#EB1D1D', background: '#FEF2F2' },
+  { font: '#E007D9', background: '#FDF0FD' },
+  { font: '#B07513', background: '#F2EFE7' },
+  { font: '#00FBFF', background: '#EDFFFD' },
+  { font: '#ACEA56', background: '#F5FFE7' },
+  { font: '#3C58D2', background: '#F1F6FC' },
+  { font: '#3A5674', background: '#F0F4F8' },
+];
+
+const groups = {};
+const assignedColors = [];
+
 class QueueCombineItem extends React.PureComponent {
   _onPress = () => {
     this.props.onPressItem(this.props.id, this.props.groupId);
   };
+
+
   _onPressSelectLeader = () => {
     // console.log('_onPressSelectLeader', this.props.id);
     this.props.onPressSelectLeader(this.props.id, this.props.groupId);
   }
   getLabelForItem = (item: QueueItem) => {
-    let label, iconName;
+    let label,
+      iconName;
     if (item.status < 6 && item.status !== 4) {
       // iconName = Icons.hourglassHalf;
       iconName = 'hourglassHalf';
@@ -44,70 +65,100 @@ class QueueCombineItem extends React.PureComponent {
     } else {
       // iconName = Icons.play;
       iconName = 'play';
-      label =  'In service';
+      label = 'In service';
     }
     return (
       <View style={styles.clientStatusContainer}>
-        <Icon name={iconName} style={styles.clientStatusIcon} />
+        <Icon name={iconName} type="solid" style={styles.clientStatusIcon} />
         <Text style={[styles.clientStatusText]}>{label}</Text>
       </View>
     );
   }
-  renderPaymentIcon = () => {
-    const { selected, item, type, groupLeader } = this.props;
-    if (type === "uncombine" || selected)
+  renderPaymentIcon = (color) => {
+    const {
+      selected, item, type, groupLeader,
+    } = this.props;
+
+
+    console.log(JSON.stringify(item));
+    if (type === 'uncombine' || selected) {
       return (
         <TouchableOpacity onPress={this._onPressSelectLeader} style={styles.dollarSignContainerTouchable}>
-          <View style={[styles.dollarSignContainer, groupLeader ? null : { backgroundColor : 'transparent'}]}>
-            <Text style={[styles.dollarSign, groupLeader ? null : { color : '#00E480' }]}>$</Text>
+          <View style={[styles.dollarSignContainer, groupLeader ? { backgroundColor: color.font, borderColor: color.font } : { backgroundColor: 'transparent', borderColor: color.font }]}>
+            <Icon
+              name="dollar"
+              type="solid"
+              size={10}
+              color={groupLeader ? '#FFFFFF' : color.font}
+              style={styles.dollarSign}
+            />
           </View>
         </TouchableOpacity>
-      )
+      );
+    }
     return null;
   }
   renderCheckContainer = () => {
     const { selected, type } = this.props;
-    if (type === "combine")
+    if (type === 'combine') {
       return (
         <View style={styles.checkContainer}>
           <Icon
-            name={selected ? "checkCircle" : "circle"}
-            type={selected ? "regular" : "solid"}
-            size={selected ? 23 : 20 }
-            color={selected ? '#2BBA11' : '#727A8F' }
-            style={styles.checkIcon}  />
+            name={selected ? 'checkCircle' : 'circle'}
+            type={selected ? 'regular' : 'solid'}
+            size={selected ? 23 : 20}
+            color={selected ? '#2BBA11' : '#727A8F'}
+            style={styles.checkIcon}
+          />
         </View>
-      )
+      );
+    }
     return null;
   }
 
   render() {
-    const { selected, index, type } = this.props;
+    const {
+      selected, index, type, groupLeader,
+    } = this.props;
     const item: QueueItem = this.props.item;
     const label = this.getLabelForItem(item);
     let first = null;
-    if (type == "uncombine") {
+    if (type == 'uncombine') {
       first = index == 0 ? styles.itemContainerCombinedFirst : styles.itemContainerCombined;
     }
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = ((firstService.employeeFirstName||'')+' '+(firstService.employeeLastName||'')).toUpperCase();
+    const employee = (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase();
+
+    let color = groupColors[Math.floor(Math.random() * groupColors.length)];
+
+
+    if (item.groupId) {
+      
+      if (groups[item.groupId]) {
+        color = groups[item.groupId];
+      } else {
+        groups[item.groupId] = color;
+      }
+    } else {
+      color = groupColors[0];
+    }
 
     return (
-      <TouchableOpacity style={[styles.itemContainer, type == "uncombine" ? {'backgroundColor': 'white'} : null, first]} key={item.id} onPress={this._onPress}>
+      <TouchableOpacity style={[styles.itemContainer, type == 'uncombine' ? { backgroundColor: color.background } : null, first]} key={item.id} onPress={this._onPress}>
         {this.renderCheckContainer()}
-        <View style={[styles.itemSummary, type == "uncombine"? (index == 0 ? styles.itemSummaryCombinedFirst : styles.itemSummaryCombined) : null]}>
+        <View style={[styles.itemSummary, type == 'uncombine' ? (groupLeader ? styles.itemSummaryCombinedFirst : styles.itemSummaryCombined) : null]}>
           <View>
             <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
             <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
               {serviceName}
-              {item.services.length > 1 ? (<Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>+{item.services.length - 1}</Text>) : null}
-              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {employee}
+              {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>+{item.services.length - 1}</Text>) : null}
+              &nbsp;<Text style={{ color: '#727A8F' }}>with</Text> {employee}
             </Text>
             {label}
           </View>
-          {this.renderPaymentIcon()}
+          {this.renderPaymentIcon(color)}
         </View>
       </TouchableOpacity>
     );
@@ -123,7 +174,7 @@ export class QueueCombine extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
-    selected: (new Map(): Map<string, boolean>)
+    selected: (new Map(): Map<string, boolean>),
   }
   componentWillMount() {
     this.setState({ data: this.props.data });
@@ -143,22 +194,19 @@ export class QueueCombine extends React.Component {
       this.setState({ data });
     }
 
-    let text = query.toLowerCase();
+    const text = query.toLowerCase();
     // search by the client full name
-    let filteredData = data.filter(({ client }) => {
-      const fullName = (client.name||'')+' '+(client.middleName||'')+' '+(client.lastName||'');
+    const filteredData = data.filter(({ client }) => {
+      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
       return fullName.toLowerCase().match(text);
     });
 
     // if no match, set empty array
-    if (!filteredData || !filteredData.length)
-      this.setState({ data: [] });
+    if (!filteredData || !filteredData.length) { this.setState({ data: [] }); }
     // if the matched numbers are equal to the original data, keep it the same
-    else if (filteredData.length === data.length)
-      this.setState({ data: this.props.data });
+    else if (filteredData.length === data.length) { this.setState({ data: this.props.data }); }
     // else, set the filtered data
-    else
-      this.setState({ data: filteredData });
+    else { this.setState({ data: filteredData }); }
   };
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -173,9 +221,8 @@ export class QueueCombine extends React.Component {
       const selected = new Map(state.selected);
       selected.set(id, !selected.get(id)); // toggle
       const selectedArray = [];
-      selected.forEach((value, key)=> {
-        if (value)
-          selectedArray.push(key);
+      selected.forEach((value, key) => {
+        if (value) { selectedArray.push(key); }
       });
 
       let { groupLeader } = this.state;
@@ -219,21 +266,21 @@ export class QueueCombine extends React.Component {
 
   render() {
     return (
-      // <View style={styles.container}>
-        <FlatList
-          renderItem={this.renderItem}
-          data={this.state.data}
-          extraData={this.state}
-          keyExtractor={this._keyExtractor}
-          style={{marginBottom: 28}}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
+    // <View style={styles.container}>
+      <FlatList
+        renderItem={this.renderItem}
+        data={this.state.data}
+        extraData={this.state}
+        keyExtractor={this._keyExtractor}
+        style={{ marginBottom: 28 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
           }
-        />
-      // </View>
+      />
+    // </View>
     );
   }
 }
@@ -244,7 +291,7 @@ export class QueueUncombine extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
-    selected: (new Map(): Map<string, boolean>)
+    selected: (new Map(): Map<string, boolean>),
   }
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -273,14 +320,12 @@ export class QueueUncombine extends React.Component {
   // };
   _onPressSelectLeader = (id: string, groupId: string) => {
     console.log('_onPressSelectLeader', id, groupId);
-    if (this.props.onChangeLeader)
-      this.props.onChangeLeader(id, groupId);
+    if (this.props.onChangeLeader) { this.props.onChangeLeader(id, groupId); }
   }
   renderItem = ({ item, index, section }) => {
-
     const groupLeader = this.props.groupLeaders[section.groupId] ?
-            item.id === this.props.groupLeaders[section.groupId] :
-            item.isGroupLeader;
+      item.id === this.props.groupLeaders[section.groupId] :
+      item.isGroupLeader;
     // console.log('*** QueueUncombine renderItem', this.props.groupLeaders[section.groupId], item.isGroupLeader, groupLeader, item);
     return (
       <QueueCombineItem
@@ -297,42 +342,41 @@ export class QueueUncombine extends React.Component {
       />
     );
   }
-  renderSectionHeader = ({section}) => {
+  renderSectionHeader = ({ section }) => {
     console.log('renderSectionHeader', section);
     const { loading } = this.props;
     return (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{section.title}</Text>
-      <TouchableOpacity onPress={loading? null : ()=>this.props.onUncombineClients(section.groupId)} style={styles.sectionUncombine}>
-        {loading? <ActivityIndicator /> : null }
-        <Text style={[styles.sectionUncombineText, loading? {color: 'gray'} : null ]}>UNCOMBINE</Text>
-      </TouchableOpacity>
-    </View>
-  )};
-  renderSectionFooter = ({section}) => {
-    return (
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{section.title}</Text>
+        <TouchableOpacity onPress={loading ? null : () => this.props.onUncombineClients(section.groupId)} style={styles.sectionUncombine}>
+          {loading ? <ActivityIndicator /> : null }
+          <Text style={[styles.sectionUncombineText, loading ? { color: 'gray' } : null]}>UNCOMBINE</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  renderSectionFooter = ({ section }) => (
     <View style={styles.sectionFooter} />
-  )};
+  );
 
   _keyExtractor = (item, index) => item.id;
 
   render() {
-
     return (
-        <SectionList
-          renderSectionHeader={this.renderSectionHeader}
-          renderSectionFooter={this.renderSectionFooter}
-          renderItem={this.renderItem}
-          sections={this.props.data}
-          extraData={this.state}
-          keyExtractor={this._keyExtractor}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
+      <SectionList
+        renderSectionHeader={this.renderSectionHeader}
+        renderSectionFooter={this.renderSectionFooter}
+        renderItem={this.renderItem}
+        sections={this.props.data}
+        extraData={this.state}
+        keyExtractor={this._keyExtractor}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
           }
-        />
+      />
     );
   }
 }
@@ -342,7 +386,7 @@ export class QueueUncombine extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f1f1'
+    backgroundColor: '#f1f1f1',
   },
   itemContainer: {
     height: 94,
@@ -360,26 +404,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
-    marginBottom: 4
+    marginBottom: 4,
   },
   itemContainerCombinedFirst: {
-    backgroundColor : '#EDFCEF',
+  //  backgroundColor: '#EDFCEF',
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderBottomWidth: 0,
     marginBottom: 0,
-    height: 99
+    height: 99,
   },
   itemContainerCombined: {
-    backgroundColor : '#EDFCEF',
+  //  backgroundColor: '#EDFCEF',
     borderRadius: 0,
     borderTopWidth: 0,
     borderBottomWidth: 0,
     marginBottom: 0,
-    height: 99
+    height: 99,
   },
   sectionFooter: {
-    backgroundColor : '#EDFCEF',
+  //  backgroundColor: '#EDFCEF',
+    backgroundColor: 'transparent',
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
     // borderWidth: 1,
@@ -392,7 +437,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 3,
     marginHorizontal: 8,
-    marginBottom: 28
+    marginBottom: 28,
   },
   itemSummary: {
     paddingLeft: 10,
@@ -413,7 +458,8 @@ const styles = StyleSheet.create({
 
     backgroundColor: 'white',
     flexDirection: 'row',
-    left: 1
+
+    left: 1,
   },
   itemSummaryCombined: {
     // borderRadius: 0,
@@ -423,7 +469,8 @@ const styles = StyleSheet.create({
     left: 0,
     marginRight: 4,
     marginLeft: 4,
-    marginTop: 4,
+    marginTop: 6,
+    marginBottom: 6,
     height: 94,
     borderRadius: 4,
     // borderWidth: 1,
@@ -457,13 +504,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#111415',
     marginTop: 12,
-    marginBottom: 4
+    marginBottom: 4,
   },
   serviceName: {
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    marginBottom: 12
+    marginBottom: 12,
   },
   sectionHeader: {
     // marginTop: 28,
@@ -476,13 +523,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     color: '#4D5067',
     marginLeft: 16,
-    marginBottom: 7
+    marginBottom: 7,
   },
   sectionUncombineText: {
     fontSize: 10,
     fontFamily: 'Roboto-Bold',
     color: '#1DBF12',
-    marginLeft: 5
+    marginLeft: 5,
   },
   listItem: {
     height: 75,
@@ -504,13 +551,13 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
     // width: 'auto'
   },
   clientStatusIcon: {
     fontSize: 10,
     color: 'white',
-    paddingRight: 6
+    paddingRight: 6,
   },
   checkContainer: {
     width: 44,
@@ -529,7 +576,7 @@ const styles = StyleSheet.create({
   },
   checkIcon: {
     fontSize: 20,
-    color: '#727A8F'
+    color: '#727A8F',
   },
   dollarSignContainerTouchable: {
     marginLeft: 'auto',
@@ -546,6 +593,10 @@ const styles = StyleSheet.create({
     marginRight: 12,
     marginTop: 12,
     marginBottom: 'auto',
+    height: 18,
+    width: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dollarSign: {
     color: 'white',
@@ -557,6 +608,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 7
-  }
+    marginBottom: 7,
+  },
 });

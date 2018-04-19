@@ -7,9 +7,6 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import SalonDateTxt from '../../../../components/SalonDateTxt';
-import SalonDatePicker from '../../../../components/modals/SalonDatePicker';
-import SalonHeader from '../../../../components/SalonHeader';
 import {
   InputDate,
   InputText,
@@ -74,8 +71,9 @@ export default class AppointmentFormula extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <InputGroup style={{ marginTop: 16 }}>
+        <InputGroup style={{ flex: 1, flexDirection: 'column', marginTop: 16 }}>
           <InputButton
+            style={{ flex: 1 }}
             onPress={() => {
               this.props.navigation.navigate('Clients', {
                 actionType: 'update',
@@ -88,6 +86,7 @@ export default class AppointmentFormula extends React.Component {
           />
           <InputDivider />
           <InputButton
+            style={{ flex: 1 }}
             onPress={() => {}}
             label="Type"
             value="Nail"
@@ -98,13 +97,15 @@ export default class AppointmentFormula extends React.Component {
           />
         </InputGroup>
         <SectionDivider />
-        <InputGroup>
+        <InputGroup style={{ flex: 1, flexDirection: 'column' }}>
           <InputButton
+            style={{ flex: 1 }}
             onPress={() => {}}
             label="Associated appt."
           />
           <InputDivider />
           <InputDate
+            style={{ flex: 1 }}
             placeholder="Date"
             onPress={(selectedDate) => {
               const { formula } = this.state;
@@ -115,13 +116,14 @@ export default class AppointmentFormula extends React.Component {
           />
           <InputDivider />
           <InputButton
+            style={{ flex: 1 }}
             onPress={() => {}}
             label="Provider"
             value="BJ Penn"
           />
         </InputGroup>
         <SectionDivider />
-        <InputGroup>
+        <InputGroup style={{ flex: 1, flexDirection: 'column' }}>
           <InputButton
             onPress={() => {}}
             label="Copy formula to"

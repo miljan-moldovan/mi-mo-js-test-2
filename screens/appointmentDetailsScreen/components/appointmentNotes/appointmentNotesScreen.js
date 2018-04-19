@@ -332,7 +332,7 @@ export default class AppointmentNotesScreen extends Component {
 
     if (searchText && searchText.length > 0) {
       const criteria = [
-        { Field: 'enteredBy', Values: [searchText.toLowerCase()] },
+        { Field: 'updatedBy', Values: [searchText.toLowerCase()] },
         { Field: 'text', Values: [searchText.toLowerCase()] },
         { Field: 'enterTime', Values: [searchText.toLowerCase()] },
       ];
@@ -561,7 +561,7 @@ export default class AppointmentNotesScreen extends Component {
                           />
 
                           <Text style={styles.noteBy}>by</Text>
-                          <Text style={styles.noteAuthor}>{item.enteredBy}</Text>
+                          <Text style={styles.noteAuthor}>{item.updatedBy}</Text>
 
                         </View>
                         <View style={styles.noteHeaderRight}>

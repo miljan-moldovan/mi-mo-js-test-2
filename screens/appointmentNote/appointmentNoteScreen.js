@@ -123,7 +123,7 @@ class AppointmentNoteScreen extends Component {
 
     const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
 
-    note.author = providerName;
+    note.updatedBy = providerName;
     this.setState({ note, isVisible: true });
   }
 
@@ -164,7 +164,7 @@ class AppointmentNoteScreen extends Component {
   isNoteValid() {
     if (this.state.note.text.length === 0) {
       return false;
-    } else if (this.state.note.author === '') {
+    } else if (this.state.note.enteredBy === '') {
       return false;
     }
 
@@ -179,6 +179,7 @@ class AppointmentNoteScreen extends Component {
       if (this.props.navigation.state.params.actionType === 'new') {
         const note = this.state.note;
         note.notes = note.text;
+        note.enteredBy = note.updatedBy;
         this.props.appointmentNotesActions.postAppointmentNotes(appointment.client.id, note)
           .then((response) => {
             this.getNotes();
@@ -258,7 +259,7 @@ class AppointmentNoteScreen extends Component {
                   labelStyle={{ color: '#110A24' }}
                   onPress={this.handlePressProvider}
                   placeholder="Added by"
-                  label={this.state.note.author}
+                  label={this.state.note.updatedBy}
                 >{this.props.appointmentNotesState.selectedProvider &&
                 <SalonAvatar
                   wrapperStyle={styles.providerRound}

@@ -113,6 +113,22 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Light',
     lineHeight: 40,
   },
+  avatarDefaultComponent: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 2,
+    borderColor: '#115ECD',
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarDefaultComponentText: {
+    fontSize: 10,
+    color: '#115ECD',
+    fontWeight: 'bold',
+    fontFamily: 'Roboto',
+  },
 });
 
 export const RemoveButton = ({ title, onPress }) => (
@@ -414,8 +430,7 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    debugger //eslint-disable-line
-    const value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : ('serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
+    const value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : (this.state.selectedService && 'serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -477,6 +492,7 @@ export class ProviderInput extends React.Component {
                 borderWidth={1}
                 borderColor="transparent"
                 image={{ uri: employeePhoto }}
+                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA'}</Text></View>}
               />
               <Text style={[styles.inputText]}>{value}</Text>
             </View>

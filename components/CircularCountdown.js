@@ -44,7 +44,6 @@ class CircularCountdown extends Component {
     const {
       estimatedTime, processTime, itemStatus, queueType,
     } = this.props;
-    //debugger //eslint-disable-line
     switch (itemStatus) {
       case QUEUE_ITEM_NOT_ARRIVED:
         if (processTime != null && estimatedTime != null) {

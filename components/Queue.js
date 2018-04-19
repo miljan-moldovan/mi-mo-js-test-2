@@ -36,479 +36,507 @@ import type { QueueItem } from '../models';
 
 const chevron = require('../assets/images/icons/icon_caret_right.png');
 
+const groupColors = [
+  { font: '#00E480', background: '#F1FFF2' },
+  { font: '#A07FCC', background: '#F6F5FF' },
+  { font: '#F6A623', background: '#FDF7EC' },
+  { font: '#F5E000', background: '#FFFEEF' },
+  { font: '#0095F5', background: '#F5FFFE' },
+  { font: '#EB1D1D', background: '#FEF2F2' },
+  { font: '#E007D9', background: '#FDF0FD' },
+  { font: '#B07513', background: '#F2EFE7' },
+  { font: '#00FBFF', background: '#EDFFFD' },
+  { font: '#ACEA56', background: '#F5FFE7' },
+  { font: '#3C58D2', background: '#F1F6FC' },
+  { font: '#3A5674', background: '#F0F4F8' },
+];
+
+const groups = {};
+const assignedColors = [];
+
 class Queue extends React.Component {
-  state = {
-    refreshing: false,
-    notificationVisible: false,
-    notificationType: '',
-    notificationItem: {},
-    appointment: null,
-    isVisible: false,
-    client: null,
-    services: null,
-    data: [],
-  }
-  componentWillMount() {
-    const {
-      data, searchClient, searchProvider, filterText,
-    } = this.props;
-    this.setState({ data });
-    if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
-  }
-  componentWillReceiveProps({
+state = {
+  refreshing: false,
+  notificationVisible: false,
+  notificationType: '',
+  notificationItem: {},
+  appointment: null,
+  isVisible: false,
+  client: null,
+  services: null,
+  data: [],
+}
+componentWillMount() {
+  const {
     data, searchClient, searchProvider, filterText,
-  }) {
-    if (data !== this.props.data) {
-      this.setState({ data });
-    }
-    // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
-    if (searchClient != this.props.searchClient ||
-        searchProvider != this.props.searchProvider ||
-        filterText != this.props.filterText) {
-      this.searchText(filterText, searchClient, searchProvider);
-    }
+  } = this.props;
+  this.setState({ data });
+  if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
+}
+componentWillReceiveProps({
+  data, searchClient, searchProvider, filterText,
+}) {
+  if (data !== this.props.data) {
+    this.setState({ data });
   }
-  onChangeFilterResultCount = () => {
-    console.log('onChangeFilterResultCount', this.state.data.length);
-    if (this.props.onChangeFilterResultCount) { this.props.onChangeFilterResultCount(this.state.data.length); }
+  // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
+  if (searchClient != this.props.searchClient ||
+searchProvider != this.props.searchProvider ||
+filterText != this.props.filterText) {
+    this.searchText(filterText, searchClient, searchProvider);
   }
-  searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
-    const { data } = this.props;
-    const prevCount = this.state.data.length;
-    console.log('searchText prevCount', prevCount);
-    if (query === '' || (!searchClient && !searchProvider)) {
-      this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
+}
+onChangeFilterResultCount = () => {
+  console.log('onChangeFilterResultCount', this.state.data.length);
+  if (this.props.onChangeFilterResultCount) { this.props.onChangeFilterResultCount(this.state.data.length); }
+}
+searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
+  const { data } = this.props;
+  const prevCount = this.state.data.length;
+  console.log('searchText prevCount', prevCount);
+  if (query === '' || (!searchClient && !searchProvider)) {
+    this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
+  }
+  const text = query.toLowerCase();
+  // search by the client full name
+  const filteredData = data.filter(({ client, services }) => {
+    if (searchClient) {
+      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+      // if this row is a match, we don't need to check providers
+      if (fullName.toLowerCase().match(text)) { return true; }
     }
-    const text = query.toLowerCase();
-    // search by the client full name
-    const filteredData = data.filter(({ client, services }) => {
-      if (searchClient) {
-        const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-        // if this row is a match, we don't need to check providers
+    if (searchProvider) {
+      for (let i = 0; i < services.length; i++) {
+        const { employeeFirstName, employeeLastName } = services[i];
+        const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
+        // if this provider is a match, we don't need to check other providers
         if (fullName.toLowerCase().match(text)) { return true; }
       }
-      if (searchProvider) {
-        for (let i = 0; i < services.length; i++) {
-          const { employeeFirstName, employeeLastName } = services[i];
-          const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
-          // if this provider is a match, we don't need to check other providers
-          if (fullName.toLowerCase().match(text)) { return true; }
-        }
-      }
-      return false;
-    });
-    // if no match, set empty array
-    if (!filteredData || !filteredData.length) { this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined); }
-    // if the matched numbers are equal to the original data, keep it the same
-    else if (filteredData.length === data.length) { this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined); }
-    // else, set the filtered data
-    else { this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined); }
-  };
+    }
+    return false;
+  });
+  // if no match, set empty array
+  if (!filteredData || !filteredData.length) { this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined); }
+  // if the matched numbers are equal to the original data, keep it the same
+  else if (filteredData.length === data.length) { this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined); }
+  // else, set the filtered data
+  else { this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined); }
+};
 
-  handlePressSummary = {
-    checkIn: () => this.handlePressCheckIn(),
-    rebook: () => this.handlePressRebook(),
-    walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
-    modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
-    returning: returned => this.handleReturning(returned),
-    toService: () => this.handleStartService(),
-    toWaiting: () => this.handleToWaiting(),
-    finish: finish => this.handlePressFinish(finish),
-  }
+handlePressSummary = {
+  checkIn: () => this.handlePressCheckIn(),
+  rebook: () => this.handlePressRebook(),
+  walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
+  modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
+  returning: returned => this.handleReturning(returned),
+  toService: () => this.handleStartService(),
+  toWaiting: () => this.handleToWaiting(),
+  finish: finish => this.handlePressFinish(finish),
+}
 
-  _onRefresh = () => {
-    this.setState({ refreshing: true });
-    // FIXME this._refreshData();
-    // emulate refresh call
-    setTimeout(() => this.setState({ refreshing: false }), 500);
-  }
+_onRefresh = () => {
+  this.setState({ refreshing: true });
+  // FIXME this._refreshData();
+  // emulate refresh call
+  setTimeout(() => this.setState({ refreshing: false }), 500);
+}
 
-  getButtonsForItem = (item) => {
-    const {
-      noShow, returnLater, clientReturned, service, walkout, checkin,
-      uncheckin, undoFinish, rebook, checkout, notesFormulas,
-      toWaiting, finishService,
-    } = QueueButtonTypes;
-    const { id: queueId } = item;
-    let left,
-      right;
-    if (!item.serviced) {
-      if (!item.checked_in) {
-        left = [
-          <QueueButton type={noShow} left />,
-        ];
-        right = [
-          <QueueButton
-            type={checkin}
-            right
-            onPress={() => {
-              LayoutAnimation.spring();
-              this.props.checkInClient(queueId);
-              }}
-          />,
-          <QueueButton
-            type={service}
-            right
-            onPress={() => {
-              LayoutAnimation.spring();
-              this.props.startService(queueId);
-              this.showNotification(item, 'service');
-            }}
-          />,
-        ];
-      } else {
-        left = [
-          <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId); }} left />,
-          <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId); }} left />,
-        ];
-        right = [
-          <QueueButton type={uncheckin} right />,
-          <QueueButton
-            type={service}
-            onPress={() => {
-            LayoutAnimation.spring();
-            this.props.startService(queueId);
-            this.showNotification(item, 'service');
-          }}
-            right
-          />,
-        ];
-      }
-    } else if (item.finishService) {
+getButtonsForItem = (item) => {
+  const {
+    noShow, returnLater, clientReturned, service, walkout, checkin,
+    uncheckin, undoFinish, rebook, checkout, notesFormulas,
+    toWaiting, finishService,
+  } = QueueButtonTypes;
+  const { id: queueId } = item;
+  let left,
+    right;
+  if (!item.serviced) {
+    if (!item.checked_in) {
       left = [
-        <QueueButton type={undoFinish} left />,
+        <QueueButton type={noShow} left />,
       ];
       right = [
-        <QueueButton type={rebook} right />,
-        <QueueButton type={checkout} right />,
+        <QueueButton
+          type={checkin}
+          right
+          onPress={() => {
+LayoutAnimation.spring();
+this.props.checkInClient(queueId);
+}}
+        />,
+        <QueueButton
+          type={service}
+          right
+          onPress={() => {
+LayoutAnimation.spring();
+this.props.startService(queueId);
+this.showNotification(item, 'service');
+}}
+        />,
       ];
     } else {
       left = [
-        <QueueButton type={notesFormulas} left />,
-        <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
+        <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId); }} left />,
+        <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId); }} left />,
       ];
       right = [
-        <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
-        <QueueButton type={checkout} right />,
+        <QueueButton type={uncheckin} right />,
+        <QueueButton
+          type={service}
+          onPress={() => {
+LayoutAnimation.spring();
+this.props.startService(queueId);
+this.showNotification(item, 'service');
+}}
+          right
+        />,
       ];
     }
-    return { left, right };
+  } else if (item.finishService) {
+    left = [
+      <QueueButton type={undoFinish} left />,
+    ];
+    right = [
+      <QueueButton type={rebook} right />,
+      <QueueButton type={checkout} right />,
+    ];
+  } else {
+    left = [
+      <QueueButton type={notesFormulas} left />,
+      <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
+    ];
+    right = [
+      <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
+      <QueueButton type={checkout} right />,
+    ];
   }
-  getLabelForItem = (item) => {
-    switch (item.status) {
-      case QUEUE_ITEM_FINISHED:
-        return (
-          <View style={styles.finishedContainer}>
-            <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
-              <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>FINISHED</Text>
-            </View>
-            <View style={styles.finishedTime}>
-              <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-              <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
-            </View>
+  return { left, right };
+}
+getLabelForItem = (item) => {
+  switch (item.status) {
+    case QUEUE_ITEM_FINISHED:
+      return (
+        <View style={styles.finishedContainer}>
+          <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
+            <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>FINISHED</Text>
           </View>
-        );
-      case QUEUE_ITEM_RETURNING:
-        return (
-          <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
-            <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>RETURNING</Text>
+          <View style={styles.finishedTime}>
+            <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
+            <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
           </View>
-        );
-      case QUEUE_ITEM_NOT_ARRIVED:
-        return (
-          <View style={[styles.waitingTime, { backgroundColor: 'rgba(192,193,198,1)' }]}>
-            <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED</Text>
-          </View>
-        );
-      default:
-        console.log(JSON.stringify(item));
+        </View>
+      );
+    case QUEUE_ITEM_RETURNING:
+      return (
+        <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
+          <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>RETURNING</Text>
+        </View>
+      );
+    case QUEUE_ITEM_NOT_ARRIVED:
+      return (
+        <View style={[styles.waitingTime, { flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
+          <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
+          <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
+          <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+        </View>
+      );
+    default:
 
-        let processTime = moment(item.processTime, 'hh:mm:ss'),
-          progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
-          estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
-          processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
-            ? processTime.minutes() + processTime.hours() * 60
-            : 0,
-          progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-            ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
-            : 0,
-          estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-            ? estimatedTime.minutes() + estimatedTime.hours() * 60
-            : 0;
-        console.log('processTime', moment(item.processTime, 'hh:mm:ss').isValid());
-        console.log('processTime', processMinutes);
-        console.log('progressMaxTime', moment(item.progressMaxTime, 'hh:mm:ss').isValid());
-        console.log('progressMaxMinutes', progressMaxMinutes);
-        console.log('estimatedTime', moment(item.estimatedTime, 'hh:mm:ss').isValid());
-        console.log('estimatedTimeMinutes', estimatedTimeMinutes);
-        console.log('status', item.status);
-        return (
-          <CircularCountdown
-            size={46}
-            estimatedTime={progressMaxMinutes}
-            processTime={processMinutes}
-            itemStatus={item.status}
-            style={styles.circularCountdown}
-            queueType={item.queueType}
-          />
-        );
-    }
+      let processTime = moment(item.processTime, 'hh:mm:ss'),
+        progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
+        estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
+        processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+          ? processTime.minutes() + processTime.hours() * 60
+          : 0,
+        progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+          ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+          : 0,
+        estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+          ? estimatedTime.minutes() + estimatedTime.hours() * 60
+          : 0;
+
+      return (
+        <CircularCountdown
+          size={46}
+          estimatedTime={progressMaxMinutes}
+          processTime={processMinutes}
+          itemStatus={item.status}
+          style={styles.circularCountdown}
+          queueType={item.queueType}
+        />
+      );
   }
+}
 
-  handlePress = (item) => {
-    if (!this.state.isVisible) {
-      this.setState({
-        appointment: item,
-        client: item.client,
-        services: item.services,
-        isVisible: true,
-      });
-    }
+handlePress = (item) => {
+  if (!this.state.isVisible) {
+    this.setState({
+      appointment: item,
+      client: item.client,
+      services: item.services,
+      isVisible: true,
+    });
   }
+}
 
-  handlePressModify = (isWaiting, onPressSummary) => {
-    const { appointment } = this.state;
-    this.hideDialog();
+handlePressModify = (isWaiting, onPressSummary) => {
+  const { appointment } = this.state;
+  this.hideDialog();
+  if (appointment !== null) {
+    setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
+  }
+}
+
+handlePressRebook = () => {
+  const { appointment } = this.state;
+  this.hideDialog();
+  if (appointment !== null) {
+    this.props.navigation.navigate('RebookDialog', {
+      appointment,
+      ...this.props,
+    });
+  }
+}
+
+handlePressCheckIn = () => {
+  const { appointment } = this.state;
+  this.props.checkInClient(appointment.id);
+  this.hideDialog();
+}
+
+handlePressWalkOut = (isActiveWalkOut) => {
+  const { appointment } = this.state;
+
+  if (isActiveWalkOut) {
+    // this.props.walkOut(appointment.id);
+
     if (appointment !== null) {
-      setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
-    }
-  }
-
-  handlePressRebook = () => {
-    const { appointment } = this.state;
-    this.hideDialog();
-    if (appointment !== null) {
-      this.props.navigation.navigate('RebookDialog', {
+      this.props.navigation.navigate('Walkout', {
         appointment,
         ...this.props,
       });
     }
+  } else {
+    this.props.noShow(appointment.id);
   }
 
-  handlePressCheckIn = () => {
-    const { appointment } = this.state;
-    this.props.checkInClient(appointment.id);
-    this.hideDialog();
+  this.hideDialog();
+}
+
+handleReturning = (returned) => {
+  const { appointment } = this.state;
+
+  if (returned) {
+    this.props.returned(appointment.id);
+  } else {
+    this.props.returnLater(appointment.id);
   }
 
-  handlePressWalkOut = (isActiveWalkOut) => {
-    const { appointment } = this.state;
+  this.hideDialog();
+}
 
-    if (isActiveWalkOut) {
-      // this.props.walkOut(appointment.id);
+handleStartService = () => {
+  const { appointment } = this.state;
+  this.props.startService(appointment.id);
+  this.hideDialog();
+}
 
-      if (appointment !== null) {
-        this.props.navigation.navigate('Walkout', {
-          appointment,
-          ...this.props,
-        });
-      }
+handleToWaiting = () => {
+  const { appointment } = this.state;
+  this.props.toWaiting(appointment.id);
+  this.hideDialog();
+}
+
+handlePressFinish = (finish) => {
+  const { appointment } = this.state;
+
+  if (!finish) {
+    this.props.undoFinishService(appointment.id);
+  } else {
+    this.props.finishService(appointment.id);
+  }
+
+  this.hideDialog();
+}
+
+hideDialog = () => {
+  this.setState({ isVisible: false });
+}
+
+getGroupLeaderName = (item: QueueItem) => {
+  const { groups } = this.props;
+  if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
+  return null;
+}
+
+renderItem = (row) => {
+  const item: QueueItem = row.item;
+  const index = row.index;
+
+  const label = this.getLabelForItem(item);
+  const groupLeaderName = this.getGroupLeaderName(item);
+  const firstService = item.services[0] || {};
+  const serviceName = (firstService.serviceName || '').toUpperCase();
+  const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
+
+  let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+    ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
+    : 0;
+
+  if (item.estimatedTime && item.estimatedTime[0] === '-') {
+    estimatedTime *= (-1);
+  }
+
+  const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
+  const isAppointment = item.queueType === 1;
+  const isBookedByWeb = item.queueType === 3;
+
+  let color = groupColors[Math.floor(Math.random() * groupColors.length)];
+
+  if (item.groupId) {
+    
+    if (groups[item.groupId]) {
+      color = groups[item.groupId];
     } else {
-      this.props.noShow(appointment.id);
+      groups[item.groupId] = color;
     }
-
-    this.hideDialog();
+  } else {
+    color = groupColors[0];
   }
 
-  handleReturning = (returned) => {
-    const { appointment } = this.state;
+  return (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => this.handlePress(item)}
+      key={item.id}
+    >
+      <View style={styles.itemSummary}>
+        <View style={{ flexDirection: 'row', marginTop: 11, alignItems: 'center' }}>
 
-    if (returned) {
-      this.props.returned(appointment.id);
-    } else {
-      this.props.returnLater(appointment.id);
-    }
-
-    this.hideDialog();
-  }
-
-  handleStartService = () => {
-    const { appointment } = this.state;
-    this.props.startService(appointment.id);
-    this.hideDialog();
-  }
-
-  handleToWaiting = () => {
-    const { appointment } = this.state;
-    this.props.toWaiting(appointment.id);
-    this.hideDialog();
-  }
-
-  handlePressFinish = (finish) => {
-    const { appointment } = this.state;
-
-    if (!finish) {
-      this.props.undoFinishService(appointment.id);
-    } else {
-      this.props.finishService(appointment.id);
-    }
-
-    this.hideDialog();
-  }
-
-  hideDialog = () => {
-    this.setState({ isVisible: false });
-  }
-
-  getGroupLeaderName = (item: QueueItem) => {
-    const { groups } = this.props;
-    if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
-    return null;
-  }
-
-  renderItem = (row) => {
-    const item: QueueItem = row.item;
-    const index = row.index;
-
-    const label = this.getLabelForItem(item);
-    const groupLeaderName = this.getGroupLeaderName(item);
-    const firstService = item.services[0] || {};
-    const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
-
-    let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-      ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
-      : 0;
-
-    if (item.estimatedTime && item.estimatedTime[0] === '-') {
-      estimatedTime *= (-1);
-    }
-
-    const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
-    const isAppointment = item.queueType === 1;
-    const isBookedByWeb = item.queueType === 3;
-
-    return (
-      <TouchableOpacity
-        style={styles.itemContainer}
-        onPress={() => this.handlePress(item)}
-        key={item.id}
-      >
-        <View style={styles.itemSummary}>
-          <View style={{ flexDirection: 'row', marginTop: 11, alignItems: 'center' }}>
-
-            {isBookedByWeb &&
-              <View style={{
-                backgroundColor: '#115ECD',
-                width: 16,
-                height: 14,
-                borderRadius: 8,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 5,
-                marginTop: 2,
-              }}
-              >
-                <Text style={{ fontWeight: '700', color: '#FFFFFF', fontSize: 8 }}>O</Text>
-              </View>
-            }
-
-            <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-            <ServiceIcons item={item} groupLeaderName={groupLeaderName} />
+          {isBookedByWeb &&
+          <View style={{
+backgroundColor: '#115ECD',
+width: 16,
+height: 14,
+borderRadius: 8,
+alignItems: 'center',
+justifyContent: 'center',
+marginRight: 5,
+marginTop: 2,
+}}
+          >
+            <Text style={{ fontWeight: '700', color: '#FFFFFF', fontSize: 8 }}>O</Text>
           </View>
-          <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
-            {serviceName}
-            <Text style={{ color: '#727A8F' }}> with</Text> {employee}
-            {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
+}
 
-          </Text>
-          <Text style={styles.serviceTimeContainer}>
-            <Icon name="clockO" style={styles.serviceClockIcon} />
-            <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  >  REM Wait <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
-            {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-          </Text>
-
+          <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+          <ServiceIcons color={color} item={item} groupLeaderName={groupLeaderName} />
         </View>
+        <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
+          {serviceName}
+          <Text style={{ color: '#727A8F' }}> with</Text> {employee}
+          {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
+
+        </Text>
+        <Text style={styles.serviceTimeContainer}>
+          <Icon name="clockO" style={styles.serviceClockIcon} />
+          <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  <Icon name="chevronRight" style={styles.chevronRightIcon} />  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
+          {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
+        </Text>
+
+      </View>
+      <View style={{ height: '100%', justifyContent: 'flex-end' }}>
         {label}
-        {/* <Image source={chevron} style={styles.chevron} /> */}
-        <Icon name="chevronRight" style={styles.chevron} type="solid" />
-      </TouchableOpacity>
-    );
-  }
-  showNotification = (item, type) => {
-    this.setState({
-      notificationVisible: true,
-      notificationType: type,
-      notificationItem: item,
-    });
-  }
-  onDismissNotification = () => {
-    this.setState({ notificationVisible: false });
-  }
-  renderNotification = () => {
-    const { notificationType, notificationItem, notificationVisible } = this.state;
-    let notificationColor,
-      notificationButton,
-      notificationText;
-    switch (notificationType) {
-      case 'service':
-        const client = notificationItem.client || {};
-        notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name} ${client.lastName}`}</Text></Text>);
-        notificationColor = '#ccc';
-        notificationButton = <NotificationBannerButton title="UNDO" />;
-        break;
-      default: '';
-    }
-    return (
-      <NotificationBanner
-        backgroundColor={notificationColor}
-        visible={notificationVisible}
-        button={notificationButton}
-        onDismiss={this.onDismissNotification}
-      >
-        <Text>{notificationText}</Text>
-      </NotificationBanner>
-    );
-  }
-  _keyExtractor = (item, index) => item.id;
-
-  render() {
-    // console.log('Queue.render', this.props.data);
-    const { headerTitle, searchText } = this.props;
-    const numResult = this.state.data.length;
-
-    const header = headerTitle ? (
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{headerTitle}</Text>
-        <Text style={styles.headerCount}>{numResult} {numResult === 1 ? 'Result' : 'Results'}</Text>
       </View>
-    ) : null;
-    return (
-      <View style={styles.container}>
-        {this.props.loading ? (
-          <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator />
-          </View>
-        ) : null}
-        <FlatList
-          style={{ marginTop: 5 }}
-          renderItem={this.renderItem}
-          data={this.state.data}
-          keyExtractor={this._keyExtractor}
-          ListHeaderComponent={header}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
-          }
-        />
-        <QueueItemSummary
-          {...this.props}
-          isVisible={this.state.isVisible}
-          client={this.state.client}
-          services={this.state.services}
-          onDonePress={this.hideDialog}
-          onPressSummary={this.handlePressSummary}
-          isWaiting={this.props.isWaiting}
-          item={this.state.appointment}
-          appointment={this.state.appointment}
-          hide={this.hideDialog}
-        />
-        {this.renderNotification()}
-      </View>
-    );
+      {/* <Image source={chevron} style={styles.chevron} /> */}
+      <Icon name="chevronRight" style={styles.chevron} type="solid" />
+    </TouchableOpacity>
+  );
+}
+showNotification = (item, type) => {
+  this.setState({
+    notificationVisible: true,
+    notificationType: type,
+    notificationItem: item,
+  });
+}
+onDismissNotification = () => {
+  this.setState({ notificationVisible: false });
+}
+renderNotification = () => {
+  const { notificationType, notificationItem, notificationVisible } = this.state;
+  let notificationColor,
+    notificationButton,
+    notificationText;
+  switch (notificationType) {
+    case 'service':
+      const client = notificationItem.client || {};
+      notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name} ${client.lastName}`}</Text></Text>);
+      notificationColor = '#ccc';
+      notificationButton = <NotificationBannerButton title="UNDO" />;
+      break;
+    default: '';
   }
+  return (
+    <NotificationBanner
+      backgroundColor={notificationColor}
+      visible={notificationVisible}
+      button={notificationButton}
+      onDismiss={this.onDismissNotification}
+    >
+      <Text>{notificationText}</Text>
+    </NotificationBanner>
+  );
+}
+_keyExtractor = (item, index) => item.id;
+
+render() {
+// console.log('Queue.render', this.props.data);
+  const { headerTitle, searchText } = this.props;
+  const numResult = this.state.data.length;
+
+  const header = headerTitle ? (
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>{headerTitle}</Text>
+      <Text style={styles.headerCount}>{numResult} {numResult === 1 ? 'Result' : 'Results'}</Text>
+    </View>
+  ) : null;
+  return (
+    <View style={styles.container}>
+      {this.props.loading ? (
+        <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator />
+        </View>
+) : null}
+      <FlatList
+        style={{ marginTop: 5 }}
+        renderItem={this.renderItem}
+        data={this.state.data}
+        keyExtractor={this._keyExtractor}
+        ListHeaderComponent={header}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+}
+      />
+      <QueueItemSummary
+        {...this.props}
+        isVisible={this.state.isVisible}
+        client={this.state.client}
+        services={this.state.services}
+        onDonePress={this.hideDialog}
+        onPressSummary={this.handlePressSummary}
+        isWaiting={this.props.isWaiting}
+        item={this.state.appointment}
+        appointment={this.state.appointment}
+        hide={this.hideDialog}
+      />
+      {this.renderNotification()}
+    </View>
+  );
+}
 }
 export default connect(null, actions)(Queue);
 
@@ -568,19 +596,26 @@ const styles = StyleSheet.create({
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
     fontSize: 10,
-    textDecorationLine: 'underline',
+    //  textDecorationLine: 'underline',
   },
   serviceTime: {
-    // fontFamily: 'OpenSans-Bold',
+
+  },
+  chevronRightIcon: {
+    fontSize: 12,
+    color: '#000000',
   },
   waitingTime: {
-    marginRight: 15,
+    marginRight: 8,
     alignItems: 'center',
     backgroundColor: 'rgba(17,10,36,1)',
     borderRadius: 4,
     borderColor: 'transparent',
     paddingHorizontal: 5,
     paddingVertical: 2,
+    height: 16,
+    minWidth: 56,
+    marginBottom: 14,
   },
   circularCountdown: {
     marginLeft: 'auto',
@@ -590,7 +625,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   waitingTimeTextTop: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: 'OpenSans-Regular',
     color: '#999',
   },
@@ -600,7 +635,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   serviceClockIcon: {
-    fontSize: 10,
+    fontSize: 12,
     // padding: 0,
     color: '#7E8D98',
     paddingRight: 7,
@@ -657,7 +692,7 @@ const styles = StyleSheet.create({
   },
   chevron: {
     position: 'absolute',
-    top: 22,
+    top: 17,
     right: 10,
     fontSize: 15,
     color: '#115ECD',

@@ -53,7 +53,7 @@ export default class SalonAvatar extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     let image = 'image' in nextProps ? nextProps.image : this.state.image;
-    if (typeof image === 'string' && image.startsWith('https:')) {
+    if (typeof image === 'string' && image.startsWith('http')) {
       image = { uri: image };
     }
 
@@ -95,17 +95,36 @@ export default class SalonAvatar extends React.Component {
             borderColor: this.state.borderColor,
           }}
         >
-          <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={this.state.width} color="#4D5067" type="solid" />
 
-          <Image
-            style={{
-              zIndex: 9999,
+          {!this.props.defaultComponent && <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={26} color="#4D5067" type="solid" />
+        }
+
+
+          {
+            this.props.defaultComponent &&
+            <View style={{
+              position: 'absolute',
+              zIndex: 999,
               width: this.state.width,
               height: this.state.width,
               borderRadius: this.state.width / 2,
             }}
+            >{this.props.defaultComponent}
+            </View>
+          }
+
+
+          <Image
+            style={{
+                zIndex: 9999,
+                width: this.state.width,
+                height: this.state.width,
+                borderRadius: this.state.width / 2,
+              }}
             source={this.state.image}
           />
+
+
           {this.props.hasBadge && (
             <View style={{
               position: 'absolute',
@@ -117,6 +136,7 @@ export default class SalonAvatar extends React.Component {
               right: badgeOffsetRight,
               alignItems: 'center',
               justifyContent: 'center',
+              zIndex: 9999,
             }}
             >
               {this.props.badgeComponent}
@@ -130,10 +150,12 @@ export default class SalonAvatar extends React.Component {
 SalonAvatar.propTypes = {
   badgeColor: PropTypes.string,
   badgeComponent: PropTypes.element,
+  defaultComponent: PropTypes.element,
   hasBadge: PropTypes.bool,
 };
 SalonAvatar.defaultProps = {
   badgeColor: 'white',
   badgeComponent: null,
+  defaultComponent: null,
   hasBadge: false,
 };

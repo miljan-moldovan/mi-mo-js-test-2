@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-directed-scrollview')
     compile project(':react-native-wheel-datepicker')
     compile project(':react-native-picker')
     compile project(':react-native-sentry')

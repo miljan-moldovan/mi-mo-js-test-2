@@ -28,9 +28,8 @@ const RootDrawerNavigator = TabNavigator(
     Queue: { screen: QueueStackNavigator },
     ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
     Clients: { screen: ClientsStackNavigator },
-    Sales: { screen: SalesScreen },
     Scorecard: { screen: ScorecardScreen },
-    Settings: { screen: SettingsScreen },
+  //  Settings: { screen: SettingsScreen },
   },
   {
 
@@ -44,13 +43,11 @@ const RootDrawerNavigator = TabNavigator(
         } else if (routeName === 'Queue') {
           iconName = 'signIn';
         } else if (routeName === 'Clients') {
-          iconName = 'driversLicense';
+          iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {
           iconName = 'calendar';
         } else if (routeName === 'Scorecard') {
           iconName = 'clipboard';
-        } else if (routeName === 'Settings') {
-          iconName = 'bars';
         }
 
         // You can return any component that you like here! We usually use an
