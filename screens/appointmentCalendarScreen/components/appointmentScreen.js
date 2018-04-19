@@ -16,153 +16,153 @@ import SalonAvatar from '../../../components/SalonAvatar';
 // import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
-  static navigationOptions = ({ navigation }) => {
-    const { params } = navigation.state;
-    let title = (
-      <Text style={{
-        fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
-      }}
-      >All Providers
-      </Text>);
-
-    if (params && 'filterProvider' in params && params.filterProvider !== null) {
-      title = (
-        <View style={{ flexDirection: 'row' }}>
-          <SalonAvatar
-            wrapperStyle={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              marginRight: 6,
-            }}
-            width={20}
-            borderWidth={3}
-            borderColor="white"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
-          />
-          <Text style={{
-          fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
-        }}
-          >{params.filterProvider.fullName}
-          </Text>
-        </View>
-      );
-    }
-
-    return {
-      header: (
-        <View style={{
-          height: 63,
-          paddingBottom: 10,
-          backgroundColor: '#115ECD',
-          flexDirection: 'row',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-        }}
-        >
-          <TouchableOpacity
-            style={{
-              flex: 1 / 5,
-              alignItems: 'flex-start',
-              justifyContent: 'flex-end',
-              marginLeft: 16,
-            }}
-            onPress={() => navigation.state.params.onPressMenu()}
-          >
-            <Icon
-              name="bars"
-              type="regular"
-              color="white"
-              size={19}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              flex: 3 / 5,
-              alignSelf: 'stretch',
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              justifyContent: 'center',
-            }}
-            onPress={() => navigation.state.params.onPressTitle()}
-          >
-            {title}
-            <Icon
-              style={{ marginLeft: 5 }}
-              name="caretDown"
-              type="regular"
-              color="white"
-              size={17}
-            />
-          </TouchableOpacity>
-          <View
-            style={{
-              flex: 1 / 5,
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingRight: 16,
-              flexDirection: 'row',
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.state.params.onPressEllipsis()}
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon
-                name="ellipsisH"
-                type="regular"
-                color="white"
-                size={22}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.state.params.onPressCalendar()}
-              style={{
-                marginLeft: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon
-                name="calendar"
-                type="regular"
-                color="white"
-                size={19}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      ),
-      // headerLeft: (
-
-      // ),
-      // headerRight: (
-
-      // ),
-    };
-  };
-
+  // static navigationOptions = ({ navigation }) => {
+  //   const { params } = navigation.state;
+  //   let title = (
+  //     <Text style={{
+  //       fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+  //     }}
+  //     >All Providers
+  //     </Text>);
+  //
+  //   if (params && 'filterProvider' in params && params.filterProvider !== null) {
+  //     title = (
+  //       <View style={{ flexDirection: 'row' }}>
+  //         <SalonAvatar
+  //           wrapperStyle={{
+  //             alignItems: 'center',
+  //             justifyContent: 'center',
+  //             flexDirection: 'column',
+  //             marginRight: 6,
+  //           }}
+  //           width={20}
+  //           borderWidth={3}
+  //           borderColor="white"
+  //           image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+  //         />
+  //         <Text style={{
+  //         fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
+  //       }}
+  //         >{params.filterProvider.fullName}
+  //         </Text>
+  //       </View>
+  //     );
+  //   }
+  //
+  //   return {
+  //     header: (
+  //       <View style={{
+  //         height: 63,
+  //         paddingBottom: 10,
+  //         backgroundColor: '#115ECD',
+  //         flexDirection: 'row',
+  //         alignItems: 'flex-end',
+  //         justifyContent: 'space-between',
+  //       }}
+  //       >
+  //         <TouchableOpacity
+  //           style={{
+  //             flex: 1 / 5,
+  //             alignItems: 'flex-start',
+  //             justifyContent: 'flex-end',
+  //             marginLeft: 16,
+  //           }}
+  //           onPress={() => navigation.state.params.onPressMenu()}
+  //         >
+  //           <Icon
+  //             name="bars"
+  //             type="regular"
+  //             color="white"
+  //             size={19}
+  //           />
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={{
+  //             flex: 3 / 5,
+  //             alignSelf: 'stretch',
+  //             flexDirection: 'row',
+  //             alignItems: 'flex-end',
+  //             justifyContent: 'center',
+  //           }}
+  //           onPress={() => navigation.state.params.onPressTitle()}
+  //         >
+  //           {title}
+  //           <Icon
+  //             style={{ marginLeft: 5 }}
+  //             name="caretDown"
+  //             type="regular"
+  //             color="white"
+  //             size={17}
+  //           />
+  //         </TouchableOpacity>
+  //         <View
+  //           style={{
+  //             flex: 1 / 5,
+  //             alignItems: 'center',
+  //             justifyContent: 'flex-end',
+  //             paddingRight: 16,
+  //             flexDirection: 'row',
+  //           }}
+  //         >
+  //           <TouchableOpacity
+  //             onPress={() => navigation.state.params.onPressEllipsis()}
+  //             style={{
+  //               alignItems: 'center',
+  //               justifyContent: 'center',
+  //             }}
+  //           >
+  //             <Icon
+  //               name="ellipsisH"
+  //               type="regular"
+  //               color="white"
+  //               size={22}
+  //             />
+  //           </TouchableOpacity>
+  //           <TouchableOpacity
+  //             onPress={() => navigation.state.params.onPressCalendar()}
+  //             style={{
+  //               marginLeft: 20,
+  //               alignItems: 'center',
+  //               justifyContent: 'center',
+  //             }}
+  //           >
+  //             <Icon
+  //               name="calendar"
+  //               type="regular"
+  //               color="white"
+  //               size={19}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     ),
+  //     // headerLeft: (
+  //
+  //     // ),
+  //     // headerRight: (
+  //
+  //     // ),
+  //   };
+  // };
   constructor(props) {
     super(props);
 
-    let filterProvider = null;
-    if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
-      filterProvider = this.props.navigation.state.params.filterProvider;
-    }
+    // let filterProvider = null;
+    // if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
+    //   filterProvider = this.props.navigation.state.params.filterProvider;
+    // }
 
     this.state = {
       visible: false,
-      filterProvider,
+      //filterProvider,
       visibleNewAppointment: false,
       visibleAppointment: false,
       selectedDate: moment(),
       endDate: moment(),
       calendarPickerMode: 'day',
-
+      isLoading: true,
     };
+    props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
 
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
@@ -170,18 +170,16 @@ export default class AppointmentScreen extends Component {
       onPressCalendar: this.onPressCalendar,
       onPressTitle: this.onPressTitle,
     });
+
+    // if (this.state.filterProvider && this.state.filterProvider !== null) {
+    // } else {
+    //   const { selectedDate, endDate, calendarPickerMode } = this.state;
+    //   this.handleDateChange(selectedDate, endDate, calendarPickerMode);
+    // }
   }
 
-  componentWillMount() {
-    if (this.state.filterProvider && this.state.filterProvider !== null) {
-      this.props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
-    } else {
-      const { selectedDate, endDate, calendarPickerMode } = this.state;
-      this.handleDateChange(selectedDate, endDate, calendarPickerMode);
-    }
-  }
-
-  componentDidMount() {
+  componentWillUpdate(nextProps, nextState) {
+      this.state.isLoading = nextProps.appointmentScreenState.isLoading;
   }
 
   onPressMenu = () => alert('Not Implemented');
@@ -190,23 +188,23 @@ export default class AppointmentScreen extends Component {
 
   onPressCalendar = () => alert('Not Implemented');
 
-  onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
+  //onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
 
-  selectFilterProvider = (filterProvider) => {
-    if (filterProvider === 'all') {
-      this.props.navigation.setParams({ filterProvider: null });
-      this.setState({ filterProvider: null }, () => this.handleDateChange(this.state.selectedDate));
-    } else {
-      const { selectedDate, endDate, calendarPickerMode } = this.state;
-      this.props.navigation.setParams({ filterProvider });
-      if (calendarPickerMode === 'week') {
-        this.setState({ filterProvider }, () => this.handleDateChange(selectedDate, endDate, calendarPickerMode));
-      }
-      if (calendarPickerMode === 'day') {
-        this.setState({ filterProvider }, () => this.handleDateChange(this.state.selectedDate));
-      }
-    }
-  };
+  // // selectFilterProvider = (filterProvider) => {
+  //   if (filterProvider === 'all') {
+  //     this.props.navigation.setParams({ filterProvider: null });
+  //     this.setState({ filterProvider: null }, () => this.handleDateChange(this.state.selectedDate));
+  //   } else {
+  //     const { selectedDate, endDate, calendarPickerMode } = this.state;
+  //     this.props.navigation.setParams({ filterProvider });
+  //     if (calendarPickerMode === 'week') {
+  //       this.setState({ filterProvider }, () => this.handleDateChange(selectedDate, endDate, calendarPickerMode));
+  //     }
+  //     if (calendarPickerMode === 'day') {
+  //       this.setState({ filterProvider }, () => this.handleDateChange(this.state.selectedDate));
+  //     }
+  //   }
+  // };
 
   gotToSales = () => {
     alert('Not Implemented');
@@ -242,24 +240,24 @@ export default class AppointmentScreen extends Component {
       calendarPickerMode = this.state.calendarPickerMode;
     }
     // this.setState({ selectedDate, endDate, calendarPickerMode });
-    if (this.state.filterProvider && this.state.filterProvider !== null) {
-      if (calendarPickerMode === 'week') {
-        const dates = [];
-        // endDate.add(1, 'week');
-        for (let i = 0; i < 7; i += 1) {
-          dates.push(moment(endDate.add(1, 'days')));
-        }
-
-        this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
-        // this.props.appointmentCalendarActions.getProviderCalendar(
-        //   this.state.filterProvider.id,
-        //   startDate.format('YYYY-MM-DD'),
-        //   startDate.format('YYYY-MM-DD'),
-        // );
-      } else {
-        this.props.appointmentCalendarActions.setProviderScheduleDates([moment(selectedDate)]);
-      }
-    }
+    // if (this.state.filterProvider && this.state.filterProvider !== null) {
+    //   if (calendarPickerMode === 'week') {
+    //     const dates = [];
+    //     // endDate.add(1, 'week');
+    //     for (let i = 0; i < 7; i += 1) {
+    //       dates.push(moment(endDate.add(1, 'days')));
+    //     }
+    //
+    //     this.props.appointmentCalendarActions.setProviderScheduleDates(dates);
+    //     // this.props.appointmentCalendarActions.getProviderCalendar(
+    //     //   this.state.filterProvider.id,
+    //     //   startDate.format('YYYY-MM-DD'),
+    //     //   startDate.format('YYYY-MM-DD'),
+    //     // );
+    //   } else {
+      //  this.props.appointmentCalendarActions.setProviderScheduleDates([moment(selectedDate)]);
+    //  }
+    //}
     this.setState({ selectedDate, endDate }, () => this.getCalendarData());
   }
 
@@ -292,59 +290,57 @@ export default class AppointmentScreen extends Component {
 
   render() {
     const {
-      apptGridSettings, providerAppointments, providerSchedule, isLoading, dates,
+      apptGridSettings, providerAppointments, providerSchedule, dates,
     } = this.props.appointmentScreenState;
+    const { isLoading } = this.state;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.appointmentScreenState;
-    let calendar = (
-      <SalonCalendar
-        apptGridSettings={apptGridSettings}
-        dataSource={providerAppointments}
-        appointments={appointments}
-        providers={providers}
-        onDrop={this.props.appointmentActions.postAppointmentMove}
-        onResize={this.props.appointmentActions.postAppointmentResize}
-      />
-    );
+    const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
 
-    if (this.state.filterProvider && this.state.filterProvider !== null) {
-      calendar = this.state.calendarPickerMode === 'week' ? (
-        <SalonWeekCalendar
-          apptGridSettings={apptGridSettings}
-          dataSource={providerSchedule}
-          appointments={appointments}
-          displayMode={this.state.calendarPickerMode}
-          dates={dates}
-          onDrop={this.props.appointmentActions.postAppointmentMove}
-        />
-      ) : (
-        <SalonDayCalendar
-          apptGridSettings={apptGridSettings}
-          dataSource={providerSchedule}
-          appointments={appointments}
-          displayMode={this.state.calendarPickerMode}
-          dates={dates}
-          onDrop={this.props.appointmentActions.postAppointmentMove}
-        />
-      );
-    }
-
+    // if (this.state.filterProvider && this.state.filterProvider !== null) {
+    //   calendar = this.state.calendarPickerMode === 'week' ? (
+    //     <SalonWeekCalendar
+    //       apptGridSettings={apptGridSettings}
+    //       dataSource={providerSchedule}
+    //       appointments={appointments}
+    //       displayMode={this.state.calendarPickerMode}
+    //       dates={dates}
+    //       onDrop={this.props.appointmentActions.postAppointmentMove}
+    //     />
+    //   ) : (
+    //     <SalonDayCalendar
+    //       apptGridSettings={apptGridSettings}
+    //       dataSource={providerSchedule}
+    //       appointments={appointments}
+    //       displayMode={this.state.calendarPickerMode}
+    //       dates={dates}
+    //       onDrop={this.props.appointmentActions.postAppointmentMove}
+    //     />
+    //   );
+    // }
     return (
       <View style={{ flex: 1 }}>
 
-        <SalonDatePickerBar
+        {/* <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={this.state.calendarPickerMode}
           onCalendarSelected={() => this.setState({ visible: true })}
           onDateChange={(selectedDate, endDate) => this.handleDateChange(selectedDate, endDate, this.state.calendarPickerMode)}
           selectedDate={moment(this.state.selectedDate)}
-        />
-
+        /> */}
         {
           isLoading ?
-            <ActivityIndicator size="large" color="#0000ff" /> : <View style={{ flex: 1 }}>{calendar}</View>
+            <ActivityIndicator size="large" color="#0000ff" /> :
+            <SalonCalendar
+              apptGridSettings={apptGridSettings}
+              dataSource={providerAppointments}
+              appointments={appointments}
+              headerData={providers}
+              onDrop={this.props.appointmentActions.postAppointmentMove}
+              onResize={this.props.appointmentActions.postAppointmentResize}
+            />
         }
-        { this.state.filterProvider ?
+        {/* { this.state.filterProvider ?
           <ChangeViewFloatingButton handlePress={(isWeek) => {
             const calendarPickerMode = isWeek ? 'week' : 'day';
             const { selectedDate, endDate } = this.state;
@@ -353,10 +349,9 @@ export default class AppointmentScreen extends Component {
             this.handleDateChange(selectedDate, newEndDate, calendarPickerMode);
             // this.handleDateChange(this.state.selectedDate, null, calendarPickerMode);
           }}
-          /> : null
-      }
+          /> : null */}
 
-        <SalonDatePickerSlide
+        {/* <SalonDatePickerSlide
           mode={this.state.calendarPickerMode}
           visible={this.state.visible}
           selectedDate={moment(this.state.selectedDate)}
@@ -373,9 +368,9 @@ export default class AppointmentScreen extends Component {
           onPressArrowRight={() => {
             this.setState({ selectedDate: moment(this.state.selectedDate).add(1, this.state.calendarPickerMode) });
           }}
-        />
+        /> */}
 
-        <SalonNewAppointmentSlide
+        {/* <SalonNewAppointmentSlide
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           onHide={() => {
@@ -389,7 +384,7 @@ export default class AppointmentScreen extends Component {
           onHide={() => {
             this.setState({ visibleAppointment: false });
           }}
-        />
+        /> */}
 
       </View>
     );
