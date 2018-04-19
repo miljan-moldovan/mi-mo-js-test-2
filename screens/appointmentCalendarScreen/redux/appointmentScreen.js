@@ -107,7 +107,6 @@ const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
 
 const getProviderCalendar = () => (dispatch, getState) => {
   const { selectedProvider, startDate, endDate } = getState().appointmentScreenReducer;
-
   dispatch({ type: GET_PROVIDERS_CALENDAR });
   dispatch({ type: GET_APPOINTMENTS_CALENDAR });
   return apiWrapper.doRequest('getEmployeeAppointments', {

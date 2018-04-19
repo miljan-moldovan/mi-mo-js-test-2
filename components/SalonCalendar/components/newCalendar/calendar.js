@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
 import { times, groupBy } from 'lodash';
 import moment from 'moment';
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     position: 'absolute',
-    left: 138,
+    left: 0,
     top: 0,
     right: 0,
   },
@@ -35,6 +35,11 @@ const styles = StyleSheet.create({
     right: 0,
   },
 });
+
+const screenWidth = Dimensions.get('window').width;
+const dayWidth = screenWidth - 36;
+const weekWidth = (screenWidth - 36) / 7;
+const providerWidth = 130;
 
 export default class Calendar extends Component {
   constructor(props) {
@@ -58,14 +63,28 @@ export default class Calendar extends Component {
   }
 
   setCellsByColumn = () => {
-    const { apptGridSettings, headerData, appointments } = this.props;
+    const { apptGridSettings, headerData, appointments, selectedProvider, displayMode} = this.props;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.schedule = times(apptGridSettings.numOfRow, this.createSchedule);
-      //this.groupedAppointments = groupBy(appointments, 'employee.id');
-      this.size = {
-        width: headerData.length * 130 + 138,
-        height: apptGridSettings.numOfRow * 30 + 40,
-      };
+      if (selectedProvider === 'all') {
+        this.size = {
+          width: headerData.length * providerWidth + 138,
+          height: apptGridSettings.numOfRow * 30 + 40,
+        };
+        this.cellWidth = providerWidth;
+      } else if (displayMode === 'week') {
+        this.size = {
+          width: headerData.length * weekWidth + 36,
+          height: apptGridSettings.numOfRow * 30 + 40,
+        };
+        this.cellWidth = weekWidth;
+      } else {
+        this.size = {
+          width: headerData.length * dayWidth + 36,
+          height: apptGridSettings.numOfRow * 30 + 40,
+        };
+        this.cellWidth = dayWidth;
+      }
     }
   }
 
@@ -153,7 +172,7 @@ export default class Calendar extends Component {
   }
 
   render() {
-    const { headerData, apptGridSettings, dataSource } = this.props;
+    const { headerData, apptGridSettings, dataSource, selectedProvider } = this.props;
     const { isScrollEnabled } = this.state;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
@@ -180,6 +199,8 @@ export default class Calendar extends Component {
               apptGridSettings={apptGridSettings}
               groupedAppointments={this.groupedAppointments}
               timeSchedules={dataSource}
+              showAvailability={selectedProvider === 'all'}
+              cellWidth={this.cellWidth}
             />
             { this.renderCards() }
           </ScrollViewChild>
@@ -188,7 +209,11 @@ export default class Calendar extends Component {
             <CurrentTime apptGridSettings={apptGridSettings} />
           </ScrollViewChild>
           <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
-            <Header dataSource={headerData} />
+            <Header
+              dataSource={headerData}
+              isDate={selectedProvider !== 'all'}
+              cellWidth={this.cellWidth}
+            />
           </ScrollViewChild>
         </ScrollView>
       );
