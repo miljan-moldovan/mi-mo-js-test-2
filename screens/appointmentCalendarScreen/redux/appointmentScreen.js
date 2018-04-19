@@ -5,8 +5,6 @@ import {
   GET_APPOINTMENTS_SUCCESS,
 } from '../../../actions/appointment';
 
-import { GET_PROVIDERS_SUCCESS } from '../../providersScreen/redux';
-
 import apiWrapper from '../../../utilities/apiWrapper';
 
 export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
@@ -55,8 +53,10 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
       for (let i = 0; i < providers.length; i += 1) {
         schedule = response[providers[i].id];
         if (schedule) {
-          schedule.provider = providers[i];
+          const provider = providers[i];
+          schedule.provider = provider;
           if (schedule.scheduledIntervals && schedule.scheduledIntervals.length > 0) {
+            provider.schedule = schedule.scheduledIntervals;
             newTime = moment(schedule.scheduledIntervals[0].start, 'HH:mm');
             startTime = startTime && startTime.isBefore(newTime) ? startTime : newTime;
             newTime = moment(schedule.scheduledIntervals[0].end, 'HH:mm');
@@ -100,7 +100,6 @@ const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
   return apiWrapper.doRequest('getEmployees', { query: { maxCount: 10000 } })
     .then((employees) => {
       const providers = orderBy(employees, 'appointmentOrder', 'asc');
-      // dispatch({ type: GET_PROVIDERS_SUCCESS, data: { providers } });
       return dispatch(getProvidersSchedule(providers, date, appointmentResponse));
     })
     .catch(err => dispatch(getProvidersCalendarError(err)));

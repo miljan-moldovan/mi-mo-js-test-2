@@ -58,15 +58,6 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-      <key>192.168.47.168</key>
-      <dict>
-        <key>NSIncludesSubdomains</key>
-        <true/>
-        <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-        <true/>
-        <key>NSTemporaryExceptionMinimumTLSVersion</key>
-        <string>TLSv1.1</string>
-      </dict>
 			<key>zenithnew.dev.cicd.salondev.net</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>

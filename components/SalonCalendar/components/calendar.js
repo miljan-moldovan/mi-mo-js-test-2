@@ -128,7 +128,7 @@ export default class SalonCalendar extends Component {
         <ScrollView
           style={styles.scrollView}
           horizontal
-          crollEventThrottle={16}
+          scrollEventThrottle={16}
           ref={(scrollView1) => { this.horizontalView = scrollView1; }}
           bounces={false}
           scrollEnabled={this.state.isEnabled}
