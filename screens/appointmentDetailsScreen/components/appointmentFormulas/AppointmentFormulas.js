@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topSearchBar: {
-    marginTop: 10,
+    padding: 0,
+    margin: 0,
     backgroundColor: 'transparent',
     flex: 1,
     flexDirection: 'column',
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
   },
   tagsBar: {
     paddingHorizontal: 15,
+    paddingVertical: 0,
     backgroundColor: 'transparent',
     flex: 1,
     flexDirection: 'row',
@@ -323,8 +325,6 @@ export default class AppointmentFormulas extends Component {
   }
 
   render() {
-    console.log('fpormulas', this.props);
-
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -392,6 +392,18 @@ export default class AppointmentFormulas extends Component {
                       <View style={styles.formulaTypeTag}>
                         <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
                       </View>
+                      <TouchableOpacity
+                        onPress={() => alert('Screen Not Implemented')}
+                      >
+                        <FontAwesome
+                          style={{
+                            marginLeft: 10,
+                            color: '#115ECD',
+                            fontSize: 22,
+                          }}
+                        >{Icons.angleRight}
+                        </FontAwesome>
+                      </TouchableOpacity>
                     </View>]}
                   bodyChildren={[
                     <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
@@ -420,6 +432,7 @@ export default class AppointmentFormulas extends Component {
           rootStyle={{
             height: 56,
             width: 56,
+            bottom: 25,
             borderRadius: 56 / 2,
             backgroundColor: '#727A8F',
           }}

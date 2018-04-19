@@ -414,7 +414,8 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    const value = this.state.selectedService ? this.state.selectedService.name : null;
+    debugger //eslint-disable-line
+    const value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : ('serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
     return (
       <TouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}

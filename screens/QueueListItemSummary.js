@@ -78,37 +78,52 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-const queueListItemSummary = props => (
-  <View>
-    <View style={styles.serviceContainer}>
-      <TouchableOpacity onPress={() => alert('Not implemented')}>
-        <View style={[styles.row, styles.rowBorderBottom]}>
-          <Text style={styles.textMedium}>{props.service.serviceName}</Text>
-          <View style={styles.iconContainer}>
-            <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+
+
+class queueListItemSummary extends React.Component {
+  handlePressService = (service) => {
+    this.props.navigation.navigate('Service', {
+      service,
+      index: 0,
+      client: this.props.appointment.client,
+      dismissOnSelect: true,
+      // onChangeService: data => this.handleServiceSelection(data),
+    });
+    this.props.onDonePress();
+  };
+
+  render() {
+    return (<View>
+      <View style={styles.serviceContainer}>
+        <TouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
+          <View style={[styles.row, styles.rowBorderBottom]}>
+            <Text style={styles.textMedium}>{this.props.service.serviceName}</Text>
+            <View style={styles.iconContainer}>
+              <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => alert('Not implemented')}>
-        <View style={styles.row}>
-          <SalonAvatar
-            wrapperStyle={styles.providerRound}
-            width={26}
-            image={{ uri: apiWrapper.getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
-            hasBadge
-            badgeComponent={
-              <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
-                {Icons.lock}
-              </FontAwesome>}
-          />
-          <Text style={styles.textNormal}>{!props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available'}</Text>
-          <View style={styles.iconContainer}>
-            <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
+          <View style={styles.row}>
+            <SalonAvatar
+              wrapperStyle={styles.providerRound}
+              width={26}
+              image={{ uri: apiWrapper.getEmployeePhoto(!this.props.service.isFirstAvailable ? this.props.service.employeeId : 0) }}
+              hasBadge
+              badgeComponent={
+                <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
+                  {Icons.lock}
+                </FontAwesome>}
+            />
+            <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable ? `${this.props.service.employeeFirstName} ${this.props.service.employeeLastName}` : 'First Available'}</Text>
+            <View style={styles.iconContainer}>
+              <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+        </TouchableOpacity>
+      </View>
+    </View>);
+  }
+}
 
 export default queueListItemSummary;

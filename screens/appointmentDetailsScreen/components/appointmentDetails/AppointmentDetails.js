@@ -9,7 +9,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-
+import { connect } from 'react-redux';
 import AppointmentModel from '../../../../utilities/models/appointments';
 
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../../constants/QueueStatus';
@@ -190,7 +190,7 @@ const SalonAppointmentTime = (props) => {
   return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}> {moment(props.appointment.enteredTime, 'hh:mm:ss').format('LT')}</Text>
+      <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
       {caretRight}
       <Text style={styles.serviceTime}>REM Wait</Text>
       <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
@@ -360,7 +360,7 @@ const BottomButton = props => (
   </TouchableOpacity>
 );
 
-export default class AppointmentDetails extends React.Component {
+class AppointmentDetails extends React.Component {
   constructor(props) {
     super(props);
 
@@ -396,13 +396,37 @@ export default class AppointmentDetails extends React.Component {
           </View>
         );
       default:
+
+        console.log(JSON.stringify(item));
+
+        let processTime = moment(item.processTime, 'hh:mm:ss'),
+          progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
+          estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
+          processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+            ? processTime.minutes() + processTime.hours() * 60
+            : 0,
+          progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+            ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+            : 0,
+          estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+            ? estimatedTime.minutes() + estimatedTime.hours() * 60
+            : 0;
+        console.log('processTime', moment(item.processTime, 'hh:mm:ss').isValid());
+        console.log('processTime', processMinutes);
+        console.log('progressMaxTime', moment(item.progressMaxTime, 'hh:mm:ss').isValid());
+        console.log('progressMaxMinutes', progressMaxMinutes);
+        console.log('estimatedTime', moment(item.estimatedTime, 'hh:mm:ss').isValid());
+        console.log('estimatedTimeMinutes', estimatedTimeMinutes);
+        console.log('status', item.status);
+
         return (
           <CircularCountdown
             size={58}
-            estimatedTime={item.estimatedTime}
-            processTime={item.processTime}
+            estimatedTime={progressMaxMinutes}
+            processTime={processMinutes}
             itemStatus={item.status}
             style={styles.circularCountdown}
+            queueType={item.queueType}
           />
         );
     }
@@ -517,6 +541,14 @@ export default class AppointmentDetails extends React.Component {
     );
   }
 
+
+  getGroupLeaderName = (item: QueueItem) => {
+    const { groups } = this.props;
+    if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
+    return 's';
+  }
+
+
   render() {
     if (this.state.appointment === null) {
       return null;
@@ -526,6 +558,7 @@ export default class AppointmentDetails extends React.Component {
     const { appointment } = this.state;
     const { client } = appointment;
     const label = this.getLabelForItem(appointment);
+    const groupLeaderName = this.getGroupLeaderName(appointment);
 
     return (
       <View style={[styles.container]}>
@@ -535,7 +568,7 @@ export default class AppointmentDetails extends React.Component {
               <Text style={styles.infoTitleText}>Queue Appointment</Text>
               <SalonAppointmentTime appointment={appointment} />
               <View style={{ alignSelf: 'flex-start' }}>
-                <ServiceIcons direction="column" item={appointment} />
+                <ServiceIcons direction="column" item={appointment} groupLeaderName={groupLeaderName} />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -626,3 +659,9 @@ AppointmentDetails.propTypes = {
 AppointmentDetails.defaultProps = {
   appointment: null,
 };
+
+const mapStateToProps = (state, ownProps) => ({
+  groups: state.queue.groups,
+});
+
+export default connect(mapStateToProps)(AppointmentDetails);

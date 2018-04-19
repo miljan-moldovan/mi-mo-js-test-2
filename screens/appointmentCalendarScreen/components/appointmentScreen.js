@@ -12,7 +12,7 @@ import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAp
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
 
-import BottomTabBar from '../../../components/bottomTabBar';
+// import BottomTabBar from '../../../components/bottomTabBar';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -342,26 +342,28 @@ export default class AppointmentScreen extends Component {
           }}
         />
 
-        <BottomTabBar
-          tabs={[
-            {
-              icon: 'lineChart', title: 'Sales', callback: this.gotToSales,
-            },
-            {
-            icon: 'calendar', title: 'Appt. Book', callback: this.gotToApptBook,
-            },
-            {
-            icon: 'signIn', title: 'Queue', callback: this.gotToQueue,
-            },
-            {
-            icon: 'driversLicense', title: 'Clients', callback: this.gotToClients,
-            },
-            {
-            icon: 'clipboard', title: 'ScoreCard', callback: this.gotToScoreCard,
-            },
-          ]}
-        />
       </View>
     );
   }
 }
+
+
+// <BottomTabBar
+//   tabs={[
+//   {
+//     icon: 'lineChart', title: 'Sales', callback: this.gotToSales,
+//   },
+//   {
+//    icon: 'calendar', title: 'Appt. Book', callback: this.gotToApptBook,
+//   },
+//   {
+//    icon: 'signIn', title: 'Queue', callback: this.gotToQueue,
+//   },
+//   {
+//    icon: 'driversLicense', title: 'Clients', callback: this.gotToClients,
+//   },
+//   {
+//    icon: 'clipboard', title: 'ScoreCard', callback: this.gotToScoreCard,
+//   },
+// ]}
+// />

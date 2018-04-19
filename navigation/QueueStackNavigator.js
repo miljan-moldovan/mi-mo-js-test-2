@@ -74,9 +74,6 @@ const QueueStackNavigator = StackNavigator(
     Appointment: {
       screen: AppointmentScreen,
     },
-    AppointmentDetails: {
-      screen: AppointmentDetailsScreen,
-    },
     // Service: {
     //   screen: ModifyServiceScreen,
     // },
@@ -85,6 +82,7 @@ const QueueStackNavigator = StackNavigator(
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
