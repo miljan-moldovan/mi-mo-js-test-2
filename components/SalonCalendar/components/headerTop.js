@@ -50,15 +50,13 @@ const renderItems = (item, key) => {
       <Text numberOfLines={1} style={styles.text}>{`${item.name} ${item.lastName[0]}.`}</Text>
 
     </View>
-  )
-};
-
-const headerTop = ({ dataSource }) => {
-  return (
-    <View style={styles.container}>
-      {dataSource.map((item, index) => renderItems(item, index))}
-    </View>
   );
 };
+
+const headerTop = ({ dataSource }) => (
+  <View style={styles.container}>
+    {dataSource.map((item, index) => renderItems(item, index))}
+  </View>
+);
 
 export default headerTop;

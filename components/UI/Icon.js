@@ -9,11 +9,14 @@ import PropTypes from 'prop-types';
 */
 
 import IconDB from './IconDB';
+
 const fontMap = {
-  'regular': 'FontAwesome',
-  'brands': 'FontAwesome5BrandsRegular',
-  'light': 'FontAwesome5ProLight',
-  'solid': 'FontAwesome5ProSolid'
+  solidFree: 'FontAwesome5FreeSolid',
+  simple: 'FontAwesome',
+  regular: 'FontAwesome5ProRegular',
+  brands: 'FontAwesome5BrandsRegular',
+  light: 'FontAwesome5ProLight',
+  solid: 'FontAwesome5ProSolid',
 };
 
 export default class Icon extends Component {
@@ -23,11 +26,12 @@ export default class Icon extends Component {
   _ref = component => this._root = component;
 
   render() {
-    const { style, color, name, type, size: fontSize } = this.props;
+    const {
+      style, color, name, type, size: fontSize,
+    } = this.props;
 
     let fontFamily = 'FontAwesome5ProLight';
-    if (type && fontMap[type])
-      fontFamily = fontMap[type];
+    if (type && fontMap[type]) { fontFamily = fontMap[type]; }
 
     const icon = IconDB[name];
     return (
@@ -37,7 +41,7 @@ export default class Icon extends Component {
           style,
           { fontFamily },
           color ? { color } : null,
-          fontSize ? { fontSize } : null
+          fontSize ? { fontSize } : null,
          ]}
         ref={this._ref}
       >
@@ -49,13 +53,13 @@ export default class Icon extends Component {
 Icon.propTypes = {
   name: PropTypes.string.isRequired,
   color: PropTypes.string,
-  type: PropTypes.oneOf([ 'regular', 'brands', 'light', 'solid' ]),
+  type: PropTypes.oneOf(['regular', 'brands', 'light', 'solid']),
   size: PropTypes.number,
-  style: PropTypes.any
-}
+  style: PropTypes.any,
+};
 
 const styles = StyleSheet.create({
   icon: {
-    backgroundColor:  'transparent',
+    backgroundColor: 'transparent',
   },
 });

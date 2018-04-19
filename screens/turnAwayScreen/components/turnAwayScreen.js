@@ -121,35 +121,36 @@ class TurnAwayScreen extends Component {
   isTurnAwayValid = () => true
 
   onDone() {
-    if (this.isTurnAwayValid()) {
-      const services = [];
-      for (let i = 0; i < this.state.services.length; i++) {
-        const service = this.state.services[i];
-        delete service.service;
-        delete service.provider;
-        service.toTime = service.toTime.format();
-        service.fromTime = service.fromTime.format();
-        services.push(service);
-      }
-
-      const turnAway = {
-        date: this.state.date.format('YYYY-MM-DD'),
-        reasonCode: 'providerUnavail',
-        reason: 'string',
-        myClientId: this.state.selectedClient.id,
-        isAppointmentBookTurnAway: true,
-        services,
-      };
-
-      this.props.turnAwayActions.postTurnAway(turnAway)
-        .then((response) => {
-          // this.getNotes();
-        }).catch((error) => {
-          console.log(error);
-        });
-    } else {
-      alert('Please fill all the fields');
-    }
+    alert('Not Implemented');
+    // if (this.isTurnAwayValid()) {
+    //   const services = [];
+    //   for (let i = 0; i < this.state.services.length; i++) {
+    //     const service = this.state.services[i];
+    //     delete service.service;
+    //     delete service.provider;
+    //     service.toTime = service.toTime.format();
+    //     service.fromTime = service.fromTime.format();
+    //     services.push(service);
+    //   }
+    //
+    //   const turnAway = {
+    //     date: this.state.date.format('YYYY-MM-DD'),
+    //     reasonCode: 'providerUnavail',
+    //     reason: 'string',
+    //     myClientId: this.state.selectedClient.id,
+    //     isAppointmentBookTurnAway: true,
+    //     services,
+    //   };
+    //
+    //   this.props.turnAwayActions.postTurnAway(turnAway)
+    //     .then((response) => {
+    //       // this.getNotes();
+    //     }).catch((error) => {
+    //       console.log(error);
+    //     });
+    // } else {
+    //   alert('Please fill all the fields');
+    // }
   }
 
   handleAddService= () => {

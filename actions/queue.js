@@ -43,6 +43,9 @@ import {
   GROUP_LEAD_UPDATE,
   UNCOMBINE,
   UPDATE_GROUPS,
+  PUT_QUEUE,
+  PUT_QUEUE_SUCCESS,
+  PUT_QUEUE_FAILED,
 } from './constants';
 import apiWrapper from '../utilities/apiWrapper';
 
@@ -169,7 +172,6 @@ export const walkOut = id => async (dispatch: Object => void) => {
 };
 
 export const noShow = id => async (dispatch: Object => void) => {
-  
   console.log('noShow');
   dispatch({ type: CLIENT_NO_SHOW, data: { id } });
   console.log('noShow begin');
@@ -198,7 +200,6 @@ export const noShow = id => async (dispatch: Object => void) => {
 // }
 
 export const finishService = id => async (dispatch: Object => void) => {
-
   console.log('finishService');
   dispatch({ type: CLIENT_FINISH_SERVICE, data: { id } });
   console.log('finishService begin');
@@ -214,7 +215,6 @@ export const finishService = id => async (dispatch: Object => void) => {
 
 
 export const undoFinishService = id => async (dispatch: Object => void) => {
-
   console.log('undoFinishService');
   dispatch({ type: CLIENT_UNDOFINISH_SERVICE, data: { id } });
   console.log('undoFinishService begin');
@@ -237,7 +237,6 @@ export const undoFinishService = id => async (dispatch: Object => void) => {
 
 
 export const toWaiting = id => async (dispatch: Object => void) => {
-
   console.log('toWaiting');
   dispatch({ type: CLIENT_TO_WAITING, data: { id } });
   console.log('toWaiting begin');
@@ -345,3 +344,26 @@ export function updateGroups() {
     type: UPDATE_GROUPS,
   };
 }
+
+
+export const putQueueSuccess = notes => ({
+  type: PUT_QUEUE_SUCCESS,
+  data: { notes },
+});
+
+export const putQueueFailed = error => ({
+  type: PUT_QUEUE_FAILED,
+  data: { error },
+});
+
+export const putQueue = (queueId, queue) => (dispatch) => {
+  dispatch({ type: PUT_QUEUE });
+  return apiWrapper.doRequest('putQueue', {
+    path: {
+      queueId,
+    },
+    body: queue,
+  })
+    .then(response => dispatch(putQueueSuccess(response)))
+    .catch(error => dispatch(putQueueFailed(error)));
+};

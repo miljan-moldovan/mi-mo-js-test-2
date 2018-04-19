@@ -44,6 +44,9 @@ import {
   GROUP_LEAD_UPDATE,
   UNCOMBINE,
   UPDATE_GROUPS,
+  PUT_QUEUE,
+  PUT_QUEUE_SUCCESS,
+  PUT_QUEUE_FAILED,
 } from '../actions/constants';
 import { POST_WALKIN_CLIENT_SUCCESS } from '../actions/walkIn';
 
@@ -587,6 +590,23 @@ export default (state = initialState, action) => {
       return {
         ...state,
         waitingQueue: updatedWaitingQueue,
+      };
+    case PUT_QUEUE:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case PUT_QUEUE_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+      };
+    case PUT_QUEUE_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: data.error,
       };
     default:
       return state;

@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
   TextInput,
   LayoutAnimation,
-  UIManager
+  UIManager,
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -36,27 +36,30 @@ class QueueCombineScreen extends React.Component {
     const { onPressDone, loading } = params;
     return {
       header: (
-          <SafeAreaView style={{justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19 }}>
-            <TouchableOpacity style={styles.navButton} onPress={()=>navigation.goBack()}>
-              <Text style={styles.navButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={styles.headerTitle}>Combine</Text>
-              <Text style={styles.headerSubtitle}>Select clients to combine</Text>
+        <SafeAreaView style={{
+justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
+}}
+        >
+          <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+            <Text style={styles.navButtonText}>Close</Text>
+          </TouchableOpacity>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={styles.headerTitle}>Combine</Text>
+            <Text style={styles.headerSubtitle}>Select clients to combine</Text>
+          </View>
+          {loading ? (
+            <View style={styles.navButton}>
+              <ActivityIndicator />
             </View>
-            {loading ? (
-              <View style={styles.navButton}>
-                <ActivityIndicator />
-              </View>
-            ):(
+            ) : (
               <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
                 <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
               </TouchableOpacity>
             )}
 
-          </SafeAreaView>
+        </SafeAreaView>
       ),
-    }
+    };
   };
 
   state = {
@@ -66,16 +69,17 @@ class QueueCombineScreen extends React.Component {
     groupLeadersTmp: {},
     combinedFirst: false,
     searchText: '',
-    groupLeader: ''
+    groupLeader: '',
   }
   componentWillMount() {
     this.prepareQueueData();
   }
 
   componentWillReceiveProps(nextProps) {
-    const { waitingQueue, serviceQueue, group, error, loading } = nextProps;
-    if (waitingQueue !== this.props.waitingQueue || serviceQueue !== this.props.serviceQueue || group !== this.props.group)
-      this.prepareQueueData(nextProps);
+    const {
+      waitingQueue, serviceQueue, group, error, loading,
+    } = nextProps;
+    if (waitingQueue !== this.props.waitingQueue || serviceQueue !== this.props.serviceQueue || group !== this.props.group) { this.prepareQueueData(nextProps); }
     if (error) {
       console.log('QueueCombineScreen.componentWillReceiveProps error', error);
       Alert.alert('Error', error.toString());
@@ -84,8 +88,7 @@ class QueueCombineScreen extends React.Component {
     if (loading !== undefined && loading !== this.props.loading) {
       console.log('nextProps.loading', loading);
       this.props.navigation.setParams({ loading });
-      if (!loading)
-        this.updateNavButtons();
+      if (!loading) { this.updateNavButtons(); }
     }
   }
   prepareQueueData = (nextProps = {}) => {
@@ -97,30 +100,28 @@ class QueueCombineScreen extends React.Component {
     console.log('prepareQueueData - groups', groups);
     console.log('prepareQueueData - queueData', queueData);
     const groupData = [];
-    for (let groupId in groups) {
+    for (const groupId in groups) {
       const group = groups[groupId];
       // console.log('Search groupLead', groupId, queueData);
       // const groupLead = queueData.find((queueItem) => queueItem.groupId == groupId && queueItem.isGroupLeader) || {};
       console.log('groupLead', groupId);
-      const groupClients = group.clients.map(item=>{
-        return {
-          ...item,
-          queueItem: queueData.find((queueItem) => queueItem.id === item.id)
-        }
-      });
+      const groupClients = group.clients.map(item => ({
+        ...item,
+        queueItem: queueData.find(queueItem => queueItem.id === item.id),
+      }));
       // make sure the group leader is the first item
       groupClients.sort((a, b) => (a.isGroupLeader ? -1 : 1));
       groupData.push({
         groupId,
         title: group.groupLeadName,
-        data: groupClients
-      })
+        data: groupClients,
+      });
     }
     console.log('groupData', groupData);
     this.setState({
       // clients in groups don't show up on the main list, filter them out
-      queueData: queueData.filter(({groupId})=>!groupId),
-      groupData
+      queueData: queueData.filter(({ groupId }) => !groupId),
+      groupData,
     });
   }
 
@@ -141,15 +142,17 @@ class QueueCombineScreen extends React.Component {
     }
   }
   saveData = () => {
-    const { combinedClients, queueData, groupLeader, groupData } = this.state;
+    const {
+      combinedClients, queueData, groupLeader, groupData,
+    } = this.state;
     // combine any selected clients and create a new group
     if (combinedClients && combinedClients.length > 1) {
       const combinedData = [];
       this.props.startCombine();
       console.log('saveData');
-      combinedClients.forEach((id, index)=> {
-        const queueItem = queueData.find((item)=> item.id === id)
-        const clientName = queueItem.client.name +' '+ queueItem.client.lastName;
+      combinedClients.forEach((id, index) => {
+        const queueItem = queueData.find(item => item.id === id);
+        const clientName = `${queueItem.client.name} ${queueItem.client.lastName}`;
         // for now the first client will always be the group lead
         combinedData.push({ id, groupLead: id == groupLeader });
         this.props.combineClient({ id, clientName });
@@ -159,9 +162,7 @@ class QueueCombineScreen extends React.Component {
       this.props.finishCombine(combinedData);
     }
     const groupLeadersNew = this.getUpdatedGroupLeaders();
-    if (groupLeadersNew)
-      this.props.updateGroupLeaders(groupLeadersNew);
-
+    if (groupLeadersNew) { this.props.updateGroupLeaders(groupLeadersNew); }
   }
   getUpdatedGroupLeaders = () => {
     const { groupLeadersTmp, groupData } = this.state;
@@ -170,18 +171,17 @@ class QueueCombineScreen extends React.Component {
       // created map of groupId: groupLeader
       const groupLeadersOld = {};
       groupData.forEach((group) => {
-        let groupLeader = group.data.find((item)=> item.isGroupLeader)
+        const groupLeader = group.data.find(item => item.isGroupLeader);
         groupLeadersOld[group.groupId] = groupLeader.id;
-      })
+      });
       const groupLeadersNew = {};
-      for (let groupId in groupLeadersTmp) {
+      for (const groupId in groupLeadersTmp) {
         const newGroupLeader = groupLeadersTmp[groupId];
         if (newGroupLeader && newGroupLeader != groupLeadersOld[groupId]) {
           groupLeadersNew[groupId] = newGroupLeader;
         }
       }
-      if (Object.keys(groupLeadersNew).length)
-        return groupLeadersNew;
+      if (Object.keys(groupLeadersNew).length) { return groupLeadersNew; }
     }
     return false;
   }
@@ -191,21 +191,25 @@ class QueueCombineScreen extends React.Component {
   }
   // change group leader for existing groups. Will only be applied if user clicks on 'Done'.
   onChangeGroupLeader = (clientId, groupId) => {
-    this.setState({ groupLeadersTmp: {
-      ...this.state.groupLeadersTmp,
-      [groupId]: clientId
-    }}, this.updateNavButtons);
+    this.setState({
+      groupLeadersTmp: {
+        ...this.state.groupLeadersTmp,
+        [groupId]: clientId,
+      },
+    }, this.updateNavButtons);
   }
   toggleSort = () => {
     LayoutAnimation.spring();
     this.setState({
-      combinedFirst: !this.state.combinedFirst
-    })
+      combinedFirst: !this.state.combinedFirst,
+    });
   }
   changeSearchText = searchText => this.setState({ searchText });
 
   render() {
-    const { searchText, combinedFirst, queueData, groupData, groupLeadersTmp } = this.state;
+    const {
+      searchText, combinedFirst, queueData, groupData, groupLeadersTmp,
+    } = this.state;
     console.log('groups', groupData);
     console.log('queueData', queueData);
 
@@ -217,15 +221,15 @@ class QueueCombineScreen extends React.Component {
         onChangeLeader={this.onChangeGroupLeader}
         groupLeaders={groupLeadersTmp} // overrides leaders in groupData - used for leader selection
         loading={this.props.loading}
-       />
-    )
+      />
+    );
     return (
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.searchContainer}>
           <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome>
           <TextInput style={styles.search} onChangeText={this.changeSearchText} value={this.state.searchText} placeholder="Search" returnKeyType="search" />
         </View>
-        <View style={{alignItems: 'flex-start'}}>
+        <View style={{ alignItems: 'flex-start' }}>
           <TouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
             <FontAwesome style={styles.sortButtonIcon}>{combinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
             <Text style={styles.sortButtonLabel}>Sort</Text>
@@ -238,7 +242,7 @@ class QueueCombineScreen extends React.Component {
           navigation={this.props.navigation}
           onChangeCombineClients={this.onChangeCombineClients}
           filterText={searchText}
-         />
+        />
         {combinedFirst ? null : uncombined}
       </KeyboardAwareScrollView>
     );
@@ -249,7 +253,7 @@ const mapStateToProps = (state, ownProps) => ({
   serviceQueue: state.queue.serviceQueue,
   error: state.queue.error,
   groups: state.queue.groups,
-  loading: state.queue.loading
+  loading: state.queue.loading,
 });
 export default connect(mapStateToProps, actions)(QueueCombineScreen);
 
@@ -268,7 +272,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Roboto-Regular',
     color: 'white',
-    marginBottom: 6
+    marginBottom: 6,
   },
   navButton: {
 
@@ -290,7 +294,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     flexDirection: 'row',
     flexShrink: 2,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   sortButtonIcon: {
     color: 'rgba(114,122,143,1)',
@@ -299,7 +303,7 @@ const styles = StyleSheet.create({
   sortButtonLabel: {
     fontSize: 10,
     color: 'rgba(114,122,143,1)',
-    marginLeft: 3
+    marginLeft: 3,
   },
   sortButtonText: {
     fontSize: 10,
@@ -313,14 +317,14 @@ const styles = StyleSheet.create({
     margin: 8,
     alignItems: 'center',
     // justifyContent: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   searchIcon: {
     // position: 'absolute',
     marginLeft: 7,
     color: 'rgba(114,122,143,0.7)',
     // height: '100%',
-    fontSize: 14
+    fontSize: 14,
   },
   search: {
     margin: 7,
@@ -330,5 +334,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     flex: 1,
-  }
+  },
 });

@@ -9,16 +9,16 @@ import Icon from '../components/UI/Icon';
 
 const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
   <View style={{
-      flexDirection: props.direction ? props.direction : 'row',
-      alignItems: props.align ? props.align : 'center',
-    justifyContent: 'center',
-}}
+  flexDirection: props.direction ? props.direction : 'row',
+  alignItems: props.align ? props.align : 'center',
+  justifyContent: 'center',
+  }}
   >
     {item.membership ? star : null}
     {item.newGlobal ? newGlobal : null}
     {item.newLocal ? newLocal : null}
     {item.birthday ? birthday : null}
-    {item.groupId && groupLeaderName ? (<Group leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
+    {item.groupId && groupLeaderName ? (<Group color={props.color} leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
     {/*  (<Group leader leaderName="L C" />) */ }
     {item.attributes && item.attributes.length ? tag : null}
   </View>
@@ -27,8 +27,8 @@ export default ServiceIcons;
 
 const styles = StyleSheet.create({
   clientGroupContainer: {
-    borderColor: '#00E480',
-    backgroundColor: '#F0FEFD',
+  //  borderColor: '#00E480',
+    // backgroundColor: '#F0FEFD',
     borderRadius: 4,
     marginRight: 3,
     borderWidth: 1,
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   dollarSign: {
-    backgroundColor: '#00E480',
+
     color: 'white',
     fontSize: 10,
     fontFamily: 'Roboto-Medium',
@@ -76,16 +76,17 @@ const tag = <Icon style={{ marginRight: 3, color: 'black' }} type="regular" name
 const newGlobal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>NL</Text></View>;
 const newLocal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>N</Text></View>;
 const star = <Icon style={{ color: '#FFA300', marginRight: 3 }} type="regular" name="star" />;
-const Group = ({ leader, leaderName }) => {
+const Group = ({ leader, leaderName, color }) => {
   const names = leaderName.split(' ');
+  color = color || { font: '#00E480', background: '#F1FFF2' };
   const leaderInitials = names[0][0] + names[names.length - 1][0];
   return (
-    <View style={styles.clientGroupContainer}>
+    <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background }]}>
       <View style={styles.clientGroupLabelContainer}>
-        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="regular" color="black" />
+        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="solidFree" color="black" />
         <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>
       </View>
-      { leader ? (<Text style={styles.dollarSign}>$</Text>) : null }
+      { leader ? (<Text style={[styles.dollarSign, { color: color.font }]}>$</Text>) : null }
     </View>
   );
 };

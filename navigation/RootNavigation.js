@@ -44,13 +44,11 @@ const RootDrawerNavigator = TabNavigator(
         } else if (routeName === 'Queue') {
           iconName = 'signIn';
         } else if (routeName === 'Clients') {
-          iconName = 'driversLicense';
+          iconName = 'addressCard';
         } else if (routeName === 'Appt. Book') {
           iconName = 'calendar';
         } else if (routeName === 'Scorecard') {
           iconName = 'clipboard';
-        } else if (routeName === 'Settings') {
-          iconName = 'bars';
         }
 
         // You can return any component that you like here! We usually use an

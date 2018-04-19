@@ -21,9 +21,9 @@ const getServicesFailed = error => ({
   data: { error },
 });
 
-const getServices = () => (dispatch) => {
+const getServices = params => (dispatch) => {
   dispatch({ type: GET_SERVICES });
-  return apiWrapper.doRequest('getServiceTree', {})
+  return apiWrapper.doRequest('getServiceTree', params)
     .then(response => dispatch(getServicesSuccess(response)))
     .catch(error => dispatch(getServicesFailed(error)));
 };

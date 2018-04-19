@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
     fontSize: 11,
-    textDecorationLine: 'underline',
   },
   serviceTime: {
     // fontFamily: 'OpenSans-Bold',
@@ -171,6 +170,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Roboto-Light',
   },
+  apptLabel: {
+    paddingLeft: 5,
+    fontSize: 10,
+    height: 10,
+    width: 10,
+    color: '#53646F',
+  },
 });
 
 const caretRight = (
@@ -187,13 +193,18 @@ const SalonAppointmentTime = (props) => {
   }
 
   const timeCheckedIn = props.appointment.status === 5 ? 0 : estimatedTime;
+  const isAppointment = props.appointment.status === 1;
+
   return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
     <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
       {caretRight}
-      <Text style={styles.serviceTime}>REM Wait</Text>
-      <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
+      <Text style={styles.serviceTime}>exp, start in </Text>
+      <Text style={styles.serviceRemainingWaitTime}>{timeCheckedIn}m
+        {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
+      </Text>
+
     </View>
           </View>);
 };
