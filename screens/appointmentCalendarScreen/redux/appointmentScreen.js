@@ -7,6 +7,9 @@ import {
 
 import apiWrapper from '../../../utilities/apiWrapper';
 
+export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
+export const SET_PICKER_MODE = 'appointmentCalendar/SET_PICKER_MODE';
+export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER';
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const GET_PROVIDERS_CALENDAR = 'appointmentCalendar/GET_PROVIDERS_CALENDAR';
 export const GET_PROVIDER_CALENDAR_SUCCESS = 'appointmentCalendar/GET_PROVIDER_CALENDAR_SUCCESS';
@@ -83,18 +86,18 @@ const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch
       dispatch(getProvidersScheduleSuccess(apptGridSettings, response, providers));
     })
     .catch((err) => {
-      console.log(err);
+      console.warn(err);
     });
 };
 
 const getProvidersCalendarError = error => ({
-  type: w_FAILED,
+  type: GET_APPOINTMENTS_CALENDAR_FAILED,
   data: { error },
 });
 
 const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
   dispatch({ type: GET_PROVIDERS_CALENDAR });
-  return apiWrapper.doRequest('getEmployees', { query: { maxCount: 10000 }})
+  return apiWrapper.doRequest('getEmployees', { query: { maxCount: 10000 } })
     .then((employees) => {
       const providers = orderBy(employees, 'appointmentOrder', 'asc');
       return dispatch(getProvidersSchedule(providers, date, appointmentResponse));
@@ -102,15 +105,17 @@ const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
     .catch(err => dispatch(getProvidersCalendarError(err)));
 };
 
-const getProviderCalendar = (id, startDate, endDate) => (dispatch) => {
+const getProviderCalendar = () => (dispatch, getState) => {
+  const { selectedProvider, startDate, endDate } = getState().appointmentScreenReducer;
+
   dispatch({ type: GET_PROVIDERS_CALENDAR });
   dispatch({ type: GET_APPOINTMENTS_CALENDAR });
   return apiWrapper.doRequest('getEmployeeAppointments', {
-    path: { id, dateFrom: startDate, dateTo: endDate },
+    path: { id: selectedProvider.id, dateFrom: moment(startDate).format('YYYY-MM-DD'), dateTo: moment(endDate).format('YYYY-MM-DD') },
   })
     .then((appointmentResponse) => {
       dispatch({ type: GET_APPOINTMENTS_SUCCESS, data: { appointmentResponse } });
-      return dispatch(getProviderSchedule(id, startDate, endDate, appointmentResponse));
+      return dispatch(getProviderSchedule(selectedProvider.id, moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), appointmentResponse));
     })
     .catch(err => dispatch(getProvidersCalendarError(err)));
 };
@@ -173,7 +178,7 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
     dispatch(getProviderScheduleSuccess(apptGridSettings, dictionary));
   })
   .catch((err) => {
-    console.log(err);
+    console.warn(err);
   });
 
 const getAppointmentsFailed = error => ({
@@ -195,21 +200,55 @@ const getAppoinmentsCalendar = date => (dispatch) => {
     .catch(error => dispatch(getAppointmentsFailed(error)));
 };
 
-const setProviderScheduleDates = dates => ({
-  type: SET_PROVIDER_DATES,
-  data: { dates },
+const setProviderScheduleDates = (startDate, endDate) => (dispatch) => {
+  dispatch({ type: SET_PROVIDER_DATES, data: { startDate, endDate } });
+  return dispatch(setScheduleDateRange());
+};
+
+const setPickerMode = pickerMode => (dispatch) => {
+  dispatch({
+    type: SET_PICKER_MODE,
+    data: { pickerMode },
+  });
+  return dispatch(setScheduleDateRange());
+};
+
+const setScheduleDateRange = () => (dispatch, getState) => {
+  dispatch({ type: SET_DATE_RANGE });
+  return dispatch(getCalendarData());
+};
+
+const setSelectedProvider = selectedProvider => ({
+  type: SET_SELECTED_PROVIDER,
+  data: { selectedProvider },
 });
 
+const getCalendarData = () => (dispatch, getState) => {
+  const { startDate, selectedProvider } = getState().appointmentScreenReducer;
+  if (selectedProvider && selectedProvider !== 'all') {
+    return dispatch(getProviderCalendar());
+  }
+  // dispatch({ type: SET_PICKER_MODE, data: { pickerMode: 'day' } });
+  return dispatch(getAppoinmentsCalendar(moment(startDate).format('YYYY-MM-DD')));
+};
+
 export const appointmentCalendarActions = {
+  getCalendarData,
   getAppoinmentsCalendar,
   getProviderCalendar,
   setProviderScheduleDates,
+  setPickerMode,
+  setSelectedProvider,
 };
 
 const initialState = {
   isLoading: false,
   error: null,
+  pickerMode: 'day',
+  startDate: moment(),
+  endDate: moment(),
   dates: [moment()],
+  selectedProvider: 'all',
   providerAppointments: [],
   providerSchedule: [],
   apptGridSettings: {
@@ -221,13 +260,38 @@ const initialState = {
   providers: [],
 };
 
-export default function appoinmentScreenReducer(state = initialState, action) {
+export default function appointmentScreenReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case SET_SELECTED_PROVIDER:
+      return {
+        ...state,
+        selectedProvider: data.selectedProvider,
+      };
     case SET_PROVIDER_DATES:
       return {
         ...state,
-        dates: data.dates,
+        startDate: moment(data.startDate),
+        endDate: moment(data.endDate),
+      };
+    case SET_DATE_RANGE:
+      const dates = [];
+      if (state.pickerMode === 'day') {
+        dates.push(state.startDate);
+      } else {
+        for (let i = 0; i < 7; i += 1) {
+          dates.push(moment(state.startDate).add(i, 'days'));
+        }
+      }
+
+      return {
+        ...state,
+        dates,
+      };
+    case SET_PICKER_MODE:
+      return {
+        ...state,
+        pickerMode: data.pickerMode,
       };
     case GET_APPOINTMENTS_CALENDAR:
       return {

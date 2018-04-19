@@ -7,6 +7,7 @@ import AppointmentScreen from './components/appointmentScreen';
 const mapStateToProps = state => ({
   appointmentScreenState: state.appointmentScreenReducer,
   appointmentState: state.appointmentReducer,
+  providersState: state.providersReducer,
 });
 
 const mapActionsToProps = dispatch => ({
