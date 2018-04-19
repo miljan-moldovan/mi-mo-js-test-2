@@ -20,7 +20,7 @@ const resources = {
     disableCache: true,
   },
   getEmployeeAppointments: {
-    path: 'Appointment/:dateFrom/:dateTo/Employee/:id/Appointments',
+    path: 'AppointmentBook/:dateFrom/:dateTo/Employee/:id/Appointments',
     method: 'get',
     // expiration: apiConstants.expiration,
     disableCache: true,

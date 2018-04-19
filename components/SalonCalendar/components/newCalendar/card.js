@@ -92,24 +92,20 @@ class appointmentBlock extends Component {
         }
       },
       onPanResponderRelease: (e, gesture) => {
-        // finde Provider
         this.moveX = null;
         this.moveY = null;
-        const availaabilityOffset = this.state.pan.x._value + this.state.pan.x._offset < this.state.left ? 120 : 0
-        const dx = this.state.pan.x._value + this.state.pan.x._offset - this.state.left - availaabilityOffset;
+        const availabilityOffset = this.state.pan.x._value + this.state.pan.x._offset < this.state.left ? 120 : 0
+        const dx = this.state.pan.x._value + this.state.pan.x._offset - this.state.left - availabilityOffset;
         const dy = this.state.pan.y._value + this.state.pan.y._offset - this.state.top._value;
         const remainderX = dx % 130;
         const remainderY = dy % 30;
         const xOffset = 130 - remainderX > 130 / 2 ? dx - remainderX : dx + 130 - remainderX;
-        debugger
         const yOffset = 30 - remainderY > 30 / 2 ? dy - remainderY : dy + 30 - remainderY;
-        const providerIndex = Math.abs(xOffset + this.state.left - 102) / 130;
+        const providerIndex = Math.abs((xOffset + this.state.left) - 102) / 130;
         const provider = this.props.providers[providerIndex];
-        const newFromTime = moment(fromTime, 'HH:mm').add((yOffset/30) * 15, 'minutes').format('HH:mm');
+        const newFromTime = moment(fromTime, 'HH:mm').add((yOffset / 30) * 15, 'minutes').format('HH:mm');
         // calculate new coordinates
-        // const x = (130 - remainderX > 130 / 2 ?
-        //   this.state.pan.x._value - remainderX : this.state.pan.x._value + 130 - remainderX);
-        const x = providerIndex * 130 + 102 - this.state.pan.x._offset;
+        const x = ((providerIndex * 130) + 102) - this.state.pan.x._offset;
         const y = 30 - remainderY > 30 / 2 ?
           this.state.pan.y._value - remainderY : this.state.pan.y._value + 30 - remainderY;
         this.props.onDrop(this.props.appointment.id,{

@@ -17,25 +17,28 @@ export default class Board extends Component {
   }
 
   renderCol = (col, key) => {
-    const { apptGridSettings, rows } = this.props;
+    const { apptGridSettings, rows, cellWidth } = this.props;
     return (
       <Column
         key={key}
         rows={rows}
         colData={col}
+        cellWidth={cellWidth}
       />
     );
   }
 
   render() {
-    const { columns, apptGridSettings, rows, timeSchedules } = this.props;
+    const { columns, apptGridSettings, rows, timeSchedules, showAvailability } = this.props;
     return (
       <View style={styles.container}>
-        <AvailabilityColumn
-          apptGridSettings={apptGridSettings}
-          providers={columns}
-          timeSchedules={timeSchedules}
-        />
+        { showAvailability ?
+          <AvailabilityColumn
+            apptGridSettings={apptGridSettings}
+            providers={columns}
+            timeSchedules={timeSchedules}
+          /> : null
+        }
         { columns.map(this.renderCol) }
       </View>
     );

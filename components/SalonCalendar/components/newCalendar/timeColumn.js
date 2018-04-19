@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
     width: 36,
     backgroundColor: '#fff',
     borderRightWidth: 1,
-    borderTopWidth: 1,
     borderColor: '#C0C1C6',
   },
   rowLabel: {

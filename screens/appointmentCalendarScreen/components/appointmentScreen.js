@@ -249,7 +249,7 @@ export default class AppointmentScreen extends Component {
     //     />
     //   );
     // }
-
+    const headerData = selectedProvider === 'all' ? providers : dates;
     return (
       <View style={{ flex: 1 }}>
         <SalonDatePickerBar
@@ -268,9 +268,11 @@ export default class AppointmentScreen extends Component {
               apptGridSettings={apptGridSettings}
               dataSource={providerAppointments}
               appointments={appointments}
-              headerData={providers}
+              headerData={headerData}
               onDrop={this.props.appointmentActions.postAppointmentMove}
               onResize={this.props.appointmentActions.postAppointmentResize}
+              selectedProvider={selectedProvider}
+              displayMode={pickerMode}
             />
         }
         {selectedProvider !== 'all' && (

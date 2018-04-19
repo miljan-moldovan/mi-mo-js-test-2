@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 30,
-    width: 130,
     borderColor: '#C0C1C6',
     backgroundColor: '#fff',
     borderBottomWidth: 1,
@@ -20,7 +19,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 30,
-    width: 130,
     borderColor: '#C0C1C6',
     backgroundColor: '#ccc',
     borderBottomWidth: 1,
@@ -34,7 +32,7 @@ export default class Column extends Component {
   }
 
   renderCell = (cell) => {
-    const { apptGridSettings, colData } = this.props;
+    const { apptGridSettings, colData, cellWidth } = this.props;
     const time = moment(cell, 'HH:mm A');
     let style = styles.cellContainerDisabled;
     const { schedule } = colData;
@@ -50,7 +48,7 @@ export default class Column extends Component {
     return (
       <View key={cell}>
         <TouchableOpacity
-          style={style}
+          style={[style, { width: cellWidth }]}
           onPress={() => { this.onCellPressed(cell); }}
         />
       </View>
