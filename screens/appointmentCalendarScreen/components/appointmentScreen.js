@@ -141,7 +141,6 @@ export default class AppointmentScreen extends Component {
       // ),
     };
   };
-
   constructor(props) {
     super(props);
 
@@ -152,10 +151,11 @@ export default class AppointmentScreen extends Component {
 
     this.state = {
       visible: false,
-      filterProvider,
       visibleNewAppointment: false,
       visibleAppointment: false,
+      isLoading: true,
     };
+    // props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
 
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
@@ -165,12 +165,12 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-
   componentWillMount() {
     this.getCalendarData();
   }
 
-  componentDidMount() {
+  componentWillUpdate(nextProps, nextState) {
+    this.state.isLoading = nextProps.appointmentScreenState.isLoading;
   }
 
   onPressMenu = () => alert('Not Implemented');
@@ -190,29 +190,6 @@ export default class AppointmentScreen extends Component {
 
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.getCalendarData();
-  }
-
-  gotToSales = () => {
-    alert('Not Implemented');
-  }
-
-  gotToQueue = () => {
-    alert('Not Implemented');
-  }
-
-  gotToApptBook = () => {
-    // this.setState({ visibleNewAppointment: true, visibleAppointment: false });
-    alert('Not Implemented');
-  }
-
-  gotToClients = () => {
-    // this.props.navigation.navigate('Clients');
-    alert('Not Implemented');
-  }
-
-  gotToScoreCard = () => {
-    // this.setState({ visibleAppointment: true, visibleNewAppointment: false });
-    alert('Not Implemented');
   }
 
   getCalendarData = () => {
@@ -245,7 +222,6 @@ export default class AppointmentScreen extends Component {
   render() {
     const {
       dates,
-      isLoading,
       pickerMode,
       startDate,
       endDate,
@@ -254,36 +230,27 @@ export default class AppointmentScreen extends Component {
       apptGridSettings,
       providerAppointments,
     } = this.props.appointmentScreenState;
+    const { isLoading } = this.state;
     const { appointments } = this.props.appointmentState;
-    const { providers } = this.props.providersState;
+    const { providers } = this.props.appointmentScreenState;
+    const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
 
-    let calendar = (
-      <SalonCalendar
-        apptGridSettings={apptGridSettings}
-        dataSource={providerAppointments}
-        appointments={appointments}
-        providers={providers}
-        onDrop={this.props.appointmentActions.postAppointmentMove}
-      />
-    );
-
-    if (selectedProvider !== 'all') {
-      calendar = (
-        <SalonProviderCalendar
-          dates={dates}
-          appointments={appointments}
-          selectedProvider={selectedProvider}
-          displayMode={pickerMode}
-          apptGridSettings={apptGridSettings}
-          dataSource={providerSchedule}
-          onDrop={this.props.appointmentActions.postAppointmentMove}
-        />
-      );
-    }
+    // if (selectedProvider !== 'all') {
+    //   calendar = (
+    //     <SalonProviderCalendar
+    //       dates={dates}
+    //       appointments={appointments}
+    //       selectedProvider={selectedProvider}
+    //       displayMode={pickerMode}
+    //       apptGridSettings={apptGridSettings}
+    //       dataSource={providerSchedule}
+    //       onDrop={this.props.appointmentActions.postAppointmentMove}
+    //     />
+    //   );
+    // }
 
     return (
       <View style={{ flex: 1 }}>
-
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={pickerMode}
@@ -293,15 +260,18 @@ export default class AppointmentScreen extends Component {
           }}
           selectedDate={moment(startDate)}
         />
-
         {
-          isLoading ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator /></View>
-          ) : (
-            <View style={{ flex: 1 }}>{calendar}</View>
-          )
+          isLoading ?
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator /></View> :
+            <SalonCalendar
+              apptGridSettings={apptGridSettings}
+              dataSource={providerAppointments}
+              appointments={appointments}
+              headerData={providers}
+              onDrop={this.props.appointmentActions.postAppointmentMove}
+              onResize={this.props.appointmentActions.postAppointmentResize}
+            />
         }
-
         {selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
             handlePress={(isWeek) => {
@@ -339,7 +309,6 @@ export default class AppointmentScreen extends Component {
             this.setState({ visibleAppointment: false });
           }}
         />
-
       </View>
     );
   }

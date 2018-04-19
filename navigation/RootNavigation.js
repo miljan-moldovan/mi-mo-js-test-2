@@ -26,8 +26,7 @@ import ClientsStackNavigator from './ClientsStackNavigator';
 const RootDrawerNavigator = TabNavigator(
   {
     Queue: { screen: QueueStackNavigator },
-    Sales: { screen: SalesScreen },
-    'Appt. Book': { screen: AppointmentStackNavigator },
+    ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
     Clients: { screen: ClientsStackNavigator },
     Scorecard: { screen: ScorecardScreen },
   //  Settings: { screen: SettingsScreen },
@@ -45,7 +44,7 @@ const RootDrawerNavigator = TabNavigator(
           iconName = 'signIn';
         } else if (routeName === 'Clients') {
           iconName = 'addressCard';
-        } else if (routeName === 'Appt. Book') {
+        } else if (routeName === 'ApptBook') {
           iconName = 'calendar';
         } else if (routeName === 'Scorecard') {
           iconName = 'clipboard';
