@@ -149,6 +149,7 @@ class ApptBookSetEmployeeOrderScreen extends Component {
     this.props.apptBookSetEmployeeOrderActions.postEmployeesAppointmentOrder(newOrder)
       .then((response) => {
         this.getEmployees();
+        this.goBack();
       }).catch((error) => {
         console.log(error);
       });
