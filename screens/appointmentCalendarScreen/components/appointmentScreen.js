@@ -257,6 +257,7 @@ export default class AppointmentScreen extends Component {
           onCalendarSelected={() => this.setState({ visible: true })}
           onDateChange={(startDate, endDate) => {
             this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
+            this.props.appointmentCalendarActions.getCalendarData();
           }}
           selectedDate={moment(startDate)}
         />
@@ -279,6 +280,7 @@ export default class AppointmentScreen extends Component {
             handlePress={(isWeek) => {
               const pickerMode = isWeek ? 'week' : 'day';
               this.props.appointmentCalendarActions.setPickerMode(pickerMode);
+              this.props.appointmentCalendarActions.getCalendarData();
             }}
           />
         )}
@@ -292,7 +294,9 @@ export default class AppointmentScreen extends Component {
           }}
           onDateSelected={(startDate, endDate) => {
             this.setState({ visible: false });
+
             this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
+            this.props.appointmentCalendarActions.getCalendarData();
           }}
         />
 

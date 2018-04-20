@@ -49,11 +49,10 @@ export default class Header extends Component {
   }
 
   renderProvider = (data, index) => {
-    debugger
     const { cellWidth } = this.props;
     const uri = apiWrapper.getEmployeePhoto(data.id);
     return (
-      <View key={data.id} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents={'box-none'}>
+      <View key={data.id} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
         <SalonAvatar
           wrapperStyle={styles.avatarStyle}
           width={24}
@@ -66,23 +65,23 @@ export default class Header extends Component {
         />
         <Text numberOfLines={1} style={styles.columnTitle}>{`${data.name} ${data.lastName[0]}.`}</Text>
       </View>
-    )
+    );
   }
 
   renderDate = (data, index) => {
     const { cellWidth } = this.props;
     return (
-      <View key={data} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents={'box-none'}>
+      <View key={data} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
         <Text numberOfLines={1} style={styles.columnTitle}>{index}</Text>
       </View>
-    )
+    );
   }
 
   render() {
     const { isDate } = this.props;
     const width = isDate ? 36 : 138;
     return (
-      <View style={styles.container} pointerEvents={'box-none'}>
+      <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
           { isDate ? null : <FirstAvailableBtn /> }
         </View>

@@ -213,8 +213,20 @@ const setPickerMode = pickerMode => (dispatch) => {
 };
 
 const setScheduleDateRange = () => (dispatch, getState) => {
+  const { startDate, endDate, pickerMode } = getState().appointmentScreenReducer;
+  const dates = [];
+  let diff = endDate.diff(startDate, 'days');
+  let newEndDate = startDate;
+  dates.push(startDate);
+  if (diff === 0 && pickerMode === 'week') {
+    diff = 7;
+  }
+  debugger//eslint-disable-line
+  for (let i = 0; i < diff; i += 1) {
+    dates.push(newEndDate.add(1, 'day'));
+  }
   dispatch({ type: SET_DATE_RANGE });
-  return dispatch(getCalendarData());
+  // return dispatch(getCalendarData());
 };
 
 const setSelectedProvider = selectedProvider => ({
@@ -274,18 +286,9 @@ export default function appointmentScreenReducer(state = initialState, action) {
         endDate: moment(data.endDate),
       };
     case SET_DATE_RANGE:
-      const dates = [];
-      if (state.pickerMode === 'day') {
-        dates.push(state.startDate);
-      } else {
-        for (let i = 0; i < 7; i += 1) {
-          dates.push(moment(state.startDate).add(i, 'days'));
-        }
-      }
-
       return {
         ...state,
-        dates,
+        dates: data.dates,
       };
     case SET_PICKER_MODE:
       return {
