@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Icon from './../UI/Icon';
+import { CachedImage } from 'react-native-img-cache';
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -114,7 +115,7 @@ export default class SalonAvatar extends React.Component {
           }
 
 
-          <Image
+          <CachedImage
             style={{
                 zIndex: 9999,
                 width: this.state.width,
