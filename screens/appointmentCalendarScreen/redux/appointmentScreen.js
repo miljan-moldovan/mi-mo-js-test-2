@@ -160,7 +160,7 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
       }
     }
 
-    const step = 30;
+    const step = 15;
     if (!startTime) {
       startTime = initialState.apptGridSettings.startTime;
     }
@@ -215,18 +215,17 @@ const setPickerMode = pickerMode => (dispatch) => {
 const setScheduleDateRange = () => (dispatch, getState) => {
   const { startDate, endDate, pickerMode } = getState().appointmentScreenReducer;
   const dates = [];
-  let diff = endDate.diff(startDate, 'days');
-  let newEndDate = startDate;
-  dates.push(startDate);
-  if (diff === 0 && pickerMode === 'week') {
-    diff = 7;
+  let diff = 0;
+
+  if (pickerMode === 'week') {
+    diff = 6;
+    dispatch({ type: SET_PROVIDER_DATES, data: { startDate, endDate: moment(moment(startDate).add(6, 'day')) } });
   }
-  debugger//eslint-disable-line
-  for (let i = 0; i < diff; i += 1) {
-    dates.push(newEndDate.add(1, 'day'));
+  for (let i = 0; i <= diff; i += 1) {
+    dates.push(moment(moment(startDate).add(i, 'day')));
   }
-  dispatch({ type: SET_DATE_RANGE });
-  // return dispatch(getCalendarData());
+  dispatch({ type: SET_DATE_RANGE, data: { dates } });
+  return dispatch(getCalendarData());
 };
 
 const setSelectedProvider = selectedProvider => ({

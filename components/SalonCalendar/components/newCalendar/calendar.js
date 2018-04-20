@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     height: 1000,
     width: 1000,
+    borderColor: '#C0C1C6',
   },
   headerContainer: {
     position: 'absolute',
@@ -25,13 +26,11 @@ const styles = StyleSheet.create({
     right: 0,
   },
   boardContainer: {
-    marginTop: 40,
     marginLeft: 36,
   },
   columnContainer: {
     position: 'absolute',
     left: 0,
-    top: 40,
     right: 0,
   },
 });
@@ -40,6 +39,7 @@ const screenWidth = Dimensions.get('window').width;
 const dayWidth = screenWidth - 36;
 const weekWidth = (screenWidth - 36) / 7;
 const providerWidth = 130;
+const headerHeight = 40;
 
 export default class Calendar extends Component {
   constructor(props) {
@@ -69,19 +69,19 @@ export default class Calendar extends Component {
       if (selectedProvider === 'all') {
         this.size = {
           width: headerData.length * providerWidth + 138,
-          height: apptGridSettings.numOfRow * 30 + 40,
+          height: apptGridSettings.numOfRow * 30 + headerHeight,
         };
         this.cellWidth = providerWidth;
       } else if (displayMode === 'week') {
         this.size = {
           width: headerData.length * weekWidth + 36,
-          height: apptGridSettings.numOfRow * 30 + 40,
+          height: apptGridSettings.numOfRow * 30 + headerHeight,
         };
         this.cellWidth = weekWidth;
       } else {
         this.size = {
           width: headerData.length * dayWidth + 36,
-          height: apptGridSettings.numOfRow * 30 + 40,
+          height: apptGridSettings.numOfRow * 30,
         };
         this.cellWidth = dayWidth;
       }
@@ -150,8 +150,9 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData } = this.props;
+    const { apptGridSettings, headerData, selectedProvider, displayMode } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
+    const isAllProviderView = selectedProvider === 'all';
     if (appointment.employee) {
       return (
         <Card
@@ -166,13 +167,18 @@ export default class Calendar extends Component {
           calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleResize}
+          cellWidth={this.cellWidth}
+          displayMode={isAllProviderView ? 'all' : displayMode}
+          selectedProvider={selectedProvider}
         />);
     }
     return null;
   }
 
   render() {
-    const { headerData, apptGridSettings, dataSource, selectedProvider } = this.props;
+    const { headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule } = this.props;
+    const isDate = selectedProvider !== 'all';
+    const showHeader = displayMode === 'week' || selectedProvider === 'all';
     const { isScrollEnabled } = this.state;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
@@ -182,7 +188,7 @@ export default class Calendar extends Component {
           maximumZoomScale={1.1}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.contentContainer, this.size]}
+          contentContainerStyle={[styles.contentContainer, this.size, { borderTopWidth: !showHeader ? 1 : 0 }]}
           style={styles.container}
           scrollEnabled={isScrollEnabled}
           onScroll={this.handleScroll}
@@ -191,7 +197,7 @@ export default class Calendar extends Component {
         >
           <ScrollViewChild
             scrollDirection="both"
-            style={styles.boardContainer}
+            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0}]}
           >
             <Board
               columns={headerData}
@@ -199,22 +205,26 @@ export default class Calendar extends Component {
               apptGridSettings={apptGridSettings}
               groupedAppointments={this.groupedAppointments}
               timeSchedules={dataSource}
-              showAvailability={selectedProvider === 'all'}
+              showAvailability={!isDate}
               cellWidth={this.cellWidth}
+              isDate={isDate}
+              providerSchedule={providerSchedule}
             />
             { this.renderCards() }
           </ScrollViewChild>
-          <ScrollViewChild scrollDirection="vertical" style={styles.columnContainer}>
+          <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
             <TimeColumn schedule={this.schedule} />
             <CurrentTime apptGridSettings={apptGridSettings} />
           </ScrollViewChild>
-          <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
-            <Header
-              dataSource={headerData}
-              isDate={selectedProvider !== 'all'}
-              cellWidth={this.cellWidth}
-            />
-          </ScrollViewChild>
+          { showHeader ?
+            <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
+              <Header
+                dataSource={headerData}
+                isDate={isDate}
+                cellWidth={this.cellWidth}
+              />
+            </ScrollViewChild> : null
+          }
         </ScrollView>
       );
     }

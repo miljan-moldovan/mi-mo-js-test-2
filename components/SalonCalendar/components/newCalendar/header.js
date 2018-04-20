@@ -15,16 +15,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderColor: '#C0C1C6',
     borderRightWidth: 1,
-    borderTopWidth: 1,
     borderBottomWidth: 1,
+    borderTopWidth: 1,
     alignItems: 'center',
     padding: 8,
+    backgroundColor: '#fff',
+    height: 40,
+  },
+  columnLabelDate: {
+    flexDirection: 'column',
+    borderColor: '#C0C1C6',
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#fff',
     height: 40,
   },
   columnTitle: {
     fontFamily: 'Roboto',
     fontSize: 13,
+    fontWeight: '500',
+    color: '#110A24',
+    flex: 1,
+  },
+  columnDay: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#110A24',
+    flex: 1,
+  },
+  columnDayName: {
+    fontFamily: 'Roboto',
+    fontSize: 14,
     fontWeight: '500',
     color: '#110A24',
     flex: 1,
@@ -70,9 +95,12 @@ export default class Header extends Component {
 
   renderDate = (data, index) => {
     const { cellWidth } = this.props;
+    const dayName = data.format('ddd').toString()
+    const day = data.format('D').toString()
     return (
-      <View key={data} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
-        <Text numberOfLines={1} style={styles.columnTitle}>{index}</Text>
+      <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents={'box-none'}>
+        <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
+        <Text numberOfLines={1} style={styles.columnDayName}>{day}</Text>
       </View>
     );
   }

@@ -184,6 +184,7 @@ export default class AppointmentScreen extends Component {
   selectFilterProvider = (filterProvider) => {
     if (filterProvider === 'all') {
       this.props.navigation.setParams({ filterProvider: null });
+      this.props.appointmentCalendarActions.setPickerMode('day');
     } else {
       this.props.navigation.setParams({ filterProvider });
     }
@@ -273,6 +274,7 @@ export default class AppointmentScreen extends Component {
               onResize={this.props.appointmentActions.postAppointmentResize}
               selectedProvider={selectedProvider}
               displayMode={pickerMode}
+              providerSchedule={providerSchedule}
             />
         }
         {selectedProvider !== 'all' && (
