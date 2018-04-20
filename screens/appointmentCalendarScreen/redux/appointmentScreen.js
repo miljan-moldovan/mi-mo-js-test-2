@@ -160,7 +160,7 @@ const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dis
       }
     }
 
-    const step = 30;
+    const step = 15;
     if (!startTime) {
       startTime = initialState.apptGridSettings.startTime;
     }

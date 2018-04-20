@@ -32,10 +32,16 @@ export default class Column extends Component {
   }
 
   renderCell = (cell) => {
-    const { apptGridSettings, colData, cellWidth } = this.props;
+    const { apptGridSettings, colData, cellWidth, isDate, providerSchedule } = this.props;
     const time = moment(cell, 'HH:mm A');
     let style = styles.cellContainerDisabled;
-    const { schedule } = colData;
+    let schedule;
+    if (isDate) {
+      schedule = providerSchedule[colData.format('YYYY-MM-DD')];
+      schedule = schedule ? schedule.scheduledIntervals : null;
+    } else {
+      schedule = colData.schedule;
+    }
     if (schedule) {
       for (let i = 0; i < schedule.length; i += 1) {
         if (time.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&

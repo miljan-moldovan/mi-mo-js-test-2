@@ -273,6 +273,7 @@ export default class AppointmentScreen extends Component {
               onResize={this.props.appointmentActions.postAppointmentResize}
               selectedProvider={selectedProvider}
               displayMode={pickerMode}
+              providerSchedule={providerSchedule}
             />
         }
         {selectedProvider !== 'all' && (
