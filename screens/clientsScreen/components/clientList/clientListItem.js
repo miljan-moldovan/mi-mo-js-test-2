@@ -77,18 +77,28 @@ const styles = StyleSheet.create({
 class ClientListItem extends React.PureComponent {
   constructor(props) {
     super(props);
+
+    const phones = props.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
+
     this.state = {
       client: props.client,
       name: `${props.client.name} ${props.client.lastName}`,
       boldWords: props.boldWords,
       onPress: props.onPress,
+      email: props.client.email ? props.client.email : null,
+      phone: phones.length > 0 ? phones : null,
     };
   }
 
   componentWillReceiveProps(nextProps) {
+    const phones = nextProps.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
+
+
     this.setState({
       client: nextProps.client,
       name: `${nextProps.client.name} ${nextProps.client.lastName}`,
+      email: nextProps.client.email ? nextProps.client.email : null,
+      phone: phones.length > 0 ? phones : null,
       boldWords: nextProps.boldWords,
       onPress: nextProps.onPress,
     });
@@ -115,26 +125,28 @@ class ClientListItem extends React.PureComponent {
               </View>
             </View>
             <View style={styles.bottomContainer}>
-              {this.props.client.phone &&
+              {this.state.phone &&
               <FontAwesome style={styles.phoneIconLeft}>{Icons.mobile}</FontAwesome>}
-              {this.props.client.phone &&
+              {this.state.phone &&
               <WordHighlighter
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientPhone}
               >
-                {this.props.client.phone}
+                {this.state.phone}
               </WordHighlighter>
-            }
-              {this.props.client.email &&
+}
+
+
+              {this.state.email &&
               <WordHighlighter
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientEmail}
               >
-                {this.props.client.email}
+                {this.state.email}
               </WordHighlighter>
-            }
+}
             </View>
           </View>
 
