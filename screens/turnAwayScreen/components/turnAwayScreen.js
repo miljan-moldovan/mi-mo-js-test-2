@@ -146,7 +146,7 @@ class TurnAwayScreen extends Component {
     //     .then((response) => {
     //       // this.getNotes();
     //     }).catch((error) => {
-    //       console.log(error);
+    //
     //     });
     // } else {
     //   alert('Please fill all the fields');

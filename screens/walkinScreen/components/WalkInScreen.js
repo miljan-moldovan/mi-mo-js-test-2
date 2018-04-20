@@ -35,6 +35,7 @@ class WalkInScreen extends Component {
       // headerTitle: `${name} ${lastName}`,
       headerRight:
   <HeaderRight
+    disabled={false}
     button={(
       <Text style={styles.headerButton}>Done</Text>
       )}

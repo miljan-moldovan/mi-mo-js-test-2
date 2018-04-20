@@ -26,6 +26,7 @@ import QueueHeader from '../components/QueueHeader';
 import Icon from '../components/UI/Icon';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
+import WithPreventDoubleClick from '../components/withPreventDoubleClick';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -375,8 +376,8 @@ class QueueScreen extends React.Component {
 
 
   render() {
-    // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
-    // console.log('QueueScreen.render', this.props.settings);
+    //
+    //
     if (this.state.searchMode) { return this._renderSearchResults(); }
 
     return (
@@ -397,10 +398,10 @@ class QueueScreen extends React.Component {
         />
         {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
-            <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+            <WithPreventDoubleClick onPress={this._handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
               <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
-            </TouchableOpacity>
+            </WithPreventDoubleClick>
           )
         }
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>

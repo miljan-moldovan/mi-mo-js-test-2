@@ -105,10 +105,6 @@ export default class SalonDatePickerBar extends Component {
     let endDate = previousDayStartDate.clone();
     endDate = this.state.mode === 'week' ? endDate.add(6, 'day') : previousDayStartDate;
 
-
-    console.log('startDate: ', previousDayStartDate.format('YYYY-MM-DD'));
-    console.log('endDate: ', endDate.format('YYYY-MM-DD'));
-
     this.props.onDateChange(previousDayStartDate, endDate);
   }
 
@@ -123,9 +119,6 @@ export default class SalonDatePickerBar extends Component {
     this.setState({ startDate: nextDayStartDate });
     let endDate = nextDayStartDate.clone();
     endDate = this.state.mode === 'week' ? endDate.add(6, 'day') : nextDayStartDate.clone();
-
-    console.log('startDate: ', nextDayStartDate.format('YYYY-MM-DD'));
-    console.log('endDate: ', endDate.format('YYYY-MM-DD'));
 
     this.props.onDateChange(nextDayStartDate, endDate);
   }

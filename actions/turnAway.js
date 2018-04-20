@@ -27,7 +27,7 @@ const postTurnAwayFailed = error => ({
 
 const postTurnAway = turnAway => (dispatch) => {
   dispatch({ type: POST_TURN_AWAY });
-  console.log(turnAway);
+  
   return apiWrapper.doRequest('postTurnAway', {
     body: turnAway,
   })

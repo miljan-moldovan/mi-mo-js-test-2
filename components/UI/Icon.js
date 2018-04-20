@@ -53,7 +53,7 @@ export default class Icon extends Component {
 Icon.propTypes = {
   name: PropTypes.string.isRequired,
   color: PropTypes.string,
-  type: PropTypes.oneOf(['regular', 'brands', 'light', 'solid']),
+  type: PropTypes.oneOf(['regular', 'brands', 'light', 'solid', 'solidFree']),
   size: PropTypes.number,
   style: PropTypes.any,
 };

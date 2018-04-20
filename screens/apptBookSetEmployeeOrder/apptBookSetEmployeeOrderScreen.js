@@ -133,7 +133,6 @@ class ApptBookSetEmployeeOrderScreen extends Component {
         this.setState({ employees, order: orderIds, orderEmployees });
       })
       .catch((err) => {
-        console.log(err);
       });
   }
 
@@ -151,7 +150,6 @@ class ApptBookSetEmployeeOrderScreen extends Component {
         this.getEmployees();
         this.goBack();
       }).catch((error) => {
-        console.log(error);
       });
   }
 

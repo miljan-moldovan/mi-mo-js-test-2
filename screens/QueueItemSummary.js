@@ -143,7 +143,6 @@ class QueueItemSummary extends Component {
     } else if (this.props.isVisible && !newProps.isVisible) {
       this.translateY(360).start(() => this.setState({ isVisible: newProps.isVisible }));
     }
-    console.log(JSON.stringify(this.props.appointment));
   }
 
 fadeInOut = value => Animated.timing( // Animate over time
@@ -336,7 +335,6 @@ render() {
   const isBookedByWeb = item.queueType === 3;
 
   const { translateYAnim } = this.state;
-  console.log(JSON.stringify(this.props.services));
 
 
   if (this.state.isVisible) {

@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
   iconStyle: {
     width: 35,
     height: 15,
-    color: '#727A8F',
   },
   weekJumpContainer: {
     height: 44,
@@ -142,9 +141,6 @@ export default class SalonDatePickerSlide extends React.Component {
 
     let endDate = startDate.clone();
     endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
-
-    console.log('startDate: ', startDate.format('YYYY-MM-DD'));
-    console.log('endDate: ', endDate.format('YYYY-MM-DD'));
 
     this.props.onDateSelected(startDate, endDate);
 

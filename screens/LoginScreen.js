@@ -36,7 +36,6 @@ class LoginScreen extends React.Component {
       .then(biometryType => {
         // Success code
         if (biometryType === 'FaceID' || biometryType === 'TouchID') {
-            console.log('Biometry is supported. ', biometryType);
             this.setState({ hasFingerprint: true });
         } else {
             this.setState({ hasFingerprint: false });
@@ -44,14 +43,12 @@ class LoginScreen extends React.Component {
       })
       .catch(error => {
         // Failure code
-        console.log(error);
         this.setState({ hasFingerprint: false });
       });
 
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this.props.auth.loggedIn, this.props.auth.useFingerprintId, this.props.auth.fingerprintAuthenticationTime);
     if (this.props.auth.loggedIn && this.props.auth.useFingerprintId) {
       this._handleFingerprintPress();
     }
@@ -61,7 +58,7 @@ class LoginScreen extends React.Component {
     // if (Platform.OS === 'android') {
     //   // TO DO present Android specific UI
     // }
-    // console.log('_handleFingerprintPress');
+    //
     // const { success, error } = await Fingerprint.authenticateAsync();
     // let message;
     // if (success) {
@@ -103,7 +100,6 @@ class LoginScreen extends React.Component {
   _handleForgotPasswordPress = () => this.props.navigation.navigate('ForgotPassword');
 
   _handleLoginPress = () => {
-    console.log('_handleLoginPress', this.state.hasFingerprint, this.props.auth.useFingerprintId);
     // if the device supports fingerprint and the user hasn't chosen whether to
     // use it yet, present a dialog
     if (this.state.hasFingerprint && (this.props.auth.useFingerprintId === undefined)) {
@@ -171,7 +167,6 @@ class LoginScreen extends React.Component {
 
   render() {
     const { loggedIn } = this.props.auth;
-    console.log('LoginScreen.render');
     return (
       <View style={styles.container}>
         <Image
@@ -242,7 +237,6 @@ class LoginScreen extends React.Component {
   }
 }
 const mapStateToProps = (state, ownProps) => {
-  console.log('login-map');
   return {
     auth: state.auth
   }
