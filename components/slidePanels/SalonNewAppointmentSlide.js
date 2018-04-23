@@ -1,16 +1,16 @@
 import React from 'react';
 import { Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
+import moment from 'moment';
+
 import Icon from './../UI/Icon';
 import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
 import SalonFlatPicker from '../SalonFlatPicker';
-
 import {
   InputGroup,
   InputButton,
   InputSwitch,
   InputDivider,
 } from '../../components/formHelpers';
-
 
 const styles = StyleSheet.create({
   panel: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   otherOptionsLabels: { color: '#115ECD', fontSize: 16 },
 });
 
-export default class SalonDatePickerSlide extends React.Component {
+export default class SalonNewAppointmentSlide extends React.Component {
   static defaultProps = {
     draggableRange: {
       top: Dimensions.get('window').height,
@@ -248,28 +248,36 @@ export default class SalonDatePickerSlide extends React.Component {
 
   constructor(props) {
     super(props);
+    // debugger//eslint-disable-line
     this.state = {
       visible: props.visible,
       selectedFilter: 0,
-      client: undefined,
-      service: undefined,
-      provider: undefined,
+      startTime: 'startTime' in this.props ? this.props.startTime : null,
+      endTime: 'endTime' in this.props ? this.props.endTime : null,
+      client: 'selectedClient' in this.props ? this.props.selectedClient : null,
+      service: 'selectedService' in this.props ? this.props.selectedService : null,
+      provider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
 
-  state:{
-    visible: false,
-    selected: '',
-    selectedFilter: 0,
-    client: undefined,
-    service: undefined,
-    provider: undefined,
-  }
+  // state:{
+  //   visible: false,
+  //   selected: '',
+  //   selectedFilter: 0,
+  //   client: undefined,
+  //   service: undefined,
+  //   provider: undefined,
+  // }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       visible: nextProps.visible,
       selected: nextProps.selectedDate,
+      startTime: 'startTime' in this.props ? this.props.startTime : null,
+      endTime: 'endTime' in this.props ? this.props.endTime : null,
+      client: 'selectedClient' in this.props ? this.props.selectedClient : null,
+      service: 'selectedService' in this.props ? this.props.selectedService : null,
+      provider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     });
 
     if (nextProps.visible) {
@@ -349,17 +357,15 @@ export default class SalonDatePickerSlide extends React.Component {
 
             {this.state.selectedFilter === 0 &&
               <View style={styles.tab} >
-
-
                 <View style={styles.panelTopSection}>
                   <Text style={styles.dateText}>
-                    Wed, Feb 20
+                    {moment(this.props.date).format('ddd, MMM D')}
                   </Text>
 
                   <View style={styles.clockIconContainer}>
                     <Icon style={{ paddingTop: 7, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
                     <Text style={styles.timeText}>
-                      {'11:00 AM > 11:15 AM'}
+                      {`${moment(this.props.startTime).format('HH:mm A')} > ${moment(this.props.endTime).format('HH:mm A')}`}
                     </Text>
                   </View>
                 </View>
@@ -371,43 +377,25 @@ export default class SalonDatePickerSlide extends React.Component {
 
                     {[<InputButton
                       style={{ height: 44 }}
-                      labelStyle={{ fontSize: 16, color: this.state.client ? '#000000' : '#727A8F' }}
-                      onPress={() => {
-                        this.props.navigation.navigate('Clients', {
-                          actionType: 'update',
-                          dismissOnSelect: true,
-                          onChangeClient: this.handleClientSelection,
-                        });
-                      }}
-                      label={this.state.client ? `${this.state.client.name} ${this.state.client.lastName}` : 'Select Client'}
+                      labelStyle={{ fontSize: 16, color: this.props.client ? '#000000' : '#727A8F' }}
+                      onPress={this.props.handlePressClient}
+                      label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
                       iconStyle={{ color: '#115ECD' }}
                     />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <InputButton
                         style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.state.service ? '#000000' : '#727A8F' }}
-                        onPress={() => {
-                          this.props.navigation.navigate('Services', {
-                            actionType: 'update',
-                            dismissOnSelect: true,
-                            onChangeService: this.handleServiceSelection,
-                          });
-                        }}
-                        label={this.state.service ? `${this.state.service.name}` : 'Select a Service'}
+                        labelStyle={{ fontSize: 16, color: this.props.service ? '#000000' : '#727A8F' }}
+                        onPress={this.props.handlePressService}
+                        label={this.props.service ? `${this.props.service.name}` : 'Select a Service'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <InputButton
                         style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.state.provider ? '#000000' : '#727A8F' }}
-                        onPress={() => {
-                          this.props.navigation.navigate('Providers', {
-                            actionType: 'update',
-                            dismissOnSelect: true,
-                            onChangeProvider: this.handleProviderSelection,
-                          });
-                        }}
-                        label={this.state.provider ? `${this.state.provider.name} ${this.state.provider.lastName}` : 'Select a Provider'}
+                        labelStyle={{ fontSize: 16, color: this.props.provider ? '#000000' : '#727A8F' }}
+                        onPress={this.props.handlePressProvider}
+                        label={this.props.provider ? `${this.props.provider.name} ${this.props.provider.lastName}` : 'Select a Provider'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
                     ]}
@@ -420,10 +408,8 @@ export default class SalonDatePickerSlide extends React.Component {
                       <InputSwitch
                         style={{ height: 61, paddingRight: 0, paddingTop: 5 }}
                         textStyle={{ fontSize: 16, color: '#000000' }}
-                        onChange={(state) => {
-
-                        }}
-                        value={this.state.provideIsRequested}
+                        onChange={this.props.handleChangeRequested}
+                        value={this.props.isProviderRequested}
                         text="Provider is Requested?"
                       />,
                     ]}
@@ -447,7 +433,7 @@ export default class SalonDatePickerSlide extends React.Component {
                   <View style={styles.btnTop}>
                     <TouchableOpacity
                       style={styles.bookApptContainer}
-                      onPress={() => { alert('Not implemented'); }}
+                      onPress={this.props.handlePressBook}
                     >
                       <View style={styles.blueButtonContainer}>
                         <Text style={styles.blueButtonText}>

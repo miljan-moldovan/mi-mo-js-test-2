@@ -7,6 +7,14 @@ import {
 
 import apiWrapper from '../../../utilities/apiWrapper';
 
+export const SET_NEW_APPT_EMPLOYEE = 'appointmentCalendar/SET_NEW_APPT_EMPLOYEE';
+export const SET_NEW_APPT_DATE = 'appointmentCalendar/SET_NEW_APPT_DATE';
+export const SET_NEW_APPT_SERVICE = 'appointmentCalendar/SET_NEW_APPT_SERVICE';
+export const SET_NEW_APPT_CLIENT = 'appointmentCalendar/SET_NEW_APPT_CLIENT';
+export const SET_NEW_APPT_START_TIME = 'appointmentCalendar/SET_NEW_APPT_START_TIME';
+export const SET_NEW_APPT_DURATION = 'appointmentCalendar/SET_NEW_APPT_DURATION';
+export const SET_NEW_APPT_REQUESTED = 'appointmentCalendar/SET_NEW_APPT_REQUESTED';
+
 export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
 export const SET_PICKER_MODE = 'appointmentCalendar/SET_PICKER_MODE';
 export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER';
@@ -16,6 +24,44 @@ export const GET_PROVIDER_CALENDAR_SUCCESS = 'appointmentCalendar/GET_PROVIDER_C
 export const GET_APPOINTMENTS_CALENDAR = 'appointmentCalendar/GET_APPOINTMENTS';
 export const GET_APPOINTMENTS_CALENDAR_SUCCESS = 'appointmentCalendar/GET_APPOINTMENTS_CALENDAR_SUCCESS';
 export const GET_APPOINTMENTS_CALENDAR_FAILED = 'appointmentCalendar/GET_APPOINTMENTS_FAILED';
+
+const setNewApptTime = (startTime, endTime) => ({
+  type: SET_NEW_APPT_START_TIME,
+  data: { startTime, endTime },
+});
+
+const setNewApptDate = date => ({
+  type: SET_NEW_APPT_DATE,
+  data: { date },
+});
+
+const setNewApptEmployee = employee => ({
+  type: SET_NEW_APPT_EMPLOYEE,
+  data: { employee },
+});
+
+const setNewApptService = service => ({
+  type: SET_NEW_APPT_SERVICE,
+  data: { service },
+});
+
+const setNewApptClient = client => ({
+  type: SET_NEW_APPT_CLIENT,
+  data: { client },
+});
+
+const setNewApptDuration = () => (dispatch, getState) => {
+  const { newAppointment: { service } } = getState().appointmentScreenReducer;
+};
+
+const bookNewAppt = () => (dispatch, getState) => {
+  const { newAppointment } = getState().appointmentScreenReducer;
+  return apiWrapper.doRequest('postNewAppointment', {
+    body: JSON.stringify(newAppointment),
+  })
+    .then(res => console.warn(res))
+    .catch(err => console.warn(err));
+};
 
 const getProviderScheduleSuccess = (apptGridSettings, dictionary) => ({
   type: GET_PROVIDER_CALENDAR_SUCCESS,
@@ -249,6 +295,13 @@ export const appointmentCalendarActions = {
   setProviderScheduleDates,
   setPickerMode,
   setSelectedProvider,
+  setNewApptClient,
+  setNewApptDate,
+  setNewApptDuration,
+  setNewApptTime,
+  setNewApptEmployee,
+  setNewApptService,
+  bookNewAppt,
 };
 
 const initialState = {
@@ -268,11 +321,103 @@ const initialState = {
     step: 15,
   },
   providers: [],
+  newAppointment: {
+    service: null,
+    client: null,
+    employee: null,
+    date: moment(),
+    bookedByEmployeeId: 0,
+    remarks: '',
+    displayColor: '',
+    recurring: {
+      repeatPeriod: 0,
+      endsAfterCount: 0,
+      endsOnDate: moment(),
+    },
+    clientInfo: {
+      id: 0,
+      email: '',
+      phones: [
+        {
+          type: 'work',
+          value: '',
+        },
+      ],
+      confirmationType: null,
+    },
+    items: [
+      {
+        date: moment(),
+        fromTime: 'string',
+        toTime: 'string',
+        gapTime: 'string',
+        afterTime: 'string',
+        bookBetween: true,
+        employeeId: 0,
+        bookedByEmployeeId: 0,
+        serviceId: 0,
+        clientId: 0,
+        requested: true,
+        roomId: 0,
+        roomOrdinal: 0,
+        resourceId: 0,
+        resourceOrdinal: 0,
+        primaryAppointmentId: 0,
+        isFirstAvailable: true,
+      },
+    ],
+  },
 };
 
 export default function appointmentScreenReducer(state = initialState, action) {
   const { type, data } = action;
+  const { newAppointment } = state;
   switch (type) {
+    case SET_NEW_APPT_DATE:
+      newAppointment.date = data.date;
+      return {
+        ...state,
+        newAppointment,
+      };
+    case SET_NEW_APPT_START_TIME:
+      newAppointment.startTime = data.startTime;
+      newAppointment.endTime = data.endTime;
+      newAppointment.items[0].fromTime = data.startTime;
+      newAppointment.items[0].toTime = data.endTime;
+      return {
+        ...state,
+        newAppointment,
+      };
+    case SET_NEW_APPT_CLIENT:
+      newAppointment.client = data.client;
+      newAppointment.clientInfo = data.client;
+      newAppointment.items[0].clientId = data.client.id;
+      return {
+        ...state,
+        newAppointment,
+      };
+    case SET_NEW_APPT_EMPLOYEE:
+      newAppointment.employee = data.employee;
+      newAppointment.bookedByEmployeeId = data.employee.id;
+      newAppointment.items[0].employeeId = data.employee.id;
+      newAppointment.items[0].bookedByEmployeeId = data.employee.id;
+      return {
+        ...state,
+        newAppointment,
+      };
+    case SET_NEW_APPT_SERVICE:
+      newAppointment.service = data.service;
+      newAppointment.items[0].serviceId = data.service.id;
+      return {
+        ...state,
+        newAppointment,
+      };
+    case SET_NEW_APPT_DURATION:
+      newAppointment.duration = data.duration;
+      return {
+        ...state,
+        newAppointment,
+      };
     case SET_SELECTED_PROVIDER:
       return {
         ...state,

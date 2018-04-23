@@ -63,7 +63,9 @@ export default class Calendar extends Component {
   }
 
   setCellsByColumn = () => {
-    const { apptGridSettings, headerData, appointments, selectedProvider, displayMode} = this.props;
+    const {
+      apptGridSettings, headerData, appointments, selectedProvider, displayMode,
+    } = this.props;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.schedule = times(apptGridSettings.numOfRow, this.createSchedule);
       if (selectedProvider === 'all') {
@@ -150,7 +152,9 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode } = this.props;
+    const {
+      apptGridSettings, headerData, selectedProvider, displayMode,
+    } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     if (appointment.employee) {
@@ -176,7 +180,9 @@ export default class Calendar extends Component {
   }
 
   render() {
-    const { headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule } = this.props;
+    const {
+      headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule,
+    } = this.props;
     const isDate = selectedProvider !== 'all';
     const showHeader = displayMode === 'week' || selectedProvider === 'all';
     const { isScrollEnabled } = this.state;
@@ -197,9 +203,10 @@ export default class Calendar extends Component {
         >
           <ScrollViewChild
             scrollDirection="both"
-            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0}]}
+            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
           >
             <Board
+              onCellPressed={this.props.onCellPressed}
               columns={headerData}
               rows={this.schedule}
               apptGridSettings={apptGridSettings}
