@@ -437,6 +437,8 @@ class AppointmentDetails extends React.Component {
   handleAddService = () => {
     this.props.navigation.navigate('Service', {
       client: this.state.appointment.client,
+      services: this.state.appointment.services,
+      appointment: this.state.appointment,
       dismissOnSelect: true,
       onChangeService: data => this.handleServiceSelection(data),
     });
@@ -446,6 +448,8 @@ class AppointmentDetails extends React.Component {
     this.props.navigation.navigate('Service', {
       service,
       index,
+      appointment: this.state.appointment,
+      services: this.state.appointment.services,
       client: this.state.appointment.client,
       dismissOnSelect: true,
       onChangeService: data => this.handleServiceSelection(data),
@@ -455,6 +459,7 @@ class AppointmentDetails extends React.Component {
   handleAddProduct = () => {
     this.props.navigation.navigate('Product', {
       client: this.state.appointment.client,
+
       dismissOnSelect: true,
       onChangeProduct: data => this.handleProductSelection(data),
     });
@@ -595,7 +600,7 @@ class AppointmentDetails extends React.Component {
               ]}
             />
             <Text style={styles.titleText}>Services</Text>
-            {appointmentDetailsState.services.map((item, index) => (
+            {this.state.appointment.services.map((item, index) => (
               <ServiceCard
                 key={Math.random()}
                 onPress={() => this.handlePressService(item, index)}

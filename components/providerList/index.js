@@ -184,7 +184,7 @@ class ProviderList extends React.Component {
     }
     const image = apiWrapper.doRequest('getEmployeePhoto', { path: { id: provider.id } })
       .then((pic) => {
-      debugger//eslint-disable-line
+
       });
 
     return (

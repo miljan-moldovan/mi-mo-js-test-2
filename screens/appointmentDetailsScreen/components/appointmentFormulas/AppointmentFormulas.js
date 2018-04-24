@@ -237,7 +237,7 @@ export default class AppointmentFormulas extends Component {
 
   existingCategories = () => {
     const { formulas } = this.props.appointmentFormulasState;
-    // debugger//eslint-disable-line
+    
     const existing = [];
     for (let i = 0; i < formulas.length; i += 1) {
       if (existing.indexOf(formulas[i].category) < 0) {

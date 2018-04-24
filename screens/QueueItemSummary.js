@@ -293,7 +293,7 @@ renderBtnContainer = () => {
       >
         <View style={styles.btnGroup}>
           <View style={otherBtnStyle}>
-            <Icon name="penAlt" size={16} color="#fff" type="solidFree" />
+            <Icon name="penAlt" size={16} color="#fff" type="solid" />
           </View>
           <Text style={styles.btnbottomText}>Modify</Text>
         </View>

@@ -485,15 +485,17 @@ export class ProviderInput extends React.Component {
         <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
+              {this.state.selectedProvider &&
               <SalonAvatar
                 wrapperStyle={styles.providerRound}
                 width={30}
                 borderWidth={1}
                 borderColor="transparent"
                 image={{ uri: employeePhoto }}
-                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA'}</Text></View>}
-              />
+                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA') : ''}</Text></View>}
+              /> }
               <Text style={[styles.inputText]}>{value}</Text>
+
             </View>
           )}
         </View>
