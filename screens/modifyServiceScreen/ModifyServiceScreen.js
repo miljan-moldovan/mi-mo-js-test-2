@@ -86,11 +86,12 @@ export default class ModifyServiceScreen extends React.Component {
   }
 
   onSave = () => {
-    const { service, index } = this.state;
-    // this.props.queueActions.addService({ service, index });
-    this.saveQueue();
+    alert('Not implemented');
 
-    this.props.navigation.goBack();
+    // const { service, index } = this.state;
+    // this.saveQueue();
+    //
+    // this.props.navigation.goBack();
   }
 
   removeService = (index) => {
