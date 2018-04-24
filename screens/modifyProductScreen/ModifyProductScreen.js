@@ -51,6 +51,7 @@ export default class ModifyProductScreen extends React.Component {
 
     headerRight: (
       <SalonTouchableOpacity
+        wait={3000}
         onPress={rootProps.navigation.state.params.onSave}
       >
         <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>

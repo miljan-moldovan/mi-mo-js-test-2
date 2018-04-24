@@ -54,6 +54,7 @@ export default class ModifyServiceScreen extends React.Component {
 
     headerRight: (
       <SalonTouchableOpacity
+        wait={3000}
         onPress={rootProps.navigation.state.params.onSave}
       >
         <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>

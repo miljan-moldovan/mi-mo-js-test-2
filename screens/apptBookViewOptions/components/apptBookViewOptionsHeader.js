@@ -124,6 +124,7 @@ export default class ApptBookViewOptionsHeader extends React.Component {
         <Text style={styles.titleText}>View Options</Text>
       </View>
       <SalonTouchableOpacity
+        wait={3000}
         style={styles.rightButton}
         onPress={() => { this.props.rootProps.navigation.state.params.handlePress(); }}
       >

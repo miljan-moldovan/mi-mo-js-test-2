@@ -123,6 +123,7 @@ export default class AppointmentNoteHeader extends React.Component {
         <Text style={styles.titleText}>New Note</Text>
       </View>
       <SalonTouchableOpacity
+        wait={3000}
         style={styles.rightButton}
         onPress={() => { this.props.rootProps.navigation.state.params.handlePress(); }}
       >

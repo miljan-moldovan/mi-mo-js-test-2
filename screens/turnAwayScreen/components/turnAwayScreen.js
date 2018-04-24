@@ -83,6 +83,7 @@ class TurnAwayScreen extends Component {
 
     headerRight: (
       <SalonTouchableOpacity
+        wait={3000}
         onPress={rootProps.navigation.state.params ? rootProps.navigation.state.params.onDone : () => {}}
       >
         <Text style={{ fontSize: 14, color: 'white' }}>Done</Text>

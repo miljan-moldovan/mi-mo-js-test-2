@@ -130,6 +130,7 @@ export default class ApptBookSetEmployeeOrderHeader extends React.Component {
       </View>
       <SalonTouchableOpacity
         style={styles.rightButton}
+        wait={3000}
         onPress={() => { this.props.params.handlePress(); }}
       >
         <View style={styles.rightButtonContainer}>
