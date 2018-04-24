@@ -408,8 +408,6 @@ class AppointmentDetails extends React.Component {
         );
       default:
 
-        console.log(JSON.stringify(item));
-
         let processTime = moment(item.processTime, 'hh:mm:ss'),
           progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
           estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
@@ -422,13 +420,6 @@ class AppointmentDetails extends React.Component {
           estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
             ? estimatedTime.minutes() + estimatedTime.hours() * 60
             : 0;
-        console.log('processTime', moment(item.processTime, 'hh:mm:ss').isValid());
-        console.log('processTime', processMinutes);
-        console.log('progressMaxTime', moment(item.progressMaxTime, 'hh:mm:ss').isValid());
-        console.log('progressMaxMinutes', progressMaxMinutes);
-        console.log('estimatedTime', moment(item.estimatedTime, 'hh:mm:ss').isValid());
-        console.log('estimatedTimeMinutes', estimatedTimeMinutes);
-        console.log('status', item.status);
 
         return (
           <CircularCountdown

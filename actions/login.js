@@ -8,7 +8,7 @@ import AT from './types';
 
 import processError from '../utilities/processError.js';
 
-export const login = (username: string, password: string, callback: (success: boolean, message: ?string) => void)  => async (dispatch: Object => void) => {
+export const login = (username: string, password: string, callback: (success: boolean, message: ?string) => void) => async (dispatch: Object => void) => {
   setTimeout(() => { // emulate delay while API isn't ready
     try {
       // const url = endpoints.LOGIN;
@@ -16,19 +16,17 @@ export const login = (username: string, password: string, callback: (success: bo
       if (username != 'test' || password != 'test') {
         throw { response: { data: { message: 'Invalid password. Try u: test p: test' } } };
       }
-      let data = { jws: 'abcxyz'};
-      console.log('login ', data);
+      const data = { jws: 'abcxyz' };
       dispatch({
         type: AT.LOGIN_SUCCESS,
-        data
+        data,
       });
       callback(true);
     } catch (error) {
-      console.log('Login error', error);
       const e = processError(error);
       dispatch({
         type: AT.LOGIN_FAILURE,
-        data: { errorMessage: e.message }
+        data: { errorMessage: e.message },
       });
       callback(false, e.message, error);
     }

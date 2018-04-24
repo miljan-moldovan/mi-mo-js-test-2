@@ -74,7 +74,6 @@ class QueueDetailScreen extends React.Component {
     });
   }
   _handleServiceChange = (service) => {
-    console.log('QueueDetail._handleServiceChange', service);
     this.setState({
       item: {
         ...this.state.item,
@@ -103,7 +102,6 @@ class QueueDetailScreen extends React.Component {
     });
   }
   _handlePromoChange = (promotion) => {
-    console.log('QueueDetailScreen._handlePromoChange', promotion);
     this.setState({
       item: {
         ...this.state.item,
@@ -151,7 +149,6 @@ class QueueDetailScreen extends React.Component {
   }
 }
 const mapStateToProps = (state, ownProps) => {
-  console.log('QueueDetailScreen-map', state);
   return {
     waitingQueue: state.queue.waitingQueue,
     serviceQueue: state.queue.serviceQueue,

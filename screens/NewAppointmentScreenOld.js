@@ -139,7 +139,6 @@ class NewAppointmentsScreen extends React.Component {
     });
   }
   _handleClientChange = (client) => {
-    console.log('NewAppointmentsScreen._handleClientChange', client);
     this.setState({
       item: {
         ...this.state.item,
@@ -154,7 +153,6 @@ class NewAppointmentsScreen extends React.Component {
     });
   }
   _handleServiceChange = (service) => {
-    console.log('NewAppointmentsScreen._handleServiceChange', service);
     const { item } = this.state;
     this.setState({
       item: {
@@ -191,7 +189,6 @@ class NewAppointmentsScreen extends React.Component {
   }
   render() {
     const { item } = this.state;
-    console.log('item', item);
     const service = item.services[0];
     const employee = service.employees[0].name+' '+service.employees[0].lastName;
     const client = item.client.name;

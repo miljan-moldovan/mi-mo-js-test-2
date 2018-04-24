@@ -40,11 +40,9 @@ export default class SettingsScreen extends React.Component {
       const store = await AsyncStorage.getItem(STOREKEY);
       if (apiURL !== null || store !== null) {
         this.setState({ apiURL, store });
-        console.log('loaded Values', apiURL, store);
       }
     } catch (error) {
       // Error retrieving data
-      console.log('no store found');
     }
   }
   saveSettings = async () => {
@@ -74,7 +72,6 @@ export default class SettingsScreen extends React.Component {
   _handleStoreChange = store => this.setState({ store });
 
   render() {
-    console.log('LoginScreen.render');
     return (
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

@@ -178,7 +178,7 @@ export const InputDivider = props => (
 );
 
 InputDivider.propTypes = {
-  style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  style: ViewPropTypes.style,
 };
 
 InputDivider.defaultProps = {
@@ -471,7 +471,6 @@ export class ProviderInput extends React.Component {
   }
 
   render() {
-    console.log(JSON.stringify(this.state.selectedProvider));
     const value = this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available') : '';
 
 

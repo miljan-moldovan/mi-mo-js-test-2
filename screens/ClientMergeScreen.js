@@ -74,18 +74,17 @@ class ClientMergeScreen extends React.Component {
     const { error, loading } = nextProps;
 
     if (error) {
-      console.log('ClientMergeScreen.componentWillReceiveProps error', error);
       Alert.alert('Error', error.toString());
     }
 
     if (loading !== undefined && loading !== this.props.loading) {
-      // console.log('nextProps.loading', loading);
+      //
       this.props.navigation.setParams({ loading });
     }
   }
 
   onChangeMergeClients = (mergedClients, mainClient) => {
-    // console.log('onChangeMergeClients', mergedClients, mainClient);
+    //
     if (mergedClients) {
       if (mergedClients && mergedClients.length > 1) {
         this.props.navigation.setParams({ onPressDone: this.onFinishMergeClients });

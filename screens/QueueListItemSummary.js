@@ -136,7 +136,6 @@ class queueListItemSummary extends React.Component {
 
 
     }).catch((error) => {
-      console.log(error);
     });
   }
 
@@ -178,7 +177,6 @@ class queueListItemSummary extends React.Component {
 
 
     }).catch((error) => {
-      console.log(error);
     });
   }
 

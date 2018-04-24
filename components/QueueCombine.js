@@ -52,7 +52,7 @@ class QueueCombineItem extends React.PureComponent {
 
 
   _onPressSelectLeader = () => {
-    // console.log('_onPressSelectLeader', this.props.id);
+    //
     this.props.onPressSelectLeader(this.props.id, this.props.groupId);
   }
   getLabelForItem = (item: QueueItem) => {
@@ -78,9 +78,6 @@ class QueueCombineItem extends React.PureComponent {
     const {
       selected, item, type, groupLeader,
     } = this.props;
-
-
-    console.log(JSON.stringify(item));
     if (type === 'uncombine' || selected) {
       return (
         <TouchableOpacity onPress={this._onPressSelectLeader} style={styles.dollarSignContainerTouchable}>
@@ -215,7 +212,6 @@ export class QueueCombine extends React.Component {
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
   _onPressItem = (id: string) => {
-    console.log('_onPressItem', id);
     // updater functions are preferred for transactional updates
     this.setState((state) => {
       const selected = new Map(state.selected);
@@ -237,7 +233,6 @@ export class QueueCombine extends React.Component {
         // if the previous group leader was unselected, the first selected person from the list will be the leader
         groupLeader = selectedArray[0];
       }
-      console.log('_onPressItem groupLeader', groupLeader);
       if (this.props.onChangeCombineClients) {
         this.props.onChangeCombineClients(selectedArray, groupLeader);
       }
@@ -245,7 +240,6 @@ export class QueueCombine extends React.Component {
     });
   };
   _onPressSelectLeader = (id: string) => {
-    console.log('_onPressSelectLeader', id);
     this.setState({ groupLeader: id });
     this.props.onChangeCombineClients(null, id);
   }
@@ -300,7 +294,7 @@ export class QueueUncombine extends React.Component {
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
   // _onPressItem = (id: string) => {
-  //   console.log('_onPressItem', id);
+  //
   //   // updater functions are preferred for transactional updates
   //   this.setState((state) => {
   //     const selected = new Map(state.selected);
@@ -319,14 +313,13 @@ export class QueueUncombine extends React.Component {
   //   });
   // };
   _onPressSelectLeader = (id: string, groupId: string) => {
-    console.log('_onPressSelectLeader', id, groupId);
     if (this.props.onChangeLeader) { this.props.onChangeLeader(id, groupId); }
   }
   renderItem = ({ item, index, section }) => {
     const groupLeader = this.props.groupLeaders[section.groupId] ?
       item.id === this.props.groupLeaders[section.groupId] :
       item.isGroupLeader;
-    // console.log('*** QueueUncombine renderItem', this.props.groupLeaders[section.groupId], item.isGroupLeader, groupLeader, item);
+    //
     return (
       <QueueCombineItem
         id={item.id}
@@ -343,7 +336,6 @@ export class QueueUncombine extends React.Component {
     );
   }
   renderSectionHeader = ({ section }) => {
-    console.log('renderSectionHeader', section);
     const { loading } = this.props;
     return (
       <View style={styles.sectionHeader}>

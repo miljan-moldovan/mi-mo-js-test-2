@@ -117,7 +117,7 @@ export class ClientMerge extends React.Component {
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
   _onPressItem = (id: string) => {
-    // console.log('_onPressItem', id);
+    //
     // updater functions are preferred for transactional updates
     this.setState((state) => {
       const selected = new Map(state.selected);
@@ -150,7 +150,7 @@ export class ClientMerge extends React.Component {
     });
   };
   _onPressSelectMain = (id: string) => {
-    // console.log('_onPressSelectMain', id);
+    //
     this.setState({ mainClient: id });
     this.props.onChangeMergeClients(null, id);
   }
