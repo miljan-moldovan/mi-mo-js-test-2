@@ -2,12 +2,12 @@
 import React from 'react';
 import { View,
   Text,
-  TouchableHighlight,
   StyleSheet,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import SalonAvatar from '../SalonAvatar';
 import apiWrapper from '../../utilities/apiWrapper';
+import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   itemSeparator: {
@@ -188,7 +188,7 @@ class ProviderList extends React.Component {
       });
 
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         key={provider.id}
         style={isSelected ? styles.selectedProvider : styles.provider}
         underlayColor="transparent"
@@ -244,7 +244,7 @@ class ProviderList extends React.Component {
             <Text style={styles.providerMin}>min</Text>
           </View>
         </View>
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
   render() {
@@ -252,7 +252,7 @@ class ProviderList extends React.Component {
 
       <View style={styles.providerListContainer}>
 
-        <TouchableHighlight
+        <SalonTouchableHighlight
           style={this.state.firstAvailableSelected ? styles.selectedProvider : styles.provider}
           underlayColor="transparent"
           onPress={() => {
@@ -287,7 +287,7 @@ class ProviderList extends React.Component {
               <Text style={styles.providerMin}>min</Text>
             </View>
           </View>
-        </TouchableHighlight>
+        </SalonTouchableHighlight>
 
         <FlatList
           style={styles.providersList}

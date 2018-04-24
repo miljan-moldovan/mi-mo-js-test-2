@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { View, StyleSheet, Text } from 'react-native';
 import PropTypes from 'prop-types';
 
 import SalonAvatar from '../../../components/SalonAvatar';

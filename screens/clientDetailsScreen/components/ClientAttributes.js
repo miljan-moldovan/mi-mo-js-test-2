@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Switch,
 } from 'react-native';
 
 import Button from '../../../components/Button';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -93,7 +93,7 @@ export default class ClientNotes extends Component {
     return (
       <View style={styles.container}>
         <View>
-          <TouchableOpacity
+          <SalonTouchableOpacity
             style={styles.switchItem}
             onPress={() => {
               this.setState({ premiumSwitch: !this.state.premiumSwitch });
@@ -107,8 +107,8 @@ export default class ClientNotes extends Component {
                 this.setState({ premiumSwitch: !this.state.premiumSwitch });
               }}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </SalonTouchableOpacity>
+          <SalonTouchableOpacity
             style={styles.switchItem}
             onPress={() => {
               this.setState({ vipSwitch: !this.state.vipSwitch });
@@ -121,7 +121,7 @@ export default class ClientNotes extends Component {
                 this.setState({ vipSwitch: !this.state.vipSwitch });
               }}
             />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
           <View style={{ marginTop: 20 }}>
             <Button type="light" text="Modify Attributes List" onPress={() => {}} />
           </View>

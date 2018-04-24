@@ -3,11 +3,13 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import apiWrapper from '../../utilities/apiWrapper';
+
+import SalonTouchableOpacity from '../SalonTouchableOpacity';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -58,12 +60,12 @@ export default class SalonServiceList extends React.Component {
   }
 
   renderItem = (item) => {
-    <TouchableOpacity key={item.id} style={styles.inputRow} onPress={() => this.handlePress(item)}>
+    <SalonTouchableOpacity key={item.id} style={styles.inputRow} onPress={() => this.handlePress(item)}>
       <Text style={styles.textStyle}>{item.name}</Text>
       {item.services && item.services.length > 0 && (
         <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
       )}
-    </TouchableOpacity>;
+    </SalonTouchableOpacity>;
   }
 
   renderSeparator = () => (

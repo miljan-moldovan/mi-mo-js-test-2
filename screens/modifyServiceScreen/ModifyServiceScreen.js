@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -20,6 +19,7 @@ import {
 import apiWrapper from '../../utilities/apiWrapper';
 import Icon from '../../components/UI/Icon';
 import * as actions from '../../actions/queue';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +41,7 @@ export default class ModifyServiceScreen extends React.Component {
     </Text>,
     headerLeft:
 
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={() => { rootProps.navigation.goBack(); }}
   >
     <Icon
@@ -50,14 +50,14 @@ export default class ModifyServiceScreen extends React.Component {
       color="white"
       size={26}
     />
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
 
     headerRight: (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         onPress={rootProps.navigation.state.params.onSave}
       >
         <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     ),
   });
 
@@ -186,7 +186,7 @@ export default class ModifyServiceScreen extends React.Component {
         <SectionDivider />
         {this.state.index !== null && (
           <InputGroup>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
                 this.removeService(this.state.index);
@@ -199,7 +199,7 @@ export default class ModifyServiceScreen extends React.Component {
               >
               Remove Service
               </Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </InputGroup>
       )}
       </View>

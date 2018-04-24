@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   FlatList,
   Alert,
   RefreshControl,
@@ -19,6 +18,7 @@ import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -563,7 +563,7 @@ export default class AppointmentNotesScreen extends Component {
 
                         </View>
                         <View style={styles.noteHeaderRight}>
-                          <TouchableOpacity
+                          <SalonTouchableOpacity
                             style={styles.dotsButton}
                             onPress={() => { this.showActionSheet(item); }}
                           >
@@ -572,7 +572,7 @@ export default class AppointmentNotesScreen extends Component {
                               icon="dots"
                               style={styles.dotsIcon}
                             />
-                          </TouchableOpacity>
+                          </SalonTouchableOpacity>
                         </View>
                       </View>]}
 
@@ -599,7 +599,7 @@ export default class AppointmentNotesScreen extends Component {
 
               <View style={styles.showDeletedButtonContainer}>
 
-                <TouchableOpacity
+                <SalonTouchableOpacity
                   style={styles.showDeletedButton}
                   onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
@@ -607,7 +607,7 @@ export default class AppointmentNotesScreen extends Component {
                 }}
                 >
                   <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-                </TouchableOpacity>
+                </SalonTouchableOpacity>
               </View>
 
             </View>

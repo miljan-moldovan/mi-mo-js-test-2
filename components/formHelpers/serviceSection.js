@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -177,46 +180,46 @@ class ServiceSection extends Component {
   renderService = (service, index) => (
     <View style={styles.serviceRow} key={index}>
       <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => this.props.onRemove(index)}>
+        <SalonTouchableOpacity onPress={() => this.props.onRemove(index)}>
           <View style={styles.row}>
             <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
             <Text style={styles.textLabel}>service</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
       <View style={styles.serviceDataContainer}>
-        <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
+        <SalonTouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
           <View style={styles.innerRow}>
             {this.renderProvider(service.provider)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressService(service, index)}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
             {this.renderServiceInfo(service.service)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.start, service, index, 'start')}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.start, service, index, 'start')}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
             <View style={styles.dataContainer}>
               <Text style={styles.textData}>{service.start.format('hh:mm a')}</Text>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.end, service, index, 'end')}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.end, service, index, 'end')}>
           <View style={styles.lastInnerRow}>
             <Text style={styles.label}>End</Text>
             <View style={styles.dataContainer}>
               <Text style={styles.textData}>{service.end.format('hh:mm a')}</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
     </View>
   )
@@ -225,12 +228,12 @@ class ServiceSection extends Component {
     return (
       <View style={styles.container}>
         {this.props.services.map((service, index) => this.renderService(service, index))}
-        <TouchableOpacity onPress={this.props.onAdd}>
+        <SalonTouchableOpacity onPress={this.props.onAdd}>
           <View style={styles.addRow}>
             <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
             <Text style={styles.textLabel}>add Service</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
         <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this.handleDateSelection}

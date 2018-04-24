@@ -1,8 +1,8 @@
 import debounce from 'lodash.debounce'; // 4.0.8
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableHighlight } from 'react-native';
 
-const WithPreventDoubleClick = (WrappedComponent) => {
+const SalonTouchableHighlight = (WrappedComponent) => {
   class PreventDoubleClick extends React.PureComponent {
     debouncedOnPress = () => {
       this.props.onPress && this.props.onPress();
@@ -19,4 +19,4 @@ const WithPreventDoubleClick = (WrappedComponent) => {
   return PreventDoubleClick;
 };
 
-export default WithPreventDoubleClick(TouchableOpacity);
+export default SalonTouchableHighlight(TouchableHighlight);

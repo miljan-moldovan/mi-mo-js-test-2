@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   Text, View, StyleSheet, Dimensions,
-  Modal, TouchableHighlight, Animated, ScrollView,
+  Modal, Animated, ScrollView,
 } from 'react-native';
 
 import styles, { btnStyle, sheetStyle, hairlineWidth } from './styles';
+import SalonTouchableHighlight from '../SalonTouchableHighlight';
 
 
 const TITLE_H = 40;
@@ -124,14 +125,14 @@ class SalonActionSheet extends Component {
     const { options, cancelButtonIndex, tintColor } = this.props;
     if (cancelButtonIndex > -1 && options[cancelButtonIndex]) {
       return (
-        <TouchableHighlight
+        <SalonTouchableHighlight
           activeOpacity={1}
           underlayColor="#f4f4f4"
           style={[btnStyle.wrapper, { marginTop: 6, borderRadius: 10 }]}
           onPress={this._cancel}
         >
           <Text style={[btnStyle.title, { fontWeight: '700', color: tintColor }]}>{options[cancelButtonIndex]}</Text>
-        </TouchableHighlight>
+        </SalonTouchableHighlight>
       );
     }
     return null;
@@ -153,7 +154,7 @@ class SalonActionSheet extends Component {
       titleNode = <Text style={[btnStyle.title, { color: fontColor }]}>{title}</Text>;
     }
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         key={index}
         activeOpacity={1}
         underlayColor="#f4f4f4"
@@ -161,7 +162,7 @@ class SalonActionSheet extends Component {
         onPress={this.hide.bind(this, index)}
       >
         {titleNode}
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 

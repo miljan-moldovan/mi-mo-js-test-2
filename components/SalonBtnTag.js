@@ -1,7 +1,8 @@
 import React from 'react';
-import { TouchableHighlight, Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonIcon from './../components/SalonIcon';
+import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   btnContainer: {
@@ -50,7 +51,7 @@ class salonBtnTag extends React.Component {
 
     return (
 
-      <TouchableHighlight
+      <SalonTouchableHighlight
         onPress={() => onPress(this.props.value)}
         underlayColor="transparent"
         style={styles.btnContainer}
@@ -75,7 +76,7 @@ class salonBtnTag extends React.Component {
           >{this.props.value}
           </Text>
         </View>
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 }

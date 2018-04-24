@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
@@ -13,7 +12,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import AppointmentDetails from './components/appointmentDetails';
 import AppoinmentNotes from './components/appointmentNotes';
 import AppointmentFormulas from './components/appointmentFormulas';
-
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import apiWrapper from '../../utilities/apiWrapper';
 
 const initialLayout = {
@@ -82,16 +81,16 @@ export default class AppointmentDetailsScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
+        <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
           <Text style={{ fontSize: 14, color: '#fff' }}>
             <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
           </Text>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       ),
       headerRight: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => alert('Not Implemented')}>
+        <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => alert('Not Implemented')}>
           <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       ),
     });
   };

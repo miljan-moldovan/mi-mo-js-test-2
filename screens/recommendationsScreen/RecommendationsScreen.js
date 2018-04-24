@@ -3,13 +3,13 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
 import SalonCard from '../../components/SalonCard';
 import Icon from '../../components/UI/Icon';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 
 const styles = StyleSheet.create({
@@ -87,7 +87,7 @@ CircularIcon.defaultProps = {
 };
 
 const AddButton = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={props.onPress}
     style={{
       flexDirection: 'row',
@@ -98,7 +98,7 @@ const AddButton = props => (
   >
     <CircularIcon />
     <Text style={styles.addButtonText}> {props.title}</Text>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 AddButton.propTypes = {
   title: PropTypes.string.isRequired,
@@ -113,7 +113,7 @@ export default class RecommendationsScreen extends React.Component {
   static navigationOptions = rootProps => ({
     headerTitle: <Text style={styles.titleText}>Recommended</Text>,
     headerLeft:
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={() => { rootProps.navigation.goBack(); }}
   >
     <Icon
@@ -122,7 +122,7 @@ export default class RecommendationsScreen extends React.Component {
       color="white"
       size={19}
     />
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
 
   });
 

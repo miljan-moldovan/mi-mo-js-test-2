@@ -3,7 +3,6 @@ import moment from 'moment';
 import {
   View,
   StyleSheet,
-  TouchableHighlight,
   Text,
 } from 'react-native';
 import Modal from 'react-native-modal';
@@ -13,6 +12,7 @@ import ApptBookSetEmployeeOrderHeader from './components/apptBookSetEmployeeOrde
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
 import apiWrapper from '../../utilities/apiWrapper';
+import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 
 const styles = StyleSheet.create({
@@ -63,7 +63,7 @@ class RowComponent extends React.Component {
     const { fullName, id } = this.props.employee;
 
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         underlayColor="#eee"
         style={styles.rowContainer}
         {...this.props.sortHandlers}
@@ -79,7 +79,7 @@ class RowComponent extends React.Component {
           <Text style={{ fontSize: 14, flex: 1, color: '#110A24' }}>{fullName}</Text>
           <Icon name="bars" size={20} color="#C0C1C6" type="solid" />
         </View>
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 }

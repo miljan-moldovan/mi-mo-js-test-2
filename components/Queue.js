@@ -1,18 +1,11 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Alert,
-  Modal,
   FlatList,
   RefreshControl,
-  TouchableHighlight,
   LayoutAnimation,
   ActivityIndicator,
 } from 'react-native';
@@ -24,17 +17,15 @@ import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
 
-
-import SideMenuItem from '../components/SideMenuItem';
 import CircularCountdown from '../components/CircularCountdown';
 import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
 import Icon from '../components/UI/Icon';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
+
 
 import type { QueueItem } from '../models';
-
-const chevron = require('../assets/images/icons/icon_caret_right.png');
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },
@@ -392,7 +383,6 @@ renderItem = (row) => {
   let color = groupColors[Math.floor(Math.random() * groupColors.length)];
 
   if (item.groupId) {
-    
     if (groups[item.groupId]) {
       color = groups[item.groupId];
     } else {
@@ -403,7 +393,7 @@ renderItem = (row) => {
   }
 
   return (
-    <TouchableOpacity
+    <SalonTouchableOpacity
       style={styles.itemContainer}
       onPress={() => this.handlePress(item)}
       key={item.id}
@@ -448,7 +438,7 @@ marginTop: 2,
       </View>
       {/* <Image source={chevron} style={styles.chevron} /> */}
       <Icon name="chevronRight" style={styles.chevron} type="solid" />
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 }
 showNotification = (item, type) => {

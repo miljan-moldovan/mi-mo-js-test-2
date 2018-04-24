@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   text: {
@@ -11,11 +12,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const headerLeftText = (props) => {
-  return (<TouchableOpacity onPress={props.handlePress}>
-    <Text style={styles.text}>Cancel</Text>
-  </TouchableOpacity>);
-};
+const headerLeftText = props => (<SalonTouchableOpacity onPress={props.handlePress}>
+  <Text style={styles.text}>Cancel</Text>
+</SalonTouchableOpacity>);
 
 headerLeftText.propTypes = {
   handlePress: PropTypes.func,

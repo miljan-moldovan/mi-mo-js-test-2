@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
 import Icon from '../../../components/UI/Icon';
@@ -11,6 +11,7 @@ import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePicke
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -57,7 +58,7 @@ export default class AppointmentScreen extends Component {
           justifyContent: 'space-between',
         }}
         >
-          <TouchableOpacity
+          <SalonTouchableOpacity
             style={{
               flex: 1 / 5,
               alignItems: 'flex-start',
@@ -72,8 +73,8 @@ export default class AppointmentScreen extends Component {
               color="white"
               size={19}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </SalonTouchableOpacity>
+          <SalonTouchableOpacity
             style={{
               flex: 3 / 5,
               alignSelf: 'stretch',
@@ -91,7 +92,7 @@ export default class AppointmentScreen extends Component {
               color="white"
               size={17}
             />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
           <View
             style={{
               flex: 1 / 5,
@@ -101,7 +102,7 @@ export default class AppointmentScreen extends Component {
               flexDirection: 'row',
             }}
           >
-            <TouchableOpacity
+            <SalonTouchableOpacity
               onPress={() => navigation.state.params.onPressEllipsis()}
               style={{
                 alignItems: 'center',
@@ -114,8 +115,8 @@ export default class AppointmentScreen extends Component {
                 color="white"
                 size={22}
               />
-            </TouchableOpacity>
-            <TouchableOpacity
+            </SalonTouchableOpacity>
+            <SalonTouchableOpacity
               onPress={() => navigation.state.params.onPressCalendar()}
               style={{
                 marginLeft: 20,
@@ -129,7 +130,7 @@ export default class AppointmentScreen extends Component {
                 color="white"
                 size={19}
               />
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </View>
         </View>
       ),

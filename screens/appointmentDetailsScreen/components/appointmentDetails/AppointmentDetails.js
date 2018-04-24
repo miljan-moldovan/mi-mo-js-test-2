@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
@@ -20,6 +19,8 @@ import { InputButton } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import apiWrapper from '../../../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -222,7 +223,7 @@ const ServiceCard = (props) => {
       containerStyles={{ marginHorizontal: 0 }}
       bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
       bodyChildren={[
-        <TouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
+        <SalonTouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
           <View key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }}>
             <Text style={[styles.serviceTitle, { flex: 1 }]}>
               {name}
@@ -272,7 +273,7 @@ const ServiceCard = (props) => {
             <Text style={styles.promoDescription}>FIRST CUSTOMER -50%</Text>
         )}
           </View>
-        </TouchableOpacity>,
+        </SalonTouchableOpacity>,
     ]}
     />
   );
@@ -284,7 +285,7 @@ const ProductCard = props => (
     containerStyles={{ marginHorizontal: 0 }}
     bodyStyles={{ paddingVertical: 10 }}
     bodyChildren={[
-      <TouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }} onPress={props.onPress}>
+      <SalonTouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }} onPress={props.onPress}>
         <View key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }}>
           <Text style={styles.serviceTitle}>{props.product.product.name}</Text>
           <Text style={styles.employeeText}>{props.product.provider.fullName}</Text>
@@ -302,7 +303,7 @@ const ProductCard = props => (
             <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
           </View>
         </View>
-      </TouchableOpacity>,
+      </SalonTouchableOpacity>,
     ]}
   />
 );
@@ -342,7 +343,7 @@ CircularIcon.defaultProps = {
 };
 
 export const AddButton = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={props.onPress}
     style={{
       flexDirection: 'row',
@@ -353,7 +354,7 @@ export const AddButton = props => (
   >
     <CircularIcon style={props.iconStyle} />
     <Text style={styles.addButtonText}> {props.title}</Text>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 AddButton.propTypes = {
   title: PropTypes.string.isRequired,
@@ -361,14 +362,14 @@ AddButton.propTypes = {
 };
 
 const BottomButton = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     style={styles.bottomButtonWrapper}
     onPress={props.onPress}
     disabled={props.disabled}
   >
     <FontAwesome style={styles.bottomButtonIcon}>{Icons[props.icon]}</FontAwesome>
     <Text style={styles.bottomButtonText}>{props.title}</Text>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 class AppointmentDetails extends React.Component {

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import moment from 'moment';
 
 import DatePicker from '../../../components/modals/SalonDatePicker';
 import ClientRow from './clientRow';
 import ServiceSection from './serviceSection';
 import fetchFormCache from '../../../utilities/fetchFormCache';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,18 +75,18 @@ class TurnAwayScreen extends Component {
   static navigationOptions = rootProps => ({
     headerTitle: <Text style={styles.titleText}>Turn Away</Text>,
     headerLeft:
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={() => { rootProps.navigation.goBack(); }}
   >
     <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
 
     headerRight: (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         onPress={rootProps.navigation.state.params ? rootProps.navigation.state.params.onDone : () => {}}
       >
         <Text style={{ fontSize: 14, color: 'white' }}>Done</Text>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     ),
   });
 

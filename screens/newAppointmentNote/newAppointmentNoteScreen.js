@@ -3,13 +3,13 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
   Switch,
   TextInput,
 } from 'react-native';
 
 import SalonIcon from '../../components/SalonIcon';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -139,20 +139,20 @@ class NewAppointmentNoteScreen extends Component {
     <InputGroup>
       <View style={styles.inputSection}>
         <Text style={styles.placeholderText}>Added by</Text>
-        <TouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.handlePressClient()}>
+        <SalonTouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.handlePressClient()}>
           <View style={styles.inputSection}>
             <SalonIcon size={15} icon="caretRight" style={{ tintColor: '#727A8F' }} />
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
       <Divider />
       <View style={styles.inputSection}>
         <Text style={styles.placeholderText}>Date</Text>
-        <TouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.showDatePicker()}>
+        <SalonTouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.showDatePicker()}>
           <View style={styles.inputSection}>
             <Text style={styles.placeholderText}>{this.state.selectedDate ? this.state.selectedDate : 'Optional'}</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
       <Divider />
       <View style={styles.inputSection}>
