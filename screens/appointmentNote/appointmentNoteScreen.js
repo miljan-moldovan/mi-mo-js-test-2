@@ -127,23 +127,24 @@ class AppointmentNoteScreen extends Component {
     this.setState({ note, isVisible: true });
   }
 
-  getNotes = () => {
-    const { appointment } = this.props.navigation.state.params;
-    this.props.appointmentNotesActions.getAppointmentNotes(appointment.client.id)
-      .then((response) => {
-        if (response.data.error) {
-          this.props.appointmentNotesActions.setFilteredNotes([]);
-          this.props.appointmentNotesActions.setNotes([]);
-        } else {
-          const notes = response.data.notes.sort(AppointmentNoteScreen.compareByDate);
-          this.props.appointmentNotesActions.setFilteredNotes(notes);
-          this.props.appointmentNotesActions.setNotes(notes);
-          this.props.appointmentNotesActions.selectProvider(null);
-
-          this.props.navigation.goBack();
-        }
-      });
-  }
+  // getNotes = () => {
+  //   const { appointment } = this.props.navigation.state.params;
+  //   this.props.appointmentNotesActions.getAppointmentNotes(appointment.client.id)
+  //     .then((response) => {
+  //       if (response.data.error) {
+  //         this.props.appointmentNotesActions.setFilteredNotes([]);
+  //         this.props.appointmentNotesActions.setNotes([]);
+  //       } else {
+  //         const notes = response.data.notes.sort(AppointmentNoteScreen.compareByDate);
+  //         this.props.appointmentNotesActions.setFilteredNotes(notes);
+  //         this.props.appointmentNotesActions.setNotes(notes);
+  //         this.props.appointmentNotesActions.selectProvider(null);
+  //
+  //         this.props.navigation.goBack();
+  //         this.props.navigation.state.params.onNavigateBack();
+  //       }
+  //     });
+  // }
 
   shouldSave = false
 
@@ -182,7 +183,8 @@ class AppointmentNoteScreen extends Component {
         note.enteredBy = note.updatedBy;
         this.props.appointmentNotesActions.postAppointmentNotes(appointment.client.id, note)
           .then((response) => {
-            this.getNotes();
+            this.props.navigation.goBack();
+            this.props.navigation.state.params.onNavigateBack();
           }).catch((error) => {
           });
       } else if (this.props.navigation.state.params.actionType === 'update') {
@@ -190,7 +192,9 @@ class AppointmentNoteScreen extends Component {
         note.notes = note.text;
         this.props.appointmentNotesActions.putAppointmentNotes(appointment.client.id, note)
           .then((response) => {
-            this.getNotes();
+          //  this.getNotes();
+            this.props.navigation.goBack();
+            this.props.navigation.state.params.onNavigateBack();
           }).catch((error) => {
           });
       }

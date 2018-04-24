@@ -293,8 +293,13 @@ export default class AppointmentNotesScreen extends Component {
       actionType: 'update',
       note,
       appointment: this.props.appointment,
+      onNavigateBack: this.getNotes,
       ...this.props,
     });
+  }
+
+  reloadAfterChange = () => {
+    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   showActionSheet = (note) => {
@@ -351,7 +356,7 @@ export default class AppointmentNotesScreen extends Component {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
-        } else if (!note.forAppointment && !note.forSales && !note.forSales) {
+        } else if (!note.forAppointment && !note.forSales && !note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -370,7 +375,7 @@ export default class AppointmentNotesScreen extends Component {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
-        } else if (!note.forAppointment && !note.forSales && !note.forSales) {
+        } else if (!note.forAppointment && !note.forSales && !note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -619,7 +624,11 @@ export default class AppointmentNotesScreen extends Component {
           handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('AppointmentNote', {
- mode: 'modal', actionType: 'new', ...this.props, appointment: this.props.appointment,
+ mode: 'modal',
+actionType: 'new',
+...this.props,
+appointment: this.props.appointment,
+ onNavigateBack: this.getNotes,
 });
           }}
         >
