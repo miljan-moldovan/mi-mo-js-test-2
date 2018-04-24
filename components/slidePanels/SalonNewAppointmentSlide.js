@@ -236,6 +236,29 @@ const styles = StyleSheet.create({
     width: '90%',
   },
   otherOptionsLabels: { color: '#115ECD', fontSize: 16 },
+  conflictBox: {
+    height: 32,
+    width: 343,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 4,
+    backgroundColor: '#FFF7CC',
+    paddingHorizontal: 10,
+    marginVertical: 12,
+  },
+  conflictBoxText: {
+    fontSize: 11,
+    lineHeight: 22,
+    color: '#2F3142',
+    marginLeft: 7,
+  },
+  conflictBoxLink: {
+    fontSize: 11,
+    lineHeight: 22,
+    color: '#D1242A',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default class SalonNewAppointmentSlide extends React.Component {
@@ -259,15 +282,6 @@ export default class SalonNewAppointmentSlide extends React.Component {
       provider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
   }
-
-  // state:{
-  //   visible: false,
-  //   selected: '',
-  //   selectedFilter: 0,
-  //   client: undefined,
-  //   service: undefined,
-  //   provider: undefined,
-  // }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
@@ -365,7 +379,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <View style={styles.clockIconContainer}>
                     <Icon style={{ paddingTop: 7, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
                     <Text style={styles.timeText}>
-                      {`${moment(this.props.startTime).format('HH:mm A')} > ${moment(this.props.endTime).format('HH:mm A')}`}
+                      {`${this.props.startTime} > ${this.props.endTime}`}
                     </Text>
                   </View>
                 </View>
@@ -400,6 +414,19 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       />,
                     ]}
                   </InputGroup>
+
+                  {this.props.hasConflicts && (
+                    <TouchableOpacity
+                      style={styles.conflictBox}
+                      onPress={this.props.handlePressConflicts}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon type="solid" name="warning" color="#D1242A" size={12} />
+                        <Text style={styles.conflictBoxText}>Conflicts found</Text>
+                      </View>
+                      <Text style={styles.conflictBoxLink}>Show conflicts</Text>
+                    </TouchableOpacity>
+                  )}
 
                   <InputGroup
                     style={styles.apptGroup}
@@ -472,11 +499,11 @@ export default class SalonNewAppointmentSlide extends React.Component {
               <View style={styles.tab}>
                 <InputGroup
                   style={{
-                  borderBottomWidth: 0,
-                  borderBottomColor: 'transparent',
-                  paddingLeft: 2,
-                  paddingRight: 0,
-}}
+                    borderBottomWidth: 0,
+                    borderBottomColor: 'transparent',
+                    paddingLeft: 2,
+                    paddingRight: 0,
+                  }}
                 >
                   {[<InputButton
                     noIcon

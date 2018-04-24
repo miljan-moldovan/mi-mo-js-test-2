@@ -106,8 +106,8 @@ export default class AppointmentScreen extends Component {
     const startTime = moment(cellId, 'HH:mm A');
     const endTime = moment(startTime).add(15, 'minute');
 
-    this.props.appointmentCalendarActions.setNewApptEmployee(colData);
-    this.props.appointmentCalendarActions.setNewApptTime(startTime, endTime);
+    this.props.newAppointmentActions.setNewApptEmployee(colData);
+    this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
 
     this.setState({ visibleNewAppointment: true });
   }
@@ -161,9 +161,8 @@ export default class AppointmentScreen extends Component {
       providerSchedule,
       apptGridSettings,
       providerAppointments,
-      newAppointment,
     } = this.props.appointmentScreenState;
-    console.log(newAppointment);
+
     const { isLoading } = this.state;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.appointmentScreenState;
@@ -238,42 +237,43 @@ export default class AppointmentScreen extends Component {
 
         <SalonNewAppointmentSlide
           navigation={this.props.navigation}
-          startTime={newAppointment.startTime}
-          endTime={newAppointment.endTime}
-          isProviderRequested={newAppointment.isProviderRequested}
-          client={newAppointment.client}
-          provider={newAppointment.employee}
-          service={newAppointment.service}
+          hasConflicts={this.props.newAppointmentState.hasConflicts}
+          startTime={this.props.newAppointmentState.body.items[0].fromTime}
+          endTime={this.props.newAppointmentState.body.items[0].toTime}
+          isProviderRequested={this.props.newAppointmentState.body.items[0].requested}
+          client={this.props.newAppointmentState.client}
+          provider={this.props.newAppointmentState.employee}
+          service={this.props.newAppointmentState.service}
           visible={this.state.visibleNewAppointment}
           onHide={() => {
             this.setState({ visibleNewAppointment: false });
           }}
           handlePressBook={() => {
-            this.props.appointmentCalendarActions.bookNewAppt();
+            this.props.newAppointmentActions.bookNewAppt();
           }}
           handlePressProvider={() => {
             this.props.navigation.navigate('Providers', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeProvider: provider => this.props.appointmentCalendarActions.setNewApptEmployee(provider),
+              onChangeProvider: provider => this.props.newAppointmentActions.setNewApptEmployee(provider),
             });
           }}
           handlePressService={() => {
             this.props.navigation.navigate('Services', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeService: service => this.props.appointmentCalendarActions.setNewApptService(service),
+              onChangeService: service => this.props.newAppointmentActions.setNewApptService(service),
             });
           }}
           handlePressClient={() => {
             this.props.navigation.navigate('ChangeClient', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeClient: client => this.props.appointmentCalendarActions.setNewApptClient(client),
+              onChangeClient: client => this.props.newAppointmentActions.setNewApptClient(client),
             });
           }}
-          handleChangeRequested={(isRequested) => {
-
+          handleChangeRequested={(requested) => {
+            this.props.newAppointmentActions.setNewApptRequested(requested);
           }}
         />
 

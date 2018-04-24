@@ -1,5 +1,6 @@
 import apiWrapper from '../utilities/apiWrapper';
 
+export const ADD_APPOINTMENT = 'appointment/ADD_APPOINTMENT';
 export const GET_APPOINTMENTS = 'appointment/GET_APPOINTMENTS';
 export const GET_APPOINTMENTS_SUCCESS = 'appointment/GET_APPOINTMENTS_SUCCESS';
 export const GET_APPOINTMENTS_FAILED = 'appointment/GET_APPOINTMENTS_FAILED';
@@ -9,6 +10,11 @@ export const POST_APPOINTMENT_MOVE_FAILED = 'appointment/POST_APPOINTMENT_MOVE_F
 export const POST_APPOINTMENT_RESIZE = 'appointment/POST_APPOINTMENT_RESIZE';
 export const POST_APPOINTMENT_RESIZE_SUCCESS = 'appointment/POST_APPOINTMENT_RESIZE_SUCCESS';
 export const POST_APPOINTMENT_RESIZE_FAILED = 'appointment/POST_APPOINTMENT_RESIZE_FAILED';
+
+const addAppointment = appointment => ({
+  type: ADD_APPOINTMENT,
+  data: { appointment },
+});
 
 const getAppointmentsSuccess = appointmentResponse => ({
   type: GET_APPOINTMENTS_SUCCESS,
@@ -80,6 +86,7 @@ const postAppointmentResize = (appointmentId, params) => (dispatch) => {
 };
 
 const appointmentActions = {
+  addAppointment,
   getAppoinments,
   postAppointmentMove,
   postAppointmentResize,
