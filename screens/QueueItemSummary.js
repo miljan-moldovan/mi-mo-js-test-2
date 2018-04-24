@@ -6,6 +6,7 @@ import Icon from '../components/UI/Icon';
 import ListItem from './QueueListItemSummary';
 import SalonIcon from '../components/SalonIcon';
 import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
+import QueueTimeNote from '../components/QueueTimeNote';
 
 const styles = StyleSheet.create({
   container: {
@@ -387,16 +388,18 @@ render() {
                   <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
                 </SalonTouchableOpacity>
               </View>
-              <View style={[styles.row, { height: 25 }]}>
-                <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
-                <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
-                <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
-                <Text style={styles.remTimeText}>{'exp, start in '}
-                  <Text>{timeCheckedIn}m</Text>
-                  {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-                </Text>
-
-              </View>
+              {/*  // <View style={[styles.row, { height: 25 }]}>
+              //   <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
+              //   <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
+              //   <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+              //   <Text style={styles.remTimeText}>{'exp, start in '}
+              //     <Text>{timeCheckedIn}m</Text>
+              //     {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
+              //   </Text>
+              //
+              // </View>
+*/}
+              <QueueTimeNote item={item} />
               <ScrollView style={styles.listContainer}>
                 <FlatList
                   data={this.props.services}

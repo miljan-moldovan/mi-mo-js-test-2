@@ -15,7 +15,7 @@ const SalonTouchableOpacity = (WrappedComponent) => {
     }
   }
 
-  PreventDoubleClick.displayName = `withPreventDoubleClick(${WrappedComponent.displayName || WrappedComponent.name})`;
+  PreventDoubleClick.displayName = `SalonTouchableOpacity(${WrappedComponent.displayName || WrappedComponent.name})`;
   return PreventDoubleClick;
 };
 

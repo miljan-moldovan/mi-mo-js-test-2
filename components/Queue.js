@@ -23,6 +23,7 @@ import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
 import Icon from '../components/UI/Icon';
 import SalonTouchableOpacity from './SalonTouchableOpacity';
+import QueueTimeNote from './QueueTimeNote';
 
 
 import type { QueueItem } from '../models';
@@ -357,6 +358,48 @@ getGroupLeaderName = (item: QueueItem) => {
   if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
   return null;
 }
+  //
+  //
+  // timeNote= (item) => {
+  //   let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
+  //     ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
+  //     : 0;
+  //
+  //   if (item.estimatedTime && item.estimatedTime[0] === '-') {
+  //     estimatedTime *= (-1);
+  //   }
+  //
+  //   const status = item.status;
+  //   const isAppointment = item.queueType === 1;
+  //
+  //   let serviceTime = {};
+  //
+  //   if (status === 0 || status === 1 || status === 5) {
+  //     const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
+  //     serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text></Text>;
+  //   } else if (status === 6) {
+  //     if (estimatedTime >= 0) {
+  //       serviceTime = <Text style={styles.serviceTime}>remaining  rem. <Text style={styles.serviceRemainingWaitTime}> {estimatedTime}m</Text></Text>;
+  //     }
+  //     serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {+estimatedTime}m</Text></Text>;
+  //   } else if (status === 7) {
+  //     if (estimatedTime >= 0) {
+  //       serviceTime = <Text style={styles.serviceTime}> on time!</Text>;
+  //     }
+  //     serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {-estimatedTime}m</Text></Text>;
+  //   }
+  //   serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> 0m</Text></Text>;
+  //
+  //
+  //   return (
+  //     <Text style={styles.serviceTimeContainer}>
+  //       <Icon name="clockO" style={styles.serviceClockIcon} />
+  //       <Text style={styles.serviceTime}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')}</Text>  <Icon name="chevronRight" style={styles.chevronRightIcon} />
+  //       {serviceTime}
+  //       {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
+  //     </Text>
+  //   );
+  // }
 
 renderItem = (row) => {
   const item: QueueItem = row.item;
@@ -368,16 +411,6 @@ renderItem = (row) => {
   const serviceName = (firstService.serviceName || '').toUpperCase();
   const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
 
-  let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-    ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
-    : 0;
-
-  if (item.estimatedTime && item.estimatedTime[0] === '-') {
-    estimatedTime *= (-1);
-  }
-
-  const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
-  const isAppointment = item.queueType === 1;
   const isBookedByWeb = item.queueType === 3;
 
   let color = groupColors[Math.floor(Math.random() * groupColors.length)];
@@ -426,11 +459,9 @@ marginTop: 2,
           {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
 
         </Text>
-        <Text style={styles.serviceTimeContainer}>
-          <Icon name="clockO" style={styles.serviceClockIcon} />
-          <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  <Icon name="chevronRight" style={styles.chevronRightIcon} />  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
-          {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-        </Text>
+
+        <QueueTimeNote item={item} />
+
 
       </View>
       <View style={{ height: '100%', justifyContent: 'flex-end' }}>

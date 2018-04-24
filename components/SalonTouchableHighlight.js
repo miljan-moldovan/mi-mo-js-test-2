@@ -15,7 +15,7 @@ const SalonTouchableHighlight = (WrappedComponent) => {
     }
   }
 
-  PreventDoubleClick.displayName = `withPreventDoubleClick(${WrappedComponent.displayName || WrappedComponent.name})`;
+  PreventDoubleClick.displayName = `SalonTouchableHighlight(${WrappedComponent.displayName || WrappedComponent.name})`;
   return PreventDoubleClick;
 };
 
