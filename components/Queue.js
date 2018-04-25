@@ -12,7 +12,7 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import moment from 'moment';
-
+import _ from 'lodash';
 import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
@@ -57,19 +57,24 @@ state = {
   client: null,
   services: null,
   data: [],
+  sortItemsBy: { value: 'FIRST_ARRIVED', label: 'First Arrived' },
 }
 componentWillMount() {
   const {
     data, searchClient, searchProvider, filterText,
   } = this.props;
-  this.setState({ data });
+
+  const sortedItems = this.sortItems(this.state.sortItemsBy, data);
+
+  this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
 }
 componentWillReceiveProps({
   data, searchClient, searchProvider, filterText,
 }) {
   if (data !== this.props.data) {
-    this.setState({ data });
+    const sortedItems = this.sortItems(this.state.sortItemsBy, data);
+    this.setState({ data: sortedItems });
   }
   // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
   if (searchClient != this.props.searchClient ||
@@ -358,48 +363,27 @@ getGroupLeaderName = (item: QueueItem) => {
   if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
   return null;
 }
-  //
-  //
-  // timeNote= (item) => {
-  //   let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-  //     ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
-  //     : 0;
-  //
-  //   if (item.estimatedTime && item.estimatedTime[0] === '-') {
-  //     estimatedTime *= (-1);
-  //   }
-  //
-  //   const status = item.status;
-  //   const isAppointment = item.queueType === 1;
-  //
-  //   let serviceTime = {};
-  //
-  //   if (status === 0 || status === 1 || status === 5) {
-  //     const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
-  //     serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text></Text>;
-  //   } else if (status === 6) {
-  //     if (estimatedTime >= 0) {
-  //       serviceTime = <Text style={styles.serviceTime}>remaining  rem. <Text style={styles.serviceRemainingWaitTime}> {estimatedTime}m</Text></Text>;
-  //     }
-  //     serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {+estimatedTime}m</Text></Text>;
-  //   } else if (status === 7) {
-  //     if (estimatedTime >= 0) {
-  //       serviceTime = <Text style={styles.serviceTime}> on time!</Text>;
-  //     }
-  //     serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {-estimatedTime}m</Text></Text>;
-  //   }
-  //   serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> 0m</Text></Text>;
-  //
-  //
-  //   return (
-  //     <Text style={styles.serviceTimeContainer}>
-  //       <Icon name="clockO" style={styles.serviceClockIcon} />
-  //       <Text style={styles.serviceTime}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')}</Text>  <Icon name="chevronRight" style={styles.chevronRightIcon} />
-  //       {serviceTime}
-  //       {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-  //     </Text>
-  //   );
-  // }
+
+
+sortItems = (option, items) => {
+  let sortedItems = [];
+
+  if (option.value === 'FIRST_ARRIVED' || option.value === 'LAST_ARRIVED') {
+    sortedItems = _.sortBy(items, item => item.enteredTime);
+
+    if (option.value === 'LAST_ARRIVED') {
+      sortedItems = _.reverse(sortedItems);
+    }
+  } else if (option.value === 'A_Z' || option.value === 'Z_A') {
+    sortedItems = _.sortBy(items, item => item.client.fullName);
+
+    if (option.value === 'Z_A') {
+      sortedItems = _.reverse(sortedItems);
+    }
+  }
+
+  return sortedItems;
+}
 
 renderItem = (row) => {
   const item: QueueItem = row.item;
