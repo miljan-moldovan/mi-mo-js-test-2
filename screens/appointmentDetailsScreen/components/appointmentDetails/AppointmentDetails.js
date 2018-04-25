@@ -362,7 +362,13 @@ class AppointmentDetails extends React.Component {
             </View>
             <View style={styles.finishedTime}>
               <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-              <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
+              <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
+                ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
+                : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+                  ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
+                  : 0)}min est.
+                </Text>
+              </Text>
             </View>
           </View>
         );
@@ -547,7 +553,7 @@ class AppointmentDetails extends React.Component {
               <Text style={styles.infoTitleText}>Queue Appointment</Text>
               <QueueTimeNote item={appointment} />
               <View style={{ alignSelf: 'flex-start' }}>
-                <ServiceIcons direction="column" item={appointment} groupLeaderName={groupLeaderName} />
+                <ServiceIcons align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end' }}>

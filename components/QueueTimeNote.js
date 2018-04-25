@@ -72,7 +72,7 @@ const QueueTimeNote = (props) => {
     serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text></Text>;
   } else if (status === 6) {
     if (estimatedTime >= 0) {
-      serviceTime = <Text style={styles.serviceTime}>remaining  rem. <Text style={styles.serviceRemainingWaitTime}> {estimatedTime}m</Text></Text>;
+      serviceTime = <Text style={styles.serviceTime}> remaining  rem. <Text style={styles.serviceRemainingWaitTime}> {estimatedTime}m</Text></Text>;
     } else {
       serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {+estimatedTime}m</Text></Text>;
     }

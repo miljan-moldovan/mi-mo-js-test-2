@@ -212,15 +212,24 @@ getLabelForItem = (item) => {
     case QUEUE_ITEM_FINISHED:
       return (
         <View style={styles.finishedContainer}>
+
+          <View style={styles.finishedTime}>
+            <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
+            <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
+              ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
+              : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+                ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
+                : 0)}min est.
+              </Text>
+            </Text>
+          </View>
+
           <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
             <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>FINISHED</Text>
           </View>
-          <View style={styles.finishedTime}>
-            <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-            <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
-          </View>
         </View>
       );
+      break;
     case QUEUE_ITEM_RETURNING:
       return (
         <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
@@ -448,10 +457,12 @@ marginTop: 2,
 
 
       </View>
-      <View style={{ height: '100%', justifyContent: 'flex-end' }}>
+      <View style={{
+ flex: 1, height: '100%', justifyContent: 'flex-end', alignItems: 'flex-start',
+}}
+      >
         {label}
       </View>
-      {/* <Image source={chevron} style={styles.chevron} /> */}
       <Icon name="chevronRight" style={styles.chevron} type="solid" />
     </SalonTouchableOpacity>
   );
@@ -572,8 +583,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 'auto',
     paddingRight: 10,
-    flex: 1,
     height: 90,
+    flex: 3.5,
   },
   clientName: {
     fontSize: 16,
@@ -644,19 +655,23 @@ const styles = StyleSheet.create({
     paddingRight: 7,
   },
   finishedContainer: {
-    height: 58,
+    height: 16,
     alignItems: 'center',
     justifyContent: 'center',
-
-    marginLeft: 'auto',
-    marginBottom: 'auto',
-    marginRight: 42,
-    marginTop: 16,
+    flexDirection: 'row',
+    //  marginLeft: 'auto',
+    // marginRight: 10,
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
   },
   finishedTime: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    height: 16,
+    marginBottom: 14,
     flexDirection: 'row',
-    alignSelf: 'flex-end',
-    marginTop: 'auto',
     alignItems: 'center',
     justifyContent: 'center',
   },
