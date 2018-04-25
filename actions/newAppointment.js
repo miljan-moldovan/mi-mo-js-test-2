@@ -1,5 +1,6 @@
-import apiWrapper from '../utilities/apiWrapper';
+import moment from 'moment';
 
+import apiWrapper from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
 } from './appointment';
@@ -31,10 +32,14 @@ const setNewApptEmployee = employee => ({
   data: { employee },
 });
 
-const setNewApptService = service => ({
-  type: SET_NEW_APPT_SERVICE,
-  data: { service },
-});
+const setNewApptService = service => (dispatch) => {
+  dispatch({
+    type: SET_NEW_APPT_SERVICE,
+    data: { service },
+  });
+
+  return dispatch(setNewApptDuration());
+};
 
 const setNewApptClient = client => ({
   type: SET_NEW_APPT_CLIENT,
@@ -52,7 +57,12 @@ const setNewApptFirstAvailable = isFirstAvailable => ({
 });
 
 const setNewApptDuration = () => (dispatch, getState) => {
-  const { service } = getState().newAppointmentReducer;
+  const { service, body: { items } } = getState().newAppointmentReducer;
+  const { fromTime } = items[0];
+  const serviceDuration = moment.duration(service.maxDuration);
+  const endTime = moment(fromTime, 'HH:mm').add(serviceDuration);
+
+  return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime: fromTime, endTime } });
 };
 
 const bookNewAppt = callback => (dispatch, getState) => {

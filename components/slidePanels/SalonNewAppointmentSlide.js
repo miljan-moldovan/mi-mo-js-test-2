@@ -271,7 +271,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
 
   constructor(props) {
     super(props);
-    // debugger//eslint-disable-line
+
     this.state = {
       visible: props.visible,
       selectedFilter: 0,
@@ -342,7 +342,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
               <TouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
                 <View style={styles.cancelButtonContainer}>
                   <Text style={styles.cancelButtonText}>
-                Cancel
+                    Cancel
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -446,13 +446,14 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <InputGroup
                     style={styles.lengthGroup}
                   >
-                    {[<InputButton
-                      style={{ height: 36 }}
-                      labelStyle={{ color: '#2F3142' }}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Length select a service first"
-                      noIcon
-                    />,
+                    {[
+                      <InputButton
+                        style={{ height: 36 }}
+                        labelStyle={{ color: '#2F3142' }}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Length select a service first"
+                        noIcon
+                      />,
                     ]}
                   </InputGroup>
                 </View>

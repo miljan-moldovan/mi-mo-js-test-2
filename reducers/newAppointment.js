@@ -75,6 +75,7 @@ export default function newAppointmentReducer(state = initialState, action) {
       };
     case SET_NEW_APPT_DATE:
       body.date = data.date;
+      body.items[0].date = data.date;
       return {
         ...state,
         body,
@@ -109,12 +110,6 @@ export default function newAppointmentReducer(state = initialState, action) {
         ...state,
         body,
         service: data.service,
-      };
-    case SET_NEW_APPT_DURATION:
-      // body.duration = data.duration;
-      return {
-        ...state,
-        body,
       };
     case BOOK_NEW_APPT:
       return {

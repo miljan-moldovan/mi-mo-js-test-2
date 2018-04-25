@@ -103,10 +103,20 @@ export default class AppointmentScreen extends Component {
   });
 
   onCalendarCellPressed = (cellId, colData) => {
+    const {
+      startDate,
+      selectedProvider,
+    } = this.props.appointmentScreenState;
     const startTime = moment(cellId, 'HH:mm A');
     const endTime = moment(startTime).add(15, 'minute');
 
-    this.props.newAppointmentActions.setNewApptEmployee(colData);
+    if (selectedProvider === 'all') {
+      this.props.newAppointmentActions.setNewApptEmployee(colData);
+      this.props.newAppointmentActions.setNewApptDate(startDate);
+    } else {
+      this.props.newAppointmentActions.setNewApptEmployee(selectedProvider);
+      this.props.newAppointmentActions.setNewApptDate(colData);
+    }
     this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
 
     this.setState({ visibleNewAppointment: true });
@@ -238,6 +248,7 @@ export default class AppointmentScreen extends Component {
         <SalonNewAppointmentSlide
           navigation={this.props.navigation}
           hasConflicts={this.props.newAppointmentState.hasConflicts}
+          date={this.props.newAppointmentState.body.date}
           startTime={this.props.newAppointmentState.body.items[0].fromTime}
           endTime={this.props.newAppointmentState.body.items[0].toTime}
           isProviderRequested={this.props.newAppointmentState.body.items[0].requested}
