@@ -55,7 +55,7 @@ const setNewApptDuration = () => (dispatch, getState) => {
   const { service } = getState().newAppointmentReducer;
 };
 
-const bookNewAppt = () => (dispatch, getState) => {
+const bookNewAppt = callback => (dispatch, getState) => {
   const { body } = getState().newAppointmentReducer;
   dispatch({ type: BOOK_NEW_APPT });
   return apiWrapper.doRequest('postNewAppointment', {
@@ -66,11 +66,16 @@ const bookNewAppt = () => (dispatch, getState) => {
         type: ADD_APPOINTMENT,
         data: { appointment: res[0] },
       });
-      dispatch({ type: BOOK_NEW_APPT_SUCCESS });
+      dispatch(bookNewApptSuccess(callback));
     })
     .catch((err) => {
       dispatch({ type: BOOK_NEW_APPT_FAILED });
     });
+};
+
+const bookNewApptSuccess = (callback = false) => (dispatch) => {
+  dispatch({ type: BOOK_NEW_APPT_SUCCESS });
+  return callback ? callback() : true;
 };
 
 const newAppointmentActions = {

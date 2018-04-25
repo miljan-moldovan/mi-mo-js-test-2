@@ -249,7 +249,11 @@ export default class AppointmentScreen extends Component {
             this.setState({ visibleNewAppointment: false });
           }}
           handlePressBook={() => {
-            this.props.newAppointmentActions.bookNewAppt();
+            const callback = () => {
+              this.setState({ visibleNewAppointment: false });
+              this.props.appointmentCalendarActions.getCalendarData();
+            };
+            this.props.newAppointmentActions.bookNewAppt(callback);
           }}
           handlePressProvider={() => {
             this.props.navigation.navigate('Providers', {

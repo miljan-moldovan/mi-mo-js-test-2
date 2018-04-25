@@ -326,7 +326,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
   render() {
     return (
       <SalonSlidingUpPanel
-        visible
+        visible={this.props.visible}
         showBackdrop={this.state.visible}
         onDragEnd={() => this.setState({ visible: false })}
         ref={(c) => { this._panel = c; }}
@@ -379,7 +379,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <View style={styles.clockIconContainer}>
                     <Icon style={{ paddingTop: 7, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
                     <Text style={styles.timeText}>
-                      {`${this.props.startTime} > ${this.props.endTime}`}
+                      {`${moment(this.props.startTime, 'HH:mm').format('HH:mm A')} > ${moment(this.props.endTime, 'HH:mm').format('HH:mm A')}`}
                     </Text>
                   </View>
                 </View>
@@ -388,14 +388,14 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <InputGroup
                     style={styles.middleSectionGroup}
                   >
-
-                    {[<InputButton
-                      style={{ height: 44 }}
-                      labelStyle={{ fontSize: 16, color: this.props.client ? '#000000' : '#727A8F' }}
-                      onPress={this.props.handlePressClient}
-                      label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
-                      iconStyle={{ color: '#115ECD' }}
-                    />,
+                    {[
+                      <InputButton
+                        style={{ height: 44 }}
+                        labelStyle={{ fontSize: 16, color: this.props.client ? '#000000' : '#727A8F' }}
+                        onPress={this.props.handlePressClient}
+                        label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
+                        iconStyle={{ color: '#115ECD' }}
+                      />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <InputButton
                         style={{ height: 44 }}
@@ -523,8 +523,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                      </View>]}
-                  </InputButton>,
+                    </View>]}
+                    </InputButton>,
 
                     <InputButton
                       noIcon
@@ -545,7 +545,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                             type="solid"
                           />
                         </View>
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -556,7 +556,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Room Assignment"
                     >
                       {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -567,7 +567,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Turn Away"
                     >
                       {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -578,7 +578,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message Provider's Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
                     <InputButton
                       noIcon
@@ -588,7 +588,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message All Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>]}
                 </InputGroup>
               </View>
