@@ -2,11 +2,10 @@
 import React from 'react';
 import {
   View,
-  TouchableHighlight,
   StyleSheet,
-  Text,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 import { connect } from 'react-redux';
 import WordHighlighter from '../wordHighlighter';
@@ -47,7 +46,7 @@ class SuggestionListItem extends React.PureComponent {
 
   render() {
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         style={styles.container}
         underlayColor="transparent"
         onPress={() => { this.props.onPress(this.props.value); }}
@@ -63,7 +62,7 @@ class SuggestionListItem extends React.PureComponent {
             {this.props.value}
           </WordHighlighter>
         </View>
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 }

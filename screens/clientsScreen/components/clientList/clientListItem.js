@@ -2,13 +2,13 @@
 import React from 'react';
 import {
   View,
-  TouchableHighlight,
   StyleSheet,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import { connect } from 'react-redux';
 import WordHighlighter from '../../../../components/wordHighlighter';
+import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   phoneIconLeft: {
@@ -106,7 +106,7 @@ class ClientListItem extends React.PureComponent {
 
   render() {
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         style={styles.container}
         underlayColor="transparent"
         onPress={() => { this.props.onPress(this.props.client); }}
@@ -151,7 +151,7 @@ class ClientListItem extends React.PureComponent {
           </View>
 
         </View>
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 }

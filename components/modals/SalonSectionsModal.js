@@ -1,9 +1,10 @@
 import React from 'react';
-import { ScrollView, View, Image, Text, TouchableOpacity, SectionList, StyleSheet } from 'react-native';
+import { View, Text, SectionList, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 
 import SalonModal from './../SalonModal';
 import SalonIcon from './../SalonIcon';
+import SalonTouchableOpacity from './../SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   modal: {
@@ -132,7 +133,7 @@ export default class SalonSectionsModal extends React.Component {
 
 
     return (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         key={`${item.type}_${item.id}`}
         style={styles.modalLine}
         onPress={() => this.selectItem(item)}
@@ -147,7 +148,7 @@ export default class SalonSectionsModal extends React.Component {
           />
 
         }
-      </TouchableOpacity>);
+      </SalonTouchableOpacity>);
   }
 
   hideModal() {

@@ -4,12 +4,12 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
-  TouchableOpacity,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import WordHighlighter from '../../../components/wordHighlighter';
 import apiWrapper from '../../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,7 +99,7 @@ export default class SalonResourceList extends React.Component {
   );
 
   renderItem = ({ item, index }) => (
-    <TouchableOpacity
+    <SalonTouchableOpacity
       style={styles.itemRow}
       onPress={() => {}}
       key={index}
@@ -118,7 +118,7 @@ export default class SalonResourceList extends React.Component {
         <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
         )}
       </View>
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 
   render() {

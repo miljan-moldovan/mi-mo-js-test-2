@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -19,6 +18,8 @@ import {
 } from '../../components/formHelpers';
 import apiWrapper from '../../utilities/apiWrapper';
 import Icon from '../../components/UI/Icon';
+import * as actions from '../../actions/queue';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,7 +41,7 @@ export default class ModifyServiceScreen extends React.Component {
     </Text>,
     headerLeft:
 
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={() => { rootProps.navigation.goBack(); }}
   >
     <Icon
@@ -49,14 +50,15 @@ export default class ModifyServiceScreen extends React.Component {
       color="white"
       size={26}
     />
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
 
     headerRight: (
-      <TouchableOpacity
+      <SalonTouchableOpacity
+        wait={3000}
         onPress={rootProps.navigation.state.params.onSave}
       >
         <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     ),
   });
 
@@ -69,11 +71,13 @@ export default class ModifyServiceScreen extends React.Component {
     this.state = {
       index: 'index' in params ? params.index : null,
       service: 'service' in params ? params.service : null,
+      services: 'services' in params ? params.services : null,
       selectedService: 'service' in params ? params.service : null,
+      appointment: 'appointment' in params ? params.appointment : null,
       selectedProvider: 'service' in params ? {
-        id: !params.service.isFirstAvailable ? params.service.employeeId : 0,
-        name: !params.service.isFirstAvailable ? params.service.employeeFirstName : 'First',
-        lastName: !params.service.isFirstAvailable ? params.service.employeeLastName : 'Available',
+        id: params.service ? (!params.service.isFirstAvailable ? params.service.employeeId : 0) : null,
+        name: params.service ? (!params.service.isFirstAvailable ? params.service.employeeFirstName : 'First') : null,
+        lastName: params.service ? (!params.service.isFirstAvailable ? params.service.employeeLastName : 'Available') : null,
       } : null,
       selectedPromotion: 'promotion' in params ? params.promotion : null,
       providerRequested: false,
@@ -83,10 +87,60 @@ export default class ModifyServiceScreen extends React.Component {
   }
 
   onSave = () => {
-    const { service, index } = this.state;
-    this.props.appointmentDetailsActions.addService({ service, index });
-    this.props.navigation.goBack();
+    alert('Not implemented');
+
+    // const { service, index } = this.state;
+    // this.saveQueue();
+    //
+    // this.props.navigation.goBack();
   }
+
+  removeService = (index) => {
+
+  }
+
+  saveQueue = () => {
+    const newServices = [];
+
+
+    for (let i = 0; i < this.state.services.length; i++) {
+      const oldService = this.state.services[i];
+
+      let newService = {
+        serviceId: oldService.serviceId,
+        employeeId: oldService.employeeId,
+        promotionCode: oldService.promoCode,
+        isProviderRequested: oldService.isProviderRequested,
+        priceEntered: oldService.price,
+        isFirstAvailable: oldService.isFirstAvailable,
+      };
+
+      if (oldService.id === this.state.service.id) {
+        newService = {
+          serviceId: this.state.selectedService.id,
+          employeeId: 'isFirstAvailable' in this.state.selectedProvider ? null : this.state.selectedProvider.id,
+          promotionCode: this.state.selectedPromotion ? this.state.selectedPromotion.promoCode : null,
+          isProviderRequested: this.state.selectedService.isProviderRequested,
+          priceEntered: this.state.selectedService.price,
+          isFirstAvailable: 'isFirstAvailable' in this.state.selectedProvider,
+        };
+      }
+
+      newServices.push(newService);
+    }
+
+
+    this.props.putQueue(this.state.service.id, {
+      clientId: this.state.appointment.client.id,
+      serviceEmployeeClientQueues: newServices,
+      productEmployeeClientQueues: [],
+    }).then((response) => {
+
+
+    }).catch((error) => {
+    });
+  }
+
 
   render() {
     return (
@@ -97,25 +151,8 @@ export default class ModifyServiceScreen extends React.Component {
             selectedService={this.state.selectedService}
             onChange={(selected) => {
               this.setState({
-                service: { name: selected.name },
                 selectedService: selected,
               });
-
-              apiWrapper.doRequest('getService', {
-                path: {
-                  id: selected.id,
-                },
-              })
-                .then((service) => {
-                  this.setState({
-                    price: service.price,
-                    selectedService: selected,
-                    service: { ...this.state.service, ...service, name: selected.name },
-                  });
-                })
-                .catch((err) => {
-                  console.warn(err);
-                });
             }}
           />
           <InputDivider />
@@ -124,14 +161,6 @@ export default class ModifyServiceScreen extends React.Component {
             selectedProvider={this.state.selectedProvider}
             onChange={(provider) => {
               this.setState({
-                service: {
-                  ...this.state.service,
-                  employeeId: provider.id,
-                  employeeFirstName: provider.name,
-                  employeeMiddleName: provider.middleName,
-                  employeeLastName: provider.lastName,
-                  employeeFullName: provider.fullName,
-                },
                 selectedProvider: provider,
               });
             }}
@@ -158,10 +187,10 @@ export default class ModifyServiceScreen extends React.Component {
         <SectionDivider />
         {this.state.index !== null && (
           <InputGroup>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
-                this.props.appointmentDetailsActions.removeService(this.state.index);
+                this.removeService(this.state.index);
                 this.props.navigation.goBack();
               }}
             >
@@ -171,7 +200,7 @@ export default class ModifyServiceScreen extends React.Component {
               >
               Remove Service
               </Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </InputGroup>
       )}
       </View>

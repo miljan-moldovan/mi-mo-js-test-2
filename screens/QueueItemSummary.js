@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, TouchableOpacity, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, Animated, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import Icon from '../components/UI/Icon';
 import ListItem from './QueueListItemSummary';
 import SalonIcon from '../components/SalonIcon';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
+import QueueTimeNote from '../components/QueueTimeNote';
 
 const styles = StyleSheet.create({
   container: {
@@ -213,7 +215,7 @@ renderBtnContainer = () => {
   if (this.props.isWaiting) {
     return (
       <View style={styles.btnContainer}>
-        <TouchableOpacity
+        <SalonTouchableOpacity
           onPress={this.props.onPressSummary.checkIn}
           disabled={!this.props.appointment.checkedIn}
         >
@@ -223,8 +225,8 @@ renderBtnContainer = () => {
             </View>
             <Text style={styles.btnbottomText}>Check-in</Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity
           onPress={() => this.props.onPressSummary.walkOut(isActiveWalkOut)}
         >
           <View style={styles.btnGroup}>
@@ -233,8 +235,8 @@ renderBtnContainer = () => {
             </View>
             <Text style={styles.btnbottomText}>{isActiveWalkOut ? 'Walk-out' : 'No Show'} </Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity
           onPress={() => this.props.onPressSummary.modify(this.props.isWaiting, this.props.onPressSummary)}
         >
           <View style={styles.btnGroup}>
@@ -243,8 +245,8 @@ renderBtnContainer = () => {
             </View>
             <Text style={styles.btnbottomText}>Modify</Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity
           onPress={() => this.props.onPressSummary.returning(returned)}
           disabled={isDisabledReturnLater}
         >
@@ -254,8 +256,8 @@ renderBtnContainer = () => {
             </View>
             <Text style={styles.btnbottomText}>{returned ? 'Returned' : 'Return later'}</Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity
           onPress={this.props.onPressSummary.toService}
           disabled={returned}
         >
@@ -266,39 +268,39 @@ renderBtnContainer = () => {
             </View>
             <Text style={styles.btnbottomText}>To Service</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
     );
   }
   return (
     <View style={styles.btnContainer}>
-      <TouchableOpacity onPress={this.props.onPressSummary.toWaiting} disabled={!isActiveWaiting}>
+      <SalonTouchableOpacity onPress={this.props.onPressSummary.toWaiting} disabled={!isActiveWaiting}>
         <View style={styles.btnGroup}>
           <View style={isActiveWaiting ? styles.btnBottom : [styles.btnBottom, styles.btnDisabled]}>
             <Icon name="hourglassHalf" size={16} color="#fff" type="solidFree" />
           </View>
           <Text style={styles.btnbottomText}>To Waiting</Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={this.props.onPressSummary.rebook}>
+      </SalonTouchableOpacity>
+      <SalonTouchableOpacity onPress={this.props.onPressSummary.rebook}>
         <View style={styles.btnGroup}>
           <View style={styles.btnBottom}>
             <Icon name="undo" size={16} color="#fff" type="solidFree" />
           </View>
           <Text style={styles.btnbottomText}>Rebook</Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
+      </SalonTouchableOpacity>
+      <SalonTouchableOpacity
         onPress={() => this.props.onPressSummary.modify(this.props.isWaiting, this.props.onPressSummary)}
       >
         <View style={styles.btnGroup}>
           <View style={otherBtnStyle}>
-            <Icon name="penAlt" size={16} color="#fff" type="solidFree" />
+            <Icon name="penAlt" size={16} color="#fff" type="solid" />
           </View>
           <Text style={styles.btnbottomText}>Modify</Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
+      </SalonTouchableOpacity>
+      <SalonTouchableOpacity
         onPress={() => this.props.onPressSummary.finish(isActiveFinish)}
       >
         <View style={styles.btnGroup}>
@@ -307,15 +309,15 @@ renderBtnContainer = () => {
           </View>
           <Text style={styles.btnbottomText}>{isActiveFinish ? 'Finish' : 'Undo finish'}</Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={this.props.onPressSummary.checkout}>
+      </SalonTouchableOpacity>
+      <SalonTouchableOpacity onPress={this.props.onPressSummary.checkout}>
         <View style={styles.btnGroup}>
           <View style={styles.btnBottom}>
             <Icon name="dollar" size={16} color="#fff" type="solidFree" />
           </View>
           <Text style={styles.btnbottomText}>Checkout</Text>
         </View>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     </View>
   );
 }
@@ -358,9 +360,9 @@ render() {
             ]}
           >
             <View style={styles.header}>
-              <TouchableOpacity onPress={this.props.onDonePress}>
+              <SalonTouchableOpacity onPress={this.props.onDonePress}>
                 <Text style={styles.btnText}>Done</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
             <View style={styles.body}>
               <View style={[styles.row, { height: 20 }]}>
@@ -382,20 +384,22 @@ render() {
     }
 
                 <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-                <TouchableOpacity onPress={() => alert('Not implemented')}>
+                <SalonTouchableOpacity onPress={() => alert('Not implemented')}>
                   <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
-                </TouchableOpacity>
+                </SalonTouchableOpacity>
               </View>
-              <View style={[styles.row, { height: 25 }]}>
-                <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
-                <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
-                <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
-                <Text style={styles.remTimeText}>{'exp, start in '}
-                  <Text>{timeCheckedIn}m</Text>
-                  {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-                </Text>
-
-              </View>
+              {/*  // <View style={[styles.row, { height: 25 }]}>
+              //   <Icon name="clockO" size={12} style={{ marginRight: 4 }} color="#72838F" type="light" />
+              //   <Text style={styles.timeText}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>
+              //   <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+              //   <Text style={styles.remTimeText}>{'exp, start in '}
+              //     <Text>{timeCheckedIn}m</Text>
+              //     {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
+              //   </Text>
+              //
+              // </View>
+*/}
+              <QueueTimeNote item={item} />
               <ScrollView style={styles.listContainer}>
                 <FlatList
                   data={this.props.services}

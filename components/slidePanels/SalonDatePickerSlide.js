@@ -1,8 +1,9 @@
 import React from 'react';
-import { Image, Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, Text, Animated, Dimensions, View, StyleSheet } from 'react-native';
 import { LocaleConfig, Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
+import SalonTouchableOpacity from './../SalonTouchableOpacity';
 
 LocaleConfig.locales.en = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -184,11 +185,11 @@ export default class SalonDatePickerSlide extends React.Component {
           <View style={styles.panelContainer}>
 
             <View style={styles.panelTopArrow}>
-              <TouchableOpacity onPress={this.hidePanel}>
+              <SalonTouchableOpacity onPress={this.hidePanel}>
                 <View>
                   <Image source={require('../../assets/images/icons/chevronDown.png')} style={styles.iconStyle} />
                 </View>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
 
             <View style={styles.panelTopSection}>
@@ -228,11 +229,11 @@ export default class SalonDatePickerSlide extends React.Component {
               </View>
               <View style={styles.weekJumpContainer}>
                 { ['3', '4', '5', '6', '7', '8'].map((weeks, i) => (
-                  <TouchableOpacity onPress={() => this.jumpToWeeks(weeks)} key={Math.random().toString()}>
+                  <SalonTouchableOpacity onPress={() => this.jumpToWeeks(weeks)} key={Math.random().toString()}>
                     <View style={styles.weekJump}>
                       <Text style={styles.weekJumpText}>{weeks}</Text>
                     </View>
-                  </TouchableOpacity>
+                  </SalonTouchableOpacity>
                 ))}
               </View>
             </View>

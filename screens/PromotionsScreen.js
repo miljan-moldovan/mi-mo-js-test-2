@@ -2,15 +2,10 @@
 import React from 'react';
 import {
   Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   FlatList,
-  SectionList,
-  TouchableHighlight,
   TextInput,
 } from 'react-native';
 
@@ -19,6 +14,7 @@ import { connect } from 'react-redux';
 import SideMenuItem from '../components/SideMenuItem';
 import SearchBar from '../components/searchBar';
 import SalonModal from '../components/SalonModal';
+import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
 
 export default class PromotionsScreen extends React.Component {
   static navigationOptions = {
@@ -124,7 +120,7 @@ export default class PromotionsScreen extends React.Component {
     const { data, key } = item;
 
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
         onPress={(e) => {
           if (this.hasMappedChildren(data)) {
@@ -159,7 +155,7 @@ export default class PromotionsScreen extends React.Component {
             </View>
           </View>
         </View>
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 
@@ -227,7 +223,7 @@ height: 50, paddingHorizontal: 13, marginVertical: 15, paddingVertical: 11, bord
             />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 0 }}>
-            <TouchableHighlight
+            <SalonTouchableHighlight
               style={{
                 width: 140,
                 height: 60,
@@ -240,8 +236,8 @@ height: 50, paddingHorizontal: 13, marginVertical: 15, paddingVertical: 11, bord
               }}
             >
               <View><Text style={{ color: '#67A3C7', fontSize: 18 }}>Cancel</Text></View>
-            </TouchableHighlight>
-            <TouchableHighlight
+            </SalonTouchableHighlight>
+            <SalonTouchableHighlight
               style={{
                 width: 140,
                 height: 60,
@@ -254,7 +250,7 @@ height: 50, paddingHorizontal: 13, marginVertical: 15, paddingVertical: 11, bord
               }}
             >
               <View><Text style={{ color: 'white', fontSize: 18 }}>Ok</Text></View>
-            </TouchableHighlight>
+            </SalonTouchableHighlight>
           </View>
         </SalonModal>
       </View>

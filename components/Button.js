@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const styles = {
   light: StyleSheet.create({
@@ -49,12 +50,12 @@ const styles = {
 };
 
 const Button = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={props.onPress}
-    style={[styles[props.type].button, {alignSelf: 'center'}]}
+    style={[styles[props.type].button, { alignSelf: 'center' }]}
   >
     <Text style={styles[props.type].text}>{props.text}</Text>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 Button.propTypes = {

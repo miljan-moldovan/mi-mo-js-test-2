@@ -709,6 +709,7 @@ const Icons = {
   transgenderAlt: '\uf225',
   trash: '\uf1f8',
   trashO: '\uf014',
+  trashAlt: '\uf2ed',
   tree: '\uf1bb',
   trello: '\uf181',
   tripadvisor: '\uf262',

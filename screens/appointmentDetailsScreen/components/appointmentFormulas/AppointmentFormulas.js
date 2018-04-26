@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   StyleSheet,
-  TouchableOpacity,
   FlatList,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -17,6 +16,7 @@ import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import FloatingButton from '../../../../components/FloatingButton';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -237,7 +237,7 @@ export default class AppointmentFormulas extends Component {
 
   existingCategories = () => {
     const { formulas } = this.props.appointmentFormulasState;
-    // debugger//eslint-disable-line
+
     const existing = [];
     for (let i = 0; i < formulas.length; i += 1) {
       if (existing.indexOf(formulas[i].category) < 0) {
@@ -373,7 +373,7 @@ export default class AppointmentFormulas extends Component {
                       <View style={styles.formulaTypeTag}>
                         <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
                       </View>
-                      <TouchableOpacity
+                      <SalonTouchableOpacity
                         onPress={() => alert('Screen Not Implemented')}
                       >
                         <FontAwesome
@@ -384,7 +384,7 @@ export default class AppointmentFormulas extends Component {
                           }}
                         >{Icons.angleRight}
                         </FontAwesome>
-                      </TouchableOpacity>
+                      </SalonTouchableOpacity>
                     </View>]}
                   bodyChildren={[
                     <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
@@ -398,14 +398,14 @@ export default class AppointmentFormulas extends Component {
               )}
             />
             <View style={styles.showDeletedButtonContainer}>
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 style={styles.showDeletedButton}
                 onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
                 }}
               >
                 <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
           </ScrollView>
         </View>

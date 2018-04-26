@@ -4,7 +4,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
@@ -23,7 +22,7 @@ import {
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
-
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
@@ -79,7 +78,7 @@ const caretRight = (
 );
 
 const Guest = props => (
-  <TouchableOpacity onPress={props.onPress}>
+  <SalonTouchableOpacity onPress={props.onPress}>
     <SalonCard
       bodyChildren={(
         <View style={styles.guestContainer}>
@@ -103,7 +102,7 @@ const Guest = props => (
       )}
       backgroundColor="white"
     />
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 const ServiceInfo = props => (
@@ -175,7 +174,7 @@ const ServiceCard = ({ data, ...props }) => (
     backgroundColor="white"
     bodyChildren={
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        <TouchableOpacity
+        <SalonTouchableOpacity
           style={{ flexDirection: 'row' }}
           onPress={props.onPress}
         >
@@ -196,7 +195,7 @@ const ServiceCard = ({ data, ...props }) => (
             >{Icons.angleRight}
             </FontAwesome>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
         <View style={{
           flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
         }}
@@ -234,14 +233,14 @@ const ServiceCard = ({ data, ...props }) => (
         />
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <SalonAppointmentTime startTime="12:00" />
-          <TouchableOpacity onPress={props.onPressDelete}>
+          <SalonTouchableOpacity onPress={props.onPressDelete}>
             <Icon
               name="trash"
               size={12}
               color="#D1242A"
               type="regular"
             />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
       </View>
     }
@@ -334,7 +333,7 @@ export default class NewAppointmentScreen extends React.Component {
             selectedClient={this.state.selectedClient}
             onChange={this.onChangeClient}
             extraComponents={[
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 onPress={() => {
                   this.props.navigation.navigate('AppointmentFormulas');
                 }}
@@ -348,8 +347,8 @@ export default class NewAppointmentScreen extends React.Component {
                   color="#115ECD"
                   type="light"
                 />
-              </TouchableOpacity>,
-              <TouchableOpacity
+              </SalonTouchableOpacity>,
+              <SalonTouchableOpacity
                 onPress={() => {
                   this.props.navigation.navigate('AppointmentFormulas');
                 }}
@@ -363,7 +362,7 @@ export default class NewAppointmentScreen extends React.Component {
                   color="#115ECD"
                   type="light"
                 />
-              </TouchableOpacity>,
+              </SalonTouchableOpacity>,
             ]}
           />
           <InputDivider />

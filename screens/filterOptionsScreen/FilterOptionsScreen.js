@@ -5,7 +5,6 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
-  TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -15,8 +14,12 @@ import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
+<<<<<<< HEAD
 import apiWrapper from '../../utilities/apiWrapper';
 
+=======
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+>>>>>>> 11994fba0fcb464379631521987b42f04f8a9504
 import SalonRoomList from './components/SalonRoomList';
 import SalonResourceList from './components/SalonResourceList';
 
@@ -128,12 +131,12 @@ export default class FilterOptionsScreen extends React.Component {
       case TAB_PROVIDERS:
         return (
           <View style={styles.container}>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={styles.row}
               onPress={() => this._handleOnChangeProvider('all')}
             >
               <Text style={styles.rowText}>View all providers</Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
             {this.props.providersState.isLoading
               ? (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -182,7 +185,7 @@ export default class FilterOptionsScreen extends React.Component {
   }
 
   renderItem = ({ item, index }) => (
-    <TouchableOpacity
+    <SalonTouchableOpacity
       style={styles.itemRow}
       onPress={() => this._handleOnChangeProvider(item)}
       key={index}
@@ -208,7 +211,7 @@ export default class FilterOptionsScreen extends React.Component {
         <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
         )}
       </View>
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 
   renderSeparator = () => (

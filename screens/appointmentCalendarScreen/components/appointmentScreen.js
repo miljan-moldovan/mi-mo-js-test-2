@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
 import Icon from '../../../components/UI/Icon';
@@ -12,6 +12,7 @@ import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointm
 import SalonAvatar from '../../../components/SalonAvatar';
 import apiWrapper from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {

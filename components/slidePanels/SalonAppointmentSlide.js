@@ -1,6 +1,8 @@
 import React from 'react';
-import { ScrollView, Text, Animated, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, Animated, View, StyleSheet } from 'react-native';
 import Icon from './../UI/Icon';
+import SalonTouchableOpacity from './../SalonTouchableOpacity';
+
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import Modal from 'react-native-modal';
@@ -320,9 +322,9 @@ export default class SalonAppointmentSlide extends React.Component {
           <View style={styles.panel} key={Math.random()}>
             <View style={styles.panelBlurredSection} />
             <View style={styles.panelContainer}>
-              <TouchableOpacity style={styles.panelTopIcon} onPress={() => this.setState({ visible: false })}>
+              <SalonTouchableOpacity style={styles.panelTopIcon} onPress={() => this.setState({ visible: false })}>
                 <Icon name="minus" size={45} color="#CCCCCC" type="solid" />
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
               <View style={styles.panelTop}>
                 <View style={[styles.panelTopLine, { flex: 1 }]}>
                   <View style={styles.panelTopLineLeft}>
@@ -330,9 +332,9 @@ export default class SalonAppointmentSlide extends React.Component {
                     <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="solid" />
                   </View>
                   <View style={styles.panelTopLineRight}>
-                    <TouchableOpacity onPress={() => this.setState({ visible: false })}>
+                    <SalonTouchableOpacity onPress={() => this.setState({ visible: false })}>
                       <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
-                    </TouchableOpacity>
+                    </SalonTouchableOpacity>
                   </View>
                 </View>
                 <View style={[styles.panelTopLine, { flex: 1 }]}>
@@ -365,25 +367,25 @@ export default class SalonAppointmentSlide extends React.Component {
 
               <View style={{ height: 600, backgroundColor: '#FFFFFF' }}>
                 <ScrollView >
-                  <TouchableOpacity activeOpacity={1}>
+                  <SalonTouchableOpacity activeOpacity={1}>
                     <View style={styles.panelMiddle}>
                       <View style={styles.panelIcons}>
                         <View style={styles.panelIcon}>
-                          <TouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
                             <Icon name="check" size={18} color="#FFFFFF" type="solid" />
-                          </TouchableOpacity>
+                          </SalonTouchableOpacity>
                           <Text style={styles.panelIconText}>Check-In</Text>
                         </View>
 
                         <View style={styles.panelIcon}>
-                          <TouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
                             <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
-                          </TouchableOpacity>
+                          </SalonTouchableOpacity>
                           <Text style={styles.panelIconText}>Check-out</Text>
                         </View>
 
                         <View style={styles.panelIcon}>
-                          <TouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
                             <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
                             <View style={styles.plusIconContainer}>
                               <Icon
@@ -394,14 +396,14 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                          </TouchableOpacity>
+                          </SalonTouchableOpacity>
                           <Text style={styles.panelIconText}>Cancel Appt.</Text>
                         </View>
 
                         <View style={styles.panelIcon}>
-                          <TouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
                             <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
-                          </TouchableOpacity>
+                          </SalonTouchableOpacity>
                           <Text style={styles.panelIconText}>Modifiy</Text>
                         </View>
                       </View>
@@ -425,9 +427,9 @@ export default class SalonAppointmentSlide extends React.Component {
                         </View>
 
                       </View>
-                      <TouchableOpacity style={styles.panelInfoShowMore} onPress={() => { alert('Not implemented'); }}>
+                      <SalonTouchableOpacity style={styles.panelInfoShowMore} onPress={() => { alert('Not implemented'); }}>
                         <Text style={styles.panelInfoShowMoreText}>SHOW MORE</Text>
-                      </TouchableOpacity>
+                      </SalonTouchableOpacity>
                     </View>
                     <View style={styles.panelBottom}>
                       <InputGroup
@@ -550,7 +552,7 @@ export default class SalonAppointmentSlide extends React.Component {
                       </InputGroup>
                     </View>
                     <View style={styles.panelDiff} />
-                  </TouchableOpacity>
+                  </SalonTouchableOpacity>
                 </ScrollView>
               </View>
             </View>

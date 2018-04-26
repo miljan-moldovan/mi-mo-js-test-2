@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   root: {
@@ -27,9 +28,9 @@ const styles = StyleSheet.create({
 
 const floatingButton = props => (
   <View style={[styles.root, props.rootStyle]}>
-    <TouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
+    <SalonTouchableOpacity style={styles.buttonContainer} onPress={props.handlePress}>
       {props.children}
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   </View>
 );
 

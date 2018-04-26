@@ -1,10 +1,12 @@
 import React from 'react';
-import { Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, Animated, Dimensions, View, StyleSheet } from 'react-native';
 import moment from 'moment';
 
 import Icon from './../UI/Icon';
 import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
 import SalonFlatPicker from '../SalonFlatPicker';
+
+import SalonTouchableOpacity from './../SalonTouchableOpacity';
 import {
   InputGroup,
   InputButton,
@@ -339,13 +341,13 @@ export default class SalonNewAppointmentSlide extends React.Component {
           <View style={styles.panelContainer}>
             <View style={styles.panelTop}>
 
-              <TouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
+              <SalonTouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
                 <View style={styles.cancelButtonContainer}>
                   <Text style={styles.cancelButtonText}>
                     Cancel
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
 
               <View style={styles.pickerBar}>
                 <View style={styles.flatPicker}>
@@ -360,13 +362,13 @@ export default class SalonNewAppointmentSlide extends React.Component {
                 </View>
               </View>
 
-              <TouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
+              <SalonTouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
                 <View style={styles.doneButtonContainer}>
                   <Text style={styles.doneButtonText}>
                     Done
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
 
             {this.state.selectedFilter === 0 &&
@@ -459,7 +461,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                 </View>
                 <View style={styles.panelBottomSection}>
                   <View style={styles.btnTop}>
-                    <TouchableOpacity
+                    <SalonTouchableOpacity
                       style={styles.bookApptContainer}
                       onPress={this.props.handlePressBook}
                     >
@@ -468,10 +470,10 @@ export default class SalonNewAppointmentSlide extends React.Component {
                         BOOK APPOINTMENT
                         </Text>
                       </View>
-                    </TouchableOpacity>
+                    </SalonTouchableOpacity>
                   </View>
                   <View style={styles.btnBottom}>
-                    <TouchableOpacity
+                    <SalonTouchableOpacity
                       style={{ width: '46%' }}
                       onPress={() => { alert('Not implemented'); }}
                     >
@@ -480,9 +482,9 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           MORE OPTIONS
                         </Text>
                       </View>
-                    </TouchableOpacity>
+                    </SalonTouchableOpacity>
                     <View style={{ width: '8%' }} />
-                    <TouchableOpacity
+                    <SalonTouchableOpacity
                       style={{ width: '46%' }}
                       onPress={() => { alert('Not implemented'); }}
                     >
@@ -491,7 +493,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           BOOK ANOTHER
                         </Text>
                       </View>
-                    </TouchableOpacity>
+                    </SalonTouchableOpacity>
                   </View>
                 </View>
               </View>

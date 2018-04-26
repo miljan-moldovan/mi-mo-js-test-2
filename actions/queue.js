@@ -73,14 +73,6 @@ export function saveQueueItem(queueItem) {
   };
 }
 
-// export function checkInClient(id) {
-//   return {
-//     type: CLIENT_CHECKED_IN,
-//     data: {id}
-//   }
-// }
-
-
 export const startService = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_START_SERVICE, data: { id } });
   try {
@@ -102,16 +94,7 @@ export const checkInClient = id => async (dispatch: Object => void) => {
   }
 };
 
-
-// export function returnLater(id) {
-//   return {
-//     type: CLIENT_RETURNED_LATER,
-//     data: { id },
-//   };
-// }
-
 export const returnLater = id => async (dispatch: Object => void) => {
-  
   dispatch({ type: CLIENT_RETURNED_LATER, data: { id } });
 
   try {
@@ -119,14 +102,12 @@ export const returnLater = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_RETURNED_LATER_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_RETURNED_LATER_FAILED, error });
   }
 };
 
 
 export const returned = id => async (dispatch: Object => void) => {
-
   dispatch({ type: CLIENT_RETURNED, data: { id } });
 
   try {
@@ -134,20 +115,11 @@ export const returned = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_RETURNED_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_RETURNED_FAILED, error });
   }
 };
 
-// export function walkOut(id) {
-//   return {
-//     type: CLIENT_WALKED_OUT,
-//     data: { id },
-//   };
-// }
-
 export const walkOut = id => async (dispatch: Object => void) => {
-
   dispatch({ type: CLIENT_WALKED_OUT, data: { id } });
 
   try {
@@ -155,13 +127,11 @@ export const walkOut = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_WALKED_OUT_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_WALKED_OUT_FAILED, error });
   }
 };
 
 export const noShow = id => async (dispatch: Object => void) => {
-
   dispatch({ type: CLIENT_NO_SHOW, data: { id } });
 
   try {
@@ -169,27 +139,11 @@ export const noShow = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_NO_SHOW_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_NO_SHOW_FAILED, error });
   }
 };
 
-// export function startService(id) {
-//   return {
-//     type: CLIENT_START_SERVICE,
-//     data: { id },
-//   };
-// }
-
-// export function finishService(id) {
-//   return {
-//     type: CLIENT_FINISH_SERVICE,
-//     data: { id },
-//   };
-// }
-
 export const finishService = id => async (dispatch: Object => void) => {
-
   dispatch({ type: CLIENT_FINISH_SERVICE, data: { id } });
 
   try {
@@ -197,14 +151,12 @@ export const finishService = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_FINISH_SERVICE_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_FINISH_SERVICE_FAILED, error });
   }
 };
 
 
 export const undoFinishService = id => async (dispatch: Object => void) => {
-
   dispatch({ type: CLIENT_UNDOFINISH_SERVICE, data: { id } });
 
   try {
@@ -212,21 +164,11 @@ export const undoFinishService = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_UNDOFINISH_SERVICE_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_UNDOFINISH_SERVICE_FAILED, error });
   }
 };
 
-// export function toWaiting(id) {
-//   return {
-//     type: CLIENT_TO_WAITING,
-//     data: { id },
-//   };
-// }
-
-
 export const toWaiting = id => async (dispatch: Object => void) => {
-
   dispatch({ type: CLIENT_TO_WAITING, data: { id } });
 
   try {
@@ -234,7 +176,6 @@ export const toWaiting = id => async (dispatch: Object => void) => {
 
     dispatch({ type: CLIENT_TO_WAITING_RECEIVED, data });
   } catch (error) {
-
     dispatch({ type: CLIENT_TO_WAITING_FAILED, error });
   }
 };
@@ -283,7 +224,6 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
 
     dispatch(receiveQueue());
   } catch (error) {
-
     dispatch({ type: QUEUE_FAILED, error });
   }
 };
@@ -300,7 +240,6 @@ export const updateGroupLeaders = (groups: Object) => async (dispatch: Object =>
 
     dispatch(receiveQueue());
   } catch (error) {
-
     dispatch({ type: QUEUE_FAILED, error });
   }
 };
@@ -322,7 +261,6 @@ export const uncombine = (groupId: number) => async (dispatch: Object => void) =
     });
 
     dispatch(receiveQueue());
-    // setTimeout(()=>dispatch(receiveQueue()), 1000);
   } catch (error) {
     dispatch({ type: QUEUE_FAILED, error });
   }

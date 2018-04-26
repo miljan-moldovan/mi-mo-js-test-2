@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 import moment from 'moment';
 
 import Icon from '../../components/UI/Icon';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   calendarContainer: {
@@ -160,22 +161,22 @@ export default class SalonDatePickerBar extends Component {
         ]}
       >
         <View style={styles.datesStrip}>
-          <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', paddingLeft: 25 }]} onPress={this.getPrevious}>
+          <SalonTouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', paddingLeft: 25 }]} onPress={this.getPrevious}>
             <View>
               <Icon name="angleLeft" size={25} color="#727A8F" type="solid" />
             </View>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
 
           <View style={styles.calendarDates}>
-            <TouchableOpacity style={styles.todayContainer} onPress={this.goToToday}>
+            <SalonTouchableOpacity style={styles.todayContainer} onPress={this.goToToday}>
               <View>
                 <Text style={styles.today}>
                 Today
                 </Text>
               </View>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
 
-            <TouchableOpacity style={styles.dateButton} onPress={this.props.onCalendarSelected}>
+            <SalonTouchableOpacity style={styles.dateButton} onPress={this.props.onCalendarSelected}>
               <View style={styles.dateContainer}>
                 {this.state.mode === 'week' && <Text style={styles.date} >
                   {`${moment(this.state.startDate).format('ddd MM/DD')} - ${moment(this.state.startDate).add(6, 'day').format('ddd MM/DD')}`}
@@ -187,19 +188,19 @@ export default class SalonDatePickerBar extends Component {
                 </Text>
                 }
               </View>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
 
-            <TouchableOpacity style={styles.iconContainer} onPress={this.props.onCalendarSelected}>
+            <SalonTouchableOpacity style={styles.iconContainer} onPress={this.props.onCalendarSelected}>
               <View>
                 <Icon name="calendar" size={20} color="#115ECD" type="solid" />
               </View>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </View>
-          <TouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', paddingRight: 25 }]} onPress={this.getNext}>
+          <SalonTouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', paddingRight: 25 }]} onPress={this.getNext}>
             <View>
               <Icon name="angleRight" size={25} color="#727A8F" type="solid" />
             </View>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
       </View>
     )

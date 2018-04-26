@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableHighlight, View, StyleSheet, ViewPropTypes } from 'react-native';
+import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   container: {
@@ -131,7 +132,7 @@ class SalonSearchBar extends Component {
             <View style={styles.crossIconContainer}>
               {this.state.searchText.length > 0 &&
 
-                <TouchableHighlight
+                <SalonTouchableHighlight
                   style={styles.crossIconButton}
                   underlayColor="transparent"
                   onPress={
@@ -145,7 +146,7 @@ class SalonSearchBar extends Component {
                   >{Icons.timesCircle}
                   </FontAwesome>
 
-                </TouchableHighlight>
+                </SalonTouchableHighlight>
 
               }
             </View>
@@ -153,7 +154,7 @@ class SalonSearchBar extends Component {
         </View>
         {this.props.showCancel &&
           <View style={styles.cancelContainer}>
-            <TouchableHighlight
+            <SalonTouchableHighlight
               style={styles.cancelSearchContainer}
               underlayColor="transparent"
               onPress={
@@ -163,7 +164,7 @@ class SalonSearchBar extends Component {
               }
             >
               <Text style={[styles.cancelSearch, { color: this.props.fontColor }]}>Cancel</Text>
-            </TouchableHighlight>
+            </SalonTouchableHighlight>
           </View>
           }
       </View>

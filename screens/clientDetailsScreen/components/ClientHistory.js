@@ -3,12 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Image,
 } from 'react-native';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonSectionsModal from '../../../components/modals/SalonSectionsModal';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -217,13 +217,13 @@ export default class ClientHistory extends Component {
 
         <View style={styles.header}>
           <Text style={styles.headerTitle}>SERVICE</Text>
-          <TouchableOpacity
+          <SalonTouchableOpacity
             style={styles.filterButton}
             onPress={() => this.showModal()}
           >
             <Text style={styles.filterBtnText}>CHANGE</Text>
             <Image style={{ marginLeft: 5, height: 10, width: 10 }} source={require('../../../assets/images/icons/icon_arrow_down_xs.png')} />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
         <View style={styles.historyContainer}>
 
