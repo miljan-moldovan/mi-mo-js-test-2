@@ -98,8 +98,10 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
       ])
         .then(([employees, appointments, availabilityItem]) => {
           const employeesAppointment = orderBy(employees, 'appointmentOrder');
-          dispatch(setGridAllViewSuccess(employeesAppointment,
-            appointments, availabilityItem.timeSlots
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+          dispatch(setGridAllViewSuccess(
+            employeesAppointment,
+            orderedAppointments, availabilityItem.timeSlots
           ));
         })
         .catch((ex) => {
@@ -120,8 +122,9 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
       ])
         .then(([providerSchedule, appointments]) => {
           const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
           dispatch(setGridDayWeekViewSuccess(
-            appointments,
+            orderedAppointments,
             groupedProviderSchedule,
             apptGridSettings,
             startDate,

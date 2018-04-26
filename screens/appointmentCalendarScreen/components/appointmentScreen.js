@@ -4,13 +4,13 @@ import moment from 'moment';
 
 import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
-import SalonProviderCalendar from '../../../components/SalonProviderCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
+import apiWrapper from '../../../utilities/apiWrapper';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -35,7 +35,7 @@ export default class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+            image={{ uri: apiWrapper.getEmployeePhoto(params.filterProvider.id) }}
           />
           <Text style={{
           fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',

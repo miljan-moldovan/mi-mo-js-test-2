@@ -164,7 +164,7 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode } = this.props;
+    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(this.startTime, 'HH:mm');
@@ -186,6 +186,7 @@ export default class Calendar extends Component {
           displayMode={isAllProviderView ? 'all' : displayMode}
           selectedProvider={selectedProvider}
           startTime={startTime}
+          appointments={appointments}
         />);
     }
     return null;
