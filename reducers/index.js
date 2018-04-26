@@ -18,6 +18,7 @@ import serviceReducer from './service';
 import { providersReducer } from '../screens/providersScreen/redux';
 import productsReducer from './products';
 import appointmentReducer from './appointment';
+import newAppointmentReducer from './newAppointment';
 import apptBookViewOptionsReducer from './apptBookViewOptions';
 import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
 import turnAway from './turnAway';
@@ -45,4 +46,5 @@ export default combineReducers({
   apptBookViewOptionsReducer,
   apptBookSetEmployeeOrderReducer,
   turnAway,
+  newAppointmentReducer,
 });

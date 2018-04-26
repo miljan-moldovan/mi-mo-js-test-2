@@ -11,6 +11,7 @@ import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePicke
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
+import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 export default class AppointmentScreen extends Component {
@@ -49,97 +50,14 @@ export default class AppointmentScreen extends Component {
 
     return {
       header: (
-        <View style={{
-          height: 63,
-          paddingBottom: 10,
-          backgroundColor: '#115ECD',
-          flexDirection: 'row',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-        }}
-        >
-          <SalonTouchableOpacity
-            style={{
-              flex: 1 / 5,
-              alignItems: 'flex-start',
-              justifyContent: 'flex-end',
-              marginLeft: 16,
-            }}
-            onPress={() => navigation.state.params.onPressMenu()}
-          >
-            <Icon
-              name="bars"
-              type="regular"
-              color="white"
-              size={19}
-            />
-          </SalonTouchableOpacity>
-          <SalonTouchableOpacity
-            style={{
-              flex: 3 / 5,
-              alignSelf: 'stretch',
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              justifyContent: 'center',
-            }}
-            onPress={() => navigation.state.params.onPressTitle()}
-          >
-            {title}
-            <Icon
-              style={{ marginLeft: 5 }}
-              name="caretDown"
-              type="regular"
-              color="white"
-              size={17}
-            />
-          </SalonTouchableOpacity>
-          <View
-            style={{
-              flex: 1 / 5,
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingRight: 16,
-              flexDirection: 'row',
-            }}
-          >
-            <SalonTouchableOpacity
-              onPress={() => navigation.state.params.onPressEllipsis()}
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon
-                name="ellipsisH"
-                type="regular"
-                color="white"
-                size={22}
-              />
-            </SalonTouchableOpacity>
-            <SalonTouchableOpacity
-              onPress={() => navigation.state.params.onPressCalendar()}
-              style={{
-                marginLeft: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon
-                name="calendar"
-                type="regular"
-                color="white"
-                size={19}
-              />
-            </SalonTouchableOpacity>
-          </View>
-        </View>
+        <ApptCalendarHeader
+          {...title}
+          onPressMenu={() => navigation.state.params.onPressMenu()}
+          onPressTitle={() => navigation.state.params.onPressTitle()}
+          onPressEllipsis={() => navigation.state.params.onPressEllipsis()}
+          onPressCalendar={() => navigation.state.params.onPressCalendar()}
+        />
       ),
-      // headerLeft: (
-
-      // ),
-      // headerRight: (
-
-      // ),
     };
   };
   constructor(props) {
@@ -180,7 +98,30 @@ export default class AppointmentScreen extends Component {
 
   onPressCalendar = () => alert('Not Implemented');
 
-  onPressTitle = () => this.props.navigation.navigate('FilterOptions', { dismissOnSelect: true, onChangeProvider: this.selectFilterProvider });
+  onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
+    dismissOnSelect: true,
+    onChangeProvider: this.selectFilterProvider,
+  });
+
+  onCalendarCellPressed = (cellId, colData) => {
+    const {
+      startDate,
+      selectedProvider,
+    } = this.props.appointmentScreenState;
+    const startTime = moment(cellId, 'HH:mm A');
+    const endTime = moment(startTime).add(15, 'minute');
+
+    if (selectedProvider === 'all') {
+      this.props.newAppointmentActions.setNewApptEmployee(colData);
+      this.props.newAppointmentActions.setNewApptDate(startDate);
+    } else {
+      this.props.newAppointmentActions.setNewApptEmployee(selectedProvider);
+      this.props.newAppointmentActions.setNewApptDate(colData);
+    }
+    this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
+
+    this.setState({ visibleNewAppointment: true });
+  }
 
   selectFilterProvider = (filterProvider) => {
     if (filterProvider === 'all') {
@@ -232,6 +173,7 @@ export default class AppointmentScreen extends Component {
       apptGridSettings,
       providerAppointments,
     } = this.props.appointmentScreenState;
+
     const { isLoading } = this.state;
     const { appointments } = this.props.appointmentState;
     const { providers } = this.props.appointmentScreenState;
@@ -267,6 +209,7 @@ export default class AppointmentScreen extends Component {
           isLoading ?
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator /></View> :
             <SalonCalendar
+              onCellPressed={this.onCalendarCellPressed}
               apptGridSettings={apptGridSettings}
               dataSource={providerAppointments}
               appointments={appointments}
@@ -305,9 +248,48 @@ export default class AppointmentScreen extends Component {
 
         <SalonNewAppointmentSlide
           navigation={this.props.navigation}
+          hasConflicts={this.props.newAppointmentState.hasConflicts}
+          date={this.props.newAppointmentState.body.date}
+          startTime={this.props.newAppointmentState.body.items[0].fromTime}
+          endTime={this.props.newAppointmentState.body.items[0].toTime}
+          isProviderRequested={this.props.newAppointmentState.body.items[0].requested}
+          client={this.props.newAppointmentState.client}
+          provider={this.props.newAppointmentState.employee}
+          service={this.props.newAppointmentState.service}
           visible={this.state.visibleNewAppointment}
           onHide={() => {
             this.setState({ visibleNewAppointment: false });
+          }}
+          handlePressBook={() => {
+            const callback = () => {
+              this.setState({ visibleNewAppointment: false });
+              this.props.appointmentCalendarActions.getCalendarData();
+            };
+            this.props.newAppointmentActions.bookNewAppt(callback);
+          }}
+          handlePressProvider={() => {
+            this.props.navigation.navigate('Providers', {
+              actionType: 'update',
+              dismissOnSelect: true,
+              onChangeProvider: provider => this.props.newAppointmentActions.setNewApptEmployee(provider),
+            });
+          }}
+          handlePressService={() => {
+            this.props.navigation.navigate('Services', {
+              actionType: 'update',
+              dismissOnSelect: true,
+              onChangeService: service => this.props.newAppointmentActions.setNewApptService(service),
+            });
+          }}
+          handlePressClient={() => {
+            this.props.navigation.navigate('ChangeClient', {
+              actionType: 'update',
+              dismissOnSelect: true,
+              onChangeClient: client => this.props.newAppointmentActions.setNewApptClient(client),
+            });
+          }}
+          handleChangeRequested={(requested) => {
+            this.props.newAppointmentActions.setNewApptRequested(requested);
           }}
         />
 

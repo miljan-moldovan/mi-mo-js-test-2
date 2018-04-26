@@ -17,7 +17,9 @@ export default class Board extends Component {
   }
 
   renderCol = (col, key) => {
-    const { apptGridSettings, rows, cellWidth, isDate, providerSchedule } = this.props;
+    const {
+      apptGridSettings, rows, cellWidth, isDate, providerSchedule,
+    } = this.props;
     return (
       <Column
         key={key}
@@ -26,12 +28,15 @@ export default class Board extends Component {
         cellWidth={cellWidth}
         isDate={isDate}
         providerSchedule={providerSchedule}
+        onCellPressed={this.props.onCellPressed}
       />
     );
   }
 
   render() {
-    const { columns, apptGridSettings, rows, timeSchedules, showAvailability } = this.props;
+    const {
+      columns, apptGridSettings, rows, timeSchedules, showAvailability,
+    } = this.props;
     return (
       <View style={styles.container}>
         { showAvailability ?
