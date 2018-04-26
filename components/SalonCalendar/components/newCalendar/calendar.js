@@ -76,7 +76,7 @@ export default class Calendar extends Component {
       this.schedule = times(apptGridSettings.numOfRow, this.createSchedule);
       if (selectedProvider === 'all') {
         this.size = {
-          width: headerData.length * providerWidth + 138,
+          width: headerData.length * providerWidth + 100,
           height: apptGridSettings.numOfRow * 30 + headerHeight,
         };
         this.cellWidth = providerWidth;
