@@ -14,12 +14,9 @@ import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
-<<<<<<< HEAD
 import apiWrapper from '../../utilities/apiWrapper';
 
-=======
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
->>>>>>> 11994fba0fcb464379631521987b42f04f8a9504
 import SalonRoomList from './components/SalonRoomList';
 import SalonResourceList from './components/SalonResourceList';
 
