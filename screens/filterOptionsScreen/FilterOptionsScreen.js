@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import apiWrapper from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
@@ -165,7 +166,7 @@ export default class FilterOptionsScreen extends React.Component {
         );
       case TAB_ROOMS:
         return (
-          <SalonRoomList />
+          <SalonRoomList onChangeRoom={this._handleOnChangeRoom} />
         );
       case TAB_DESK_STAFF:
         return (
@@ -192,7 +193,7 @@ export default class FilterOptionsScreen extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
           highlight={this.state.searchText}
@@ -271,6 +272,15 @@ export default class FilterOptionsScreen extends React.Component {
     }
     const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
+
+  _handleOnChangeRoom = (Room) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeRoom, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeRoom) { onChangeRoom(Room); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 }

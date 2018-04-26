@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
+import apiWrapper from '../../../utilities/apiWrapper';
 import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
 import SalonProviderCalendar from '../../../components/SalonProviderCalendar';
@@ -36,7 +37,7 @@ export default class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+            image={{ uri: apiWrapper.getEmployeePhoto(params.filterProvider.id) }}
           />
           <Text style={{
           fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
@@ -50,7 +51,7 @@ export default class AppointmentScreen extends Component {
     return {
       header: (
         <ApptCalendarHeader
-          {...title}
+          title={title}
           onPressMenu={() => navigation.state.params.onPressMenu()}
           onPressTitle={() => navigation.state.params.onPressTitle()}
           onPressEllipsis={() => navigation.state.params.onPressEllipsis()}
@@ -97,6 +98,7 @@ export default class AppointmentScreen extends Component {
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
     dismissOnSelect: true,
     onChangeProvider: this.selectFilterProvider,
+    onChangeRoom: this.selectFilterRoom,
   });
 
   onCalendarCellPressed = (cellId, colData) => {
@@ -130,6 +132,8 @@ export default class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.setGridView();
   }
+
+  selectFilterRoom = room => alert(`Selected Room ${room.name}s`)
 
   render() {
     const {

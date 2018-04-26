@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import newAppointmentActions, {
+  ADD_NEW_APPT_ITEM,
   SET_NEW_APPT_EMPLOYEE,
   SET_NEW_APPT_DATE,
   SET_NEW_APPT_SERVICE,
@@ -13,6 +14,21 @@ import newAppointmentActions, {
   BOOK_NEW_APPT_SUCCESS,
   BOOK_NEW_APPT_FAILED,
 } from '../actions/newAppointment';
+
+const itemShape = {
+  date: moment(),
+  service: null,
+  employee: null,
+  client: null,
+  fromTime: 'string',
+  toTime: 'string',
+  employeeId: 0,
+  bookedByEmployeeId: 0,
+  serviceId: 0,
+  clientId: 0,
+  requested: true,
+  isFirstAvailable: false,
+};
 
 const initialState = {
   isLoading: false,
@@ -42,20 +58,7 @@ const initialState = {
       confirmationType: null,
     },
     items: [
-      {
-        date: moment(),
-        service: null,
-        employee: null,
-        client: null,
-        fromTime: 'string',
-        toTime: 'string',
-        employeeId: 0,
-        bookedByEmployeeId: 0,
-        serviceId: 0,
-        clientId: 0,
-        requested: true,
-        isFirstAvailable: false,
-      },
+      itemShape,
     ],
   },
 };
@@ -64,36 +67,42 @@ export default function newAppointmentReducer(state = initialState, action) {
   const { type, data } = action;
   const { body } = state;
   switch (type) {
+    case ADD_NEW_APPT_ITEM:
+      body.items.push(itemShape);
+      return {
+        ...state,
+        body,
+      };
     case SET_NEW_APPT_REQUESTED:
-      body.items[0].requested = data.requested;
+      body.items[data.index].requested = data.requested;
       return {
         ...state,
         body,
       };
     case SET_NEW_APPT_FIRST_AVAILABLE:
-      body.items[0].isFirstAvailable = data.isFirstAvailable;
+      body.items[data.index].isFirstAvailable = data.isFirstAvailable;
       return {
         ...state,
         body,
       };
     case SET_NEW_APPT_DATE:
       body.date = data.date;
-      body.items[0].date = data.date;
+      body.items[data.index].date = data.date;
       return {
         ...state,
         body,
       };
     case SET_NEW_APPT_START_TIME:
-      body.items[0].fromTime = moment(data.startTime, 'HH:mm A').format('HH:mm');
-      body.items[0].toTime = moment(data.endTime, 'HH:mm A').format('HH:mm');
+      body.items[data.index].fromTime = moment(data.startTime, 'HH:mm A').format('HH:mm');
+      body.items[data.index].toTime = moment(data.endTime, 'HH:mm A').format('HH:mm');
       return {
         ...state,
         body,
       };
     case SET_NEW_APPT_CLIENT:
       body.clientInfo = data.client;
-      body.items[0].client = data.client;
-      body.items[0].clientId = data.client.id;
+      body.items[data.index].client = data.client;
+      body.items[data.index].clientId = data.client.id;
       return {
         ...state,
         body,
@@ -101,17 +110,17 @@ export default function newAppointmentReducer(state = initialState, action) {
       };
     case SET_NEW_APPT_EMPLOYEE:
       body.bookedByEmployeeId = data.employee.id;
-      body.items[0].employee = data.employee;
-      body.items[0].employeeId = data.employee.id;
-      body.items[0].bookedByEmployeeId = data.employee.id;
+      body.items[data.index].employee = data.employee;
+      body.items[data.index].employeeId = data.employee.id;
+      body.items[data.index].bookedByEmployeeId = data.employee.id;
       return {
         ...state,
         body,
         employee: data.employee,
       };
     case SET_NEW_APPT_SERVICE:
-      body.items[0].service = data.service;
-      body.items[0].serviceId = data.service.id;
+      body.items[data.index].service = data.service;
+      body.items[data.index].serviceId = data.service.id;
       return {
         ...state,
         body,
