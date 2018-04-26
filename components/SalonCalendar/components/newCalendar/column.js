@@ -37,10 +37,10 @@ export default class Column extends Component {
     let style = styles.cellContainerDisabled;
     let schedule;
     if (isDate) {
-      schedule = providerSchedule[colData.format('YYYY-MM-DD')];
+      schedule = providerSchedule[colData.format('YYYY-MM-DD')][0];
       schedule = schedule ? schedule.scheduledIntervals : null;
     } else {
-      schedule = colData.schedule;
+      schedule = colData.scheduledIntervals;
     }
     if (schedule) {
       for (let i = 0; i < schedule.length; i += 1) {

@@ -12,8 +12,8 @@ const styles = StyleSheet.create({
 });
 
 export default class Board extends Component {
-  shouldComponentUpdate() {
-    return false;
+  shouldComponentUpdate(nextProps, nexState) {
+    return nextProps.displayMode !== this.props.displayMode;
   }
 
   renderCol = (col, key) => {
@@ -31,14 +31,14 @@ export default class Board extends Component {
   }
 
   render() {
-    const { columns, apptGridSettings, rows, timeSchedules, showAvailability } = this.props;
+    const { columns, apptGridSettings, availability, showAvailability } = this.props;
     return (
       <View style={styles.container}>
         { showAvailability ?
           <AvailabilityColumn
             apptGridSettings={apptGridSettings}
             providers={columns}
-            timeSchedules={timeSchedules}
+            availability={availability}
           /> : null
         }
         { columns.map(this.renderCol) }

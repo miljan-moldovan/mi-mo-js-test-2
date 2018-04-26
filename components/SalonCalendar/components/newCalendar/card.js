@@ -50,25 +50,7 @@ class appointmentBlock extends Component {
   constructor(props) {
     super(props);
     this.scrollValue = 0;
-    const { toTime, fromTime } = props.appointment;
-    const { startTime, step } = props.apptGridSettings;
-    const { cellWidth, displayMode, selectedProvider } = props;
-    const start = moment(fromTime, 'HH:mm');
-    const top = (start.diff(startTime, 'minutes') / step) * 30;
-    const end = moment(toTime, 'HH:mm');
-    const left = this.calculateLeft();
-    const height = (moment.duration(end.diff(start)).asMinutes() / step) * 30 - 1;
-    this.animatedValueX = left;
-    this.animatedValueY = top;
-    this.state = {
-      pan: new Animated.ValueXY({ x: left, y: top }),
-      left,
-      top: new Animated.Value(top),
-      height: new Animated.Value(height),
-      isActive: false,
-      isResizeing: false,
-      opacity: new Animated.Value(0)
-    };
+    this.calcualteStateValues(props);
     // this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
     // this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
     this.panResponder = PanResponder.create({
@@ -90,7 +72,7 @@ class appointmentBlock extends Component {
         }
       },
       onPanResponderRelease: (e, gesture) => {
-        switch (displayMode) {
+        switch (this.props.displayMode) {
           case 'all':
             this.handleReleaseAll();
             break;
@@ -108,7 +90,36 @@ class appointmentBlock extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextState.isActive || this.state.isActive;
+    return nextState.isActive || this.state.isActive || nextProps.displayMode !== this.props.displayMode;
+  }
+
+  componentWillUpdate(nextProps) {
+    if (nextProps.displayMode !== this.props.displayMode) {
+      this.calcualteStateValues(nextProps)
+    }
+  }
+
+  calcualteStateValues = (props) => {
+    const { startTime } = props;
+    const { toTime, fromTime } = props.appointment;
+    const { step } = props.apptGridSettings;
+    const { cellWidth, displayMode, selectedProvider } = props;
+    const start = moment(fromTime, 'HH:mm');
+    const top = (start.diff(startTime, 'minutes') / step) * 30;
+    const end = moment(toTime, 'HH:mm');
+    const left = this.calculateLeft();
+    const height = (moment.duration(end.diff(start)).asMinutes() / step) * 30 - 1;
+    this.animatedValueX = left;
+    this.animatedValueY = top;
+    this.state = {
+      pan: new Animated.ValueXY({ x: left, y: top }),
+      left,
+      top: new Animated.Value(top),
+      height: new Animated.Value(height),
+      isActive: false,
+      isResizeing: false,
+      opacity: new Animated.Value(0)
+    };
   }
 
   handleReleaseAll = () => {
@@ -246,9 +257,17 @@ class appointmentBlock extends Component {
 
   calculateLeft = () => {
     const { providers, displayMode, cellWidth, appointment } = this.props;
-    return displayMode === 'all' ?
-      providers.findIndex(provider => provider.id
-      === appointment.employee.id) * cellWidth + 102 : 0;
+    switch(displayMode) {
+      case 'all':
+        return providers.findIndex(provider => provider.id
+        === appointment.employee.id) * cellWidth + 102;
+      case 'week': {
+        const apptDate = moment(appointment.date).format('YYYY-DD-MM');
+        return providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
+      }
+      default:
+        return 0;
+    }
   }
 
   handleOnLongPress = () => {

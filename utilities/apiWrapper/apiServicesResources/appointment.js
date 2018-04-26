@@ -28,11 +28,6 @@ const resources = {
     method: 'post',
     disableCache: true,
   },
-  postAppointmentBookRebook: {
-    path: 'AppointmentBook/Rebook/:appointmentId',
-    method: 'post',
-    expiration: apiConstants.expiration,
-  },
 };
 
 export default {
