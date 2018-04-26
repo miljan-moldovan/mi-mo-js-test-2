@@ -3,7 +3,7 @@ import moment from 'moment';
 import apiWrapper from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
-} from './appointment';
+} from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
 
 export const SET_NEW_APPT_EMPLOYEE = 'newAppointment/SET_NEW_APPT_EMPLOYEE';
 export const SET_NEW_APPT_DATE = 'newAppointment/SET_NEW_APPT_DATE';
@@ -72,9 +72,12 @@ const bookNewAppt = callback => (dispatch, getState) => {
     body,
   })
     .then((res) => {
+      const { service } = body.items[0];
+      service.description = service.name;
+      body.items[0].service = service;
       dispatch({
         type: ADD_APPOINTMENT,
-        data: { appointment: res[0] },
+        data: { appointment: body.items[0] },
       });
       dispatch(bookNewApptSuccess(callback));
     })

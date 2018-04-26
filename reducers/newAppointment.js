@@ -18,8 +18,8 @@ const initialState = {
   isLoading: false,
   hasConflicts: false,
   service: null,
-  client: null,
   employee: null,
+  client: null,
   body: {
     date: moment(),
     bookedByEmployeeId: 0,
@@ -44,6 +44,9 @@ const initialState = {
     items: [
       {
         date: moment(),
+        service: null,
+        employee: null,
+        client: null,
         fromTime: 'string',
         toTime: 'string',
         employeeId: 0,
@@ -89,6 +92,7 @@ export default function newAppointmentReducer(state = initialState, action) {
       };
     case SET_NEW_APPT_CLIENT:
       body.clientInfo = data.client;
+      body.items[0].client = data.client;
       body.items[0].clientId = data.client.id;
       return {
         ...state,
@@ -97,6 +101,7 @@ export default function newAppointmentReducer(state = initialState, action) {
       };
     case SET_NEW_APPT_EMPLOYEE:
       body.bookedByEmployeeId = data.employee.id;
+      body.items[0].employee = data.employee;
       body.items[0].employeeId = data.employee.id;
       body.items[0].bookedByEmployeeId = data.employee.id;
       return {
@@ -105,6 +110,7 @@ export default function newAppointmentReducer(state = initialState, action) {
         employee: data.employee,
       };
     case SET_NEW_APPT_SERVICE:
+      body.items[0].service = data.service;
       body.items[0].serviceId = data.service.id;
       return {
         ...state,

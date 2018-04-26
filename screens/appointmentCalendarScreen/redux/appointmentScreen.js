@@ -1,215 +1,210 @@
 import moment from 'moment';
-import { orderBy } from 'lodash';
-
-import {
-  GET_APPOINTMENTS_SUCCESS,
-} from '../../../actions/appointment';
-
+import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import apiWrapper from '../../../utilities/apiWrapper';
 
+export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
+export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
+export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
+export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_VIEW_SUCCESS';
 export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
 export const SET_PICKER_MODE = 'appointmentCalendar/SET_PICKER_MODE';
 export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER';
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
-export const GET_PROVIDERS_CALENDAR = 'appointmentCalendar/GET_PROVIDERS_CALENDAR';
-export const GET_PROVIDER_CALENDAR_SUCCESS = 'appointmentCalendar/GET_PROVIDER_CALENDAR_SUCCESS';
-export const GET_APPOINTMENTS_CALENDAR = 'appointmentCalendar/GET_APPOINTMENTS';
-export const GET_APPOINTMENTS_CALENDAR_SUCCESS = 'appointmentCalendar/GET_APPOINTMENTS_CALENDAR_SUCCESS';
-export const GET_APPOINTMENTS_CALENDAR_FAILED = 'appointmentCalendar/GET_APPOINTMENTS_FAILED';
+export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
+export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
 
-const getProviderScheduleSuccess = (apptGridSettings, dictionary) => ({
-  type: GET_PROVIDER_CALENDAR_SUCCESS,
-  data: { apptGridSettings, dictionary },
+const addAppointment = appointment => ({
+  type: ADD_APPOINTMENT,
+  data: { appointment },
 });
 
-const getProvidersScheduleSuccess = (apptGridSettings, dictionary, providers) => ({
-  type: GET_APPOINTMENTS_CALENDAR_SUCCESS,
-  data: { apptGridSettings, dictionary, providers },
-});
+const toTimeStamp = time => moment(time, 'HH:mm').unix();
 
-const getProvidersSchedule = (providers, date, appointmentResponse) => (dispatch) => {
-  let ids = '';
-  for (let i = 0; i < providers.length; i += 1) {
-    if (i !== 0) {
-      ids += `&ids=${providers[i].id}`;
-    } else {
-      ids += `${providers[i].id}`;
-    }
-  }
-  return apiWrapper.doRequest('getEmployeeSchedule', {
-    path: {
-      date,
-    },
-    query: {
-      ids,
-    },
-  })
-    .then((response) => {
-      let startTime;
-      let endTime;
-      let newTime;
-      let schedule;
-      let appointment;
-      for (let i = 0; i < providers.length; i += 1) {
-        schedule = response[providers[i].id];
-        if (schedule) {
-          const provider = providers[i];
-          schedule.provider = provider;
-          if (schedule.scheduledIntervals && schedule.scheduledIntervals.length > 0) {
-            provider.schedule = schedule.scheduledIntervals;
-            newTime = moment(schedule.scheduledIntervals[0].start, 'HH:mm');
-            startTime = startTime && startTime.isBefore(newTime) ? startTime : newTime;
-            newTime = moment(schedule.scheduledIntervals[0].end, 'HH:mm');
-            endTime = endTime && endTime.isAfter(newTime) ? endTime : newTime;
-          }
-        }
-      }
-      for (let i = 0; i < appointmentResponse.length; i += 1) {
-        appointment = appointmentResponse[i];
-        if (appointment.employee) {
-          schedule = response[appointment.employee.id];
-          if (schedule) {
-            if (!schedule.appointments) {
-              schedule.appointments = [];
-            }
-            schedule.appointments.push(appointment);
-          }
-        }
-      }
-      const step = 15;
-      const apptGridSettings = {
-        startTime,
-        endTime,
-        numOfRow: endTime.diff(startTime, 'minutes') / step,
-        step,
-      };
-      dispatch(getProvidersScheduleSuccess(apptGridSettings, response, providers));
-    })
-    .catch((err) => {
-      console.warn(err);
-    });
+const setStoreWeeklyScheduleSuccess = (weeklySchedule) => {
+  const minStartTime = minBy(weeklySchedule, schedule => toTimeStamp(schedule.start1)).start1;
+  const maxEndTime = maxBy(weeklySchedule, schedule => toTimeStamp(schedule.end1)).end1;
+  const apptGridSettings = {
+    minStartTime,
+    maxEndTime,
+    weeklySchedule,
+  };
+  return {
+    type: SET_WEEKLY_SCHEDULE_SUCCESS,
+    data: { apptGridSettings },
+  };
 };
 
-const getProvidersCalendarError = error => ({
-  type: GET_APPOINTMENTS_CALENDAR_FAILED,
-  data: { error },
-});
-
-const getProvidersCalendar = (appointmentResponse, date) => (dispatch) => {
-  dispatch({ type: GET_PROVIDERS_CALENDAR });
-  return apiWrapper.doRequest('getEmployees', { query: { maxCount: 10000 } })
-    .then((employees) => {
-      const providers = orderBy(employees, 'appointmentOrder', 'asc');
-      return dispatch(getProvidersSchedule(providers, date, appointmentResponse));
-    })
-    .catch(err => dispatch(getProvidersCalendarError(err)));
-};
-
-const getProviderCalendar = () => (dispatch, getState) => {
-  const { selectedProvider, startDate, endDate } = getState().appointmentScreenReducer;
-  dispatch({ type: GET_PROVIDERS_CALENDAR });
-  dispatch({ type: GET_APPOINTMENTS_CALENDAR });
-  return apiWrapper.doRequest('getEmployeeAppointments', {
-    path: { id: selectedProvider.id, dateFrom: moment(startDate).format('YYYY-MM-DD'), dateTo: moment(endDate).format('YYYY-MM-DD') },
-  })
-    .then((appointmentResponse) => {
-      dispatch({ type: GET_APPOINTMENTS_SUCCESS, data: { appointmentResponse } });
-      return dispatch(getProviderSchedule(selectedProvider.id, moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), appointmentResponse));
-    })
-    .catch(err => dispatch(getProvidersCalendarError(err)));
-};
-
-const getProviderSchedule = (id, startDate, endDate, appointmentResponse) => dispatch => apiWrapper.doRequest('getEmployeeScheduleRange', {
-  path: { id, startDate, endDate },
-})
-  .then((response) => {
-    const dictionary = {};
-
-    let startTime;
-    let endTime;
-    let newTime;
-    let schedule;
-    let appointment;
-    for (let i = 0; i < response.length; i += 1) {
-      schedule = response[i];
-      if (schedule) {
-        schedule.provider = { id };
-        if (!dictionary[moment(schedule.date).format('YYYY-MM-DD')]) {
-          dictionary[moment(schedule.date).format('YYYY-MM-DD')] = schedule;
-        }
-        // dictionary[moment(schedule.date).format('YYYY-MM-DD')].push(schedule);
-
-        if (schedule.scheduledIntervals && schedule.scheduledIntervals.length > 0) {
-          newTime = moment(schedule.scheduledIntervals[0].start, 'HH:mm');
-          startTime = startTime && startTime.isBefore(newTime) ? startTime : newTime;
-          newTime = moment(schedule.scheduledIntervals[0].end, 'HH:mm');
-          endTime = endTime && endTime.isAfter(newTime) ? endTime : newTime;
-        }
-      }
-    }
-    for (let i = 0; i < appointmentResponse.length; i += 1) {
-      appointment = appointmentResponse[i];
-      if (appointment.employee) {
-        schedule = dictionary[moment(appointment.date).format('YYYY-MM-DD')];
-        if (schedule) {
-          if (!schedule.appointments) {
-            schedule.appointments = [];
-          }
-          schedule.appointments.push(appointment);
-        }
-      }
-    }
-
-    const step = 15;
-    if (!startTime) {
-      startTime = initialState.apptGridSettings.startTime;
-    }
-    if (!endTime) {
-      endTime = initialState.apptGridSettings.endTime;
-    }
-
-    const apptGridSettings = {
-      step,
-      endTime,
-      startTime,
-      numOfRow: endTime.diff(startTime, 'minutes') / step,
-    };
-    dispatch(getProviderScheduleSuccess(apptGridSettings, dictionary));
-  })
-  .catch((err) => {
-    console.warn(err);
-  });
-
-const getAppointmentsFailed = error => ({
-  type: GET_APPOINTMENTS_CALENDAR_FAILED,
-  data: { error },
-});
-
-const getAppoinmentsCalendar = date => (dispatch) => {
-  dispatch({ type: GET_APPOINTMENTS_CALENDAR });
-  return apiWrapper.doRequest('getAppointmentsByDate', {
-    path: {
-      date,
-    },
-  })
-    .then((response) => {
-      dispatch({ type: GET_APPOINTMENTS_SUCCESS, data: { appointmentResponse: response } });
-      return dispatch(getProvidersCalendar(response, date));
-    })
-    .catch(error => dispatch(getAppointmentsFailed(error)));
-};
-
-const setProviderScheduleDates = (startDate, endDate) => (dispatch) => {
-  dispatch({ type: SET_PROVIDER_DATES, data: { startDate, endDate } });
-  return dispatch(setScheduleDateRange());
-};
-
-const setPickerMode = pickerMode => (dispatch) => {
+const setStoreWeeklySchedule = () => (dispatch) => {
   dispatch({
-    type: SET_PICKER_MODE,
-    data: { pickerMode },
+    type: SET_WEEKLY_SCHEDULE,
   });
-  return dispatch(setScheduleDateRange());
+  apiWrapper.doRequest('getStoreWeeklySchedule', {}).then((weeklySchedule) => {
+    dispatch(setStoreWeeklyScheduleSuccess(weeklySchedule));
+  }).catch((ex) => {
+    // TODO
+    console.log(ex);
+  });
+};
+
+const setGridAllViewSuccess = (employees, appointments, availability) => {
+  const apptGridSettings = {
+    numOfRow: availability.length,
+    step: 15,
+  };
+  return {
+    type: SET_GRID_ALL_VIEW_SUCCESS,
+    data: {
+      employees, appointments, apptGridSettings, availability,
+    },
+  };
+};
+
+const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSettings, startDate, pickerMode) => {
+  const {
+    minStartTime, maxEndTime, weeklySchedule, step,
+  } = apptGridSettings;
+  let numOfRow = 0;
+  const schedule = weeklySchedule[startDate.format('E') - 1];
+  switch (pickerMode) {
+    case 'week':
+      numOfRow = times(moment(maxEndTime, 'HH:mm').diff(moment(minStartTime, 'HH:mm'), 'minutes')).length / step;
+      break;
+    default:
+      numOfRow = times(moment(schedule.end1, 'HH:mm').diff(moment(schedule.start1, 'HH:mm'), 'minutes')).length / step;
+      break;
+  }
+  const newApptGridSettings = {
+    numOfRow,
+    step: 15,
+  };
+  return {
+    type: SET_GRID_DAY_WEEK_VIEW_SUCCESS,
+    data: { providerSchedule, appointments, apptGridSettings: newApptGridSettings },
+  };
+};
+
+const reloadGridRelatedStuff = () => (dispatch, getState) => {
+  const {
+    selectedProvider, startDate, endDate, pickerMode, apptGridSettings,
+  } = getState().appointmentScreenReducer;
+  const typeView = selectedProvider === 'all' ? selectedProvider : pickerMode;
+  const date = startDate.format('YYYY-MM-DD');
+  switch (typeView) {
+    case 'all': {
+      Promise.all([
+        apiWrapper.doRequest('getAppointmentBookEmployees', {
+          path: {
+            date,
+          },
+        }),
+        apiWrapper.doRequest('getAppointmentsByDate', {
+          path: {
+            date,
+          },
+        }),
+        apiWrapper.doRequest('getAppointmentBookAvailability', {
+          path: {
+            date,
+          },
+        }),
+      ])
+        .then(([employees, appointments, availabilityItem]) => {
+          const employeesAppointment = orderBy(employees, 'appointmentOrder');
+          dispatch(setGridAllViewSuccess(
+            employeesAppointment,
+            appointments, availabilityItem.timeSlots,
+          ));
+        })
+        .catch((ex) => {
+          // TODO
+        });
+      break;
+    }
+    case 'day':
+    case 'week': {
+      const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
+      Promise.all([
+        apiWrapper.doRequest('getEmployeeScheduleRange', {
+          path: { id: selectedProvider.id, startDate: startDate.format('YYYY-MM-DD'), endDate: dateTo },
+        }),
+        apiWrapper.doRequest('getEmployeeAppointments', {
+          path: { id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo },
+        }),
+      ])
+        .then(([providerSchedule, appointments]) => {
+          const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
+          dispatch(setGridDayWeekViewSuccess(
+            appointments,
+            groupedProviderSchedule,
+            apptGridSettings,
+            startDate,
+            pickerMode,
+          ));
+        })
+        .catch((ex) => {
+          // TODO
+        });
+      break;
+    }
+    default:
+      break;
+    //
+    // case 'Rooms': {
+    //   Promise.all([
+    //     API.getAppointmentEmployees(date),
+    //     API.getAppointmentsForDate(date),
+    //     api.get(`AppointmentBook/${date}/Rooms/Appointments`),
+    //   ])
+    //     .then(([employees, appointments, rooms]: [AppointmentEmployee[], AppointmentCard[], AppointmentRoom[]]) => {
+    //       dispatch(employeesAppointmentReceived(employees));
+    //       dispatch(getAppointmentByDateSuccess(appointments));
+    //
+    //       dispatch({
+    //         type: consts.APPTB_GET_ROOMS_BY_DATE_SUCCESS,
+    //         data: rooms
+    //       });
+    //
+    //       const idEmpls = employees.map(item => item.id);
+    //
+    //       API.getEmployeeStatsForDay(date, idEmpls)
+    //         .then( (stats: EmployeesStats[]) => dispatch(getEmployeeStatsForDaySuccess(stats)))
+    //         .catch(error => dispatch(getEmployeeStatsForDayFail(error)));
+    //     });
+    //
+    //   break;
+    // }
+    //
+    // case 'Resources': {
+    //   Promise.all([
+    //     API.getAppointmentsResourcesForDate(date),
+    //     API.getSalonResources(),
+    //     API.getAppointmentsForDate(date),
+    //   ])
+    //     .then(([appointmentResources, resources, appointments]: [AppointmentResource[], Resource[], AppointmentCard[]]) => {
+    //       dispatch({
+    //         type: consts.APPTB_GET_RESOURCES_APPOINTMENTS_BY_DATE_SUCCESS,
+    //         data: appointmentResources,
+    //       });
+    //
+    //       dispatch({
+    //         type: consts.APPTB_GET_RESOURCES_SUCCESS,
+    //         data: resources,
+    //       });
+    //
+    //       dispatch(getAppointmentByDateSuccess(appointments));
+    //     });
+    //
+    //   break;
+    // }
+  }
+};
+
+const setGridView = () => (dispatch) => {
+  dispatch({
+    type: SET_GRID_VIEW,
+  });
+
+  dispatch(reloadGridRelatedStuff());
 };
 
 const setScheduleDateRange = () => (dispatch, getState) => {
@@ -225,7 +220,20 @@ const setScheduleDateRange = () => (dispatch, getState) => {
     dates.push(moment(moment(startDate).add(i, 'day')));
   }
   dispatch({ type: SET_DATE_RANGE, data: { dates } });
-  return dispatch(getCalendarData());
+  // return dispatch(getCalendarData());
+};
+
+const setProviderScheduleDates = (startDate, endDate) => (dispatch) => {
+  dispatch({ type: SET_PROVIDER_DATES, data: { startDate, endDate } });
+  return dispatch(setScheduleDateRange());
+};
+
+const setPickerMode = pickerMode => (dispatch) => {
+  dispatch({
+    type: SET_PICKER_MODE,
+    data: { pickerMode },
+  });
+  return dispatch(setScheduleDateRange());
 };
 
 const setSelectedProvider = selectedProvider => ({
@@ -233,26 +241,17 @@ const setSelectedProvider = selectedProvider => ({
   data: { selectedProvider },
 });
 
-const getCalendarData = () => (dispatch, getState) => {
-  const { startDate, selectedProvider } = getState().appointmentScreenReducer;
-  if (selectedProvider && selectedProvider !== 'all') {
-    return dispatch(getProviderCalendar());
-  }
-  // dispatch({ type: SET_PICKER_MODE, data: { pickerMode: 'day' } });
-  return dispatch(getAppoinmentsCalendar(moment(startDate).format('YYYY-MM-DD')));
-};
-
 export const appointmentCalendarActions = {
-  getCalendarData,
-  getAppoinmentsCalendar,
-  getProviderCalendar,
+  setGridView,
   setProviderScheduleDates,
   setPickerMode,
   setSelectedProvider,
+  setStoreWeeklySchedule,
 };
 
 const initialState = {
   isLoading: false,
+  isLoadingSchedule: false,
   error: null,
   pickerMode: 'day',
   startDate: moment(),
@@ -260,19 +259,38 @@ const initialState = {
   dates: [moment()],
   selectedProvider: 'all',
   providerAppointments: [],
-  providerSchedule: [],
   apptGridSettings: {
-    startTime: moment('07:00', 'HH:mm'),
-    endTime: moment('21:00', 'HH:mm'),
+    minStartTime: moment('07:00', 'HH:mm'),
+    maxEndTime: moment('21:00', 'HH:mm'),
     numOfRow: 0,
     step: 15,
+    weeklySchedule: [],
   },
   providers: [],
+  providerSchedule: [],
 };
 
 export default function appointmentScreenReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case ADD_APPOINTMENT:
+      const { appointments } = state;
+      appointments.push(data.appointment);
+      return {
+        ...state,
+        appointments,
+      };
+    case SET_WEEKLY_SCHEDULE_SUCCESS:
+      return {
+        ...state,
+        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
+        isLoadingSchedule: false,
+      };
+    case SET_WEEKLY_SCHEDULE:
+      return {
+        ...state,
+        isLoadingSchedule: true,
+      };
     case SET_SELECTED_PROVIDER:
       return {
         ...state,
@@ -294,27 +312,31 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         pickerMode: data.pickerMode,
       };
-    case GET_APPOINTMENTS_CALENDAR:
+    case SET_GRID_VIEW:
       return {
         ...state,
         isLoading: true,
       };
-    case GET_PROVIDER_CALENDAR_SUCCESS:
+    case SET_GRID_ALL_VIEW_SUCCESS:
+      console.log('niggas', data);
+
       return {
         ...state,
         isLoading: false,
         error: null,
-        apptGridSettings: data.apptGridSettings,
-        providerSchedule: data.dictionary,
+        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
+        providers: data.employees,
+        appointments: data.appointments,
+        availability: data.availability,
       };
-    case GET_APPOINTMENTS_CALENDAR_SUCCESS:
+    case SET_GRID_DAY_WEEK_VIEW_SUCCESS:
       return {
         ...state,
         isLoading: false,
         error: null,
-        apptGridSettings: data.apptGridSettings,
-        providerAppointments: data.dictionary,
-        providers: data.providers,
+        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
+        appointments: data.appointments,
+        providerSchedule: data.providerSchedule,
       };
     default:
       return state;
