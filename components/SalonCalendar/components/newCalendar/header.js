@@ -95,10 +95,10 @@ export default class Header extends Component {
 
   renderDate = (data, index) => {
     const { cellWidth } = this.props;
-    const dayName = data.format('ddd').toString()
-    const day = data.format('D').toString()
+    const dayName = data.format('ddd').toString();
+    const day = data.format('D').toString();
     return (
-      <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents={'box-none'}>
+      <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents="box-none">
         <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
         <Text numberOfLines={1} style={styles.columnDayName}>{day}</Text>
       </View>

@@ -1,4 +1,5 @@
 import {
+  ADD_APPOINTMENT,
   GET_APPOINTMENTS,
   GET_APPOINTMENTS_SUCCESS,
   GET_APPOINTMENTS_FAILED,
@@ -17,6 +18,13 @@ const initialState = {
 export default function appoinmentReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case ADD_APPOINTMENT:
+      const { appointments } = state;
+      appointments.push(data.appointment);
+      return {
+        ...state,
+        appointments,
+      };
     case GET_APPOINTMENTS:
       return {
         ...state,

@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
 });
 
 export default class Column extends Component {
-  onCellPressed = (cellId) => {
-    Alert.alert(`Pressed ${cellId}`);
+  onCellPressed = (cellId, colData) => {
+    this.props.onCellPressed(cellId, colData);
   }
 
   renderCell = (cell) => {
@@ -55,7 +55,7 @@ export default class Column extends Component {
       <View key={cell}>
         <TouchableOpacity
           style={[style, { width: cellWidth }]}
-          onPress={() => { this.onCellPressed(cell); }}
+          onPress={() => { this.onCellPressed(cell, colData); }}
         />
       </View>
     );
