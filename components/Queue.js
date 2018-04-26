@@ -238,10 +238,12 @@ getLabelForItem = (item) => {
       );
     case QUEUE_ITEM_NOT_ARRIVED:
       return (
-        <View style={[styles.waitingTime, { flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
-          <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
-          <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
-          <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+        <View style={styles.notArrivedContainer}>
+          <View style={[styles.waitingTime, { marginRight: 0, flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
+            <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
+            <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
+            <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+          </View>
         </View>
       );
     default:
@@ -654,13 +656,21 @@ const styles = StyleSheet.create({
     color: '#7E8D98',
     paddingRight: 7,
   },
+  notArrivedContainer: {
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
+  },
   finishedContainer: {
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    //  marginLeft: 'auto',
-    // marginRight: 10,
     position: 'absolute',
     zIndex: 99999,
     right: 30,
