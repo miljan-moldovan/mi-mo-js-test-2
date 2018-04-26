@@ -10,6 +10,8 @@ import employees from './apiServicesResources/employees';
 import product from './apiServicesResources/product';
 import salon from './apiServicesResources/salon';
 import turnAway from './apiServicesResources/turnAway';
+import appointmentBook from './apiServicesResources/appointmentBook';
+import store from './apiServicesResources/store';
 
 const conf = {
   ...queue.resources,
@@ -24,6 +26,8 @@ const conf = {
   ...product.resources,
   ...salon.resources,
   ...turnAway.resources,
+  ...appointmentBook.resources,
+  ...store.resources,
 };
 
 export default {

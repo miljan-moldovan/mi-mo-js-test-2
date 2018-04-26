@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
-import { times, groupBy } from 'lodash';
+import { times, groupBy, filter } from 'lodash';
 import moment from 'moment';
 
 import Board from './board';
@@ -44,7 +44,7 @@ const headerHeight = 40;
 export default class Calendar extends Component {
   constructor(props) {
     super(props);
-    this.setCellsByColumn();
+    this.setCellsByColumn(props);
     this.state = {
       calendarMeasure: {
         width: 0,
@@ -58,15 +58,21 @@ export default class Calendar extends Component {
     };
   }
 
-  componentWillUpdate() {
-    this.setCellsByColumn();
+  componentWillUpdate(nextProps) {
+    this.setCellsByColumn(nextProps);
   }
 
-  setCellsByColumn = () => {
+  setCellsByColumn = (nextProps) => {
     const {
-      apptGridSettings, headerData, appointments, selectedProvider, displayMode,
-    } = this.props;
+      apptGridSettings,
+      headerData,
+      appointments,
+      selectedProvider,
+      displayMode,
+      startDate
+    } = nextProps;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
+      this.startTime = apptGridSettings.weeklySchedule[startDate.format('E') - 1].start1;
       this.schedule = times(apptGridSettings.numOfRow, this.createSchedule);
       if (selectedProvider === 'all') {
         this.size = {
@@ -92,7 +98,7 @@ export default class Calendar extends Component {
 
   createSchedule = (index) => {
     const { apptGridSettings } = this.props;
-    const time = moment(apptGridSettings.startTime).add(index * apptGridSettings.step, 'm');
+    const time = moment(this.startTime, 'HH:mm').add(index * apptGridSettings.step, 'm');
     return time.format('h:mm A').toString();
   }
 
@@ -144,19 +150,24 @@ export default class Calendar extends Component {
   }
 
   renderCards = () => {
-    const { appointments } = this.props;
+    const { appointments, selectedProvider, displayMode, startDate } = this.props;
     if (appointments) {
+      const isAllProviderView = selectedProvider === 'all';
+      if (!isAllProviderView && displayMode === 'day') {
+        const filteredAppointments = filter(appointments, appt => startDate.format('YYYY-MM-DD')
+        === moment(appt.date).format('YYYY-MM-DD'));
+        return filteredAppointments.map(this.renderCard);
+      }
       return appointments.map(this.renderCard);
     }
     return null;
   }
 
   renderCard = (appointment) => {
-    const {
-      apptGridSettings, headerData, selectedProvider, displayMode,
-    } = this.props;
+    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
     const isAllProviderView = selectedProvider === 'all';
+    const startTime = moment(this.startTime, 'HH:mm');
     if (appointment.employee) {
       return (
         <Card
@@ -174,18 +185,19 @@ export default class Calendar extends Component {
           cellWidth={this.cellWidth}
           displayMode={isAllProviderView ? 'all' : displayMode}
           selectedProvider={selectedProvider}
+          startTime={startTime}
+          appointments={appointments}
         />);
     }
     return null;
   }
 
   render() {
-    const {
-      headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule,
-    } = this.props;
+    const { headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability } = this.props;
     const isDate = selectedProvider !== 'all';
     const showHeader = displayMode === 'week' || selectedProvider === 'all';
     const { isScrollEnabled } = this.state;
+    const startTime = moment(this.startTime, 'HH:mm');
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <ScrollView
@@ -210,18 +222,19 @@ export default class Calendar extends Component {
               columns={headerData}
               rows={this.schedule}
               apptGridSettings={apptGridSettings}
-              groupedAppointments={this.groupedAppointments}
               timeSchedules={dataSource}
               showAvailability={!isDate}
               cellWidth={this.cellWidth}
               isDate={isDate}
               providerSchedule={providerSchedule}
+              availability={availability}
+              displayMode={displayMode}
             />
             { this.renderCards() }
           </ScrollViewChild>
           <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
             <TimeColumn schedule={this.schedule} />
-            <CurrentTime apptGridSettings={apptGridSettings} />
+            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime}/>
           </ScrollViewChild>
           { showHeader ?
             <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>

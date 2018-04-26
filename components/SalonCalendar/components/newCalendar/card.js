@@ -2,22 +2,8 @@ import React, { Component } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import moment from 'moment';
 
+import colors from '../../../../constants/appointmentColors';
 import ResizeButton from '../resizeButtons';
-
-const colors = [
-  { header: '#9e2fff', content: '#e2b2ff', border: '#b684ee' },
-  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
-  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
-  { header: '#0dce00', content: '#9fef99', border: '#2adb1e' },
-  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
-  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
-  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
-  { header: '#ff8200', content: '#ffcd99', border: '#f9a71e' },
-  { header: '#00c9c7', content: '#83f2f0', border: '#1ad9d8' },
-  { header: '#0dce00', content: '#9fef99', border: '#2adb1e' },
-  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
-  { header: '#006bf5', content: '#bad8ff', border: '#5c9cfa' },
-];
 
 const styles = StyleSheet.create({
   clientText: {
@@ -46,29 +32,11 @@ const styles = StyleSheet.create({
   },
 });
 
-class appointmentBlock extends Component {
+class Card extends Component {
   constructor(props) {
     super(props);
     this.scrollValue = 0;
-    const { toTime, fromTime } = props.appointment;
-    const { startTime, step } = props.apptGridSettings;
-    const { cellWidth, displayMode, selectedProvider } = props;
-    const start = moment(fromTime, 'HH:mm');
-    const top = (start.diff(startTime, 'minutes') / step) * 30;
-    const end = moment(toTime, 'HH:mm');
-    const left = this.calculateLeft();
-    const height = (moment.duration(end.diff(start)).asMinutes() / step) * 30 - 1;
-    this.animatedValueX = left;
-    this.animatedValueY = top;
-    this.state = {
-      pan: new Animated.ValueXY({ x: left, y: top }),
-      left,
-      top: new Animated.Value(top),
-      height: new Animated.Value(height),
-      isActive: false,
-      isResizeing: false,
-      opacity: new Animated.Value(0)
-    };
+    this.state = this.calcualteStateValues(props);
     // this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
     // this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
     this.panResponder = PanResponder.create({
@@ -90,7 +58,7 @@ class appointmentBlock extends Component {
         }
       },
       onPanResponderRelease: (e, gesture) => {
-        switch (displayMode) {
+        switch (this.props.displayMode) {
           case 'all':
             this.handleReleaseAll();
             break;
@@ -108,7 +76,39 @@ class appointmentBlock extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextState.isActive || this.state.isActive;
+    const { calendarOffset } = this.props;
+    const newX = nextProps.calendarOffset.x;
+    const newY = nextProps.calendarOffset.y;
+    return (newX === calendarOffset.x && newY === calendarOffset.y) || nextState.isActive || this.state.isActive //|| nextProps.displayMode !== this.props.displayMode;
+  }
+
+  componentWillUpdate(nextProps) {
+    if (nextProps.displayMode !== this.props.displayMode) {
+      this.setState(this.calcualteStateValues(nextProps));
+    }
+  }
+
+  calcualteStateValues = (props) => {
+    const { startTime } = props;
+    const { toTime, fromTime } = props.appointment;
+    const { step } = props.apptGridSettings;
+    const { cellWidth, displayMode, selectedProvider } = props;
+    const start = moment(fromTime, 'HH:mm');
+    const top = (start.diff(startTime, 'minutes') / step) * 30;
+    const end = moment(toTime, 'HH:mm');
+    const { left, cardWidth, zIndex } = this.calculateLeftAndGap(props);
+    const height = (moment.duration(end.diff(start)).asMinutes() / step) * 30 - 1;
+    return {
+      pan: new Animated.ValueXY({ x: left, y: top }),
+      left,
+      top: new Animated.Value(top),
+      height: new Animated.Value(height),
+      isActive: false,
+      isResizeing: false,
+      opacity: new Animated.Value(0),
+      cardWidth,
+      zIndex,
+    };
   }
 
   handleReleaseAll = () => {
@@ -117,14 +117,14 @@ class appointmentBlock extends Component {
     const { pan, left, top } = this.state;
     const { cellWidth, providers, appointment, onDrop, apptGridSettings } = this.props;
     const { toTime, fromTime } = appointment;
-    const availabilityOffset = pan.x._value + pan.x._offset < left ? 102 : 0
+    const availabilityOffset = pan.x._value + pan.x._offset < left ? 64 : 0
     const dx = pan.x._value + pan.x._offset - left - availabilityOffset;
     const remainderX = dx % cellWidth;
     const xOffset = cellWidth - remainderX > cellWidth / 2 ? dx - remainderX : dx + cellWidth - remainderX;
-    const providerIndex = Math.abs((xOffset + left) - 102) / cellWidth;
+    const providerIndex = Math.round(Math.abs((xOffset + left) - 64) / cellWidth);
     const provider = providers[providerIndex];
     // calculate new coordinates x
-    const x = ((providerIndex * cellWidth) + 102) - this.state.pan.x._offset;
+    const x = ((providerIndex * cellWidth) + 64) - this.state.pan.x._offset;
 
     const dy = pan.y._value + pan.y._offset - top._value;
     const remainderY = dy % 30;
@@ -150,7 +150,7 @@ class appointmentBlock extends Component {
       )
     ]).start(() => this.setState({
       isActive: false,
-      left: providerIndex * cellWidth + 102 ,
+      left: providerIndex * cellWidth + 64 ,
       top: new Animated.Value(top._value + yOffset)
     },
     () => {
@@ -244,11 +244,47 @@ class appointmentBlock extends Component {
     }));
   }
 
-  calculateLeft = () => {
-    const { providers, displayMode, cellWidth, appointment } = this.props;
-    return displayMode === 'all' ?
-      providers.findIndex(provider => provider.id
-      === appointment.employee.id) * cellWidth + 102 : 0;
+  calculateLeftAndGap = (props) => {
+    const { appointments, providers, displayMode, cellWidth, appointment } = props;
+    const date = moment(appointment.date)
+    const startTime = moment(appointment.fromTime, 'HH:mm');
+    let cardWidth = cellWidth - 1;
+    let zIndex = 1;
+    let left = 0;
+    switch (displayMode) {
+      case 'all':
+        left = providers.findIndex(provider => provider.id
+        === appointment.employee.id) * cellWidth + 64;
+        break;
+      case 'week': {
+        const apptDate = moment(appointment.date).format('YYYY-DD-MM');
+        left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
+        break;
+      }
+      default:
+        left = 0;
+        break;
+    }
+    for (let i = 0; i < appointments.length; i += 1) {
+      const currentAppt = appointments[i];
+      const currentDate = moment(currentAppt.date);
+      if (date.format('YYYY-MM-DD') === currentDate.format('YYYY-MM-DD')
+    && currentAppt.employee.id === appointment.employee.id) {
+        if (currentAppt.id !== appointment.id) {
+          const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
+          const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
+          if (startTime.isSameOrAfter(currentStartTime)
+          && startTime.isBefore(currentEndTime)) {
+            cardWidth -= 8;
+            zIndex += 1;
+            left += 8;
+          }
+        } else {
+          return { cardWidth, zIndex, left };
+        }
+      }
+    }
+    return { cardWidth, zIndex, left };
   }
 
   handleOnLongPress = () => {
@@ -436,6 +472,10 @@ class appointmentBlock extends Component {
     });
   }
 
+  calculateCardWidth = () => {
+
+  }
+
   render() {
     const {
       client,
@@ -446,13 +486,13 @@ class appointmentBlock extends Component {
       mainServiceColor,
     } = this.props.appointment;
     const { cellWidth } = this.props;
+    const { zIndex, cardWidth, left } = this.state;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const cardWidth = cellWidth - 1;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const { height } = this.state;
-    const borderColor = this.state.isActive ? colors[color].header : colors[color].border;
-    const contentColor = this.state.isActive ? colors[color].header : colors[color].content;
+    const borderColor = colors[color].dark;
+    const contentColor = this.state.isActive ? colors[color].dark : colors[color].light;
     const serviceTextColor = this.state.isActive ? '#fff' : '#1D1E29';
     const clientTextColor = this.state.isActive ? '#fff' : '#2F3142';
     const shadow = this.state.isActive ? {
@@ -462,15 +502,15 @@ class appointmentBlock extends Component {
       shadowRadius: 4,
     } : null
     return (
-      <Animated.View style={this.state.isActive ? { position: 'absolute', zIndex: 1 } : { position: 'absolute', zIndex: 0 }}>
+      <Animated.View style={this.state.isActive ? { position: 'absolute', zIndex: 9999 } : { position: 'absolute', zIndex }}>
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.container,
-            { width: cardWidth, height, borderColor: colors[color].border, backgroundColor: colors[color].content,
-            left: this.state.left, top: this.state.top, opacity: this.state.opacity }]}
+            { width: cardWidth, height, borderColor: colors[color].dark, backgroundColor: colors[color].light,
+            left, top: this.state.top, opacity: this.state.opacity }]}
 
         >
-          <View style={[styles.header, { backgroundColor: colors[color].header }]} />
+          <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
           <Text numberOfLines={1} style={styles.clientText}>{clientName}</Text>
           <Text numberOfLines={1} style={styles.serviceText}>{serviceName}</Text>
         </Animated.View>
@@ -486,7 +526,7 @@ class appointmentBlock extends Component {
             disabled={this.state.isActive}
           >
             <View style={{ width: '100%', height: '100%' }}>
-              <View style={[styles.header, { backgroundColor: colors[color].header }]} />
+              <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
               <Text
                 numberOfLines={1}
                 style={[styles.clientText, { color: clientTextColor }]}
@@ -506,7 +546,7 @@ class appointmentBlock extends Component {
               onPress={() => this.setState({ isResizeing: true })}
               onRelease={this.handleResizeReleaseBottom}
               onResize={this.resizeBottom}
-              color={colors[color].header}
+              color={colors[color].dark}
               position={{ left: 2, bottom: -12}}
               apptGridSettings={this.props.apptGridSettings}
               height={height._value}
@@ -520,7 +560,7 @@ class appointmentBlock extends Component {
               onPress={() => this.setState({ isResizeing: true })}
               onRelease={this.handleResizeReleaseTop}
               onResize={this.resizeTop}
-              color={colors[color].header}
+              color={colors[color].dark}
               position={{ right: 2, top: -12 }}
               apptGridSettings={this.props.apptGridSettings}
               height={height._value}
@@ -535,4 +575,4 @@ class appointmentBlock extends Component {
   }
 }
 
-export default appointmentBlock;
+export default Card;

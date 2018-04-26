@@ -14,6 +14,8 @@ import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
+import apiWrapper from '../../utilities/apiWrapper';
+
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonRoomList from './components/SalonRoomList';
 import SalonResourceList from './components/SalonResourceList';
@@ -191,7 +193,7 @@ export default class FilterOptionsScreen extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
           highlight={this.state.searchText}

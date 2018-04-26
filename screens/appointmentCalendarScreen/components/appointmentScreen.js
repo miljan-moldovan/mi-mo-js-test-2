@@ -4,13 +4,13 @@ import moment from 'moment';
 
 import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
-import SalonProviderCalendar from '../../../components/SalonProviderCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
+import apiWrapper from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
@@ -37,7 +37,7 @@ export default class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
+            image={{ uri: apiWrapper.getEmployeePhoto(params.filterProvider.id) }}
           />
           <Text style={{
           fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
@@ -62,7 +62,7 @@ export default class AppointmentScreen extends Component {
   };
   constructor(props) {
     super(props);
-
+    props.appointmentCalendarActions.setStoreWeeklySchedule();
     let filterProvider = null;
     if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
       filterProvider = this.props.navigation.state.params.filterProvider;
@@ -82,14 +82,11 @@ export default class AppointmentScreen extends Component {
       onPressCalendar: this.onPressCalendar,
       onPressTitle: this.onPressTitle,
     });
-  }
-
-  componentWillMount() {
-    this.getCalendarData();
+    this.props.appointmentCalendarActions.setGridView();
   }
 
   componentWillUpdate(nextProps, nextState) {
-    this.state.isLoading = nextProps.appointmentScreenState.isLoading;
+    this.state.isLoading = nextProps.appointmentScreenState.isLoading || nextProps.appointmentScreenState.isLoadingSchedule;
   }
 
   onPressMenu = () => alert('Not Implemented');
@@ -132,34 +129,7 @@ export default class AppointmentScreen extends Component {
     }
 
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
-    this.props.appointmentCalendarActions.getCalendarData();
-  }
-
-  getCalendarData = () => {
-    const {
-      startDate,
-      endDate,
-      selectedProvider,
-      pickerMode,
-    } = this.props.appointmentScreenState;
-
-    if (selectedProvider && selectedProvider !== 'all') {
-      if (pickerMode === 'week') {
-        this.props.appointmentCalendarActions.getProviderCalendar(
-          selectedProvider.id,
-          moment(startDate).format('YYYY-MM-DD'),
-          moment(endDate).format('YYYY-MM-DD'),
-        );
-      } else {
-        this.props.appointmentCalendarActions.getProviderCalendar(
-          selectedProvider.id,
-          moment(startDate).format('YYYY-MM-DD'),
-          moment(startDate).format('YYYY-MM-DD'),
-        );
-      }
-    } else {
-      this.props.appointmentCalendarActions.getAppoinmentsCalendar(moment(startDate).format('YYYY-MM-DD'));
-    }
+    this.props.appointmentCalendarActions.setGridView();
   }
 
   render() {
@@ -172,26 +142,13 @@ export default class AppointmentScreen extends Component {
       providerSchedule,
       apptGridSettings,
       providerAppointments,
+      providers,
+      appointments,
+      availability,
     } = this.props.appointmentScreenState;
 
     const { isLoading } = this.state;
-    const { appointments } = this.props.appointmentState;
-    const { providers } = this.props.appointmentScreenState;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
-
-    // if (selectedProvider !== 'all') {
-    //   calendar = (
-    //     <SalonProviderCalendar
-    //       dates={dates}
-    //       appointments={appointments}
-    //       selectedProvider={selectedProvider}
-    //       displayMode={pickerMode}
-    //       apptGridSettings={apptGridSettings}
-    //       dataSource={providerSchedule}
-    //       onDrop={this.props.appointmentActions.postAppointmentMove}
-    //     />
-    //   );
-    // }
     const headerData = selectedProvider === 'all' ? providers : dates;
     return (
       <View style={{ flex: 1 }}>
@@ -201,7 +158,7 @@ export default class AppointmentScreen extends Component {
           onCalendarSelected={() => this.setState({ visible: true })}
           onDateChange={(startDate, endDate) => {
             this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
-            this.props.appointmentCalendarActions.getCalendarData();
+            this.props.appointmentCalendarActions.setGridView();
           }}
           selectedDate={moment(startDate)}
         />
@@ -219,6 +176,8 @@ export default class AppointmentScreen extends Component {
               selectedProvider={selectedProvider}
               displayMode={pickerMode}
               providerSchedule={providerSchedule}
+              availability={availability}
+              startDate={startDate}
             />
         }
         {selectedProvider !== 'all' && (
@@ -226,7 +185,6 @@ export default class AppointmentScreen extends Component {
             handlePress={(isWeek) => {
               const pickerMode = isWeek ? 'week' : 'day';
               this.props.appointmentCalendarActions.setPickerMode(pickerMode);
-              this.props.appointmentCalendarActions.getCalendarData();
             }}
           />
         )}
@@ -242,7 +200,7 @@ export default class AppointmentScreen extends Component {
             this.setState({ visible: false });
 
             this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
-            this.props.appointmentCalendarActions.getCalendarData();
+            this.props.appointmentCalendarActions.setGridView();
           }}
         />
 

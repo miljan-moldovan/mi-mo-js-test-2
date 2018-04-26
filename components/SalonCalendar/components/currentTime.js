@@ -12,11 +12,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     zIndex: 1,
   },
-  lineStyle: {
-    width: windowsWidth,
-    height: 1,
-    backgroundColor: '#1DBF12',
-  },
   textContainer: {
     width: 35,
     height: 11,
@@ -36,7 +31,7 @@ class CurrentTime extends Component {
   constructor(props) {
     super(props);
     const currentTime = moment();
-    let dTime = currentTime.diff(this.props.apptGridSettings.startTime, 'minutes');
+    let dTime = currentTime.diff(this.props.startTime, 'minutes');
     dTime = ((dTime / this.props.apptGridSettings.step) * 30) - 5.5;
     this.state = {
       currentTime: currentTime.format('h:mm'),
@@ -51,7 +46,7 @@ class CurrentTime extends Component {
 
   updateTime = () => {
     const currentTime = moment();
-    let dTime = currentTime.diff(this.props.apptGridSettings.startTime, 'minutes');
+    let dTime = currentTime.diff(this.props.startTime, 'minutes');
     dTime = ((dTime / this.props.apptGridSettings.step) * 30) - 5.5;
     Animated.timing(this.state.top, {
       toValue: dTime,
@@ -67,7 +62,6 @@ class CurrentTime extends Component {
         <View style={styles.textContainer}>
           <Text style={styles.textStyle}>{this.state.currentTime}</Text>
         </View>
-        <View style={styles.lineStyle} />
       </Animated.View>
     );
   }
