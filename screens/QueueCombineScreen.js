@@ -81,30 +81,24 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     } = nextProps;
     if (waitingQueue !== this.props.waitingQueue || serviceQueue !== this.props.serviceQueue || group !== this.props.group) { this.prepareQueueData(nextProps); }
     if (error) {
-      console.log('QueueCombineScreen.componentWillReceiveProps error', error);
       Alert.alert('Error', error.toString());
     }
 
     if (loading !== undefined && loading !== this.props.loading) {
-      console.log('nextProps.loading', loading);
       this.props.navigation.setParams({ loading });
       if (!loading) { this.updateNavButtons(); }
     }
   }
   prepareQueueData = (nextProps = {}) => {
-    console.log('prepareQueueData');
     const waitingQueue = nextProps.waitingQueue || this.props.waitingQueue;
     const serviceQueue = nextProps.serviceQueue || this.props.serviceQueue;
     const queueData = [...waitingQueue, ...serviceQueue];
     const groups = nextProps.groups || this.props.groups || [];
-    console.log('prepareQueueData - groups', groups);
-    console.log('prepareQueueData - queueData', queueData);
     const groupData = [];
     for (const groupId in groups) {
       const group = groups[groupId];
-      // console.log('Search groupLead', groupId, queueData);
+      //
       // const groupLead = queueData.find((queueItem) => queueItem.groupId == groupId && queueItem.isGroupLeader) || {};
-      console.log('groupLead', groupId);
       const groupClients = group.clients.map(item => ({
         ...item,
         queueItem: queueData.find(queueItem => queueItem.id === item.id),
@@ -117,7 +111,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
         data: groupClients,
       });
     }
-    console.log('groupData', groupData);
     this.setState({
       // clients in groups don't show up on the main list, filter them out
       queueData: queueData.filter(({ groupId }) => !groupId),
@@ -149,7 +142,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     if (combinedClients && combinedClients.length > 1) {
       const combinedData = [];
       this.props.startCombine();
-      console.log('saveData');
       combinedClients.forEach((id, index) => {
         const queueItem = queueData.find(item => item.id === id);
         const clientName = `${queueItem.client.name} ${queueItem.client.lastName}`;
@@ -157,7 +149,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
         combinedData.push({ id, groupLead: id == groupLeader });
         this.props.combineClient({ id, clientName });
       });
-      console.log('saveData', groupLeader, combinedData);
       this.props.navigation.setParams({ onPressDone: undefined });
       this.props.finishCombine(combinedData);
     }
@@ -210,8 +201,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     const {
       searchText, combinedFirst, queueData, groupData, groupLeadersTmp,
     } = this.state;
-    console.log('groups', groupData);
-    console.log('queueData', queueData);
 
     const uncombined = (
       <QueueUncombine

@@ -184,7 +184,6 @@ class AppointmentNoteScreen extends Component {
           .then((response) => {
             this.getNotes();
           }).catch((error) => {
-            console.log(error);
           });
       } else if (this.props.navigation.state.params.actionType === 'update') {
         const note = this.state.note;
@@ -193,7 +192,6 @@ class AppointmentNoteScreen extends Component {
           .then((response) => {
             this.getNotes();
           }).catch((error) => {
-            console.log(error);
           });
       }
     } else {
@@ -232,7 +230,6 @@ class AppointmentNoteScreen extends Component {
   }
 
   handleOnNavigateBack = () => {
-    console.log('handleOnNavigateBack');
     this.setState({ isVisible: true });
   }
 

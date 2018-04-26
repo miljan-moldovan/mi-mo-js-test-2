@@ -262,7 +262,6 @@ export default class AppointmentFormulas extends Component {
   }
 
   filterFormulas(searchText, showDeleted) {
-    debugger //eslint-disable-line
     const baseFormulas = showDeleted ? this.props.appointmentFormulasState.formulas :
       this.props.appointmentFormulasState.formulas.filter(el => !el.isDeleted);
 

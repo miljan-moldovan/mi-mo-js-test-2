@@ -272,7 +272,6 @@ export default class AppointmentNotesScreen extends Component {
     this.props.appointmentNotesActions.deleteAppointmentNotes(this.state.appointment.client.id, note.id).then((response) => {
       this.getNotes();
     }).catch((error) => {
-      console.log(error);
     });
   }
 
@@ -282,7 +281,6 @@ export default class AppointmentNotesScreen extends Component {
     this.props.appointmentNotesActions.undeleteAppointmentNotes(this.state.appointment.client.id, note.id).then((response) => {
       this.getNotes();
     }).catch((error) => {
-      console.log(error);
     });
   }
 

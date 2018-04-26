@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
 });
 
 const headerLeftText = (props) => {
-  console.log('headerLeftText', props);
   return (<TouchableOpacity onPress={props.handlePress}>
     <Text style={styles.text}>Cancel</Text>
   </TouchableOpacity>);

@@ -1,16 +1,16 @@
 import React from 'react';
 import { Text, Animated, Dimensions, View, StyleSheet, TouchableOpacity } from 'react-native';
+import moment from 'moment';
+
 import Icon from './../UI/Icon';
 import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
 import SalonFlatPicker from '../SalonFlatPicker';
-
 import {
   InputGroup,
   InputButton,
   InputSwitch,
   InputDivider,
 } from '../../components/formHelpers';
-
 
 const styles = StyleSheet.create({
   panel: {
@@ -236,9 +236,32 @@ const styles = StyleSheet.create({
     width: '90%',
   },
   otherOptionsLabels: { color: '#115ECD', fontSize: 16 },
+  conflictBox: {
+    height: 32,
+    width: 343,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 4,
+    backgroundColor: '#FFF7CC',
+    paddingHorizontal: 10,
+    marginVertical: 12,
+  },
+  conflictBoxText: {
+    fontSize: 11,
+    lineHeight: 22,
+    color: '#2F3142',
+    marginLeft: 7,
+  },
+  conflictBoxLink: {
+    fontSize: 11,
+    lineHeight: 22,
+    color: '#D1242A',
+    textDecorationLine: 'underline',
+  },
 });
 
-export default class SalonDatePickerSlide extends React.Component {
+export default class SalonNewAppointmentSlide extends React.Component {
   static defaultProps = {
     draggableRange: {
       top: Dimensions.get('window').height,
@@ -248,28 +271,27 @@ export default class SalonDatePickerSlide extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       visible: props.visible,
       selectedFilter: 0,
-      client: undefined,
-      service: undefined,
-      provider: undefined,
+      startTime: 'startTime' in this.props ? this.props.startTime : null,
+      endTime: 'endTime' in this.props ? this.props.endTime : null,
+      client: 'selectedClient' in this.props ? this.props.selectedClient : null,
+      service: 'selectedService' in this.props ? this.props.selectedService : null,
+      provider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     };
-  }
-
-  state:{
-    visible: false,
-    selected: '',
-    selectedFilter: 0,
-    client: undefined,
-    service: undefined,
-    provider: undefined,
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       visible: nextProps.visible,
       selected: nextProps.selectedDate,
+      startTime: 'startTime' in this.props ? this.props.startTime : null,
+      endTime: 'endTime' in this.props ? this.props.endTime : null,
+      client: 'selectedClient' in this.props ? this.props.selectedClient : null,
+      service: 'selectedService' in this.props ? this.props.selectedService : null,
+      provider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     });
 
     if (nextProps.visible) {
@@ -304,7 +326,7 @@ export default class SalonDatePickerSlide extends React.Component {
   render() {
     return (
       <SalonSlidingUpPanel
-        visible
+        visible={this.props.visible}
         showBackdrop={this.state.visible}
         onDragEnd={() => this.setState({ visible: false })}
         ref={(c) => { this._panel = c; }}
@@ -320,7 +342,7 @@ export default class SalonDatePickerSlide extends React.Component {
               <TouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
                 <View style={styles.cancelButtonContainer}>
                   <Text style={styles.cancelButtonText}>
-                Cancel
+                    Cancel
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -349,17 +371,15 @@ export default class SalonDatePickerSlide extends React.Component {
 
             {this.state.selectedFilter === 0 &&
               <View style={styles.tab} >
-
-
                 <View style={styles.panelTopSection}>
                   <Text style={styles.dateText}>
-                    Wed, Feb 20
+                    {moment(this.props.date).format('ddd, MMM D')}
                   </Text>
 
                   <View style={styles.clockIconContainer}>
                     <Icon style={{ paddingTop: 7, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
                     <Text style={styles.timeText}>
-                      {'11:00 AM > 11:15 AM'}
+                      {`${moment(this.props.startTime, 'HH:mm').format('HH:mm A')} > ${moment(this.props.endTime, 'HH:mm').format('HH:mm A')}`}
                     </Text>
                   </View>
                 </View>
@@ -368,50 +388,45 @@ export default class SalonDatePickerSlide extends React.Component {
                   <InputGroup
                     style={styles.middleSectionGroup}
                   >
-
-                    {[<InputButton
-                      style={{ height: 44 }}
-                      labelStyle={{ fontSize: 16, color: this.state.client ? '#000000' : '#727A8F' }}
-                      onPress={() => {
-                        this.props.navigation.navigate('Clients', {
-                          actionType: 'update',
-                          dismissOnSelect: true,
-                          onChangeClient: this.handleClientSelection,
-                        });
-                      }}
-                      label={this.state.client ? `${this.state.client.name} ${this.state.client.lastName}` : 'Select Client'}
-                      iconStyle={{ color: '#115ECD' }}
-                    />,
-                      <InputDivider style={styles.middleSectionDivider} />,
+                    {[
                       <InputButton
                         style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.state.service ? '#000000' : '#727A8F' }}
-                        onPress={() => {
-                          this.props.navigation.navigate('Services', {
-                            actionType: 'update',
-                            dismissOnSelect: true,
-                            onChangeService: this.handleServiceSelection,
-                          });
-                        }}
-                        label={this.state.service ? `${this.state.service.name}` : 'Select a Service'}
+                        labelStyle={{ fontSize: 16, color: this.props.client ? '#000000' : '#727A8F' }}
+                        onPress={this.props.handlePressClient}
+                        label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <InputButton
                         style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.state.provider ? '#000000' : '#727A8F' }}
-                        onPress={() => {
-                          this.props.navigation.navigate('Providers', {
-                            actionType: 'update',
-                            dismissOnSelect: true,
-                            onChangeProvider: this.handleProviderSelection,
-                          });
-                        }}
-                        label={this.state.provider ? `${this.state.provider.name} ${this.state.provider.lastName}` : 'Select a Provider'}
+                        labelStyle={{ fontSize: 16, color: this.props.service ? '#000000' : '#727A8F' }}
+                        onPress={this.props.handlePressService}
+                        label={this.props.service ? `${this.props.service.name}` : 'Select a Service'}
+                        iconStyle={{ color: '#115ECD' }}
+                      />,
+                      <InputDivider style={styles.middleSectionDivider} />,
+                      <InputButton
+                        style={{ height: 44 }}
+                        labelStyle={{ fontSize: 16, color: this.props.provider ? '#000000' : '#727A8F' }}
+                        onPress={this.props.handlePressProvider}
+                        label={this.props.provider ? `${this.props.provider.name} ${this.props.provider.lastName}` : 'Select a Provider'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
                     ]}
                   </InputGroup>
+
+                  {this.props.hasConflicts && (
+                    <TouchableOpacity
+                      style={styles.conflictBox}
+                      onPress={this.props.handlePressConflicts}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon type="solid" name="warning" color="#D1242A" size={12} />
+                        <Text style={styles.conflictBoxText}>Conflicts found</Text>
+                      </View>
+                      <Text style={styles.conflictBoxLink}>Show conflicts</Text>
+                    </TouchableOpacity>
+                  )}
 
                   <InputGroup
                     style={styles.apptGroup}
@@ -420,10 +435,8 @@ export default class SalonDatePickerSlide extends React.Component {
                       <InputSwitch
                         style={{ height: 61, paddingRight: 0, paddingTop: 5 }}
                         textStyle={{ fontSize: 16, color: '#000000' }}
-                        onChange={(state) => {
-
-                        }}
-                        value={this.state.provideIsRequested}
+                        onChange={this.props.handleChangeRequested}
+                        value={this.props.isProviderRequested}
                         text="Provider is Requested?"
                       />,
                     ]}
@@ -433,13 +446,14 @@ export default class SalonDatePickerSlide extends React.Component {
                   <InputGroup
                     style={styles.lengthGroup}
                   >
-                    {[<InputButton
-                      style={{ height: 36 }}
-                      labelStyle={{ color: '#2F3142' }}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Length select a service first"
-                      noIcon
-                    />,
+                    {[
+                      <InputButton
+                        style={{ height: 36 }}
+                        labelStyle={{ color: '#2F3142' }}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Length select a service first"
+                        noIcon
+                      />,
                     ]}
                   </InputGroup>
                 </View>
@@ -447,7 +461,7 @@ export default class SalonDatePickerSlide extends React.Component {
                   <View style={styles.btnTop}>
                     <TouchableOpacity
                       style={styles.bookApptContainer}
-                      onPress={() => { alert('Not implemented'); }}
+                      onPress={this.props.handlePressBook}
                     >
                       <View style={styles.blueButtonContainer}>
                         <Text style={styles.blueButtonText}>
@@ -486,11 +500,11 @@ export default class SalonDatePickerSlide extends React.Component {
               <View style={styles.tab}>
                 <InputGroup
                   style={{
-                  borderBottomWidth: 0,
-                  borderBottomColor: 'transparent',
-                  paddingLeft: 2,
-                  paddingRight: 0,
-}}
+                    borderBottomWidth: 0,
+                    borderBottomColor: 'transparent',
+                    paddingLeft: 2,
+                    paddingRight: 0,
+                  }}
                 >
                   {[<InputButton
                     noIcon
@@ -510,8 +524,8 @@ export default class SalonDatePickerSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                      </View>]}
-                  </InputButton>,
+                    </View>]}
+                    </InputButton>,
 
                     <InputButton
                       noIcon
@@ -532,7 +546,7 @@ export default class SalonDatePickerSlide extends React.Component {
                             type="solid"
                           />
                         </View>
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -543,7 +557,7 @@ export default class SalonDatePickerSlide extends React.Component {
                       label="Room Assignment"
                     >
                       {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -554,7 +568,7 @@ export default class SalonDatePickerSlide extends React.Component {
                       label="Turn Away"
                     >
                       {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -565,7 +579,7 @@ export default class SalonDatePickerSlide extends React.Component {
                       label="Message Provider's Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
                     <InputButton
                       noIcon
@@ -575,7 +589,7 @@ export default class SalonDatePickerSlide extends React.Component {
                       label="Message All Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>]}
                 </InputGroup>
               </View>

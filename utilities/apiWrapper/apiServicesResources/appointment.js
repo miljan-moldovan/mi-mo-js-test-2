@@ -1,10 +1,15 @@
 import apiConstants from '../apiConstants';
 
 const resources = {
+  postNewAppointment: {
+    path: 'Appointment',
+    method: 'post',
+    disableCache: true,
+  },
   getAppointmentsByDate: {
     path: 'Appointment/:date',
     method: 'get',
-    //expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
     disableCache: true,
   },
   postAppointmentMove: {
@@ -15,7 +20,7 @@ const resources = {
   getEmployeesAppointmentOrder: {
     path: 'Employees/AppointmentOrder',
     method: 'get',
-    //expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
     disableCache: true,
   },
   postEmployeesAppointmentOrder: {

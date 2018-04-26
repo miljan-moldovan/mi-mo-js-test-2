@@ -121,7 +121,6 @@ class ServiceSection extends Component {
 
   renderProvider = () => {
     const { provider } = this.props;
-    console.log(JSON.stringify(provider));
     const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
 
     if (provider) {

@@ -215,9 +215,10 @@ export default class Calendar extends Component {
         >
           <ScrollViewChild
             scrollDirection="both"
-            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0}]}
+            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
           >
             <Board
+              onCellPressed={this.props.onCellPressed}
               columns={headerData}
               rows={this.schedule}
               apptGridSettings={apptGridSettings}

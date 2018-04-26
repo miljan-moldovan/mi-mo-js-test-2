@@ -153,7 +153,6 @@ class ServiceSection extends Component {
   }
 
   renderProvider = (provider) => {
-    console.log(provider);
     const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
     const providerPhoto = provider ? (apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 

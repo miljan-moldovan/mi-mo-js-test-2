@@ -87,13 +87,11 @@ filterText != this.props.filterText) {
   }
 }
 onChangeFilterResultCount = () => {
-  console.log('onChangeFilterResultCount', this.state.data.length);
   if (this.props.onChangeFilterResultCount) { this.props.onChangeFilterResultCount(this.state.data.length); }
 }
 searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
   const { data } = this.props;
   const prevCount = this.state.data.length;
-  console.log('searchText prevCount', prevCount);
   if (query === '' || (!searchClient && !searchProvider)) {
     this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
   }
@@ -491,7 +489,7 @@ renderNotification = () => {
 _keyExtractor = (item, index) => item.id;
 
 render() {
-// console.log('Queue.render', this.props.data);
+//
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
 
