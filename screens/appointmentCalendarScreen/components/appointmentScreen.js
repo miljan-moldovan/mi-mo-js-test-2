@@ -234,9 +234,7 @@ export default class AppointmentScreen extends Component {
           mode={pickerMode}
           visible={this.state.visible}
           selectedDate={moment(startDate)}
-          onHide={() => {
-            this.setState({ visible: false });
-          }}
+          onHide={() => this.setState({ visible: false })}
           onDateSelected={(startDate, endDate) => {
             this.setState({ visible: false });
 
