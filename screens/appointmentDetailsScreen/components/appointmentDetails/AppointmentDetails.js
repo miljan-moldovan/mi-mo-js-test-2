@@ -21,6 +21,7 @@ import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import apiWrapper from '../../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../../../../components/QueueTimeNote';
+import Icon from '../../../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
@@ -177,6 +178,49 @@ const styles = StyleSheet.create({
     height: 10,
     width: 10,
     color: '#53646F',
+  },
+  notArrivedContainer: {
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
+  },
+  finishedContainer: {
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
+  },
+  finishedTime: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    height: 16,
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  finishedTimeText: {
+    fontSize: 9,
+    fontFamily: 'Roboto-Medium',
+    color: '#4D5067',
+  },
+  finishedTimeFlag: {
+    backgroundColor: '#31CF48',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 3,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'transparent',
   },
 });
 
@@ -380,8 +424,12 @@ class AppointmentDetails extends React.Component {
         );
       case QUEUE_ITEM_NOT_ARRIVED:
         return (
-          <View style={[styles.waitingTime, { backgroundColor: 'rgba(192,193,198,1)' }]}>
-            <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED</Text>
+          <View>
+            <View style={[styles.waitingTime, { marginRight: 0, flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
+              <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
+              <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
+              <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+            </View>
           </View>
         );
       default:
