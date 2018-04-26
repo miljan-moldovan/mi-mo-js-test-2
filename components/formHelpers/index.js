@@ -154,11 +154,16 @@ export const RemoveButton = ({ title, onPress }) => (
 );
 export const SectionTitle = props => (
   <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
-    <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
+    <Text style={[styles.sectionTitle, props.sectionTitleStyle]}>{props.case === 'upper' ? props.value.toUpperCase() : (props.case === 'lower' ? props.value.toLowerCase() : props.value)}</Text>
   </View>
 );
 SectionTitle.propTypes = {
   value: PropTypes.string.isRequired,
+  case: PropTypes.string,
+};
+
+SectionTitle.defaultProps = {
+  case: 'upper',
 };
 
 export const SectionDivider = props => (
