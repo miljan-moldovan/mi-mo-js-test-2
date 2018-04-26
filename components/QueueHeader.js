@@ -6,7 +6,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Alert,
   Modal,
@@ -19,7 +18,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import Icon from './UI/Icon';
-import WithPreventDoubleClick from '../components/withPreventDoubleClick';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 
 import apiWrapper from '../utilities/apiWrapper';
@@ -27,11 +26,11 @@ import apiWrapper from '../utilities/apiWrapper';
 const QueueNavButton = ({
   icon, onPress, style, type,
 }) => (
-  <WithPreventDoubleClick onPress={onPress} style={[{ justifyContent: 'flex-end' }, style]}>
+  <SalonTouchableOpacity onPress={onPress} style={[{ justifyContent: 'flex-end' }, style]}>
     <View style={{ height: 20, width: 20 }}>
       <Icon name={icon} type={type} style={styles.navButton} />
     </View>
-  </WithPreventDoubleClick>
+  </SalonTouchableOpacity>
 );
 
 export default class QueueHeader extends React.Component {
@@ -75,9 +74,9 @@ export default class QueueHeader extends React.Component {
           <Icon name="search" type="light" style={styles.searchIcon} />
           <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
         </View>
-        <WithPreventDoubleClick onPress={this.onSearchCancel}>
+        <SalonTouchableOpacity onPress={this.onSearchCancel}>
           <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginLeft: 6 }]}>Cancel</Text>
-        </WithPreventDoubleClick>
+        </SalonTouchableOpacity>
 
       </SafeAreaView>
     ) : (

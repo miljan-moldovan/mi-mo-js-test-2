@@ -1,15 +1,10 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Alert,
-  Modal,
   ActivityIndicator,
   TextInput,
   LayoutAnimation,
@@ -20,6 +15,7 @@ import { Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { SafeAreaView } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 
 import { connect } from 'react-redux';
@@ -40,9 +36,9 @@ class QueueCombineScreen extends React.Component {
 justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
 }}
         >
-          <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+          <SalonTouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
             <Text style={styles.navButtonText}>Close</Text>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <Text style={styles.headerTitle}>Combine</Text>
             <Text style={styles.headerSubtitle}>Select clients to combine</Text>
@@ -52,9 +48,9 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
               <ActivityIndicator />
             </View>
             ) : (
-              <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
+              <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
                 <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             )}
 
         </SafeAreaView>
@@ -219,11 +215,11 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
           <TextInput style={styles.search} onChangeText={this.changeSearchText} value={this.state.searchText} placeholder="Search" returnKeyType="search" />
         </View>
         <View style={{ alignItems: 'flex-start' }}>
-          <TouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
+          <SalonTouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
             <FontAwesome style={styles.sortButtonIcon}>{combinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
             <Text style={styles.sortButtonLabel}>Sort</Text>
             <Text style={styles.sortButtonText}>{combinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
         {combinedFirst ? uncombined : null}
         <QueueCombine

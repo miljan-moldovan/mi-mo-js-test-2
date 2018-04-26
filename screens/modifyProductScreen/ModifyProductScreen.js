@@ -3,15 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
 import {
   InputGroup,
   InputDivider,
-  InputSwitch,
-  ServiceInput,
   ProductInput,
   ProviderInput,
   SectionDivider,
@@ -19,6 +16,7 @@ import {
   InputLabel,
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,7 +38,7 @@ export default class ModifyProductScreen extends React.Component {
     </Text>,
     headerLeft:
 
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={() => { rootProps.navigation.goBack(); }}
   >
     <Icon
@@ -49,14 +47,15 @@ export default class ModifyProductScreen extends React.Component {
       color="white"
       size={19}
     />
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
 
     headerRight: (
-      <TouchableOpacity
+      <SalonTouchableOpacity
+        wait={3000}
         onPress={rootProps.navigation.state.params.onSave}
       >
         <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     ),
   });
 
@@ -115,7 +114,7 @@ export default class ModifyProductScreen extends React.Component {
         <SectionDivider />
         {this.state.index !== null && (
           <InputGroup>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
                 this.props.appointmentDetailsActions.removeProduct(this.state.index);
@@ -128,7 +127,7 @@ export default class ModifyProductScreen extends React.Component {
               >
                 Remove Product
               </Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </InputGroup>
         )}
       </View>

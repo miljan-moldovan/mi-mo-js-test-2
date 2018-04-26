@@ -2,15 +2,10 @@
 import React from 'react';
 import {
   Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Alert,
   ActivityIndicator,
-  Modal
 } from 'react-native';
 
 import { Button } from 'native-base';
@@ -20,11 +15,12 @@ import SideMenuItem from '../components/SideMenuItem';
 
 class SalesScreen extends React.Component {
   static navigationOptions = {
-    drawerLabel: (props) => (
+    drawerLabel: props => (
       <SideMenuItem
         {...props}
         title="Sales"
-        icon={require('../assets/images/sidemenu/icon_sales_menu.png')} />
+        icon={require('../assets/images/sidemenu/icon_sales_menu.png')}
+      />
     ),
   };
   state = {
@@ -36,7 +32,8 @@ class SalesScreen extends React.Component {
       <View style={styles.container}>
         <Image
           style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')} />
+          source={require('../assets/images/login/blue.png')}
+        />
         <Text style={styles.title}>Sales Screen placeholder</Text>
         <Button rounded bordered style={styles.loginButton} onPress={this.props.logout}>
           <Text style={styles.loginButtonText}>LOGOUT</Text>{ this.state.waitingLogin && <ActivityIndicator /> }
@@ -50,13 +47,13 @@ export default connect(null, actions)(SalesScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#333'
+    backgroundColor: '#333',
   },
   backgroundImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   title: {
     color: 'white',
@@ -65,7 +62,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 20,
     alignSelf: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
 
   },
   loginButton: {
@@ -76,7 +73,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'white',
     borderColor: 'white',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   loginButtonText: {
     color: 'rgba(48,120,164,1)',
@@ -85,6 +82,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-    letterSpacing: 2
+    letterSpacing: 2,
   },
 });

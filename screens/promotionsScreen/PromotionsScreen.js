@@ -5,8 +5,8 @@ import {
   Text,
   View,
   FlatList,
-  TouchableHighlight,
 } from 'react-native';
+import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 const promotions = require('../../mockData/promotions.json');
 
@@ -204,7 +204,7 @@ class PromotionsScreen extends React.Component {
     if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
   _renderItem = ({ item: { data, key } }) => (
-    <TouchableHighlight
+    <SalonTouchableHighlight
       style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
       onPress={() => {
         const { navigate, state } = this.props.navigation;
@@ -214,7 +214,6 @@ class PromotionsScreen extends React.Component {
           this.props.walkInActions.selectPromotion(data);
           navigate('WalkIn');
         }
-
       }}
       key={key}
       underlayColor="#ffffff"
@@ -234,7 +233,7 @@ class PromotionsScreen extends React.Component {
           </View>
         </View>
       </View>
-    </TouchableHighlight>
+    </SalonTouchableHighlight>
   );
 
 

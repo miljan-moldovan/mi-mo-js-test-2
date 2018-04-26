@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 import Icon from '../components/UI/Icon';
 
+const marginBottom = 5;
+
 const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
   <View style={{
   flexDirection: props.direction ? props.direction : 'row',
@@ -14,13 +16,20 @@ const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
   justifyContent: 'center',
   }}
   >
-    {item.membership ? star : null}
-    {item.newGlobal ? newGlobal : null}
-    {item.newLocal ? newLocal : null}
-    {item.birthday ? birthday : null}
-    {item.groupId && groupLeaderName ? (<Group color={props.color} leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
-    {/*  (<Group leader leaderName="L C" />) */ }
-    {item.attributes && item.attributes.length ? tag : null}
+
+    {item.membership ? <Star direction={props.direction} /> : null}
+    {item.newGlobal ? <NewGlobal direction={props.direction} /> : null}
+    {item.newLocal ? <NewLocal direction={props.direction} /> : null}
+    {item.birthday ? <Birthday direction={props.direction} /> : null}
+    { item.groupId && groupLeaderName ? (<Group direction={props.direction} color={props.color} leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
+    {item.attributes && item.attributes.length ? <Tag direction={props.direction} /> : null}
+
+    { /*  {<Star direction={props.direction} />}
+    {<NewGlobal direction={props.direction} />}
+    {<NewLocal direction={props.direction} />}
+    {<Birthday direction={props.direction} />}
+    {(<Group direction={props.direction} leader leaderName="L C" />) }
+    {<Tag direction={props.direction} />} */}
   </View>
 );
 export default ServiceIcons;
@@ -71,17 +80,28 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 });
-const birthday = <Icon style={{ color: '#115ECD', marginRight: 3, fontSize: 15 }} type="solid" name="gift" />;
-const tag = <Icon style={{ marginRight: 3, color: 'black' }} type="regular" name="tag" />;
-const newGlobal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>NL</Text></View>;
-const newLocal = <View style={styles.newClientTag}><Text style={styles.newClientTagText}>N</Text></View>;
-const star = <Icon style={{ color: '#FFA300', marginRight: 3 }} type="regular" name="star" />;
-const Group = ({ leader, leaderName, color }) => {
+const Birthday = ({ direction }) => (<Icon
+  style={{
+   color: '#115ECD',
+   marginRight: 3,
+   fontSize: 15,
+   marginBottom: direction === 'column' ? 10 : 0,
+  }}
+  type="solid"
+  name="gift"
+/>);
+const Tag = ({ direction }) => (<Icon style={{ marginRight: 3, color: 'black', marginBottom: direction === 'column' ? marginBottom : 0 }} type="regular" name="tag" />);
+const NewGlobal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>NL</Text></View>);
+const NewLocal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>N</Text></View>);
+const Star = ({ direction }) => (<Icon style={{ color: '#FFA300', marginRight: 3, marginBottom: direction === 'column' ? marginBottom : 0 }} type="regular" name="star" />);
+const Group = ({
+  leader, leaderName, color, direction,
+}) => {
   const names = leaderName.split(' ');
   color = color || { font: '#00E480', background: '#F1FFF2' };
   const leaderInitials = names[0][0] + names[names.length - 1][0];
   return (
-    <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background }]}>
+    <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background, marginBottom: direction === 'column' ? marginBottom : 0 }]}>
       <View style={styles.clientGroupLabelContainer}>
         <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="solidFree" color="black" />
         <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>

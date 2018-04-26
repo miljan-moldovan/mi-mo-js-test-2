@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   Text, View, StyleSheet, Dimensions,
-  Modal, TouchableHighlight, Animated, ScrollView,
+  Modal, Animated, ScrollView,
 } from 'react-native';
 
 import styles, { btnStyle, sheetStyle, hairlineWidth } from './styles';
+import SalonTouchableHighlight from '../SalonTouchableHighlight';
 
 
 const TITLE_H = 40;
@@ -68,8 +69,23 @@ class SalonActionSheet extends Component {
   }
 
   _calculateHeight(props) {
-    const count = props.options.length;
-    let height = BUTTON_H * count + CANCEL_MARGIN;
+    let count = props.options.length;
+    let height = props.optionStyles && props.optionStyles.length > 0
+    && props.cancelButtonIndex < props.optionStyles.length ? props.optionStyles[props.cancelButtonIndex].marginTop : CANCEL_MARGIN;
+
+
+    if (props.optionStyles) {
+      for (let i = 0; i < props.optionStyles.length; i++) {
+        const style = props.optionStyles[i];
+        if (style && 'height' in style) {
+          count -= 1;
+          height += style.height;
+        }
+      }
+    }
+
+    height += BUTTON_H * count;
+
     if (props.title) height += TITLE_H;
     if (props.message) height += MESSAGE_H;
     if (height > MAX_HEIGHT) {
@@ -121,17 +137,22 @@ class SalonActionSheet extends Component {
   }
 
   _renderCancelButton() {
-    const { options, cancelButtonIndex, tintColor } = this.props;
+    const {
+      options, cancelButtonIndex, tintColor, optionStyles,
+    } = this.props;
     if (cancelButtonIndex > -1 && options[cancelButtonIndex]) {
+      const wrapperStyle = optionStyles && optionStyles.length > 0
+      && cancelButtonIndex < optionStyles.length ? optionStyles[cancelButtonIndex] : {};
+
       return (
-        <TouchableHighlight
+        <SalonTouchableHighlight
           activeOpacity={1}
           underlayColor="#f4f4f4"
-          style={[btnStyle.wrapper, { marginTop: 6, borderRadius: 10 }]}
+          style={[btnStyle.wrapper, { marginTop: 6, borderRadius: 10 }, wrapperStyle]}
           onPress={this._cancel}
         >
           <Text style={[btnStyle.title, { fontWeight: '700', color: tintColor }]}>{options[cancelButtonIndex]}</Text>
-        </TouchableHighlight>
+        </SalonTouchableHighlight>
       );
     }
     return null;
@@ -153,7 +174,7 @@ class SalonActionSheet extends Component {
       titleNode = <Text style={[btnStyle.title, { color: fontColor }]}>{title}</Text>;
     }
     return (
-      <TouchableHighlight
+      <SalonTouchableHighlight
         key={index}
         activeOpacity={1}
         underlayColor="#f4f4f4"
@@ -161,17 +182,22 @@ class SalonActionSheet extends Component {
         onPress={this.hide.bind(this, index)}
       >
         {titleNode}
-      </TouchableHighlight>
+      </SalonTouchableHighlight>
     );
   }
 
   _renderOptions() {
     const {
-      options, tintColor, cancelButtonIndex, destructiveButtonIndex,
+      options, tintColor, cancelButtonIndex, destructiveButtonIndex, optionStyles,
     } = this.props;
+
+
     return options.map((title, index) => {
+      const wrapperStyle = optionStyles && optionStyles.length > 0
+      && index < optionStyles.length ? optionStyles[index] : null;
+
       const fontColor = destructiveButtonIndex === index ? WARN_COLOR : tintColor;
-      return index === cancelButtonIndex ? null : this._createButton(title, fontColor, index);
+      return index === cancelButtonIndex ? null : this._createButton(title, fontColor, index, wrapperStyle);
     });
   }
 
@@ -185,7 +211,7 @@ class SalonActionSheet extends Component {
         animationType="none"
         onRequestClose={this._cancel}
       >
-        <View style={sheetStyle.wrapper}>
+        <View style={[sheetStyle.wrapper, this.props.wrapperStyle]}>
           <Text style={styles.overlay} onPress={this._cancel} />
           <Animated.View
             style={[sheetStyle.bd, { height: this.translateY, transform: [{ translateY: sheetAnim }] }]}

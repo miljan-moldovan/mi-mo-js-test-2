@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, StyleSheet, Text, TextInput } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
-import HeaderLateral from '../../../components/HeaderLateral';
 import HeaderRight from '../../../components/HeaderRight';
 import reasonTypeModel from '../../../utilities/models/reasonType';
 import fetchFormCache from '../../../utilities/fetchFormCache';
 import SalonAvatar from '../../../components/SalonAvatar';
 import apiWrapper from '../../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 
 const styles = StyleSheet.create({
@@ -229,7 +229,7 @@ class WalkoutScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this.handlePressProvider}>
+        <SalonTouchableOpacity onPress={this.handlePressProvider}>
           <View style={[styles.row, styles.borderTop]}>
             <Text style={styles.label}>Provider</Text>
             <View style={styles.rowRightContainer}>
@@ -244,29 +244,29 @@ class WalkoutScreen extends Component {
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
         <View style={styles.titleRow}>
           <Text style={styles.title}>WALK-OUT REASON</Text>
         </View>
-        <TouchableOpacity onPress={() => this.handlePressReason(1, false)}>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(1, false)}>
           <View style={[styles.row, styles.borderTop]}>
             <Text>Waited too much</Text>
             {this.renderCheck(1)}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressReason(2, false)}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(2, false)}>
           <View style={styles.row}>
             <Text>Personal Affairs</Text>
             {this.renderCheck(2)}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressReason(3, false)}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(3, false)}>
           <View style={styles.row}>
             <Text>Provider didn&#39;t show up</Text>
             {this.renderCheck(3)}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressReason(0, true)}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(0, true)}>
           <View style={styles.textAreaContainer}>
             <View style={styles.innerRow}>
               <Text>Other</Text>
@@ -282,7 +282,7 @@ class WalkoutScreen extends Component {
               onChangeText={this.handleOnchangeText}
             />
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
     );
   }

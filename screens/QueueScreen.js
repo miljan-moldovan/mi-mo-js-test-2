@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Alert,
   Dimensions,
@@ -26,7 +25,7 @@ import QueueHeader from '../components/QueueHeader';
 import Icon from '../components/UI/Icon';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
-import WithPreventDoubleClick from '../components/withPreventDoubleClick';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -246,18 +245,18 @@ class QueueScreen extends React.Component {
         <View style={styles.searchTypeContainer}>
           {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
           <View style={styles.searchType}>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
               onPress={this.handleSearchClients}
             >
               <Text style={[styles.searchTypeText, searchType === SEARCH_CLIENTS ? activeText : null]}>Client</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </SalonTouchableOpacity>
+            <SalonTouchableOpacity
               style={[styles.searchProvider, searchType === SEARCH_PROVIDERS ? active : null]}
               onPress={this.handleSearchProviders}
             >
               <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </View>
         </View>
       </View>
@@ -398,10 +397,10 @@ class QueueScreen extends React.Component {
         />
         {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
-            <WithPreventDoubleClick onPress={this._handleWalkInPress} style={styles.walkinButton}>
+            <SalonTouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
               <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
-            </WithPreventDoubleClick>
+            </SalonTouchableOpacity>
           )
         }
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
@@ -424,12 +423,12 @@ class QueueScreen extends React.Component {
               />
             </View>
             <View style={styles.walkoutButtonContainer}>
-              <TouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
+              <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
                 <Text style={styles.walkoutTextCancel}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
+              </SalonTouchableOpacity>
+              <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
                 <Text style={styles.walkoutTextOk}>Ok</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
           </View>]}
         </SalonModal>

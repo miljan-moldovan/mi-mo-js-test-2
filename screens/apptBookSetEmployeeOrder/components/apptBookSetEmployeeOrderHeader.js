@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 
 const styles = StyleSheet.create({
@@ -114,7 +115,7 @@ export default class ApptBookSetEmployeeOrderHeader extends React.Component {
   render() {
     return (<View style={styles.header}>
 
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={styles.leftButton}
         onPress={() => { this.props.params.handleGoBack(); }}
       >
@@ -123,12 +124,13 @@ export default class ApptBookSetEmployeeOrderHeader extends React.Component {
             Cancel
           </Text>
         </View>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Set Employee Order</Text>
       </View>
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={styles.rightButton}
+        wait={3000}
         onPress={() => { this.props.params.handlePress(); }}
       >
         <View style={styles.rightButtonContainer}>
@@ -136,7 +138,7 @@ export default class ApptBookSetEmployeeOrderHeader extends React.Component {
             Done
           </Text>
         </View>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
             </View>);
   }
 }

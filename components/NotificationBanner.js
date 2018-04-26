@@ -3,10 +3,9 @@ import React from 'react';
 import {
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
   Animated,
 } from 'react-native';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const BANNER_HEIGHT = 50;
 const AUTODISMISS_TIMEOUT = 2000;
@@ -26,8 +25,7 @@ export class NotificationBanner extends React.Component {
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.visible && !this.props.visible) {
       // clear any running timeout in case of multiple calls
-      if (this.timeout)
-        {clearTimeout(this.timeout);}
+      if (this.timeout) { clearTimeout(this.timeout); }
 
       this.timeout = setTimeout(() => {
         this.hide();
@@ -44,7 +42,7 @@ export class NotificationBanner extends React.Component {
   }
   hide() {
     Animated.timing(
-this.state.fadeAnim,
+      this.state.fadeAnim,
       {
         toValue: 0,
         duration: 400,
@@ -53,7 +51,7 @@ this.state.fadeAnim,
   }
   show() {
     Animated.timing(
-this.state.fadeAnim,
+      this.state.fadeAnim,
       {
         toValue: 1,
         duration: 600,
@@ -85,11 +83,11 @@ this.state.fadeAnim,
 export class NotificationBannerButton extends React.Component {
   render() {
     return (
-      <TouchableOpacity style={styles.buttonContainer} onPress={this.props.onPress}>
+      <SalonTouchableOpacity style={styles.buttonContainer} onPress={this.props.onPress}>
         <Text style={styles.buttonText}>
           {this.props.title}
         </Text>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     );
   }
 }

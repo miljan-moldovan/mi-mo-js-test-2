@@ -2,21 +2,16 @@
 import React from 'react';
 import {
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Alert,
-  Modal
 } from 'react-native';
-import { Form, Item, Input, Button, Label } from 'native-base';
-
+import { Item, Input, Button, Label } from 'native-base';
 
 export default class ForgotPasswordScreen extends React.Component {
   static navigationOptions = {
-    title: 'Reset Password'
+    title: 'Reset Password',
   };
   state = {
 
@@ -27,20 +22,22 @@ export default class ForgotPasswordScreen extends React.Component {
       <View style={styles.container}>
         <Image
           style={styles.backgroundImage}
-          source={require('../assets/images/login/blue.png')} />
+          source={require('../assets/images/login/blue.png')}
+        />
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
           <Text style={styles.bodyText}>Having trouble logging in? You can use the form below to reset your password.</Text>
           <Text style={styles.bodyText}>
-            You can also ask your manager to change your password through Salon Ultimate.</Text>
+            You can also ask your manager to change your password through Salon Ultimate.
+          </Text>
           <View style={styles.inputContainer}>
             <Image source={require('../assets/images/login/icon_profile.png')} style={styles.inputIcon} />
             <Item floatingLabel style={styles.item}>
-              <Label style={{ color:'white', fontFamily: 'OpenSans-Regular' }}>Username</Label>
-              <Input style={styles.input} autoCorrect={false} blurOnSubmit={true} autoCapitalize="none" />
+              <Label style={{ color: 'white', fontFamily: 'OpenSans-Regular' }}>Username</Label>
+              <Input style={styles.input} autoCorrect={false} blurOnSubmit autoCapitalize="none" />
             </Item>
           </View>
-          <Button transparent style={{marginLeft: 'auto', marginRight: 'auto'}}>
-            <Text style={[styles.bodyText, {fontSize: 20}]}>Reset Password</Text>
+          <Button transparent style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+            <Text style={[styles.bodyText, { fontSize: 20 }]}>Reset Password</Text>
           </Button>
 
         </ScrollView>
@@ -55,17 +52,17 @@ const styles = StyleSheet.create({
   },
   scrollContentContainer: {
     alignItems: 'center',
-    padding: 20
+    padding: 20,
   },
   container: {
     flex: 1,
-    backgroundColor: '#333'
+    backgroundColor: '#333',
   },
   backgroundImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   inputContainer: {
     // width: 292,
@@ -75,7 +72,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 32,
     // backgroundColor: '#333',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   item: {
     width: 260,
@@ -85,7 +82,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#555'
   },
   inputLabel: {
-    color: 'white'
+    color: 'white',
   },
   input: {
     color: 'white',
@@ -93,18 +90,18 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
     paddingTop: 0,
     marginTop: 0,
-    paddingLeft: 0
+    paddingLeft: 0,
   },
   inputIcon: {
     width: 28,
     height: 28,
     alignSelf: 'flex-end',
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   bodyText: {
     color: 'white',
     fontSize: 14,
     fontFamily: 'OpenSans-Regular',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
 });

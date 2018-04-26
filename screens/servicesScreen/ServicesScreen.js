@@ -4,9 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
-  RefreshControl,
-  ScrollView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -15,6 +12,7 @@ import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ServiceList from './components/serviceList';
 import CategoryServicesList from './components/categoryServicesList';
 import ServiceCategoryList from './components/serviceCategoryList';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -244,14 +242,14 @@ class ServicesScreen extends React.Component {
       title: item.name,
       subTitle: null,
       leftButton:
-  <TouchableOpacity
+  <SalonTouchableOpacity
     style={{ flex: 1 }}
     onPress={() => { this.goBack(); }}
   >
     <FontAwesome style={styles.backIcon}>
       {Icons.angleLeft}
     </FontAwesome>
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
     }, true);
     this.props.servicesActions.setShowCategoryServices(true);
     this.props.servicesActions.setCategoryServices(item.services);

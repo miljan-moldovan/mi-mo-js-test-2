@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Text, Image, TouchableOpacity, Switch } from 'react-native';
+import { View, ScrollView, StyleSheet, Text, Image, Switch } from 'react-native';
 
 import SalonMaterialTextInput from '../../../components/SalonMaterialTextInput';
 import SalonPicker from '../../../components/SalonPicker';
@@ -10,6 +10,7 @@ import plusIcon from '../../../assets/images/clientDetails/icon_plus_small.png';
 import removeIcon from '../../../assets/images/clientDetails/icon_close_w.png';
 import sendIcon from '../../../assets/images/clientDetails/send_sms.png';
 import callIcon from '../../../assets/images/clientDetails/call.png';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const confirmations = ['Email', 'SMS'];
 
@@ -176,16 +177,16 @@ class ClientDetails extends Component {
         </View>
         <View style={styles.row}>
           <SalonMaterialTextInput title="Home" editable={false} rootStyle={styles.middleInput} value="111-555-2255" />
-          <TouchableOpacity>
+          <SalonTouchableOpacity>
             <Image style={styles.imageRemove} source={removeIcon} />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
-        <TouchableOpacity>
+        <SalonTouchableOpacity>
           <View style={styles.row}>
             <Image style={styles.imageAdd} source={plusIcon} />
             <Text style={styles.blueText}>Add Contact</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
         <View style={styles.row}>
           <SalonPicker title="Confirmation" dataSource={confirmations} selectedValue="Email" onPickerConfirm={() => {}} disabled />
         </View>
@@ -239,9 +240,9 @@ class ClientDetails extends Component {
           <SalonMaterialTextInput title="Note" editable={false} value="You probably have not heard of them" rootStyle={styles.addressInput} />
         </View>
         <View style={[styles.titleRow, styles.deleteContainer]}>
-          <TouchableOpacity style={styles.btnDelete}>
+          <SalonTouchableOpacity style={styles.btnDelete}>
             <Text style={styles.deleteText}>Delete Client</Text>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
         <View style={styles.btnRow}>
           <View style={styles.btnContainer}>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, FlatList, View } from 'react-native';
+import { StyleSheet, Text, FlatList } from 'react-native';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,9 +28,9 @@ const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', '
 
 const keyExtractor = item => item;
 
-const renderItem = (elem, props) => (<TouchableOpacity style={styles.rowItem} onPress={() => { props.onPress(elem.item); }}>
+const renderItem = (elem, props) => (<SalonTouchableOpacity style={styles.rowItem} onPress={() => { props.onPress(elem.item); }}>
   <Text style={styles.text}>{elem.item}</Text>
-                                     </TouchableOpacity>);
+                                     </SalonTouchableOpacity>);
 
 const listLetterFilter = props => (
   <FlatList

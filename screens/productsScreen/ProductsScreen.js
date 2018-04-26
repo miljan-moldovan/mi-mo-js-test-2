@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -13,6 +12,7 @@ import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ProductList from './components/productList';
 import CategoryProductsList from './components/categoryProductsList';
 import ProductCategoryList from './components/productCategoryList';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -229,14 +229,14 @@ class ProductsScreen extends React.Component {
       title: item.name,
       subTitle: null,
       leftButton:
-  <TouchableOpacity
+  <SalonTouchableOpacity
     style={{ flex: 1 }}
     onPress={() => { this.goBack(); }}
   >
     <FontAwesome style={styles.backIcon}>
       {Icons.angleLeft}
     </FontAwesome>
-  </TouchableOpacity>,
+  </SalonTouchableOpacity>,
     }, true);
     this.props.productsActions.setShowCategoryProducts(true);
     this.props.productsActions.setCategoryProducts(item.products);

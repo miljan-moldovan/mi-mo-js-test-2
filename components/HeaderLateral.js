@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -20,9 +21,9 @@ const HeaderLateral = (props) => {
     props.navigationParams.onNavigateBack : handlePress;
 
   return (
-    <TouchableOpacity style={styles.buttonContainer} onPress={handlePress}>
+    <SalonTouchableOpacity style={styles.buttonContainer} onPress={handlePress}>
       {props.button}
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 };
 

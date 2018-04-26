@@ -3,7 +3,6 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
@@ -13,6 +12,7 @@ import {
   InputGroup,
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,7 +45,7 @@ export default class EndsOnScreen extends React.Component {
     return (
       <View style={styles.container}>
         <InputGroup style={{ marginTop: 16 }}>
-          <TouchableOpacity
+          <SalonTouchableOpacity
             onPress={() => this.setState({ selected: 'date' })}
           >
             <InputLabel
@@ -56,7 +56,7 @@ export default class EndsOnScreen extends React.Component {
                 null
               )}
             />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
           {this.state.selected === 'date' && (
             <DatePicker
               mode="date"
@@ -64,7 +64,7 @@ export default class EndsOnScreen extends React.Component {
             />
           )}
           <InputDivider />
-          <TouchableOpacity
+          <SalonTouchableOpacity
             onPress={() => this.setState({ selected: 'ocurrences' })}
           >
             <InputLabel
@@ -75,7 +75,7 @@ export default class EndsOnScreen extends React.Component {
               null
             )}
             />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </InputGroup>
         {this.state.selected === 'ocurrences' && (
           <Picker

@@ -4,12 +4,12 @@ import {
   ScrollView,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Image,
   FlatList,
 } from 'react-native';
 
 import Button from '../../../components/Button';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -81,13 +81,13 @@ export default class ClientNotes extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>NOTES</Text>
-          <TouchableOpacity
+          <SalonTouchableOpacity
             style={styles.filterButton}
             onPress={() => console.log('pressed filter btn')}
           >
             <Text style={styles.filterBtnText}>FILTER</Text>
             <Image style={{ marginLeft: 5, height: 20, width: 20 }} source={require('../../../assets/images/icons/icon_filter.png')} />
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
         <ScrollView>
           <FlatList

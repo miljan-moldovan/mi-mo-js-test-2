@@ -1,40 +1,32 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Alert,
-  Modal,
   FlatList,
   RefreshControl,
-  TouchableHighlight,
   LayoutAnimation,
   ActivityIndicator,
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import moment from 'moment';
-
+import _ from 'lodash';
 import QueueItemSummary from '../screens/QueueItemSummary';
 import * as actions from '../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
 
-
-import SideMenuItem from '../components/SideMenuItem';
 import CircularCountdown from '../components/CircularCountdown';
 import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
 import { QueueButton, QueueButtonTypes } from './QueueButton';
 import ServiceIcons from './ServiceIcons';
 import Icon from '../components/UI/Icon';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
+import QueueTimeNote from './QueueTimeNote';
+
 
 import type { QueueItem } from '../models';
-
-const chevron = require('../assets/images/icons/icon_caret_right.png');
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },
@@ -65,19 +57,24 @@ state = {
   client: null,
   services: null,
   data: [],
+  sortItemsBy: { value: 'FIRST_ARRIVED', label: 'First Arrived' },
 }
 componentWillMount() {
   const {
     data, searchClient, searchProvider, filterText,
   } = this.props;
-  this.setState({ data });
+
+  const sortedItems = this.sortItems(this.state.sortItemsBy, data);
+
+  this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
 }
 componentWillReceiveProps({
   data, searchClient, searchProvider, filterText,
 }) {
   if (data !== this.props.data) {
-    this.setState({ data });
+    const sortedItems = this.sortItems(this.state.sortItemsBy, data);
+    this.setState({ data: sortedItems });
   }
   // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
   if (searchClient != this.props.searchClient ||
@@ -215,15 +212,24 @@ getLabelForItem = (item) => {
     case QUEUE_ITEM_FINISHED:
       return (
         <View style={styles.finishedContainer}>
+
+          <View style={styles.finishedTime}>
+            <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
+            <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
+              ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
+              : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+                ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
+                : 0)}min est.
+              </Text>
+            </Text>
+          </View>
+
           <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
             <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>FINISHED</Text>
           </View>
-          <View style={styles.finishedTime}>
-            <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-            <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
-          </View>
         </View>
       );
+      break;
     case QUEUE_ITEM_RETURNING:
       return (
         <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
@@ -232,10 +238,12 @@ getLabelForItem = (item) => {
       );
     case QUEUE_ITEM_NOT_ARRIVED:
       return (
-        <View style={[styles.waitingTime, { flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
-          <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
-          <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
-          <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+        <View style={styles.notArrivedContainer}>
+          <View style={[styles.waitingTime, { marginRight: 0, flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
+            <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
+            <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
+            <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+          </View>
         </View>
       );
     default:
@@ -367,6 +375,27 @@ getGroupLeaderName = (item: QueueItem) => {
   return null;
 }
 
+
+sortItems = (option, items) => {
+  let sortedItems = [];
+
+  if (option.value === 'FIRST_ARRIVED' || option.value === 'LAST_ARRIVED') {
+    sortedItems = _.sortBy(items, item => item.enteredTime);
+
+    if (option.value === 'LAST_ARRIVED') {
+      sortedItems = _.reverse(sortedItems);
+    }
+  } else if (option.value === 'A_Z' || option.value === 'Z_A') {
+    sortedItems = _.sortBy(items, item => item.client.fullName);
+
+    if (option.value === 'Z_A') {
+      sortedItems = _.reverse(sortedItems);
+    }
+  }
+
+  return sortedItems;
+}
+
 renderItem = (row) => {
   const item: QueueItem = row.item;
   const index = row.index;
@@ -377,22 +406,11 @@ renderItem = (row) => {
   const serviceName = (firstService.serviceName || '').toUpperCase();
   const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
 
-  let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-    ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
-    : 0;
-
-  if (item.estimatedTime && item.estimatedTime[0] === '-') {
-    estimatedTime *= (-1);
-  }
-
-  const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
-  const isAppointment = item.queueType === 1;
   const isBookedByWeb = item.queueType === 3;
 
   let color = groupColors[Math.floor(Math.random() * groupColors.length)];
 
   if (item.groupId) {
-    
     if (groups[item.groupId]) {
       color = groups[item.groupId];
     } else {
@@ -403,7 +421,7 @@ renderItem = (row) => {
   }
 
   return (
-    <TouchableOpacity
+    <SalonTouchableOpacity
       style={styles.itemContainer}
       onPress={() => this.handlePress(item)}
       key={item.id}
@@ -436,19 +454,19 @@ marginTop: 2,
           {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
 
         </Text>
-        <Text style={styles.serviceTimeContainer}>
-          <Icon name="clockO" style={styles.serviceClockIcon} />
-          <Text style={styles.serviceTime}> {moment(item.startTime, 'hh:mm:ss').format('LT')}</Text>  <Icon name="chevronRight" style={styles.chevronRightIcon} />  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text>
-          {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-        </Text>
+
+        <QueueTimeNote item={item} />
+
 
       </View>
-      <View style={{ height: '100%', justifyContent: 'flex-end' }}>
+      <View style={{
+ flex: 1, height: '100%', justifyContent: 'flex-end', alignItems: 'flex-start',
+}}
+      >
         {label}
       </View>
-      {/* <Image source={chevron} style={styles.chevron} /> */}
       <Icon name="chevronRight" style={styles.chevron} type="solid" />
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 }
 showNotification = (item, type) => {
@@ -567,8 +585,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 'auto',
     paddingRight: 10,
-    flex: 1,
     height: 90,
+    flex: 3.5,
   },
   clientName: {
     fontSize: 16,
@@ -638,20 +656,32 @@ const styles = StyleSheet.create({
     color: '#7E8D98',
     paddingRight: 7,
   },
-  finishedContainer: {
-    height: 58,
+  notArrivedContainer: {
+    height: 16,
     alignItems: 'center',
     justifyContent: 'center',
-
-    marginLeft: 'auto',
-    marginBottom: 'auto',
-    marginRight: 42,
-    marginTop: 16,
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
+  },
+  finishedContainer: {
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
   },
   finishedTime: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    height: 16,
+    marginBottom: 14,
     flexDirection: 'row',
-    alignSelf: 'flex-end',
-    marginTop: 'auto',
     alignItems: 'center',
     justifyContent: 'center',
   },

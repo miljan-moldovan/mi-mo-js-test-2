@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet, ViewPropTypes } from 'react-native';
+import { Text, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 
 const styles = StyleSheet.create({
@@ -73,7 +74,7 @@ SalonFixedBottom.defaultProps = {
 };
 
 const salonBtnFixedBottom = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={props.onPress}
     style={[styles.btnContainer, props.rootStyle, { backgroundColor: props.backgroundColor }]}
   >
@@ -88,7 +89,7 @@ const salonBtnFixedBottom = props => (
       )}
       {props.children}
     </View>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 salonBtnFixedBottom.propTypes = {
   children: PropTypes.element,
