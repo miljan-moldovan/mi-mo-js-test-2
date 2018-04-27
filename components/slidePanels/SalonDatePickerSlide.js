@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CDCED2',
     flexDirection: 'column',
     zIndex: 99999,
-    height: 580,
+    height: 500,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
@@ -172,8 +172,7 @@ export default class SalonDatePickerSlide extends React.Component {
   render() {
     return (
       <SalonSlidingUpPanel
-        visible
-        showBackdrop={this.state.visible}
+        visible={this.props.visible}
         onDragEnd={() => this.setState({ visible: false })}
         ref={(c) => { this._panel = c; }}
         draggableRange={this.props.draggableRange}

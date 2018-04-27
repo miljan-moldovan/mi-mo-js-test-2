@@ -9,12 +9,25 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+import Modal from 'react-native-modal';
 
 import FlickAnimation from './FlickAnimation';
 
 const visibleHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+  modal: {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 0,
+    margin: 0,
+    flexDirection: 'column',
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    zIndex: 99991,
+  },
   container: {
     zIndex: 99999,
     position: 'absolute',
@@ -69,20 +82,29 @@ export default class SlidingUpPanel extends React.Component {
     onRequestClose: () => {},
     allowMomentum: true,
     allowDragging: true,
-    showBackdrop: true,
+    showBackdrop: false,
   }
 
 
   constructor(props) {
     super(props);
 
+    this.state = {
+      visible: false,
+    };
+
     this._onDrag = this._onDrag.bind(this);
     this._requestClose = this._requestClose.bind(this);
-    this._renderBackdrop = this._renderBackdrop.bind(this);
     this._isInsideDraggableRange = this._isInsideDraggableRange.bind(this);
 
     this.transitionTo = this.transitionTo.bind(this);
   }
+
+
+  state:{
+    visible: false,
+  }
+
   componentWillMount() {
     const { top, bottom } = this.props.draggableRange;
 
@@ -105,6 +127,11 @@ export default class SlidingUpPanel extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    this.setState({
+      visible: nextProps.visible,
+    });
+
+
     if (nextProps.visible && !this.props.visible) {
       this.transitionTo(-this.props.draggableRange.top);
     }
@@ -165,6 +192,7 @@ export default class SlidingUpPanel extends React.Component {
     this._translateYAnimation.flattenOffset();
     const cancelFlick = this.props.onDragEnd(-this._animatedValueY);
 
+
     if (!this.props.allowMomentum || cancelFlick) {
       return;
     }
@@ -179,6 +207,7 @@ export default class SlidingUpPanel extends React.Component {
 
   // eslint-disable-next-line no-unused-vars
   _onPanResponderTerminate(evt, gestureState) {
+    this.setState({ visible: false });
     //
   }
 
@@ -196,6 +225,7 @@ export default class SlidingUpPanel extends React.Component {
     }
 
     if (value >= -this.props.draggableRange.bottom) {
+      this.setState({ visible: false });
       this.props.onRequestClose();
     }
   }
@@ -217,32 +247,12 @@ export default class SlidingUpPanel extends React.Component {
       return this.props.onRequestClose();
     }
 
+    this.setState({ visible: false });
+
     return this.transitionTo(-this.props.draggableRange.bottom, () =>
       this.props.onRequestClose());
   }
 
-  _renderBackdrop() {
-    if (!this.props.showBackdrop) {
-      return null;
-    }
-
-    const { top, bottom } = this.props.draggableRange;
-
-    const backdropOpacity = this._translateYAnimation.interpolate({
-      inputRange: [-top, -bottom],
-      outputRange: [0.75, 0],
-      extrapolate: 'clamp',
-    });
-
-    return (
-      <TouchableWithoutFeedback
-        onPressIn={() => this._flick.stop()}
-        onPress={() => this._requestClose()}
-      >
-        <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} />
-      </TouchableWithoutFeedback>
-    );
-  }
 
   render() {
     if (!this.props.visible) {
@@ -268,15 +278,19 @@ export default class SlidingUpPanel extends React.Component {
     ];
 
     return (
-      <View style={styles.container} pointerEvents="box-none">
-        {this._renderBackdrop()}
-        <Animated.View
-          {...this._panResponder.panHandlers}
-          style={animatedContainerStyles}
-        >
-          {this.props.children}
-        </Animated.View>
-      </View>
+      <Modal
+        isVisible={this.state.visible}
+        style={styles.modal}
+      >
+        <View style={styles.container} pointerEvents="box-none">
+          <Animated.View
+            {...this._panResponder.panHandlers}
+            style={animatedContainerStyles}
+          >
+            {this.props.children}
+          </Animated.View>
+        </View>
+      </Modal>
     );
   }
 }
