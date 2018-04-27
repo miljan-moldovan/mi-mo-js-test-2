@@ -484,7 +484,9 @@ export class ProviderInput extends React.Component {
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
-        <Text style={[styles.labelText]}>{this.state.labelText}</Text>
+        {!this.props.noLabel && (
+          <Text style={[styles.labelText]}>{this.state.labelText}</Text>
+        )}
         <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
