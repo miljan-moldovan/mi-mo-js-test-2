@@ -178,7 +178,7 @@ const ServiceCard = ({ data, ...props }) => (
           style={{ flexDirection: 'row' }}
           onPress={props.onPress}
         >
-          <Text style={styles.serviceTitle}>Corrective Color</Text>
+          <Text style={styles.serviceTitle}>{data.service.name}</Text>
           <View style={{
               flexDirection: 'row',
               justifyContent: 'flex-end',
@@ -224,7 +224,7 @@ const ServiceCard = ({ data, ...props }) => (
             lineHeight: 22,
             color: '#2F3142',
           }}
-          >Provider Name
+          >{data.employee.fullName}
           </Text>
         </View>
         <View style={{
@@ -232,7 +232,7 @@ const ServiceCard = ({ data, ...props }) => (
           }}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <SalonAppointmentTime startTime="12:00" />
+          <SalonAppointmentTime startTime={data.fromTime.format('HH:mm')} />
           <SalonTouchableOpacity onPress={props.onPressDelete}>
             <Icon
               name="trash"
@@ -310,28 +310,34 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   render() {
+    const {
+      employee,
+      service,
+      client,
+      body,
+    } = this.props.newAppointmentState;
     return (
       <ScrollView style={styles.container}>
         <InputGroup style={{ marginTop: 15 }}>
           <ProviderInput
             navigate={this.props.navigation.navigate}
-            selectedProvider={this.state.selectedProvider}
-            onChange={this.onChangeProvider}
+            selectedProvider={employee}
+            onChange={this.props.newAppointmentActions.setNewApptEmployee}
           />
           <InputDivider />
           <InputDate
             noIcon
             placeholder="Date"
-            selectedDate={this.state.selectedDate}
-            onPress={selectedDate => this.setState({ selectedDate })}
+            selectedDate={body.date}
+            onPress={this.props.newAppointmentActions.setNewApptDate}
           />
         </InputGroup>
         <SectionTitle style={{ height: 46 }} value="Client" />
         <InputGroup>
           <ClientInput
             navigate={this.props.navigation.navigate}
-            selectedClient={this.state.selectedClient}
-            onChange={this.onChangeClient}
+            selectedClient={client}
+            onChange={this.props.newAppointmentActions.setNewApptClient}
             extraComponents={[
               <SalonTouchableOpacity
                 onPress={() => {
@@ -368,12 +374,12 @@ export default class NewAppointmentScreen extends React.Component {
           <InputDivider />
           <InputLabel
             label="Email"
-            value={this.state.selectedClient !== null ? this.state.selectedClient.email : ''}
+            value={body.clientInfo !== null ? body.clientInfo.email : ''}
           />
           <InputDivider />
           <InputLabel
             label="Phone"
-            value={this.state.selectedClient !== null ? this.state.selectedClient.phone : ''}
+            value={body.clientInfo !== null ? body.clientInfo.phones[0].value : ''}
           />
           <InputDivider />
           <InputNumber
@@ -386,18 +392,18 @@ export default class NewAppointmentScreen extends React.Component {
         </InputGroup>
         <View>
           <SubTitle title="Main Client" />
-          {this.state.mainServices.map(item => (
+          {body.items.map(item => (item.service !== null ? (
             <ServiceCard
               onPress={this.onPressService}
               onPressDelete={this.deleteMainService}
               key={Math.random().toString()}
               data={item}
             />
-          ))}
+          ) : null))}
           <AddButton
             onPress={this.addMainService}
             iconStyle={{ marginLeft: 10, marginRight: 6 }}
-            title="add service"
+            title="Add service"
           />
         </View>
         <View>
@@ -414,14 +420,14 @@ export default class NewAppointmentScreen extends React.Component {
           <AddButton
             onPress={this.addGuestService}
             iconStyle={{ marginLeft: 10, marginRight: 6 }}
-            title="add service"
+            title="Add service"
           />
         </View>
         <InputGroup>
           <InputSwitch
             text="Recurring appt."
-            onChange={this.onChangeRecurring}
-            value={this.state.isRecurring}
+            value={this.props.newAppointmentState.isRecurring}
+            onChange={this.props.newAppointmentActions.setNewApptRecurring}
           />
         </InputGroup>
         <View style={{ paddingVertical: 32, paddingHorizontal: 8 }}>

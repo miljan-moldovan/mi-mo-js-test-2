@@ -3,8 +3,9 @@ import moment from 'moment';
 import apiWrapper from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
-} from './appointment';
+} from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
 
+export const ADD_NEW_APPT_ITEM = 'newAppointment/ADD_NEW_APPT_ITEM';
 export const SET_NEW_APPT_EMPLOYEE = 'newAppointment/SET_NEW_APPT_EMPLOYEE';
 export const SET_NEW_APPT_DATE = 'newAppointment/SET_NEW_APPT_DATE';
 export const SET_NEW_APPT_SERVICE = 'newAppointment/SET_NEW_APPT_SERVICE';
@@ -17,52 +18,56 @@ export const BOOK_NEW_APPT = 'newAppointment/BOOK_NEW_APPT';
 export const BOOK_NEW_APPT_SUCCESS = 'newAppointment/BOOK_NEW_APPT_SUCCESS';
 export const BOOK_NEW_APPT_FAILED = 'newAppointment/BOOK_NEW_APPT_FAILED';
 
-const setNewApptTime = (startTime, endTime) => ({
+const addNewApptItem = () => ({
+  type: ADD_NEW_APPT_ITEM,
+});
+
+const setNewApptTime = (startTime, endTime, index = 0) => ({
   type: SET_NEW_APPT_START_TIME,
-  data: { startTime, endTime },
+  data: { index, startTime, endTime },
 });
 
-const setNewApptDate = date => ({
+const setNewApptDate = (date, index = 0) => ({
   type: SET_NEW_APPT_DATE,
-  data: { date },
+  data: { index, date },
 });
 
-const setNewApptEmployee = employee => ({
+const setNewApptEmployee = (employee, index = 0) => ({
   type: SET_NEW_APPT_EMPLOYEE,
-  data: { employee },
+  data: { index, employee },
 });
 
-const setNewApptService = service => (dispatch) => {
+const setNewApptService = (service, index = 0) => (dispatch) => {
   dispatch({
     type: SET_NEW_APPT_SERVICE,
-    data: { service },
+    data: { index, service },
   });
 
   return dispatch(setNewApptDuration());
 };
 
-const setNewApptClient = client => ({
+const setNewApptClient = (client, index = 0) => ({
   type: SET_NEW_APPT_CLIENT,
-  data: { client },
+  data: { index, client },
 });
 
-const setNewApptRequested = requested => ({
+const setNewApptRequested = (requested, index = 0) => ({
   type: SET_NEW_APPT_REQUESTED,
-  data: { requested },
+  data: { index, requested },
 });
 
-const setNewApptFirstAvailable = isFirstAvailable => ({
+const setNewApptFirstAvailable = (isFirstAvailable, index = 0) => ({
   type: SET_NEW_APPT_FIRST_AVAILABLE,
-  data: { isFirstAvailable },
+  data: { index, isFirstAvailable },
 });
 
-const setNewApptDuration = () => (dispatch, getState) => {
+const setNewApptDuration = (index = 0) => (dispatch, getState) => {
   const { service, body: { items } } = getState().newAppointmentReducer;
-  const { fromTime } = items[0];
+  const { fromTime } = items[index];
   const serviceDuration = moment.duration(service.maxDuration);
   const endTime = moment(fromTime, 'HH:mm').add(serviceDuration);
 
-  return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime: fromTime, endTime } });
+  return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime: fromTime, endTime, index } });
 };
 
 const bookNewAppt = callback => (dispatch, getState) => {
@@ -72,9 +77,12 @@ const bookNewAppt = callback => (dispatch, getState) => {
     body,
   })
     .then((res) => {
+      const { service } = body.items[0];
+      service.description = service.name;
+      body.items[0].service = service;
       dispatch({
         type: ADD_APPOINTMENT,
-        data: { appointment: res[0] },
+        data: { appointment: body.items[0] },
       });
       dispatch(bookNewApptSuccess(callback));
     })

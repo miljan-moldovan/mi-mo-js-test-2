@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import moment from 'moment';
 
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
@@ -152,6 +153,7 @@ export const RemoveButton = ({ title, onPress }) => (
     </Text>
   </SalonTouchableOpacity>
 );
+
 export const SectionTitle = props => (
   <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={[styles.sectionTitle, props.sectionTitleStyle]}>{props.case === 'upper' ? props.value.toUpperCase() : (props.case === 'lower' ? props.value.toLowerCase() : props.value)}</Text>
@@ -325,7 +327,7 @@ export class InputDate extends React.Component {
           }}
           noIcon
           label={this.props.placeholder}
-          value={this.props.selectedDate}
+          value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format('YYYY-MM-DD') : this.props.selectedDate}
         />
         {!this.props.noIcon && (
           <SalonTouchableOpacity
@@ -476,10 +478,11 @@ export class ProviderInput extends React.Component {
   }
 
   render() {
-    const value = this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available') : '';
+    const value = this.state.selectedProvider !== null && 'name' in this.state.selectedProvider ?
+      `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available';
 
 
-    const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(!this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
+    const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(this.state.selectedProvider !== null && !this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
 
     return (
       <SalonTouchableOpacity
@@ -491,15 +494,17 @@ export class ProviderInput extends React.Component {
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
               {this.state.selectedProvider &&
-              <SalonAvatar
-                wrapperStyle={styles.providerRound}
-                width={30}
-                borderWidth={1}
-                borderColor="transparent"
-                image={{ uri: employeePhoto }}
-                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA') : ''}</Text></View>}
-              /> }
-              <Text style={[styles.inputText]}>{value}</Text>
+              <View>
+                <SalonAvatar
+                  wrapperStyle={styles.providerRound}
+                  width={30}
+                  borderWidth={1}
+                  borderColor="transparent"
+                  image={{ uri: employeePhoto }}
+                  defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA'}</Text></View>}
+                />
+                <Text style={[styles.inputText]}>{value}</Text>
+              </View>}
 
             </View>
           )}

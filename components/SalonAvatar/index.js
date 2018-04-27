@@ -98,7 +98,7 @@ export default class SalonAvatar extends React.Component {
           }}
         >
 
-          {!this.props.defaultComponent && this.state.isLoading && <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={26} color="#4D5067" type="solid" />
+          {!this.props.defaultComponent && this.state.isLoading && <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={this.state.width} color="#4D5067" type="solid" />
         }
 
 

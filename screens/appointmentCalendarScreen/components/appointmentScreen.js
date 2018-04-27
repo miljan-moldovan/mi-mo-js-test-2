@@ -51,7 +51,7 @@ export default class AppointmentScreen extends Component {
     return {
       header: (
         <ApptCalendarHeader
-          {...title}
+          title={title}
           onPressMenu={() => navigation.state.params.onPressMenu()}
           onPressTitle={() => navigation.state.params.onPressTitle()}
           onPressEllipsis={() => navigation.state.params.onPressEllipsis()}
@@ -98,6 +98,7 @@ export default class AppointmentScreen extends Component {
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
     dismissOnSelect: true,
     onChangeProvider: this.selectFilterProvider,
+    onChangeRoom: this.selectFilterRoom,
   });
 
   onCalendarCellPressed = (cellId, colData) => {
@@ -131,6 +132,8 @@ export default class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.setGridView();
   }
+
+  selectFilterRoom = room => alert(`Selected Room ${room.name}s`)
 
   render() {
     const {
@@ -193,9 +196,7 @@ export default class AppointmentScreen extends Component {
           mode={pickerMode}
           visible={this.state.visible}
           selectedDate={moment(startDate)}
-          onHide={() => {
-            this.setState({ visible: false });
-          }}
+          onHide={() => this.setState({ visible: false })}
           onDateSelected={(startDate, endDate) => {
             this.setState({ visible: false });
 
@@ -221,7 +222,7 @@ export default class AppointmentScreen extends Component {
           handlePressBook={() => {
             const callback = () => {
               this.setState({ visibleNewAppointment: false });
-              this.props.appointmentCalendarActions.getCalendarData();
+              // this.props.appointmentCalendarActions.getCalendarData();
             };
             this.props.newAppointmentActions.bookNewAppt(callback);
           }}

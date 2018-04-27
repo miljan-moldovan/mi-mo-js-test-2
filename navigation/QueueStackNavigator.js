@@ -63,15 +63,19 @@ const QueueStackNavigator = StackNavigator(
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
+      navigationOptions: { tabBarVisible: false },
     },
     ApptBookViewOptions: {
       screen: apptBookViewOptions,
+      navigationOptions: { tabBarVisible: false },
     },
     Products: {
       screen: ProductsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Services: {
       screen: ServicesScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Appointment: {
       screen: AppointmentScreen,
@@ -88,9 +92,11 @@ const QueueStackNavigator = StackNavigator(
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
+      navigationOptions: { tabBarVisible: false },
     },
     AppointmentNotes: {
       screen: AppoinmentNotes,
+      navigationOptions: { tabBarVisible: false },
     },
     AppointmentNote: {
       screen: AppointmentNoteScreen,
@@ -102,12 +108,15 @@ const QueueStackNavigator = StackNavigator(
     },
     Service: {
       screen: ModifyServiceScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Product: {
       screen: ModifyProductScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Recommendations: {
       screen: RecommendationsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     RebookDialog: {
       screen: RebookDialogScreen,
@@ -128,12 +137,15 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueDetail: {
       screen: QueueDetailScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     QueueCombine: {
       screen: QueueCombineScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ClientMerge: {
       screen: ClientMergeScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -144,9 +156,11 @@ const QueueStackNavigator = StackNavigator(
           handlePress: () => rootProps.navigation.goBack(),
         }),
       }),
+      navigationOptions: { tabBarVisible: false },
     },
     Providers: {
       screen: ProvidersScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Promotions: {
       screen: PromotionsScreen,
@@ -158,9 +172,11 @@ const QueueStackNavigator = StackNavigator(
             {...rootProps}
           />),
       }),
+      navigationOptions: { tabBarVisible: false },
     },
     Clients: {
       screen: ClientsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     NewClient: {
       screen: NewClientScreen,
@@ -172,6 +188,7 @@ const QueueStackNavigator = StackNavigator(
     },
     TurnAway: {
       screen: TurnAwayScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Settings: { screen: SettingsScreen },
   },

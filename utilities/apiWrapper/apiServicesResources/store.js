@@ -6,6 +6,16 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  getRooms: {
+    path: 'Store/Rooms',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
+  getResources: {
+    path: 'Store/Resources',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
 };
 
 export default {
