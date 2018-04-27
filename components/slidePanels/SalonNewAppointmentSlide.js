@@ -12,6 +12,7 @@ import {
   InputButton,
   InputSwitch,
   InputDivider,
+  ProviderInput,
 } from '../../components/formHelpers';
 
 const styles = StyleSheet.create({
@@ -407,12 +408,10 @@ export default class SalonNewAppointmentSlide extends React.Component {
                         iconStyle={{ color: '#115ECD' }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
-                      <InputButton
-                        style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.props.provider ? '#000000' : '#727A8F' }}
-                        onPress={this.props.handlePressProvider}
-                        label={this.props.provider ? `${this.props.provider.name} ${this.props.provider.lastName}` : 'Select a Provider'}
-                        iconStyle={{ color: '#115ECD' }}
+                      <ProviderInput
+                        noLabel
+                        navigate={this.props.navigation.navigate}
+                        onChange={this.props.handlePressProvider}
                       />,
                     ]}
                   </InputGroup>
