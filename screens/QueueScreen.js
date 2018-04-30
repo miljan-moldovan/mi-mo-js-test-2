@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
   },
   walkinButton: {
     position: 'absolute',
-    right: 12,
+    right: 10,
     top: 0,
     width: 92,
     borderWidth: 1,
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
   },
   tab: {
     height: 31,
-    width: 120,
+    width: initialLayout.width === 320 ? 100 : 120,
     // backgroundColor: 'rgba(0,255,0,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -620,12 +620,12 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     height: 32,
-    width: 240,
+    width: initialLayout.width === 320 ? 200 : 240,
     borderWidth: 1,
     borderColor: 'rgba(8,46,102,0.5)',
     borderRadius: 16,
     backgroundColor: '#115ECD',
-    marginLeft: 15,
+    marginLeft: initialLayout.width === 320 ? 10 : 12,
     marginBottom: 9,
   },
   tabQueueCounter: {

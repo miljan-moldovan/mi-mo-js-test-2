@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
   },
   weekJump: {
     backgroundColor: '#FFFFFF',
-    width: 48,
-    height: 48,
+    width: Dimensions.get('window').width === 320 ? 40 : 48,
+    height: Dimensions.get('window').width === 320 ? 40 : 48,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',

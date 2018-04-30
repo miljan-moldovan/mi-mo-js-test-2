@@ -8,6 +8,7 @@ import {
   RefreshControl,
   LayoutAnimation,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
@@ -563,7 +564,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     // width: '100%',
-    height: 94,
+    height: Dimensions.get('window').width === 320 ? 110 : 94,
     // borderBottomWidth: 1,
     // borderBottomColor: 'rgba(29,29,38,1)',
     borderRadius: 4,
@@ -585,8 +586,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 'auto',
     paddingRight: 10,
-    height: 90,
-    flex: 3.5,
+    height: Dimensions.get('window').width === 320 ? 96 : 90,
+    flex: Dimensions.get('window').width === 320 ? 3 : 3.5,
   },
   clientName: {
     fontSize: 16,
@@ -658,12 +659,12 @@ const styles = StyleSheet.create({
   },
   notArrivedContainer: {
     height: 16,
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
     flexDirection: 'row',
     position: 'absolute',
     zIndex: 99999,
-    right: 30,
+    right: Dimensions.get('window').width === 320 ? 15 : 30,
     bottom: 5,
   },
   finishedContainer: {
