@@ -230,21 +230,30 @@ export default class AppointmentScreen extends Component {
             this.props.navigation.navigate('Providers', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeProvider: provider => this.props.newAppointmentActions.setNewApptEmployee(provider),
+              onChangeProvider: (provider) => {
+                this.props.newAppointmentActions.setNewApptEmployee(provider);
+                this.setState({ visibleNewAppointment: true });
+              },
             });
           }}
           handlePressService={() => {
             this.props.navigation.navigate('Services', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeService: service => this.props.newAppointmentActions.setNewApptService(service),
+              onChangeService: (service) => {
+                this.props.newAppointmentActions.setNewApptService(service);
+                this.setState({ visibleNewAppointment: true });
+              },
             });
           }}
           handlePressClient={() => {
             this.props.navigation.navigate('ChangeClient', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeClient: client => this.props.newAppointmentActions.setNewApptClient(client),
+              onChangeClient: (client) => {
+                this.props.newAppointmentActions.setNewApptClient(client);
+                this.setState({ visibleNewAppointment: true });
+              },
             });
           }}
           handleChangeRequested={(requested) => {

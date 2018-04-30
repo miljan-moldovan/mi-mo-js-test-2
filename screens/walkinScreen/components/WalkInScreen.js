@@ -108,6 +108,7 @@ class WalkInScreen extends Component {
         serviceId: service.id,
       };
       this.props.walkInActions.postWalkinClient(params).then(() => {
+        console.log('params: ', params);
         this.saving = false;
         this.props.navigation.navigate('Main');
       });

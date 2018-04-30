@@ -176,7 +176,6 @@ const QueueStackNavigator = StackNavigator(
     },
     Clients: {
       screen: ClientsScreen,
-      navigationOptions: { tabBarVisible: false },
     },
     NewClient: {
       screen: NewClientScreen,
