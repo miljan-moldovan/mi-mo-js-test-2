@@ -237,11 +237,35 @@ export default QueueStackNavigator = StackNavigator({
   /** MODAL SCREENS GO HERE * */
   ModalServices: {
     screen: ServicesScreen,
-    navigationOptions: { tabBarVisible: false, headerMode: 'screen' },
+    navigationOptions: {
+
+      tabBarVisible: false,
+      headerMode: 'screen',
+      gesturesEnabled: false,
+    },
   },
   ModalProviders: {
     screen: ProvidersScreen,
-    navigationOptions: { tabBarVisible: false, headerMode: 'screen' },
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#115ECD',
+        paddingHorizontal: 10,
+        paddingVertical: 14,
+        paddingTop: 20,
+        borderWidth: 0,
+        shadowColor: 'transparent',
+        elevation: 0,
+        borderBottomWidth: 0,
+        justifyContent: 'center',
+      },
+      tabBarVisible: false,
+      headerMode: 'screen',
+      gesturesEnabled: false,
+    },
+  },
+  ModalClients: {
+    screen: ClientsScreen,
+    navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
   },
 }, {
   mode: 'modal', // Remember to set the root navigator to display modally.
