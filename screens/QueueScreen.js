@@ -279,7 +279,7 @@ class QueueScreen extends React.Component {
         provider: null,
       },
     });
-    navigate('Clients', {
+    navigate('ModalClients', {
       onChangeClient: this.handleChangeClient,
       headerProps: {
         title: 'Walk-in',
@@ -302,7 +302,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.client = client;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('Services', {
+    this.props.navigation.navigate('ModalServices', {
       onChangeService: this.handleChangeService,
       headerProps: {
         title: 'Walk-in',
@@ -332,7 +332,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.service = service;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('Providers', {
+    this.props.navigation.navigate('ModalProviders', {
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',

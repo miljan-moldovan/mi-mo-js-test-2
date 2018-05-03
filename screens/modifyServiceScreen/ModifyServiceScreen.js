@@ -16,7 +16,6 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
-import apiWrapper from '../../utilities/apiWrapper';
 import Icon from '../../components/UI/Icon';
 import * as actions from '../../actions/queue';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
