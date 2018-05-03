@@ -556,11 +556,21 @@ export default class AppointmentNotesScreen extends Component {
                         <View style={styles.noteHeaderLeft}>
 
                           <SalonDateTxt
-                            dateFormat="MMM. DD YYYY"
+                            dateFormat="MMM. DD"
                             value={item.enterTime}
                             valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
                             fontFamily="Roboto-Bold"
                             valueSize={12}
+                            fontWeight="500"
+                          />
+
+                          <SalonDateTxt
+                            dateFormat=" YYYY"
+                            value={item.enterTime}
+                            valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
+                            fontFamily="Roboto-Bold"
+                            valueSize={12}
+                            fontWeight="normal"
                           />
 
                           <Text style={styles.noteBy}>by</Text>

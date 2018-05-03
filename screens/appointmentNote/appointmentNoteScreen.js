@@ -239,13 +239,13 @@ class AppointmentNoteScreen extends Component {
               {[
                 <InputButton
                   style={{ flex: 1 }}
-                  labelStyle={{ color: '#110A24' }}
+                  labelStyle={{ color: '#727A8F' }}
                   onPress={this.handlePressProvider}
-                  placeholder="Added by"
-                  label={this.state.note.updatedBy}
+                  label="Added by"
+                  value={this.state.note.updatedBy}
                 >{this.props.appointmentNotesState.selectedProvider &&
                 <SalonAvatar
-                  wrapperStyle={styles.providerRound}
+                  wrapperStyle={{ marginLeft: 10 }}
                   width={30}
                   borderWidth={1}
                   borderColor="transparent"
@@ -318,12 +318,19 @@ class AppointmentNoteScreen extends Component {
               {[<InputDate
                 style={{ flex: 1 }}
                 placeholder="Expire Date"
+                noIcon={this.state.note.expiration == null}
                 onPress={(selectedDate) => {
                 const { note } = this.state;
                 note.expiration = selectedDate;
                 this.shouldSave = true;
                 this.setState({ note });
               }}
+                valueStyle={this.state.note.expiration == null ? {
+                  fontSize: 14,
+                  lineHeight: 22,
+                  color: '#727A8F',
+                  fontFamily: 'Roboto-Regular',
+                } : {}}
                 selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
               />]}
 

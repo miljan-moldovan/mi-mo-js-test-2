@@ -50,7 +50,7 @@ import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 import SettingsScreen from './../screens/SettingsScreen';
 
-const QueueStackNavigator = StackNavigator(
+const MainNavigator = StackNavigator(
   {
     Main: {
       screen: QueueScreen,
@@ -192,6 +192,7 @@ const QueueStackNavigator = StackNavigator(
     Settings: { screen: SettingsScreen },
   },
   {
+    headerMode: 'none',
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#115ECD',
@@ -225,4 +226,24 @@ const QueueStackNavigator = StackNavigator(
     },
   },
 );
-export default QueueStackNavigator;
+
+
+export default QueueStackNavigator = StackNavigator({
+  Main: {
+    screen: MainNavigator,
+    navigationOptions: { headerMode: 'none' },
+  },
+
+  /** MODAL SCREENS GO HERE * */
+  ModalServices: {
+    screen: ServicesScreen,
+    navigationOptions: { tabBarVisible: false, headerMode: 'screen' },
+  },
+  ModalProviders: {
+    screen: ProvidersScreen,
+    navigationOptions: { tabBarVisible: false, headerMode: 'screen' },
+  },
+}, {
+  mode: 'modal', // Remember to set the root navigator to display modally.
+//  headerMode: 'none', // This ensures we don't get two top bars.
+});

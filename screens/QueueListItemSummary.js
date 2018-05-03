@@ -182,7 +182,7 @@ class queueListItemSummary extends React.Component {
   }
 
   handlePressService = (service) => {
-    this.props.navigation.navigate('Services', {
+    this.props.navigation.navigate('ModalServices', {
       service,
       index: 0,
       client: this.props.appointment.client,
@@ -194,7 +194,7 @@ class queueListItemSummary extends React.Component {
   };
 
 handlePressProvider = (service) => {
-  this.props.navigation.navigate('Providers', {
+  this.props.navigation.navigate('ModalProviders', {
     index: 0,
     client: this.props.appointment.client,
     dismissOnSelect: true,

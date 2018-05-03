@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     height: 44,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
     alignItems: 'center',
     paddingLeft: 16,
@@ -22,19 +22,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#727A8F',
     fontSize: 14,
   },
   textData: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#110A24',
     fontSize: 14,
   },
   iconStyle: {
     fontSize: 20,
     color: '#727A8F',
-    marginLeft: 5,
+    marginLeft: 15,
   },
   buttonStyle: {
     alignItems: 'center',

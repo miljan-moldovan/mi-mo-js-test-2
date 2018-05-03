@@ -22,25 +22,16 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   chevronRightIcon: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#000000',
-  },
-  waitingTime: {
-    marginRight: 8,
-    alignItems: 'center',
-    backgroundColor: 'rgba(17,10,36,1)',
-    borderRadius: 4,
-    borderColor: 'transparent',
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    height: 16,
-    minWidth: 56,
-    marginBottom: 14,
+    marginTop: 2,
+    paddingHorizontal: 3,
   },
   serviceClockIcon: {
     fontSize: 12,
     color: '#7E8D98',
-    paddingRight: 7,
+    paddingRight: 3,
+    marginTop: 2,
   },
   apptLabel: {
     paddingLeft: 5,
@@ -105,7 +96,8 @@ const QueueTimeNote = (props) => {
         <Icon name="chevronRight" style={styles.chevronRightIcon} />
       </View>
       <View style={styles.serviceTimeRight}>
-        {serviceTime}{isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
+        <Text style={styles.serviceTime}>{serviceTime}</Text>
+        {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
       </View>
     </View>
   );

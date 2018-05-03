@@ -29,24 +29,61 @@ const styles = StyleSheet.create({
     flex: 9,
     backgroundColor: 'white',
   },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
   backIcon: {
     fontSize: 30,
     marginLeft: 10,
     textAlign: 'left',
     color: '#FFFFFF',
   },
+  leftButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
   rightButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-    textAlign: 'right',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -242,13 +279,12 @@ class ServicesScreen extends React.Component {
       title: item.name,
       subTitle: null,
       leftButton:
-  <SalonTouchableOpacity
-    style={{ flex: 1 }}
-    onPress={() => { this.goBack(); }}
-  >
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
+  <SalonTouchableOpacity style={styles.leftButton} onPress={() => { this.goBack(); }}>
+    <View style={styles.leftButtonContainer}>
+      <Text style={styles.leftButtonText}>
+        <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+      </Text>
+    </View>
   </SalonTouchableOpacity>,
     }, true);
     this.props.servicesActions.setShowCategoryServices(true);

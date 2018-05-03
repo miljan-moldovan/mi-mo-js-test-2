@@ -403,7 +403,14 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <ProviderInput
+                        noAvatar
                         noLabel
+                        selectedProvider={this.props.provider}
+                        placeholder="Select a Provider"
+                        placeholderStyle={{ fontSize: 16, color: '#727A8F' }}
+                        selectedStyle={{ fontSize: 16, color: 'black' }}
+                        contentStyle={{ alignItems: 'flex-start' }}
+                        iconStyle={{ color: '#115ECD' }}
                         navigate={this.props.navigation.navigate}
                         onChange={() => { this.hidePanel(); this.props.handlePressProvider(); }}
                       />,

@@ -96,19 +96,19 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
   const text = query.toLowerCase();
   // search by the client full name
   const filteredData = data.filter(({ client, services }) => {
-    if (searchClient) {
-      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-      // if this row is a match, we don't need to check providers
+  //  if (searchClient) {
+    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+    // if this row is a match, we don't need to check providers
+    if (fullName.toLowerCase().match(text)) { return true; }
+    //  }
+    //    if (searchProvider) {
+    for (let i = 0; i < services.length; i++) {
+      const { employeeFirstName, employeeLastName } = services[i];
+      const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
+      // if this provider is a match, we don't need to check other providers
       if (fullName.toLowerCase().match(text)) { return true; }
     }
-    if (searchProvider) {
-      for (let i = 0; i < services.length; i++) {
-        const { employeeFirstName, employeeLastName } = services[i];
-        const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
-        // if this provider is a match, we don't need to check other providers
-        if (fullName.toLowerCase().match(text)) { return true; }
-      }
-    }
+    //  }
     return false;
   });
   // if no match, set empty array
@@ -233,8 +233,10 @@ getLabelForItem = (item) => {
       break;
     case QUEUE_ITEM_RETURNING:
       return (
-        <View style={[styles.waitingTime, { backgroundColor: 'black' }]}>
-          <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>RETURNING</Text>
+        <View style={styles.returningContainer}>
+          <View style={[styles.waitingTime, { marginRight: 0, backgroundColor: 'black' }]}>
+            <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>RETURNING</Text>
+          </View>
         </View>
       );
     case QUEUE_ITEM_NOT_ARRIVED:
@@ -643,8 +645,9 @@ const styles = StyleSheet.create({
   },
   waitingTimeTextTop: {
     fontSize: 9,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'Roboto-Regular',
     color: '#999',
+    fontWeight: '500',
   },
   listItem: {
     height: 75,
@@ -664,7 +667,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     zIndex: 99999,
-    right: Dimensions.get('window').width === 320 ? 15 : 30,
+    right: Dimensions.get('window').width === 320 ? 0 : 15,
+    bottom: 5,
+  },
+  returningContainer: {
+    height: 16,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: Dimensions.get('window').width === 320 ? 0 : 10,
     bottom: 5,
   },
   finishedContainer: {

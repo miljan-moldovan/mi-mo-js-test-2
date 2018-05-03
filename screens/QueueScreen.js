@@ -216,7 +216,7 @@ class QueueScreen extends React.Component {
 
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <KeyboardAwareScrollView style={{ marginTop: 40 }}>
+        <KeyboardAwareScrollView>
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
@@ -244,8 +244,8 @@ class QueueScreen extends React.Component {
             {...p}
           />
         </KeyboardAwareScrollView>
-        <View style={styles.searchTypeContainer}>
-          {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
+        {/*  <View style={styles.searchTypeContainer}>
+
           <View style={styles.searchType}>
             <SalonTouchableOpacity
               style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
@@ -260,7 +260,7 @@ class QueueScreen extends React.Component {
               <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
             </SalonTouchableOpacity>
           </View>
-        </View>
+        </View> */}
       </View>
     );
   }
@@ -282,7 +282,7 @@ class QueueScreen extends React.Component {
     navigate('Clients', {
       onChangeClient: this.handleChangeClient,
       headerProps: {
-        title: 'Walking',
+        title: 'Walk-in',
         subTitle: 'step 1 of 3',
         leftButton:
   <View style={styles.backContainer}>
@@ -290,7 +290,7 @@ class QueueScreen extends React.Component {
       {Icons.angleLeft}
     </FontAwesome>
     <Text style={styles.leftButtonText}>
-            Back
+            Cancel
     </Text>
   </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
@@ -305,7 +305,7 @@ class QueueScreen extends React.Component {
     this.props.navigation.navigate('Services', {
       onChangeService: this.handleChangeService,
       headerProps: {
-        title: 'Walking',
+        title: 'Walk-in',
         subTitle: 'step 2 of 3',
         leftButton:
   <View style={styles.backContainer}>
@@ -335,7 +335,7 @@ class QueueScreen extends React.Component {
     this.props.navigation.navigate('Providers', {
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
-        title: 'Walking',
+        title: 'Walk-in',
         subTitle: 'step 3 of 3',
         leftButton:
   <View style={styles.backContainer}>

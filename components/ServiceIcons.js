@@ -9,19 +9,24 @@ import Icon from '../components/UI/Icon';
 
 const marginBottom = 5;
 
-const ServiceIcons = ({ item, groupLeaderName, ...props }) => (
-  <View style={{
-  flexDirection: props.direction ? props.direction : 'row',
-  alignItems: props.align ? props.align : 'center',
-  justifyContent: 'center',
-  }}
+const ServiceIcons = ({
+  hideInitials, item, groupLeaderName, ...props
+}) => (
+  <View style={[
+    {
+      flexDirection: props.direction ? props.direction : 'row',
+      alignItems: props.align ? props.align : 'center',
+      justifyContent: 'center',
+    },
+    props.wrapperStyle,
+  ]}
   >
 
     {item.membership ? <Star direction={props.direction} /> : null}
     {item.newGlobal ? <NewGlobal direction={props.direction} /> : null}
     {item.newLocal ? <NewLocal direction={props.direction} /> : null}
     {item.birthday ? <Birthday direction={props.direction} /> : null}
-    { item.groupId && groupLeaderName ? (<Group direction={props.direction} color={props.color} leader={item.isGroupLeader} leaderName={groupLeaderName} />) : null }
+    { item.groupId && (groupLeaderName || hideInitials) ? (<Group direction={props.direction} color={props.color} leader={item.isGroupLeader} hideInitials={hideInitials} leaderName={groupLeaderName} />) : null }
     {item.attributes && item.attributes.length ? <Tag direction={props.direction} /> : null}
 
     { /*  {<Star direction={props.direction} />}
@@ -95,7 +100,7 @@ const NewGlobal = ({ direction }) => (<View style={[styles.newClientTag, { margi
 const NewLocal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>N</Text></View>);
 const Star = ({ direction }) => (<Icon style={{ color: '#FFA300', marginRight: 3, marginBottom: direction === 'column' ? marginBottom : 0 }} type="regular" name="star" />);
 const Group = ({
-  leader, leaderName, color, direction,
+  leader, leaderName, color, direction, hideInitials,
 }) => {
   const names = leaderName.split(' ');
   color = color || { font: '#00E480', background: '#F1FFF2' };
@@ -104,9 +109,9 @@ const Group = ({
     <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background, marginBottom: direction === 'column' ? marginBottom : 0 }]}>
       <View style={styles.clientGroupLabelContainer}>
         <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="solidFree" color="black" />
-        <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>
+        {!hideInitials && <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>}
       </View>
-      { leader ? (<Text style={[styles.dollarSign, { color: color.font }]}>$</Text>) : null }
+      { leader ? (<Text style={[styles.dollarSign, { fontWeight: '500', color: '#FFFFFF', backgroundColor: color.font }]}>$</Text>) : null }
     </View>
   );
 };
