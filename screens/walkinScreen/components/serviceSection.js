@@ -160,13 +160,13 @@ class ServiceSection extends Component {
         <InputButton label={this.renderService()} onPress={this.handlePressService} />
         <InputDivider />
         <InputButton label={this.renderProvider()} onPress={this.handlePressProvider} />
-        <InputDivider />
-        <InputSwitch
+        {!this.props.provider.isFirstAvailable && <InputDivider />}
+        {!this.props.provider.isFirstAvailable && <InputSwitch
           textStyle={styles.textLabel}
           onChange={this.props.onUpdateIsProviderRequested}
           text="Provider is Requested?"
           value={this.props.isProviderRequested}
-        />
+        />}
       </InputGroup>
     );
   }

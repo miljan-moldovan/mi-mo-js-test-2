@@ -231,7 +231,7 @@ class WalkInScreen extends Component {
   render() {
     const fullName = this.getFullName();
     const email = this.state.client && this.state.client.email ? this.client.email : '';
-    const phone = this.state.client && this.state.client.phone ? this.client.phone : '';
+    const phones = this.state.client && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
     return (
       <ScrollView style={styles.container}>
         <SectionTitle value="CLIENT" />
@@ -240,7 +240,7 @@ class WalkInScreen extends Component {
           <InputDivider />
           <InputLabel label="Email" value={email} />
           <InputDivider />
-          <InputLabel label="Phone" value={phone} />
+          <InputLabel label="Phone" value={phones} />
         </InputGroup>
         <SectionTitle value="SERVICE AND PROVIDER" />
         <ServiceSection
