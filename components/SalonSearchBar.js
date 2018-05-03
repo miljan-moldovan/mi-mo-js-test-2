@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// import FontAwesome, { Icons } from 'react-native-fontawesome';
+import Icon from './../components/UI/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
@@ -51,9 +52,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   crossIcon: {
-    fontSize: 15,
+    fontSize: 12,
     marginRight: 10,
     textAlign: 'center',
+    fontWeight: '700',
   },
   crossIconButton: {
     flexDirection: 'column',
@@ -102,10 +104,11 @@ class SalonSearchBar extends Component {
           <View style={styles.searchBarItems}>
             {this.props.searchIconPosition === 'left' &&
 
-            <FontAwesome style={[styles.searchIconLeft,
+            <Icon
+              style={[styles.searchIconLeft,
             { color: this.props.iconsColor }]}
-            >{Icons.search}
-            </FontAwesome>
+              name="search"
+            />
 
 
             }
@@ -121,10 +124,12 @@ class SalonSearchBar extends Component {
             />
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
 
-              <FontAwesome style={[styles.searchIconRight,
+              <Icon
+                style={[styles.searchIconRight,
                             { color: this.props.iconsColor }]}
-              >{Icons.search}
-              </FontAwesome>
+
+                name="search"
+              />
 
             }
 
@@ -141,10 +146,11 @@ class SalonSearchBar extends Component {
                     }}
                 >
 
-                  <FontAwesome style={[styles.crossIcon,
+                  <Icon
+                    style={[styles.crossIcon,
                     { color: this.props.iconsColor }]}
-                  >{Icons.timesCircle}
-                  </FontAwesome>
+                    name="timesCircle"
+                  />
 
                 </SalonTouchableHighlight>
 

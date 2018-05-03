@@ -3,7 +3,7 @@ import { Text, Animated, Dimensions, View, StyleSheet } from 'react-native';
 import moment from 'moment';
 
 import Icon from './../UI/Icon';
-import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
+import ModalBox from './ModalBox';
 import SalonFlatPicker from '../SalonFlatPicker';
 
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
@@ -12,6 +12,7 @@ import {
   InputButton,
   InputSwitch,
   InputDivider,
+  ProviderInput,
 } from '../../components/formHelpers';
 
 const styles = StyleSheet.create({
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     marginHorizontal: 16,
-    width: 382,
+    width: '100%',
     height: 640,
   },
   panelBlurredSection: {
@@ -295,17 +296,12 @@ export default class SalonNewAppointmentSlide extends React.Component {
       service: 'selectedService' in this.props ? this.props.selectedService : null,
       provider: 'selectedProvider' in this.props ? this.props.selectedProvider : null,
     });
-
-    if (nextProps.visible) {
-      this._panel.transitionTo(this.props.draggableRange.top, () => {});
-    }
   }
 
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => {
     this.setState({ visible: false });
-    this._panel.transitionTo(this.props.draggableRange.bottom, () => {});
     this.props.onHide();
   }
 
@@ -327,13 +323,10 @@ export default class SalonNewAppointmentSlide extends React.Component {
 
   render() {
     return (
-      <SalonSlidingUpPanel
-        visible={this.props.visible}
-        showBackdrop={this.state.visible}
-        onDragEnd={() => this.setState({ visible: false })}
-        ref={(c) => { this._panel = c; }}
-        draggableRange={this.props.draggableRange}
-        onDrag={v => this._draggedValue.setValue(v)}
+      <ModalBox
+        coverScreen
+        isOpen={this.props.visible}
+        onClosingState={() => this.setState({ visible: false })}
       >
         <View style={styles.panel}>
           <View style={styles.panelBlurredSection} />
@@ -394,7 +387,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       <InputButton
                         style={{ height: 44 }}
                         labelStyle={{ fontSize: 16, color: this.props.client ? '#000000' : '#727A8F' }}
-                        onPress={this.props.handlePressClient}
+                        // onPress={this.props.handlePressClient}
+                        onPress={() => { this.hidePanel(); this.props.handlePressClient(); }}
                         label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
@@ -402,17 +396,23 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       <InputButton
                         style={{ height: 44 }}
                         labelStyle={{ fontSize: 16, color: this.props.service ? '#000000' : '#727A8F' }}
-                        onPress={this.props.handlePressService}
+                      //  onPress={this.props.handlePressService}
+                        onPress={() => { this.hidePanel(); this.props.handlePressService(); }}
                         label={this.props.service ? `${this.props.service.name}` : 'Select a Service'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
-                      <InputButton
-                        style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.props.provider ? '#000000' : '#727A8F' }}
-                        onPress={this.props.handlePressProvider}
-                        label={this.props.provider ? `${this.props.provider.name} ${this.props.provider.lastName}` : 'Select a Provider'}
+                      <ProviderInput
+                        noAvatar
+                        noLabel
+                        selectedProvider={this.props.provider}
+                        placeholder="Select a Provider"
+                        placeholderStyle={{ fontSize: 16, color: '#727A8F' }}
+                        selectedStyle={{ fontSize: 16, color: 'black' }}
+                        contentStyle={{ alignItems: 'flex-start' }}
                         iconStyle={{ color: '#115ECD' }}
+                        navigate={this.props.navigation.navigate}
+                        onChange={() => { this.hidePanel(); this.props.handlePressProvider(); }}
                       />,
                     ]}
                   </InputGroup>
@@ -601,6 +601,6 @@ export default class SalonNewAppointmentSlide extends React.Component {
             <View style={{ height: 49 }} />
           </View>
         </View>
-      </SalonSlidingUpPanel>);
+      </ModalBox>);
   }
 }

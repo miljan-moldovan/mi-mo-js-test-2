@@ -316,7 +316,13 @@ class ProviderScreen extends React.Component {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
             <SalonTouchableOpacity
-              onPress={() => this._handleOnChangeProvider({ isFirstAvailable: true })}
+              onPress={() => this._handleOnChangeProvider({
+                id: 0,
+                isFirstAvailable: true,
+                name: 'First',
+                lastName: 'Available',
+
+               })}
               style={styles.itemRow}
               key={Math.random()}
             >

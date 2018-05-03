@@ -15,7 +15,7 @@ import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } fro
 import CircularCountdown from '../../../../components/CircularCountdown';
 import ServiceIcons from '../../../../components/ServiceIcons';
 import SalonCard from '../../../../components/SalonCard';
-import { InputButton } from '../../../../components/formHelpers';
+import { InputButton, SectionDivider } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import apiWrapper from '../../../../utilities/apiWrapper';
@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   circularCountdown: {
-    marginRight: 15,
+    marginRight: 5,
+    marginTop: 3,
     alignItems: 'center',
   },
   waitingTimeTextTop: {
@@ -71,10 +72,11 @@ const styles = StyleSheet.create({
   infoContainer: {
     backgroundColor: '#e2e9f1',
     borderBottomWidth: 1,
-    borderBottomColor: '#d3d9e0',
+    borderBottomColor: '#C0C1C6',
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingVertical: 19,
+    paddingBottom: 19,
+    paddingTop: 13,
     minHeight: 123,
   },
   infoTitleText: {
@@ -84,13 +86,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
   },
   content: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
   },
   titleText: {
-    marginTop: 24,
+    marginTop: 23,
     color: '#4D5067',
     fontSize: 14,
     lineHeight: 18,
+    marginLeft: 8,
+    marginBottom: 5,
     fontFamily: 'Roboto-Medium',
   },
   serviceTitle: {
@@ -128,6 +132,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#110A24',
     fontFamily: 'Roboto-Regular',
+    marginLeft: 5,
   },
   timeCaretIcon: {
     fontSize: 12,
@@ -145,7 +150,7 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 11,
     lineHeight: 16,
-    color: '#2F3142',
+    color: '#C0C1C5',
     fontFamily: 'Roboto-Medium',
   },
   totalAmount: {
@@ -166,11 +171,10 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   bottomButtonText: {
+    fontFamily: 'Roboto-Medium',
     fontSize: 10,
-    lineHeight: 11,
-    marginTop: 7,
-    color: 'white',
-    fontFamily: 'Roboto-Light',
+    lineHeight: 10,
+    marginTop: 8,
   },
   apptLabel: {
     paddingLeft: 5,
@@ -236,7 +240,7 @@ const ServiceCard = (props) => {
     <SalonCard
       backgroundColor="white"
       containerStyles={{ marginHorizontal: 0 }}
-      bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
+      bodyStyles={{ paddingHorizontal: 8, flexDirection: 'column', paddingVertical: 10 }}
       bodyChildren={[
         <SalonTouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
           <View key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }}>
@@ -245,7 +249,7 @@ const ServiceCard = (props) => {
             </Text>
             {props.service.promoId > 0
           ? (
-            <View>
+            <View style={{ flexDirection: 'row' }}>
               <Text style={[styles.price, styles.lineThrough]}>{`$${props.service.price}`}</Text>
               <Text style={[styles.price, { marginLeft: 5, color: '#FFA300' }]}>$20</Text>
             </View>
@@ -298,7 +302,7 @@ const ProductCard = props => (
   <SalonCard
     backgroundColor="white"
     containerStyles={{ marginHorizontal: 0 }}
-    bodyStyles={{ paddingVertical: 10 }}
+    bodyStyles={{ paddingHorizontal: 8, paddingVertical: 10 }}
     bodyChildren={[
       <SalonTouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }} onPress={props.onPress}>
         <View key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }}>
@@ -364,7 +368,8 @@ export const AddButton = props => (
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      padding: 12,
+      paddingHorizontal: 12,
+      paddingTop: 12,
     }}
   >
     <CircularIcon style={props.iconStyle} />
@@ -382,8 +387,8 @@ const BottomButton = props => (
     onPress={props.onPress}
     disabled={props.disabled}
   >
-    <FontAwesome style={styles.bottomButtonIcon}>{Icons[props.icon]}</FontAwesome>
-    <Text style={styles.bottomButtonText}>{props.title}</Text>
+    <Icon style={{ marginTop: 2 }} name={props.icon} size={15} color={props.disabled ? '#4D5067' : '#FFFFFF'} type="solid" />
+    <Text style={[styles.bottomButtonText, { color: props.disabled ? '#4D5067' : '#FFFFFF' }]}>{props.title}</Text>
   </SalonTouchableOpacity>
 );
 
@@ -449,7 +454,7 @@ class AppointmentDetails extends React.Component {
 
         return (
           <CircularCountdown
-            size={58}
+            size={50}
             estimatedTime={progressMaxMinutes}
             processTime={processMinutes}
             itemStatus={item.status}
@@ -599,9 +604,9 @@ class AppointmentDetails extends React.Component {
           <View style={styles.infoContainer}>
             <View style={{ flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
               <Text style={styles.infoTitleText}>Queue Appointment</Text>
-              <QueueTimeNote item={appointment} />
+              <QueueTimeNote containerStyles={{ marginTop: 3 }} item={appointment} />
               <View style={{ alignSelf: 'flex-start' }}>
-                <ServiceIcons align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
+                <ServiceIcons hideInitials wrapperStyle={{ marginTop: 6 }} align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -613,7 +618,7 @@ class AppointmentDetails extends React.Component {
             <SalonCard
               backgroundColor="white"
               containerStyles={{ marginHorizontal: 0 }}
-              bodyStyles={{ paddingVertical: 0 }}
+              bodyStyles={{ paddingHorizontal: 8, paddingVertical: 0 }}
               bodyChildren={[
                 <InputButton
                   key={Math.random()}
@@ -646,24 +651,41 @@ class AppointmentDetails extends React.Component {
               />
             ))}
             <AddButton onPress={this.handleAddProduct} title="Add Product" />
-            <View style={{ alignSelf: 'stretch' }}>
+            <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>
               <InputButton
                 style={{
-                  paddingHorizontal: 5,
-                  paddingVertical: 15,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#C0C1C6',
+              //    marginTop: 20,
+                  paddingTop: 22,
+                  paddingRight: 5,
+                  // borderBottomWidth: StyleSheet.hairlineWidth,
+                  // borderBottomColor: '#C0C1C6',
+                }}
+                iconStyle={{
+                  fontSize: 22,
+                  color: '#727A8F',
+                  paddingTop: 12,
+                }}
+                labelStyle={{
+                  color: '#4D5067',
+                  fontSize: 14,
+                  fontWeight: '500',
                 }}
                 label="Recommendations"
                 onPress={() => {
                   this.props.navigation.navigate('Recommendations');
                 }}
               />
+              <SectionDivider style={{
+                borderBottomWidth: StyleSheet.hairlineWidth,
+                borderBottomColor: '#C0C1C6',
+              }}
+              />
             </View>
             <View style={{
               flexDirection: 'row',
               marginTop: 23,
               marginBottom: 15,
+              paddingHorizontal: 8,
               justifyContent: 'space-between',
             }}
             >

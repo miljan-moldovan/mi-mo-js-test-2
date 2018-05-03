@@ -277,7 +277,7 @@ renderBtnContainer = () => {
       <SalonTouchableOpacity onPress={this.props.onPressSummary.toWaiting} disabled={!isActiveWaiting}>
         <View style={styles.btnGroup}>
           <View style={isActiveWaiting ? styles.btnBottom : [styles.btnBottom, styles.btnDisabled]}>
-            <Icon name="hourglassHalf" size={16} color="#fff" type="solidFree" />
+            <Icon name="hourglassHalf" size={16} color="#fff" type="solid" />
           </View>
           <Text style={styles.btnbottomText}>To Waiting</Text>
         </View>
@@ -285,7 +285,7 @@ renderBtnContainer = () => {
       <SalonTouchableOpacity onPress={this.props.onPressSummary.rebook}>
         <View style={styles.btnGroup}>
           <View style={styles.btnBottom}>
-            <Icon name="undo" size={16} color="#fff" type="solidFree" />
+            <Icon name="undo" size={16} color="#fff" type="solid" />
           </View>
           <Text style={styles.btnbottomText}>Rebook</Text>
         </View>
@@ -305,7 +305,7 @@ renderBtnContainer = () => {
       >
         <View style={styles.btnGroup}>
           <View style={styles.btnBottom}>
-            <Icon name="checkSquare" size={16} color="#fff" type="solidFree" />
+            <Icon name="checkSquare" size={16} color="#fff" type="solid" />
           </View>
           <Text style={styles.btnbottomText}>{isActiveFinish ? 'Finish' : 'Undo finish'}</Text>
         </View>
@@ -313,7 +313,7 @@ renderBtnContainer = () => {
       <SalonTouchableOpacity onPress={this.props.onPressSummary.checkout}>
         <View style={styles.btnGroup}>
           <View style={styles.btnBottom}>
-            <Icon name="dollar" size={16} color="#fff" type="solidFree" />
+            <Icon name="dollar" size={16} color="#fff" type="solid" />
           </View>
           <Text style={styles.btnbottomText}>Checkout</Text>
         </View>

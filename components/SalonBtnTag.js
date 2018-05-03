@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
-import SalonIcon from './../components/SalonIcon';
+import Icon from './../components/UI/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
@@ -20,8 +20,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   icon: {
-    width: 10,
-    height: 13,
     marginLeft: 5,
     paddingTop: 1,
     resizeMode: 'contain',
@@ -62,10 +60,10 @@ class salonBtnTag extends React.Component {
   }]}
         >
           {this.state.tagStyle.icon &&
-          <SalonIcon
-            size={this.props.iconSize}
-            icon={this.state.tagStyle.icon}
-            style={[styles.icon, { tintColor: this.state.tagStyle.iconColor }]}
+          <Icon
+            size={this.props.iconSize ? this.props.iconSize : this.state.tagStyle.iconSize}
+            name={this.state.tagStyle.icon}
+            style={[styles.icon, { color: this.state.tagStyle.iconColor }]}
           />
     }
 
@@ -101,18 +99,20 @@ salonBtnTag.propTypes = {
 salonBtnTag.defaultProps = {
   valueSize: 14,
   tagHeight: 24,
-  iconSize: 14,
+  iconSize: null,
   activeStyle: {
-    icon: 'check',
-    iconColor: '#FFFFFF',
     backgroundColor: '#1DBF12',
     valueColor: '#FFFFFF',
+    iconColor: '#FFFFFF',
+    icon: 'check',
+    iconSize: 10,
   },
   inactiveStyle: {
-    icon: 'unchecked',
-    iconColor: '#727A8F',
     backgroundColor: '#FFFFFF',
     valueColor: '#727A8F',
+    icon: 'square',
+    iconColor: '#727A8F',
+    iconSize: 15,
   },
   onPress: () => {},
 };

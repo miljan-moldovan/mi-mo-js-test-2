@@ -2,6 +2,7 @@ import moment from 'moment';
 import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import apiWrapper from '../../../utilities/apiWrapper';
 
+export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
 export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
 export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_VIEW_SUCCESS';
@@ -11,6 +12,11 @@ export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER'
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
+
+const addAppointment = appointment => ({
+  type: ADD_APPOINTMENT,
+  data: { appointment },
+});
 
 const toTimeStamp = time => moment(time, 'HH:mm').unix();
 
@@ -47,12 +53,16 @@ const setGridAllViewSuccess = (employees, appointments, availability) => {
   };
   return {
     type: SET_GRID_ALL_VIEW_SUCCESS,
-    data: { employees, appointments, apptGridSettings, availability },
+    data: {
+      employees, appointments, apptGridSettings, availability,
+    },
   };
 };
 
 const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSettings, startDate, pickerMode) => {
-  const { minStartTime, maxEndTime, weeklySchedule, step } = apptGridSettings;
+  const {
+    minStartTime, maxEndTime, weeklySchedule, step,
+  } = apptGridSettings;
   let numOfRow = 0;
   const schedule = weeklySchedule[startDate.format('E') - 1];
   switch (pickerMode) {
@@ -74,7 +84,9 @@ const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSetti
 };
 
 const reloadGridRelatedStuff = () => (dispatch, getState) => {
-  const { selectedProvider, startDate, endDate, pickerMode, apptGridSettings } = getState().appointmentScreenReducer;
+  const {
+    selectedProvider, startDate, endDate, pickerMode, apptGridSettings,
+  } = getState().appointmentScreenReducer;
   const typeView = selectedProvider === 'all' ? selectedProvider : pickerMode;
   const date = startDate.format('YYYY-MM-DD');
   switch (typeView) {
@@ -83,25 +95,25 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         apiWrapper.doRequest('getAppointmentBookEmployees', {
           path: {
             date,
-          }
+          },
         }),
         apiWrapper.doRequest('getAppointmentsByDate', {
           path: {
             date,
-          }
+          },
         }),
         apiWrapper.doRequest('getAppointmentBookAvailability', {
           path: {
             date,
-          }
-        })
+          },
+        }),
       ])
         .then(([employees, appointments, availabilityItem]) => {
           const employeesAppointment = orderBy(employees, 'appointmentOrder');
           const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
           dispatch(setGridAllViewSuccess(
             employeesAppointment,
-            orderedAppointments, availabilityItem.timeSlots
+            orderedAppointments, availabilityItem.timeSlots,
           ));
         })
         .catch((ex) => {
@@ -210,7 +222,7 @@ const setScheduleDateRange = () => (dispatch, getState) => {
     dates.push(moment(moment(startDate).add(i, 'day')));
   }
   dispatch({ type: SET_DATE_RANGE, data: { dates } });
-  //return dispatch(getCalendarData());
+  // return dispatch(getCalendarData());
 };
 
 const setProviderScheduleDates = (startDate, endDate) => (dispatch) => {
@@ -263,17 +275,24 @@ const initialState = {
 export default function appointmentScreenReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case ADD_APPOINTMENT:
+      const { appointments } = state;
+      appointments.push(data.appointment);
+      return {
+        ...state,
+        appointments,
+      };
     case SET_WEEKLY_SCHEDULE_SUCCESS:
       return {
         ...state,
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
-        isLoadingSchedule: false
-      }
+        isLoadingSchedule: false,
+      };
     case SET_WEEKLY_SCHEDULE:
       return {
         ...state,
-        isLoadingSchedule: true
-      }
+        isLoadingSchedule: true,
+      };
     case SET_SELECTED_PROVIDER:
       return {
         ...state,
@@ -301,6 +320,8 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: true,
       };
     case SET_GRID_ALL_VIEW_SUCCESS:
+      console.log('niggas', data);
+
       return {
         ...state,
         isLoading: false,
@@ -308,7 +329,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
         providers: data.employees,
         appointments: data.appointments,
-        availability: data.availability
+        availability: data.availability,
       };
     case SET_GRID_DAY_WEEK_VIEW_SUCCESS:
       return {
@@ -317,7 +338,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         error: null,
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
         appointments: data.appointments,
-        providerSchedule: data.providerSchedule
+        providerSchedule: data.providerSchedule,
       };
     default:
       return state;

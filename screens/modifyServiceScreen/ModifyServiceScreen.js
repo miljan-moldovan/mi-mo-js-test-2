@@ -165,12 +165,12 @@ export default class ModifyServiceScreen extends React.Component {
               });
             }}
           />
-          <InputDivider />
-          <InputSwitch
+          {!this.state.selectedProvider.isFirstAvailable && <InputDivider />}
+          {!this.state.selectedProvider.isFirstAvailable && <InputSwitch
             value={this.state.providerRequested}
             onChange={providerRequested => this.setState({ providerRequested })}
             text="Provider is requested?"
-          />
+          />}
         </InputGroup>
         <SectionDivider />
         <InputGroup>

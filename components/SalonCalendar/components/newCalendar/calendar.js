@@ -69,7 +69,7 @@ export default class Calendar extends Component {
       appointments,
       selectedProvider,
       displayMode,
-      startDate
+      startDate,
     } = nextProps;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.startTime = apptGridSettings.weeklySchedule[startDate.format('E') - 1].start1;
@@ -150,7 +150,9 @@ export default class Calendar extends Component {
   }
 
   renderCards = () => {
-    const { appointments, selectedProvider, displayMode, startDate } = this.props;
+    const {
+      appointments, selectedProvider, displayMode, startDate,
+    } = this.props;
     if (appointments) {
       const isAllProviderView = selectedProvider === 'all';
       if (!isAllProviderView && displayMode === 'day') {
@@ -164,7 +166,9 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments } = this.props;
+    const {
+      apptGridSettings, headerData, selectedProvider, displayMode, appointments,
+    } = this.props;
     const { calendarMeasure, calendarOffset } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(this.startTime, 'HH:mm');
@@ -193,7 +197,9 @@ export default class Calendar extends Component {
   }
 
   render() {
-    const { headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability } = this.props;
+    const {
+      headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability,
+    } = this.props;
     const isDate = selectedProvider !== 'all';
     const showHeader = displayMode === 'week' || selectedProvider === 'all';
     const { isScrollEnabled } = this.state;
@@ -234,7 +240,7 @@ export default class Calendar extends Component {
           </ScrollViewChild>
           <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
             <TimeColumn schedule={this.schedule} />
-            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime}/>
+            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime} />
           </ScrollViewChild>
           { showHeader ?
             <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>

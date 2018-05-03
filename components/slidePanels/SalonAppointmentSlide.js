@@ -3,9 +3,7 @@ import { ScrollView, Text, Animated, View, StyleSheet } from 'react-native';
 import Icon from './../UI/Icon';
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
 
-
-import SlidingUpPanel from 'rn-sliding-up-panel';
-import Modal from 'react-native-modal';
+import ModalBox from './ModalBox';
 
 import {
   InputGroup,
@@ -308,256 +306,251 @@ export default class SalonAppointmentSlide extends React.Component {
 
   render() {
     return (
-      <Modal
-        isVisible={this.state.visible}
-        style={styles.modal}
+      <ModalBox
+        isOpen={this.props.visible}
+        coverScreen
+        onClosingState={() => this.hidePanel()}
       >
-        <SlidingUpPanel
-          showBackdrop={false}
-          visible={this.state.visible}
-          style={styles.slide}
-          onRequestClose={() => this.setState({ visible: false })}
-          allowDragging={false}
-        >
-          <View style={styles.panel} key={Math.random()}>
-            <View style={styles.panelBlurredSection} />
-            <View style={styles.panelContainer}>
-              <SalonTouchableOpacity style={styles.panelTopIcon} onPress={() => this.setState({ visible: false })}>
-                <Icon name="minus" size={45} color="#CCCCCC" type="solid" />
-              </SalonTouchableOpacity>
-              <View style={styles.panelTop}>
-                <View style={[styles.panelTopLine, { flex: 1 }]}>
-                  <View style={styles.panelTopLineLeft}>
-                    <Text style={styles.panelTopName}>Francis Perci</Text>
-                    <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="solid" />
-                  </View>
-                  <View style={styles.panelTopLineRight}>
-                    <SalonTouchableOpacity onPress={() => this.setState({ visible: false })}>
-                      <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
-                    </SalonTouchableOpacity>
-                  </View>
-                </View>
-                <View style={[styles.panelTopLine, { flex: 1 }]}>
-                  <View style={styles.panelTopLineLeft}>
-                    <Text style={styles.panelTopService}>Pedicure</Text>
-                  </View>
-                </View>
 
-                <View style={[styles.panelTopLine, { flex: 1 }]}>
-                  <View style={styles.panelTopLineLeft}>
-                    <Icon style={{ paddingTop: 4 }} name="clockO" size={12} color="#AAB3BA" type="solid" />
-                    <Text style={styles.panelTopTimeText}>
-                      {'11:00 AM > 11:15 AM'}
-                    </Text>
-                  </View>
+        <View style={styles.panel} key={Math.random()}>
+          <View style={styles.panelBlurredSection} />
+          <View style={styles.panelContainer}>
+            <SalonTouchableOpacity style={styles.panelTopIcon} onPress={() => this.setState({ visible: false })}>
+              <Icon name="minus" size={45} color="#CCCCCC" type="solid" />
+            </SalonTouchableOpacity>
+            <View style={styles.panelTop}>
+              <View style={[styles.panelTopLine, { flex: 1 }]}>
+                <View style={styles.panelTopLineLeft}>
+                  <Text style={styles.panelTopName}>Francis Perci</Text>
+                  <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="solid" />
                 </View>
-
-                <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-                  <View style={styles.panelTopLineLeft}>
-                    <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
-                  </View>
+                <View style={styles.panelTopLineRight}>
+                  <SalonTouchableOpacity onPress={() => this.setState({ visible: false })}>
+                    <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
+                  </SalonTouchableOpacity>
                 </View>
-
-                <View style={[styles.panelTopLine, { alignItems: 'center', height: 25, backgroundColor: '#F1F1F1' }]}>
-                  <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
-                    <Text style={styles.panelTopRemarks}>Text of remarks goes here</Text>
-                  </View>
+              </View>
+              <View style={[styles.panelTopLine, { flex: 1 }]}>
+                <View style={styles.panelTopLineLeft}>
+                  <Text style={styles.panelTopService}>Pedicure</Text>
                 </View>
               </View>
 
-              <View style={{ height: 600, backgroundColor: '#FFFFFF' }}>
-                <ScrollView >
-                  <SalonTouchableOpacity activeOpacity={1}>
-                    <View style={styles.panelMiddle}>
-                      <View style={styles.panelIcons}>
-                        <View style={styles.panelIcon}>
-                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                            <Icon name="check" size={18} color="#FFFFFF" type="solid" />
-                          </SalonTouchableOpacity>
-                          <Text style={styles.panelIconText}>Check-In</Text>
-                        </View>
+              <View style={[styles.panelTopLine, { flex: 1 }]}>
+                <View style={styles.panelTopLineLeft}>
+                  <Icon style={{ paddingTop: 4 }} name="clockO" size={12} color="#AAB3BA" type="solid" />
+                  <Text style={styles.panelTopTimeText}>
+                    {'11:00 AM > 11:15 AM'}
+                  </Text>
+                </View>
+              </View>
 
-                        <View style={styles.panelIcon}>
-                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                            <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
-                          </SalonTouchableOpacity>
-                          <Text style={styles.panelIconText}>Check-out</Text>
-                        </View>
+              <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+                <View style={styles.panelTopLineLeft}>
+                  <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+                </View>
+              </View>
 
-                        <View style={styles.panelIcon}>
-                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                            <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+              <View style={[styles.panelTopLine, { alignItems: 'center', height: 25, backgroundColor: '#F1F1F1' }]}>
+                <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+                  <Text style={styles.panelTopRemarks}>Text of remarks goes here</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={{ height: 600, backgroundColor: '#FFFFFF' }}>
+              <ScrollView >
+                <SalonTouchableOpacity activeOpacity={1}>
+                  <View style={styles.panelMiddle}>
+                    <View style={styles.panelIcons}>
+                      <View style={styles.panelIcon}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                        </SalonTouchableOpacity>
+                        <Text style={styles.panelIconText}>Check-In</Text>
+                      </View>
+
+                      <View style={styles.panelIcon}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+                        </SalonTouchableOpacity>
+                        <Text style={styles.panelIconText}>Check-out</Text>
+                      </View>
+
+                      <View style={styles.panelIcon}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+                          <View style={styles.plusIconContainer}>
+                            <Icon
+                              style={styles.subIcon}
+                              name="plus"
+                              size={9}
+                              color="#FFFFFF"
+                              type="solid"
+                            />
+                          </View>
+                        </SalonTouchableOpacity>
+                        <Text style={styles.panelIconText}>Cancel Appt.</Text>
+                      </View>
+
+                      <View style={styles.panelIcon}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                          <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+                        </SalonTouchableOpacity>
+                        <Text style={styles.panelIconText}>Modifiy</Text>
+                      </View>
+                    </View>
+                    <View style={styles.panelInfo}>
+                      <View style={[styles.panelInfoLine, { paddingTop: 5 }]}>
+                        <Text style={styles.panelInfoTitle}>BOOKED</Text>
+                        <Text style={styles.panelInfoText}>Womans haircut with Susan A. on 04/04 at 9AM</Text>
+                        <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
+                      </View>
+
+                      <View style={styles.panelInfoLine}>
+                        <Text style={styles.panelInfoTitle}>MODIFIED</Text>
+                        <Text style={styles.panelInfoText}>Beard trim with Susan A. on 04/04 at 9AM</Text>
+                        <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
+                      </View>
+
+                      <View style={styles.panelInfoLine}>
+                        <Text style={styles.panelInfoTitle}>MODIFIED</Text>
+                        <Text style={styles.panelInfoText}>Womans haircut with Susan A. on 04/04 at 9AM</Text>
+                        <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
+                      </View>
+
+                    </View>
+                    <SalonTouchableOpacity style={styles.panelInfoShowMore} onPress={() => { alert('Not implemented'); }}>
+                      <Text style={styles.panelInfoShowMoreText}>SHOW MORE</Text>
+                    </SalonTouchableOpacity>
+                  </View>
+                  <View style={styles.panelBottom}>
+                    <InputGroup
+                      style={styles.otherOptionsGroup}
+                    >
+                      {[
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="New Appointment"
+                        >
+                          {[<View style={styles.iconContainer}>
+                            <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
                             <View style={styles.plusIconContainer}>
                               <Icon
                                 style={styles.subIcon}
                                 name="plus"
                                 size={9}
-                                color="#FFFFFF"
+                                color="#115ECD"
                                 type="solid"
                               />
                             </View>
-                          </SalonTouchableOpacity>
-                          <Text style={styles.panelIconText}>Cancel Appt.</Text>
-                        </View>
+                          </View>]}
+                        </InputButton>,
 
-                        <View style={styles.panelIcon}>
-                          <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                            <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
-                          </SalonTouchableOpacity>
-                          <Text style={styles.panelIconText}>Modifiy</Text>
-                        </View>
-                      </View>
-                      <View style={styles.panelInfo}>
-                        <View style={[styles.panelInfoLine, { paddingTop: 5 }]}>
-                          <Text style={styles.panelInfoTitle}>BOOKED</Text>
-                          <Text style={styles.panelInfoText}>Womans haircut with Susan A. on 04/04 at 9AM</Text>
-                          <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
-                        </View>
-
-                        <View style={styles.panelInfoLine}>
-                          <Text style={styles.panelInfoTitle}>MODIFIED</Text>
-                          <Text style={styles.panelInfoText}>Beard trim with Susan A. on 04/04 at 9AM</Text>
-                          <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
-                        </View>
-
-                        <View style={styles.panelInfoLine}>
-                          <Text style={styles.panelInfoTitle}>MODIFIED</Text>
-                          <Text style={styles.panelInfoText}>Womans haircut with Susan A. on 04/04 at 9AM</Text>
-                          <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
-                        </View>
-
-                      </View>
-                      <SalonTouchableOpacity style={styles.panelInfoShowMore} onPress={() => { alert('Not implemented'); }}>
-                        <Text style={styles.panelInfoShowMoreText}>SHOW MORE</Text>
-                      </SalonTouchableOpacity>
-                    </View>
-                    <View style={styles.panelBottom}>
-                      <InputGroup
-                        style={styles.otherOptionsGroup}
-                      >
-                        {[
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="New Appointment"
-                          >
-                            {[<View style={styles.iconContainer}>
-                              <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-                              <View style={styles.plusIconContainer}>
-                                <Icon
-                                  style={styles.subIcon}
-                                  name="plus"
-                                  size={9}
-                                  color="#115ECD"
-                                  type="solid"
-                                />
-                              </View>
-                              </View>]}
-                          </InputButton>,
-
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="Rebook Appointment"
-                          >
-                            {[<View style={styles.iconContainer}><Icon name="undo" size={18} color="#115ECD" type="solid" />
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="Rebook Appointment"
+                        >
+                          {[<View style={styles.iconContainer}><Icon name="undo" size={18} color="#115ECD" type="solid" />
                             </View>]}
-                          </InputButton>,
+                        </InputButton>,
                         ]}
-                      </InputGroup>
-                    </View>
+                    </InputGroup>
+                  </View>
 
-                    <View style={styles.panelBottom}>
-                      <InputGroup
-                        style={styles.otherOptionsGroup}
-                      >
-                        {[
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="Edit Remarks"
-                          >
-                            {[<View style={styles.iconContainer}><Icon name="edit" size={18} color="#115ECD" type="solid" />
-                              </View>]}
-                          </InputButton>,
+                  <View style={styles.panelBottom}>
+                    <InputGroup
+                      style={styles.otherOptionsGroup}
+                    >
+                      {[
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="Edit Remarks"
+                        >
+                          {[<View style={styles.iconContainer}><Icon name="edit" size={18} color="#115ECD" type="solid" />
+                          </View>]}
+                        </InputButton>,
 
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="Show Apps. (today.future)"
-                          >
-                            {[<View style={styles.iconContainer}>
-                              <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-                              <View style={styles.plusIconContainer}>
-                                <Icon
-                                  style={styles.subIcon}
-                                  name="search"
-                                  size={9}
-                                  color="#115ECD"
-                                  type="solid"
-                                />
-                              </View>
-                              </View>]}
-                          </InputButton>,
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="Show Apps. (today.future)"
+                        >
+                          {[<View style={styles.iconContainer}>
+                            <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
+                            <View style={styles.plusIconContainer}>
+                              <Icon
+                                style={styles.subIcon}
+                                name="search"
+                                size={9}
+                                color="#115ECD"
+                                type="solid"
+                              />
+                            </View>
+                          </View>]}
+                        </InputButton>,
                         ]}
-                      </InputGroup>
-                    </View>
+                    </InputGroup>
+                  </View>
 
 
-                    <View style={[styles.panelBottom, { height: 201 }]}>
-                      <InputGroup
-                        style={styles.otherOptionsGroup}
-                      >
-                        {[
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="Email Client"
-                          >
-                            {[<View style={styles.iconContainer}><Icon name="envelope" size={18} color="#115ECD" type="solid" />
-                              </View>]}
-                          </InputButton>,
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="SMS Client"
-                          >
-                            {[<View style={styles.iconContainer}><Icon name="comments" size={18} color="#115ECD" type="solid" />
-                              </View>]}
-                          </InputButton>,
-                          <InputButton
-                            noIcon
-                            style={styles.otherOptionsBtn}
-                            labelStyle={styles.otherOptionsLabels}
-                            onPress={() => { alert('Not implemented'); }}
-                            label="Recommended Products"
-                          >
-                            {[<View style={styles.iconContainer}><Icon name="star" size={18} color="#115ECD" type="solid" />
-                              </View>]}
-                          </InputButton>,
+                  <View style={[styles.panelBottom, { height: 201 }]}>
+                    <InputGroup
+                      style={styles.otherOptionsGroup}
+                    >
+                      {[
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="Email Client"
+                        >
+                          {[<View style={styles.iconContainer}><Icon name="envelope" size={18} color="#115ECD" type="solid" />
+                          </View>]}
+                        </InputButton>,
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="SMS Client"
+                        >
+                          {[<View style={styles.iconContainer}><Icon name="comments" size={18} color="#115ECD" type="solid" />
+                            </View>]}
+                        </InputButton>,
+                        <InputButton
+                          noIcon
+                          style={styles.otherOptionsBtn}
+                          labelStyle={styles.otherOptionsLabels}
+                          onPress={() => { alert('Not implemented'); }}
+                          label="Recommended Products"
+                        >
+                          {[<View style={styles.iconContainer}><Icon name="star" size={18} color="#115ECD" type="solid" />
+                            </View>]}
+                        </InputButton>,
 
                         ]}
-                      </InputGroup>
-                    </View>
-                    <View style={styles.panelDiff} />
-                  </SalonTouchableOpacity>
-                </ScrollView>
-              </View>
+                    </InputGroup>
+                  </View>
+                  <View style={styles.panelDiff} />
+                </SalonTouchableOpacity>
+              </ScrollView>
             </View>
           </View>
-        </SlidingUpPanel>
-      </Modal>);
+        </View>
+
+      </ModalBox>);
   }
 }

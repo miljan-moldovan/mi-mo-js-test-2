@@ -89,7 +89,7 @@ class CircularCountdown extends Component {
     const progress = processTime / estimatedTime;
     const delay = (estimatedTime - processTime) / 60;
 
-    const fill = 'transparent',
+    const fill = '#FFFFFF',
       // stroke = progress <= 1 ? '#31CE49' : (progress <= 1.2 ? '#FCA301' : '#D1242A'),
       stroke = this.getStrokeColor(),
       strokeLinecap = 'butt',
@@ -101,6 +101,13 @@ class CircularCountdown extends Component {
         <Svg
           height={size}
           width={size}
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+            elevation: 1,
+          }}
         >
           <Path
             d={backgroundArc}
@@ -134,6 +141,7 @@ const styles = StyleSheet.create({
   overlayContainer: {
     position: 'absolute',
     alignItems: 'center',
+
   },
   processTime: {
     alignItems: 'center',
