@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   panelContainer: {
     backgroundColor: '#FFFFFF',
     flexDirection: 'column',
-    height: 575,
+    height: 510,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     width: '100%',
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 16,
     width: '100%',
-    height: 640,
+    height: 510,
   },
   panelBlurredSection: {
     flex: 1,
@@ -326,7 +326,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
       <ModalBox
         coverScreen
         isOpen={this.props.visible}
-        onClosingState={() => this.setState({ visible: false })}
+        onClosingState={() => this.hidePanel()}
       >
         <View style={styles.panel}>
           <View style={styles.panelBlurredSection} />
@@ -504,8 +504,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   style={{
                     borderBottomWidth: 0,
                     borderBottomColor: 'transparent',
-                    paddingLeft: 2,
-                    paddingRight: 0,
+                    width: '90%',
+                    paddingLeft: 0,
                   }}
                 >
                   {[<InputButton
@@ -597,8 +597,6 @@ export default class SalonNewAppointmentSlide extends React.Component {
               </View>
 
             }
-
-            <View style={{ height: 49 }} />
           </View>
         </View>
       </ModalBox>);

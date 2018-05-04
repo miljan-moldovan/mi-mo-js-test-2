@@ -98,14 +98,6 @@ const MainNavigator = StackNavigator(
       screen: AppoinmentNotes,
       navigationOptions: { tabBarVisible: false },
     },
-    AppointmentNote: {
-      screen: AppointmentNoteScreen,
-      navigationOptions: {
-        headerMode: 'none',
-        gesturesEnabled: false,
-        header: props => (<View />),
-      },
-    },
     Service: {
       screen: ModifyServiceScreen,
       navigationOptions: { tabBarVisible: false },
@@ -266,6 +258,12 @@ export default QueueStackNavigator = StackNavigator({
   ModalClients: {
     screen: ClientsScreen,
     navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
+  },
+  AppointmentNote: {
+    screen: AppointmentNoteScreen,
+    navigationOptions: {
+      tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false,
+    },
   },
 }, {
   mode: 'modal', // Remember to set the root navigator to display modally.

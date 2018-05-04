@@ -74,52 +74,6 @@ const AppointmentStackNavigator = StackNavigator(
     AppointmentNotes: {
       screen: AppoinmentNotes,
     },
-    AppointmentNote: {
-      screen: AppointmentNoteScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: <AppointmentNoteHeader rootProps={rootProps} />,
-        headerLeft: HeaderLateral({
-          key: Math.random().toString(),
-          ...rootProps,
-          handlePress: () => { rootProps.navigation.goBack(); },
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          key: Math.random().toString(),
-          params: rootProps.navigation.state.params,
-          button: (
-            <View style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  }}
-            >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontFamily: 'OpenSans-Regular' }}>Save</Text>
-            </View>
-          ),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-          />),
-      }),
-    },
     NewAppointment: {
       screen: NewAppointmentScreen,
     },
