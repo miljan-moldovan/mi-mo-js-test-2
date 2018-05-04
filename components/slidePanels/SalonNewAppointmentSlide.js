@@ -479,7 +479,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <View style={styles.btnBottom}>
                     <TouchableOpacity
                       style={{ width: '46%' }}
-                      onPress={() => { this.props.navigation.navigate('NewAppointment'); }}
+                      onPress={this.props.handlePressMore}
                     >
                       <View style={styles.whiteButtonContainer}>
                         <Text style={styles.whiteButtonText}>

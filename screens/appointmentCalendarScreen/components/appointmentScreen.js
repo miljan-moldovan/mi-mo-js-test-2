@@ -63,9 +63,12 @@ export default class AppointmentScreen extends Component {
   constructor(props) {
     super(props);
     props.appointmentCalendarActions.setStoreWeeklySchedule();
-    let filterProvider = null;
-    if ('params' in this.props.navigation.state && 'filterProvider' in this.props.navigation.state.params) {
-      filterProvider = this.props.navigation.state.params.filterProvider;
+    let filterProvider = 'all';
+    const { params } = this.props.navigation.state;
+    if (params !== undefined) {
+      if ('filterProvider' in params) {
+        filterProvider = this.props.navigation.state.params.filterProvider;
+      }
     }
 
     this.state = {
@@ -75,7 +78,6 @@ export default class AppointmentScreen extends Component {
       isLoading: true,
     };
     // props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
-
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -226,6 +228,7 @@ export default class AppointmentScreen extends Component {
             };
             this.props.newAppointmentActions.bookNewAppt(callback);
           }}
+          handlePressMore={() => this.props.navigation.navigate('NewAppointment')}
           handlePressProvider={() => {
             this.props.navigation.navigate('Providers', {
               actionType: 'update',

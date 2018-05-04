@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import moment from 'moment';
 
 import {
   InputGroup,
@@ -20,6 +21,7 @@ import {
   InputDivider,
   RemoveButton,
 } from '../../components/formHelpers';
+import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,28 +30,153 @@ const styles = StyleSheet.create({
   },
 });
 
+// const shape = {
+//   date: moment(),
+//   fromTime: '',
+//   toTime: '',
+//   gapTime: '',
+//   afterTime: '',
+//   bookBetween: false,
+//   employeeId: 0,
+//   bookedByEmployeeId: 0,
+//   serviceId: 0,
+//   clientId: 0,
+//   requested: false,
+//   roomId: 0,
+//   roomOrdinal: 0,
+//   resourceId: 0,
+//   resourceOrdinal: 0,
+//   primaryAppointmentId: 0,
+//   isFirstAvailable: false,
+// };
+
+
 export default class ModifyApptServiceScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    let title = 'New Service';
+    if ('params' in navigation.state && navigation.state.params !== undefined) {
+      if ('item' in navigation.state.params) {
+        title = navigation.state.params.item.service.name;
+      }
+    }
+    return {
+      title,
+      headerLeft: (
+        <TouchableOpacity
+          onPress={() => { navigation.goBack(); }}
+        >
+          <Text style={{
+            fontSize: 14,
+            lineHeight: 22,
+            color: 'white',
+          }}
+          >Cancel
+          </Text>
+        </TouchableOpacity>
+      ),
+      headerRight: (
+        <TouchableOpacity
+          onPress={() => navigation.state.params.handleSave()}
+        >
+          <Text style={{
+            fontSize: 14,
+            lineHeight: 22,
+            color: 'white',
+          }}
+          >Done
+          </Text>
+        </TouchableOpacity>
+      ),
+    };
+  };
+
   constructor(props) {
     super(props);
-
-
+    const {
+      body,
+    } = this.props.newAppointmentState;
+    const { client } = this.props.navigation.state.params;
+    this.props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
       selectedClient: null,
       selectedProvider: null,
       selectedService: null,
-      isRequested: false,
       startTime: null,
       endTime: null,
       length: null,
-      gap: null,
+      gap: false,
       gapTime: 0,
       afterGap: 0,
       assignedRoom: null,
       assignedResource: null,
+      body: {
+        date: body.date,
+        client,
+        requested: false,
+        clientId: client.id,
+      },
     };
   }
 
-  onPressRemove = () => alert('Not Implemented');
+  handleSelectService = (selectedService) => {
+    const {
+      startTime,
+    } = this.props.newAppointmentState;
+    const newBody = this.state.body;
+
+    let endTime = null;
+    if ('maxDuration' in selectedService) {
+      endTime = moment(startTime, 'HH:mm').add(moment.duration(selectedService.maxDuration));
+    }
+
+    newBody.service = selectedService;
+    newBody.serviceId = selectedService.id;
+    newBody.fromTime = startTime;
+    newBody.toTime = endTime.format('HH:mm');
+    this.setState({ selectedService, body: newBody, endTime: endTime.format('HH:mm A') });
+  }
+
+  handleSave = () => {
+    const { body } = this.state;
+    const { params } = this.props.navigation.state;
+    if ('guestIndex' in params) {
+      this.props.newAppointmentActions.addGuestService(params.guestIndex, body);
+    } else {
+      this.props.newAppointmentActions.addNewApptItem(body);
+    }
+    this.props.navigation.goBack();
+  }
+
+  handleSelectProvider = (selectedProvider) => {
+    const newBody = this.state.body;
+
+    newBody.bookedByEmployeeId = selectedProvider.id;
+    newBody.employeeId = selectedProvider.id;
+    newBody.employee = selectedProvider;
+    this.setState({ selectedProvider, body: newBody });
+  }
+
+  handleRequested = requested => {
+    const newBody = this.state.body;
+    newBody.requested = !requested;
+    this.setState({ body: newBody });
+  }
+
+  onPressRemove = () => {
+    const { body } = this.state;
+    const { params } = this.props.navigation.state;
+    if (!'serviceIndex' in params) {
+      return this.props.navigation.goBack();
+    }
+
+    if ('guestIndex' in params) {
+      this.props.newAppointmentActions.removeGuestService(params.guestIndex, serviceIndex);
+    } else {
+      this.props.newAppointmentActions.removeService(body, params.serviceIndex);
+    }
+
+    this.props.navigation.goBack();
+  };
 
   render() {
     return (
@@ -58,19 +185,20 @@ export default class ModifyApptServiceScreen extends React.Component {
           <ServiceInput
             navigate={this.props.navigation.navigate}
             selectedService={this.state.selectedService}
-            onChange={selectedService => console.log(selectedService)}// this.setState({ selectedService })}
+            onChange={this.handleSelectService}
           />
           <InputDivider />
           <ProviderInput
+            placeholder=""
             navigate={this.props.navigation.navigate}
             selectedProvider={this.state.selectedProvider}
-            onChange={selectedProvider => this.setState({ selectedProvider })}
+            onChange={this.handleSelectProvider}
           />
           <InputDivider />
           <InputSwitch
             text="Provider is requested"
-            value={this.state.isRequested}
-            onChange={isRequested => this.setState({ isRequested })}
+            value={this.state.body.requested}
+            onChange={this.handleRequested}
           />
           <InputDivider />
           <InputLabel
@@ -82,40 +210,47 @@ export default class ModifyApptServiceScreen extends React.Component {
         <InputGroup>
           <InputLabel
             label="Starts"
-            value="11:00 am"
+            value={moment(this.props.newAppointmentState.startTime, 'HH:mm').format('HH:mm A')}
           />
           <InputDivider />
           <InputLabel
             label="Ends"
-            value="12:00 pm"
+            value={this.state.endTime}
           />
           <InputDivider />
           <InputLabel
             label="Length"
-            value="60 min"
+            value={
+              this.state.selectedService === null
+              ? '' : moment.duration(this.state.selectedService.maxDuration).humanize()
+            }
           />
           <InputDivider />
           <InputSwitch
             text="Gap"
             value={this.state.gap}
-            onChange={gap => this.setState({ gap })}
+            onChange={gap => this.setState({ gap: !gap })}
           />
-          <InputDivider />
-          <InputNumber
-            value={this.state.gapTime}
-            onChange={(action, gapTime) => this.setState({ gapTime })}
-            label="Gap Time"
-            singularText="min"
-            pluralText="min"
-          />
-          <InputDivider />
-          <InputNumber
-            value={this.state.afterGap}
-            onChange={(action, afterGap) => this.setState({ afterGap })}
-            label="After"
-            singularText="min"
-            pluralText="min"
-          />
+          {this.state.gap && (
+            <View>
+              <InputDivider />
+              <InputNumber
+                value={this.state.gapTime}
+                onChange={(action, gapTime) => this.setState({ gapTime })}
+                label="Gap Time"
+                singularText="min"
+                pluralText="min"
+              />
+              <InputDivider />
+              <InputNumber
+                value={this.state.afterGap}
+                onChange={(action, afterGap) => this.setState({ afterGap })}
+                label="After"
+                singularText="min"
+                pluralText="min"
+              />
+            </View>
+        )}
         </InputGroup>
         <SectionTitle value="Room & Resource" />
         <InputGroup>

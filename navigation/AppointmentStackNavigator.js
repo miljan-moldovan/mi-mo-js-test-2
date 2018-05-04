@@ -38,6 +38,7 @@ import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
+import RepeatsOnScreen from './../screens/repeatsOnScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -58,6 +59,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,
+    },
+    RepeatsOn: {
+      screen: RepeatsOnScreen,
     },
     FilterOptions: {
       screen: FilterOptionsScreen,
