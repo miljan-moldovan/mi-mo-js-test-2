@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import moment from 'moment';
 
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
@@ -152,6 +153,7 @@ export const RemoveButton = ({ title, onPress }) => (
     </Text>
   </SalonTouchableOpacity>
 );
+
 export const SectionTitle = props => (
   <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
     <Text style={[styles.sectionTitle, props.sectionTitleStyle]}>{props.case === 'upper' ? props.value.toUpperCase() : (props.case === 'lower' ? props.value.toLowerCase() : props.value)}</Text>
@@ -217,7 +219,7 @@ export const InputButton = props => (
       {
         typeof props.value === 'string'
         ? (
-          <Text style={styles.inputText}>{props.value}</Text>
+          <Text style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
         ) :
           props.value
       }
@@ -232,6 +234,7 @@ InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   style: ViewPropTypes.style,
   labelStyle: Text.propTypes.style,
+  valueStyle: Text.propTypes.style,
   label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
@@ -241,6 +244,7 @@ InputButton.propTypes = {
 InputButton.defaultProps = {
   style: {},
   labelStyle: {},
+  valueStyle: {},
   label: false,
   value: false,
   noIcon: false,
@@ -320,12 +324,13 @@ export class InputDate extends React.Component {
         />
         <InputButton
           style={{ flex: 1 }}
+          valueStyle={this.props.valueStyle}
           onPress={() => {
             this.setState({ showModal: !this.state.showModal });
           }}
           noIcon
           label={this.props.placeholder}
-          value={this.props.selectedDate}
+          value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format('YYYY-MM-DD') : this.props.selectedDate}
         />
         {!this.props.noIcon && (
           <SalonTouchableOpacity
@@ -476,35 +481,47 @@ export class ProviderInput extends React.Component {
   }
 
   render() {
-    const value = this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : 'First Available') : '';
+    let placeholder = 'placeholder' in this.props ? this.props.placeholder : 'Select Provider';
+    if (this.props.noPlaceholder) {
+      placeholder = null;
+    }
+    const value = this.state.selectedProvider !== null && 'name' in this.state.selectedProvider ?
+      `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : null;
 
 
-    const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(!this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
+    const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(this.state.selectedProvider !== null && !this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
 
     return (
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
-        <Text style={[styles.labelText]}>{this.state.labelText}</Text>
-        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+        {!this.props.noLabel && (
+          <Text style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
+        )}
+        <View style={[
+          { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
+          this.props.contentStyle,
+        ]}
+        >
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
-              {this.state.selectedProvider &&
-              <SalonAvatar
+              {!this.props.noAvatar && (<SalonAvatar
                 wrapperStyle={styles.providerRound}
                 width={30}
                 borderWidth={1}
                 borderColor="transparent"
                 image={{ uri: employeePhoto }}
-                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{this.state.selectedProvider ? (!this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA') : ''}</Text></View>}
-              /> }
-              <Text style={[styles.inputText]}>{value}</Text>
-
+                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA'}</Text></View>}
+              />)}
+              <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
             </View>
           )}
+          {value === null && placeholder !== null && (
+            <Text style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+          )}
         </View>
-        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+        <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>
     );
   }

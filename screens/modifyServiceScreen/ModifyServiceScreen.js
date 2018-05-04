@@ -16,7 +16,6 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
-import apiWrapper from '../../utilities/apiWrapper';
 import Icon from '../../components/UI/Icon';
 import * as actions from '../../actions/queue';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -165,12 +164,12 @@ export default class ModifyServiceScreen extends React.Component {
               });
             }}
           />
-          <InputDivider />
-          <InputSwitch
+          {this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable && <InputDivider />}
+          {this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable && <InputSwitch
             value={this.state.providerRequested}
             onChange={providerRequested => this.setState({ providerRequested })}
             text="Provider is requested?"
-          />
+          />}
         </InputGroup>
         <SectionDivider />
         <InputGroup>

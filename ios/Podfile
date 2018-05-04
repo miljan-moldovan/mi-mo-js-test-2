@@ -13,7 +13,6 @@ target 'SalonUltimateRN' do
 
 
 
-  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
   target 'SalonUltimateRNTests' do
     inherit! :search_paths

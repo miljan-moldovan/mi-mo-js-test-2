@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   innerRow: {
     flexDirection: 'row',
     height: 44,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
     paddingLeft: 16,
     alignItems: 'center',
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingLeft: 16,
     paddingRight: 16,
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
   },
   plusIcon: {
@@ -46,14 +46,15 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   textData: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#110A24',
     fontSize: 14,
+    marginLeft: 5,
   },
   serviceRow: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
     paddingLeft: 16,
   },
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     color: '#727A8F',
   },
   label: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#727A8F',
     fontSize: 14,
   },
@@ -239,7 +240,7 @@ class ServiceSection extends Component {
         <SalonTouchableOpacity onPress={this.props.onAdd}>
           <View style={styles.addRow}>
             <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
-            <Text style={styles.textData}>add Service</Text>
+            <Text style={styles.textData}>add service</Text>
           </View>
         </SalonTouchableOpacity>
         <DateTimePicker

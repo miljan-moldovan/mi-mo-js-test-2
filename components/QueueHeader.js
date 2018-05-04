@@ -1,18 +1,9 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  Alert,
-  Modal,
-  FlatList,
-  RefreshControl,
-  Animated,
-  Dimensions,
   ActionSheetIOS,
   TextInput,
 } from 'react-native';
@@ -20,8 +11,6 @@ import { SafeAreaView } from 'react-navigation';
 import Icon from './UI/Icon';
 import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
-
-import apiWrapper from '../utilities/apiWrapper';
 
 const QueueNavButton = ({
   icon, onPress, style, type,
@@ -67,12 +56,12 @@ export default class QueueHeader extends React.Component {
   onChangeSearchText = (searchText: String) => this.props.onChangeSearchText(searchText);
   render() {
     return this.props.searchMode ? (
-      <SafeAreaView style={styles.headerContainer}>
+      <SafeAreaView style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
 
         <View style={styles.searchContainer}>
           {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
           <Icon name="search" type="light" style={styles.searchIcon} />
-          <TextInput style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
+          <TextInput autoFocus style={styles.search} placeholderTextColor="rgba(76,134,217,1)" onChangeText={this.onChangeSearchText} value={this.props.searchText} placeholder="Search" returnKeyType="search" />
         </View>
         <SalonTouchableOpacity onPress={this.onSearchCancel}>
           <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginLeft: 6 }]}>Cancel</Text>

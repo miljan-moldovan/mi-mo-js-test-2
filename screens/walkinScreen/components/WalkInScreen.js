@@ -3,7 +3,9 @@ import {
   StyleSheet,
   ScrollView,
   Text,
+  View,
 } from 'react-native';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import {
   InputLabel,
@@ -13,7 +15,7 @@ import {
   SectionTitle,
 } from '../../../components/formHelpers';
 import ServiceSection from './serviceSection';
-import HeaderRight from '../../../components/HeaderRight';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,24 +27,110 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 14,
   },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 class WalkInScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const handlePress = navigation.state.params && navigation.state.params.walkin ? navigation.state.params.walkin : () => {};
-    // const { name, lastName } = navigation.state.params.item.client;
-    return {
-      // headerTitle: `${name} ${lastName}`,
-      headerRight:
-  <HeaderRight
-    disabled={false}
-    button={(
-      <Text style={styles.headerButton}>Done</Text>
-      )}
-    handlePress={handlePress}
-  />,
-    };
+
+    return ({
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>Walk-in</Text>
+          <Text style={styles.subTitleText}>25m Est. wait</Text>
+        </View>
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity style={styles.leftButton} onPress={() => { navigation.goBack(); }}>
+          <View style={styles.leftButtonContainer}>
+            <FontAwesome style={{ marginRight: 8, fontSize: 30, color: '#fff' }}>
+              {Icons.angleLeft}
+            </FontAwesome>
+            <Text style={styles.leftButtonText}>
+              Back
+            </Text>
+          </View>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity style={styles.rightButton} onPress={handlePress}>
+          <View style={styles.rightButtonContainer}>
+            <Text style={styles.rightButtonText}>
+              Done
+            </Text>
+          </View>
+        </SalonTouchableOpacity>
+      ),
+    });
   };
+
+  // static navigationOptions = ({ navigation }) => {
+  //   const handlePress = navigation.state.params && navigation.state.params.walkin ? navigation.state.params.walkin : () => {};
+  //   // const { name, lastName } = navigation.state.params.item.client;
+  //   return {
+  //     // headerTitle: `${name} ${lastName}`,
+  //     headerRight:
+  // <HeaderRight
+  //   disabled={false}
+  //   button={(
+  //     <Text style={styles.headerButton}>Done</Text>
+  //     )}
+  //   handlePress={handlePress}
+  // />,
+  //   };
+  // };
 
   saving = false
 
@@ -108,6 +196,7 @@ class WalkInScreen extends Component {
         serviceId: service.id,
       };
       this.props.walkInActions.postWalkinClient(params).then(() => {
+        console.log('params: ', params);
         this.saving = false;
         this.props.navigation.navigate('Main');
       });
@@ -142,7 +231,7 @@ class WalkInScreen extends Component {
   render() {
     const fullName = this.getFullName();
     const email = this.state.client && this.state.client.email ? this.client.email : '';
-    const phone = this.state.client && this.state.client.phone ? this.client.phone : '';
+    const phones = this.state.client && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
     return (
       <ScrollView style={styles.container}>
         <SectionTitle value="CLIENT" />
@@ -151,7 +240,7 @@ class WalkInScreen extends Component {
           <InputDivider />
           <InputLabel label="Email" value={email} />
           <InputDivider />
-          <InputLabel label="Phone" value={phone} />
+          <InputLabel label="Phone" value={phones} />
         </InputGroup>
         <SectionTitle value="SERVICE AND PROVIDER" />
         <ServiceSection

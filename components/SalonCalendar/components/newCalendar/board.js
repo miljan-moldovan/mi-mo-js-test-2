@@ -34,7 +34,9 @@ export default class Board extends Component {
   }
 
   render() {
-    const { columns, apptGridSettings, availability, showAvailability } = this.props;
+    const {
+      columns, apptGridSettings, availability, showAvailability,
+    } = this.props;
     return (
       <View style={styles.container}>
         { showAvailability ?

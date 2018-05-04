@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Text, Animated, Dimensions, View, StyleSheet } from 'react-native';
 import { LocaleConfig, Calendar } from 'react-native-calendars';
 import moment from 'moment';
-import SalonSlidingUpPanel from './../SalonSlidingUpPanel';
+import ModalBox from './ModalBox';
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
 
 LocaleConfig.locales.en = {
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CDCED2',
     flexDirection: 'column',
     zIndex: 99999,
-    height: 580,
+    height: 500,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
   },
   weekJump: {
     backgroundColor: '#FFFFFF',
-    width: 48,
-    height: 48,
+    width: Dimensions.get('window').width === 320 ? 40 : 48,
+    height: Dimensions.get('window').width === 320 ? 40 : 48,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -120,16 +120,15 @@ export default class SalonDatePickerSlide extends React.Component {
       selected: nextProps.selectedDate,
     });
 
-    if (nextProps.visible) {
-      this._panel.transitionTo(this.props.draggableRange.top, () => {});
-    }
+    // if (nextProps.visible) {
+    //   this._panel.transitionTo(this.props.draggableRange.top, () => {});
+    // }
   }
 
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => {
     this.setState({ visible: false });
-    this._panel.transitionTo(this.props.draggableRange.bottom, () => {});
     this.props.onHide();
   }
 
@@ -171,13 +170,10 @@ export default class SalonDatePickerSlide extends React.Component {
 
   render() {
     return (
-      <SalonSlidingUpPanel
-        visible
-        showBackdrop={this.state.visible}
-        onDragEnd={() => this.setState({ visible: false })}
-        ref={(c) => { this._panel = c; }}
-        draggableRange={this.props.draggableRange}
-        onDrag={v => this._draggedValue.setValue(v)}
+      <ModalBox
+        isOpen={this.props.visible}
+        coverScreen
+        onClosingState={() => this.hidePanel()}
       >
         <View style={styles.panel}>
           <View style={styles.panelBlurredSection} />
@@ -239,6 +235,6 @@ export default class SalonDatePickerSlide extends React.Component {
             </View>
           </View>
         </View>
-      </SalonSlidingUpPanel>);
+      </ModalBox>);
   }
 }

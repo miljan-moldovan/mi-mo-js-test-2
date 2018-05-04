@@ -110,7 +110,11 @@ class ProviderScreen extends React.Component {
     return {
       headerTitle: (
         <View style={{
-          flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center',
+          flexDirection: 'column',
+flex: 1,
+alignItems: 'center',
+justifyContent: 'center',
+
           }}
         >
           <Text style={styles.headerTitle}>{title}</Text>
@@ -168,12 +172,23 @@ class ProviderScreen extends React.Component {
   }
 
   componentWillMount() {
+    this.props.navigation.setParams({ defaultProps: this.state.headerProps });
+
     this.props.providersActions.getProviders({
       filterRule: 'none',
       maxCount: 100,
       sortOrder: 'asc',
       sortField: 'fullName',
     });
+  }
+
+  state = {
+    headerProps: {
+      title: 'Providers',
+      subTitle: null,
+      leftButtonOnPress: () => { this.props.navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    },
   }
 
   getFirstItemForLetter = (letter) => {
@@ -316,7 +331,13 @@ class ProviderScreen extends React.Component {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
             <SalonTouchableOpacity
-              onPress={() => this._handleOnChangeProvider({ isFirstAvailable: true })}
+              onPress={() => this._handleOnChangeProvider({
+                id: 0,
+                isFirstAvailable: true,
+                name: 'First',
+                lastName: 'Available',
+
+               })}
               style={styles.itemRow}
               key={Math.random()}
             >

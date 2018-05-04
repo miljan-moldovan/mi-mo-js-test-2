@@ -101,7 +101,7 @@ export default class SalonRoomList extends React.Component {
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
       style={styles.itemRow}
-      onPress={() => {}}
+      onPress={() => this.props.onChangeRoom(item)}
       key={index}
     >
       <View style={styles.inputRow}>
@@ -110,7 +110,7 @@ export default class SalonRoomList extends React.Component {
           style={this.state.selectedRoom === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
           highlightStyle={{ color: '#1DBF12' }}
         >
-          {item.fullName}
+          {item.name}
         </WordHighlighter>
       </View>
       <View style={{ flex: 1, alignItems: 'center' }}>

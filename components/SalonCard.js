@@ -9,24 +9,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    borderRadius: 5,
+    borderRadius: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: StyleSheet.hairlineWidth / 2 },
+    shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 1,
+    elevation: StyleSheet.hairlineWidth / 2,
   },
   footer: {
     flexDirection: 'row',
     alignSelf: 'stretch',
     marginTop: 7,
     marginBottom: 10,
-    marginHorizontal: 15,
+    marginHorizontal: 10,
     justifyContent: 'flex-start',
   },
   header: {
     paddingVertical: 8.5,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     alignSelf: 'stretch',
     justifyContent: 'flex-start',
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   body: {
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     alignSelf: 'stretch',
     justifyContent: 'flex-start',
@@ -80,6 +80,7 @@ salonCard.propTypes = {
   ]),
   backgroundColor: PropTypes.string,
   containerStyles: ViewPropTypes.style,
+  styleHeader: ViewPropTypes.style,
   bodyStyles: ViewPropTypes.style,
 };
 
@@ -88,6 +89,7 @@ salonCard.defaultProps = {
   headerChildren: null,
   footerChildren: null,
   containerStyles: {},
+  styleHeader: {},
   bodyStyles: {},
 };
 

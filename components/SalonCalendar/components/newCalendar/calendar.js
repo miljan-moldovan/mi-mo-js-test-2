@@ -74,7 +74,6 @@ export default class Calendar extends Component {
       selectedProvider,
       displayMode,
       startDate,
-      isLoading,
     } = nextProps;
 
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
@@ -158,7 +157,9 @@ export default class Calendar extends Component {
   }
 
   renderCards = () => {
-    const { appointments, selectedProvider, displayMode, startDate } = this.props;
+    const {
+      appointments, selectedProvider, displayMode, startDate,
+    } = this.props;
     if (appointments) {
       const isAllProviderView = selectedProvider === 'all';
       if (!isAllProviderView && displayMode === 'day') {
@@ -253,7 +254,7 @@ export default class Calendar extends Component {
           </ScrollViewChild>
           <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
             <TimeColumn schedule={this.schedule} />
-            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime}/>
+            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime} />
           </ScrollViewChild>
           { showHeader ?
             <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
