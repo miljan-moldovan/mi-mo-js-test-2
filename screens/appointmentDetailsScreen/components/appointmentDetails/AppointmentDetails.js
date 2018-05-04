@@ -559,10 +559,10 @@ class AppointmentDetails extends React.Component {
     if (this.props.isWaiting) {
       return (
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-          <BottomButton disabled={!this.props.appointment.checkedIn} icon="check" onPress={() => { this.props.onPressSummary.checkIn(); this.props.navigation.goBack(); }} title="Check In" />
+          <BottomButton disabled={!isActiveCheckin} icon="check" onPress={() => { this.props.onPressSummary.checkIn(); this.props.navigation.goBack(); }} title="Check In" />
           <BottomButton disabled={false} icon="signOut" onPress={() => { this.props.onPressSummary.walkOut(isActiveWalkOut); this.props.navigation.goBack(); }} title={isActiveWalkOut ? 'Walk-out' : 'No Show'} />
           <BottomButton disabled={isDisabledReturnLater} icon="undo" onPress={() => { this.props.onPressSummary.returning(returned); this.props.navigation.goBack(); }} title={returned ? 'Returned' : 'Return later'} />
-          <BottomButton disabled={returned} icon="play" onPress={() => { this.props.onPressSummary.toService(); this.props.navigation.goBack(); }} title="To Service" />
+          <BottomButton disabled={(returned || isActiveCheckin)} icon="play" onPress={() => { this.props.onPressSummary.toService(); this.props.navigation.goBack(); }} title="To Service" />
         </View>
       );
     }
@@ -600,7 +600,7 @@ class AppointmentDetails extends React.Component {
 
     return (
       <View style={[styles.container]}>
-        <ScrollView style={{ marginBottom: 63 }}>
+        <ScrollView style={{ marginBottom: 44 }}>
           <View style={styles.infoContainer}>
             <View style={{ flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
               <Text style={styles.infoTitleText}>Queue Appointment</Text>

@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
+    marginBottom: 5,
   },
   subTitleText: {
     fontFamily: 'Roboto',
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 2,
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
   },
 });

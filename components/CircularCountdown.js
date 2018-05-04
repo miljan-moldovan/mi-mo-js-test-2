@@ -86,7 +86,7 @@ class CircularCountdown extends Component {
     } = this.props;
     const strokeWidth = baseStrokeWidth * size / baseSize;
     const radius = baseRadius * size / baseSize; // ((baseSize - 15 - 20) * size/baseSize - strokeWidth/2)/2;
-    const progress = processTime / estimatedTime;
+    const progress = estimatedTime > 0 ? processTime / estimatedTime : 0;
     const delay = (estimatedTime - processTime) / 60;
 
     const fill = '#FFFFFF',
