@@ -1,15 +1,10 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Alert,
-  Modal,
   ActivityIndicator,
   TextInput,
   LayoutAnimation,
@@ -20,6 +15,7 @@ import { Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { SafeAreaView } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 
 import { connect } from 'react-redux';
@@ -40,9 +36,9 @@ class QueueCombineScreen extends React.Component {
 justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
 }}
         >
-          <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+          <SalonTouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
             <Text style={styles.navButtonText}>Close</Text>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <Text style={styles.headerTitle}>Combine</Text>
             <Text style={styles.headerSubtitle}>Select clients to combine</Text>
@@ -52,9 +48,9 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
               <ActivityIndicator />
             </View>
             ) : (
-              <TouchableOpacity style={styles.navButton} onPress={onPressDone}>
+              <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
                 <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             )}
 
         </SafeAreaView>
@@ -81,30 +77,24 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     } = nextProps;
     if (waitingQueue !== this.props.waitingQueue || serviceQueue !== this.props.serviceQueue || group !== this.props.group) { this.prepareQueueData(nextProps); }
     if (error) {
-      console.log('QueueCombineScreen.componentWillReceiveProps error', error);
       Alert.alert('Error', error.toString());
     }
 
     if (loading !== undefined && loading !== this.props.loading) {
-      console.log('nextProps.loading', loading);
       this.props.navigation.setParams({ loading });
       if (!loading) { this.updateNavButtons(); }
     }
   }
   prepareQueueData = (nextProps = {}) => {
-    console.log('prepareQueueData');
     const waitingQueue = nextProps.waitingQueue || this.props.waitingQueue;
     const serviceQueue = nextProps.serviceQueue || this.props.serviceQueue;
     const queueData = [...waitingQueue, ...serviceQueue];
     const groups = nextProps.groups || this.props.groups || [];
-    console.log('prepareQueueData - groups', groups);
-    console.log('prepareQueueData - queueData', queueData);
     const groupData = [];
     for (const groupId in groups) {
       const group = groups[groupId];
-      // console.log('Search groupLead', groupId, queueData);
+      //
       // const groupLead = queueData.find((queueItem) => queueItem.groupId == groupId && queueItem.isGroupLeader) || {};
-      console.log('groupLead', groupId);
       const groupClients = group.clients.map(item => ({
         ...item,
         queueItem: queueData.find(queueItem => queueItem.id === item.id),
@@ -117,7 +107,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
         data: groupClients,
       });
     }
-    console.log('groupData', groupData);
     this.setState({
       // clients in groups don't show up on the main list, filter them out
       queueData: queueData.filter(({ groupId }) => !groupId),
@@ -149,7 +138,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     if (combinedClients && combinedClients.length > 1) {
       const combinedData = [];
       this.props.startCombine();
-      console.log('saveData');
       combinedClients.forEach((id, index) => {
         const queueItem = queueData.find(item => item.id === id);
         const clientName = `${queueItem.client.name} ${queueItem.client.lastName}`;
@@ -157,7 +145,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
         combinedData.push({ id, groupLead: id == groupLeader });
         this.props.combineClient({ id, clientName });
       });
-      console.log('saveData', groupLeader, combinedData);
       this.props.navigation.setParams({ onPressDone: undefined });
       this.props.finishCombine(combinedData);
     }
@@ -210,8 +197,6 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     const {
       searchText, combinedFirst, queueData, groupData, groupLeadersTmp,
     } = this.state;
-    console.log('groups', groupData);
-    console.log('queueData', queueData);
 
     const uncombined = (
       <QueueUncombine
@@ -230,11 +215,11 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
           <TextInput style={styles.search} onChangeText={this.changeSearchText} value={this.state.searchText} placeholder="Search" returnKeyType="search" />
         </View>
         <View style={{ alignItems: 'flex-start' }}>
-          <TouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
+          <SalonTouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
             <FontAwesome style={styles.sortButtonIcon}>{combinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
             <Text style={styles.sortButtonLabel}>Sort</Text>
             <Text style={styles.sortButtonText}>{combinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
         {combinedFirst ? uncombined : null}
         <QueueCombine

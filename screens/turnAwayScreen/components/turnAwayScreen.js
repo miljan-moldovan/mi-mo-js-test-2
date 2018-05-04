@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import moment from 'moment';
 
 import DatePicker from '../../../components/modals/SalonDatePicker';
 import ClientRow from './clientRow';
 import ServiceSection from './serviceSection';
 import fetchFormCache from '../../../utilities/fetchFormCache';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+
+import {
+  InputDivider,
+} from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,14 +22,15 @@ const styles = StyleSheet.create({
     height: 44,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderColor: '#C0C1C6',
+    //  borderBottomWidth: 1,
+    // borderColor: '#C0C1C6',
     alignItems: 'center',
     paddingLeft: 16,
     paddingRight: 16,
   },
   rowFirst: {
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#C0C1C6',
   },
   dataContainer: {
     flex: 1,
@@ -32,12 +38,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#727A8F',
     fontSize: 14,
   },
   textData: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#110A24',
     fontSize: 14,
   },
@@ -60,7 +66,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#727A8F',
     fontSize: 12,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
   },
   titleText: {
     fontFamily: 'Roboto',
@@ -68,26 +74,103 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
   },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#19428A',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
 });
 
 class TurnAwayScreen extends Component {
-  static navigationOptions = rootProps => ({
-    headerTitle: <Text style={styles.titleText}>Turn Away</Text>,
-    headerLeft:
-  <TouchableOpacity
-    onPress={() => { rootProps.navigation.goBack(); }}
-  >
-    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-  </TouchableOpacity>,
+  static navigationOptions = ({ navigation }) => {
+    const handlePress = navigation.state.params && navigation.state.params.onDone ? navigation.state.params.onDone : () => {};
 
-    headerRight: (
-      <TouchableOpacity
-        onPress={rootProps.navigation.state.params ? rootProps.navigation.state.params.onDone : () => {}}
-      >
-        <Text style={{ fontSize: 14, color: 'white' }}>Done</Text>
-      </TouchableOpacity>
-    ),
-  });
+    return {
+      headerTitle: <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>Turn Away</Text>
+      </View>,
+      headerLeft:
+  <View style={styles.leftButtonContainer}>
+    <SalonTouchableOpacity
+      onPress={() => { navigation.goBack(); }}
+      style={styles.leftButton}
+    >
+      <Text style={styles.leftButtonText}>Cancel</Text>
+    </SalonTouchableOpacity>
+  </View>,
+      headerRight: (
+        <View style={styles.rightButtonContainer}>
+          <SalonTouchableOpacity
+            wait={3000}
+            onPress={handlePress}
+            style={styles.rightButton}
+          >
+            <Text style={styles.rightButtonText}>Done</Text>
+          </SalonTouchableOpacity>
+        </View>
+      ),
+    };
+  };
+
+  // static navigationOptions = rootProps => ({
+  //   headerTitle: <Text style={styles.titleText}>Turn Away</Text>,
+  //   headerLeft:
+  // <SalonTouchableOpacity
+  //   onPress={() => { rootProps.navigation.goBack(); }}
+  // >
+  //   <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+  // </SalonTouchableOpacity>,
+  //
+  //   headerRight: (
+  //     <SalonTouchableOpacity
+  //       wait={3000}
+  //       onPress={rootProps.navigation.state.params ? rootProps.navigation.state.params.onDone : () => {}}
+  //     >
+  //       <Text style={{ fontSize: 14, color: 'white' }}>Done</Text>
+  //     </SalonTouchableOpacity>
+  //   ),
+  // });
 
   constructor(props) {
     super(props);
@@ -146,7 +229,7 @@ class TurnAwayScreen extends Component {
     //     .then((response) => {
     //       // this.getNotes();
     //     }).catch((error) => {
-    //       console.log(error);
+    //
     //     });
     // } else {
     //   alert('Please fill all the fields');
@@ -213,6 +296,7 @@ class TurnAwayScreen extends Component {
             <Text onPress={this.handleDateModal} style={styles.textData}>{this.state.date.format('DD MMMM YYYY')}</Text>
           </View>
         </View>
+        <View style={{ width: '100%', backgroundColor: '#FFFFFF' }} ><InputDivider style={{ marginHorizontal: 16 }} /></View>
         <ClientRow
           client={this.state.selectedClient}
           onPress={this.handlePressClient}

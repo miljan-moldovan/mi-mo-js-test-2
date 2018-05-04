@@ -1,8 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, StyleSheet, Image } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
-import arrow from "../assets/images/newClient/icon_arrow_right_xs.png";
+import arrow from '../assets/images/newClient/icon_arrow_right_xs.png';
 
 const styles = StyleSheet.create({
   btnContainer: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
 });
 
 const salonBtnSelect = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={props.onPress}
     style={styles.btnContainer}
   >
@@ -47,7 +48,7 @@ const salonBtnSelect = props => (
         <Image style={styles.image} source={arrow} />
       </View>
     </View>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 salonBtnSelect.propTypes = {

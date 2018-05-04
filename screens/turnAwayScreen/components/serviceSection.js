@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import apiWrapper from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../../components/SalonAvatar';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 
 const styles = StyleSheet.create({
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   innerRow: {
     flexDirection: 'row',
     height: 44,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
     paddingLeft: 16,
     alignItems: 'center',
@@ -35,8 +36,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingLeft: 16,
     paddingRight: 16,
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
   },
   plusIcon: {
@@ -45,14 +46,15 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   textData: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#110A24',
     fontSize: 14,
+    marginLeft: 5,
   },
   serviceRow: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
     paddingLeft: 16,
   },
@@ -74,7 +76,7 @@ const styles = StyleSheet.create({
     color: '#727A8F',
   },
   label: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#727A8F',
     fontSize: 14,
   },
@@ -153,7 +155,6 @@ class ServiceSection extends Component {
   }
 
   renderProvider = (provider) => {
-    console.log(provider);
     const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
     const providerPhoto = provider ? (apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 
@@ -188,46 +189,46 @@ class ServiceSection extends Component {
   renderService = (service, index) => (
     <View style={styles.serviceRow} key={index}>
       <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => this.props.onRemove(index)}>
+        <SalonTouchableOpacity onPress={() => this.props.onRemove(index)}>
           <View style={styles.row}>
             <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
             <Text style={styles.textData}>service</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
       <View style={styles.serviceDataContainer}>
-        <TouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
+        <SalonTouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
           <View style={styles.innerRow}>
             {this.renderProvider(service.provider)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressService(service, index)}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
             {this.renderServiceInfo(service.service)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'start')}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'start')}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
             <View style={styles.dataContainer}>
               <Text style={styles.textData}>{service.fromTime.format('hh:mm a')}</Text>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'end')}>
+        </SalonTouchableOpacity>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'end')}>
           <View style={styles.lastInnerRow}>
             <Text style={styles.label}>End</Text>
             <View style={styles.dataContainer}>
               <Text style={styles.textData}>{service.toTime.format('hh:mm a')}</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
     </View>
   )
@@ -236,12 +237,12 @@ class ServiceSection extends Component {
     return (
       <View style={styles.container}>
         {this.props.services.map((service, index) => this.renderService(service, index))}
-        <TouchableOpacity onPress={this.props.onAdd}>
+        <SalonTouchableOpacity onPress={this.props.onAdd}>
           <View style={styles.addRow}>
             <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
-            <Text style={styles.textData}>add Service</Text>
+            <Text style={styles.textData}>add service</Text>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
         <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this.handleDateSelection}

@@ -83,7 +83,6 @@ class RebookDialogScreen extends Component {
       .then((response) => {
         this.goBack();
       }).catch((error) => {
-        console.log(error);
       });
   }
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { View,
   Text,
-  TouchableHighlight,
   SectionList,
   StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
@@ -9,6 +8,7 @@ import ClientListItem from './clientListItem';
 import ClientListHeader from './clientListHeader';
 
 import ListLetterFilter from '../../../../components/listLetterFilter';
+import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
 
 const ITEM_HEIGHT = 60;
 const HEADER_HEIGHT = 30;
@@ -206,13 +206,13 @@ class ClientList extends React.Component {
             letterComponent = <Text style={styles.foundLetter}>{letter}</Text>;
           }
 
-          letterGuide.push(<TouchableHighlight
+          letterGuide.push(<SalonTouchableHighlight
             underlayColor="transparent"
             key={Math.random().toString()}
             onPress={() => { this.scrollToIndex((i), letter); }}
           >
             <View style={styles.letterContainer}>{letterComponent}</View>
-                           </TouchableHighlight>);
+                           </SalonTouchableHighlight>);
         }
 
         return (letterGuide);

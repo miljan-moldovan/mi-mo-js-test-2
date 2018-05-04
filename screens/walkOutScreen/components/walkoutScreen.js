@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, StyleSheet, Text, TextInput } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
-import HeaderLateral from '../../../components/HeaderLateral';
-import HeaderRight from '../../../components/HeaderRight';
 import reasonTypeModel from '../../../utilities/models/reasonType';
 import fetchFormCache from '../../../utilities/fetchFormCache';
 import SalonAvatar from '../../../components/SalonAvatar';
 import apiWrapper from '../../../utilities/apiWrapper';
-
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import {
+  InputDivider,
+} from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,19 +22,15 @@ const styles = StyleSheet.create({
     height: 44,
     flexDirection: 'row',
     backgroundColor: '#F1F1F1',
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
   row: {
     height: 44,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderColor: '#C0C1C6',
     alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingHorizontal: 16,
   },
   borderTop: {
     borderTopWidth: 1,
@@ -112,28 +109,84 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
   },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#19428A',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
 });
 
 class WalkoutScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const handlePress = navigation.state.params && navigation.state.params.walkout ? navigation.state.params.walkout : () => {};
-    // const { name, lastName } = navigation.state.params.item.client;
+    const { name, lastName } = navigation.state.params.appointment.client;
+
     return {
-      headerTitle: <Text style={styles.titleText}>Walkout</Text>,
+      headerTitle: <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>Walk-out</Text>
+        <Text style={styles.subTitleText}>{`${name} ${lastName}`}</Text>
+      </View>,
       headerLeft:
-  <HeaderRight
-    button={(
-      <Text style={styles.headerButton}>Cancel</Text>
-            )}
-    handlePress={() => { navigation.goBack(); }}
-  />,
-      headerRight:
-  <HeaderRight
-    button={(
-      <Text style={styles.headerButton}>Done</Text>
-      )}
-    handlePress={handlePress}
-  />,
+  <View style={styles.leftButtonContainer}>
+    <SalonTouchableOpacity
+      onPress={() => { navigation.goBack(); }}
+      style={styles.leftButton}
+    >
+      <Text style={styles.leftButtonText}>Cancel</Text>
+    </SalonTouchableOpacity>
+  </View>,
+      headerRight: (
+        <View style={styles.rightButtonContainer}>
+          <SalonTouchableOpacity
+            wait={3000}
+            onPress={handlePress}
+            style={styles.rightButton}
+          >
+            <Text style={styles.rightButtonText}>Done</Text>
+          </SalonTouchableOpacity>
+        </View>
+      ),
     };
   };
 
@@ -229,8 +282,12 @@ class WalkoutScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this.handlePressProvider}>
-          <View style={[styles.row, styles.borderTop]}>
+        <SalonTouchableOpacity onPress={this.handlePressProvider}>
+          <View style={[styles.row, styles.borderTop, {
+    borderBottomWidth: 1,
+              borderColor: '#C0C1C6',
+}]}
+          >
             <Text style={styles.label}>Provider</Text>
             <View style={styles.rowRightContainer}>
               <SalonAvatar
@@ -244,29 +301,32 @@ class WalkoutScreen extends Component {
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
         <View style={styles.titleRow}>
           <Text style={styles.title}>WALK-OUT REASON</Text>
         </View>
-        <TouchableOpacity onPress={() => this.handlePressReason(1, false)}>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(1, false)}>
           <View style={[styles.row, styles.borderTop]}>
             <Text>Waited too much</Text>
             {this.renderCheck(1)}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressReason(2, false)}>
+        </SalonTouchableOpacity>
+        <View style={{ width: '100%', backgroundColor: '#FFFFFF' }} ><InputDivider style={{ marginHorizontal: 16 }} /></View>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(2, false)}>
           <View style={styles.row}>
             <Text>Personal Affairs</Text>
             {this.renderCheck(2)}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressReason(3, false)}>
+        </SalonTouchableOpacity>
+        <View style={{ width: '100%', backgroundColor: '#FFFFFF' }} ><InputDivider style={{ marginHorizontal: 16 }} /></View>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(3, false)}>
           <View style={styles.row}>
             <Text>Provider didn&#39;t show up</Text>
             {this.renderCheck(3)}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.handlePressReason(0, true)}>
+        </SalonTouchableOpacity>
+        <View style={{ width: '100%', backgroundColor: '#FFFFFF' }} ><InputDivider style={{ marginHorizontal: 16 }} /></View>
+        <SalonTouchableOpacity onPress={() => this.handlePressReason(0, true)}>
           <View style={styles.textAreaContainer}>
             <View style={styles.innerRow}>
               <Text>Other</Text>
@@ -282,7 +342,7 @@ class WalkoutScreen extends Component {
               onChangeText={this.handleOnchangeText}
             />
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       </View>
     );
   }

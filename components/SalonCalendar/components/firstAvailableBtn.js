@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    width: 138,
+    width: 100,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
@@ -23,14 +23,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const firstAvailableBtn = ({ rootStyles, switchStyle }) => (
+const firstAvailableBtn = ({ rootStyles, switchStyle, onChange, value }) => (
   <View style={[styles.container, rootStyles]}>
     <InputSwitch
-      text="First Available"
-      onChange={() => {}}
+      text="First Avl."
+      onChange={onChange}
       textStyle={styles.textStyle}
       switchStyle={styles.switchStyle}
       textRight
+      value={value}
     />
   </View>
 );

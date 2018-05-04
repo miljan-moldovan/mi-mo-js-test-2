@@ -127,24 +127,6 @@ class AppointmentNoteScreen extends Component {
     this.setState({ note, isVisible: true });
   }
 
-  getNotes = () => {
-    const { appointment } = this.props.navigation.state.params;
-    this.props.appointmentNotesActions.getAppointmentNotes(appointment.client.id)
-      .then((response) => {
-        if (response.data.error) {
-          this.props.appointmentNotesActions.setFilteredNotes([]);
-          this.props.appointmentNotesActions.setNotes([]);
-        } else {
-          const notes = response.data.notes.sort(AppointmentNoteScreen.compareByDate);
-          this.props.appointmentNotesActions.setFilteredNotes(notes);
-          this.props.appointmentNotesActions.setNotes(notes);
-          this.props.appointmentNotesActions.selectProvider(null);
-
-          this.props.navigation.goBack();
-        }
-      });
-  }
-
   shouldSave = false
 
   goBack() {
@@ -182,18 +164,20 @@ class AppointmentNoteScreen extends Component {
         note.enteredBy = note.updatedBy;
         this.props.appointmentNotesActions.postAppointmentNotes(appointment.client.id, note)
           .then((response) => {
-            this.getNotes();
+            this.props.appointmentNotesActions.selectProvider(null);
+            this.props.navigation.goBack();
+            this.props.navigation.state.params.onNavigateBack();
           }).catch((error) => {
-            console.log(error);
           });
       } else if (this.props.navigation.state.params.actionType === 'update') {
         const note = this.state.note;
         note.notes = note.text;
         this.props.appointmentNotesActions.putAppointmentNotes(appointment.client.id, note)
           .then((response) => {
-            this.getNotes();
+            this.props.appointmentNotesActions.selectProvider(null);
+            this.props.navigation.goBack();
+            this.props.navigation.state.params.onNavigateBack();
           }).catch((error) => {
-            console.log(error);
           });
       }
     } else {
@@ -232,7 +216,6 @@ class AppointmentNoteScreen extends Component {
   }
 
   handleOnNavigateBack = () => {
-    console.log('handleOnNavigateBack');
     this.setState({ isVisible: true });
   }
 
@@ -256,13 +239,13 @@ class AppointmentNoteScreen extends Component {
               {[
                 <InputButton
                   style={{ flex: 1 }}
-                  labelStyle={{ color: '#110A24' }}
+                  labelStyle={{ color: '#727A8F' }}
                   onPress={this.handlePressProvider}
-                  placeholder="Added by"
-                  label={this.state.note.updatedBy}
+                  label="Added by"
+                  value={this.state.note.updatedBy}
                 >{this.props.appointmentNotesState.selectedProvider &&
                 <SalonAvatar
-                  wrapperStyle={styles.providerRound}
+                  wrapperStyle={{ marginLeft: 10 }}
                   width={30}
                   borderWidth={1}
                   borderColor="transparent"
@@ -335,12 +318,19 @@ class AppointmentNoteScreen extends Component {
               {[<InputDate
                 style={{ flex: 1 }}
                 placeholder="Expire Date"
+                noIcon={this.state.note.expiration == null}
                 onPress={(selectedDate) => {
                 const { note } = this.state;
                 note.expiration = selectedDate;
                 this.shouldSave = true;
                 this.setState({ note });
               }}
+                valueStyle={this.state.note.expiration == null ? {
+                  fontSize: 14,
+                  lineHeight: 22,
+                  color: '#727A8F',
+                  fontFamily: 'Roboto-Regular',
+                } : {}}
                 selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
               />]}
 

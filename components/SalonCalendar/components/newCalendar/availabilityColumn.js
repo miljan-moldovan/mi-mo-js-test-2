@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   cellStyle: {
     height: 30,
-    width: 102,
+    width: 64,
     borderColor: '#C0C1C6',
     borderBottomWidth: 1,
     borderRightWidth: 1,
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 
 const renderItems = item => (
   <View key={item.startTime} style={styles.cellStyle}>
-    <Text style={styles.textStyle}>{`${item.availableSlots} available`}</Text>
+    <Text style={styles.textStyle}>{`${item.availableSlots} avl.`}</Text>
   </View>
 );
 

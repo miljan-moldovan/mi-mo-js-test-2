@@ -2,6 +2,8 @@ import moment from 'moment';
 import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import apiWrapper from '../../../utilities/apiWrapper';
 
+import { POST_APPOINTMENT_MOVE_SUCCESS, POST_APPOINTMENT_MOVE, POST_APPOINTMENT_MOVE_FAILED } from '../../../actions/appointment';
+
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
 export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
@@ -110,9 +112,10 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
       ])
         .then(([employees, appointments, availabilityItem]) => {
           const employeesAppointment = orderBy(employees, 'appointmentOrder');
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
           dispatch(setGridAllViewSuccess(
             employeesAppointment,
-            appointments, availabilityItem.timeSlots,
+            orderedAppointments, availabilityItem.timeSlots,
           ));
         })
         .catch((ex) => {
@@ -133,8 +136,9 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
       ])
         .then(([providerSchedule, appointments]) => {
           const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
           dispatch(setGridDayWeekViewSuccess(
-            appointments,
+            orderedAppointments,
             groupedProviderSchedule,
             apptGridSettings,
             startDate,
@@ -220,7 +224,6 @@ const setScheduleDateRange = () => (dispatch, getState) => {
     dates.push(moment(moment(startDate).add(i, 'day')));
   }
   dispatch({ type: SET_DATE_RANGE, data: { dates } });
-  // return dispatch(getCalendarData());
 };
 
 const setProviderScheduleDates = (startDate, endDate) => (dispatch) => {
@@ -301,6 +304,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
       return {
         ...state,
         selectedProvider: data.selectedProvider,
+        //isLoading: true,
       };
     case SET_PROVIDER_DATES:
       return {
@@ -341,6 +345,27 @@ export default function appointmentScreenReducer(state = initialState, action) {
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
         appointments: data.appointments,
         providerSchedule: data.providerSchedule,
+      };
+    case POST_APPOINTMENT_MOVE:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case POST_APPOINTMENT_MOVE_SUCCESS: {
+      debugger
+      const appointments = state.appointments;
+      const index = appointments.findIndex(appt => appt.id === data.appointment.id);
+      appointments[index] = data.appointment
+      return {
+        ...state,
+        appointments,
+        isLoading: false,
+      }
+    }
+    case POST_APPOINTMENT_MOVE_FAILED:
+      return {
+        ...state,
+        isLoading: false,
       };
     default:
       return state;

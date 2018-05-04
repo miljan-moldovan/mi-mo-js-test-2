@@ -3,27 +3,60 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
-
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
   InputGroup,
   InputDivider,
-  InputSwitch,
-  ServiceInput,
   ProductInput,
   ProviderInput,
   SectionDivider,
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
+
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
+  },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   titleText: {
     fontFamily: 'Roboto',
@@ -31,32 +64,49 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
   },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default class ModifyProductScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: <Text style={styles.titleText}>{'product' in rootProps.navigation.state.params ?
-        'Modify Product' : 'Add Product'}
-    </Text>,
-    headerLeft:
-
-  <TouchableOpacity
-    onPress={() => { rootProps.navigation.goBack(); }}
-  >
-    <Icon
-      name="angleLeft"
-      type="regular"
-      color="white"
-      size={19}
-    />
-  </TouchableOpacity>,
-
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>{'product' in rootProps.navigation.state.params ?
+              'Modify Product' : 'Add Product'}
+        </Text>
+      </View>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity
+        style={styles.leftButton}
+        onPress={() => { rootProps.navigation.goBack(); }}
+      >
+        <View style={styles.leftButtonContainer}>
+          <Text style={styles.leftButtonText}>
+            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+          </Text>
+        </View>
+      </SalonTouchableOpacity>
+    ),
     headerRight: (
-      <TouchableOpacity
+      <SalonTouchableOpacity
+        wait={3000}
         onPress={rootProps.navigation.state.params.onSave}
       >
-        <Text style={{ fontSize: 14, color: 'white' }}>Save</Text>
-      </TouchableOpacity>
+        <View style={styles.rightButtonContainer}>
+          <Text style={styles.rightButtonText}>Save</Text>
+        </View>
+      </SalonTouchableOpacity>
     ),
   });
 
@@ -75,8 +125,9 @@ export default class ModifyProductScreen extends React.Component {
   }
 
   onSave = () => {
-    this.props.appointmentDetailsActions.addProduct({ product: this.state.selectedProduct, provider: this.state.selectedProvider }, this.state.index);
-    this.props.navigation.goBack();
+    alert('Not Implemented');
+    // this.props.appointmentDetailsActions.addProduct({ product: this.state.selectedProduct, provider: this.state.selectedProvider }, this.state.index);
+    // this.props.navigation.goBack();
   }
 
   render() {
@@ -115,7 +166,7 @@ export default class ModifyProductScreen extends React.Component {
         <SectionDivider />
         {this.state.index !== null && (
           <InputGroup>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
                 this.props.appointmentDetailsActions.removeProduct(this.state.index);
@@ -128,7 +179,7 @@ export default class ModifyProductScreen extends React.Component {
               >
                 Remove Product
               </Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </InputGroup>
         )}
       </View>

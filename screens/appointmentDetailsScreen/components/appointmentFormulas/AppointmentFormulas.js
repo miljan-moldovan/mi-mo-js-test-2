@@ -4,19 +4,17 @@ import {
   ScrollView,
   Text,
   StyleSheet,
-  TouchableOpacity,
   FlatList,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import SalonSearchBar from '../../../../components/SalonSearchBar';
 import SalonIcon from '../../../../components/SalonIcon';
-import SalonBtnFixedBottom from '../../../../components/SalonBtnFixedBottom';
-import SalonTag from '../../../../components/SalonTag';
 import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import FloatingButton from '../../../../components/FloatingButton';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,7 +23,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   header: {
-    flex: 2,
+    // flex: 2,
     // paddingVertical: 10,
     alignSelf: 'stretch',
     alignItems: 'flex-start',
@@ -52,23 +50,24 @@ const styles = StyleSheet.create({
   },
   topSearchBar: {
     padding: 0,
+    paddingHorizontal: 0,
     margin: 0,
     backgroundColor: 'transparent',
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    height: 53,
   },
   tagsBar: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 8,
     paddingVertical: 0,
     backgroundColor: 'transparent',
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
+    height: 38,
   },
   formulasContainer: {
     paddingTop: 0,
@@ -79,6 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   formulaTags: {
+    height: 17,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -108,14 +108,17 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   formulaText: {
+    color: '#5E5F61',
+    fontSize: 10,
+    fontFamily: 'Roboto-Light',
+    fontWeight: 'normal',
+    marginVertical: 5,
+  },
+  formulaTextTitle: {
     color: '#2E3032',
     fontSize: 12,
     fontFamily: 'Roboto',
-  },
-  formulaText: {
-    color: '#2E3032',
-    fontSize: 10,
-    lineHeight: 16,
+    fontWeight: 'normal',
   },
   formulaAuthor: {
     color: '#2F3142',
@@ -237,7 +240,7 @@ export default class AppointmentFormulas extends Component {
 
   existingCategories = () => {
     const { formulas } = this.props.appointmentFormulasState;
-    // debugger//eslint-disable-line
+
     const existing = [];
     for (let i = 0; i < formulas.length; i += 1) {
       if (existing.indexOf(formulas[i].category) < 0) {
@@ -262,7 +265,6 @@ export default class AppointmentFormulas extends Component {
   }
 
   filterFormulas(searchText, showDeleted) {
-    debugger //eslint-disable-line
     const baseFormulas = showDeleted ? this.props.appointmentFormulasState.formulas :
       this.props.appointmentFormulasState.formulas.filter(el => !el.isDeleted);
 
@@ -312,6 +314,7 @@ export default class AppointmentFormulas extends Component {
         <View style={styles.header}>
           <View style={styles.topSearchBar}>
             <SalonSearchBar
+              containerStyle={{ paddingHorizontal: 8 }}
               placeHolderText="Search"
               marginVertical={0}
               placeholderTextColor="#727A8F"
@@ -327,7 +330,6 @@ export default class AppointmentFormulas extends Component {
             {this.state.existingCategories.map(item => (
               <View style={styles.tag} key={Math.random().toString()}>
                 <SalonBtnTag
-                  iconSize={13}
                   onPress={this.onPressTagFilter}
                   tagHeight={24}
                   value={item}
@@ -338,12 +340,14 @@ export default class AppointmentFormulas extends Component {
                     iconColor: '#FFFFFF',
                     backgroundColor: '#1DBF12',
                     valueColor: '#FFFFFF',
+                    iconSize: 8,
                   }}
                   inactiveStyle={{
-                    icon: 'unchecked',
+                    icon: 'square',
                     iconColor: '#727A8F',
                     backgroundColor: '#FFFFFF',
                     valueColor: '#727A8F',
+                    iconSize: 16,
                   }}
                 />
               </View>
@@ -355,27 +359,37 @@ export default class AppointmentFormulas extends Component {
             <FlatList
               extraData={this.props}
               keyExtractor={(item, index) => index}
-              style={{ alignSelf: 'stretch', flex: 1 }}
+              style={{ alignSelf: 'stretch', marginTop: 4 }}
               data={this.props.appointmentFormulasState.filtered}
               renderItem={({ item, index }) => (
                 <SalonCard
                   key={index}
+                  containerStyles={{ marginVertical: 2, marginHorizontal: 8 }}
                   backgroundColor="#FFFFFF"
                   headerChildren={[
                     <View style={styles.formulaTags} key={Math.random().toString()}>
                       <View style={styles.formulaHeaderLeft}>
                         <SalonDateTxt
-                          dateFormat="MMM. DD YYYY"
+                          dateFormat="MMM. DD"
                           value={item.date}
                           valueColor="#000000"
                           valueSize={12}
+                          fontWeight="500"
+                        />
+                        <SalonDateTxt
+                          dateFormat=" YYYY"
+                          value={item.date}
+                          valueColor="#000000"
+                          valueSize={12}
+                          fontWeight="normal"
                         />
                       </View>
                       <View style={styles.formulaTypeTag}>
                         <Text style={styles.formulaType}>{item.category.toUpperCase()}</Text>
                       </View>
-                      <TouchableOpacity
+                      <SalonTouchableOpacity
                         onPress={() => alert('Screen Not Implemented')}
+                        style={{ marginRight: 10 }}
                       >
                         <FontAwesome
                           style={{
@@ -385,12 +399,12 @@ export default class AppointmentFormulas extends Component {
                           }}
                         >{Icons.angleRight}
                         </FontAwesome>
-                      </TouchableOpacity>
+                      </SalonTouchableOpacity>
                     </View>]}
                   bodyChildren={[
-                    <View style={{ flexDirection: 'column' }} key={Math.random().toString()}>
-                      <Text style={styles.formulaText}>
-                        <Text style={[styles.formulaText, styles.boldText]}>{item.service}</Text>
+                    <View style={{ flexDirection: 'column', height: 33 }} key={Math.random().toString()}>
+                      <Text style={styles.formulaTextTitle}>
+                        <Text style={[styles.formulaTextTitle, styles.boldText]}>{item.service}</Text>
                         <Text style={styles.italicText}> by</Text> {item.provider}
                       </Text>
                       <Text style={styles.formulaText}>Sport Clip Haircuts of Dallas/Knox St</Text>
@@ -399,14 +413,14 @@ export default class AppointmentFormulas extends Component {
               )}
             />
             <View style={styles.showDeletedButtonContainer}>
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 style={styles.showDeletedButton}
                 onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
                 }}
               >
                 <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
           </ScrollView>
         </View>

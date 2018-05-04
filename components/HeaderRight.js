@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -8,9 +9,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const headerRight = props => (<TouchableOpacity disabled={props.disabled} style={styles.buttonContainer} onPress={props.handlePress}>
+const headerRight = props => (<SalonTouchableOpacity disabled={props.disabled} style={styles.buttonContainer} onPress={props.handlePress}>
   {props.button}
-</TouchableOpacity>
+</SalonTouchableOpacity>
 );
 
 headerRight.propTypes = {

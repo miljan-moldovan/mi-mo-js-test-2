@@ -4,7 +4,6 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  TouchableOpacity,
   ActivityIndicator,
   FlatList,
   RefreshControl,
@@ -15,8 +14,8 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import apiWrapper from '../../utilities/apiWrapper';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
-import ProviderList from '../../components/providerList';
 import WordHighlighter from '../../components/wordHighlighter';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -111,7 +110,11 @@ class ProviderScreen extends React.Component {
     return {
       headerTitle: (
         <View style={{
-          flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center',
+          flexDirection: 'column',
+flex: 1,
+alignItems: 'center',
+justifyContent: 'center',
+
           }}
         >
           <Text style={styles.headerTitle}>{title}</Text>
@@ -119,9 +122,9 @@ class ProviderScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={leftButtonOnPress}>
+        <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={leftButtonOnPress}>
           { leftButton }
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       ),
       headerRight: (null),
       drawerLabel: props => (
@@ -169,12 +172,23 @@ class ProviderScreen extends React.Component {
   }
 
   componentWillMount() {
+    this.props.navigation.setParams({ defaultProps: this.state.headerProps });
+
     this.props.providersActions.getProviders({
       filterRule: 'none',
       maxCount: 100,
       sortOrder: 'asc',
       sortField: 'fullName',
     });
+  }
+
+  state = {
+    headerProps: {
+      title: 'Providers',
+      subTitle: null,
+      leftButtonOnPress: () => { this.props.navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    },
   }
 
   getFirstItemForLetter = (letter) => {
@@ -241,7 +255,7 @@ class ProviderScreen extends React.Component {
   }
 
   renderItem = ({ item, index }) => (
-    <TouchableOpacity
+    <SalonTouchableOpacity
       style={styles.itemRow}
       onPress={() => this._handleOnChangeProvider(item)}
       key={index}
@@ -270,7 +284,7 @@ class ProviderScreen extends React.Component {
         <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
         )}
       </View>
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 
   renderSeparator = () => (
@@ -316,8 +330,14 @@ class ProviderScreen extends React.Component {
 
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
-            <TouchableOpacity
-              onPress={() => this._handleOnChangeProvider({ isFirstAvailable: true })}
+            <SalonTouchableOpacity
+              onPress={() => this._handleOnChangeProvider({
+                id: 0,
+                isFirstAvailable: true,
+                name: 'First',
+                lastName: 'Available',
+
+               })}
               style={styles.itemRow}
               key={Math.random()}
             >
@@ -335,7 +355,7 @@ class ProviderScreen extends React.Component {
                 <Text style={[styles.timeLeftText]}>21m</Text>
               </View>
               <View style={{ flex: 1, alignItems: 'center' }} />
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
             {this.renderSeparator()}
             { this.props.providersState.isLoading ?
               (
@@ -365,14 +385,14 @@ class ProviderScreen extends React.Component {
           </View>
           <View style={styles.letterListContainer}>
             {letters.map(item => (
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 key={item}
                 onPress={() => {
                   this.scrollToIndex(this.getFirstItemForLetter(item));
                 }}
               >
                 <Text style={styles.letterListText}>{item}</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
               ))}
           </View>
         </View>

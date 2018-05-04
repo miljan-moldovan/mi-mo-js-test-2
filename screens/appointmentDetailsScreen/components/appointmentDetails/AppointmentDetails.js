@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
@@ -16,10 +15,13 @@ import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } fro
 import CircularCountdown from '../../../../components/CircularCountdown';
 import ServiceIcons from '../../../../components/ServiceIcons';
 import SalonCard from '../../../../components/SalonCard';
-import { InputButton } from '../../../../components/formHelpers';
+import { InputButton, SectionDivider } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import apiWrapper from '../../../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+import QueueTimeNote from '../../../../components/QueueTimeNote';
+import Icon from '../../../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
@@ -58,7 +60,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   circularCountdown: {
-    marginRight: 15,
+    marginRight: 5,
+    marginTop: 3,
     alignItems: 'center',
   },
   waitingTimeTextTop: {
@@ -69,10 +72,11 @@ const styles = StyleSheet.create({
   infoContainer: {
     backgroundColor: '#e2e9f1',
     borderBottomWidth: 1,
-    borderBottomColor: '#d3d9e0',
+    borderBottomColor: '#C0C1C6',
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingVertical: 19,
+    paddingBottom: 19,
+    paddingTop: 13,
     minHeight: 123,
   },
   infoTitleText: {
@@ -82,13 +86,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
   },
   content: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
   },
   titleText: {
-    marginTop: 24,
+    marginTop: 23,
     color: '#4D5067',
     fontSize: 14,
     lineHeight: 18,
+    marginLeft: 8,
+    marginBottom: 5,
     fontFamily: 'Roboto-Medium',
   },
   serviceTitle: {
@@ -126,6 +132,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#110A24',
     fontFamily: 'Roboto-Regular',
+    marginLeft: 5,
   },
   timeCaretIcon: {
     fontSize: 12,
@@ -143,7 +150,7 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 11,
     lineHeight: 16,
-    color: '#2F3142',
+    color: '#C0C1C5',
     fontFamily: 'Roboto-Medium',
   },
   totalAmount: {
@@ -164,11 +171,10 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   bottomButtonText: {
+    fontFamily: 'Roboto-Medium',
     fontSize: 10,
-    lineHeight: 11,
-    marginTop: 7,
-    color: 'white',
-    fontFamily: 'Roboto-Light',
+    lineHeight: 10,
+    marginTop: 8,
   },
   apptLabel: {
     paddingLeft: 5,
@@ -177,40 +183,54 @@ const styles = StyleSheet.create({
     width: 10,
     color: '#53646F',
   },
+  notArrivedContainer: {
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
+  },
+  finishedContainer: {
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 99999,
+    right: 30,
+    bottom: 5,
+  },
+  finishedTime: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    height: 16,
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  finishedTimeText: {
+    fontSize: 9,
+    fontFamily: 'Roboto-Medium',
+    color: '#4D5067',
+  },
+  finishedTimeFlag: {
+    backgroundColor: '#31CF48',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 3,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'transparent',
+  },
 });
 
 const caretRight = (
   <FontAwesome style={styles.timeCaretIcon}>{Icons.angleRight}</FontAwesome>
 );
-
-const SalonAppointmentTime = (props) => {
-  let estimatedTime = moment(props.appointment.estimatedTime, 'hh:mm:ss').isValid()
-    ? moment(props.appointment.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(props.appointment.estimatedTime, 'hh:mm:ss').minutes()
-    : 0;
-
-  if (props.appointment.estimatedTime && props.appointment.estimatedTime[0] === '-') {
-    estimatedTime *= (-1);
-  }
-
-  const timeCheckedIn = props.appointment.status === 5 ? 0 : estimatedTime;
-  const isAppointment = props.appointment.status === 1;
-
-  return (<View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
-    <FontAwesome style={styles.serviceClockIcon}>{Icons.clockO}</FontAwesome>
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}> {moment(props.appointment.startTime, 'hh:mm:ss').format('LT')}</Text>
-      {caretRight}
-      <Text style={styles.serviceTime}>exp, start in </Text>
-      <Text style={styles.serviceRemainingWaitTime}>{timeCheckedIn}m
-        {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
-      </Text>
-
-    </View>
-          </View>);
-};
-SalonAppointmentTime.propTypes = {
-  appointment: PropTypes.shape(AppointmentModel).isRequired,
-};
 
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
@@ -220,16 +240,16 @@ const ServiceCard = (props) => {
     <SalonCard
       backgroundColor="white"
       containerStyles={{ marginHorizontal: 0 }}
-      bodyStyles={{ flexDirection: 'column', paddingVertical: 10 }}
+      bodyStyles={{ paddingHorizontal: 8, flexDirection: 'column', paddingVertical: 10 }}
       bodyChildren={[
-        <TouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
+        <SalonTouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }} onPress={props.onPress}>
           <View key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }}>
             <Text style={[styles.serviceTitle, { flex: 1 }]}>
               {name}
             </Text>
             {props.service.promoId > 0
           ? (
-            <View>
+            <View style={{ flexDirection: 'row' }}>
               <Text style={[styles.price, styles.lineThrough]}>{`$${props.service.price}`}</Text>
               <Text style={[styles.price, { marginLeft: 5, color: '#FFA300' }]}>$20</Text>
             </View>
@@ -272,7 +292,7 @@ const ServiceCard = (props) => {
             <Text style={styles.promoDescription}>FIRST CUSTOMER -50%</Text>
         )}
           </View>
-        </TouchableOpacity>,
+        </SalonTouchableOpacity>,
     ]}
     />
   );
@@ -282,9 +302,9 @@ const ProductCard = props => (
   <SalonCard
     backgroundColor="white"
     containerStyles={{ marginHorizontal: 0 }}
-    bodyStyles={{ paddingVertical: 10 }}
+    bodyStyles={{ paddingHorizontal: 8, paddingVertical: 10 }}
     bodyChildren={[
-      <TouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }} onPress={props.onPress}>
+      <SalonTouchableOpacity key={Math.random()} style={{ flex: 1, flexDirection: 'row', alignSelf: 'flex-start' }} onPress={props.onPress}>
         <View key={Math.random()} style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-start' }}>
           <Text style={styles.serviceTitle}>{props.product.product.name}</Text>
           <Text style={styles.employeeText}>{props.product.provider.fullName}</Text>
@@ -302,7 +322,7 @@ const ProductCard = props => (
             <FontAwesome style={styles.caretIcon}>{Icons.angleRight}</FontAwesome>
           </View>
         </View>
-      </TouchableOpacity>,
+      </SalonTouchableOpacity>,
     ]}
   />
 );
@@ -342,18 +362,19 @@ CircularIcon.defaultProps = {
 };
 
 export const AddButton = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     onPress={props.onPress}
     style={{
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      padding: 12,
+      paddingHorizontal: 12,
+      paddingTop: 12,
     }}
   >
     <CircularIcon style={props.iconStyle} />
     <Text style={styles.addButtonText}> {props.title}</Text>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 AddButton.propTypes = {
   title: PropTypes.string.isRequired,
@@ -361,14 +382,14 @@ AddButton.propTypes = {
 };
 
 const BottomButton = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     style={styles.bottomButtonWrapper}
     onPress={props.onPress}
     disabled={props.disabled}
   >
-    <FontAwesome style={styles.bottomButtonIcon}>{Icons[props.icon]}</FontAwesome>
-    <Text style={styles.bottomButtonText}>{props.title}</Text>
-  </TouchableOpacity>
+    <Icon style={{ marginTop: 2 }} name={props.icon} size={15} color={props.disabled ? '#4D5067' : '#FFFFFF'} type="solid" />
+    <Text style={[styles.bottomButtonText, { color: props.disabled ? '#4D5067' : '#FFFFFF' }]}>{props.title}</Text>
+  </SalonTouchableOpacity>
 );
 
 class AppointmentDetails extends React.Component {
@@ -390,7 +411,13 @@ class AppointmentDetails extends React.Component {
             </View>
             <View style={styles.finishedTime}>
               <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-              <Text style={styles.finishedTimeText}>{item.processTime}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{item.estimatedTime}min est.</Text></Text>
+              <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
+                ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
+                : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+                  ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
+                  : 0)}min est.
+                </Text>
+              </Text>
             </View>
           </View>
         );
@@ -402,13 +429,15 @@ class AppointmentDetails extends React.Component {
         );
       case QUEUE_ITEM_NOT_ARRIVED:
         return (
-          <View style={[styles.waitingTime, { backgroundColor: 'rgba(192,193,198,1)' }]}>
-            <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED</Text>
+          <View>
+            <View style={[styles.waitingTime, { marginRight: 0, flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
+              <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
+              <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
+              <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
+            </View>
           </View>
         );
       default:
-
-        console.log(JSON.stringify(item));
 
         let processTime = moment(item.processTime, 'hh:mm:ss'),
           progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
@@ -422,17 +451,10 @@ class AppointmentDetails extends React.Component {
           estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
             ? estimatedTime.minutes() + estimatedTime.hours() * 60
             : 0;
-        console.log('processTime', moment(item.processTime, 'hh:mm:ss').isValid());
-        console.log('processTime', processMinutes);
-        console.log('progressMaxTime', moment(item.progressMaxTime, 'hh:mm:ss').isValid());
-        console.log('progressMaxMinutes', progressMaxMinutes);
-        console.log('estimatedTime', moment(item.estimatedTime, 'hh:mm:ss').isValid());
-        console.log('estimatedTimeMinutes', estimatedTimeMinutes);
-        console.log('status', item.status);
 
         return (
           <CircularCountdown
-            size={58}
+            size={50}
             estimatedTime={progressMaxMinutes}
             processTime={processMinutes}
             itemStatus={item.status}
@@ -446,6 +468,8 @@ class AppointmentDetails extends React.Component {
   handleAddService = () => {
     this.props.navigation.navigate('Service', {
       client: this.state.appointment.client,
+      services: this.state.appointment.services,
+      appointment: this.state.appointment,
       dismissOnSelect: true,
       onChangeService: data => this.handleServiceSelection(data),
     });
@@ -455,6 +479,8 @@ class AppointmentDetails extends React.Component {
     this.props.navigation.navigate('Service', {
       service,
       index,
+      appointment: this.state.appointment,
+      services: this.state.appointment.services,
       client: this.state.appointment.client,
       dismissOnSelect: true,
       onChangeService: data => this.handleServiceSelection(data),
@@ -464,6 +490,7 @@ class AppointmentDetails extends React.Component {
   handleAddProduct = () => {
     this.props.navigation.navigate('Product', {
       client: this.state.appointment.client,
+
       dismissOnSelect: true,
       onChangeProduct: data => this.handleProductSelection(data),
     });
@@ -575,11 +602,11 @@ class AppointmentDetails extends React.Component {
       <View style={[styles.container]}>
         <ScrollView style={{ marginBottom: 63 }}>
           <View style={styles.infoContainer}>
-            <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+            <View style={{ flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
               <Text style={styles.infoTitleText}>Queue Appointment</Text>
-              <SalonAppointmentTime appointment={appointment} />
+              <QueueTimeNote containerStyles={{ marginTop: 3 }} item={appointment} />
               <View style={{ alignSelf: 'flex-start' }}>
-                <ServiceIcons direction="column" item={appointment} groupLeaderName={groupLeaderName} />
+                <ServiceIcons hideInitials wrapperStyle={{ marginTop: 6 }} align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -591,7 +618,7 @@ class AppointmentDetails extends React.Component {
             <SalonCard
               backgroundColor="white"
               containerStyles={{ marginHorizontal: 0 }}
-              bodyStyles={{ paddingVertical: 0 }}
+              bodyStyles={{ paddingHorizontal: 8, paddingVertical: 0 }}
               bodyChildren={[
                 <InputButton
                   key={Math.random()}
@@ -604,7 +631,7 @@ class AppointmentDetails extends React.Component {
               ]}
             />
             <Text style={styles.titleText}>Services</Text>
-            {appointmentDetailsState.services.map((item, index) => (
+            {this.state.appointment.services.map((item, index) => (
               <ServiceCard
                 key={Math.random()}
                 onPress={() => this.handlePressService(item, index)}
@@ -624,24 +651,41 @@ class AppointmentDetails extends React.Component {
               />
             ))}
             <AddButton onPress={this.handleAddProduct} title="Add Product" />
-            <View style={{ alignSelf: 'stretch' }}>
+            <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>
               <InputButton
                 style={{
-                  paddingHorizontal: 5,
-                  paddingVertical: 15,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#C0C1C6',
+              //    marginTop: 20,
+                  paddingTop: 22,
+                  paddingRight: 5,
+                  // borderBottomWidth: StyleSheet.hairlineWidth,
+                  // borderBottomColor: '#C0C1C6',
+                }}
+                iconStyle={{
+                  fontSize: 22,
+                  color: '#727A8F',
+                  paddingTop: 12,
+                }}
+                labelStyle={{
+                  color: '#4D5067',
+                  fontSize: 14,
+                  fontWeight: '500',
                 }}
                 label="Recommendations"
                 onPress={() => {
                   this.props.navigation.navigate('Recommendations');
                 }}
               />
+              <SectionDivider style={{
+                borderBottomWidth: StyleSheet.hairlineWidth,
+                borderBottomColor: '#C0C1C6',
+              }}
+              />
             </View>
             <View style={{
               flexDirection: 'row',
               marginTop: 23,
               marginBottom: 15,
+              paddingHorizontal: 8,
               justifyContent: 'space-between',
             }}
             >

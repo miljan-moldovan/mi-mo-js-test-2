@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import moment from 'moment';
 
-import apiWrapper from '../../../utilities/apiWrapper';
 import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
-import SalonProviderCalendar from '../../../components/SalonProviderCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
+import apiWrapper from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -151,7 +151,6 @@ export default class AppointmentScreen extends Component {
       appointments,
       availability,
     } = this.props.appointmentScreenState;
-
     const { isLoading } = this.state;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     const headerData = selectedProvider === 'all' ? providers : dates;
@@ -167,23 +166,24 @@ export default class AppointmentScreen extends Component {
           }}
           selectedDate={moment(startDate)}
         />
+        <SalonCalendar
+          onCellPressed={this.onCalendarCellPressed}
+          apptGridSettings={apptGridSettings}
+          dataSource={providerAppointments}
+          appointments={appointments}
+          headerData={headerData}
+          onDrop={this.props.appointmentActions.postAppointmentMove}
+          onResize={this.props.appointmentActions.postAppointmentResize}
+          selectedProvider={selectedProvider}
+          displayMode={pickerMode}
+          providerSchedule={providerSchedule}
+          availability={availability}
+          startDate={startDate}
+          isLoading={isLoading}
+        />
         {
-          isLoading ?
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator /></View> :
-            <SalonCalendar
-              onCellPressed={this.onCalendarCellPressed}
-              apptGridSettings={apptGridSettings}
-              dataSource={providerAppointments}
-              appointments={appointments}
-              headerData={headerData}
-              onDrop={this.props.appointmentActions.postAppointmentMove}
-              onResize={this.props.appointmentActions.postAppointmentResize}
-              selectedProvider={selectedProvider}
-              displayMode={pickerMode}
-              providerSchedule={providerSchedule}
-              availability={availability}
-              startDate={startDate}
-            />
+           isLoading ?
+             <View style={{ position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d' }}><ActivityIndicator /></View> : null
         }
         {selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
@@ -233,21 +233,30 @@ export default class AppointmentScreen extends Component {
             this.props.navigation.navigate('Providers', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeProvider: provider => this.props.newAppointmentActions.setNewApptEmployee(provider),
+              onChangeProvider: (provider) => {
+                this.props.newAppointmentActions.setNewApptEmployee(provider);
+                this.setState({ visibleNewAppointment: true });
+              },
             });
           }}
           handlePressService={() => {
             this.props.navigation.navigate('Services', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeService: service => this.props.newAppointmentActions.setNewApptService(service),
+              onChangeService: (service) => {
+                this.props.newAppointmentActions.setNewApptService(service);
+                this.setState({ visibleNewAppointment: true });
+              },
             });
           }}
           handlePressClient={() => {
             this.props.navigation.navigate('ChangeClient', {
               actionType: 'update',
               dismissOnSelect: true,
-              onChangeClient: client => this.props.newAppointmentActions.setNewApptClient(client),
+              onChangeClient: (client) => {
+                this.props.newAppointmentActions.setNewApptClient(client);
+                this.setState({ visibleNewAppointment: true });
+              },
             });
           }}
           handleChangeRequested={(requested) => {

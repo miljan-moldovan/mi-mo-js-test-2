@@ -1,25 +1,16 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Alert,
-  Modal,
-  FlatList,
-  RefreshControl,
-  Animated,
-  Dimensions,
 } from 'react-native';
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import HeaderRight from '../components/HeaderRight';
 import * as actions from '../actions/queue.js';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 class QueueDetailScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -74,7 +65,6 @@ class QueueDetailScreen extends React.Component {
     });
   }
   _handleServiceChange = (service) => {
-    console.log('QueueDetail._handleServiceChange', service);
     this.setState({
       item: {
         ...this.state.item,
@@ -103,7 +93,6 @@ class QueueDetailScreen extends React.Component {
     });
   }
   _handlePromoChange = (promotion) => {
-    console.log('QueueDetailScreen._handlePromoChange', promotion);
     this.setState({
       item: {
         ...this.state.item,
@@ -117,15 +106,15 @@ class QueueDetailScreen extends React.Component {
     const promotion = item.promotion;
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.itemContainer} onPress={this._handleServicePress}>
+        <SalonTouchableOpacity style={styles.itemContainer} onPress={this._handleServicePress}>
           <View>
             <Text style={styles.serviceTitle}>{item.services[0].description}</Text>
             <Text style={styles.serviceTime}>{item.estimatedTime}min</Text>
           </View>
           <Text style={styles.servicePrice}>$??.??</Text>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
 
-        <TouchableOpacity style={styles.itemContainer} onPress={this._handleProviderPress}>
+        <SalonTouchableOpacity style={styles.itemContainer} onPress={this._handleProviderPress}>
           <View>
             <Text style={styles.providerLabel}>PROVIDER</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
@@ -133,15 +122,15 @@ class QueueDetailScreen extends React.Component {
               <Text style={styles.providerName}>{employee}</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
 
-        <TouchableOpacity style={styles.itemContainer} onPress={this._handlePromoPress}>
+        <SalonTouchableOpacity style={styles.itemContainer} onPress={this._handlePromoPress}>
           <View>
             <Text style={styles.providerLabel}>PROMO CODE</Text>
             <Text style={styles.promoCode}>{ promotion ? promotion.name.substring(0, 30) : 'None'}</Text>
           </View>
           <Text style={styles.promoDiscount}>{ promotion ? (`-$${promotion.discount}`) : '' }</Text>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
 
         <Button rounded bordered style={styles.deleteButton} onPress={this._handleDeletePress}>
           <Text style={styles.deleteButtonText}>Delete Service</Text>
@@ -150,13 +139,10 @@ class QueueDetailScreen extends React.Component {
     );
   }
 }
-const mapStateToProps = (state, ownProps) => {
-  console.log('QueueDetailScreen-map', state);
-  return {
-    waitingQueue: state.queue.waitingQueue,
-    serviceQueue: state.queue.serviceQueue,
-  };
-};
+const mapStateToProps = (state, ownProps) => ({
+  waitingQueue: state.queue.waitingQueue,
+  serviceQueue: state.queue.serviceQueue,
+});
 export default connect(mapStateToProps, actions)(QueueDetailScreen);
 
 

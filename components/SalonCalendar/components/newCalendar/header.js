@@ -4,11 +4,10 @@ import { Text, View, StyleSheet } from 'react-native';
 import SalonAvatar from '../../../SalonAvatar';
 import apiWrapper from '../../../../utilities/apiWrapper';
 import FirstAvailableBtn from '../firstAvailableBtn';
+import colors from '../../../../constants/appointmentColors';
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
     flexDirection: 'row',
   },
   columnLabel: {
@@ -76,12 +75,16 @@ export default class Header extends Component {
   renderProvider = (data, index) => {
     const { cellWidth } = this.props;
     const uri = apiWrapper.getEmployeePhoto(data.id);
+    const hasBorder =data.displayColor && data.displayColor !== -1;
+    const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
+    const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';
     return (
-      <View key={data.id} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
+      <View key={data.id} style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
         <SalonAvatar
           wrapperStyle={styles.avatarStyle}
           width={24}
-          borderWidth={0}
+          borderWidth={hasBorder ? 3 : 0}
+          borderColor={borderColor}
           image={{ uri }}
           // hasBadge
           // badgeComponent={
@@ -106,12 +109,17 @@ export default class Header extends Component {
   }
 
   render() {
-    const { isDate } = this.props;
-    const width = isDate ? 36 : 138;
+    const { isDate, showFirstAvailable, handleShowfirstAvailalble } = this.props;
+    const width = isDate ? 36 : 100;
     return (
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
-          { isDate ? null : <FirstAvailableBtn /> }
+          { isDate ? null :
+          <FirstAvailableBtn
+            value={showFirstAvailable}
+            onChange={handleShowfirstAvailalble}
+          />
+          }
         </View>
         { this.props.dataSource.map((data, index) => this.renderColumnLabel(data, index)) }
       </View>

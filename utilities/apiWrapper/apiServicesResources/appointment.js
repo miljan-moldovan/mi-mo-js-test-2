@@ -12,6 +12,12 @@ const resources = {
     // expiration: apiConstants.expiration,
     disableCache: true,
   },
+  getAppointmentsById: {
+    path: 'Appointment/:id',
+    method: 'get',
+    // expiration: apiConstants.expiration,
+    disableCache: true,
+  },
   postAppointmentMove: {
     path: 'Appointment/:appointmentId/Move',
     method: 'post',

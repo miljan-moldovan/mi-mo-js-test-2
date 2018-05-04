@@ -1,9 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, StyleSheet, Image } from 'react-native';
 import Picker from 'react-native-picker';
 import PropTypes from 'prop-types';
 
-import arrow from "../assets/images/newClient/icon_arrow_right_xs.png";
+import SalonTouchableOpacity from './SalonTouchableOpacity';
+
+
+import arrow from '../assets/images/newClient/icon_arrow_right_xs.png';
 
 const styles = StyleSheet.create({
   btnContainer: {
@@ -51,7 +54,7 @@ function showPicker(props) {
 }
 
 const salonPicker = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     disabled={props.disabled}
     onPress={() => showPicker({
       dataSource: props.dataSource,
@@ -70,7 +73,7 @@ const salonPicker = props => (
         <Image style={styles.image} source={arrow} />
       </View>
     </View>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 salonPicker.propTypes = {

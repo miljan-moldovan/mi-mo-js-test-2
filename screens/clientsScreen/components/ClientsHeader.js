@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 
 const styles = StyleSheet.create({
@@ -109,7 +110,7 @@ export default class ClientsSearchHeader extends React.Component {
   render() {
     return (<View style={styles.header}>
 
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={styles.leftButton}
         onPress={() => { this.props.navigation.goBack(); }}
       >
@@ -118,11 +119,11 @@ export default class ClientsSearchHeader extends React.Component {
             Cancel
           </Text>
         </View>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Clients</Text>
       </View>
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={styles.rightButton}
         onPress={() => { this.props.navigation.navigate('NewClientScreen'); }}
       >
@@ -131,7 +132,7 @@ export default class ClientsSearchHeader extends React.Component {
             {this.props.salonSearchHeaderState.rightButton}
           </Text>
         </View>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
             </View>);
   }
 }

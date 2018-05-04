@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
   Switch,
   ViewPropTypes,
 } from 'react-native';
@@ -15,6 +14,7 @@ import moment from 'moment';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
 import apiWrapper from '../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -145,7 +145,7 @@ export const DefaultAvatar = props => (
 );
 
 export const RemoveButton = ({ title, onPress }) => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     style={{
         height: 44,
         alignSelf: 'stretch',
@@ -163,16 +163,21 @@ export const RemoveButton = ({ title, onPress }) => (
       }}
     >{title}
     </Text>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 export const SectionTitle = props => (
   <View style={[{ height: 38, flexDirection: 'column', justifyContent: 'center' }, props.style]} >
-    <Text style={styles.sectionTitle}>{props.value.toUpperCase()}</Text>
+    <Text style={[styles.sectionTitle, props.sectionTitleStyle]}>{props.case === 'upper' ? props.value.toUpperCase() : (props.case === 'lower' ? props.value.toLowerCase() : props.value)}</Text>
   </View>
 );
 SectionTitle.propTypes = {
   value: PropTypes.string.isRequired,
+  case: PropTypes.string,
+};
+
+SectionTitle.defaultProps = {
+  case: 'upper',
 };
 
 export const SectionDivider = props => (
@@ -192,7 +197,7 @@ export const InputDivider = props => (
 );
 
 InputDivider.propTypes = {
-  style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  style: ViewPropTypes.style,
 };
 
 InputDivider.defaultProps = {
@@ -214,7 +219,7 @@ InputGroup.defaultProps = {
 };
 
 export const InputButton = props => (
-  <TouchableOpacity
+  <SalonTouchableOpacity
     style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
     onPress={props.onPress}
   >
@@ -226,7 +231,7 @@ export const InputButton = props => (
       {
         typeof props.value === 'string'
         ? (
-          <Text style={styles.inputText}>{props.value}</Text>
+          <Text style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
         ) :
           props.value
       }
@@ -235,12 +240,13 @@ export const InputButton = props => (
     {!props.noIcon && (
       <FontAwesome style={[styles.iconStyle, props.iconStyle]}>{Icons.angleRight}</FontAwesome>
     )}
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 InputButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   style: ViewPropTypes.style,
   labelStyle: Text.propTypes.style,
+  valueStyle: Text.propTypes.style,
   label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
@@ -250,6 +256,7 @@ InputButton.propTypes = {
 InputButton.defaultProps = {
   style: {},
   labelStyle: {},
+  valueStyle: {},
   label: false,
   value: false,
   noIcon: false,
@@ -329,6 +336,7 @@ export class InputDate extends React.Component {
         />
         <InputButton
           style={{ flex: 1 }}
+          valueStyle={this.props.valueStyle}
           onPress={() => {
             this.setState({ showModal: !this.state.showModal });
           }}
@@ -337,7 +345,7 @@ export class InputDate extends React.Component {
           value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format('YYYY-MM-DD') : this.props.selectedDate}
         />
         {!this.props.noIcon && (
-          <TouchableOpacity
+          <SalonTouchableOpacity
             onPress={() => {
               this.props.onPress(null);
             }}
@@ -346,7 +354,7 @@ export class InputDate extends React.Component {
             <View style={styles.dateCancelStyle}>
               <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
             </View>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         )}
       </View>
     );
@@ -403,7 +411,7 @@ export class ClientInput extends React.Component {
   render() {
     const value = this.props.selectedClient ? `${this.props.selectedClient.name} ${this.props.selectedClient.lastName}` : null;
     return (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.style]}
         onPress={this.handlePress}
       >
@@ -415,7 +423,7 @@ export class ClientInput extends React.Component {
           <View style={{ marginHorizontal: 5, flexDirection: 'row' }}>{this.props.extraComponents}</View>
         )}
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     );
   }
 }
@@ -446,7 +454,7 @@ export class ServiceInput extends React.Component {
   render() {
     const value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : (this.state.selectedService && 'serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
     return (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
@@ -455,7 +463,7 @@ export class ServiceInput extends React.Component {
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     );
   }
 }
@@ -501,7 +509,7 @@ export class ProviderInput extends React.Component {
     const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(this.state.selectedProvider !== null && !this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
 
     return (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
@@ -531,7 +539,7 @@ export class ProviderInput extends React.Component {
           )}
         </View>
         <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     );
   }
 }
@@ -561,7 +569,7 @@ export class PromotionInput extends React.Component {
   render() {
     const value = this.state.selectedPromotion ? this.state.selectedPromotion.name : null;
     return (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
@@ -570,7 +578,7 @@ export class PromotionInput extends React.Component {
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     );
   }
 }
@@ -600,7 +608,7 @@ export class ProductInput extends React.Component {
   render() {
     const value = this.state.selectedProduct ? this.state.selectedProduct.name : null;
     return (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
         onPress={this.handlePress}
       >
@@ -609,7 +617,7 @@ export class ProductInput extends React.Component {
           <Text style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     );
   }
 }
@@ -658,7 +666,7 @@ export class InputNumber extends React.Component {
       <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
         {countComponent}
         <View style={[styles.inputNumber, this.props.inputNumberStyle]}>
-          <TouchableOpacity
+          <SalonTouchableOpacity
             style={[styles.inputNumberButton, {
               borderRightColor: '#1DBF12',
               borderRightWidth: 1,
@@ -666,13 +674,13 @@ export class InputNumber extends React.Component {
             onPress={this.handleSubstractPress}
           >
             <Text style={[styles.inputNumberLabelText]}>-</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </SalonTouchableOpacity>
+          <SalonTouchableOpacity
             style={[styles.inputNumberButton]}
             onPress={this.handleAddPress}
           >
             <Text style={[styles.inputNumberLabelText]}>+</Text>
-          </TouchableOpacity>
+          </SalonTouchableOpacity>
         </View>
       </View>
     );

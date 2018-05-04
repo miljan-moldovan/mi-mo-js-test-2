@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -15,6 +14,8 @@ import {
   InputDivider,
   SectionDivider,
 } from '../../../../components/formHelpers';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -29,9 +30,9 @@ const styles = StyleSheet.create({
 });
 
 const NavButton = ({ icon, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
+  <SalonTouchableOpacity onPress={onPress}>
     <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 export default class AppointmentFormula extends React.Component {
@@ -43,13 +44,13 @@ export default class AppointmentFormula extends React.Component {
       </View>
     ),
     headerLeft: (
-      <TouchableOpacity
+      <SalonTouchableOpacity
         onPress={() => {
           rootProps.navigation.goBack();
           }}
       >
         <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'Roboto-Regular' }}>Cancel</Text>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     ),
     headerRight: <Text style={{ fontSize: 14, color: '#fff', fontFamily: 'Roboto-Regular' }}>Save</Text>,
   })
@@ -65,7 +66,6 @@ export default class AppointmentFormula extends React.Component {
   }
 
   handleClientSelection = (client) => {
-    console.log('selected client', client);
   }
 
   render() {

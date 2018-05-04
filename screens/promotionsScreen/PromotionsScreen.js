@@ -5,8 +5,10 @@ import {
   Text,
   View,
   FlatList,
-  TouchableHighlight,
 } from 'react-native';
+import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 const promotions = require('../../mockData/promotions.json');
 
@@ -122,9 +124,79 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 class PromotionsScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>Promotions</Text>
+      </View>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity style={styles.leftButton} onPress={() => { navigation.goBack(); }}>
+        <View style={styles.leftButtonContainer}>
+          <Text style={styles.leftButtonText}>
+            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+          </Text>
+        </View>
+      </SalonTouchableOpacity>
+    ),
+  });
+
+
   constructor(props) {
     super(props);
 
@@ -204,7 +276,7 @@ class PromotionsScreen extends React.Component {
     if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
   _renderItem = ({ item: { data, key } }) => (
-    <TouchableHighlight
+    <SalonTouchableHighlight
       style={data.id === this.state.activeListItem ? styles.listItemActive : styles.listItemInactive}
       onPress={() => {
         const { navigate, state } = this.props.navigation;
@@ -214,7 +286,6 @@ class PromotionsScreen extends React.Component {
           this.props.walkInActions.selectPromotion(data);
           navigate('WalkIn');
         }
-
       }}
       key={key}
       underlayColor="#ffffff"
@@ -234,7 +305,7 @@ class PromotionsScreen extends React.Component {
           </View>
         </View>
       </View>
-    </TouchableHighlight>
+    </SalonTouchableHighlight>
   );
 
 

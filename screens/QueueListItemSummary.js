@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import apiWrapper from '../utilities/apiWrapper';
 import * as actions from '../actions/queue';
 import SalonAvatar from '../components/SalonAvatar';
 import { connect } from 'react-redux';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   row: {
@@ -136,7 +137,6 @@ class queueListItemSummary extends React.Component {
 
 
     }).catch((error) => {
-      console.log(error);
     });
   }
 
@@ -178,12 +178,11 @@ class queueListItemSummary extends React.Component {
 
 
     }).catch((error) => {
-      console.log(error);
     });
   }
 
   handlePressService = (service) => {
-    this.props.navigation.navigate('Services', {
+    this.props.navigation.navigate('ModalServices', {
       service,
       index: 0,
       client: this.props.appointment.client,
@@ -195,7 +194,7 @@ class queueListItemSummary extends React.Component {
   };
 
 handlePressProvider = (service) => {
-  this.props.navigation.navigate('Providers', {
+  this.props.navigation.navigate('ModalProviders', {
     index: 0,
     client: this.props.appointment.client,
     dismissOnSelect: true,
@@ -206,15 +205,15 @@ handlePressProvider = (service) => {
 render() {
   return (<View>
     <View style={styles.serviceContainer}>
-      <TouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
+      <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
         <View style={[styles.row, styles.rowBorderBottom]}>
           <Text style={styles.textMedium}>{this.props.service.serviceName}</Text>
           <View style={styles.iconContainer}>
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
           </View>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => this.handlePressProvider(this.props.service)}>
+      </SalonTouchableOpacity>
+      <SalonTouchableOpacity onPress={() => this.handlePressProvider(this.props.service)}>
         <View style={styles.row}>
           <SalonAvatar
             borderColor="#FFFFFF"
@@ -238,7 +237,7 @@ render() {
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
           </View>
         </View>
-      </TouchableOpacity>
+      </SalonTouchableOpacity>
     </View>
           </View>);
 }

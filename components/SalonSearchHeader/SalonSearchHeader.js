@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, ViewPropTypes, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ViewPropTypes, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
+import SalonTouchableOpacity from '../SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 24,
+    paddingTop: 35,
     paddingHorizontal: 10,
     paddingBottom: 8,
   },
@@ -132,24 +133,24 @@ class SalonSearchHeader extends React.Component {
           <View style={styles.header}>
 
             <View style={styles.leftButton}>
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 style={{ flex: 1 }}
                 onPress={() => { this.props.leftButtonOnPress(); }}
               >
                 {this.props.leftButton}
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
             <View style={styles.titleContainer}>
               <Text style={styles.titleText}>{this.props.title}</Text>
               {this.props.subTitle && <Text style={styles.subTitleText}>{this.props.subTitle}</Text>}
             </View>
             <View style={styles.rightButton}>
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 style={{ flex: 1 }}
                 onPress={() => { this.props.rightButtonOnPress(); }}
               >
                 {this.props.rightButton}
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
           </View>
         }

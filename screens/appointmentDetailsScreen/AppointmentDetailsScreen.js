@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
@@ -13,8 +12,8 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import AppointmentDetails from './components/appointmentDetails';
 import AppoinmentNotes from './components/appointmentNotes';
 import AppointmentFormulas from './components/appointmentFormulas';
-
-import apiWrapper from '../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import Icon from '../../components/UI/Icon';
 
 const initialLayout = {
   height: 0,
@@ -22,23 +21,9 @@ const initialLayout = {
 };
 
 const styles = StyleSheet.create({
-  headerTitle: {
-    fontSize: 17,
-    lineHeight: 22,
-    paddingTop: 14,
-    fontFamily: 'Roboto-Medium',
-    color: 'white',
-  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    top: 0,
   },
   tabLabel: {
     height: 39.5,
@@ -48,7 +33,7 @@ const styles = StyleSheet.create({
   },
   tabLabelText: {
     color: '#4D5067',
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     fontSize: 12,
     lineHeight: 14,
   },
@@ -57,6 +42,7 @@ const styles = StyleSheet.create({
   },
   tabIcon: {
     marginRight: 5,
+
   },
   textWalkInBtn: {
     color: '#fff',
@@ -65,6 +51,58 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     marginTop: 5,
+  },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -77,21 +115,25 @@ export default class AppointmentDetailsScreen extends React.Component {
     }
     return ({
       headerTitle: (
-        <View style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-          <Text style={styles.headerTitle}>{title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>{title}</Text>
         </View>
       ),
       headerLeft: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => { navigation.goBack(); }}>
-          <Text style={{ fontSize: 14, color: '#fff' }}>
-            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-          </Text>
-        </TouchableOpacity>
+        <SalonTouchableOpacity style={styles.leftButton} onPress={() => { navigation.goBack(); }}>
+          <View style={styles.leftButtonContainer}>
+            <Text style={styles.leftButtonText}>
+              <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+            </Text>
+          </View>
+        </SalonTouchableOpacity>
       ),
       headerRight: (
-        <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => alert('Not Implemented')}>
-          <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
-        </TouchableOpacity>
+        <SalonTouchableOpacity style={styles.rightButton} onPress={() => alert('Not Implemented')}>
+          <View style={styles.rightButtonContainer}>
+            <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
+          </View>
+        </SalonTouchableOpacity>
       ),
     });
   };
@@ -107,8 +149,8 @@ export default class AppointmentDetailsScreen extends React.Component {
       formulas: [],
       notes: [],
       routes: [
-        { key: '0', title: 'Appt. Details', icon: 'pencil' },
-        { key: '1', title: 'Notes', icon: 'file' },
+        { key: '0', title: 'Appt. Details', icon: 'penAlt' },
+        { key: '1', title: 'Notes', icon: 'fileText' },
         { key: '2', title: 'Formulas', icon: 'eyedropper' },
       ],
     };
@@ -143,7 +185,12 @@ export default class AppointmentDetailsScreen extends React.Component {
           : styles.tabLabelText
         }
     >
-      <FontAwesome style={styles.tabIcon}>{Icons[route.icon]}</FontAwesome>
+      <Icon
+        style={[styles.tabIcon, { color: this.state.index === index ? '#1DBF12' : '#C0C1C6' }]}
+        name={route.icon}
+        size={12}
+        type="solid"
+      />
       {` ${route.title}`}
     </Text>
 
@@ -153,7 +200,7 @@ export default class AppointmentDetailsScreen extends React.Component {
     <TabBar
       {...props}
       tabStyle={[styles.tabLabel, { backgroundColor: 'transparent' }]}
-      style={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: 'transparent', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#C0C1C6' }}
       renderLabel={this.renderLabel(props)}
       indicatorStyle={{ backgroundColor: '#1DBF12', height: 2 }}
     />

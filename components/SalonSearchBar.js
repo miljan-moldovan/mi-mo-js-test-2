@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableHighlight, View, StyleSheet, ViewPropTypes } from 'react-native';
+import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// import FontAwesome, { Icons } from 'react-native-fontawesome';
+import Icon from './../components/UI/Icon';
+import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,9 +52,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   crossIcon: {
-    fontSize: 15,
+    fontSize: 12,
     marginRight: 10,
     textAlign: 'center',
+    fontWeight: '700',
   },
   crossIconButton: {
     flexDirection: 'column',
@@ -101,10 +104,11 @@ class SalonSearchBar extends Component {
           <View style={styles.searchBarItems}>
             {this.props.searchIconPosition === 'left' &&
 
-            <FontAwesome style={[styles.searchIconLeft,
+            <Icon
+              style={[styles.searchIconLeft,
             { color: this.props.iconsColor }]}
-            >{Icons.search}
-            </FontAwesome>
+              name="search"
+            />
 
 
             }
@@ -120,10 +124,12 @@ class SalonSearchBar extends Component {
             />
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
 
-              <FontAwesome style={[styles.searchIconRight,
+              <Icon
+                style={[styles.searchIconRight,
                             { color: this.props.iconsColor }]}
-              >{Icons.search}
-              </FontAwesome>
+
+                name="search"
+              />
 
             }
 
@@ -131,7 +137,7 @@ class SalonSearchBar extends Component {
             <View style={styles.crossIconContainer}>
               {this.state.searchText.length > 0 &&
 
-                <TouchableHighlight
+                <SalonTouchableHighlight
                   style={styles.crossIconButton}
                   underlayColor="transparent"
                   onPress={
@@ -140,12 +146,13 @@ class SalonSearchBar extends Component {
                     }}
                 >
 
-                  <FontAwesome style={[styles.crossIcon,
+                  <Icon
+                    style={[styles.crossIcon,
                     { color: this.props.iconsColor }]}
-                  >{Icons.timesCircle}
-                  </FontAwesome>
+                    name="timesCircle"
+                  />
 
-                </TouchableHighlight>
+                </SalonTouchableHighlight>
 
               }
             </View>
@@ -153,7 +160,7 @@ class SalonSearchBar extends Component {
         </View>
         {this.props.showCancel &&
           <View style={styles.cancelContainer}>
-            <TouchableHighlight
+            <SalonTouchableHighlight
               style={styles.cancelSearchContainer}
               underlayColor="transparent"
               onPress={
@@ -163,7 +170,7 @@ class SalonSearchBar extends Component {
               }
             >
               <Text style={[styles.cancelSearch, { color: this.props.fontColor }]}>Cancel</Text>
-            </TouchableHighlight>
+            </SalonTouchableHighlight>
           </View>
           }
       </View>

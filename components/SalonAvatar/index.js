@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Icon from './../UI/Icon';
+import { CachedImage } from 'react-native-img-cache';
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -49,6 +50,7 @@ export default class SalonAvatar extends React.Component {
     borderRadius: 13,
     borderColor: 'transparent',
     borderWidth: 0,
+    isLoading: true,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -91,17 +93,17 @@ export default class SalonAvatar extends React.Component {
             width: this.state.totalWidth,
             height: this.state.totalWidth,
             borderRadius: this.state.totalWidth / 2,
-            borderWidth: this.state.borderWidth,
-            borderColor: this.state.borderColor,
+            borderWidth: this.state.isLoading ? 0 : this.state.borderWidth,
+            borderColor: this.state.isLoading ? 'transparent' : this.state.borderColor,
           }}
         >
 
-          {!this.props.defaultComponent && <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={26} color="#4D5067" type="solid" />
+          {!this.props.defaultComponent && this.state.isLoading && <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={this.state.width} color="#4D5067" type="solid" />
         }
 
 
           {
-            this.props.defaultComponent &&
+            this.props.defaultComponent && this.state.isLoading &&
             <View style={{
               position: 'absolute',
               zIndex: 999,
@@ -114,7 +116,7 @@ export default class SalonAvatar extends React.Component {
           }
 
 
-          <Image
+          <CachedImage
             style={{
                 zIndex: 9999,
                 width: this.state.width,
@@ -122,6 +124,7 @@ export default class SalonAvatar extends React.Component {
                 borderRadius: this.state.width / 2,
               }}
             source={this.state.image}
+            onLoadEnd={() => this.setState({ isLoading: false })}
           />
 
 

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   FlatList,
   Alert,
   RefreshControl,
@@ -19,6 +18,7 @@ import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -272,7 +272,6 @@ export default class AppointmentNotesScreen extends Component {
     this.props.appointmentNotesActions.deleteAppointmentNotes(this.state.appointment.client.id, note.id).then((response) => {
       this.getNotes();
     }).catch((error) => {
-      console.log(error);
     });
   }
 
@@ -282,7 +281,6 @@ export default class AppointmentNotesScreen extends Component {
     this.props.appointmentNotesActions.undeleteAppointmentNotes(this.state.appointment.client.id, note.id).then((response) => {
       this.getNotes();
     }).catch((error) => {
-      console.log(error);
     });
   }
 
@@ -295,8 +293,13 @@ export default class AppointmentNotesScreen extends Component {
       actionType: 'update',
       note,
       appointment: this.props.appointment,
+      onNavigateBack: this.getNotes,
       ...this.props,
     });
+  }
+
+  reloadAfterChange = () => {
+    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   showActionSheet = (note) => {
@@ -353,7 +356,7 @@ export default class AppointmentNotesScreen extends Component {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
-        } else if (!note.forAppointment && !note.forSales && !note.forSales) {
+        } else if (!note.forAppointment && !note.forSales && !note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -372,7 +375,7 @@ export default class AppointmentNotesScreen extends Component {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
-        } else if (!note.forAppointment && !note.forSales && !note.forSales) {
+        } else if (!note.forAppointment && !note.forSales && !note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -553,11 +556,21 @@ export default class AppointmentNotesScreen extends Component {
                         <View style={styles.noteHeaderLeft}>
 
                           <SalonDateTxt
-                            dateFormat="MMM. DD YYYY"
+                            dateFormat="MMM. DD"
                             value={item.enterTime}
                             valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
                             fontFamily="Roboto-Bold"
                             valueSize={12}
+                            fontWeight="500"
+                          />
+
+                          <SalonDateTxt
+                            dateFormat=" YYYY"
+                            value={item.enterTime}
+                            valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
+                            fontFamily="Roboto-Bold"
+                            valueSize={12}
+                            fontWeight="normal"
                           />
 
                           <Text style={styles.noteBy}>by</Text>
@@ -565,7 +578,7 @@ export default class AppointmentNotesScreen extends Component {
 
                         </View>
                         <View style={styles.noteHeaderRight}>
-                          <TouchableOpacity
+                          <SalonTouchableOpacity
                             style={styles.dotsButton}
                             onPress={() => { this.showActionSheet(item); }}
                           >
@@ -574,7 +587,7 @@ export default class AppointmentNotesScreen extends Component {
                               icon="dots"
                               style={styles.dotsIcon}
                             />
-                          </TouchableOpacity>
+                          </SalonTouchableOpacity>
                         </View>
                       </View>]}
 
@@ -601,7 +614,7 @@ export default class AppointmentNotesScreen extends Component {
 
               <View style={styles.showDeletedButtonContainer}>
 
-                <TouchableOpacity
+                <SalonTouchableOpacity
                   style={styles.showDeletedButton}
                   onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
@@ -609,7 +622,7 @@ export default class AppointmentNotesScreen extends Component {
                 }}
                 >
                   <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-                </TouchableOpacity>
+                </SalonTouchableOpacity>
               </View>
 
             </View>
@@ -621,7 +634,11 @@ export default class AppointmentNotesScreen extends Component {
           handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('AppointmentNote', {
- mode: 'modal', actionType: 'new', ...this.props, appointment: this.props.appointment,
+ mode: 'modal',
+actionType: 'new',
+...this.props,
+appointment: this.props.appointment,
+ onNavigateBack: this.getNotes,
 });
           }}
         >

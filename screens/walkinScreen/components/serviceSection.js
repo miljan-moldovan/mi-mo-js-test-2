@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { View, StyleSheet, Text } from 'react-native';
 import PropTypes from 'prop-types';
 
 import SalonAvatar from '../../../components/SalonAvatar';
@@ -121,7 +120,6 @@ class ServiceSection extends Component {
 
   renderProvider = () => {
     const { provider } = this.props;
-    console.log(JSON.stringify(provider));
     const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
 
     if (provider) {
@@ -162,13 +160,13 @@ class ServiceSection extends Component {
         <InputButton label={this.renderService()} onPress={this.handlePressService} />
         <InputDivider />
         <InputButton label={this.renderProvider()} onPress={this.handlePressProvider} />
-        <InputDivider />
-        <InputSwitch
+        {!this.props.provider.isFirstAvailable && <InputDivider />}
+        {!this.props.provider.isFirstAvailable && <InputSwitch
           textStyle={styles.textLabel}
           onChange={this.props.onUpdateIsProviderRequested}
           text="Provider is Requested?"
           value={this.props.isProviderRequested}
-        />
+        />}
       </InputGroup>
     );
   }

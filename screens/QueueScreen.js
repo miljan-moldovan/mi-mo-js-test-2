@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Alert,
   Dimensions,
@@ -26,6 +25,7 @@ import QueueHeader from '../components/QueueHeader';
 import Icon from '../components/UI/Icon';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -85,6 +85,8 @@ class QueueScreen extends React.Component {
 
   componentWillMount() {
     this.props.actions.receiveQueue();
+    setInterval(this.props.actions.receiveQueue, 15000);
+
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     // this._refreshData();
   }
@@ -214,7 +216,7 @@ class QueueScreen extends React.Component {
 
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <KeyboardAwareScrollView style={{ marginTop: 40 }}>
+        <KeyboardAwareScrollView>
           { !searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
@@ -242,23 +244,23 @@ class QueueScreen extends React.Component {
             {...p}
           />
         </KeyboardAwareScrollView>
-        <View style={styles.searchTypeContainer}>
-          {/* <Text style={{color: 'white'}}>{searchWaitingCount} {searchServiceCount}</Text> */}
+        {/*  <View style={styles.searchTypeContainer}>
+
           <View style={styles.searchType}>
-            <TouchableOpacity
+            <SalonTouchableOpacity
               style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
               onPress={this.handleSearchClients}
             >
               <Text style={[styles.searchTypeText, searchType === SEARCH_CLIENTS ? activeText : null]}>Client</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </SalonTouchableOpacity>
+            <SalonTouchableOpacity
               style={[styles.searchProvider, searchType === SEARCH_PROVIDERS ? active : null]}
               onPress={this.handleSearchProviders}
             >
               <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           </View>
-        </View>
+        </View> */}
       </View>
     );
   }
@@ -277,10 +279,10 @@ class QueueScreen extends React.Component {
         provider: null,
       },
     });
-    navigate('Clients', {
+    navigate('ModalClients', {
       onChangeClient: this.handleChangeClient,
       headerProps: {
-        title: 'Walking',
+        title: 'Walk-in',
         subTitle: 'step 1 of 3',
         leftButton:
   <View style={styles.backContainer}>
@@ -288,7 +290,7 @@ class QueueScreen extends React.Component {
       {Icons.angleLeft}
     </FontAwesome>
     <Text style={styles.leftButtonText}>
-            Back
+            Cancel
     </Text>
   </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
@@ -300,10 +302,10 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.client = client;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('Services', {
+    this.props.navigation.navigate('ModalServices', {
       onChangeService: this.handleChangeService,
       headerProps: {
-        title: 'Walking',
+        title: 'Walk-in',
         subTitle: 'step 2 of 3',
         leftButton:
   <View style={styles.backContainer}>
@@ -330,10 +332,10 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.service = service;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('Providers', {
+    this.props.navigation.navigate('ModalProviders', {
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
-        title: 'Walking',
+        title: 'Walk-in',
         subTitle: 'step 3 of 3',
         leftButton:
   <View style={styles.backContainer}>
@@ -375,8 +377,8 @@ class QueueScreen extends React.Component {
 
 
   render() {
-    // console.log('QueueScreen.render', JSON.stringify(this.props.waitingQueue, null, 2), JSON.stringify(this.props.receiveQueue, null, 2));
-    // console.log('QueueScreen.render', this.props.settings);
+    //
+    //
     if (this.state.searchMode) { return this._renderSearchResults(); }
 
     return (
@@ -397,10 +399,10 @@ class QueueScreen extends React.Component {
         />
         {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
-            <TouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+            <SalonTouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
               <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
-            </TouchableOpacity>
+            </SalonTouchableOpacity>
           )
         }
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
@@ -423,12 +425,12 @@ class QueueScreen extends React.Component {
               />
             </View>
             <View style={styles.walkoutButtonContainer}>
-              <TouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
+              <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
                 <Text style={styles.walkoutTextCancel}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
+              </SalonTouchableOpacity>
+              <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
                 <Text style={styles.walkoutTextOk}>Ok</Text>
-              </TouchableOpacity>
+              </SalonTouchableOpacity>
             </View>
           </View>]}
         </SalonModal>
@@ -573,7 +575,7 @@ const styles = StyleSheet.create({
   },
   walkinButton: {
     position: 'absolute',
-    right: 12,
+    right: 10,
     top: 0,
     width: 92,
     borderWidth: 1,
@@ -611,7 +613,7 @@ const styles = StyleSheet.create({
   },
   tab: {
     height: 31,
-    width: 120,
+    width: initialLayout.width === 320 ? 100 : 120,
     // backgroundColor: 'rgba(0,255,0,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -620,12 +622,12 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     height: 32,
-    width: 240,
+    width: initialLayout.width === 320 ? 200 : 240,
     borderWidth: 1,
     borderColor: 'rgba(8,46,102,0.5)',
     borderRadius: 16,
     backgroundColor: '#115ECD',
-    marginLeft: 15,
+    marginLeft: initialLayout.width === 320 ? 10 : 12,
     marginBottom: 9,
   },
   tabQueueCounter: {

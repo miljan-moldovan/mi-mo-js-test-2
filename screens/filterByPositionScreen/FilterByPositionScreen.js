@@ -5,7 +5,6 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
-  TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -15,7 +14,8 @@ import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
-// import apiWrapper from '../../utilities/apiWrapper';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -112,7 +112,7 @@ export default class FilterByPositionScreen extends React.Component {
   }
 
   renderItem = ({ item, index }) => (
-    <TouchableOpacity
+    <SalonTouchableOpacity
       style={styles.itemRow}
       onPress={() => this._handleOnChangeProvider(item)}
       key={index}
@@ -138,7 +138,7 @@ export default class FilterByPositionScreen extends React.Component {
         <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
         )}
       </View>
-    </TouchableOpacity>
+    </SalonTouchableOpacity>
   );
 
   renderSeparator = () => (

@@ -1,10 +1,7 @@
 import React from 'react';
 import {
-  Text,
-  View,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 

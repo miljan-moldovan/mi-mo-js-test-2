@@ -2,7 +2,6 @@
 import React from 'react';
 import {
   View,
-  TouchableHighlight,
   StyleSheet,
 } from 'react-native';
 
@@ -13,6 +12,7 @@ import {
 } from '../../../../components/formHelpers';
 
 import WordHighlighter from '../../../../components/wordHighlighter';
+import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   highlightStyle: {
@@ -79,7 +79,7 @@ class ServiceListItem extends React.PureComponent {
         borderTopWidth: 0,
       }}
       >
-        {[<TouchableHighlight
+        {[<SalonTouchableHighlight
           key={Math.random().toString()}
           style={styles.container}
           underlayColor="transparent"
@@ -99,7 +99,7 @@ class ServiceListItem extends React.PureComponent {
               </FontAwesome>
             }
           </View>
-        </TouchableHighlight>,
+        </SalonTouchableHighlight>,
       ]}
       </InputGroup>
     );

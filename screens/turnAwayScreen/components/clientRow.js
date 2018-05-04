@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   row: {
     height: 44,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
     alignItems: 'center',
     paddingLeft: 16,
@@ -21,19 +22,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#727A8F',
     fontSize: 14,
   },
   textData: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto',
     color: '#110A24',
     fontSize: 14,
   },
   iconStyle: {
     fontSize: 20,
     color: '#727A8F',
-    marginLeft: 5,
+    marginLeft: 15,
   },
   buttonStyle: {
     alignItems: 'center',
@@ -57,7 +58,7 @@ const renderClient = (client, onCrossPress) => {
 };
 
 const clientRow = props => (
-  <TouchableOpacity style={{ flex: 1 }} onPress={props.onPress}>
+  <SalonTouchableOpacity style={{ flex: 1 }} onPress={props.onPress}>
     <View style={styles.row} >
       <Text style={styles.label}>Client</Text>
       <View style={styles.dataContainer}>
@@ -67,7 +68,7 @@ const clientRow = props => (
       </View>
       <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
     </View>
-  </TouchableOpacity>
+  </SalonTouchableOpacity>
 );
 
 clientRow.propTypes = {

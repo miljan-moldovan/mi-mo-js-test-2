@@ -4,7 +4,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
@@ -27,7 +26,11 @@ import {
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
+<<<<<<< HEAD
 import apiWrapper from '../../utilities/apiWrapper';
+=======
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
@@ -83,6 +86,7 @@ const caretRight = (
 );
 
 const Guest = props => (
+<<<<<<< HEAD
   <SalonCard
     bodyChildren={(
       <ClientInput
@@ -92,6 +96,33 @@ const Guest = props => (
     )}
     backgroundColor="white"
   />
+=======
+  <SalonTouchableOpacity onPress={props.onPress}>
+    <SalonCard
+      bodyChildren={(
+        <View style={styles.guestContainer}>
+          <Text style={{
+              flex: 1,
+              fontSize: 14,
+              lineHeight: 22,
+              color: 'black',
+              fontFamily: 'Roboto-Medium',
+            }}
+          >Lauren Chapman
+          </Text>
+          <FontAwesome style={{
+            color: '#115ECD',
+            fontSize: 20,
+            marginLeft: 12,
+          }}
+          >{Icons.angleRight}
+          </FontAwesome>
+        </View>
+      )}
+      backgroundColor="white"
+    />
+  </SalonTouchableOpacity>
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
 );
 
 const ServiceInfo = props => (
@@ -156,6 +187,7 @@ const SalonAppointmentTime = props => (
   </View>
 );
 
+<<<<<<< HEAD
 const ServiceCard = ({ data, ...props }) => {
   const employeePhoto = apiWrapper.getEmployeePhoto(!data.employee.isFirstAvailable ? data.employee.id : 0);
   return (
@@ -186,6 +218,19 @@ const ServiceCard = ({ data, ...props }) => {
               </FontAwesome>
             </View>
           </TouchableOpacity>
+=======
+const ServiceCard = ({ data, ...props }) => (
+  <SalonCard
+    bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
+    backgroundColor="white"
+    bodyChildren={
+      <View style={{ flex: 1, flexDirection: 'column' }}>
+        <SalonTouchableOpacity
+          style={{ flexDirection: 'row' }}
+          onPress={props.onPress}
+        >
+          <Text style={styles.serviceTitle}>{data.service.name}</Text>
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
           <View style={{
             flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
           }}
@@ -218,8 +263,21 @@ const ServiceCard = ({ data, ...props }) => {
             >{data.employee.isFirstAvailable ? 'First Available' : data.employee.fullName}
             </Text>
           </View>
+<<<<<<< HEAD
           <View style={{
               height: 1, alignSelf: 'stretch', backgroundColor: '#E0EAF7', marginVertical: 7,
+=======
+        </SalonTouchableOpacity>
+        <View style={{
+          flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
+        }}
+        >
+          <SalonAvatar
+            wrapperStyle={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 10,
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
             }}
           />
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -275,12 +333,36 @@ export default class NewAppointmentScreen extends React.Component {
             lineHeight: 22,
             color: 'white',
           }}
+<<<<<<< HEAD
           >Done
           </Text>
         </TouchableOpacity>
       ),
     });
   }
+=======
+        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <SalonAppointmentTime startTime={data.fromTime.format('HH:mm')} />
+          <SalonTouchableOpacity onPress={props.onPressDelete}>
+            <Icon
+              name="trash"
+              size={12}
+              color="#D1242A"
+              type="regular"
+            />
+          </SalonTouchableOpacity>
+        </View>
+      </View>
+    }
+  />
+);
+
+export default class NewAppointmentScreen extends React.Component {
+  static navigationOptions = rootProps => ({
+    headerTitle: 'New Appointment',
+  })
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
 
   constructor(props) {
     super(props);
@@ -415,7 +497,7 @@ export default class NewAppointmentScreen extends React.Component {
             selectedClient={client}
             onChange={this.props.newAppointmentActions.setNewApptClient}
             extraComponents={[
-              <TouchableOpacity
+              <SalonTouchableOpacity
                 onPress={() => {
                   this.props.navigation.navigate('AppointmentFormulas');
                 }}
@@ -429,8 +511,8 @@ export default class NewAppointmentScreen extends React.Component {
                   color="#115ECD"
                   type="light"
                 />
-              </TouchableOpacity>,
-              <TouchableOpacity
+              </SalonTouchableOpacity>,
+              <SalonTouchableOpacity
                 onPress={() => {
                   this.props.navigation.navigate('AppointmentFormulas');
                 }}
@@ -444,7 +526,7 @@ export default class NewAppointmentScreen extends React.Component {
                   color="#115ECD"
                   type="light"
                 />
-              </TouchableOpacity>,
+              </SalonTouchableOpacity>,
             ]}
           />
           <InputDivider />

@@ -50,7 +50,7 @@ import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 import SettingsScreen from './../screens/SettingsScreen';
 
-const QueueStackNavigator = StackNavigator(
+const MainNavigator = StackNavigator(
   {
     Main: {
       screen: QueueScreen,
@@ -63,15 +63,19 @@ const QueueStackNavigator = StackNavigator(
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
+      navigationOptions: { tabBarVisible: false },
     },
     ApptBookViewOptions: {
       screen: apptBookViewOptions,
+      navigationOptions: { tabBarVisible: false },
     },
     Products: {
       screen: ProductsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Services: {
       screen: ServicesScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Appointment: {
       screen: AppointmentScreen,
@@ -88,9 +92,11 @@ const QueueStackNavigator = StackNavigator(
     },
     AppointmentFormula: {
       screen: AppointmentFormula,
+      navigationOptions: { tabBarVisible: false },
     },
     AppointmentNotes: {
       screen: AppoinmentNotes,
+      navigationOptions: { tabBarVisible: false },
     },
     AppointmentNote: {
       screen: AppointmentNoteScreen,
@@ -102,12 +108,15 @@ const QueueStackNavigator = StackNavigator(
     },
     Service: {
       screen: ModifyServiceScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Product: {
       screen: ModifyProductScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Recommendations: {
       screen: RecommendationsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     RebookDialog: {
       screen: RebookDialogScreen,
@@ -128,12 +137,15 @@ const QueueStackNavigator = StackNavigator(
     },
     QueueDetail: {
       screen: QueueDetailScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     QueueCombine: {
       screen: QueueCombineScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ClientMerge: {
       screen: ClientMergeScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     WalkIn: {
       screen: WalkInScreen,
@@ -144,9 +156,11 @@ const QueueStackNavigator = StackNavigator(
           handlePress: () => rootProps.navigation.goBack(),
         }),
       }),
+      navigationOptions: { tabBarVisible: false },
     },
     Providers: {
       screen: ProvidersScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Promotions: {
       screen: PromotionsScreen,
@@ -158,6 +172,7 @@ const QueueStackNavigator = StackNavigator(
             {...rootProps}
           />),
       }),
+      navigationOptions: { tabBarVisible: false },
     },
     Clients: {
       screen: ClientsScreen,
@@ -172,10 +187,12 @@ const QueueStackNavigator = StackNavigator(
     },
     TurnAway: {
       screen: TurnAwayScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Settings: { screen: SettingsScreen },
   },
   {
+    headerMode: 'none',
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#115ECD',
@@ -209,4 +226,48 @@ const QueueStackNavigator = StackNavigator(
     },
   },
 );
-export default QueueStackNavigator;
+
+
+export default QueueStackNavigator = StackNavigator({
+  Main: {
+    screen: MainNavigator,
+    navigationOptions: { headerMode: 'none' },
+  },
+
+  /** MODAL SCREENS GO HERE * */
+  ModalServices: {
+    screen: ServicesScreen,
+    navigationOptions: {
+
+      tabBarVisible: false,
+      headerMode: 'screen',
+      gesturesEnabled: false,
+    },
+  },
+  ModalProviders: {
+    screen: ProvidersScreen,
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#115ECD',
+        paddingHorizontal: 10,
+        paddingVertical: 14,
+        paddingTop: 20,
+        borderWidth: 0,
+        shadowColor: 'transparent',
+        elevation: 0,
+        borderBottomWidth: 0,
+        justifyContent: 'center',
+      },
+      tabBarVisible: false,
+      headerMode: 'screen',
+      gesturesEnabled: false,
+    },
+  },
+  ModalClients: {
+    screen: ClientsScreen,
+    navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
+  },
+}, {
+  mode: 'modal', // Remember to set the root navigator to display modally.
+//  headerMode: 'none', // This ensures we don't get two top bars.
+});
