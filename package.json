@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@yfuks/react-native-action-sheet": "0.0.4",
+    "axios": "^0.18.0",
     "lodash": "4.17.5",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.20.1",
