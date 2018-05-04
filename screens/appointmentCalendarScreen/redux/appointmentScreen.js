@@ -2,6 +2,8 @@ import moment from 'moment';
 import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import apiWrapper from '../../../utilities/apiWrapper';
 
+import { POST_APPOINTMENT_MOVE_SUCCESS, POST_APPOINTMENT_MOVE, POST_APPOINTMENT_MOVE_FAILED } from '../../../actions/appointment';
+
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
 export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
 export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_VIEW_SUCCESS';
@@ -210,7 +212,6 @@ const setScheduleDateRange = () => (dispatch, getState) => {
     dates.push(moment(moment(startDate).add(i, 'day')));
   }
   dispatch({ type: SET_DATE_RANGE, data: { dates } });
-  //return dispatch(getCalendarData());
 };
 
 const setProviderScheduleDates = (startDate, endDate) => (dispatch) => {
@@ -278,6 +279,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
       return {
         ...state,
         selectedProvider: data.selectedProvider,
+        //isLoading: true,
       };
     case SET_PROVIDER_DATES:
       return {
@@ -318,6 +320,27 @@ export default function appointmentScreenReducer(state = initialState, action) {
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
         appointments: data.appointments,
         providerSchedule: data.providerSchedule
+      };
+    case POST_APPOINTMENT_MOVE:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case POST_APPOINTMENT_MOVE_SUCCESS: {
+      debugger
+      const appointments = state.appointments;
+      const index = appointments.findIndex(appt => appt.id === data.appointment.id);
+      appointments[index] = data.appointment
+      return {
+        ...state,
+        appointments,
+        isLoading: false,
+      }
+    }
+    case POST_APPOINTMENT_MOVE_FAILED:
+      return {
+        ...state,
+        isLoading: false,
       };
     default:
       return state;

@@ -23,14 +23,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const firstAvailableBtn = ({ rootStyles, switchStyle }) => (
+const firstAvailableBtn = ({ rootStyles, switchStyle, onChange, value }) => (
   <View style={[styles.container, rootStyles]}>
     <InputSwitch
       text="First Avl."
-      onChange={() => {}}
+      onChange={onChange}
       textStyle={styles.textStyle}
       switchStyle={styles.switchStyle}
       textRight
+      value={value}
     />
   </View>
 );

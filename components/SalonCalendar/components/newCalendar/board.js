@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 
 export default class Board extends Component {
   shouldComponentUpdate(nextProps, nexState) {
-    return nextProps.displayMode !== this.props.displayMode;
+    return nextProps.displayMode !== this.props.displayMode || (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading);
   }
 
   renderCol = (col, key) => {

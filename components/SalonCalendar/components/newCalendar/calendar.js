@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Text } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
 import { times, groupBy, filter } from 'lodash';
 import moment from 'moment';
@@ -55,11 +55,15 @@ export default class Calendar extends Component {
         y: 0,
       },
       isScrollEnabled: true,
+      showFirstAvailable: true,
     };
   }
 
   componentWillUpdate(nextProps) {
-    this.setCellsByColumn(nextProps);
+    if ((!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading)
+      || nextProps.displayMode !== this.props.displayMode) {
+      this.setCellsByColumn(nextProps);
+    }
   }
 
   setCellsByColumn = (nextProps) => {
@@ -69,17 +73,20 @@ export default class Calendar extends Component {
       appointments,
       selectedProvider,
       displayMode,
-      startDate
+      startDate,
+      isLoading,
     } = nextProps;
+
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.startTime = apptGridSettings.weeklySchedule[startDate.format('E') - 1].start1;
-      this.schedule = times(apptGridSettings.numOfRow, this.createSchedule);
+      this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
       if (selectedProvider === 'all') {
         this.size = {
           width: headerData.length * providerWidth + 100,
           height: apptGridSettings.numOfRow * 30 + headerHeight,
         };
         this.cellWidth = providerWidth;
+        this.groupedProviders = groupBy(headerData, 'id');
       } else if (displayMode === 'week') {
         this.size = {
           width: headerData.length * weekWidth + 36,
@@ -92,6 +99,7 @@ export default class Calendar extends Component {
           height: apptGridSettings.numOfRow * 30,
         };
         this.cellWidth = dayWidth;
+        this.groupedProviders = groupBy(selectedProvider, 'id');
       }
     }
   }
@@ -163,11 +171,17 @@ export default class Calendar extends Component {
     return null;
   }
 
+  handleShowfirstAvailalble = () => {
+    const { showFirstAvailable } = this.state;
+    this.setState({ showFirstAvailable: !showFirstAvailable });
+  }
+
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments } = this.props;
-    const { calendarMeasure, calendarOffset } = this.state;
+    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
+    const { calendarMeasure, calendarOffset,showFirstAvailable } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(this.startTime, 'HH:mm');
+    console.log(this.cellWidth)
     if (appointment.employee) {
       return (
         <Card
@@ -187,28 +201,32 @@ export default class Calendar extends Component {
           selectedProvider={selectedProvider}
           startTime={startTime}
           appointments={appointments}
+          showFirstAvailable={showFirstAvailable}
+          groupedProviders={this.groupedProviders}
+          providerSchedule={providerSchedule}
+          isLoading={isLoading}
         />);
     }
     return null;
   }
 
   render() {
-    const { headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability } = this.props;
+    const { isLoading, headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability } = this.props;
     const isDate = selectedProvider !== 'all';
     const showHeader = displayMode === 'week' || selectedProvider === 'all';
-    const { isScrollEnabled } = this.state;
+    const { isScrollEnabled, showFirstAvailable } = this.state;
     const startTime = moment(this.startTime, 'HH:mm');
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <ScrollView
           bounces={false}
-          bouncesZoom
-          maximumZoomScale={1.1}
+          //bouncesZoom
+          //maximumZoomScale={1.1}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[styles.contentContainer, this.size, { borderTopWidth: !showHeader ? 1 : 0 }]}
           style={styles.container}
-          scrollEnabled={isScrollEnabled}
+          scrollEnabled={isScrollEnabled && !isLoading}
           onScroll={this.handleScroll}
           ref={(board) => { this.board = board; }}
           onLayout={this.measureScrollView}
@@ -229,6 +247,7 @@ export default class Calendar extends Component {
               providerSchedule={providerSchedule}
               availability={availability}
               displayMode={displayMode}
+              isLoading={isLoading}
             />
             { this.renderCards() }
           </ScrollViewChild>
@@ -242,6 +261,8 @@ export default class Calendar extends Component {
                 dataSource={headerData}
                 isDate={isDate}
                 cellWidth={this.cellWidth}
+                handleShowfirstAvailalble={this.handleShowfirstAvailalble}
+                showFirstAvailable={showFirstAvailable}
               />
             </ScrollViewChild> : null
           }
