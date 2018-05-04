@@ -232,6 +232,7 @@ export default class AppointmentDetailsScreen extends React.Component {
             onIndexChange={this.handleIndexChange}
             initialLayout={initialLayout}
             swipeEnabled={false}
+            useNativeDriver
           />
         </View>
       );
