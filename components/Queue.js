@@ -7,7 +7,7 @@ import {
   FlatList,
   RefreshControl,
   LayoutAnimation,
-  ActivityIndicator,
+  // ActivityIndicator,
   Dimensions,
 } from 'react-native';
 import { Button } from 'native-base';
@@ -80,7 +80,7 @@ componentWillReceiveProps({
   // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
   if (searchClient != this.props.searchClient ||
 searchProvider != this.props.searchProvider ||
-filterText != this.props.filterText) {
+filterText != this.props.filterText || (data !== this.props.data && filterText)) {
     this.searchText(filterText, searchClient, searchProvider);
   }
 }
@@ -434,15 +434,15 @@ renderItem = (row) => {
 
           {isBookedByWeb &&
           <View style={{
-backgroundColor: '#115ECD',
-width: 16,
-height: 14,
-borderRadius: 8,
-alignItems: 'center',
-justifyContent: 'center',
-marginRight: 5,
-marginTop: 2,
-}}
+                backgroundColor: '#115ECD',
+                width: 16,
+                height: 14,
+                borderRadius: 8,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 5,
+                marginTop: 2,
+              }}
           >
             <Text style={{ fontWeight: '700', color: '#FFFFFF', fontSize: 8 }}>O</Text>
           </View>
@@ -462,10 +462,7 @@ marginTop: 2,
 
 
       </View>
-      <View style={{
- flex: 1, height: '100%', justifyContent: 'flex-end', alignItems: 'flex-start',
-}}
-      >
+      <View style={styles.itemIcons}>
         {label}
       </View>
       <Icon name="chevronRight" style={styles.chevron} type="solid" />
@@ -522,11 +519,11 @@ render() {
   ) : null;
   return (
     <View style={styles.container}>
-      {this.props.loading ? (
+      {/* this.props.loading ? (
         <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>
-) : null}
+) : null */}
       <FlatList
         style={{ marginTop: 5 }}
         renderItem={this.renderItem}
@@ -582,6 +579,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1.1,
+    paddingBottom: 26,
     // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
   },
   itemSummary: {
@@ -590,6 +588,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     height: Dimensions.get('window').width === 320 ? 96 : 90,
     flex: Dimensions.get('window').width === 320 ? 3 : 3.5,
+    justifyContent: 'flex-end',
+  },
+  itemIcons: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    height: Dimensions.get('window').width === 320 ? 96 : 90,
+    flex: 1,
+    paddingTop: 11,
   },
   clientName: {
     fontSize: 16,
@@ -601,7 +607,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    marginTop: 5,
+    marginTop: 4,
     // marginBottom: 12
   },
   serviceTimeContainer: {
@@ -634,7 +640,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     height: 16,
     minWidth: 56,
-    marginBottom: 14,
+    // marginBottom: 14,
   },
   circularCountdown: {
     marginLeft: 'auto',
@@ -668,7 +674,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 99999,
     right: Dimensions.get('window').width === 320 ? 0 : 15,
-    bottom: 5,
+    bottom: 0,
   },
   returningContainer: {
     height: 16,
@@ -678,7 +684,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 99999,
     right: Dimensions.get('window').width === 320 ? 0 : 10,
-    bottom: 5,
+    bottom: 0,
   },
   finishedContainer: {
     height: 16,
@@ -688,13 +694,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 99999,
     right: 30,
-    bottom: 5,
+    bottom: 0,
   },
   finishedTime: {
     paddingHorizontal: 5,
     paddingVertical: 2,
     height: 16,
-    marginBottom: 14,
+    // marginBottom: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

@@ -600,7 +600,7 @@ class AppointmentDetails extends React.Component {
 
     return (
       <View style={[styles.container]}>
-        <ScrollView style={{ marginBottom: 63 }}>
+        <ScrollView style={{ marginBottom: 44 }}>
           <View style={styles.infoContainer}>
             <View style={{ flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
               <Text style={styles.infoTitleText}>Queue Appointment</Text>

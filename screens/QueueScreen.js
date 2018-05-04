@@ -232,6 +232,7 @@ class QueueScreen extends React.Component {
             </View>
           ) : null }
           <Queue
+            isWaiting
             onChangeFilterResultCount={this.updateSearchWaitingCount}
             data={waitingQueue}
             headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}

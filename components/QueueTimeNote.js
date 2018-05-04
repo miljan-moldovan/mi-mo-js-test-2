@@ -51,6 +51,9 @@ const styles = StyleSheet.create({
     minWidth: 50,
     minHeight: 15,
   },
+  underline: {
+    textDecorationLine: 'underline',
+  },
 });
 
 const QueueTimeNote = (props) => {
@@ -71,21 +74,21 @@ const QueueTimeNote = (props) => {
 
   if (status === 0 || status === 1 || status === 5) {
     const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
-    serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> {timeCheckedIn}m</Text></Text>;
+    serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>{timeCheckedIn}m</Text></Text>;
   } else if (status === 6) {
     if (estimatedTime >= 0) {
-      serviceTime = <Text style={styles.serviceTime}> remaining  rem. <Text style={styles.serviceRemainingWaitTime}> {estimatedTime}m</Text></Text>;
+      serviceTime = <Text style={styles.serviceTime}> remaining  rem. <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>{estimatedTime}m</Text></Text>;
     } else {
-      serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {+estimatedTime}m</Text></Text>;
+      serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over</Text> <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>{+estimatedTime}m</Text></Text>;
     }
   } else if (status === 7) {
     if (estimatedTime >= 0) {
       serviceTime = <Text style={styles.serviceTime}> on time!</Text>;
     } else {
-      serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over {-estimatedTime}m</Text></Text>;
+      serviceTime = <Text style={styles.serviceTime}><Text style={styles.serviceRemainingWaitTime}> over</Text> <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>{-estimatedTime}m</Text></Text>;
     }
   } else {
-    serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={styles.serviceRemainingWaitTime}> 0m</Text></Text>;
+    serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>0m</Text></Text>;
   }
 
   return (
