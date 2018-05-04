@@ -132,6 +132,18 @@ const styles = StyleSheet.create({
   },
 });
 
+export const DefaultAvatar = props => (
+  <View style={styles.avatarDefaultComponent}>
+    <Text style={styles.avatarDefaultComponentText}>
+      {
+        props.provider && !props.provider.isFirstAvailable
+        ? `${props.provider.name[0]}${props.provider.lastName[0]}`
+        : 'FA'
+      }
+    </Text>
+  </View>
+);
+
 export const RemoveButton = ({ title, onPress }) => (
   <SalonTouchableOpacity
     style={{
@@ -397,10 +409,10 @@ export class ClientInput extends React.Component {
   }
 
   render() {
-    const value = this.props.selectedClient ? this.props.selectedClient.name : null;
+    const value = this.props.selectedClient ? `${this.props.selectedClient.name} ${this.props.selectedClient.lastName}` : null;
     return (
       <SalonTouchableOpacity
-        style={[styles.inputRow, { justifyContent: 'center' }]}
+        style={[styles.inputRow, { justifyContent: 'center' }, this.props.style]}
         onPress={this.handlePress}
       >
         <Text style={[styles.labelText]}>Client</Text>
@@ -485,9 +497,14 @@ export class ProviderInput extends React.Component {
     if (this.props.noPlaceholder) {
       placeholder = null;
     }
-    const value = this.state.selectedProvider !== null && 'name' in this.state.selectedProvider ?
+    let value = this.state.selectedProvider !== null && 'name' in this.state.selectedProvider ?
       `${this.state.selectedProvider.name} ${this.state.selectedProvider.lastName}` : null;
 
+    if (this.state.selectedProvider !== null) {
+      if ('isFirstAvailable' in this.state.selectedProvider) {
+        value = 'First Available';
+      }
+    }
 
     const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(this.state.selectedProvider !== null && !this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
 
@@ -512,7 +529,7 @@ export class ProviderInput extends React.Component {
                 borderWidth={1}
                 borderColor="transparent"
                 image={{ uri: employeePhoto }}
-                defaultComponent={<View style={styles.avatarDefaultComponent}><Text style={styles.avatarDefaultComponentText}>{this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable ? `${this.state.selectedProvider.name[0]}${this.state.selectedProvider.lastName[0]}` : 'FA'}</Text></View>}
+                defaultComponent={<DefaultAvatar provider={this.state.selectedProvider} />}
               />)}
               <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
             </View>

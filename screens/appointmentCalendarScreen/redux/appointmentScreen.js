@@ -278,7 +278,13 @@ export default function appointmentScreenReducer(state = initialState, action) {
   switch (type) {
     case ADD_APPOINTMENT:
       const { appointments } = state;
-      appointments.push(data.appointment);
+      if (Array.isArray(data.appointment)) {
+        for (let i = 0; i < data.appointment.length; i += 1) {
+          appointments.push(data.appointment[i]);
+        }
+      } else {
+        appointments.push(data.appointment);        
+      }
       return {
         ...state,
         appointments,
@@ -322,8 +328,6 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: true,
       };
     case SET_GRID_ALL_VIEW_SUCCESS:
-      console.log('niggas', data);
-
       return {
         ...state,
         isLoading: false,
