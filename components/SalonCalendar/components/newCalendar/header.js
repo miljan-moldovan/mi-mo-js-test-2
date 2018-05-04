@@ -109,12 +109,17 @@ export default class Header extends Component {
   }
 
   render() {
-    const { isDate } = this.props;
+    const { isDate, showFirstAvailable, handleShowfirstAvailalble } = this.props;
     const width = isDate ? 36 : 100;
     return (
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
-          { isDate ? null : <FirstAvailableBtn /> }
+          { isDate ? null :
+          <FirstAvailableBtn
+            value={showFirstAvailable}
+            onChange={handleShowfirstAvailalble}
+          />
+          }
         </View>
         { this.props.dataSource.map((data, index) => this.renderColumnLabel(data, index)) }
       </View>

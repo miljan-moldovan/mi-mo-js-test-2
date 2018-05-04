@@ -26,9 +26,9 @@ const getAppointmentsFailed = error => ({
   data: { error },
 });
 
-const postAppointmentMoveSuccess = response => ({
+const postAppointmentMoveSuccess = appointment => ({
   type: POST_APPOINTMENT_MOVE_SUCCESS,
-  data: { response },
+  data: { appointment },
 });
 
 const postAppointmentMoveFailed = error => ({
@@ -67,7 +67,10 @@ const postAppointmentMove = (appointmentId, params) => (dispatch) => {
       ...params,
     },
   })
-    .then(response => dispatch(postAppointmentMoveSuccess(response)))
+    .then(response => apiWrapper.doRequest('getAppointmentsById', {
+      path: {
+        id: appointmentId,
+      }}).then(resp => dispatch(postAppointmentMoveSuccess(resp)))) //dispatch(postAppointmentMoveSuccess(appointmentId)))
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
 

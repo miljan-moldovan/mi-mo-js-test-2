@@ -149,7 +149,6 @@ export default class AppointmentScreen extends Component {
       appointments,
       availability,
     } = this.props.appointmentScreenState;
-
     const { isLoading } = this.state;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     const headerData = selectedProvider === 'all' ? providers : dates;
@@ -165,23 +164,24 @@ export default class AppointmentScreen extends Component {
           }}
           selectedDate={moment(startDate)}
         />
+        <SalonCalendar
+          onCellPressed={this.onCalendarCellPressed}
+          apptGridSettings={apptGridSettings}
+          dataSource={providerAppointments}
+          appointments={appointments}
+          headerData={headerData}
+          onDrop={this.props.appointmentActions.postAppointmentMove}
+          onResize={this.props.appointmentActions.postAppointmentResize}
+          selectedProvider={selectedProvider}
+          displayMode={pickerMode}
+          providerSchedule={providerSchedule}
+          availability={availability}
+          startDate={startDate}
+          isLoading={isLoading}
+        />
         {
-          isLoading ?
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator /></View> :
-            <SalonCalendar
-              onCellPressed={this.onCalendarCellPressed}
-              apptGridSettings={apptGridSettings}
-              dataSource={providerAppointments}
-              appointments={appointments}
-              headerData={headerData}
-              onDrop={this.props.appointmentActions.postAppointmentMove}
-              onResize={this.props.appointmentActions.postAppointmentResize}
-              selectedProvider={selectedProvider}
-              displayMode={pickerMode}
-              providerSchedule={providerSchedule}
-              availability={availability}
-              startDate={startDate}
-            />
+           isLoading ?
+             <View style={{ position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d' }}><ActivityIndicator /></View> : null
         }
         {selectedProvider !== 'all' && (
           <ChangeViewFloatingButton

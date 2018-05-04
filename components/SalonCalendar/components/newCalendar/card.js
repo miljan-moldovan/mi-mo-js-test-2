@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import moment from 'moment';
+import Svg, {
+  LinearGradient,
+  Rect,
+  Defs,
+  Stop
+} from 'react-native-svg';
+import { times } from 'lodash'
 
 import colors from '../../../../constants/appointmentColors';
 import ResizeButton from '../resizeButtons';
@@ -29,6 +36,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 4,
     borderWidth: 1,
+  },
+  stripesContainer: {
+    position: 'absolute',
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    borderRadius: 4,
   },
 });
 
@@ -79,25 +92,36 @@ class Card extends Component {
     const { calendarOffset } = this.props;
     const newX = nextProps.calendarOffset.x;
     const newY = nextProps.calendarOffset.y;
-    return (newX === calendarOffset.x && newY === calendarOffset.y) || nextState.isActive || this.state.isActive //|| nextProps.displayMode !== this.props.displayMode;
+    return (newX === calendarOffset.x && newY === calendarOffset.y)
+    || (nextState.isActive || this.state.isActive) || (nextProps.showFirstAvailable !== this.props.showFirstAvailable) //|| nextProps.displayMode !== this.props.displayMode;
   }
 
   componentWillUpdate(nextProps) {
-    if (nextProps.displayMode !== this.props.displayMode) {
+    if (nextProps.cellWidth !== this.props.cellWidth || (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading)) {
       this.setState(this.calcualteStateValues(nextProps));
     }
   }
 
   calcualteStateValues = (props) => {
-    const { startTime } = props;
-    const { toTime, fromTime } = props.appointment;
+    const { toTime, fromTime, employee, date } = props.appointment;
     const { step } = props.apptGridSettings;
-    const { cellWidth, displayMode, selectedProvider } = props;
+    const { startTime, cellWidth, displayMode, selectedProvider, groupedProviders, providerSchedule } = props;
+    const apptDate = moment(date).format('YYYY-MM-DD');
+    const provider = displayMode === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
     const { left, cardWidth, zIndex } = this.calculateLeftAndGap(props);
-    const height = (moment.duration(end.diff(start)).asMinutes() / step) * 30 - 1;
+    const height = ((end.diff(start, 'minutes') / step) * 30) - 1;
+    let isActiveEmployeeInCellTime = false;
+    if (provider &&
+      provider.scheduledIntervals && provider.scheduledIntervals[0]) {
+      const employeeTime = provider.scheduledIntervals[0];
+      const employeeStartTime = moment(employeeTime.start, 'HH:mm');
+      const employeeEndTime = moment(employeeTime.end, 'HH:mm');
+      isActiveEmployeeInCellTime = start.diff(employeeStartTime, 'm') >= 0 &&
+        end.diff(employeeEndTime, 'm') <= 0;
+    }
     return {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
@@ -108,6 +132,7 @@ class Card extends Component {
       opacity: new Animated.Value(0),
       cardWidth,
       zIndex,
+      isActiveEmployeeInCellTime,
     };
   }
 
@@ -472,10 +497,6 @@ class Card extends Component {
     });
   }
 
-  calculateCardWidth = () => {
-
-  }
-
   render() {
     const {
       client,
@@ -484,32 +505,73 @@ class Card extends Component {
       toTime,
       id,
       mainServiceColor,
+      isFirstAvailable,
     } = this.props.appointment;
-    const { cellWidth } = this.props;
-    const { zIndex, cardWidth, left } = this.state;
+    const { showFirstAvailable } = this.props;
+    const { zIndex, cardWidth, left, isActive,isActiveEmployeeInCellTime } = this.state;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const { height } = this.state;
+    const backgroundColor = isActiveEmployeeInCellTime ? colors[color].light : 'black';
     const borderColor = colors[color].dark;
-    const contentColor = this.state.isActive ? colors[color].dark : colors[color].light;
-    const serviceTextColor = this.state.isActive ? '#fff' : '#1D1E29';
-    const clientTextColor = this.state.isActive ? '#fff' : '#2F3142';
+    const contentColor = isActive ? colors[color].dark : colors[color].light;
+    const serviceTextColor = isActive ? '#fff' : '#1D1E29';
+    const clientTextColor = isActive ? '#fff' : '#2F3142';
+    let countOpacity = 0;
+    let countGap = 0;
+    let countOpacity2 = 0;
+    let countGap2 = 0;
     const shadow = this.state.isActive ? {
       shadowColor: '#3C4A5A',
       shadowOffset: { height: 2, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 4,
-    } : null
+    } : null;
+    const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     return (
-      <Animated.View style={this.state.isActive ? { position: 'absolute', zIndex: 9999 } : { position: 'absolute', zIndex }}>
+      <Animated.View style={isActive ? { position: 'absolute', zIndex: 9999 } : { position: 'absolute', zIndex }}>
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.container,
-            { width: cardWidth, height, borderColor: colors[color].dark, backgroundColor: colors[color].light,
-            left, top: this.state.top, opacity: this.state.opacity }]}
+            { width: cardWidth, height, borderColor, backgroundColor: colors[color].light,
+            left, top: this.state.top, opacity: this.state.opacity, borderStyle }]}
 
         >
+          {!isActiveEmployeeInCellTime ?
+            <Svg
+              height={height._value - 2}
+              width={cardWidth - 2}
+              style={styles.stripesContainer}
+            >
+              <Defs>
+                <LinearGradient id="grad" x1={0} y1={cardWidth > height._value ?  cardWidth : height._value}
+                  x2={cardWidth > height._value ?  cardWidth : height._value}
+                  y2={0}
+                >
+                  {
+                   times(50).map((index) => {
+                    const gap = countGap2;
+                    countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
+                    if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
+                      countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
+                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />)
+                    }
+                    countOpacity2 += 1;
+                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} />)
+                  })
+                  }
+                </LinearGradient>
+              </Defs>
+              <Rect
+                width={cardWidth}
+                height={height._value}
+                fill="url(#grad)"
+                strokeLinecap="round"
+              />
+            </Svg>
+            : null
+          }
           <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
           <Text numberOfLines={1} style={styles.clientText}>{clientName}</Text>
           <Text numberOfLines={1} style={styles.serviceText}>{serviceName}</Text>
@@ -518,12 +580,46 @@ class Card extends Component {
           {...this.panResponder.panHandlers}
           key={id}
           style={[styles.container,
-            { width: cardWidth, height, borderColor, backgroundColor: contentColor  },
-            this.state.pan.getLayout(), shadow]}
+            { width: cardWidth, height, borderColor, backgroundColor: contentColor, borderStyle: isActive ? 'solid' : borderStyle },
+            this.state.pan.getLayout(), shadow,]}
         >
+          {!isActiveEmployeeInCellTime && !isActive ?
+            <Svg
+              height={height._value - 2}
+              width={cardWidth - 2}
+              style={styles.stripesContainer}
+            >
+              <Defs>
+                <LinearGradient id="grad" x1={0} y1={cardWidth > height._value ?  cardWidth : height._value}
+                  x2={cardWidth > height._value ?  cardWidth : height._value}
+                  y2={0}
+                >
+                  {
+                   times(50).map((index) => {
+                    const gap = countGap;
+                    countGap = index % 2 === 0 ? countGap + 2 : countGap;
+                    if (countOpacity > 0 && countOpacity % 2 === 0) {
+                      countOpacity = index % 2 === 0 ? countOpacity : 0;
+                      return (<Stop key={index} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />)
+                    }
+                    countOpacity += 1;
+                      return (<Stop key={index} offset={`${index + gap}%`} stopColor={contentColor} />)
+                  })
+                  }
+                </LinearGradient>
+              </Defs>
+              <Rect
+                width={cardWidth}
+                height={height._value}
+                fill="url(#grad)"
+                strokeLinecap="round"
+              />
+            </Svg>
+            : null
+          }
           <TouchableOpacity
             onLongPress={this.handleOnLongPress}
-            disabled={this.state.isActive}
+            disabled={isActive}
           >
             <View style={{ width: '100%', height: '100%' }}>
               <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
@@ -541,7 +637,7 @@ class Card extends Component {
               </Text>
             </View>
           </TouchableOpacity>
-          {this.state.isActive ?
+          {isActive ?
             <ResizeButton
               onPress={() => this.setState({ isResizeing: true })}
               onRelease={this.handleResizeReleaseBottom}
@@ -555,7 +651,7 @@ class Card extends Component {
               onScrollY={this.props.onScrollY}
               top={this.state.top._value}
             /> : null }
-          {this.state.isActive ?
+          {isActive ?
             <ResizeButton
               onPress={() => this.setState({ isResizeing: true })}
               onRelease={this.handleResizeReleaseTop}
