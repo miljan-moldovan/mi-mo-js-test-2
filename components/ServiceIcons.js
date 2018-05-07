@@ -108,7 +108,7 @@ const Group = ({
   return (
     <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background, marginBottom: direction === 'column' ? marginBottom : 0 }]}>
       <View style={styles.clientGroupLabelContainer}>
-        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="solidFree" color="black" />
+        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="solid" color="black" />
         {!hideInitials && <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>}
       </View>
       { leader ? (<Text style={[styles.dollarSign, { fontWeight: '500', color: '#FFFFFF', backgroundColor: color.font }]}>$</Text>) : null }

@@ -71,7 +71,7 @@ export default class QueueHeader extends React.Component {
     ) : (
       <SafeAreaView style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
         <QueueNavButton
-          type="regular"
+          type="solid"
           icon="bars"
           style={{
  alignItems: 'flex-start', flex: 1, paddingLeft: 8, paddingTop: 5,
@@ -94,7 +94,7 @@ flex: 1,
 }}
         >
           <QueueNavButton type="solid" icon="ellipsisH" onPress={this.onActionPress} style={{ marginRight: 20, paddingTop: 5 }} />
-          <QueueNavButton type="regular" icon="search" onPress={this.onSearchPress} style={{ marginRight: 2, paddingTop: 5 }} />
+          <QueueNavButton type="solid" icon="search" onPress={this.onSearchPress} style={{ marginRight: 2, paddingTop: 5 }} />
         </View>
       </SafeAreaView>
     );

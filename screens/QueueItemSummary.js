@@ -252,9 +252,9 @@ renderBtnContainer = () => {
         >
           <View style={styles.btnGroup}>
             <View style={isDisabledReturnLater ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}>
-              <Icon name="undo" size={16} color="#fff" type="solid" />
+              <Icon name="history" size={16} color="#fff" type="solid" />
             </View>
-            <Text style={styles.btnbottomText}>{returned ? 'Returned' : 'Return later'}</Text>
+            <Text style={styles.btnbottomText}>{returned ? 'Returned' : 'Returning'}</Text>
           </View>
         </SalonTouchableOpacity>
         <SalonTouchableOpacity
