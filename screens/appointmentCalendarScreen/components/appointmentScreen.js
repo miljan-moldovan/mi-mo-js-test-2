@@ -73,6 +73,7 @@ export default class AppointmentScreen extends Component {
 
     this.state = {
       visible: false,
+      newAppointmentFilter: 0,
       visibleNewAppointment: false,
       visibleAppointment: false,
       isLoading: true,
@@ -120,7 +121,7 @@ export default class AppointmentScreen extends Component {
     }
     this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
 
-    this.setState({ visibleNewAppointment: true });
+    this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
   }
 
   selectFilterProvider = (filterProvider) => {
@@ -183,7 +184,11 @@ export default class AppointmentScreen extends Component {
         />
         {
            isLoading ?
-             <View style={{ position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d' }}><ActivityIndicator /></View> : null
+             <View style={{
+ position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
+}}
+             ><ActivityIndicator />
+             </View> : null
         }
         {selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
@@ -209,6 +214,7 @@ export default class AppointmentScreen extends Component {
 
         <SalonNewAppointmentSlide
           navigation={this.props.navigation}
+          selectedFilter={this.state.newAppointmentFilter}
           hasConflicts={this.props.newAppointmentState.hasConflicts}
           date={this.props.newAppointmentState.body.date}
           startTime={this.props.newAppointmentState.body.items[0].fromTime}
@@ -228,7 +234,10 @@ export default class AppointmentScreen extends Component {
             };
             this.props.newAppointmentActions.bookNewAppt(callback);
           }}
-          handlePressMore={() => this.props.navigation.navigate('NewAppointment')}
+          handlePressMore={() => {
+              this.setState({ visibleNewAppointment: false });
+              this.props.navigation.navigate('NewAppointment');
+          }}
           handlePressProvider={() => {
             this.props.navigation.navigate('Providers', {
               actionType: 'update',

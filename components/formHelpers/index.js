@@ -510,7 +510,7 @@ export class ProviderInput extends React.Component {
 
     return (
       <SalonTouchableOpacity
-        style={[styles.inputRow, { justifyContent: 'center' }]}
+        style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
         onPress={this.handlePress}
       >
         {!this.props.noLabel && (
@@ -523,14 +523,16 @@ export class ProviderInput extends React.Component {
         >
           {value !== null && (
             <View style={{ flexDirection: 'row' }}>
-              {!this.props.noAvatar && (<SalonAvatar
-                wrapperStyle={styles.providerRound}
-                width={30}
-                borderWidth={1}
-                borderColor="transparent"
-                image={{ uri: employeePhoto }}
-                defaultComponent={<DefaultAvatar provider={this.state.selectedProvider} />}
-              />)}
+              {!this.props.noAvatar && (
+                <SalonAvatar
+                  wrapperStyle={styles.providerRound}
+                  width={'avatarSize' in this.props ? this.props.avatarSize : 30}
+                  borderWidth={1}
+                  borderColor="transparent"
+                  image={{ uri: employeePhoto }}
+                  defaultComponent={<DefaultAvatar provider={this.state.selectedProvider} />}
+                />
+              )}
               <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
             </View>
           )}

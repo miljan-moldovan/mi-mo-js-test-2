@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Animated, Dimensions, View, StyleSheet } from 'react-native';
+import { Text, Animated, Dimensions, ScrollView, View, StyleSheet } from 'react-native';
 import moment from 'moment';
 
 import Icon from './../UI/Icon';
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   panelContainer: {
     backgroundColor: '#FFFFFF',
     flexDirection: 'column',
-    height: 510,
+    height: 462,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     width: '100%',
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 16,
     width: '100%',
-    height: 510,
+    height: 462,
   },
   panelBlurredSection: {
     flex: 1,
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     // justifyContent: 'center',
     flexDirection: 'column',
-    height: 78,
+    height: 70,
   },
   panelBottomSection: {
     backgroundColor: '#FFFFFF',
@@ -62,15 +62,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    marginTop: 14,
+    marginTop: 12,
   },
   btnBottom: {
-    height: 53,
+    height: 54,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
     width: '100%',
-    marginTop: 17,
+    marginTop: 10,
   },
   panelTop: {
     backgroundColor: '#115ECD',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   blueButtonContainer: {
     width: '100%',
-    height: 54,
+    height: 48,
     backgroundColor: '#115ECD',
     borderRadius: 5,
     flexDirection: 'row',
@@ -127,13 +127,13 @@ const styles = StyleSheet.create({
   },
   blueButtonText: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
+    fontSize: 12,
+    fontFamily: 'Roboto-Bold',
     backgroundColor: 'transparent',
   },
   whiteButtonContainer: {
     width: '100%',
-    height: 53,
+    height: 48,
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
     borderColor: '#B4B4B4',
@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
   },
   whiteButtonText: {
     color: '#115ECD',
-    fontSize: 14,
-    fontFamily: 'Roboto',
+    fontSize: 12,
+    fontFamily: 'Roboto-Bold',
     backgroundColor: 'transparent',
   },
   iconContainer: {
@@ -163,22 +163,24 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 10 / 2,
   },
-
   dateText: {
     color: '#000000',
-    fontSize: 18,
+    fontSize: 16,
+    lineHeight: 30,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-    paddingTop: 11,
+    paddingTop: 4,
     paddingLeft: 4,
   },
   timeText: {
     color: '#000000',
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-    paddingTop: 9,
+    paddingTop: 2,
     paddingLeft: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   clockIconContainer: {
     flexDirection: 'row',
@@ -210,7 +212,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     backgroundColor: '#F4F7FC',
-    height: 135,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
   apptGroup: {
     borderBottomColor: 'transparent',
     borderTopColor: 'transparent',
-    height: 61,
+    height: 55,
     paddingLeft: 0,
     paddingRight: 0,
     width: '90%',
@@ -235,7 +236,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     backgroundColor: '#F1F1F1',
-    height: 36,
+    height: 30,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
     width: '90%',
   },
   otherOptionsLabels: { color: '#115ECD', fontSize: 16 },
@@ -262,7 +265,31 @@ const styles = StyleSheet.create({
     color: '#D1242A',
     textDecorationLine: 'underline',
   },
+  placeholderText: {
+    fontSize: 14,
+    color: '#727A8F',
+    lineHeight: 22,
+  },
+  lengthLabel: {
+    fontSize: 13,
+    lineHeight: 22,
+    color: '#2F3142',
+  },
+  lengthText: {
+    fontSize: 13,
+    lineHeight: 22,
+    color: '#2F3142',
+    fontStyle: 'italic',
+    opacity: 0.5,
+  },
 });
+
+const caretRight = () => (
+  <Icon
+    name="angleRight"
+    style={styles.timeText}
+  />
+);
 
 export default class SalonNewAppointmentSlide extends React.Component {
   static defaultProps = {
@@ -277,7 +304,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
 
     this.state = {
       visible: props.visible,
-      selectedFilter: 0,
+      selectedFilter: 'selectedFilter' in this.props ? this.props.selectedFilter : 0,
       startTime: 'startTime' in this.props ? this.props.startTime : null,
       endTime: 'endTime' in this.props ? this.props.endTime : null,
       client: 'selectedClient' in this.props ? this.props.selectedClient : null,
@@ -290,6 +317,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
     this.setState({
       visible: nextProps.visible,
       selected: nextProps.selectedDate,
+      selectedFilter: 'selectedFilter' in this.props ? this.props.selectedFilter : null,
       startTime: 'startTime' in this.props ? this.props.startTime : null,
       endTime: 'endTime' in this.props ? this.props.endTime : null,
       client: 'selectedClient' in this.props ? this.props.selectedClient : null,
@@ -322,6 +350,12 @@ export default class SalonNewAppointmentSlide extends React.Component {
   }
 
   render() {
+    const length = this.props.service !== null ? `${moment.duration(this.props.service.maxDuration).asMinutes()} min` : false;
+    const lengthText = (
+      <Text style={styles.lengthLabel}>
+        Length <Text style={styles.lengthText}>{length || 'select a service first'}</Text>
+      </Text>
+    );
     return (
       <ModalBox
         coverScreen
@@ -365,17 +399,23 @@ export default class SalonNewAppointmentSlide extends React.Component {
             </View>
 
             {this.state.selectedFilter === 0 &&
-              <View style={styles.tab} >
+              <ScrollView style={styles.tab} >
                 <View style={styles.panelTopSection}>
                   <Text style={styles.dateText}>
                     {moment(this.props.date).format('ddd, MMM D')}
                   </Text>
 
                   <View style={styles.clockIconContainer}>
-                    <Icon style={{ paddingTop: 7, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
-                    <Text style={styles.timeText}>
-                      {`${moment(this.props.startTime, 'HH:mm').format('HH:mm A')} > ${moment(this.props.endTime, 'HH:mm').format('HH:mm A')}`}
-                    </Text>
+                    <Icon style={{ paddingTop: 5, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
+                    <Text style={styles.timeText}>{moment(this.props.startTime, 'HH:mm').format('HH:mm A')}</Text>
+                    <Icon
+                      name="angleRight"
+                      size={15}
+                      style={{ paddingTop: 4, paddingLeft: 4 }}
+                      color="#000000"
+                      type="light"
+                    />
+                    <Text style={styles.timeText}>{moment(this.props.endTime, 'HH:mm').format('HH:mm A')}</Text>
                   </View>
                 </View>
 
@@ -385,8 +425,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   >
                     {[
                       <InputButton
-                        style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.props.client ? '#000000' : '#727A8F' }}
+                        style={{ height: 39 }}
+                        labelStyle={{ fontSize: 14, color: this.props.client ? '#000000' : '#727A8F' }}
                         // onPress={this.props.handlePressClient}
                         onPress={() => { this.hidePanel(); this.props.handlePressClient(); }}
                         label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
@@ -394,23 +434,25 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <InputButton
-                        style={{ height: 44 }}
-                        labelStyle={{ fontSize: 16, color: this.props.service ? '#000000' : '#727A8F' }}
-                      //  onPress={this.props.handlePressService}
+                        style={{ height: 39 }}
+                        labelStyle={{ fontSize: 14, color: this.props.service ? '#000000' : '#727A8F' }}
+                        value={length}
+                        //  onPress={this.props.handlePressService}
                         onPress={() => { this.hidePanel(); this.props.handlePressService(); }}
                         label={this.props.service ? `${this.props.service.name}` : 'Select a Service'}
                         iconStyle={{ color: '#115ECD' }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <ProviderInput
-                        noAvatar
                         noLabel
+                        rootStyle={{ height: 39 }}
                         selectedProvider={this.props.provider}
                         placeholder="Select a Provider"
-                        placeholderStyle={{ fontSize: 16, color: '#727A8F' }}
-                        selectedStyle={{ fontSize: 16, color: 'black' }}
+                        placeholderStyle={styles.placeholderText}
+                        selectedStyle={{ fontSize: 14, lineHeight: 22, color: 'black' }}
                         contentStyle={{ alignItems: 'flex-start' }}
                         iconStyle={{ color: '#115ECD' }}
+                        avatarSize={20}
                         navigate={this.props.navigation.navigate}
                         onChange={() => { this.hidePanel(); this.props.handlePressProvider(); }}
                       />,
@@ -418,7 +460,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   </InputGroup>
 
                   {this.props.hasConflicts && (
-                    <TouchableOpacity
+                    <SalonTouchableOpacity
                       style={styles.conflictBox}
                       onPress={this.props.handlePressConflicts}
                     >
@@ -427,7 +469,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                         <Text style={styles.conflictBoxText}>Conflicts found</Text>
                       </View>
                       <Text style={styles.conflictBoxLink}>Show conflicts</Text>
-                    </TouchableOpacity>
+                    </SalonTouchableOpacity>
                   )}
 
                   <InputGroup
@@ -435,8 +477,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   >
                     {[
                       <InputSwitch
-                        style={{ height: 61, paddingRight: 0, paddingTop: 5 }}
-                        textStyle={{ fontSize: 16, color: '#000000' }}
+                        style={{ height: 55, paddingRight: 0, paddingTop: 5 }}
+                        textStyle={{ fontSize: 14, color: '#000000' }}
                         onChange={this.props.handleChangeRequested}
                         value={this.props.isProviderRequested}
                         text="Provider is Requested?"
@@ -448,15 +490,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <InputGroup
                     style={styles.lengthGroup}
                   >
-                    {[
-                      <InputButton
-                        style={{ height: 36 }}
-                        labelStyle={{ color: '#2F3142' }}
-                        onPress={() => { alert('Not implemented'); }}
-                        label="Length select a service first"
-                        noIcon
-                      />,
-                    ]}
+                    {lengthText}
                   </InputGroup>
                 </View>
                 <View style={styles.panelBottomSection}>
@@ -496,7 +530,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                     </SalonTouchableOpacity>
                   </View>
                 </View>
-              </View>
+              </ScrollView>
             }
             {this.state.selectedFilter === 1 &&
               <View style={styles.tab}>

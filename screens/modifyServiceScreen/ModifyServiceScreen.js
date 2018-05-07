@@ -36,22 +36,23 @@ const styles = StyleSheet.create({
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    headerTitle: <Text style={styles.titleText}>{'service' in rootProps.navigation.state.params ?
-      'Modify Service' : 'Add Service'}
-    </Text>,
-    headerLeft:
-
-  <SalonTouchableOpacity
-    onPress={() => { rootProps.navigation.goBack(); }}
-  >
-    <Icon
-      name="angleLeft"
-      type="regular"
-      color="white"
-      size={26}
-    />
-  </SalonTouchableOpacity>,
-
+    headerTitle: (
+      <Text style={styles.titleText}>
+        {'service' in rootProps.navigation.state.params ? 'Modify Service' : 'Add Service'}
+      </Text>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity
+        onPress={() => { rootProps.navigation.goBack(); }}
+      >
+        <Icon
+          name="angleLeft"
+          type="regular"
+          color="white"
+          size={26}
+        />
+      </SalonTouchableOpacity>
+    ),
     headerRight: (
       <SalonTouchableOpacity
         wait={3000}
