@@ -73,7 +73,7 @@ Icon.propTypes = {
   name: PropTypes.string.isRequired,
   color: PropTypes.string,
   fontWeight: PropTypes.string,
-  type: PropTypes.oneOf(['regular', 'brands', 'light', 'solid']),
+  type: PropTypes.oneOf(['solid', 'brands', 'light', 'regularFree', 'solidFree', 'simple']),
   size: PropTypes.number,
   style: PropTypes.any,
 };

@@ -46,7 +46,7 @@ export default class ModifyServiceScreen extends React.Component {
   >
     <Icon
       name="angleLeft"
-      type="regular"
+      type="regularFree"
       color="white"
       size={26}
     />

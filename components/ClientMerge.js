@@ -55,7 +55,7 @@ class ClientMergeItem extends React.PureComponent {
       <View style={styles.checkContainer}>
         <Icon
           name={selected ? 'checkCircle' : 'circle'}
-          type={selected ? 'regular' : 'solid'}
+          type={selected ? 'regularFree' : 'solid'}
           size={selected ? 23 : 20}
           color={selected ? '#2BBA11' : '#727A8F'}
         />

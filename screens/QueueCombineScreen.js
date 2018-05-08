@@ -26,6 +26,8 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 
 const TAB_UNCOMBINED = 0;
 const TAB_COMBINED = 1;
+const TAB_COMBINE = { title: 'Combine', message: 'Are you sure you want to combine this items?' };
+const TAB_CHANGE_LEADER = { title: 'Change leader', message: 'Are you sure you want to change the leader?' };
 
 class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -79,6 +81,7 @@ class QueueCombineScreen extends React.Component {
     searchText: '',
     groupLeader: '',
     activeTab: TAB_UNCOMBINED,
+    alertDone: TAB_COMBINE,
   }
   componentWillMount() {
     this.prepareQueueData();
@@ -130,10 +133,10 @@ class QueueCombineScreen extends React.Component {
   onChangeCombineClients = (combinedClients, groupLeader) => {
     if (combinedClients === null && groupLeader !== undefined && groupLeader !== null) {
       // update only groupLeader
-      this.setState({ groupLeader });
+      this.setState({ groupLeader, alertDone: TAB_COMBINE });
       return;
     }
-    this.setState({ combinedClients, groupLeader }, this.updateNavButtons);
+    this.setState({ combinedClients, groupLeader, alertDone: TAB_COMBINE }, this.updateNavButtons);
   }
   updateNavButtons = () => {
     const { combinedClients } = this.state;
@@ -146,8 +149,8 @@ class QueueCombineScreen extends React.Component {
 
   confirmation = () => {
     Alert.alert(
-      'Combine',
-      'Are you sure?',
+      this.state.alertDone.title,
+      this.state.alertDone.message,
       [
         { text: 'Cancel', onPress: () => null, style: 'cancel' },
         { text: 'OK', onPress: () => this.saveData() },
@@ -201,7 +204,17 @@ class QueueCombineScreen extends React.Component {
   }
   onUncombineClients = (groupId) => {
     // Alert.alert('onUncombineClients', groupId);
-    this.props.uncombine(groupId);
+
+
+    Alert.alert(
+      'Uncombine',
+      'Are you sure you want to uncombine this items?',
+      [
+        { text: 'Cancel', onPress: () => null, style: 'cancel' },
+        { text: 'OK', onPress: () => this.props.uncombine(groupId) },
+      ],
+      { cancelable: true },
+    );
   }
   // change group leader for existing groups. Will only be applied if user clicks on 'Done'.
   onChangeGroupLeader = (clientId, groupId) => {
@@ -210,6 +223,7 @@ class QueueCombineScreen extends React.Component {
         ...this.state.groupLeadersTmp,
         [groupId]: clientId,
       },
+      alertDone: TAB_CHANGE_LEADER,
     }, this.updateNavButtons);
   }
   toggleSort = () => {
