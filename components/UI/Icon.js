@@ -10,9 +10,17 @@ import PropTypes from 'prop-types';
 
 import IconDB from './IconDB';
 
+const fontWeights = {
+  solid: '900',
+  brands: '400',
+  light: '300',
+  regularFree: '400',
+  solidFree: '300',
+  simple: 'normal',
+};
+
 const fontMap = {
   solid: 'FontAwesome5ProSolid',
-  // regular: 'FontAwesome5ProRegular',
   brands: 'FontAwesome5BrandsRegular',
   light: 'FontAwesome5ProLight',
   regularFree: 'FontAwesome5FreeRegular',
@@ -32,8 +40,14 @@ export default class Icon extends Component {
     } = this.props;
 
     let fontFamily = 'FontAwesome5ProLight';
+    let weight = fontWeight;
+
     if (type && fontMap[type]) {
       fontFamily = fontMap[type];
+    }
+
+    if (!fontWeight && type && fontWeights[type]) {
+      weight = fontWeights[type];
     }
 
     const icon = IconDB[name];
@@ -46,7 +60,7 @@ export default class Icon extends Component {
           { fontFamily, fontWeight },
           color ? { color } : null,
           fontSize ? { fontSize } : null,
-          fontWeight ? { fontWeight } : { fontWeight: 'normal' },
+          fontWeight ? { fontWeight } : { fontWeight: weight },
          ]}
         ref={this._ref}
       >

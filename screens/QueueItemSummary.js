@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import Icon from '../components/UI/Icon';
 import ListItem from './QueueListItemSummary';

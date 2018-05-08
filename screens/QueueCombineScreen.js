@@ -11,12 +11,10 @@ import {
   UIManager,
 } from 'react-native';
 
-import { Button } from 'native-base';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { SafeAreaView } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
-
+import Icon from '../components/UI/Icon';
+import SalonFlatPicker from '../components/SalonFlatPicker';
 
 import { connect } from 'react-redux';
 import * as actions from '../actions/queue.js';
@@ -26,37 +24,51 @@ UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
 
 
+const TAB_UNCOMBINED = 0;
+const TAB_COMBINED = 1;
+
 class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     const { onPressDone, loading } = params;
     return {
-      header: (
-        <SafeAreaView style={{
-justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
-}}
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>Combine</Text>
+          <Text style={styles.subTitleText}>Select clients to combine</Text>
+        </View>
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity
+          style={styles.leftButton}
+          onPress={() => { navigation.goBack(); }}
         >
-          <SalonTouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.navButtonText}>Close</Text>
-          </SalonTouchableOpacity>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={styles.headerTitle}>Combine</Text>
-            <Text style={styles.headerSubtitle}>Select clients to combine</Text>
+          <View style={styles.leftButtonContainer}>
+            <Text style={styles.leftButtonText}>
+            Close
+            </Text>
           </View>
-          {loading ? (
-            <View style={styles.navButton}>
-              <ActivityIndicator />
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        loading ? (
+          <View style={styles.navButton}>
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <SalonTouchableOpacity
+            wait={3000}
+            onPress={onPressDone}
+          >
+            <View style={styles.rightButtonContainer}>
+              <Text style={[styles.rightButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
             </View>
-            ) : (
-              <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
-                <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-              </SalonTouchableOpacity>
-            )}
-
-        </SafeAreaView>
+          </SalonTouchableOpacity>
+        )
       ),
     };
   };
+
 
   state = {
     combinedClients: [],
@@ -66,6 +78,7 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     combinedFirst: false,
     searchText: '',
     groupLeader: '',
+    activeTab: TAB_UNCOMBINED,
   }
   componentWillMount() {
     this.prepareQueueData();
@@ -125,11 +138,25 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
   updateNavButtons = () => {
     const { combinedClients } = this.state;
     if ((combinedClients && combinedClients.length > 1) || this.getUpdatedGroupLeaders()) {
-      this.props.navigation.setParams({ onPressDone: this.saveData });
+      this.props.navigation.setParams({ onPressDone: this.confirmation });
     } else {
       this.props.navigation.setParams({ onPressDone: undefined });
     }
   }
+
+  confirmation = () => {
+    Alert.alert(
+      'Combine',
+      'Are you sure?',
+      [
+        { text: 'Cancel', onPress: () => null, style: 'cancel' },
+        { text: 'OK', onPress: () => this.saveData() },
+      ],
+      { cancelable: true },
+    );
+  }
+
+
   saveData = () => {
     const {
       combinedClients, queueData, groupLeader, groupData,
@@ -193,6 +220,10 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
   }
   changeSearchText = searchText => this.setState({ searchText });
 
+  onPressTab = (ev, index) => {
+    this.setState({ activeTab: index });
+  }
+
   render() {
     const {
       searchText, combinedFirst, queueData, groupData, groupLeadersTmp,
@@ -211,24 +242,45 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     return (
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.searchContainer}>
-          <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome>
+          <Icon style={{ marginLeft: 10 }} name="search" size={14} color="rgba(114,122,143,0.7)" type="solid" />
           <TextInput style={styles.search} onChangeText={this.changeSearchText} value={this.state.searchText} placeholder="Search" returnKeyType="search" />
         </View>
-        <View style={{ alignItems: 'flex-start' }}>
-          <SalonTouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
-            <FontAwesome style={styles.sortButtonIcon}>{combinedFirst ? Icons.sortAmountAsc : Icons.sortAmountDesc }</FontAwesome>
+        <View style={{ height: 40, alignItems: 'center' }}>
+          <SalonFlatPicker
+            textFontSize={13}
+            selectedIndex={this.state.activeTab}
+            onItemPress={this.onPressTab}
+            rootStyle={{
+              height: 27,
+            }}
+            containerStyle={{
+              height: 27,
+              width: 350,
+              backgroundColor: 'white',
+            }}
+            selectedColor="#115ECD"
+            unSelectedTextColor="#115ECD"
+            dataSource={['Uncombined', 'Combined']}
+          />
+          {/* <SalonTouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
+            <Icon name={combinedFirst ? 'sortAmountAsc' : 'sortAmountDesc'} size={10} color="rgba(114,122,143,1)" type="solid" />
             <Text style={styles.sortButtonLabel}>Sort</Text>
             <Text style={styles.sortButtonText}>{combinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
-          </SalonTouchableOpacity>
+          </SalonTouchableOpacity> */}
         </View>
-        {combinedFirst ? uncombined : null}
-        <QueueCombine
-          data={queueData}
-          navigation={this.props.navigation}
-          onChangeCombineClients={this.onChangeCombineClients}
-          filterText={searchText}
-        />
-        {combinedFirst ? null : uncombined}
+
+        {this.state.activeTab === TAB_UNCOMBINED &&
+          <QueueCombine
+            data={queueData}
+            navigation={this.props.navigation}
+            onChangeCombineClients={this.onChangeCombineClients}
+            activeTab={this.state.activeTab}
+            filterText={searchText}
+          />
+        }
+        {this.state.activeTab === TAB_COMBINED &&
+        <View style={{ marginTop: 23 }}>{uncombined}</View>
+        }
       </KeyboardAwareScrollView>
     );
   }
@@ -281,10 +333,6 @@ const styles = StyleSheet.create({
     flexShrink: 2,
     alignItems: 'center',
   },
-  sortButtonIcon: {
-    color: 'rgba(114,122,143,1)',
-    fontSize: 10,
-  },
   sortButtonLabel: {
     fontSize: 10,
     color: 'rgba(114,122,143,1)',
@@ -300,16 +348,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(142,142,147,0.24)',
     height: 36,
     margin: 8,
+    marginBottom: 13,
     alignItems: 'center',
     // justifyContent: 'center',
     flexDirection: 'row',
-  },
-  searchIcon: {
-    // position: 'absolute',
-    marginLeft: 7,
-    color: 'rgba(114,122,143,0.7)',
-    // height: '100%',
-    fontSize: 14,
   },
   search: {
     margin: 7,
@@ -319,5 +361,59 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     flex: 1,
+  },
+  leftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
+  rightButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  leftButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  titleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+
+  },
+  subTitleText: {
+    fontFamily: 'Roboto',
+    color: '#fff',
+    fontSize: 10,
+  },
+  titleContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,
   },
 });

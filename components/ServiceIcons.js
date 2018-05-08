@@ -29,7 +29,7 @@ const ServiceIcons = ({
     { item.groupId && (groupLeaderName || hideInitials) ? (<Group direction={props.direction} color={props.color} leader={item.isGroupLeader} hideInitials={hideInitials} leaderName={groupLeaderName} />) : null }
     {item.attributes && item.attributes.length ? <Tag direction={props.direction} /> : null}
 
-    { /*  {<Star direction={props.direction} />}
+    { /*        {<Star direction={props.direction} />}
     {<NewGlobal direction={props.direction} />}
     {<NewLocal direction={props.direction} />}
     {<Birthday direction={props.direction} />}
@@ -92,7 +92,7 @@ const Birthday = ({ direction }) => (<Icon
    fontSize: 15,
    marginBottom: direction === 'column' ? 10 : 0,
   }}
-  type="solid"
+  type="light"
   name="gift"
 />);
 const Tag = ({ direction }) => (<Icon style={{ marginRight: 3, color: 'black', marginBottom: direction === 'column' ? marginBottom : 0 }} type="regular" name="tag" />);
@@ -108,7 +108,7 @@ const Group = ({
   return (
     <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background, marginBottom: direction === 'column' ? marginBottom : 0 }]}>
       <View style={styles.clientGroupLabelContainer}>
-        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="solid" color="black" />
+        <Icon style={{ fontSize: 10, padding: 0 }} name="userPlus" type="simple" color="black" />
         {!hideInitials && <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>}
       </View>
       { leader ? (<Text style={[styles.dollarSign, { fontWeight: '500', color: '#FFFFFF', backgroundColor: color.font }]}>$</Text>) : null }
