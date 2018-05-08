@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   switchStyle: {
-    transform: [{ scaleX: 0.8 }, { scaleY: 0.8}],
+    transform: [{ scaleX: 0.6 }, { scaleY: 0.6}],
   },
 });
 

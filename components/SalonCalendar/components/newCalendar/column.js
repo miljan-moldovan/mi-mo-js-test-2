@@ -20,9 +20,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 30,
     borderColor: '#C0C1C6',
-    backgroundColor: '#ccc',
+    backgroundColor: '#dddfe0',
     borderBottomWidth: 1,
     borderRightWidth: 1,
+  },
+  oClockBorder: {
+    borderBottomColor: '#2c2f34',
   },
 });
 
@@ -31,7 +34,7 @@ export default class Column extends Component {
     this.props.onCellPressed(cellId, colData);
   }
 
-  renderCell = (cell) => {
+  renderCell = (cell, index) => {
     const { apptGridSettings, colData, cellWidth, isDate, providerSchedule } = this.props;
     const time = moment(cell, 'HH:mm A');
     let style = styles.cellContainerDisabled;
@@ -50,6 +53,12 @@ export default class Column extends Component {
           break;
         }
       }
+    }
+    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
+    const timeSplit = startTime.split(':');
+    const minutesSplit = timeSplit[1];
+    if (minutesSplit === '00') {
+      style = [style, styles.oClockBorder];
     }
     return (
       <View key={cell}>

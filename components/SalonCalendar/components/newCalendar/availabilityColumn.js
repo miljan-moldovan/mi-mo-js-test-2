@@ -20,18 +20,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  oClockBorder: {
+    borderBottomColor: '#2c2f34',
+  },
 });
 
-const renderItems = item => (
-  <View key={item.startTime} style={styles.cellStyle}>
-    <Text style={styles.textStyle}>{`${item.availableSlots} avl.`}</Text>
-  </View>
-);
+const renderItems = (item, index, apptGridSettings) => {
+  const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
+  const timeSplit = startTime.split(':');
+  const minutesSplit = timeSplit[1];
+  const style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
+  return (
+    <View key={item.startTime} style={style}>
+      <Text style={styles.textStyle}>{`${item.availableSlots} avl.`}</Text>
+    </View>
+  );
+};
 
-const availabilityColumn = ({ availability }) => (
+const availabilityColumn = ({ availability, apptGridSettings }) => (
   <View>
     {
-      availability.map(renderItems)
+      availability.map((item, index) => renderItems(item, index, apptGridSettings))
     }
   </View>
 );
