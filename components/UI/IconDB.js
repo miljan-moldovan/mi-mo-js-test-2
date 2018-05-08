@@ -188,6 +188,7 @@ const Icons = {
   commentsO: '\uf0e6',
   compass: '\uf14e',
   compress: '\uf066',
+  compressAlt: '\uf422',
   connectdevelop: '\uf20e',
   contao: '\uf26d',
   copy: '\uf0c5',

@@ -95,10 +95,10 @@ class QueueCombineItem extends React.PureComponent {
         <View style={styles.checkContainer}>
           <Icon
             name={selected ? 'checkCircle' : 'circle'}
-            type={selected ? 'regular' : 'solid'}
+            type={selected ? 'solid' : 'regularFree'}
             size={selected ? 23 : 20}
             color={selected ? '#2BBA11' : '#727A8F'}
-            style={styles.checkIcon}
+
           />
         </View>
       );
@@ -119,7 +119,7 @@ class QueueCombineItem extends React.PureComponent {
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase();
+    const employee = !firstService.isFirstAvailable ? (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase() : 'First Available';
 
     let color = groupColors[Math.floor(Math.random() * groupColors.length)];
 
@@ -334,6 +334,7 @@ export class QueueUncombine extends React.Component {
         <Text style={styles.sectionTitle}>{section.title}</Text>
         <SalonTouchableOpacity onPress={loading ? null : () => this.props.onUncombineClients(section.groupId)} style={styles.sectionUncombine}>
           {loading ? <ActivityIndicator /> : null }
+          <Icon name="timesCircle" type="solid" size={10} color={loading ? 'gray' : '#1DBF12'} />
           <Text style={[styles.sectionUncombineText, loading ? { color: 'gray' } : null]}>UNCOMBINE</Text>
         </SalonTouchableOpacity>
       </View>
@@ -500,13 +501,14 @@ const styles = StyleSheet.create({
     // marginTop: 28,
     flexDirection: 'row',
     marginHorizontal: 8,
+    marginBottom: 2,
 
   },
   sectionTitle: {
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     color: '#4D5067',
-    marginLeft: 16,
+    marginLeft: 8,
     marginBottom: 7,
   },
   sectionUncombineText: {
@@ -558,10 +560,10 @@ const styles = StyleSheet.create({
     borderLeftColor: 'transparent',
     borderLeftWidth: 1,
   },
-  checkIcon: {
-    fontSize: 20,
-    color: '#727A8F',
-  },
+  // checkIcon: {
+  //   fontSize: 20,
+  //   color: '#727A8F',
+  // },
   dollarSignContainerTouchable: {
     marginLeft: 'auto',
     height: '100%',
@@ -592,6 +594,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 7,
+    marginBottom: 5,
+    marginRight: 8,
   },
 });

@@ -37,11 +37,14 @@ const RootDrawerNavigator = TabNavigator(
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
+        let type = 'regularFree';
+        const fontWeight = 'normal';
 
         if (routeName === 'Sales') {
           iconName = 'lineChart';
         } else if (routeName === 'Queue') {
           iconName = 'signIn';
+          type = 'regular';
         } else if (routeName === 'Clients') {
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {
@@ -52,7 +55,7 @@ const RootDrawerNavigator = TabNavigator(
 
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
-        return <Icon name={iconName} size={23} color={tintColor} type="solid" />;
+        return <Icon name={iconName} size={23} color={tintColor} type={type} fontWeight={fontWeight} />;
       },
     }),
     tabBarOptions: {

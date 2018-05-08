@@ -94,9 +94,9 @@ const QueueTimeNote = (props) => {
   return (
     <View style={[styles.serviceTimeContainer, props.containerStyles]}>
       <View style={styles.serviceTimeLeft}>
-        <Icon name="clockO" style={styles.serviceClockIcon} />
+        <Icon name="clockO" type="regularFree" style={styles.serviceClockIcon} />
         <Text style={styles.serviceTime}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')} </Text>
-        <Icon name="chevronRight" style={styles.chevronRightIcon} />
+        <Icon name="chevronRight" type="light" style={styles.chevronRightIcon} />
       </View>
       <View style={styles.serviceTimeRight}>
         <Text style={styles.serviceTime}>{serviceTime}</Text>

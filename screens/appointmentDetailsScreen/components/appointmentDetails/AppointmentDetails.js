@@ -561,7 +561,7 @@ class AppointmentDetails extends React.Component {
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
           <BottomButton disabled={!isActiveCheckin} icon="check" onPress={() => { this.props.onPressSummary.checkIn(); this.props.navigation.goBack(); }} title="Check In" />
           <BottomButton disabled={false} icon="signOut" onPress={() => { this.props.onPressSummary.walkOut(isActiveWalkOut); this.props.navigation.goBack(); }} title={isActiveWalkOut ? 'Walk-out' : 'No Show'} />
-          <BottomButton disabled={isDisabledReturnLater} icon="undo" onPress={() => { this.props.onPressSummary.returning(returned); this.props.navigation.goBack(); }} title={returned ? 'Returned' : 'Return later'} />
+          <BottomButton disabled={isDisabledReturnLater} icon="history" onPress={() => { this.props.onPressSummary.returning(returned); this.props.navigation.goBack(); }} title={returned ? 'Returned' : 'Return later'} />
           <BottomButton disabled={(returned || isActiveCheckin)} icon="play" onPress={() => { this.props.onPressSummary.toService(); this.props.navigation.goBack(); }} title="To Service" />
         </View>
       );

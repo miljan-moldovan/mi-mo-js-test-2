@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import Icon from '../components/UI/Icon';
 import ListItem from './QueueListItemSummary';
@@ -252,9 +251,9 @@ renderBtnContainer = () => {
         >
           <View style={styles.btnGroup}>
             <View style={isDisabledReturnLater ? [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}>
-              <Icon name="undo" size={16} color="#fff" type="solid" />
+              <Icon name="history" size={16} color="#fff" type="solid" />
             </View>
-            <Text style={styles.btnbottomText}>{returned ? 'Returned' : 'Return later'}</Text>
+            <Text style={styles.btnbottomText}>{returned ? 'Returned' : 'Returning'}</Text>
           </View>
         </SalonTouchableOpacity>
         <SalonTouchableOpacity

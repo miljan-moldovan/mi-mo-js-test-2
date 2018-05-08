@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 
 function renderBtn(
   data, index, isSelected, isLast, onItemPress,
-  disabled, selectedColor, selectedTextColor, unSelectedTextColor,
+  disabled, selectedColor, selectedTextColor, unSelectedTextColor, textFontSize,
 ) {
   let btnStyle = styles.btn;
   let textStyle = styles.text;
@@ -78,7 +78,7 @@ function renderBtn(
       disabled={disabled}
     >
       <View style={styles.textContainer}>
-        <Text style={textStyle}>
+        <Text style={[textStyle, { fontSize: textFontSize }]}>
           {data}
         </Text>
       </View>
@@ -98,6 +98,7 @@ const salonFlatPicker = props => (
           props.selectedColor,
           props.selectedTextColor,
           props.unSelectedTextColor,
+          props.textFontSize,
         ))}
     </View>
   </View>
@@ -112,6 +113,7 @@ salonFlatPicker.propTypes = {
   selectedColor: PropTypes.string,
   selectedTextColor: PropTypes.string,
   unSelectedTextColor: PropTypes.string,
+  textFontSize: PropTypes.number,
 };
 
 salonFlatPicker.defaultProps = {
@@ -121,6 +123,7 @@ salonFlatPicker.defaultProps = {
   selectedColor: '#67A3C7',
   selectedTextColor: '#fff',
   unSelectedTextColor: '#67A3C7',
+  textFontSize: 14,
 };
 
 export default salonFlatPicker;
