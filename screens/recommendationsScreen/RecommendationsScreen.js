@@ -119,7 +119,7 @@ const options = [
     <View style={styles.secondItemRight}>
       <Icon
         name="plusCircle"
-        type="regular"
+        type="regularFree"
         color="#115ECD"
         size={16}
       />
@@ -134,7 +134,7 @@ const options = [
     <View style={styles.secondItemRight}>
       <Icon
         name="trashAlt"
-        type="regular"
+        type="regularFree"
         color="#D1242A"
         size={16}
       />

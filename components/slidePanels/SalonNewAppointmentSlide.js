@@ -282,6 +282,12 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     opacity: 0.5,
   },
+  lengthTextExists: {
+    fontSize: 13,
+    lineHeight: 22,
+    color: '#2F3142',
+    fontFamily: 'Roboto-Bold',
+  },
 });
 
 const caretRight = () => (
@@ -351,9 +357,10 @@ export default class SalonNewAppointmentSlide extends React.Component {
 
   render() {
     const length = this.props.service !== null ? `${moment.duration(this.props.service.maxDuration).asMinutes()} min` : false;
+    const lengthStyle = length ? styles.lengthTextExists : styles.lengthText;
     const lengthText = (
       <Text style={styles.lengthLabel}>
-        Length <Text style={styles.lengthText}>{length || 'select a service first'}</Text>
+        Length <Text style={lengthStyle}>{length || 'select a service first'}</Text>
       </Text>
     );
     return (
@@ -436,8 +443,15 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       <InputButton
                         style={{ height: 39 }}
                         labelStyle={{ fontSize: 14, color: this.props.service ? '#000000' : '#727A8F' }}
-                        value={length}
-                        //  onPress={this.props.handlePressService}
+                        value={(
+                          <Text style={{
+                            fontSize: 12,
+                            color: '#727A8F',
+                            fontFamily: 'Roboto-Bold',
+                          }}
+                          >{length}
+                          </Text>
+                        )}
                         onPress={() => { this.hidePanel(); this.props.handlePressService(); }}
                         label={this.props.service ? `${this.props.service.name}` : 'Select a Service'}
                         iconStyle={{ color: '#115ECD' }}

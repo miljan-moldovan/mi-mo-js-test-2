@@ -41,18 +41,19 @@ export default class ModifyServiceScreen extends React.Component {
         {'service' in rootProps.navigation.state.params ? 'Modify Service' : 'Add Service'}
       </Text>
     ),
-    headerLeft: (
-      <SalonTouchableOpacity
-        onPress={() => { rootProps.navigation.goBack(); }}
-      >
-        <Icon
-          name="angleLeft"
-          type="regular"
-          color="white"
-          size={26}
-        />
-      </SalonTouchableOpacity>
-    ),
+    headerLeft:
+
+  <SalonTouchableOpacity
+    onPress={() => { rootProps.navigation.goBack(); }}
+  >
+    <Icon
+      name="angleLeft"
+      type="regularFree"
+      color="white"
+      size={26}
+    />
+  </SalonTouchableOpacity>,
+
     headerRight: (
       <SalonTouchableOpacity
         wait={3000}

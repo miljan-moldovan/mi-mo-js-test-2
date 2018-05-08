@@ -58,7 +58,7 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>zenithnew.dev.cicd.salondev.net</key>
+			<key>queuereact.dev.cicd.salondev.net</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
@@ -76,7 +76,7 @@
 				<key>NSTemporaryExceptionMinimumTLSVersion</key>
 				<string>TLSv1.1</string>
 			</dict>
-			<key>queuereact.dev.cicd.salondev.net</key>
+			<key>zenithnew.dev.cicd.salondev.net</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
@@ -91,12 +91,12 @@
 	<string/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Font-Awesome-5-Free-Solid-900.otf</string>
+		<string>FontAwesome5FreeRegular400.otf</string>
+		<string>FontAwesome5FreeSolid900.otf</string>
+		<string>FontAwesome5ProLight300.otf</string>
+		<string>FontAwesome5BrandsRegular400.otf</string>
+		<string>FontAwesome5ProSolid900.otf</string>
 		<string>FontAwesome.ttf</string>
-		<string>Font-Awesome-5-Pro-Solid-900.otf</string>
-		<string>Font-Awesome-5-Pro-Regular-400.otf</string>
-		<string>Font-Awesome-5-Pro-Light-300.otf</string>
-		<string>Font-Awesome-5-Brands-Regular-400.otf</string>
 		<string>Entypo.ttf</string>
 		<string>EvilIcons.ttf</string>
 		<string>Foundation.ttf</string>
