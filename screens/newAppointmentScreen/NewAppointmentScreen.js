@@ -6,8 +6,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import moment from 'moment';
+import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
 import {
+  DefaultAvatar,
   InputGroup,
   InputText,
   InputLabel,
@@ -18,11 +21,16 @@ import {
   ClientInput,
   ProviderInput,
   InputNumber,
+  InputButton,
 } from '../../components/formHelpers';
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
+<<<<<<< HEAD
+import apiWrapper from '../../utilities/apiWrapper';
+=======
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
@@ -78,6 +86,17 @@ const caretRight = (
 );
 
 const Guest = props => (
+<<<<<<< HEAD
+  <SalonCard
+    bodyChildren={(
+      <ClientInput
+        style={{ flex: 1 }}
+        {...props}
+      />
+    )}
+    backgroundColor="white"
+  />
+=======
   <SalonTouchableOpacity onPress={props.onPress}>
     <SalonCard
       bodyChildren={(
@@ -103,14 +122,14 @@ const Guest = props => (
       backgroundColor="white"
     />
   </SalonTouchableOpacity>
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
 );
 
 const ServiceInfo = props => (
   <Text style={styles.serviceInfo}>
     <Text style={{ fontFamily: 'Roboto-Medium' }}>{props.waitTime}</Text>
-    <Text style={{ fontSize: 10 }}> min</Text>
     <Text style={{ fontSize: 13 }}>  |  </Text>
-    <Text style={{ fontFamily: 'Roboto-Medium' }}>${props.price}</Text>
+    <Text style={{ fontFamily: 'Roboto-Medium' }}>$ {props.price}</Text>
   </Text>
 );
 
@@ -141,7 +160,7 @@ const LabeledTextarea = props => (
     }}
     >{props.label}
     </Text>
-    <InputText placeholder={props.placeholder} />
+    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
   </View>
 );
 
@@ -155,7 +174,7 @@ const SalonAppointmentTime = props => (
       style={{ marginRight: 5 }}
     />
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}>11:00 am</Text>
+      <Text style={styles.serviceTime}>{props.from}</Text>
       <Icon
         name="longArrowRight"
         size={11}
@@ -163,11 +182,43 @@ const SalonAppointmentTime = props => (
         type="light"
         style={{ marginHorizontal: 5 }}
       />
-      <Text style={styles.serviceTime}>12:00 pm</Text>
+      <Text style={styles.serviceTime}>{props.to}</Text>
     </View>
   </View>
 );
 
+<<<<<<< HEAD
+const ServiceCard = ({ data, ...props }) => {
+  const employeePhoto = apiWrapper.getEmployeePhoto(!data.employee.isFirstAvailable ? data.employee.id : 0);
+  return (
+    <SalonCard
+      bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
+      backgroundColor="white"
+      bodyChildren={
+        <View style={{ flex: 1, flexDirection: 'column' }}>
+          <TouchableOpacity
+            style={{ flexDirection: 'row' }}
+            onPress={props.onPress}
+          >
+            <Text style={styles.serviceTitle}>{data.service.name}</Text>
+            <View style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                alignSelf: 'flex-end',
+                alignItems: 'center',
+              }}
+            >
+              <ServiceInfo price={data.service.price} waitTime={moment.duration(data.service.maxDuration).humanize()} />
+              <FontAwesome style={{
+                color: '#115ECD',
+                fontSize: 20,
+                marginLeft: 15,
+              }}
+              >{Icons.angleRight}
+              </FontAwesome>
+            </View>
+          </TouchableOpacity>
+=======
 const ServiceCard = ({ data, ...props }) => (
   <SalonCard
     bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
@@ -179,22 +230,43 @@ const ServiceCard = ({ data, ...props }) => (
           onPress={props.onPress}
         >
           <Text style={styles.serviceTitle}>{data.service.name}</Text>
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
           <View style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignSelf: 'flex-end',
-              alignItems: 'center',
-            }}
+            flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
+          }}
           >
-            <ServiceInfo price={40} waitTime={60} />
-            <FontAwesome style={{
-              color: '#115ECD',
-              fontSize: 20,
-              marginLeft: 15,
+            <SalonAvatar
+              wrapperStyle={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 10,
+              }}
+              width={26}
+              borderWidth={1}
+              borderColor="transparent"
+              hasBadge={data.requested}
+              badgeComponent={
+                <FontAwesome style={{
+                  color: '#1DBF12', fontSize: 10,
+                }}
+                >{Icons.lock}
+                </FontAwesome>
+              }
+              image={{ uri: employeePhoto }}
+              defaultComponent={<DefaultAvatar provider={data.employee} />}
+            />
+            <Text style={{
+              fontSize: 14,
+              lineHeight: 22,
+              color: '#2F3142',
             }}
-            >{Icons.angleRight}
-            </FontAwesome>
+            >{data.employee.isFirstAvailable ? 'First Available' : data.employee.fullName}
+            </Text>
           </View>
+<<<<<<< HEAD
+          <View style={{
+              height: 1, alignSelf: 'stretch', backgroundColor: '#E0EAF7', marginVertical: 7,
+=======
         </SalonTouchableOpacity>
         <View style={{
           flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
@@ -205,31 +277,70 @@ const ServiceCard = ({ data, ...props }) => (
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: 10,
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
             }}
-            width={26}
-            borderWidth={1}
-            borderColor="transparent"
-            hasBadge
-            badgeComponent={
-              <FontAwesome style={{
-                color: '#1DBF12', fontSize: 10,
-              }}
-              >{Icons.lock}
-              </FontAwesome>
-          }
-            image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
           />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <SalonAppointmentTime
+              from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
+              to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
+            />
+            <TouchableOpacity onPress={props.onPressDelete}>
+              <Icon
+                name="trash"
+                size={12}
+                color="#D1242A"
+                type="regular"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+    />
+  );
+};
+
+export default class NewAppointmentScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    if (params !== undefined) {
+      if ('redirect' in params && params.redirect) {
+        navigation.navigate('SalonCalendar');
+      }
+    }
+
+    return ({
+      headerTitle: 'New Appointment',
+      headerLeft: (
+        <TouchableOpacity
+          onPress={() => { navigation.goBack(); }}
+        >
           <Text style={{
             fontSize: 14,
             lineHeight: 22,
-            color: '#2F3142',
+            color: 'white',
           }}
-          >{data.employee.fullName}
+          >Cancel
           </Text>
-        </View>
-        <View style={{
-            height: 1, alignSelf: 'stretch', backgroundColor: '#E0EAF7', marginVertical: 7,
+        </TouchableOpacity>
+      ),
+      headerRight: (
+        <TouchableOpacity
+          onPress={() => navigation.state.params.handleSave()}
+        >
+          <Text style={{
+            fontSize: 14,
+            lineHeight: 22,
+            color: 'white',
           }}
+<<<<<<< HEAD
+          >Done
+          </Text>
+        </TouchableOpacity>
+      ),
+    });
+  }
+=======
         />
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <SalonAppointmentTime startTime={data.fromTime.format('HH:mm')} />
@@ -251,19 +362,25 @@ export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = rootProps => ({
     headerTitle: 'New Appointment',
   })
+>>>>>>> 1bc5e587dbedde3648b1d256d4450a5ad493a1aa
 
   constructor(props) {
     super(props);
 
+    this.props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
-      guestNumber: 0,
       isRecurring: false,
+      recurringPickerOpen: false,
+      recurringNumber: 1,
+      recurringType: 'Weeks',
+      guests: [],
       guestServices: [],
       selectedClient: null,
       selectedProvider: null,
-      mainServices: ['service'],
+      mainServices: [],
     };
   }
+
 
   addMainService = () => {
     const { mainServices } = this.state;
@@ -271,22 +388,26 @@ export default class NewAppointmentScreen extends React.Component {
     this.setState({ mainServices });
   }
 
-  addGuestService = () => {
+  addGuestService = (guestIndex) => {
     const { guestServices } = this.state;
     guestServices.push('service');
     this.setState({ guestServices });
   }
 
-  deleteMainService = () => {
+  deleteMainService = (serviceIndex) => {
     const { mainServices } = this.state;
     mainServices.splice(0, 1);
     this.setState({ mainServices });
   }
 
-  deleteGuestService = () => {
-    const { guestServices } = this.state;
-    guestServices.splice(0, 1);
-    this.setState({ guestServices });
+  deleteGuestService = (guestIndex, serviceIndex) => {
+    const newGuests = this.state.guests;
+    const newGuest = newGuests[guestIndex];
+
+    newGuest.services.splice(serviceIndex, 1);
+    newGuests[guestIndex] = newGuest;
+
+    this.setState({ guests: newGuests });
   }
 
   onPressGuest = () => alert('Not Implemented');
@@ -295,7 +416,7 @@ export default class NewAppointmentScreen extends React.Component {
     this.props.navigation.navigate('ModifyApptService', { service });
   }
 
-  onChangeRecurring = isRecurring => this.setState({ isRecurring });
+  onChangeRecurring = isRecurring => this.setState({ isRecurring: !isRecurring });
 
   onChangeProvider = (selectedProvider) => {
     this.setState({ selectedProvider });
@@ -306,7 +427,19 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   onChangeGuestNumber = (action, guestNumber) => {
-    this.setState({ guestNumber });
+    if (this.props.newAppointmentState.guests.length < guestNumber) {
+      this.props.newAppointmentActions.addGuest();
+    } else {
+      this.props.newAppointmentActions.removeGuest();
+    }
+  }
+
+  handleSave = () => {
+    const callback = () => {
+      this.props.navigation.goBack();
+    };
+    this.props.navigation.setParams({ redirect: true });
+    this.props.newAppointmentActions.bookNewAppt();
   }
 
   render() {
@@ -315,16 +448,41 @@ export default class NewAppointmentScreen extends React.Component {
       service,
       client,
       body,
+      date,
+      startTime,
+      guests,
+      totalDuration,
+      totalPrice,
     } = this.props.newAppointmentState;
+    const { params } = this.props.navigation.state;
+    if (params !== undefined) {
+      if ('redirect' in params && params.redirect) {
+        return this.props.navigation.navigate('SalonCalendar');
+      }
+    }
+
+    const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 minutes' : moment.duration(totalDuration).humanize();
+    const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
     return (
       <ScrollView style={styles.container}>
         <InputGroup style={{ marginTop: 15 }}>
-          <ProviderInput
-            navigate={this.props.navigation.navigate}
-            selectedProvider={employee}
-            onChange={this.props.newAppointmentActions.setNewApptEmployee}
+          <InputLabel
+            label="Booked by"
+            value={(
+              <Text style={{
+                fontSize: 14,
+                lineHeight: 18,
+                color: '#727A8F',
+              }}
+              >{`${employee.name} ${employee.lastName}`}
+              </Text>
+            )}
           />
           <InputDivider />
+          <InputLabel
+            label="Date"
+            value={`${body.date.format('ddd, MM/DD/YYYY')}, ${startTime}`}
+          />
           <InputDate
             noIcon
             placeholder="Date"
@@ -348,7 +506,7 @@ export default class NewAppointmentScreen extends React.Component {
                 }}
               >
                 <Icon
-                  name="stickyNoteO"
+                  name="stickyNote"
                   size={20}
                   color="#115ECD"
                   type="light"
@@ -374,16 +532,16 @@ export default class NewAppointmentScreen extends React.Component {
           <InputDivider />
           <InputLabel
             label="Email"
-            value={body.clientInfo !== null ? body.clientInfo.email : ''}
+            value={client !== null ? client.email : ''}
           />
           <InputDivider />
           <InputLabel
             label="Phone"
-            value={body.clientInfo !== null ? body.clientInfo.phones[0].value : ''}
+            value={client !== null ? client.phones[0].value : ''}
           />
           <InputDivider />
           <InputNumber
-            value={this.state.guestNumber}
+            value={this.props.newAppointmentState.guests.length}
             onChange={this.onChangeGuestNumber}
             label="Multiple Guests"
             singularText="guest"
@@ -391,45 +549,131 @@ export default class NewAppointmentScreen extends React.Component {
           />
         </InputGroup>
         <View>
-          <SubTitle title="Main Client" />
-          {body.items.map(item => (item.service !== null ? (
+          <SubTitle title={this.props.newAppointmentState.guests.length > 0 ? 'Main Client' : 'Services'} />
+          {body.items.map((item, itemIndex) => (item.service !== null ? (
             <ServiceCard
               onPress={this.onPressService}
-              onPressDelete={this.deleteMainService}
+              onPressDelete={() => this.props.newAppointmentActions.removeNewApptItem(itemIndex)}
               key={Math.random().toString()}
               data={item}
             />
           ) : null))}
           <AddButton
-            onPress={this.addMainService}
+            onPress={() => {
+              if (client !== null) {
+                return this.props.navigation.navigate('ModifyApptService', { client });
+              }
+                return alert('Select a client first');
+            }}
             iconStyle={{ marginLeft: 10, marginRight: 6 }}
             title="Add service"
           />
         </View>
         <View>
-          <SubTitle title="1 Guest" />
-          <Guest onPress={this.onPressGuest} />
-          {this.state.guestServices.map(item => (
-            <ServiceCard
-              onPress={this.onPressService}
-              onPressDelete={this.deleteGuestService}
-              key={Math.random().toString()}
-              data={item}
-            />
-          ))}
-          <AddButton
-            onPress={this.addGuestService}
-            iconStyle={{ marginLeft: 10, marginRight: 6 }}
-            title="Add service"
-          />
+          <SubTitle title={guestsLabel} />
+          {
+            this.props.newAppointmentState.guests.map((guest, guestIndex) => (
+              <View>
+                <Guest
+                  index={guestIndex}
+                  navigate={this.props.navigation.navigate}
+                  selectedClient={guest.client}
+                  onPress={this.onPressGuest}
+                  onChange={selectedClient =>
+                    this.props.newAppointmentActions.setGuestClient(guestIndex, selectedClient)
+                  }
+                />
+                {
+                  guest.services.map((item, serviceIndex) => (
+                    <ServiceCard
+                      data={item}
+                      key={Math.random().toString()}
+                      onPress={this.onPressService}
+                      onPressDelete={() => this.props.newAppointmentActions.removeGuestService(guestIndex, serviceIndex)}
+                    />
+                  ))
+                }
+                <AddButton
+                  onPress={() => {
+                    if (guest.client !== null) {
+                      return this.props.navigation.navigate('ModifyApptService', { guestIndex, client: guest.client });
+                    }
+                      return alert('Select a guest first');
+                  }}
+                  iconStyle={{ marginLeft: 10, marginRight: 6 }}
+                  title="Add service"
+                />
+              </View>
+            ))
+          }
         </View>
         <InputGroup>
           <InputSwitch
             text="Recurring appt."
-            value={this.props.newAppointmentState.isRecurring}
-            onChange={this.props.newAppointmentActions.setNewApptRecurring}
+            value={this.state.isRecurring}
+            onChange={this.onChangeRecurring}
           />
         </InputGroup>
+        {this.state.isRecurring && (
+          <View>
+            <SubTitle title="Repeat Every" />
+            <InputGroup>
+              <InputButton
+                label="Repeats every"
+                value={`${this.state.recurringNumber} ${this.state.recurringType}`}
+                onPress={() => this.setState({ recurringPickerOpen: !this.state.recurringPickerOpen })}
+                style={{ paddingLeft: 0 }}
+              />
+              {this.state.recurringPickerOpen && (
+                <View style={{
+                    flexDirection: 'row',
+                    alignSelf: 'stretch',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Picker
+                    style={{ flex: 1 }}
+                    itemStyle={{ backgroundColor: 'white' }}
+                    selectedValue={this.state.recurringNumber}
+                    pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+                    onValueChange={recurringNumber => this.setState({ recurringNumber })}
+                  />
+                  <Picker
+                    style={{ flex: 1 }}
+                    itemStyle={{ backgroundColor: 'white' }}
+                    selectedValue={this.state.recurringType}
+                    pickerData={['Weeks', 'Months']}
+                    onValueChange={recurringType => this.setState({ recurringType })}
+                  />
+                </View>
+              )}
+              <InputDivider />
+              <InputButton
+                label="On"
+                value="The same day each month"
+                onPress={() => this.props.navigation.navigate('RepeatsOn')}
+                style={{ paddingLeft: 0 }}
+              />
+              <InputDivider />
+              <InputButton
+                label="Ends"
+                value="After 5 ocurrences"
+                onPress={() => this.props.navigation.navigate('EndsOn')}
+                style={{ paddingLeft: 0 }}
+              />
+            </InputGroup>
+            <Text style={{
+              fontSize: 12,
+              lineHeight: 14,
+              color: '#727A8F',
+              marginLeft: 16,
+            }}
+            >Event will occur every month on the same day each month
+            </Text>
+          </View>
+      )}
         <View style={{ paddingVertical: 32, paddingHorizontal: 8 }}>
           <View style={{ height: 2, alignSelf: 'stretch', backgroundColor: '#c2c2c2' }} />
         </View>
@@ -451,7 +695,7 @@ export default class NewAppointmentScreen extends React.Component {
             fontFamily: 'Roboto-Medium',
             color: '#4D5067',
           }}
-          >60min / $50
+          >{`${displayDuration} / $ ${totalPrice}`}
           </Text>
         </View>
         <InputGroup style={{
@@ -459,7 +703,11 @@ export default class NewAppointmentScreen extends React.Component {
           paddingVertical: 10,
         }}
         >
-          <LabeledTextarea label="Remarks" placeholder="Please specify" />
+          <LabeledTextarea
+            label="Remarks"
+            placeholder="Please specify"
+            onChangeText={this.props.newAppointmentActions.setNewApptRemarks}
+          />
         </InputGroup>
       </ScrollView>
     );
