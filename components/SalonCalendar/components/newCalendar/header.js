@@ -44,14 +44,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#110A24',
-    flex: 1,
+    lineHeight: 17,
   },
   columnDayName: {
     fontFamily: 'Roboto',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 10,
     color: '#110A24',
-    flex: 1,
+    lineHeight: 11,
   },
   avatarStyle: {
     marginRight: 12,
@@ -103,7 +102,7 @@ export default class Header extends Component {
     return (
       <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents="box-none">
         <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
-        <Text numberOfLines={1} style={styles.columnDayName}>{day}</Text>
+        <Text numberOfLines={1} style={styles.columnDay}>{day}</Text>
       </View>
     );
   }

@@ -29,6 +29,7 @@ export default class Board extends Component {
         isDate={isDate}
         providerSchedule={providerSchedule}
         onCellPressed={this.props.onCellPressed}
+        apptGridSettings={apptGridSettings}
       />
     );
   }

@@ -14,8 +14,11 @@ const styles = {
     height: 8,
     borderRadius: 4,
     borderWidth: 1,
-  }
-}
+  },
+  btnContainer: {
+    padding: 10,
+  },
+};
 
 export default class ResizeButtons extends Component {
   constructor(props) {
@@ -115,10 +118,16 @@ export default class ResizeButtons extends Component {
   }
 
   render() {
+    const { position } = this.props;
     return (
-      <View {...this.panResponder.panHandlers} style={[styles.container, this.props.position]}>
-        <TouchableWithoutFeedback disabled={this.state.isActive} onPressIn={this.handlePress}>
-          <View style={[styles.btn, {borderColor: this.props.color} ]}/>
+      <View {...this.panResponder.panHandlers} style={[styles.container, position]}>
+        <TouchableWithoutFeedback
+          disabled={this.state.isActive}
+          onPressIn={this.handlePress}
+        >
+          <View style={styles.btnContainer}>
+            <View style={[styles.btn, {borderColor: this.props.color} ]}/>
+          </View>
         </TouchableWithoutFeedback>
       </View>
     )

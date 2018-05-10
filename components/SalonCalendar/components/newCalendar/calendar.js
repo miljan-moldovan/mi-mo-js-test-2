@@ -55,7 +55,7 @@ export default class Calendar extends Component {
         y: 0,
       },
       isScrollEnabled: true,
-      showFirstAvailable: true,
+      showFirstAvailable: false,
     };
   }
 

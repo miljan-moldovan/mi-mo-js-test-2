@@ -643,7 +643,7 @@ class Card extends Component {
               onRelease={this.handleResizeReleaseBottom}
               onResize={this.resizeBottom}
               color={colors[color].dark}
-              position={{ left: 2, bottom: -12}}
+              position={{ left: -8, bottom: -22}}
               apptGridSettings={this.props.apptGridSettings}
               height={height._value}
               calendarMeasure={this.props.calendarMeasure}
@@ -657,7 +657,7 @@ class Card extends Component {
               onRelease={this.handleResizeReleaseTop}
               onResize={this.resizeTop}
               color={colors[color].dark}
-              position={{ right: 2, top: -12 }}
+              position={{ right: -8, top: -22 }}
               apptGridSettings={this.props.apptGridSettings}
               height={height._value}
               calendarMeasure={this.props.calendarMeasure}

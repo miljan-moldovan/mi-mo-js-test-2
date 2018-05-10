@@ -244,7 +244,7 @@ getLabelForItem = (item) => {
         <View style={styles.notArrivedContainer}>
           <View style={[styles.waitingTime, { marginRight: 0, flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
             <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
-            <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solidFree" />
+            <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solid" />
             <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
           </View>
         </View>
