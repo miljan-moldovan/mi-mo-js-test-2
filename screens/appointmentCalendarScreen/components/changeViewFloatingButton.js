@@ -62,7 +62,8 @@ export default class ChangeViewFloatingButton extends Component {
           width: 70,
           height: 70,
           backgroundColor: '#1DBF12',
-          marginBottom: 25,
+          bottom: 16,
+          right: 16,
         }}
       >
         {this.state.week &&
