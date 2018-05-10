@@ -107,7 +107,16 @@ class ApptBookViewOptionsScreen extends Component {
                 key={Math.random()}
                 style={{ flex: 1 }}
                 labelStyle={{ color: '#110A24' }}
-                onPress={() => { alert('Not implemented'); }}
+                onPress={() => {
+                  this.setState({ isVisibleViewOptions: false });
+                  this.props.navigation.navigate(
+                    'FilterByPosition',
+                    {
+                      dismissOnSelect: this.dismissOnSelect,
+                      onNavigateBack: this.handleOnNavigateBack,
+                    },
+                  );
+                }}
                 label="Filter By Position"
                 value={this.state.options.position}
               />,

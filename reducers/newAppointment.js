@@ -26,6 +26,7 @@ import newAppointmentActions, {
   BOOK_NEW_APPT_FAILED,
   SET_NEW_APPT_RECURRING,
   SET_NEW_APPT_RECURRING_TYPE,
+  SET_BOOKED_BY,
 } from '../actions/newAppointment';
 
 const itemShape = {
@@ -225,7 +226,6 @@ export default function newAppointmentReducer(state = initialState, action) {
     case SET_NEW_APPT_EMPLOYEE:
       body.bookedByEmployeeId = data.employee.id;
       body.bookedByEmployee = data.employee;
-      console.log(data.employee);
       body.items[data.index].employee = data.employee;
       body.items[data.index].employeeId = data.employee.id;
       body.items[data.index].bookedByEmployeeId = data.employee.id;

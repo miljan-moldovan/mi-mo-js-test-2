@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import apiWrapper from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
@@ -67,79 +68,126 @@ const styles = StyleSheet.create({
 });
 
 export default class FilterByPositionScreen extends React.Component {
-  static navigationOptions = rootProps => ({
+  static navigationOptions = ({ navigation }) => ({
     title: 'Filter By Position',
-    leftButton: (
-      <HeaderLateral>
+    headerLeft: (
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
           Cancel
         </Text>
-      </HeaderLateral>
+      </SalonTouchableOpacity>
     ),
-    rightButton: (
-      <HeaderLateral>
+    headerRight: (
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.handleSave()}>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto-Medium' }}>
           Done
         </Text>
-      </HeaderLateral>
+      </SalonTouchableOpacity>
     ),
   });
+
+  static flexFilter(list, info) {
+    let matchesFilter = [];
+    const matches = [];
+
+    matchesFilter = function match(item) {
+      let count = 0;
+      for (let n = 0; n < info.length; n += 1) {
+        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+          count += 1;
+        }
+      }
+      return count > 0;
+    };
+
+    for (let i = 0; i < list.length; i += 1) {
+      if (matchesFilter(list[i])) {
+        matches.push(list[i]);
+      }
+    }
+
+    return matches;
+  }
 
   constructor(props) {
     super(props);
 
+    this.props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
+      isLoading: false,
+      refreshing: false,
+      positions: [],
       activeData: [],
+      selectedPosition: null,
     };
   }
 
-  componentWillMount() {
-    this.props.providersActions.getProviders({
-      filterRule: 'none',
-      maxCount: 100,
-      sortOrder: 'asc',
-      sortField: 'fullName',
-    });
+  componentDidMount() {
+    this.getData();
   }
 
-  onRefresh = () => {
-    this.props.providersActions.getProviders({
-      filterRule: 'none',
-      maxCount: 100,
-      sortOrder: 'asc',
-      sortField: 'fullName',
-    });
+  onRefresh = () => this.getData();
+
+  getData = () => {
+    this.setState({ isLoading: true });
+    apiWrapper.doRequest('getEmployeePositions', {})
+      .then(positions => this.setState({ isLoading: false, positions, activeData: positions }))
+      .catch((err) => {
+        console.warn(err);
+        this.setState({ isLoading: false });
+      });
   }
 
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this._handleOnChangeProvider(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={{ uri: 'https://qph.fs.quoracdn.net/main-qimg-60b27864c5d69bdce69e6413b9819214' }}
-        />
-        <WordHighlighter
-          highlight={this.state.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-        <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+  filter = (searchText) => {
+    if (searchText && searchText.length > 0) {
+      const criteria = [
+        { Field: 'name', Values: [searchText.toLowerCase()] },
+      ];
+
+      const filtered = FilterByPositionScreen.flexFilter(this.state.positions, criteria);
+      this.setState({ activeData: filtered });
+    } else {
+      this.setState({ activeData: this.state.positions });
+    }
+  }
+
+  handleChangePosition = (item) => {
+    const selectedPosition =
+      this.state.selectedPosition !== null &&
+      this.state.selectedPosition.id === item.id ?
+        null : item;
+    this.setState({ selectedPosition });
+  };
+
+  handleSave = () => {
+
+  }
+
+  renderItem = ({ item, index }) => {
+    const isSelected = this.state.selectedPosition !== null && this.state.selectedPosition.id === item.id;
+    return (
+      <SalonTouchableOpacity
+        style={styles.itemRow}
+        onPress={() => this.handleChangePosition(item)}
+        key={index}
+      >
+        <View style={styles.inputRow}>
+          <WordHighlighter
+            highlight={this.state.searchText}
+            style={isSelected ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+            highlightStyle={{ color: '#1DBF12' }}
+          >
+            {item.name}
+          </WordHighlighter>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          {isSelected && (
+            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
+          )}
+        </View>
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderSeparator = () => (
     <View
@@ -160,35 +208,20 @@ export default class FilterByPositionScreen extends React.Component {
             iconsColor="#727A8F"
             fontColor="#727A8F"
             backgroundColor="rgba(142,142,147,0.24)"
-          // backgroundColor="#F1F1F1"
             borderColor="transparent"
-            placeholderText="Start typing to search"
-            onChangeText={this.onChangeText}
+            placeHolderText="Search"
+            onChangeText={this.filter}
           />
         </View>
-        <View style={{
-            // height: 26,
-            // flex: 1,
-            // overflow: 'hidden',
-            backgroundColor: '#F1F1F1',
-            borderBottomWidth: StyleSheet.hairlineWidth,
-            borderBottomColor: '#C0C1C6',
-          }}
-        />
-        {this.props.providersState.isLoading
+        {this.state.isLoading
           ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <ActivityIndicator />
             </View>
           ) : (
             <FlatList
-              data={this.props.providersState.currentData}
+              data={this.state.activeData}
               ItemSeparatorComponent={this.renderSeparator}
-              // renderItem={({ item }) => (
-              //   <View key={item.id} style={styles.row}>
-              //     <Text style={styles.rowText}>{item.fullName}</Text>
-              //   </View>
-              // )}
               renderItem={this.renderItem}
               refreshControl={
                 <RefreshControl

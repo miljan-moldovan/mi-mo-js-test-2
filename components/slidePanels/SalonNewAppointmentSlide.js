@@ -118,12 +118,18 @@ const styles = StyleSheet.create({
   },
   blueButtonContainer: {
     width: '100%',
-    height: 48,
+    height: 46,
     backgroundColor: '#115ECD',
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#115ECD',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  blueButtonContainerDisabled: {
+    backgroundColor: '#c0c0c0',
+    borderColor: '#86868a',
   },
   blueButtonText: {
     color: '#FFFFFF',
@@ -290,11 +296,23 @@ const styles = StyleSheet.create({
   },
 });
 
-const caretRight = () => (
-  <Icon
-    name="angleRight"
-    style={styles.timeText}
-  />
+const BookNow = props => (
+  <SalonTouchableOpacity
+    style={styles.bookApptContainer}
+    onPress={props.onPress}
+    disabled={props.disabled}
+  >
+    <View
+      style={props.disabled ?
+        [styles.blueButtonContainer, styles.blueButtonContainerDisabled] :
+        styles.blueButtonContainer
+      }
+    >
+      <Text style={styles.blueButtonText}>
+      BOOK APPOINTMENT
+      </Text>
+    </View>
+  </SalonTouchableOpacity>
 );
 
 export default class SalonNewAppointmentSlide extends React.Component {
@@ -322,6 +340,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
   componentWillReceiveProps(nextProps) {
     this.setState({
       visible: nextProps.visible,
+      date: nextProps.date,
       selected: nextProps.selectedDate,
       selectedFilter: 'selectedFilter' in this.props ? this.props.selectedFilter : null,
       startTime: 'startTime' in this.props ? this.props.startTime : null,
@@ -363,6 +382,11 @@ export default class SalonNewAppointmentSlide extends React.Component {
         Length <Text style={lengthStyle}>{length || 'select a service first'}</Text>
       </Text>
     );
+    const bookButtonEnabled =
+      this.props.service !== null &&
+      this.props.client !== null &&
+      this.props.provider !== null;
+
     return (
       <ModalBox
         coverScreen
@@ -413,7 +437,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   </Text>
 
                   <View style={styles.clockIconContainer}>
-                    <Icon style={{ paddingTop: 5, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="solid" />
+                    <Icon style={{ paddingTop: 5, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="light" />
                     <Text style={styles.timeText}>{moment(this.props.startTime, 'HH:mm').format('HH:mm A')}</Text>
                     <Icon
                       name="angleRight"
@@ -509,16 +533,10 @@ export default class SalonNewAppointmentSlide extends React.Component {
                 </View>
                 <View style={styles.panelBottomSection}>
                   <View style={styles.btnTop}>
-                    <SalonTouchableOpacity
-                      style={styles.bookApptContainer}
+                    <BookNow
+                      disabled={!bookButtonEnabled}
                       onPress={this.props.handlePressBook}
-                    >
-                      <View style={styles.blueButtonContainer}>
-                        <Text style={styles.blueButtonText}>
-                        BOOK APPOINTMENT
-                        </Text>
-                      </View>
-                    </SalonTouchableOpacity>
+                    />
                   </View>
                   <View style={styles.btnBottom}>
                     <SalonTouchableOpacity
@@ -574,8 +592,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                    </View>]}
-                    </InputButton>,
+                      </View>]}
+                  </InputButton>,
 
                     <InputButton
                       noIcon
@@ -596,7 +614,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                             type="solid"
                           />
                         </View>
-                        </View>]}
+                      </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -607,7 +625,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Room Assignment"
                     >
                       {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -618,7 +636,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Turn Away"
                     >
                       {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -629,7 +647,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message Provider's Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>,
                     <InputButton
                       noIcon
@@ -639,7 +657,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message All Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>]}
                 </InputGroup>
               </View>

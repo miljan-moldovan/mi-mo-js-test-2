@@ -125,9 +125,7 @@ class SalonSearchBar extends Component {
             {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
 
               <Icon
-                style={[styles.searchIconRight,
-                            { color: this.props.iconsColor }]}
-
+                style={[styles.searchIconRight, { color: this.props.iconsColor }]}
                 name="search"
               />
 

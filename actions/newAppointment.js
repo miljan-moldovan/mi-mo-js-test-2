@@ -15,6 +15,7 @@ export const REMOVE_GUEST_SERVICE = 'newAppointment/REMOVE_GUEST_SERVICE';
 export const UPDATE_TOTALS = 'newAppointment/UPDATE_TOTALS';
 export const ADD_NEW_APPT_ITEM = 'newAppointment/ADD_NEW_APPT_ITEM';
 export const REMOVE_NEW_APPT_ITEM = 'newAppointment/REMOVE_NEW_APPT_ITEM';
+export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
 export const SET_START_TIME = 'newAppointment/SET_START_TIME';
 export const SET_NEW_APPT_EMPLOYEE = 'newAppointment/SET_NEW_APPT_EMPLOYEE';
 export const SET_NEW_APPT_REMARKS = 'newAppointment/SET_NEW_APPT_REMARKS';
@@ -63,6 +64,11 @@ export function serializeNewApptItem(appointment, service) {
   return itemData;
 }
 
+const setBookedBy = employee => ({
+  type: SET_BOOKED_BY,
+  data: { employee },
+});
+
 export function serializeApptToRequestData(appt, extraServices) {
   const services = appt.items;
   for (let i = 0; i < extraServices.length; i += 1) {
@@ -72,7 +78,7 @@ export function serializeApptToRequestData(appt, extraServices) {
     }
   }
   const filteredServices = services.filter(srv => srv.service !== null);
-  
+
   const data = {
     dateRequired: true,
     date: moment(appt.date).format('YYYY-MM-DD'),
@@ -85,7 +91,7 @@ export function serializeApptToRequestData(appt, extraServices) {
       phones: appt.client.phones,
       // confirmationType: appt.client.confirmationType
     },
-    items: filteredServices.map((srv) => serializeNewApptItem(appt, srv)),
+    items: filteredServices.map(srv => serializeNewApptItem(appt, srv)),
   };
 
   // if (isRecurring) {
@@ -280,5 +286,6 @@ const newAppointmentActions = {
   addGuestService,
   removeGuestService,
   udpateTotals,
+  setBookedBy,
 };
 export default newAppointmentActions;

@@ -30,6 +30,11 @@ const resources = {
     method: 'get',
     disableCache: true,
   },
+  getEmployeePositions: {
+    path: 'Employees/Positions',
+    method: 'get',
+    disableCache: true,
+  },
 };
 
 export default {
