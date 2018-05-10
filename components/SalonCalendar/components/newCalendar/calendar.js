@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
 import { times, groupBy, filter } from 'lodash';
 import moment from 'moment';
@@ -8,7 +8,9 @@ import Board from './board';
 import Header from './header';
 import TimeColumn from './timeColumn';
 import Card from './card';
+import NewCard from './newCard';
 import CurrentTime from '../currentTime';
+import Buffer from '../calendarBuffer';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,7 +58,9 @@ export default class Calendar extends Component {
       },
       isScrollEnabled: true,
       showFirstAvailable: false,
+      buffer: [],
     };
+
   }
 
   componentWillUpdate(nextProps) {
@@ -120,8 +124,11 @@ export default class Calendar extends Component {
     }
   }
 
-  handleOnDrag = (isScrollEnabled) => {
-    this.setState({ isScrollEnabled });
+  handleOnDrag = (isScrollEnabled, appointment, left, top, cardWidth, height) => {
+    if (!isScrollEnabled) {
+      this.props.manageBuffer(true);
+    }
+    this.setState({ isScrollEnabled, activeCard: {appointment, left: left + 36, top: top + 40, cardWidth, height} });
   }
 
   handleScroll = (ev) => {
@@ -150,6 +157,12 @@ export default class Calendar extends Component {
 
   handleDrop = (appointmentId, params) => {
     this.props.onDrop(appointmentId, params);
+  }
+
+  handleBufferDrop=()=>{
+    const { buffer } = this.state;
+    buffer.push(this.state.activeCard.appointment)
+    this.setState({ buffer, activeCard: null });
   }
 
   handleResize = (appointmentId, params) => {
@@ -211,6 +224,20 @@ export default class Calendar extends Component {
     return null;
   }
 
+  renderActiveCard =() => {
+    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
+    const { activeCard } = this.state;
+    return activeCard ? (
+      <NewCard
+        appointment={activeCard.appointment}
+        left={activeCard.left}
+        top={activeCard.top}
+        cardWidth={activeCard.cardWidth}
+        height={activeCard.height}
+        onDrop={this.handleBufferDrop}
+      />) : null
+  }
+
   render() {
     const { isLoading, headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability } = this.props;
     const isDate = selectedProvider !== 'all';
@@ -219,55 +246,59 @@ export default class Calendar extends Component {
     const startTime = moment(this.startTime, 'HH:mm');
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
-        <ScrollView
-          bounces={false}
-          //bouncesZoom
-          //maximumZoomScale={1.1}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.contentContainer, this.size, { borderTopWidth: !showHeader ? 1 : 0 }]}
-          style={styles.container}
-          scrollEnabled={isScrollEnabled && !isLoading}
-          onScroll={this.handleScroll}
-          ref={(board) => { this.board = board; }}
-          onLayout={this.measureScrollView}
-        >
-          <ScrollViewChild
-            scrollDirection="both"
-            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
+        <View style={{flex: 1}}>
+          <ScrollView
+            bounces={false}
+            //bouncesZoom
+            //maximumZoomScale={1.1}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[styles.contentContainer, this.size, { borderTopWidth: !showHeader ? 1 : 0 }]}
+            style={styles.container}
+            scrollEnabled={isScrollEnabled && !isLoading}
+            onScroll={this.handleScroll}
+            ref={(board) => { this.board = board; }}
+            onLayout={this.measureScrollView}
           >
-            <Board
-              onCellPressed={this.props.onCellPressed}
-              columns={headerData}
-              rows={this.schedule}
-              apptGridSettings={apptGridSettings}
-              timeSchedules={dataSource}
-              showAvailability={!isDate}
-              cellWidth={this.cellWidth}
-              isDate={isDate}
-              providerSchedule={providerSchedule}
-              availability={availability}
-              displayMode={displayMode}
-              isLoading={isLoading}
-            />
-            { this.renderCards() }
-          </ScrollViewChild>
-          <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
-            <TimeColumn schedule={this.schedule} />
-            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime} />
-          </ScrollViewChild>
-          { showHeader ?
-            <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
-              <Header
-                dataSource={headerData}
-                isDate={isDate}
+            <ScrollViewChild
+              scrollDirection="both"
+              style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
+            >
+              <Board
+                onCellPressed={this.props.onCellPressed}
+                columns={headerData}
+                rows={this.schedule}
+                apptGridSettings={apptGridSettings}
+                timeSchedules={dataSource}
+                showAvailability={!isDate}
                 cellWidth={this.cellWidth}
-                handleShowfirstAvailalble={this.handleShowfirstAvailalble}
-                showFirstAvailable={showFirstAvailable}
+                isDate={isDate}
+                providerSchedule={providerSchedule}
+                availability={availability}
+                displayMode={displayMode}
+                isLoading={isLoading}
               />
-            </ScrollViewChild> : null
-          }
-        </ScrollView>
+              { this.renderCards() }
+            </ScrollViewChild>
+            <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
+              <TimeColumn schedule={this.schedule} />
+              <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime} />
+            </ScrollViewChild>
+            { showHeader ?
+              <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
+                <Header
+                  dataSource={headerData}
+                  isDate={isDate}
+                  cellWidth={this.cellWidth}
+                  handleShowfirstAvailalble={this.handleShowfirstAvailalble}
+                  showFirstAvailable={showFirstAvailable}
+                />
+              </ScrollViewChild> : null
+            }
+          </ScrollView>
+          <Buffer dataSource={this.state.buffer} visible={this.props.bufferVisible} manageBuffer={this.props.manageBuffer} />
+          {this.renderActiveCard()}
+        </View>
       );
     }
     return null;

@@ -129,7 +129,7 @@ class Card extends Component {
       height: new Animated.Value(height),
       isActive: false,
       isResizeing: false,
-      opacity: new Animated.Value(0),
+      opacity: new Animated.Value(1),
       cardWidth,
       zIndex,
       isActiveEmployeeInCellTime,
@@ -313,9 +313,10 @@ class Card extends Component {
   }
 
   handleOnLongPress = () => {
-    this.setState({ isActive: true }, this.scrollAnimation);
+    this.setState({ isActive: true });//, this.scrollAnimation);
     this.offset = { x: this.props.calendarOffset.x, y: this.props.calendarOffset.y }
-    this.props.onDrag(false);
+    this.props.onDrag(false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
+      this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height);
     Animated.timing(
       this.state.opacity,
       {
@@ -513,26 +514,19 @@ class Card extends Component {
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const { height } = this.state;
-    const backgroundColor = isActiveEmployeeInCellTime ? colors[color].light : 'black';
     const borderColor = colors[color].dark;
-    const contentColor = isActive ? colors[color].dark : colors[color].light;
-    const serviceTextColor = isActive ? '#fff' : '#1D1E29';
-    const clientTextColor = isActive ? '#fff' : '#2F3142';
+    const contentColor = colors[color].light;
+    const serviceTextColor = '#1D1E29';
+    const clientTextColor = '#2F3142';
     let countOpacity = 0;
     let countGap = 0;
     let countOpacity2 = 0;
     let countGap2 = 0;
-    const shadow = this.state.isActive ? {
-      shadowColor: '#3C4A5A',
-      shadowOffset: { height: 2, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 4,
-    } : null;
+
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     return (
-      <Animated.View style={isActive ? { position: 'absolute', zIndex: 9999 } : { position: 'absolute', zIndex }}>
+      <Animated.View key={id} style={{ position: 'absolute', zIndex }}>
         <Animated.View
-          {...this.panResponder.panHandlers}
           style={[styles.container,
             { width: cardWidth, height, borderColor, backgroundColor: colors[color].light,
             left, top: this.state.top, opacity: this.state.opacity, borderStyle }]}
@@ -572,12 +566,29 @@ class Card extends Component {
             </Svg>
             : null
           }
-          <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-          <Text numberOfLines={1} style={styles.clientText}>{clientName}</Text>
-          <Text numberOfLines={1} style={styles.serviceText}>{serviceName}</Text>
+          <TouchableOpacity
+            onLongPress={this.handleOnLongPress}
+            disabled={isActive}
+          >
+            <View style={{ width: '100%', height: '100%' }}>
+              <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
+              <Text
+                numberOfLines={1}
+                style={[styles.clientText, { color: clientTextColor }]}
+              >
+                {clientName}
+              </Text>
+              <Text
+                numberOfLines={1}
+                style={[styles.serviceText, { color: serviceTextColor }]}
+              >
+                {serviceName}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </Animated.View>
-        <Animated.View
-          {...this.panResponder.panHandlers}
+        {/* <Animated.View
+          // {...this.panResponder.panHandlers}
           key={id}
           style={[styles.container,
             { width: cardWidth, height, borderColor, backgroundColor: contentColor, borderStyle: isActive ? 'solid' : borderStyle },
@@ -665,7 +676,7 @@ class Card extends Component {
               onScrollY={this.props.onScrollY}
               top={this.state.top._value}
             /> : null }
-        </Animated.View>
+        </Animated.View> */}
       </Animated.View>
     );
   }

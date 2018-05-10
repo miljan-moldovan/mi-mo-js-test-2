@@ -83,12 +83,19 @@ export default ApptCalendarHeader = props => (
         justifyContent: 'center',
       }}
       >
-        <Icon
-          name="calendar"
-          type="regular"
-          color="white"
-          size={19}
-        />
+          <Icon
+            name="calendarO"
+            type="regularFree"
+            color="white"
+            size={19}
+          />
+          <Icon
+            name="search"
+            type="solid"
+            color="white"
+            size={8}
+            style={{ position: 'absolute', top: 7.5 }}
+          />
       </TouchableOpacity>
     </View>
   </View>
