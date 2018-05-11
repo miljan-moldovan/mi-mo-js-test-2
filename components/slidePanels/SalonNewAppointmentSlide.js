@@ -475,7 +475,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   <View style={styles.btnBottom}>
                     <SalonTouchableOpacity
                       style={{ width: '46%' }}
-                      onPress={() => { alert('Not implemented'); }}
+                      onPress={this.props.handlePressMore}
                     >
                       <View style={styles.whiteButtonContainer}>
                         <Text style={styles.whiteButtonText}>
