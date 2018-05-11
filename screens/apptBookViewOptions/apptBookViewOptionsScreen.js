@@ -223,7 +223,16 @@ class ApptBookViewOptionsScreen extends Component {
                   key={Math.random()}
                   style={{ flex: 1 }}
                   labelStyle={{ color: '#110A24' }}
-                  onPress={() => { alert('Not implemented'); }}
+                  onPress={() => {
+                    this.setState({ isVisibleViewOptions: false });
+                    this.props.navigation.navigate(
+                      'ServiceCheck',
+                      {
+                        dismissOnSelect: this.dismissOnSelect,
+                        onNavigateBack: this.handleOnNavigateBack,
+                      },
+                    );
+                  }}
                   label="Service Check"
                   value={this.state.options.serviceCheck}
                 />]}

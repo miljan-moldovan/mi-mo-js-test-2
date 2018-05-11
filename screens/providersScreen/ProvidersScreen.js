@@ -111,11 +111,10 @@ class ProviderScreen extends React.Component {
       headerTitle: (
         <View style={{
           flexDirection: 'column',
-flex: 1,
-alignItems: 'center',
-justifyContent: 'center',
-
-          }}
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
         >
           <Text style={styles.headerTitle}>{title}</Text>
           { subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null }

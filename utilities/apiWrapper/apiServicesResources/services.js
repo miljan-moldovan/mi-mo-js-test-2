@@ -16,6 +16,11 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  getServiceEmployeeCheck: {
+    path: 'Services/:serviceId/Check/Employee/:employeeId',
+    method: 'get',
+    disableCache: true,
+  },
 };
 
 export default { resources };
