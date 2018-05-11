@@ -310,6 +310,7 @@ export default class SalonAppointmentSlide extends React.Component {
         isOpen={this.props.visible}
         coverScreen
         onClosingState={() => this.hidePanel()}
+        backdrop={null}
       >
 
         <View style={styles.panel} key={Math.random()}>

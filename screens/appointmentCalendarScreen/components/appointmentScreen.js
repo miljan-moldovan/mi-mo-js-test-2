@@ -58,6 +58,7 @@ export default class AppointmentScreen extends Component {
           onPressCalendar={() => navigation.state.params.onPressCalendar()}
         />
       ),
+      tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ?  params.tabBarVisible : true,
     };
   };
   constructor(props) {
@@ -77,6 +78,7 @@ export default class AppointmentScreen extends Component {
       visibleNewAppointment: false,
       visibleAppointment: false,
       isLoading: true,
+      bufferVisible: false,
     };
     // props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
     this.props.navigation.setParams({
@@ -138,6 +140,12 @@ export default class AppointmentScreen extends Component {
 
   selectFilterRoom = room => alert(`Selected Room ${room.name}s`)
 
+
+  manageBuffer = (bufferVisible) => {
+    this.setState({bufferVisible: bufferVisible})
+    requestAnimationFrame(() =>this.props.navigation.setParams({ tabBarVisible: !bufferVisible }))
+  }
+
   render() {
     const {
       dates,
@@ -152,7 +160,7 @@ export default class AppointmentScreen extends Component {
       appointments,
       availability,
     } = this.props.appointmentScreenState;
-    const { isLoading } = this.state;
+    const { isLoading, bufferVisible } = this.state;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     const headerData = selectedProvider === 'all' ? providers : dates;
     return (
@@ -181,6 +189,8 @@ export default class AppointmentScreen extends Component {
           availability={availability}
           startDate={startDate}
           isLoading={isLoading}
+          bufferVisible={bufferVisible}
+          manageBuffer={this.manageBuffer}
         />
         {
            isLoading ?

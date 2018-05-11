@@ -106,7 +106,7 @@ class ApptBookViewOptionsScreen extends Component {
     this.goBack();
   }
 
-  goBack() {
+  goBack = () => {
     this.setState({ isVisibleViewOptions: false });
     this.props.navigation.goBack();
   }
