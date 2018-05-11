@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import {
   View,
+  Text,
   StyleSheet,
 } from 'react-native';
 import Modal from 'react-native-modal';
@@ -15,9 +16,11 @@ import {
   SectionTitle,
   InputText,
 } from '../../components/formHelpers';
-
+import Icon from '../../components/UI/Icon';
 import fetchFormCache from '../../utilities/fetchFormCache';
 import ApptBookViewOptionsHeader from './components/apptBookViewOptionsHeader';
+import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
+
 
 const styles = StyleSheet.create({
   modal: {
@@ -42,17 +45,47 @@ const styles = StyleSheet.create({
   },
 });
 
-class ApptBookViewOptionsScreen extends Component {
-  state = {
-    isVisibleViewOptions: true,
-    options: {},
-  };
+const SelectedWithRemove = props => (
+  <View style={{ flexDirection: 'row' }}>
+    <Text style={{
+      color: '#110A24',
+      fontSize: 14,
+      lineHeight: 18,
+      marginRight: 7,
+      fontFamily: 'Roboto-Medium',
+    }}
+    >{props.value}
+    </Text>
+    <SalonTouchableHighlight
+      onPress={() => props.onPressRemove()}
+    >
+      <Icon
+        name="timesCircle"
+        size={20}
+        color="#C0C1C6"
+        type="solid"
+      />
+    </SalonTouchableHighlight>
+  </View>
+);
 
-  componentWillMount() {
+class ApptBookViewOptionsScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    const {
+      filterOptions,
+    } = this.props.apptBookState;
+
     this.props.navigation.setParams({
-      handlePress: () => this.saveOptions(),
-      handleGoBack: () => this.goBack(),
+      handlePress: this.saveOptions,
+      handleGoBack: this.goBack,
     });
+    this.shouldSave = false;
+    this.state = {
+      isVisibleViewOptions: true,
+      options: filterOptions,
+    };
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -60,10 +93,18 @@ class ApptBookViewOptionsScreen extends Component {
   }
 
   saveOptions = () => {
-    alert('Not implemented');
-  }
+    const {
+      company,
+      position,
+      showOffEmployees,
+    } = this.state.options;
+    this.props.apptBookActions.setFilterOptionCompany(company);
+    this.props.apptBookActions.setFilterOptionPosition(position);
+    this.props.apptBookActions.setFilterOptionShowOffEmployees(showOffEmployees);
 
-  shouldSave = false
+    this.props.apptBookActions.setGridView();
+    this.goBack();
+  }
 
   goBack() {
     this.setState({ isVisibleViewOptions: false });
@@ -73,6 +114,18 @@ class ApptBookViewOptionsScreen extends Component {
   handleOnNavigateBack = () => {
     this.setState({ isVisibleViewOptions: true });
   }
+
+  handleChangeCompany = (company) => {
+    this.setState({ options: { ...this.state.options, company } });
+  }
+
+  handleChangePosition = (position) => {
+    this.setState({ options: { ...this.state.options, position } });
+  }
+
+  handleRemoveCompany = () => this.setState({ options: { ...this.state.options, company: null } });
+
+  handleRemovePosition = () => this.setState({ options: { ...this.state.options, position: null } });
 
   dismissOnSelect() {
     const { navigate } = this.props.navigation;
@@ -92,6 +145,12 @@ class ApptBookViewOptionsScreen extends Component {
   }
 
   render() {
+    const {
+      position,
+      company,
+      showOffEmployees,
+    } = this.state.options;
+
     return (
       <Modal
         key="ApptBookViewOptionsScreen"
@@ -114,20 +173,41 @@ class ApptBookViewOptionsScreen extends Component {
                     {
                       dismissOnSelect: this.dismissOnSelect,
                       onNavigateBack: this.handleOnNavigateBack,
+                      onChangePosition: this.handleChangePosition,
                     },
                   );
                 }}
                 label="Filter By Position"
-                value={this.state.options.position}
+                value={position === null ? null : (
+                  <SelectedWithRemove
+                    onPressRemove={this.handleRemovePosition}
+                    value={position.name}
+                  />
+                )}
               />,
                 <InputDivider key={Math.random()} />,
                 <InputButton
                   key={Math.random()}
                   style={{ flex: 1 }}
                   labelStyle={{ color: '#110A24' }}
-                  onPress={() => { alert('Not implemented'); }}
+                  onPress={() => {
+                    this.setState({ isVisibleViewOptions: false });
+                    this.props.navigation.navigate(
+                      'FilterByCompany',
+                      {
+                        dismissOnSelect: this.dismissOnSelect,
+                        onNavigateBack: this.handleOnNavigateBack,
+                        onChangeCompany: this.handleChangeCompany,
+                      },
+                    );
+                    }}
                   label="Filter By Company"
-                  value={this.state.options.company}
+                  value={company === null ? null : (
+                    <SelectedWithRemove
+                      onPressRemove={this.handleRemoveCompany}
+                      value={company.name}
+                    />
+                  )}
                 />,
                 <InputDivider key={Math.random()} />,
                 <InputButton
@@ -198,11 +278,11 @@ class ApptBookViewOptionsScreen extends Component {
                   textStyle={{ color: '#000000' }}
                   onChange={(state) => {
                         const { options } = this.state;
-                        options.showEmployeesThatAreOff = !options.showEmployeesThatAreOff;
+                        options.showOffEmployees = !options.showOffEmployees;
                         this.shouldSave = true;
                         this.setState({ options });
                       }}
-                  value={this.state.options.showEmployeesThatAreOff}
+                  value={this.state.options.showOffEmployees}
                   text="Show employees that are off"
                 />,
                 <InputDivider key={Math.random()} />]}

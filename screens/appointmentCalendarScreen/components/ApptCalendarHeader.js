@@ -28,7 +28,7 @@ export default ApptCalendarHeader = props => (
     >
       <Icon
         name="bars"
-        type="regular"
+        type="solid"
         color="white"
         size={19}
       />
@@ -47,7 +47,7 @@ export default ApptCalendarHeader = props => (
       <Icon
         style={{ marginLeft: 5 }}
         name="caretDown"
-        type="regular"
+        type="solid"
         color="white"
         size={17}
       />
@@ -70,9 +70,9 @@ export default ApptCalendarHeader = props => (
       >
         <Icon
           name="ellipsisH"
-          type="regular"
+          type="solid"
           color="white"
-          size={22}
+          size={17}
         />
       </TouchableOpacity>
       <TouchableOpacity
@@ -85,7 +85,7 @@ export default ApptCalendarHeader = props => (
       >
         <Icon
           name="calendar"
-          type="regular"
+          type="solid"
           color="white"
           size={19}
         />

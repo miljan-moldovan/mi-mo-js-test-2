@@ -9,12 +9,12 @@ const resources = {
   getAppointmentBookEmployees: {
     path: 'AppointmentBook/:date/Employees',
     method: 'get',
-    disableCache: true
+    disableCache: true,
   },
   getAppointmentBookAvailability: {
     path: 'AppointmentBook/:date/Availability',
     method: 'get',
-    disableCache: true
+    disableCache: true,
   },
 };
 

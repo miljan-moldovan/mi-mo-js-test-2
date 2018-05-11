@@ -185,8 +185,8 @@ export default class AppointmentScreen extends Component {
         {
            isLoading ?
              <View style={{
- position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
-}}
+              position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
+              }}
              ><ActivityIndicator />
              </View> : null
         }

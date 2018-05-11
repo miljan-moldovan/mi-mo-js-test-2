@@ -37,6 +37,7 @@ import ModifyServiceScreen from './../screens/modifyServiceScreen';
 import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
+import FilterByCompanyScreen from './../screens/filterByCompanyScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
 
@@ -68,6 +69,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     FilterByPosition: {
       screen: FilterByPositionScreen,
+    },
+    FilterByCompany: {
+      screen: FilterByCompanyScreen,
     },
     Appointments: {
       screen: AppointmentScreen,

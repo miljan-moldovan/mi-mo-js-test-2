@@ -5,6 +5,9 @@ import apiWrapper from '../../../utilities/apiWrapper';
 import { POST_APPOINTMENT_MOVE_SUCCESS, POST_APPOINTMENT_MOVE, POST_APPOINTMENT_MOVE_FAILED } from '../../../actions/appointment';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
+export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_COMPANY';
+export const SET_FILTER_OPTION_POSITION = 'appointmentScreen/SET_FILTER_OPTION_POSITION';
+export const SET_FILTER_OPTION_OFF_EMPLOYEES = 'appointmentScreen/SET_FILTER_OPTION_OFF_EMPLOYEES';
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
 export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
 export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_VIEW_SUCCESS';
@@ -15,9 +18,36 @@ export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
 
-const addAppointment = appointment => ({
-  type: ADD_APPOINTMENT,
-  data: { appointment },
+// const addAppointment = appointment => ({
+//   type: ADD_APPOINTMENT,
+//   data: { appointment },
+// });
+const serializeFilterOptions = (filters) => {
+  const serialized = {};
+  if (filters.company !== null) {
+    serialized.companyId = filters.company.id;
+  }
+  if (filters.position !== null) {
+    serialized.positionId = filters.position.id;
+  }
+  serialized.showOffEmployees = filters.showOffEmployees;
+
+  return serialized;
+};
+
+const setFilterOptionCompany = company => ({
+  type: SET_FILTER_OPTION_COMPANY,
+  data: { company },
+});
+
+const setFilterOptionPosition = position => ({
+  type: SET_FILTER_OPTION_POSITION,
+  data: { position },
+});
+
+const setFilterOptionShowOffEmployees = showOffEmployees => ({
+  type: SET_FILTER_OPTION_OFF_EMPLOYEES,
+  data: { showOffEmployees },
 });
 
 const toTimeStamp = time => moment(time, 'HH:mm').unix();
@@ -87,10 +117,17 @@ const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSetti
 
 const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const {
-    selectedProvider, startDate, endDate, pickerMode, apptGridSettings,
+    selectedProvider,
+    startDate,
+    endDate,
+    pickerMode,
+    apptGridSettings,
+    filterOptions,
   } = getState().appointmentScreenReducer;
   const typeView = selectedProvider === 'all' ? selectedProvider : pickerMode;
   const date = startDate.format('YYYY-MM-DD');
+  const serialized = serializeFilterOptions(filterOptions);
+
   switch (typeView) {
     case 'all': {
       Promise.all([
@@ -98,6 +135,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           path: {
             date,
           },
+          query: serializeFilterOptions(filterOptions),
         }),
         apiWrapper.doRequest('getAppointmentsByDate', {
           path: {
@@ -250,6 +288,9 @@ export const appointmentCalendarActions = {
   setPickerMode,
   setSelectedProvider,
   setStoreWeeklySchedule,
+  setFilterOptionCompany,
+  setFilterOptionPosition,
+  setFilterOptionShowOffEmployees,
 };
 
 const initialState = {
@@ -269,21 +310,45 @@ const initialState = {
     step: 15,
     weeklySchedule: [],
   },
+  filterOptions: {
+    company: null,
+    position: null,
+    serviceProxy: null,
+    showOffEmployees: false,
+  },
   providers: [],
   providerSchedule: [],
 };
 
 export default function appointmentScreenReducer(state = initialState, action) {
   const { type, data } = action;
+  const { appointments, filterOptions } = state;
   switch (type) {
+    case SET_FILTER_OPTION_COMPANY:
+      filterOptions.company = data.company;
+      return {
+        ...state,
+        filterOptions,
+      };
+    case SET_FILTER_OPTION_POSITION:
+      filterOptions.position = data.position;
+      return {
+        ...state,
+        filterOptions,
+      };
+    case SET_FILTER_OPTION_OFF_EMPLOYEES:
+      filterOptions.showOffEmployees = data.showOffEmployees;
+      return {
+        ...state,
+        filterOptions,
+      };
     case ADD_APPOINTMENT:
-      const { appointments } = state;
       if (Array.isArray(data.appointment)) {
         for (let i = 0; i < data.appointment.length; i += 1) {
           appointments.push(data.appointment[i]);
         }
       } else {
-        appointments.push(data.appointment);        
+        appointments.push(data.appointment);
       }
       return {
         ...state,
@@ -304,7 +369,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
       return {
         ...state,
         selectedProvider: data.selectedProvider,
-        //isLoading: true,
+        // isLoading: true,
       };
     case SET_PROVIDER_DATES:
       return {
@@ -352,15 +417,14 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: true,
       };
     case POST_APPOINTMENT_MOVE_SUCCESS: {
-      debugger
       const appointments = state.appointments;
       const index = appointments.findIndex(appt => appt.id === data.appointment.id);
-      appointments[index] = data.appointment
+      appointments[index] = data.appointment;
       return {
         ...state,
         appointments,
         isLoading: false,
-      }
+      };
     }
     case POST_APPOINTMENT_MOVE_FAILED:
       return {

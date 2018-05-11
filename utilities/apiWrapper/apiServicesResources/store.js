@@ -16,6 +16,11 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  getCompanies: {
+    path: 'Store/Companies',
+    method: 'get',
+    disableCache: true,
+  },
 };
 
 export default {

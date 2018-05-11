@@ -1,18 +1,15 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import apptBookViewOptionsActions from '../../actions/apptBookViewOptions';
+import { appointmentCalendarActions } from '../appointmentCalendarScreen/redux/appointmentScreen';
 import ApptBookViewOptionScreen from './apptBookViewOptionsScreen';
-import walkInActions from '../../actions/walkIn';
 
 const mapStateToProps = state => ({
   apptBookViewOptionsState: state.apptBookViewOptionsReducer,
-  walkInState: state.walkInReducer,
-  formCache: state.formCache,
+  apptBookState: state.appointmentScreenReducer,
 });
 
 const mapActionsToProps = dispatch => ({
-  apptBookViewOptionsActions: bindActionCreators({ ...apptBookViewOptionsActions }, dispatch),
-  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  apptBookActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(ApptBookViewOptionScreen);

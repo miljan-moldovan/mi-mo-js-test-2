@@ -11,10 +11,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import apiWrapper from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
-import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
-import SalonFlatPicker from '../../components/SalonFlatPicker';
-import SalonAvatar from '../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 
@@ -67,7 +64,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class FilterByPositionScreen extends React.Component {
+export default class FilterByCompanyScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Filter By Position',
     headerLeft: (
@@ -116,9 +113,9 @@ export default class FilterByPositionScreen extends React.Component {
     this.state = {
       isLoading: false,
       refreshing: false,
-      positions: [],
+      companies: [],
       activeData: [],
-      selectedPosition: null,
+      selectedCompany: null,
     };
   }
 
@@ -130,8 +127,8 @@ export default class FilterByPositionScreen extends React.Component {
 
   getData = () => {
     this.setState({ isLoading: true });
-    apiWrapper.doRequest('getEmployeePositions', {})
-      .then(positions => this.setState({ isLoading: false, positions, activeData: positions }))
+    apiWrapper.doRequest('getCompanies', {})
+      .then(companies => this.setState({ isLoading: false, companies, activeData: companies }))
       .catch((err) => {
         console.warn(err);
         this.setState({ isLoading: false });
@@ -144,36 +141,36 @@ export default class FilterByPositionScreen extends React.Component {
         { Field: 'name', Values: [searchText.toLowerCase()] },
       ];
 
-      const filtered = FilterByPositionScreen.flexFilter(this.state.positions, criteria);
+      const filtered = FilterByCompanyScreen.flexFilter(this.state.companies, criteria);
       this.setState({ activeData: filtered });
     } else {
-      this.setState({ activeData: this.state.positions });
+      this.setState({ activeData: this.state.companies });
     }
   }
 
-  handleChangePosition = (item) => {
-    const selectedPosition =
-      this.state.selectedPosition !== null &&
-      this.state.selectedPosition.id === item.id ?
+  handleChangeCompany = (item) => {
+    const selectedCompany =
+      this.state.selectedCompany !== null &&
+      this.state.selectedCompany.id === item.id ?
         null : item;
-    this.setState({ selectedPosition });
+    this.setState({ selectedCompany });
   };
 
   handleSave = () => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onChangePosition, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangePosition) { onChangePosition(this.state.selectedPosition); }
+    const { onChangeCompany, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeCompany) { onChangeCompany(this.state.selectedCompany); }
     if (dismissOnSelect) { onNavigateBack(); }
   }
 
   renderItem = ({ item, index }) => {
-    const isSelected = this.state.selectedPosition !== null && this.state.selectedPosition.id === item.id;
+    const isSelected = this.state.selectedCompany !== null && this.state.selectedCompany.id === item.id;
     return (
       <SalonTouchableOpacity
         style={styles.itemRow}
-        onPress={() => this.handleChangePosition(item)}
+        onPress={() => this.handleChangeCompany(item)}
         key={index}
       >
         <View style={styles.inputRow}>
