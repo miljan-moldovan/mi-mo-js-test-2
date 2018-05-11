@@ -85,7 +85,7 @@ class QueueScreen extends React.Component {
 
   componentWillMount() {
     this.props.actions.receiveQueue();
-    //setInterval(this.props.actions.receiveQueue, 15000);
+    setInterval(this.props.actions.receiveQueue, 15000);
 
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     // this._refreshData();
