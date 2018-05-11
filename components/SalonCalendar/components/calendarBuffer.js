@@ -27,19 +27,19 @@ const styles = {
     zIndex: 1,
   },
   listContainer: {
-    padding: 8,
+    margin: 8,
+    marginTop: 0,
     flexDirection: 'row',
-  },
-  listView: {
-    borderWidth: 1,
-    borderColor: '#c7c7ce',
-    flex: 1,
-    height: 56,
     backgroundColor: '#D8D8D8',
     borderRadius: 4,
-    borderStyle: 'dashed',
-    alignItems: 'center',
     paddingHorizontal: 4,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: '#c7c7ce',
+  },
+  listView: {
+    height: 56,
+    alignItems: 'center',
   },
   title: {
     fontFamily: 'Roboto',
@@ -88,13 +88,14 @@ export default class calendarBuffer extends React.Component {
                   size={16}
                   type="regular"
                   name="timesCircle"
-                  style={{padding:15}}
+                  style={{ padding: 15 }}
                 />
               </TouchableOpacity>
             </View>
             <View style={styles.listContainer}>
               <ListView
                 contentContainerStyle={styles.listView}
+                style={{ flex: 1 }}
                 horizontal
                 dataSource={dataSource}
                 renderRow={this.renderCard}
@@ -104,6 +105,6 @@ export default class calendarBuffer extends React.Component {
           </View>
         </SlidingUpPanel>
       </View>
-    )
+    );
   }
 }

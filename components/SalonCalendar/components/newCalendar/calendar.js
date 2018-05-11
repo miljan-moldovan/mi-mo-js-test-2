@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated, PanResponder } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
 import { times, groupBy, filter } from 'lodash';
 import moment from 'moment';
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
 });
 
 const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 const dayWidth = screenWidth - 36;
 const weekWidth = (screenWidth - 36) / 7;
 const providerWidth = 130;
@@ -59,8 +60,27 @@ export default class Calendar extends Component {
       isScrollEnabled: true,
       showFirstAvailable: false,
       buffer: [],
+      pan: new Animated.ValueXY({ x: 0, y: 0 }),
     };
-
+    this.panResponder = PanResponder.create({
+      onPanResponderTerminationRequest: () => false,
+      onMoveShouldSetPanResponder: (evt, gestureState) => !this.state.isScrollEnabled && this.state.activeCard,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => !this.state.isScrollEnabled && this.state.activeCard,
+      onPanResponderMove: (e, gesture) => {
+        if(!this.state.isScrollEnabled) {
+          return Animated.event([null, {
+            dx: this.state.pan.x,
+            dy: this.state.pan.y,
+          }])(e, gesture);
+        }
+        return null;
+      },
+      onPanResponderRelease: (e, gesture) => {
+        if (!this.state.isScrollEnabled && this.state.activeCard) {
+          this.handleBufferDrop();
+        }
+      },
+    });
   }
 
   componentWillUpdate(nextProps) {
@@ -128,6 +148,8 @@ export default class Calendar extends Component {
     if (!isScrollEnabled) {
       this.props.manageBuffer(true);
     }
+    this.state.pan.setOffset({ x: left + 36, y: top + 40});
+    this.state.pan.setValue({ x: 0, y: 0 });
     this.setState({ isScrollEnabled, activeCard: {appointment, left: left + 36, top: top + 40, cardWidth, height} });
   }
 
@@ -160,9 +182,15 @@ export default class Calendar extends Component {
   }
 
   handleBufferDrop=()=>{
-    const { buffer } = this.state;
-    buffer.push(this.state.activeCard.appointment)
-    this.setState({ buffer, activeCard: null });
+    if (this.props.bufferVisible) {
+      const { buffer, activeCard, pan } = this.state;
+      debugger
+      const top = pan.y._value + pan.y._offset;
+      if (top > screenHeight - 110 - 133) {
+        buffer.push(activeCard.appointment)
+        this.setState({ buffer, activeCard: null });
+      }
+    }
   }
 
   handleResize = (appointmentId, params) => {
@@ -195,7 +223,6 @@ export default class Calendar extends Component {
     const { calendarMeasure, calendarOffset,showFirstAvailable } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(this.startTime, 'HH:mm');
-    console.log(this.cellWidth)
     if (appointment.employee) {
       return (
         <Card
@@ -235,6 +262,7 @@ export default class Calendar extends Component {
         cardWidth={activeCard.cardWidth}
         height={activeCard.height}
         onDrop={this.handleBufferDrop}
+        pan={this.state.pan}
       />) : null
   }
 
@@ -246,7 +274,7 @@ export default class Calendar extends Component {
     const startTime = moment(this.startTime, 'HH:mm');
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1}} {...this.panResponder.panHandlers}>
           <ScrollView
             bounces={false}
             //bouncesZoom

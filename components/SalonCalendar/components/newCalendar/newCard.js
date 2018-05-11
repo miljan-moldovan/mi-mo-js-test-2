@@ -49,29 +49,29 @@ class Card extends Component {
   constructor(props) {
     super(props);
     this.scrollValue = 0;
-    this.state = {
-      pan: new Animated.ValueXY({ x: props.left, y: props.top }),
-    }
-    this.panResponder = PanResponder.create({
-      onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderMove: (e, gesture) => {
-        this.moveX = gesture.dx;
-        this.moveY = gesture.dy;
-        return Animated.event([null, {
-          dx: this.state.pan.x,
-          dy: this.state.pan.y,
-        }])(e, gesture);
-      },
-      onPanResponderGrant: () => {
-          this.state.pan.setOffset({ x: this.props.left, y: this.props.top });
-          this.state.pan.setValue({ x: 0, y: 0 });
-      },
-      onPanResponderRelease: (e, gesture) => {
-        this.props.onDrop();
-      },
-    });
+    // this.state = {
+    //   pan: new Animated.ValueXY({ x: props.left, y: props.top }),
+    // }
+    // this.panResponder = PanResponder.create({
+    //   onPanResponderTerminationRequest: () => false,
+    //   onMoveShouldSetPanResponder: (evt, gestureState) => true,
+    //   onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+    //   onPanResponderMove: (e, gesture) => {
+    //     this.moveX = gesture.dx;
+    //     this.moveY = gesture.dy;
+    //     return Animated.event([null, {
+    //       dx: this.state.pan.x,
+    //       dy: this.state.pan.y,
+    //     }])(e, gesture);
+    //   },
+    //   onPanResponderGrant: () => {
+    //       this.state.pan.setOffset({ x: this.props.left, y: this.props.top });
+    //       this.state.pan.setValue({ x: 0, y: 0 });
+    //   },
+    //   onPanResponderRelease: (e, gesture) => {
+    //     this.props.onDrop();
+    //   },
+    // });
   }
 
   render() {
@@ -98,10 +98,10 @@ class Card extends Component {
       shadowOpacity: 0.4,
       shadowRadius: 4,
     };
-    const position = left > 0 ? { position: 'absolute', ...this.state.pan.getLayout(), zIndex: 9999, ...shadow } : { position: 'relative'};
+    const position = left > 0 ? { position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow } : { position: 'relative'};
     return (
       <Animated.View
-        {...this.panResponder.panHandlers}
+        // {...this.panResponder.panHandlers}
         key={id}
         style={[styles.container,
           { width: cardWidth, height, borderColor, backgroundColor: contentColor },
