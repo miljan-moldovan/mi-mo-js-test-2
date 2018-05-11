@@ -283,7 +283,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
           appointments.push(data.appointment[i]);
         }
       } else {
-        appointments.push(data.appointment);        
+        appointments.push(data.appointment);
       }
       return {
         ...state,
@@ -352,7 +352,6 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: true,
       };
     case POST_APPOINTMENT_MOVE_SUCCESS: {
-      debugger
       const appointments = state.appointments;
       const index = appointments.findIndex(appt => appt.id === data.appointment.id);
       appointments[index] = data.appointment

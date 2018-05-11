@@ -184,7 +184,6 @@ export default class Calendar extends Component {
   handleBufferDrop=()=>{
     if (this.props.bufferVisible) {
       const { buffer, activeCard, pan } = this.state;
-      debugger
       const top = pan.y._value + pan.y._offset;
       if (top > screenHeight - 110 - 133) {
         buffer.push(activeCard.appointment)
