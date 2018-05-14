@@ -176,7 +176,7 @@ const ServiceCard = ({ data, ...props }) => {
                 alignItems: 'center',
               }}
             >
-              <ServiceInfo price={data.service.price} waitTime={moment.duration(data.service.maxDuration).humanize()} />
+              <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.service.maxDuration).asMinutes()}min`} />
               <FontAwesome style={{
                 color: '#115ECD',
                 fontSize: 20,
@@ -379,7 +379,7 @@ export default class NewAppointmentScreen extends React.Component {
       }
     }
 
-    const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 minutes' : moment.duration(totalDuration).humanize();
+    const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
     return (
       <ScrollView style={styles.container}>
@@ -400,12 +400,6 @@ export default class NewAppointmentScreen extends React.Component {
           <InputLabel
             label="Date"
             value={`${body.date.format('ddd, MM/DD/YYYY')}, ${startTime}`}
-          />
-          <InputDate
-            noIcon
-            placeholder="Date"
-            selectedDate={body.date}
-            onPress={this.props.newAppointmentActions.setNewApptDate}
           />
         </InputGroup>
         <SectionTitle style={{ height: 46 }} value="Client" />

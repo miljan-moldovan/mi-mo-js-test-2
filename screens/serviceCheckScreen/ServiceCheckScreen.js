@@ -77,7 +77,7 @@ export default class ServiceCheckScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Service Check',
     headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.onNavigateBack()}>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
           Cancel
         </Text>
@@ -104,14 +104,15 @@ export default class ServiceCheckScreen extends React.Component {
   }
 
   handleCheck = () => {
-    // if (!this.props.navigation.state || !this.props.navigation.state.params) {
-    //   return;
-    // }
-    // const { onChangePosition, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
-    // if (this.props.navigation.state.params && onChangePosition) { onChangePosition(this.state.selectedPosition); }
-    // if (dismissOnSelect) { onNavigateBack(); }
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
+
     const { selectedProvider, selectedService } = this.state;
     this.props.navigation.navigate('ServiceCheckResult', {
+      dismissOnSelect,
+      onNavigateBack,
       selectedService,
       selectedProvider,
     });
@@ -123,6 +124,7 @@ export default class ServiceCheckScreen extends React.Component {
       <View style={styles.container}>
         <InputGroup style={{ marginTop: 17 }}>
           <ProviderInput
+            noPlaceholder
             navigate={navigate}
             selectedProvider={this.state.selectedProvider}
             onChange={selectedProvider => this.setState({ selectedProvider })}

@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Text,
+  View,
   StyleSheet,
   ScrollView,
 } from 'react-native';
@@ -19,6 +21,7 @@ import {
   RemoveButton,
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,7 +62,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     return {
       title,
       headerLeft: (
-        <TouchableOpacity
+        <SalonTouchableOpacity
           onPress={() => { navigation.goBack(); }}
         >
           <Text style={{
@@ -69,10 +72,10 @@ export default class ModifyApptServiceScreen extends React.Component {
           }}
           >Cancel
           </Text>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       ),
       headerRight: (
-        <TouchableOpacity
+        <SalonTouchableOpacity
           onPress={() => navigation.state.params.handleSave()}
         >
           <Text style={{
@@ -82,7 +85,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           }}
           >Done
           </Text>
-        </TouchableOpacity>
+        </SalonTouchableOpacity>
       ),
     };
   };
@@ -153,7 +156,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     this.setState({ selectedProvider, body: newBody });
   }
 
-  handleRequested = requested => {
+  handleRequested = (requested) => {
     const newBody = this.state.body;
     newBody.requested = !requested;
     this.setState({ body: newBody });
@@ -162,7 +165,7 @@ export default class ModifyApptServiceScreen extends React.Component {
   onPressRemove = () => {
     const { body } = this.state;
     const { params } = this.props.navigation.state;
-    if (!'serviceIndex' in params) {
+    if (!('serviceIndex' in params)) {
       return this.props.navigation.goBack();
     }
 
