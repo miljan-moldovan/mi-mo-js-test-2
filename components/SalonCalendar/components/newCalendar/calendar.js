@@ -67,7 +67,7 @@ export default class Calendar extends Component {
       onMoveShouldSetPanResponder: (evt, gestureState) => !this.state.isScrollEnabled && this.state.activeCard,
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => !this.state.isScrollEnabled && this.state.activeCard,
       onPanResponderMove: (e, gesture) => {
-        if(!this.state.isScrollEnabled) {
+        if (!this.state.isScrollEnabled) {
           return Animated.event([null, {
             dx: this.state.pan.x,
             dy: this.state.pan.y,
@@ -148,9 +148,14 @@ export default class Calendar extends Component {
     if (!isScrollEnabled) {
       this.props.manageBuffer(true);
     }
-    this.state.pan.setOffset({ x: left + 36, y: top + 40});
+    this.state.pan.setOffset({ x: left + 36, y: top + 40 });
     this.state.pan.setValue({ x: 0, y: 0 });
-    this.setState({ isScrollEnabled, activeCard: {appointment, left: left + 36, top: top + 40, cardWidth, height} });
+    this.setState({
+      isScrollEnabled,
+      activeCard: {
+        appointment, left: left + 36, top: top + 40, cardWidth, height,
+      },
+    });
   }
 
   handleScroll = (ev) => {
@@ -181,12 +186,12 @@ export default class Calendar extends Component {
     this.props.onDrop(appointmentId, params);
   }
 
-  handleBufferDrop=()=>{
+  handleBufferDrop=() => {
     if (this.props.bufferVisible) {
       const { buffer, activeCard, pan } = this.state;
       const top = pan.y._value + pan.y._offset;
       if (top > screenHeight - 110 - 133) {
-        buffer.push(activeCard.appointment)
+        buffer.push(activeCard.appointment);
         this.setState({ buffer, activeCard: null });
       }
     }
@@ -218,8 +223,10 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
-    const { calendarMeasure, calendarOffset,showFirstAvailable } = this.state;
+    const {
+      apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
+    } = this.props;
+    const { calendarMeasure, calendarOffset, showFirstAvailable } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(this.startTime, 'HH:mm');
     if (appointment.employee) {
@@ -251,7 +258,9 @@ export default class Calendar extends Component {
   }
 
   renderActiveCard =() => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
+    const {
+      apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
+    } = this.props;
     const { activeCard } = this.state;
     return activeCard ? (
       <NewCard
@@ -262,22 +271,24 @@ export default class Calendar extends Component {
         height={activeCard.height}
         onDrop={this.handleBufferDrop}
         pan={this.state.pan}
-      />) : null
+      />) : null;
   }
 
   render() {
-    const { isLoading, headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability } = this.props;
+    const {
+      isLoading, headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability,
+    } = this.props;
     const isDate = selectedProvider !== 'all';
     const showHeader = displayMode === 'week' || selectedProvider === 'all';
     const { isScrollEnabled, showFirstAvailable } = this.state;
     const startTime = moment(this.startTime, 'HH:mm');
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
-        <View style={{flex: 1}} {...this.panResponder.panHandlers}>
+        <View style={{ flex: 1 }} {...this.panResponder.panHandlers}>
           <ScrollView
             bounces={false}
-            //bouncesZoom
-            //maximumZoomScale={1.1}
+            // bouncesZoom
+            // maximumZoomScale={1.1}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={[styles.contentContainer, this.size, { borderTopWidth: !showHeader ? 1 : 0 }]}
@@ -292,6 +303,7 @@ export default class Calendar extends Component {
               style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
             >
               <Board
+                onPressAvailability={this.props.onPressAvailability}
                 onCellPressed={this.props.onCellPressed}
                 columns={headerData}
                 rows={this.schedule}
