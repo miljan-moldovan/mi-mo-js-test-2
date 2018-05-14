@@ -58,7 +58,7 @@ export default class AppointmentScreen extends Component {
           onPressCalendar={() => navigation.state.params.onPressCalendar()}
         />
       ),
-      tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ?  params.tabBarVisible : true,
+      tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
     };
   };
   constructor(props) {
@@ -142,8 +142,8 @@ export default class AppointmentScreen extends Component {
 
 
   manageBuffer = (bufferVisible) => {
-    this.setState({bufferVisible: bufferVisible})
-    requestAnimationFrame(() =>this.props.navigation.setParams({ tabBarVisible: !bufferVisible }))
+    this.setState({ bufferVisible });
+    requestAnimationFrame(() => this.props.navigation.setParams({ tabBarVisible: !bufferVisible }));
   }
 
   render() {
@@ -214,9 +214,23 @@ export default class AppointmentScreen extends Component {
           visible={this.state.visible}
           selectedDate={moment(startDate)}
           onHide={() => this.setState({ visible: false })}
+          markedDates={{
+            [moment().format('YYYY-MM-DD')]: {
+              customStyles: {
+                container: {
+                  borderWidth: 1,
+                  borderColor: '#1DBF12',
+                },
+                text: {
+                  fontFamily: 'Roboto',
+                  fontWeight: '700',
+                  color: '#1DBF12',
+                },
+              },
+            },
+          }}
           onDateSelected={(startDate, endDate) => {
             this.setState({ visible: false });
-
             this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
             this.props.appointmentCalendarActions.setGridView();
           }}

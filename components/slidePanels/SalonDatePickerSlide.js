@@ -79,6 +79,8 @@ const styles = StyleSheet.create({
   },
   weekJumpText: {
     fontSize: 14,
+    fontFamily: 'Roboto',
+    fontWeight: '500',
     color: '#115ECD',
   },
   weekJumpTitle: {
@@ -91,6 +93,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+});
+
+const calendarTheme = StyleSheet.create({
+  header: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#CAD1D8',
+  },
+  monthText: {
+    flex: 1,
+    fontSize: 17,
+    fontFamily: 'Roboto',
+    fontWeight: '500',
+    color: '#110A24',
+    margin: 10,
+  },
+  dayHeader: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    fontWeight: '500',
+    color: '#115ECD',
   },
 });
 
@@ -169,6 +193,20 @@ export default class SalonDatePickerSlide extends React.Component {
   }
 
   render() {
+    console.log({
+      [moment(this.state.selected).format('YYYY-MM-DD')]: {
+        customStyles: {
+          container: {
+            backgroundColor: '#727A8F',
+          },
+          text: {
+            fontFamily: 'Roboto-Bold',
+            color: 'white',
+          },
+        },
+      },
+      ...this.props.markedDates,
+    });
     return (
       <ModalBox
         isOpen={this.props.visible}
@@ -194,25 +232,63 @@ export default class SalonDatePickerSlide extends React.Component {
                 onDayPress={this.onDayPress}
                 monthFormat="MMMM yyyy"
                 style={{ width: '95%' }}
+                markingType="custom"
                 markedDates={{
-                  [this.state.selected]: { selected: true },
+                  ...this.props.markedDates,
+                  [moment(this.state.selected).format('YYYY-MM-DD')]: {
+                    customStyles: {
+                      container: {
+                        backgroundColor: '#727A8F',
+                      },
+                      text: {
+                        fontFamily: 'Roboto',
+                        fontWeight: '700',
+                        color: 'white',
+                      },
+                    },
+                  },
                 }}
                 theme={{
-                  textSectionTitleColor: '#115ECD',
-                  selectedDayBackgroundColor: '#1DBF12',
-                  selectedDayTextColor: '#FFFFFF',
-                  todayTextColor: '#727A8F',
-                  dayTextColor: '#110A24',
-                  dotColor: '#727A8F',
-                  selectedDotColor: '#FFFFFF',
-                  arrowColor: '#727A8F',
-                  monthTextColor: '#110A24',
-                  textDayFontFamily: 'Roboto',
-                  textMonthFontFamily: 'Roboto-Bold',
-                  textDayHeaderFontFamily: 'Roboto',
-                  textDayFontSize: 16,
-                  textMonthFontSize: 18,
-                  textDayHeaderFontSize: 16,
+                  // textSectionTitleColor: '#115ECD',
+                  // selectedDayBackgroundColor: '#1DBF12',
+                  // selectedDayTextColor: '#FFFFFF',
+                  // todayTextColor: '#727A8F',
+                  // dayTextColor: '#110A24',
+                  // dotColor: '#727A8F',
+                  // selectedDotColor: '#FFFFFF',
+                  // arrowColor: '#727A8F',
+                  // monthTextColor: '#110A24',
+                  // textDayFontFamily: 'Roboto',
+                  // textMonthFontFamily: 'Roboto-Bold',
+                  // textDayHeaderFontFamily: 'Roboto',
+                  // textDayFontSize: 16,
+                  // textMonthFontSize: 18,
+                  // textDayHeaderFontSize: 16,
+                  'stylesheet.calendar.header': {
+                    week: {
+                      marginTop: 20,
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                      paddingBottom: 19,
+                      borderBottomWidth: 1,
+                      borderBottomColor: '#CAD1D8',
+                    },
+                    monthText: {
+                      textAlign: 'center',
+                      fontSize: 17,
+                      lineHeight: 22,
+                      fontFamily: 'Roboto',
+                      fontWeight: '500',
+                      color: '#110A24',
+                    },
+                    dayHeader: {
+                      textAlign: 'center',
+                      fontSize: 14,
+                      fontFamily: 'Roboto',
+                      fontWeight: '500',
+                      color: '#115ECD',
+                    },
+                  },
                 }}
                 hideExtraDays
                 onPressArrowLeft={this.props.onPressArrowLeft}
