@@ -159,6 +159,7 @@ export default class AppointmentScreen extends Component {
       providers,
       appointments,
       availability,
+      filterOptions,
     } = this.props.appointmentScreenState;
     const { isLoading, bufferVisible } = this.state;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
@@ -191,6 +192,7 @@ export default class AppointmentScreen extends Component {
           isLoading={isLoading}
           bufferVisible={bufferVisible}
           manageBuffer={this.manageBuffer}
+          filterOptions={filterOptions}
         />
         {
            isLoading ?

@@ -8,6 +8,7 @@ export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_COMPANY';
 export const SET_FILTER_OPTION_POSITION = 'appointmentScreen/SET_FILTER_OPTION_POSITION';
 export const SET_FILTER_OPTION_OFF_EMPLOYEES = 'appointmentScreen/SET_FILTER_OPTION_OFF_EMPLOYEES';
+export const SET_FILTER_OPTION_MULTIBLOCK = 'appointmentScreen/SET_FILTER_OPTION_MULTIBLOCK';
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
 export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
 export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_VIEW_SUCCESS';
@@ -48,6 +49,11 @@ const setFilterOptionPosition = position => ({
 const setFilterOptionShowOffEmployees = showOffEmployees => ({
   type: SET_FILTER_OPTION_OFF_EMPLOYEES,
   data: { showOffEmployees },
+});
+
+const setFilterOptionShowMultiBlock = showMultiBlock => ({
+  type: SET_FILTER_OPTION_MULTIBLOCK,
+  data: { showMultiBlock },
 });
 
 const toTimeStamp = time => moment(time, 'HH:mm').unix();
@@ -290,6 +296,7 @@ export const appointmentCalendarActions = {
   setStoreWeeklySchedule,
   setFilterOptionCompany,
   setFilterOptionPosition,
+  setFilterOptionShowMultiBlock,
   setFilterOptionShowOffEmployees,
 };
 
@@ -338,6 +345,12 @@ export default function appointmentScreenReducer(state = initialState, action) {
       };
     case SET_FILTER_OPTION_OFF_EMPLOYEES:
       filterOptions.showOffEmployees = data.showOffEmployees;
+      return {
+        ...state,
+        filterOptions,
+      };
+    case SET_FILTER_OPTION_OFF_EMPLOYEES:
+      filterOptions.showMultiBlock = data.showMultiBlock;
       return {
         ...state,
         filterOptions,

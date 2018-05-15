@@ -218,13 +218,14 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
+    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading, filterOptions } = this.props;
     const { calendarMeasure, calendarOffset,showFirstAvailable } = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(this.startTime, 'HH:mm');
     if (appointment.employee) {
       return (
         <Card
+          isMultiBlock={filterOptions.showMultiBlock}
           key={appointment.id}
           providers={headerData}
           appointment={appointment}

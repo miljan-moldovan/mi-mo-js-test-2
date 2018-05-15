@@ -5,9 +5,9 @@ import Svg, {
   LinearGradient,
   Rect,
   Defs,
-  Stop
+  Stop,
 } from 'react-native-svg';
-import { times } from 'lodash'
+import { times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
 import ResizeButton from '../resizeButtons';
@@ -93,7 +93,7 @@ class Card extends Component {
     const newX = nextProps.calendarOffset.x;
     const newY = nextProps.calendarOffset.y;
     return (newX === calendarOffset.x && newY === calendarOffset.y)
-    || (nextState.isActive || this.state.isActive) || (nextProps.showFirstAvailable !== this.props.showFirstAvailable) //|| nextProps.displayMode !== this.props.displayMode;
+    || (nextState.isActive || this.state.isActive) || (nextProps.showFirstAvailable !== this.props.showFirstAvailable); // || nextProps.displayMode !== this.props.displayMode;
   }
 
   componentWillUpdate(nextProps) {
@@ -103,9 +103,13 @@ class Card extends Component {
   }
 
   calcualteStateValues = (props) => {
-    const { toTime, fromTime, employee, date } = props.appointment;
+    const {
+      toTime, fromTime, employee, date,
+    } = props.appointment;
     const { step } = props.apptGridSettings;
-    const { startTime, cellWidth, displayMode, selectedProvider, groupedProviders, providerSchedule } = props;
+    const {
+      startTime, cellWidth, displayMode, selectedProvider, groupedProviders, providerSchedule,
+    } = props;
     const apptDate = moment(date).format('YYYY-MM-DD');
     const provider = displayMode === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
@@ -113,6 +117,7 @@ class Card extends Component {
     const end = moment(toTime, 'HH:mm');
     const { left, cardWidth, zIndex } = this.calculateLeftAndGap(props);
     const height = ((end.diff(start, 'minutes') / step) * 30) - 1;
+    const usedBlocks = (height + 1) / 30;
     let isActiveEmployeeInCellTime = false;
     if (provider &&
       provider.scheduledIntervals && provider.scheduledIntervals[0]) {
@@ -132,6 +137,8 @@ class Card extends Component {
       opacity: new Animated.Value(1),
       cardWidth,
       zIndex,
+      step,
+      usedBlocks,
       isActiveEmployeeInCellTime,
     };
   }
@@ -140,9 +147,11 @@ class Card extends Component {
     this.moveX = null;
     this.moveY = null;
     const { pan, left, top } = this.state;
-    const { cellWidth, providers, appointment, onDrop, apptGridSettings } = this.props;
+    const {
+      cellWidth, providers, appointment, onDrop, apptGridSettings,
+    } = this.props;
     const { toTime, fromTime } = appointment;
-    const availabilityOffset = pan.x._value + pan.x._offset < left ? 64 : 0
+    const availabilityOffset = pan.x._value + pan.x._offset < left ? 64 : 0;
     const dx = pan.x._value + pan.x._offset - left - availabilityOffset;
     const remainderX = dx % cellWidth;
     const xOffset = cellWidth - remainderX > cellWidth / 2 ? dx - remainderX : dx + cellWidth - remainderX;
@@ -157,7 +166,7 @@ class Card extends Component {
     const newFromTime = moment(fromTime, 'HH:mm').add((yOffset / 30) * apptGridSettings.step, 'minutes').format('HH:mm');
     // calculate new coordinates y
     const y = 30 - remainderY > 30 / 2 ? pan.y._value - remainderY : pan.y._value + 30 - remainderY;
-    onDrop(appointment.id,{
+    onDrop(appointment.id, {
       date: appointment.date,
       newTime: newFromTime,
       employeeId: provider.id,
@@ -165,29 +174,33 @@ class Card extends Component {
     Animated.parallel([
       Animated.spring(
         this.state.pan,
-        { toValue: { x, y } }
+        { toValue: { x, y } },
       ),
       Animated.timing(
         this.state.opacity,
         {
-          toValue: 0
-        }
-      )
-    ]).start(() => this.setState({
-      isActive: false,
-      left: providerIndex * cellWidth + 64 ,
-      top: new Animated.Value(top._value + yOffset)
-    },
-    () => {
-      this.props.onDrag(true);
-    }));
+          toValue: 0,
+        },
+      ),
+    ]).start(() => this.setState(
+      {
+        isActive: false,
+        left: providerIndex * cellWidth + 64,
+        top: new Animated.Value(top._value + yOffset),
+      },
+      () => {
+        this.props.onDrag(true);
+      },
+    ));
   }
 
   handleReleaseDay = () => {
     this.moveX = null;
     this.moveY = null;
     const { pan, top } = this.state;
-    const { selectedProvider, appointment, onDrop, apptGridSettings } = this.props;
+    const {
+      selectedProvider, appointment, onDrop, apptGridSettings,
+    } = this.props;
     const { toTime, fromTime } = appointment;
     const dy = pan.y._value + pan.y._offset - top._value;
     const remainderY = dy % 30;
@@ -196,7 +209,7 @@ class Card extends Component {
     // calculate new coordinates y
     const y = 30 - remainderY > 30 / 2 ?
       this.state.pan.y._value - remainderY : this.state.pan.y._value + 30 - remainderY;
-    onDrop(appointment.id,{
+    onDrop(appointment.id, {
       date: appointment.date,
       newTime: newFromTime,
       employeeId: selectedProvider.id,
@@ -204,29 +217,33 @@ class Card extends Component {
     Animated.parallel([
       Animated.spring(
         this.state.pan,
-        { toValue: { x: 0, y } }
+        { toValue: { x: 0, y } },
       ),
       Animated.timing(
         this.state.opacity,
         {
-          toValue: 0
-        }
-      )
-    ]).start(() => this.setState({
-      isActive: false,
-      left: 0,
-      top: new Animated.Value(top._value + yOffset)
-    },
-    () => {
-      this.props.onDrag(true);
-    }));
+          toValue: 0,
+        },
+      ),
+    ]).start(() => this.setState(
+      {
+        isActive: false,
+        left: 0,
+        top: new Animated.Value(top._value + yOffset),
+      },
+      () => {
+        this.props.onDrag(true);
+      },
+    ));
   }
 
   handleReleaseWeek = () => {
     this.moveX = null;
     this.moveY = null;
     const { pan, left, top } = this.state;
-    const { cellWidth, providers, appointment, onDrop, apptGridSettings, selectedProvider } = this.props;
+    const {
+      cellWidth, providers, appointment, onDrop, apptGridSettings, selectedProvider,
+    } = this.props;
     const { toTime, fromTime } = appointment;
     const dx = pan.x._value + pan.x._offset - left;
     const remainderX = dx % cellWidth;
@@ -243,7 +260,7 @@ class Card extends Component {
     const newFromTime = moment(fromTime, 'HH:mm').add((yOffset / 30) * apptGridSettings.step, 'minutes').format('HH:mm');
     // calculate new coordinates y
     const y = 30 - remainderY > 30 / 2 ? pan.y._value - remainderY : pan.y._value + 30 - remainderY;
-    onDrop(appointment.id,{
+    onDrop(appointment.id, {
       date: date.format('YYYY-MM-DD').toString(),
       newTime: newFromTime,
       employeeId: selectedProvider.id,
@@ -251,27 +268,31 @@ class Card extends Component {
     Animated.parallel([
       Animated.spring(
         this.state.pan,
-        { toValue: { x, y } }
+        { toValue: { x, y } },
       ),
       Animated.timing(
         this.state.opacity,
         {
-          toValue: 0
-        }
-      )
-    ]).start(() => this.setState({
-      isActive: false,
-      left: dateIndex * cellWidth,
-      top: new Animated.Value(top._value + yOffset)
-    },
-    () => {
-      this.props.onDrag(true);
-    }));
+          toValue: 0,
+        },
+      ),
+    ]).start(() => this.setState(
+      {
+        isActive: false,
+        left: dateIndex * cellWidth,
+        top: new Animated.Value(top._value + yOffset),
+      },
+      () => {
+        this.props.onDrag(true);
+      },
+    ));
   }
 
   calculateLeftAndGap = (props) => {
-    const { appointments, providers, displayMode, cellWidth, appointment } = props;
-    const date = moment(appointment.date)
+    const {
+      appointments, providers, displayMode, cellWidth, appointment,
+    } = props;
+    const date = moment(appointment.date);
     const startTime = moment(appointment.fromTime, 'HH:mm');
     let cardWidth = cellWidth - 1;
     let zIndex = 1;
@@ -313,15 +334,17 @@ class Card extends Component {
   }
 
   handleOnLongPress = () => {
-    this.setState({ isActive: true });//, this.scrollAnimation);
-    this.offset = { x: this.props.calendarOffset.x, y: this.props.calendarOffset.y }
-    this.props.onDrag(false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
-      this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height);
+    this.setState({ isActive: true });// , this.scrollAnimation);
+    this.offset = { x: this.props.calendarOffset.x, y: this.props.calendarOffset.y };
+    this.props.onDrag(
+      false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
+      this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height,
+    );
     Animated.timing(
       this.state.opacity,
       {
-        toValue: 0.7
-      }
+        toValue: 0.7,
+      },
     ).start();
   }
 
@@ -334,7 +357,7 @@ class Card extends Component {
     if (this.state.isActive) {
       if (this.moveX && this.moveY) {
         if (displayMode === 'all') {
-          if (Math.abs(this.moveX/this.props.calendarMeasure.width) >= Math.abs(this.moveY/this.props.calendarMeasure.height)) {
+          if (Math.abs(this.moveX / this.props.calendarMeasure.width) >= Math.abs(this.moveY / this.props.calendarMeasure.height)) {
             const maxWidth = this.props.providers.length * cellWidth - this.props.calendarMeasure.width;
             const scrollHorizontalBoundRight = (this.props.calendarMeasure.width
               + this.offset.x) - boundLength - cellWidth;
@@ -350,7 +373,7 @@ class Card extends Component {
               dx = dx * maxScrollChange / boundLength;
               this.offset.x += dx;
               if (this.offset.x > maxWidth) {
-                this.offset.x =  maxWidth;
+                this.offset.x = maxWidth;
               }
               if (this.offset.x < 0) {
                 this.offset.x = 0;
@@ -474,13 +497,13 @@ class Card extends Component {
     const newSize = remainderH < 30 / 2 ? height._value - remainderH : height._value + 30 - remainderH;
     const newTop = remainderH < 30 / 2 ? top._value + remainderH : top._value - 30 + remainderH;
     Animated.parallel([Animated.spring(this.state.height, { toValue: newSize }),
-    Animated.spring(this.state.top, { toValue: newTop }),
-    Animated.spring(
-      this.state.pan,
-      { toValue: { x: pan.x._value, y: newTop - pan.y._offset } }
-    )]).start(() => {
+      Animated.spring(this.state.top, { toValue: newTop }),
+      Animated.spring(
+        this.state.pan,
+        { toValue: { x: pan.x._value, y: newTop - pan.y._offset } },
+      )]).start(() => {
       this.setState({ isResizeing: false });
-      this.props.onResize(this.props.appointment.id,{
+      this.props.onResize(this.props.appointment.id, {
         newLength: (this.state.height._value / 30) * this.props.apptGridSettings.step,
       });
     });
@@ -492,10 +515,69 @@ class Card extends Component {
     const newSize = remainder < 30 / 2 ? height._value - remainder : height._value + 30 - remainder;
     Animated.spring(this.state.height, { toValue: newSize }).start(() => {
       this.setState({ isResizeing: false });
-      this.props.onResize(this.props.appointment.id,{
+      this.props.onResize(this.props.appointment.id, {
         newLength: (this.state.height._value / 30) * this.props.apptGridSettings.step,
       });
     });
+  }
+
+  renderSingleBlock = () => {
+    const {
+      client,
+      service,
+      mainServiceColor,
+    } = this.props.appointment;
+    const clientName = `${client.name} ${client.lastName}`;
+    const serviceName = service.description;
+    const serviceTextColor = '#1D1E29';
+    const clientTextColor = '#2F3142';
+    const color = colors[mainServiceColor] ? mainServiceColor : 0;
+
+    return (
+      <View style={{ width: '100%', height: '100%' }}>
+        <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
+        <Text
+          numberOfLines={1}
+          style={[styles.clientText, { color: clientTextColor }]}
+        >
+          {clientName}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={[styles.serviceText, { color: serviceTextColor }]}
+        >
+          {serviceName}
+        </Text>
+      </View>
+    );
+  }
+
+  renderMultiBlock = () => {
+    const {
+      client,
+      mainServiceColor,
+    } = this.props.appointment;
+    const {
+      step,
+      usedBlocks,
+    } = this.state;
+    const clientName = `${client.name} ${client.lastName}`;
+    const clientTextColor = '#2F3142';
+    const color = colors[mainServiceColor] ? mainServiceColor : 0;
+
+    return (
+      <View style={{ width: '100%', height: '100%' }}>
+        <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
+        {times(usedBlocks).map(index => (
+          <Text
+            numberOfLines={1}
+            style={[styles.clientText, { lineHeight: 30, color: clientTextColor }]}
+          >
+            {clientName}
+          </Text>
+        ))}
+      </View>
+    );
   }
 
   render() {
@@ -509,17 +591,15 @@ class Card extends Component {
       isFirstAvailable,
     } = this.props.appointment;
     const { showFirstAvailable } = this.props;
-    const { zIndex, cardWidth, left, isActive,isActiveEmployeeInCellTime } = this.state;
+    const {
+      zIndex, cardWidth, left, isActive, isActiveEmployeeInCellTime,
+    } = this.state;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const clientName = `${client.name} ${client.lastName}`;
-    const serviceName = service.description;
     const { height } = this.state;
     const borderColor = colors[color].dark;
     const contentColor = colors[color].light;
-    const serviceTextColor = '#1D1E29';
-    const clientTextColor = '#2F3142';
-    let countOpacity = 0;
-    let countGap = 0;
+    const countOpacity = 0;
+    const countGap = 0;
     let countOpacity2 = 0;
     let countGap2 = 0;
 
@@ -528,8 +608,16 @@ class Card extends Component {
       <Animated.View key={id} style={{ position: 'absolute', zIndex }}>
         <Animated.View
           style={[styles.container,
-            { width: cardWidth, height, borderColor, backgroundColor: colors[color].light,
-            left, top: this.state.top, opacity: this.state.opacity, borderStyle }]}
+            {
+          width: cardWidth,
+          height,
+          borderColor,
+          backgroundColor: colors[color].light,
+                      left,
+          top: this.state.top,
+          opacity: this.state.opacity,
+          borderStyle,
+          }]}
 
         >
           {!isActiveEmployeeInCellTime ?
@@ -539,8 +627,11 @@ class Card extends Component {
               style={styles.stripesContainer}
             >
               <Defs>
-                <LinearGradient id="grad" x1={0} y1={cardWidth > height._value ?  cardWidth : height._value}
-                  x2={cardWidth > height._value ?  cardWidth : height._value}
+                <LinearGradient
+                  id="grad"
+                  x1={0}
+                  y1={cardWidth > height._value ? cardWidth : height._value}
+                  x2={cardWidth > height._value ? cardWidth : height._value}
                   y2={0}
                 >
                   {
@@ -549,10 +640,10 @@ class Card extends Component {
                     countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
                     if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
                       countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
-                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />)
+                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />);
                     }
                     countOpacity2 += 1;
-                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} />)
+                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} />);
                   })
                   }
                 </LinearGradient>
@@ -570,21 +661,7 @@ class Card extends Component {
             onLongPress={this.handleOnLongPress}
             disabled={isActive}
           >
-            <View style={{ width: '100%', height: '100%' }}>
-              <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-              <Text
-                numberOfLines={1}
-                style={[styles.clientText, { color: clientTextColor }]}
-              >
-                {clientName}
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[styles.serviceText, { color: serviceTextColor }]}
-              >
-                {serviceName}
-              </Text>
-            </View>
+            {this.props.isMultiBlock ? this.renderMultiBlock() : this.renderSingleBlock()}
           </TouchableOpacity>
         </Animated.View>
         {/* <Animated.View

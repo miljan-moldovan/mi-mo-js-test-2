@@ -96,11 +96,13 @@ class ApptBookViewOptionsScreen extends Component {
     const {
       company,
       position,
+      showMultiBlock,
       showOffEmployees,
     } = this.state.options;
     this.props.apptBookActions.setFilterOptionCompany(company);
     this.props.apptBookActions.setFilterOptionPosition(position);
     this.props.apptBookActions.setFilterOptionShowOffEmployees(showOffEmployees);
+    this.props.apptBookActions.setFilterOptionShowMultiBlock(showMultiBlock);
 
     this.props.apptBookActions.setGridView();
     this.goBack();
@@ -148,6 +150,7 @@ class ApptBookViewOptionsScreen extends Component {
     const {
       position,
       company,
+      showMultiBlock,
       showOffEmployees,
     } = this.state.options;
 
@@ -273,11 +276,11 @@ class ApptBookViewOptionsScreen extends Component {
                   textStyle={{ color: '#000000' }}
                   onChange={(state) => {
                       const { options } = this.state;
-                      options.clientNameInEveryBlocks = !options.clientNameInEveryBlocks;
+                      options.showMultiBlock = !options.showMultiBlock;
                       this.shouldSave = true;
                       this.setState({ options });
                     }}
-                  value={this.state.options.clientNameInEveryBlocks}
+                  value={this.state.options.showMultiBlock}
                   text="Client name in every blocks"
                 />,
                 <InputDivider key={Math.random()} />,
