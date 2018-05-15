@@ -16,7 +16,7 @@ const initialState = {
   services: [],
   showCategoryServices: false,
   categoryServices: [],
-  selectedService: {},
+  selectedService: null,
 };
 
 export default function serviceReducer(state = initialState, action) {

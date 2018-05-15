@@ -446,6 +446,7 @@ export class ServiceInput extends React.Component {
     this.props.navigate('Services', {
       selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
+      filterByProvider: this.props.filterByProvider ? true : false,
       dismissOnSelect: true,
       onChangeService: service => this.handleServiceSelection(service),
     });
@@ -488,6 +489,7 @@ export class ProviderInput extends React.Component {
       selectedProvider: this.state.selectedProvider,
       actionType: 'update',
       dismissOnSelect: true,
+      filterByService: this.props.filterByService ? true : false,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }

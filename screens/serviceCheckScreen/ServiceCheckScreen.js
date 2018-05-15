@@ -125,12 +125,14 @@ export default class ServiceCheckScreen extends React.Component {
         <InputGroup style={{ marginTop: 17 }}>
           <ProviderInput
             noPlaceholder
+            filterByService
             navigate={navigate}
             selectedProvider={this.state.selectedProvider}
             onChange={selectedProvider => this.setState({ selectedProvider })}
           />
           <InputDivider />
           <ServiceInput
+            filterByProvider
             navigate={navigate}
             selectedService={this.state.selectedService}
             onChange={selectedService => this.setState({ selectedService })}

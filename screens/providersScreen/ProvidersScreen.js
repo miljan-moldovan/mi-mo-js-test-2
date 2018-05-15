@@ -166,6 +166,7 @@ class ProviderScreen extends React.Component {
     const { params } = this.props.navigation.state;
     this.state = {
       selectedProvider: 'selectedProvider' in params ? params.selectedProvider : null,
+      filterByService: 'filterByService' in params ? params.filterByService : false,
       refreshing: false,
     };
   }
@@ -173,12 +174,7 @@ class ProviderScreen extends React.Component {
   componentWillMount() {
     this.props.navigation.setParams({ defaultProps: this.state.headerProps });
 
-    this.props.providersActions.getProviders({
-      filterRule: 'none',
-      maxCount: 100,
-      sortOrder: 'asc',
-      sortField: 'fullName',
-    });
+    this.onRefresh();
   }
 
   state = {
@@ -209,6 +205,9 @@ class ProviderScreen extends React.Component {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
+
+    this.props.providersActions.setSelectedProvider(provider);
+    
     const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
@@ -250,7 +249,7 @@ class ProviderScreen extends React.Component {
       maxCount: 100,
       sortOrder: 'asc',
       sortField: 'fullName',
-    });
+    }, this.state.filterByService);
   }
 
   renderItem = ({ item, index }) => (

@@ -9,6 +9,7 @@ const resources = {
   getServiceTree: {
     path: 'Services/Tree',
     method: 'get',
+    disableCache: true,
     expiration: apiConstants.expiration,
   },
   getService: {
@@ -18,6 +19,11 @@ const resources = {
   },
   getServiceEmployeeCheck: {
     path: 'Services/:serviceId/Check/Employee/:employeeId',
+    method: 'get',
+    disableCache: true,
+  },
+  getEmployeesByService: {
+    path: 'Services/:serviceId/Employees',
     method: 'get',
     disableCache: true,
   },

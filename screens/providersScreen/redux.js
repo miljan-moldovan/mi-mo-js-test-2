@@ -11,18 +11,25 @@ export const GET_PROVIDERS_SUCCESS = 'providers/GET_PROVIDERS_SUCCESS';
 export const GET_PROVIDERS_ERROR = 'providers/GET_PROVIDERS_ERROR';
 export const SET_FILTERED_PROVIDERS = 'providers/SET_FILTERED_PROVIDERS';
 export const SELECTED_FILTER_TYPES = 'providers/SELECTED_FILTER_TYPES';
+export const SET_SELECTED_PROVIDER = 'providers/SET_SELECTED_PROVIDER';
 
 const initialState = {
   error: null,
   filtered: [],
   providers: [],
   currentData: [],
+  selectedProvider: null,
   isLoading: false,
 };
 
 export function providersReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case SET_SELECTED_PROVIDER:
+      return {
+        ...state,
+        selectedProvider: data.selectedProvider,
+      };
     case GET_PROVIDERS:
       return {
         ...state,
@@ -56,6 +63,11 @@ export function providersReducer(state = initialState, action) {
   }
 }
 
+const setSelectedProvider = selectedProvider => ({
+  type: SET_SELECTED_PROVIDER,
+  data: { selectedProvider },
+});
+
 const getProvidersSuccess = providers => ({
   type: GET_PROVIDERS_SUCCESS,
   data: { providers },
@@ -66,8 +78,25 @@ const getProvidersError = error => ({
   data: { error },
 });
 
-const getProviders = params => (dispatch) => {
+const getProviders = (params, filterByService = false) => (dispatch, getState) => {
   dispatch({ type: GET_PROVIDERS });
+  const { selectedService } = getState().serviceReducer;
+  if (selectedService !== null && filterByService && 'id' in selectedService) {
+    return apiWrapper.doRequest('getEmployeesByService', {
+      path: {
+        serviceId: selectedService.id,
+      },
+      query: {
+        ...params,
+      },
+    })
+      .then((providers) => {
+        dispatch(getProvidersSuccess(providers.sort(alphabeticFilter)));
+      })
+      .catch((err) => {
+        dispatch(getProvidersError(err));
+      });
+  }
 
   return apiWrapper.doRequest('getEmployees', {
     query: {
@@ -92,6 +121,7 @@ const providersActions = {
   getProvidersSuccess,
   getProvidersError,
   setFilteredProviders,
+  setSelectedProvider,
 };
 
 export default providersActions;
