@@ -392,16 +392,19 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         isLoading: true,
       };
-    case SET_GRID_ALL_VIEW_SUCCESS:
+    case SET_GRID_ALL_VIEW_SUCCESS: {
+      const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
+      const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;
       return {
         ...state,
         isLoading: false,
         error: null,
-        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
+        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime },
         providers: data.employees,
         appointments: data.appointments,
         availability: data.availability,
       };
+    }
     case SET_GRID_DAY_WEEK_VIEW_SUCCESS:
       return {
         ...state,

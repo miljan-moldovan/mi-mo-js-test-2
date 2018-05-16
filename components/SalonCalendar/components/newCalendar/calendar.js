@@ -47,6 +47,7 @@ const headerHeight = 40;
 export default class Calendar extends Component {
   constructor(props) {
     super(props);
+    this.offset = { x: 0, y: 0 };
     this.setCellsByColumn(props);
     this.state = {
       calendarMeasure: {
@@ -64,10 +65,12 @@ export default class Calendar extends Component {
     };
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => !this.state.isScrollEnabled && this.state.activeCard,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => !this.state.isScrollEnabled && this.state.activeCard,
+      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.activeCard,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.activeCard,
       onPanResponderMove: (e, gesture) => {
-        if(!this.state.isScrollEnabled) {
+        if (!this.state.isScrollEnabled) {
+          this.moveX = gesture.dx;
+          this.moveY = gesture.dy;
           return Animated.event([null, {
             dx: this.state.pan.x,
             dy: this.state.pan.y,
@@ -80,6 +83,12 @@ export default class Calendar extends Component {
           this.handleBufferDrop();
         }
       },
+      // onPanResponderGrant: () => {
+      //   if (!this.state.isScrollEnabled && this.state.activeCard) {
+      //     this.state.pan.setOffset({ x: this.state.activeCard.left, y: this.state.activeCard.top });
+      //     this.state.pan.setValue({ x: 0, y: 0 });
+      //   }
+      // },
     });
   }
 
@@ -94,14 +103,13 @@ export default class Calendar extends Component {
     const {
       apptGridSettings,
       headerData,
-      appointments,
       selectedProvider,
       displayMode,
       startDate,
     } = nextProps;
 
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
-      this.startTime = apptGridSettings.weeklySchedule[startDate.format('E') - 1].start1;
+      //this.startTime = apptGridSettings.weeklySchedule[startDate.format('E') - 1].start1;
       this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
       if (selectedProvider === 'all') {
         this.size = {
@@ -127,54 +135,146 @@ export default class Calendar extends Component {
     }
   }
 
-  createSchedule = (index) => {
-    const { apptGridSettings } = this.props;
-    const time = moment(this.startTime, 'HH:mm').add(index * apptGridSettings.step, 'm');
+  createSchedule = (index, props) => {
+    const { apptGridSettings } = props;
+    const time = moment(apptGridSettings.minStartTime, 'HH:mm').add(index * apptGridSettings.step, 'm');
     return time.format('h:mm A').toString();
   }
 
   measureScrollView = ({ nativeEvent: { layout: { width, height } } }) => {
-    if (this.state.calendarMeasure.width === 0 && this.state.calendarMeasure.height === 0) {
+    const { calendarMeasure } = this.state;
+    const newWidth = width - 36;
+    const newHeight = height - 40;
+    if (calendarMeasure.width === newWidth || calendarMeasure.height !== newHeight) {
       this.setState({
         calendarMeasure: {
-          height: height - 40,
-          width: width - 36,
+          height: newHeight,
+          width: newWidth,
         },
       });
     }
   }
 
+  scrollAnimation = () => {
+    const { cellWidth, moveX, moveY } = this;
+    const { selectedProvider, headerData, apptGridSettings, bufferVisible } = this.props;
+    const { calendarMeasure, pan, activeCard } = this.state;
+    let dx = 0;
+    let dy = 0;
+    const boundLength = 30;
+    const maxScrollChange = 15;
+    const bufferHeight = bufferVisible ? 110 : 0;
+    if (activeCard) {
+      if (moveX && moveY) {
+        if (selectedProvider === 'all') {
+          const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 64;
+          const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth + 36;
+          const scrollHorizontalBoundLeft = boundLength;
+          const newMoveX = moveX + pan.x._offset;
+          if (scrollHorizontalBoundRight < newMoveX) {
+            dx = newMoveX - scrollHorizontalBoundRight;
+          } else if (scrollHorizontalBoundLeft > newMoveX) {
+            dx = newMoveX - scrollHorizontalBoundLeft;
+          }
+          if (dx !== 0) {
+            dx = Math.abs(dx) > boundLength ? boundLength * Math.sign(dx) : dx;
+            dx = dx * maxScrollChange / boundLength;
+            this.offset.x += dx;
+            if (this.offset.x > maxWidth) {
+              this.offset.x =  maxWidth;
+            }
+            if (this.offset.x < 0) {
+              this.offset.x = 0;
+            }
+            this.scrollToX(this.offset.x, () => {
+              pan.setOffset({
+                x: pan.x._offset + dx,
+                y: pan.y._offset,
+              });
+              pan.setValue({ x: pan.x._value, y: pan.y._value, });
+            });
+          } else {
+            const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height + bufferHeight;
+            const scrollVerticalBoundTop = calendarMeasure.height - boundLength - activeCard.height._value;
+            const scrollVerticalBoundBottom = boundLength;
+            const newMoveY = moveY + pan.y._offset;
+            if (scrollVerticalBoundTop < newMoveY) {
+              dy = newMoveY - scrollVerticalBoundTop;
+            } else if (scrollVerticalBoundBottom > newMoveY) {
+              dy = newMoveY - scrollVerticalBoundBottom;
+            }
+            if (dy !== 0) {
+              dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
+              dy = dy * maxScrollChange / boundLength;
+              this.offset.y += dy;
+              if (this.offset.y > maxHeigth) {
+                this.offset.y = maxHeigth;
+              }
+              if (this.offset.y < 0) {
+                this.offset.y = 0;
+              }
+              this.scrollToY(this.offset.y, () => {
+                pan.setOffset({
+                  y: pan.y._offset + dy,
+                  x: pan.x._offset,
+                });
+                pan.setValue({ y: pan.y._value, x: pan.x._value });
+              });
+            }
+          }
+        }
+      }
+      requestAnimationFrame(this.scrollAnimation);
+    }
+  }
+
   handleOnDrag = (isScrollEnabled, appointment, left, top, cardWidth, height) => {
+    let newState;
     if (!isScrollEnabled) {
       this.props.manageBuffer(true);
+      const { pan } = this.state;
+      const newTop =  top + 40 - this.offset.y;
+      const newLeft = left + 36 - this.offset.x;
+      this.state.pan.setOffset({ x: newLeft, y: newTop });
+      this.state.pan.setValue({ x: 0, y: 0 });
+      pan.setOffset({ x: newLeft, y: newTop });
+      pan.setValue({ x: 0, y: 0 });
+      newState = {
+        isScrollEnabled,
+        activeCard: {
+          appointment,
+          left: newLeft,
+          top: newTop,
+          cardWidth,
+          height,
+        },
+      };
+      this.setState(newState, this.scrollAnimation);
+    } else {
+      this.moveX = null;
+      this.moveY = null;
+      newState = {
+        isScrollEnabled,
+        activeCard: null,
+      }
+      this.setState(newState);
     }
-    this.state.pan.setOffset({ x: left + 36, y: top + 40});
-    this.state.pan.setValue({ x: 0, y: 0 });
-    this.setState({ isScrollEnabled, activeCard: {appointment, left: left + 36, top: top + 40, cardWidth, height} });
   }
 
   handleScroll = (ev) => {
     const { isScrollEnabled } = this.state;
     if (isScrollEnabled) {
-      this.setState({
-        calendarOffset: {
-          x: ev.nativeEvent.contentOffset.x,
-          y: ev.nativeEvent.contentOffset.y,
-        },
-      });
+       this.offset.x = ev.nativeEvent.contentOffset.x;
+       this.offset.y = ev.nativeEvent.contentOffset.y;
     }
   }
 
-  scrollToX = (dx, callback) => {
-    const { calendarOffset } = this.state;
-    this.board.scrollTo({ x: dx, y: calendarOffset.y, animated: false });
-    this.setState({ calendarOffset: { ...calendarOffset, x: dx } }), callback();
+  scrollToX = (dx) => {
+    this.board.scrollTo({ x: dx, y: this.offset.y, animated: false });
   }
 
-  scrollToY = (dy, callback) => {
-    const { calendarOffset } = this.state;
-    this.board.scrollTo({ y: dy, x: calendarOffset.x, animated: false });
-    this.setState({ calendarOffset: { ...calendarOffset, y: dy } }), callback();
+  scrollToY = (dy) => {
+    this.board.scrollTo({ y: dy, x: this.offset.x, animated: false });
   }
 
   handleDrop = (appointmentId, params) => {
@@ -188,7 +288,35 @@ export default class Calendar extends Component {
       if (top > screenHeight - 110 - 133) {
         buffer.push(activeCard.appointment)
         this.setState({ buffer, activeCard: null });
+      } else {
+        this.handleReleaseAll();
       }
+    }
+  }
+
+  handleReleaseAll = () => {
+    this.moveX = null;
+    this.moveY = null;
+    const cellHeight = 30;
+    const { pan, activeCard: { appointment } } = this.state;
+    const { cellWidth, headerData, apptGridSettings, onDrop, selectedProvider, startDate, displayMode } = this.props;
+    const { toTime, fromTime } = appointment;
+    const dx = pan.x._value + pan.x._offset + this.offset.x - 64;
+    const dy = pan.y._value + pan.y._offset + this.offset.y - 40;
+    const xIndex = (dx / this.cellWidth).toFixed();
+    const yIndex = (dy / cellHeight).toFixed();
+    const isOutOfBounds = xIndex < 0 || xIndex >= headerData.length
+    || yIndex < 0 || yIndex >= this.schedule.length;
+    if (!isOutOfBounds) {
+      const employeeId = selectedProvider === 'all' ? headerData[xIndex].id : selectedProvider.id;
+      const date = selectedProvider === 'all' || displayMode === 'day' ? startDate.format('YYYY-MM-DD') : headerData[xIndex];
+      const newTime = moment(this.schedule[yIndex], 'h:mm A').format('HH:mm');
+      onDrop(appointment.id, {
+        date,
+        newTime,
+        employeeId,
+      });
+      this.handleOnDrag(true);
     }
   }
 
@@ -221,7 +349,7 @@ export default class Calendar extends Component {
     const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
     const { calendarMeasure, calendarOffset,showFirstAvailable } = this.state;
     const isAllProviderView = selectedProvider === 'all';
-    const startTime = moment(this.startTime, 'HH:mm');
+    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     if (appointment.employee) {
       return (
         <Card
@@ -270,7 +398,7 @@ export default class Calendar extends Component {
     const isDate = selectedProvider !== 'all';
     const showHeader = displayMode === 'week' || selectedProvider === 'all';
     const { isScrollEnabled, showFirstAvailable } = this.state;
-    const startTime = moment(this.startTime, 'HH:mm');
+    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <View style={{flex: 1}} {...this.panResponder.panHandlers}>
@@ -286,6 +414,7 @@ export default class Calendar extends Component {
             onScroll={this.handleScroll}
             ref={(board) => { this.board = board; }}
             onLayout={this.measureScrollView}
+            scrollEventThrottle={16}
           >
             <ScrollViewChild
               scrollDirection="both"

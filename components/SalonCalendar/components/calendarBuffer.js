@@ -69,7 +69,7 @@ export default class calendarBuffer extends React.Component {
   render() {
     const dataSource = ds.cloneWithRows(this.props.dataSource)
     return (
-      <View style={styles.container}>
+      <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel
           visible={this.props.visible}
           onRequestClose={() => this.props.manageBuffer(false)}

@@ -70,7 +70,7 @@ const postAppointmentMove = (appointmentId, params) => (dispatch) => {
     .then(response => apiWrapper.doRequest('getAppointmentsById', {
       path: {
         id: appointmentId,
-      }}).then(resp => dispatch(postAppointmentMoveSuccess(resp)))) //dispatch(postAppointmentMoveSuccess(appointmentId)))
+      }}).then(resp => dispatch(postAppointmentMoveSuccess(resp))))
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
 

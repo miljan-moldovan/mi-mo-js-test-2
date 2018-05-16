@@ -50,51 +50,14 @@ class Card extends Component {
     super(props);
     this.scrollValue = 0;
     this.state = this.calcualteStateValues(props);
-    // this.state.pan.x.addListener((value) => this.animatedValueX = value.value);
-    // this.state.pan.y.addListener((value) => this.animatedValueY = value.value);
-    this.panResponder = PanResponder.create({
-      onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.isActive && !this.state.isResizeing,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.isActive && !this.state.isResizeing,
-      onPanResponderMove: (e, gesture) => {
-        this.moveX = gesture.dx;
-        this.moveY = gesture.dy;
-        return Animated.event([null, {
-          dx: this.state.pan.x,
-          dy: this.state.pan.y,
-        }])(e, gesture);
-      },
-      onPanResponderGrant: () => {
-        if (this.state.isActive) {
-          this.state.pan.setOffset({ x: this.state.left, y: this.state.top._value });
-          this.state.pan.setValue({ x: 0, y: 0 });
-        }
-      },
-      onPanResponderRelease: (e, gesture) => {
-        switch (this.props.displayMode) {
-          case 'all':
-            this.handleReleaseAll();
-            break;
-          case 'day':
-            this.handleReleaseDay();
-            break;
-          case 'week':
-            this.handleReleaseWeek();
-            break;
-          default:
-            break;
-        }
-      },
-    });
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const { calendarOffset } = this.props;
-    const newX = nextProps.calendarOffset.x;
-    const newY = nextProps.calendarOffset.y;
-    return (newX === calendarOffset.x && newY === calendarOffset.y)
-    || (nextState.isActive || this.state.isActive) || (nextProps.showFirstAvailable !== this.props.showFirstAvailable) //|| nextProps.displayMode !== this.props.displayMode;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   const { calendarOffset } = this.props;
+  //   const newX = nextProps.calendarOffset.x;
+  //   const newY = nextProps.calendarOffset.y;
+  //   return (nextState.isActive || this.state.isActive) || (nextProps.showFirstAvailable !== this.props.showFirstAvailable) //|| nextProps.displayMode !== this.props.displayMode;
+  // }
 
   componentWillUpdate(nextProps) {
     if (nextProps.cellWidth !== this.props.cellWidth || (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading)) {
