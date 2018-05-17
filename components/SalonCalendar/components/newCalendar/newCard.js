@@ -49,29 +49,16 @@ class Card extends Component {
   constructor(props) {
     super(props);
     this.scrollValue = 0;
-    // this.state = {
-    //   pan: new Animated.ValueXY({ x: props.left, y: props.top }),
-    // }
-    // this.panResponder = PanResponder.create({
-    //   onPanResponderTerminationRequest: () => false,
-    //   onMoveShouldSetPanResponder: (evt, gestureState) => true,
-    //   onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-    //   onPanResponderMove: (e, gesture) => {
-    //     this.moveX = gesture.dx;
-    //     this.moveY = gesture.dy;
-    //     return Animated.event([null, {
-    //       dx: this.state.pan.x,
-    //       dy: this.state.pan.y,
-    //     }])(e, gesture);
-    //   },
-    //   onPanResponderGrant: () => {
-    //       this.state.pan.setOffset({ x: this.props.left, y: this.props.top });
-    //       this.state.pan.setValue({ x: 0, y: 0 });
-    //   },
-    //   onPanResponderRelease: (e, gesture) => {
-    //     this.props.onDrop();
-    //   },
-    // });
+    this.state = {
+      isActive: props.isActive,
+    };
+  }
+
+  handleOnLongPress = () => {
+    const { appointment, cardWidth, height, onLongPress } = this.props
+    this.card.measureInWindow((x, y) => {
+      onLongPress(false, appointment, x, y, cardWidth, height, true);
+    });
   }
 
   render() {
@@ -110,7 +97,7 @@ class Card extends Component {
         <TouchableOpacity
           onLongPress={this.handleOnLongPress}
         >
-          <View style={{ width: '100%', height: '100%' }}>
+          <View style={{ width: '100%', height: '100%' }} ref={(view) => { this.card = view; }}>
             <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
             <Text
               numberOfLines={1}

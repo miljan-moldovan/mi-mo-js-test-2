@@ -60,6 +60,7 @@ export default class calendarBuffer extends React.Component {
         left={0}
         top={0}
         onDrop={() => {}}
+        onLongPress={this.props.onCardLongPress}
       />
     )
   }
@@ -67,7 +68,7 @@ export default class calendarBuffer extends React.Component {
   renderSeparator = () => (<View style={{width: 4, opacity: 0}}/>)
 
   render() {
-    const dataSource = ds.cloneWithRows(this.props.dataSource)
+    const dataSource = ds.cloneWithRows(this.props.dataSource);
     return (
       <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel

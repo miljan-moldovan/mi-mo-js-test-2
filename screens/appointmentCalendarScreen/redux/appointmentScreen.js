@@ -422,7 +422,11 @@ export default function appointmentScreenReducer(state = initialState, action) {
     case POST_APPOINTMENT_MOVE_SUCCESS: {
       const appointments = state.appointments;
       const index = appointments.findIndex(appt => appt.id === data.appointment.id);
-      appointments[index] = data.appointment;
+      if (index > -1) {
+        appointments[index] = data.appointment;
+      } else {
+        appointments.push(data.appointment);
+      }
       return {
         ...state,
         appointments,

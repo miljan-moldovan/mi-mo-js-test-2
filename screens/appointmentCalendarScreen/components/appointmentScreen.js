@@ -80,7 +80,6 @@ export default class AppointmentScreen extends Component {
       isLoading: true,
       bufferVisible: false,
     };
-    // props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -133,17 +132,19 @@ export default class AppointmentScreen extends Component {
     } else {
       this.props.navigation.setParams({ filterProvider });
     }
-
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.setGridView();
+    requestAnimationFrame(()=>this.manageBuffer(false));
   }
 
   selectFilterRoom = room => alert(`Selected Room ${room.name}s`)
 
 
   manageBuffer = (bufferVisible) => {
-    this.setState({bufferVisible: bufferVisible})
-    requestAnimationFrame(() =>this.props.navigation.setParams({ tabBarVisible: !bufferVisible }))
+    if (this.state.bufferVisible !== bufferVisible) {
+      this.setState({bufferVisible: bufferVisible})
+      requestAnimationFrame(() => this.props.navigation.setParams({ tabBarVisible: !bufferVisible }));
+    }
   }
 
   render() {
