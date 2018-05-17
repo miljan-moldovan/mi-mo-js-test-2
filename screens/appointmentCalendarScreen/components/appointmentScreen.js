@@ -106,6 +106,29 @@ export default class AppointmentScreen extends Component {
     onChangeRoom: this.selectFilterRoom,
   });
 
+  onAvailabilityCellPressed = (time) => {
+    const {
+      startDate,
+      selectedProvider,
+    } = this.props.appointmentScreenState;
+
+    const startTime = moment(time, 'HH:mm A');
+    const endTime = moment(startTime).add(15, 'minute');
+
+    if (selectedProvider === 'all') {
+      this.props.newAppointmentActions.setNewApptEmployee({
+        isFirstAvailable: true,
+        name: 'First',
+        lastName: 'Available',
+      });
+      this.props.newAppointmentActions.setNewApptDate(startDate);
+    }
+
+    this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
+
+    this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
+  }
+  
   onCalendarCellPressed = (cellId, colData) => {
     const {
       startDate,
@@ -177,6 +200,7 @@ export default class AppointmentScreen extends Component {
           selectedDate={moment(startDate)}
         />
         <SalonCalendar
+          onPressAvailability={this.onAvailabilityCellPressed}
           onCellPressed={this.onCalendarCellPressed}
           apptGridSettings={apptGridSettings}
           dataSource={providerAppointments}

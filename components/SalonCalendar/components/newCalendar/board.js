@@ -44,6 +44,7 @@ export default class Board extends Component {
           <AvailabilityColumn
             apptGridSettings={apptGridSettings}
             providers={columns}
+            onPress={this.props.onPressAvailability}
             availability={availability}
           /> : null
         }

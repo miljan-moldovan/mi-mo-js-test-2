@@ -3,6 +3,8 @@ import { View, StyleSheet, Text } from 'react-native';
 import { times } from 'lodash';
 import moment from 'moment';
 
+import SalonTouchableOpacity from '../../../SalonTouchableOpacity';
+
 const styles = StyleSheet.create({
   textStyle: {
     fontFamily: 'Roboto',
@@ -25,22 +27,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderItems = (item, index, apptGridSettings) => {
-  const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
+const renderItems = (item, index, apptGridSettings, onPress = () => {}) => {
+  const startTime = moment(item.startTime, 'HH:mm').add(15, 'm').format('HH:mm');
   const timeSplit = startTime.split(':');
   const minutesSplit = timeSplit[1];
   const style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
+
   return (
-    <View key={item.startTime} style={style}>
-      <Text style={styles.textStyle}>{`${item.availableSlots} avl.`}</Text>
-    </View>
+    <SalonTouchableOpacity
+      wait={3000}
+      onPress={() => onPress(item.startTime)}
+      key={item.startTime}
+      style={style}
+    >
+      <Text style={styles.textStyle}>{`${item.availableSlots} available`}</Text>
+    </SalonTouchableOpacity>
   );
 };
 
-const availabilityColumn = ({ availability, apptGridSettings }) => (
+const availabilityColumn = ({ availability, apptGridSettings, onPress }) => (
   <View>
     {
-      availability.map((item, index) => renderItems(item, index, apptGridSettings))
+      availability.map((item, index) => renderItems(item, index, apptGridSettings, onPress))
     }
   </View>
 );
