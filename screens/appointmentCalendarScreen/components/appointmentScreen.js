@@ -13,6 +13,7 @@ import SalonAvatar from '../../../components/SalonAvatar';
 import apiWrapper from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import SalonToast from './SalonToast';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -79,8 +80,8 @@ export default class AppointmentScreen extends Component {
       visibleAppointment: false,
       isLoading: true,
       bufferVisible: false,
+      isAlertVisible: false,
     };
-    // props.appointmentCalendarActions.getAppoinmentsCalendar(this.state.selectedDate.format('YYYY-MM-DD'));
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -128,7 +129,7 @@ export default class AppointmentScreen extends Component {
 
     this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
   }
-  
+
   onCalendarCellPressed = (cellId, colData) => {
     const {
       startDate,
@@ -156,17 +157,19 @@ export default class AppointmentScreen extends Component {
     } else {
       this.props.navigation.setParams({ filterProvider });
     }
-
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.setGridView();
+    requestAnimationFrame(() => this.manageBuffer(false));
   }
 
   selectFilterRoom = room => alert(`Selected Room ${room.name}s`)
 
 
   manageBuffer = (bufferVisible) => {
-    this.setState({ bufferVisible });
-    requestAnimationFrame(() => this.props.navigation.setParams({ tabBarVisible: !bufferVisible }));
+    if (this.state.bufferVisible !== bufferVisible) {
+      this.setState({ bufferVisible });
+      requestAnimationFrame(() => this.props.navigation.setParams({ tabBarVisible: !bufferVisible }));
+    }
   }
 
   render() {
@@ -182,9 +185,11 @@ export default class AppointmentScreen extends Component {
       providers,
       appointments,
       availability,
+      showToast,
       filterOptions,
     } = this.props.appointmentScreenState;
     const { isLoading, bufferVisible } = this.state;
+    const { appointmentCalendarActions } = this.props;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     const headerData = selectedProvider === 'all' ? providers : dates;
     return (
@@ -221,7 +226,7 @@ export default class AppointmentScreen extends Component {
         {
            isLoading ?
              <View style={{
-              position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
+              position: 'absolute', top: 60, paddingBottom: 60, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
               }}
              ><ActivityIndicator />
              </View> : null
@@ -330,6 +335,10 @@ export default class AppointmentScreen extends Component {
             this.setState({ visibleAppointment: false });
           }}
         />
+        {
+          showToast ?
+            <SalonToast type="success" description={showToast} hide={appointmentCalendarActions.hideToast} btnRightText="OK" btnLeftText="UNDO" /> : null
+        }
       </View>
     );
   }
