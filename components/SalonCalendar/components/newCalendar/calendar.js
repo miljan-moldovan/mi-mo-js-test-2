@@ -240,7 +240,6 @@ export default class Calendar extends Component {
       const { pan } = this.state;
       const newTop =  top + offsetY;
       const newLeft = left + offsetX;
-      debugger
       this.state.pan.setOffset({ x: newLeft, y: newTop });
       this.state.pan.setValue({ x: 0, y: 0 });
       pan.setOffset({ x: newLeft, y: newTop });

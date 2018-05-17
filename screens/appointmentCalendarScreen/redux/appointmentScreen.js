@@ -17,6 +17,7 @@ export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER'
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
+export const HIDE_TOAST = 'appointmentCalendar/HIDE_TOAST';
 
 // const addAppointment = appointment => ({
 //   type: ADD_APPOINTMENT,
@@ -282,6 +283,10 @@ const setSelectedProvider = selectedProvider => ({
   data: { selectedProvider },
 });
 
+const hideToast = () => ({
+  type: HIDE_TOAST,
+})
+
 export const appointmentCalendarActions = {
   setGridView,
   setProviderScheduleDates,
@@ -291,6 +296,7 @@ export const appointmentCalendarActions = {
   setFilterOptionCompany,
   setFilterOptionPosition,
   setFilterOptionShowOffEmployees,
+  hideToast
 };
 
 const initialState = {
@@ -318,6 +324,7 @@ const initialState = {
   },
   providers: [],
   providerSchedule: [],
+  showToast: false,
 };
 
 export default function appointmentScreenReducer(state = initialState, action) {
@@ -427,16 +434,24 @@ export default function appointmentScreenReducer(state = initialState, action) {
       } else {
         appointments.push(data.appointment);
       }
+      const newTime = moment(data.appointment.fromTime, 'HH:mm').format('h:mm a');
+      const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
       return {
         ...state,
         appointments,
         isLoading: false,
+        showToast: `Moved to - ${newTime} ${newDate}`,
       };
     }
     case POST_APPOINTMENT_MOVE_FAILED:
       return {
         ...state,
         isLoading: false,
+      };
+    case HIDE_TOAST:
+      return {
+        ...state,
+        showToast: false,
       };
     default:
       return state;

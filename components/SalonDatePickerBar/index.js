@@ -9,7 +9,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   calendarContainer: {
-    zIndex: 99999,
+    //zIndex: 99999,
     overflow: 'hidden',
     height: 60,
     flexDirection: 'row',
