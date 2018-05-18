@@ -231,6 +231,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         .catch((ex) => {
           // TODO
         });
+      break;
     }
     case 'resources': {
       Promise.all([
@@ -265,6 +266,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         .catch((ex) => {
           // TODO
         });
+      break;
     }
     case 'day':
     case 'week': {
