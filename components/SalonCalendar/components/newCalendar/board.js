@@ -18,7 +18,7 @@ export default class Board extends Component {
 
   renderCol = (col, key) => {
     const {
-      apptGridSettings, rows, cellWidth, isDate, providerSchedule,
+      apptGridSettings, rows, cellWidth, isDate, isRoom, isResource, providerSchedule,
     } = this.props;
     return (
       <Column
@@ -27,6 +27,8 @@ export default class Board extends Component {
         colData={col}
         cellWidth={cellWidth}
         isDate={isDate}
+        isResource={isResource}
+        isRoom={isRoom}
         providerSchedule={providerSchedule}
         onCellPressed={this.props.onCellPressed}
         apptGridSettings={apptGridSettings}

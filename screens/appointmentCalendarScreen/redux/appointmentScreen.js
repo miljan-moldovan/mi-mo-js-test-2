@@ -10,6 +10,8 @@ export const SET_FILTER_OPTION_POSITION = 'appointmentScreen/SET_FILTER_OPTION_P
 export const SET_FILTER_OPTION_OFF_EMPLOYEES = 'appointmentScreen/SET_FILTER_OPTION_OFF_EMPLOYEES';
 export const SET_FILTER_OPTION_MULTIBLOCK = 'appointmentScreen/SET_FILTER_OPTION_MULTIBLOCK';
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
+export const SET_GRID_ROOM_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ROOM_VIEW_SUCCESS';
+export const SET_GRID_RESOURCE_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_RESOURCE_VIEW_SUCCESS';
 export const SET_GRID_ALL_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ALL_VIEW_SUCCESS';
 export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_VIEW_SUCCESS';
 export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
@@ -122,6 +124,32 @@ const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSetti
   };
 };
 
+const setGridRoomViewSuccess = (rooms, schedule, roomAppointments, appointments, availability) => {
+  const apptGridSettings = {
+    numOfRow: availability.length,
+    step: 15,
+  };
+  return {
+    type: SET_GRID_ROOM_VIEW_SUCCESS,
+    data: {
+      rooms, schedule, roomAppointments, appointments, apptGridSettings,
+    },
+  };
+};
+
+const setGridResourceViewSuccess = (resources, schedule, resourceAppointments, appointments, availability) => {
+  const apptGridSettings = {
+    numOfRow: availability.length,
+    step: 15,
+  };
+  return {
+    type: SET_GRID_RESOURCE_VIEW_SUCCESS,
+    data: {
+      resources, schedule, resourceAppointments, appointments, apptGridSettings,
+    },
+  };
+};
+
 const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const {
     selectedProvider,
@@ -131,7 +159,9 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     apptGridSettings,
     filterOptions,
   } = getState().appointmentScreenReducer;
-  const typeView = selectedProvider === 'all' ? selectedProvider : pickerMode;
+  const typeView = selectedProvider !== 'all' ||
+                   selectedProvider !== 'rooms' ||
+                   selectedProvider !== 'resources' ? selectedProvider : pickerMode;
   const date = startDate.format('YYYY-MM-DD');
   const serialized = serializeFilterOptions(filterOptions);
 
@@ -167,6 +197,74 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           // TODO
         });
       break;
+    }
+    case 'rooms': {
+      Promise.all([
+        apiWrapper.doRequest('getRooms', {}),
+        apiWrapper.doRequest('getStoreSchedule', {
+          path: { date },
+        }),
+        apiWrapper.doRequest('getRoomAppointments', {
+          path: { date },
+        }),
+        apiWrapper.doRequest('getAppointmentsByDate', {
+          path: {
+            date,
+          },
+        }),
+        apiWrapper.doRequest('getAppointmentBookAvailability', {
+          path: {
+            date,
+          },
+        }),
+      ])
+        .then(([rooms, schedule, roomAppointments, appointments, availability]) => {
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+          dispatch(setGridRoomViewSuccess(
+            rooms,
+            schedule,
+            roomAppointments,
+            appointments,
+            availability.timeSlots,
+          ));
+        })
+        .catch((ex) => {
+          // TODO
+        });
+    }
+    case 'resources': {
+      Promise.all([
+        apiWrapper.doRequest('getResources', {}),
+        apiWrapper.doRequest('getStoreSchedule', {
+          path: { date },
+        }),
+        apiWrapper.doRequest('getResourceAppointments', {
+          path: { date },
+        }),
+        apiWrapper.doRequest('getAppointmentsByDate', {
+          path: {
+            date,
+          },
+        }),
+        apiWrapper.doRequest('getAppointmentBookAvailability', {
+          path: {
+            date,
+          },
+        }),
+      ])
+        .then(([resources, schedule, resourceAppointments, appointments, availability]) => {
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+          dispatch(setGridResourceViewSuccess(
+            resources,
+            schedule,
+            resourceAppointments,
+            appointments,
+            availability.timeSlots,
+          ));
+        })
+        .catch((ex) => {
+          // TODO
+        });
     }
     case 'day':
     case 'week': {
@@ -316,6 +414,8 @@ const initialState = {
   dates: [moment()],
   selectedProvider: 'all',
   providerAppointments: [],
+  roomAppointments: [],
+  resourceAppointments: [],
   apptGridSettings: {
     minStartTime: moment('07:00', 'HH:mm'),
     maxEndTime: moment('21:00', 'HH:mm'),
@@ -330,6 +430,9 @@ const initialState = {
     showOffEmployees: false,
   },
   providers: [],
+  rooms: [],
+  resources: [],
+  storeSchedule: [],
   providerSchedule: [],
   showToast: false,
 };
@@ -412,6 +515,38 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         isLoading: true,
       };
+    case SET_GRID_ROOM_VIEW_SUCCESS: {
+      const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
+      const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        apptGridSettings: {
+          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
+        },
+        rooms: data.rooms,
+        providerSchedule: data.schedule,
+        appointments: data.appointments,
+        roomAppointments: data.roomAppointments,
+      };
+    }
+    case SET_GRID_RESOURCE_VIEW_SUCCESS: {
+      const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
+      const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        apptGridSettings: {
+          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
+        },
+        resources: data.resources,
+        providerSchedule: data.schedule,
+        appointments: data.appointments,
+        resourceAppointments: data.resourceAppointments,
+      };
+    }
     case SET_GRID_ALL_VIEW_SUCCESS: {
       const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
       const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;

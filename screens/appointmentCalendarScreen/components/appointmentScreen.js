@@ -18,11 +18,27 @@ import SalonToast from './SalonToast';
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
+    let currentFilter = 'All Providers';
+
+    if (params && 'currentFilter' in params) {
+      switch (params.currentFilter) {
+        case 'rooms':
+          currentFilter = 'All Rooms';
+          break;
+        case 'resources':
+          currentFilter = 'All Resources';
+          break;
+        case 'all':
+        default:
+          currentFilter = 'All Providers';
+          break;
+      }
+    }
     let title = (
       <Text style={{
         fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
       }}
-      >All Providers
+      >{currentFilter}
       </Text>);
 
     if (params && 'filterProvider' in params && params.filterProvider !== null) {
@@ -82,12 +98,15 @@ export default class AppointmentScreen extends Component {
       bufferVisible: false,
       isAlertVisible: false,
     };
+
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
       onPressCalendar: this.onPressCalendar,
       onPressTitle: this.onPressTitle,
+      currentFilter: this.props.appointmentScreenState.selectedProvider,
     });
+
     this.props.appointmentCalendarActions.setGridView();
   }
 
@@ -104,7 +123,7 @@ export default class AppointmentScreen extends Component {
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
     dismissOnSelect: true,
     onChangeProvider: this.selectFilterProvider,
-    onChangeRoom: this.selectFilterRoom,
+    onChangeFilter: this.selectFilter,
   });
 
   onAvailabilityCellPressed = (time) => {
@@ -152,7 +171,7 @@ export default class AppointmentScreen extends Component {
 
   selectFilterProvider = (filterProvider) => {
     if (filterProvider === 'all') {
-      this.props.navigation.setParams({ filterProvider: null });
+      this.props.navigation.setParams({ filterProvider: null, currentFilter: 'all' });
       this.props.appointmentCalendarActions.setPickerMode('day');
     } else {
       this.props.navigation.setParams({ filterProvider });
@@ -162,8 +181,13 @@ export default class AppointmentScreen extends Component {
     requestAnimationFrame(() => this.manageBuffer(false));
   }
 
-  selectFilterRoom = room => alert(`Selected Room ${room.name}s`)
-
+  selectFilter = (filter) => {
+    this.props.navigation.setParams({ filterProvider: null, currentFilter: filter });
+    this.props.appointmentCalendarActions.setPickerMode('day');
+    this.props.appointmentCalendarActions.setSelectedProvider(filter);
+    this.props.appointmentCalendarActions.setGridView();
+    requestAnimationFrame(() => this.manageBuffer(false));
+  }
 
   manageBuffer = (bufferVisible) => {
     if (this.state.bufferVisible !== bufferVisible) {
@@ -187,11 +211,26 @@ export default class AppointmentScreen extends Component {
       availability,
       showToast,
       filterOptions,
+      rooms,
+      roomAppointments,
+      resources,
+      resourceAppointments,
     } = this.props.appointmentScreenState;
+    // debugger //eslint-disable-line
     const { isLoading, bufferVisible } = this.state;
     const { appointmentCalendarActions } = this.props;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
-    const headerData = selectedProvider === 'all' ? providers : dates;
+    let headerData = selectedProvider === 'all' ? providers : dates;
+    let dataSource = providerAppointments;
+    if (selectedProvider === 'rooms') {
+      headerData = rooms;
+      dataSource = roomAppointments;
+    }
+    if (selectedProvider === 'resources') {
+      headerData = resources;
+      dataSource = resourceAppointments;
+    }
+    
     return (
       <View style={{ flex: 1 }}>
         <SalonDatePickerBar
@@ -208,7 +247,7 @@ export default class AppointmentScreen extends Component {
           onPressAvailability={this.onAvailabilityCellPressed}
           onCellPressed={this.onCalendarCellPressed}
           apptGridSettings={apptGridSettings}
-          dataSource={providerAppointments}
+          dataSource={dataSource}
           appointments={appointments}
           headerData={headerData}
           onDrop={this.props.appointmentActions.postAppointmentMove}
@@ -231,7 +270,7 @@ export default class AppointmentScreen extends Component {
              ><ActivityIndicator />
              </View> : null
         }
-        {selectedProvider !== 'all' && (
+        {selectedProvider !== 'all' && selectedProvider !== 'rooms' && selectedProvider !== 'resources' && (
           <ChangeViewFloatingButton
             handlePress={(isWeek) => {
               const pickerMode = isWeek ? 'week' : 'day';

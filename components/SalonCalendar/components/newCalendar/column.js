@@ -35,13 +35,15 @@ export default class Column extends Component {
   }
 
   renderCell = (cell, index) => {
-    const { apptGridSettings, colData, cellWidth, isDate, providerSchedule } = this.props;
+    const { apptGridSettings, colData, cellWidth, isDate, isRoom, isResource, providerSchedule } = this.props;
     const time = moment(cell, 'HH:mm A');
     let style = styles.cellContainerDisabled;
     let schedule;
     if (isDate) {
       schedule = providerSchedule[colData.format('YYYY-MM-DD')][0];
       schedule = schedule ? schedule.scheduledIntervals : null;
+    } else if (isRoom || isResource) {
+      schedule = providerSchedule.scheduledIntervals;
     } else {
       schedule = colData.scheduledIntervals;
     }

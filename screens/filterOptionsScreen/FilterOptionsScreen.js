@@ -17,13 +17,12 @@ import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import SalonRoomList from './components/SalonRoomList';
+import OthersTab from './components/OthersTab';
 import SalonResourceList from './components/SalonResourceList';
 
 const TAB_PROVIDERS = 0;
-const TAB_RESOURCES = 1;
-const TAB_ROOMS = 2;
-const TAB_DESK_STAFF = 3;
+const TAB_DESK_STAFF = 1;
+const TAB_OTHERS = 2;
 
 const styles = StyleSheet.create({
   container: {
@@ -160,19 +159,13 @@ export default class FilterOptionsScreen extends React.Component {
             }
           </View>
         );
-      case TAB_RESOURCES:
+      case TAB_DESK_STAFF:
         return (
           <SalonResourceList />
         );
-      case TAB_ROOMS:
+      case TAB_OTHERS:
         return (
-          <SalonRoomList onChangeRoom={this._handleOnChangeRoom} />
-        );
-      case TAB_DESK_STAFF:
-        return (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Desk Staff Tab</Text>
-          </View>
+          <OthersTab handleSelect={this.handleChangeOther} />
         );
       default:
         break;
@@ -256,7 +249,7 @@ export default class FilterOptionsScreen extends React.Component {
             containerStyle={{ backgroundColor: 'white' }}
             selectedColor="#115ECD"
             unSelectedTextColor="#115ECD"
-            dataSource={['Providers', 'Resources', 'Rooms', 'Desk Staff']}
+            dataSource={['Providers', 'Desk Staff', 'Others']}
           />
         </View>
         <View style={{ flex: 1, flexDirection: 'column' }}>
@@ -275,12 +268,12 @@ export default class FilterOptionsScreen extends React.Component {
     if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
-  _handleOnChangeRoom = (Room) => {
+  handleChangeOther = (filter) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onChangeRoom, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeRoom) { onChangeRoom(Room); }
+    const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter(filter); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 }

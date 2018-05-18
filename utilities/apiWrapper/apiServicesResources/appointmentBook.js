@@ -16,6 +16,21 @@ const resources = {
     method: 'get',
     disableCache: true,
   },
+  getStoreSchedule: {
+    path: 'Store/Schedule/:date',
+    method: 'get',
+    disableCache: true,
+  },
+  getRoomAppointments: {
+    path: 'AppointmentBook/:date/Rooms/Appointments',
+    method: 'get',
+    disableCache: true,
+  },
+  getResourceAppointments: {
+    path: 'AppointmentBook/:date/Resources/Appointments',
+    method: 'get',
+    disableCache: true,
+  },
 };
 
 export default {

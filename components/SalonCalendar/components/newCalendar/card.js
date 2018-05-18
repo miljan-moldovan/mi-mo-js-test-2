@@ -106,7 +106,7 @@ class Card extends Component {
 
   calculateLeftAndGap = (props) => {
     const {
-      appointments, providers, displayMode, cellWidth, appointment,
+      appointments, providers, rooms, displayMode, cellWidth, appointment,
     } = props;
     const date = moment(appointment.date);
     const startTime = moment(appointment.fromTime, 'HH:mm');
@@ -114,6 +114,12 @@ class Card extends Component {
     let zIndex = 1;
     let left = 0;
     switch (displayMode) {
+      case 'rooms':
+        left = providers.findIndex(room => room.id === appointment.room.id) * cellWidth;
+        break;
+      case 'rooms':
+        left = providers.findIndex(resource => resource.id === appointment.resource.id) * cellWidth;
+        break;
       case 'all':
         left = providers.findIndex(provider => provider.id
         === appointment.employee.id) * cellWidth + 64;

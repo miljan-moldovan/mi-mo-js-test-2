@@ -67,14 +67,20 @@ const styles = StyleSheet.create({
 
 export default class Header extends Component {
   renderColumnLabel = (data, index) => {
-    const { isDate } = this.props;
-    return isDate ? this.renderDate(data, index) : this.renderProvider(data, index);
+    const { isDate, isRoom, isResource } = this.props;
+    if (isDate) {
+      return this.renderDate(data, index);
+    }
+    if (isRoom || isResource) {
+      return this.renderStore(data, index);
+    }
+    return this.renderProvider(data, index);
   }
 
   renderProvider = (data, index) => {
     const { cellWidth } = this.props;
     const uri = apiWrapper.getEmployeePhoto(data.id);
-    const hasBorder =data.displayColor && data.displayColor !== -1;
+    const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';
     return (
@@ -107,13 +113,23 @@ export default class Header extends Component {
     );
   }
 
+  renderStore = (data, index) => {
+    const { cellWidth } = this.props;
+    return (
+      <View key={data.id} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
+        <Text numberOfLines={1} style={styles.columnTitle}>{data.name}</Text>
+      </View>
+    );
+  }
+
   render() {
-    const { isDate, showFirstAvailable, handleShowfirstAvailalble } = this.props;
-    const width = isDate ? 36 : 100;
+    const { isDate, isRoom, isResource, showFirstAvailable, handleShowfirstAvailalble } = this.props;
+    const width = isDate || isRoom || isResource ? 36 : 100;
+
     return (
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
-          { isDate ? null :
+          { isDate || isRoom || isResource ? null :
           <FirstAvailableBtn
             value={showFirstAvailable}
             onChange={handleShowfirstAvailalble}

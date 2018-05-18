@@ -109,7 +109,11 @@ export default class Calendar extends Component {
 
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
-      if (selectedProvider === 'all') {
+      if (
+        selectedProvider === 'all' ||
+        selectedProvider === 'rooms' ||
+        selectedProvider === 'resources'
+      ) {
         this.size = {
           width: headerData.length * providerWidth + 100,
           height: apptGridSettings.numOfRow * 30 + headerHeight,
@@ -371,10 +375,20 @@ export default class Calendar extends Component {
 
   renderCards = () => {
     const {
-      appointments, selectedProvider, displayMode, startDate,
+      appointments, rooms, selectedProvider, displayMode, startDate,
     } = this.props;
     if (appointments) {
       const isAllProviderView = selectedProvider === 'all';
+      const isRoom = selectedProvider === 'rooms';
+      const isResource = selectedProvider === 'resources';
+      if (isRoom) {
+        const filteredAppointments = filter(appointments, appt => appt.room !== null);
+        return filteredAppointments.map(this.renderCard);
+      }
+      if (isResource) {
+        const filteredAppointments = filter(appointments, appt => appt.resource !== null);
+        return filteredAppointments.map(this.renderCard);
+      }
       if (!isAllProviderView && displayMode === 'day') {
         const filteredAppointments = filter(appointments, appt => startDate.format('YYYY-MM-DD')
         === moment(appt.date).format('YYYY-MM-DD'));
@@ -446,14 +460,17 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
     } = this.props;
-    const isDate = selectedProvider !== 'all';
-    const showHeader = displayMode === 'week' || selectedProvider === 'all';
+    const isRoom = selectedProvider === 'rooms';
+    const isResource = selectedProvider === 'resources';
+    const isDate = selectedProvider !== 'all' && !isRoom && !isResource;
+    const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
     const { alert, activeCard, showFirstAvailable } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const size = {
       width: this.size.width,
       height: bufferVisible ? this.size.height + 110 : this.size.heigh,
     };
+    // debugger//eslint-disable-line
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <View style={{ flex: 1, backgroundColor: '#fff' }} {...this.panResponder.panHandlers} ref={(view) => { this.calendar = view; }}>
@@ -480,9 +497,11 @@ export default class Calendar extends Component {
                 rows={this.schedule}
                 apptGridSettings={apptGridSettings}
                 timeSchedules={dataSource}
-                showAvailability={!isDate}
+                showAvailability={!isDate && !isRoom && !isResource}
                 cellWidth={this.cellWidth}
                 isDate={isDate}
+                isRoom={isRoom}
+                isResource={isResource}
                 providerSchedule={providerSchedule}
                 availability={availability}
                 displayMode={displayMode}
@@ -499,6 +518,8 @@ export default class Calendar extends Component {
                 <Header
                   dataSource={headerData}
                   isDate={isDate}
+                  isRoom={isRoom}
+                  isResource={isResource}
                   cellWidth={this.cellWidth}
                   handleShowfirstAvailalble={this.handleShowfirstAvailalble}
                   showFirstAvailable={showFirstAvailable}
