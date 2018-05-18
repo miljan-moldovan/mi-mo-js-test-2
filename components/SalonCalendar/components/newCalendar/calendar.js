@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
 });
 
 const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 const dayWidth = screenWidth - 36;
 const weekWidth = (screenWidth - 36) / 7;
 const providerWidth = 130;
@@ -381,13 +382,14 @@ export default class Calendar extends Component {
 
   renderCard = (appointment) => {
     const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading } = this.props;
-    const { calendarMeasure, calendarOffset,showFirstAvailable, activeCard } = this.state;
+    const { calendarMeasure, calendarOffset,showFirstAvailable, activeCard, buffer} = this.state;
     const isAllProviderView = selectedProvider === 'all';
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
+    const isActive = !!activeCard && activeCard.appointment.id === appointment.id || buffer.findIndex(appt => appt.id === appointment.id) > -1;
     if (appointment.employee) {
       return (
         <Card
-          isActive={!!activeCard && activeCard.appointment.id === appointment.id}
+          isActive={isActive}
           key={appointment.id}
           providers={headerData}
           appointment={appointment}
@@ -495,6 +497,7 @@ export default class Calendar extends Component {
             visible={this.props.bufferVisible}
             manageBuffer={this.props.manageBuffer}
             onCardLongPress={this.handleOnDrag}
+            screenHeight={screenHeight}
           />
           {this.renderActiveCard()}
           <SalonAlert
