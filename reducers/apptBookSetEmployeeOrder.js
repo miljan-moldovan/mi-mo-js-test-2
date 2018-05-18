@@ -9,6 +9,7 @@ import apptBookSetEmployeeOrderActions, {
   SET_CATEGORY_EMPLOYEES,
   GET_CATEGORY_EMPLOYEES,
   SET_SELECTED_EMPLOYEE,
+  SET_ORDER_INITIALS,
 } from '../actions/apptBookSetEmployeeOrder';
 
 const initialState = {
@@ -17,11 +18,17 @@ const initialState = {
   showCategoryEmployees: false,
   categoryEmployees: [],
   selectedEmployee: {},
+  orderInitials: '',
 };
 
 export default function employeeReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case SET_ORDER_INITIALS:
+      return {
+        ...state,
+        orderInitials: data.orderInitials,
+      };
     case GET_CATEGORY_EMPLOYEES:
       return {
         ...state,

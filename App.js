@@ -50,6 +50,7 @@ export default class App extends Component<{}> {
           'appoinmentScreenReducer',
           'appointmentScreenReducer',
           'newAppointmentReducer',
+          'apptBookSetEmployeeOrderReducer',
         ],
         // whitelist: ['auth']
       },

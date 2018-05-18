@@ -12,6 +12,7 @@ import ApptBookSetEmployeeOrderHeader from './components/apptBookSetEmployeeOrde
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
 import apiWrapper from '../../utilities/apiWrapper';
+import { createInitialsString } from '../../actions/apptBookSetEmployeeOrder';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 
@@ -144,7 +145,8 @@ class ApptBookSetEmployeeOrderScreen extends Component {
       newOrder.push(employee);
     }
 
-
+    const initials = createInitialsString(newOrder);
+    this.props.apptBookSetEmployeeOrderActions.setOrderInitials(initials);
     this.props.apptBookSetEmployeeOrderActions.postEmployeesAppointmentOrder(newOrder)
       .then((response) => {
         // this.getEmployees();

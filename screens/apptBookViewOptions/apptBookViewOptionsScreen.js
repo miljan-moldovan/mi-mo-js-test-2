@@ -86,6 +86,9 @@ class ApptBookViewOptionsScreen extends Component {
       isVisibleViewOptions: true,
       options: filterOptions,
     };
+
+    // this.props.employeeOrderActions.setOrderInitials();
+    this.props.employeeOrderActions.getEmployees();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -219,7 +222,7 @@ class ApptBookViewOptionsScreen extends Component {
                   labelStyle={{ color: '#110A24' }}
                   onPress={() => { this.goToEmployeesOrder(); }}
                   label="Set Employee Order"
-                  value={this.state.options.employeeOrder}
+                  value={this.props.employeeOrderState.orderInitials}
                 />,
                 <InputDivider key={Math.random()} />,
                 <InputButton

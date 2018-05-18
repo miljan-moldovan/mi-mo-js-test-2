@@ -291,7 +291,7 @@ const setSelectedProvider = selectedProvider => ({
 
 const hideToast = () => ({
   type: HIDE_TOAST,
-})
+});
 
 export const appointmentCalendarActions = {
   setGridView,
@@ -303,7 +303,7 @@ export const appointmentCalendarActions = {
   setFilterOptionPosition,
   setFilterOptionShowMultiBlock,
   setFilterOptionShowOffEmployees,
-  hideToast
+  hideToast,
 };
 
 const initialState = {
@@ -419,7 +419,9 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         isLoading: false,
         error: null,
-        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime },
+        apptGridSettings: {
+          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
+        },
         providers: data.employees,
         appointments: data.appointments,
         availability: data.availability,
