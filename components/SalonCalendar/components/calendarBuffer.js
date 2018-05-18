@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, ListView, Text } from 'react-native';
+import { View, TouchableOpacity, FlatList, Text } from 'react-native';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '../../UI/Icon';
@@ -46,11 +46,25 @@ const styles = {
     fontWeight: '500',
     fontSize: 12,
     color: '#4D5067',
+    paddingTop: 12,
+    paddingBottom: 6,
+  },
+  dragHandle: {
+    width: 36,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: 'rgb(204, 204, 204)',
+    marginTop: 6,
+  },
+  titleContainers: {
+    alignItems: 'center',
+    flex: 1,
+    paddingLeft: 16,
   },
 };
-const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
 export default class calendarBuffer extends React.Component {
-  renderCard = (item, key) => {
+  renderCard = ({item}) => {
     return (
       <NewCard
         key={item.id}
@@ -65,10 +79,26 @@ export default class calendarBuffer extends React.Component {
     )
   }
 
-  renderSeparator = () => (<View style={{width: 4, opacity: 0}}/>)
+  handleDragEnd = (position) => {
+    const { screenHeight } = this.props;
+    const boundLength = 30;
+    const sliderHeight = 110;
+    const diff = screenHeight - position;
+    if (diff >= boundLength) {
+      this.slider.transitionTo({
+        toValue: screenHeight - sliderHeight,
+        onAnimationEnd: () => this.props.manageBuffer(false),
+      });
+    } else {
+      this.slider.transitionTo({
+        toValue: screenHeight,
+      });
+    }
+  }
+
+  renderSeparator = () => (<View style={{width: 4, opacity: 0}}/>);
 
   render() {
-    const dataSource = ds.cloneWithRows(this.props.dataSource);
     return (
       <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel
@@ -77,30 +107,34 @@ export default class calendarBuffer extends React.Component {
           showBackdrop={false}
           height={110}
           onDragEnd={this.handleDragEnd}
+          ref={(view) => { this.slider = view; }}
         >
           <View style={styles.cardContainer}>
             <View style={{flexDirection: 'row', justifyContent:'center',alignItems: 'center'}}>
-              <Text style={styles.title}>MOVE APPOINTMENT</Text>
+              <View style={styles.titleContainers}>
+                <View style={styles.dragHandle}/>
+                <Text style={styles.title}>MOVE APPOINTMENT</Text>
+              </View>
               <TouchableOpacity
                 onPress={() => this.props.manageBuffer(false)}
               >
                 <SalonIcon
                   color="#C0C1C6"
                   size={16}
-                  type="regular"
+                  type="solid"
                   name="timesCircle"
                   style={{ padding: 15 }}
                 />
               </TouchableOpacity>
             </View>
             <View style={styles.listContainer}>
-              <ListView
+              <FlatList
                 contentContainerStyle={styles.listView}
                 style={{ flex: 1 }}
                 horizontal
-                dataSource={dataSource}
-                renderRow={this.renderCard}
-                renderSeparator={this.renderSeparator}
+                data={this.props.dataSource}
+                renderItem={this.renderCard}
+                ItemSeparatorComponent={this.renderSeparator}
               />
             </View>
           </View>
