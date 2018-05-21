@@ -117,7 +117,7 @@ class Card extends Component {
       case 'rooms':
         left = providers.findIndex(room => room.id === appointment.room.id) * cellWidth;
         break;
-      case 'rooms':
+      case 'resources':
         left = providers.findIndex(resource => resource.id === appointment.resource.id) * cellWidth;
         break;
       case 'providers':
