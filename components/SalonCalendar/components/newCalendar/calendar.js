@@ -103,37 +103,43 @@ export default class Calendar extends Component {
     const {
       apptGridSettings,
       headerData,
+      selectedFilter,
       selectedProvider,
-      displayMode,
       startDate,
+      displayMode,
     } = nextProps;
 
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
-      if (
-        selectedProvider === 'all' ||
-        selectedProvider === 'rooms' ||
-        selectedProvider === 'resources'
-      ) {
+      if (selectedFilter === 'providers') {
+        if (selectedProvider === 'all') {
+          this.size = {
+            width: headerData.length * providerWidth + 100,
+            height: apptGridSettings.numOfRow * 30 + headerHeight,
+          };
+          this.cellWidth = providerWidth;
+          this.groupedProviders = groupBy(headerData, 'id');
+        } else if (displayMode === 'week') {
+          this.size = {
+            width: headerData.length * weekWidth + 36,
+            height: apptGridSettings.numOfRow * 30 + headerHeight,
+          };
+          this.cellWidth = weekWidth;
+        } else {
+          this.size = {
+            width: headerData.length * dayWidth + 36,
+            height: apptGridSettings.numOfRow * 30,
+          };
+          this.cellWidth = dayWidth;
+          this.groupedProviders = groupBy(selectedProvider, 'id');
+        }
+      } else {
         this.size = {
-          width: headerData.length * providerWidth + 100,
+          width: headerData.length * providerWidth + 36,
           height: apptGridSettings.numOfRow * 30 + headerHeight,
         };
         this.cellWidth = providerWidth;
         this.groupedProviders = groupBy(headerData, 'id');
-      } else if (displayMode === 'week') {
-        this.size = {
-          width: headerData.length * weekWidth + 36,
-          height: apptGridSettings.numOfRow * 30 + headerHeight,
-        };
-        this.cellWidth = weekWidth;
-      } else {
-        this.size = {
-          width: headerData.length * dayWidth + 36,
-          height: apptGridSettings.numOfRow * 30,
-        };
-        this.cellWidth = dayWidth;
-        this.groupedProviders = groupBy(selectedProvider, 'id');
       }
     }
   }
@@ -331,7 +337,14 @@ export default class Calendar extends Component {
     const cellHeight = 30;
     const { pan, activeCard: { appointment }, buffer } = this.state;
     const {
-      cellWidth, headerData, apptGridSettings, onDrop, selectedProvider, startDate, displayMode,
+      cellWidth,
+      headerData,
+      apptGridSettings,
+      onDrop,
+      selectedProvider,
+      selectedFilter,
+      startDate,
+      displayMode,
     } = this.props;
     const { toTime, fromTime } = appointment;
     const headerOffset = selectedProvider !== 'all' && displayMode === 'day' ? 0 : 40;
@@ -342,7 +355,7 @@ export default class Calendar extends Component {
     const isOutOfBounds = xIndex < 0 || xIndex >= headerData.length
     || yIndex < 0 || yIndex >= this.schedule.length;
     if (!isOutOfBounds) {
-      const employeeId = selectedProvider === 'all' ? headerData[xIndex].id : selectedProvider.id;
+      const employeeId = selectedFilter === 'providers' && selectedProvider === 'all' ? headerData[xIndex].id : selectedProvider.id;
       const date = selectedProvider === 'all' || displayMode === 'day' ? startDate : moment(headerData[xIndex], 'YYYY-MM-DD');
       const newTime = moment(this.schedule[yIndex], 'h:mm A');
       const oldDate = moment(appointment.date, 'YYYY-MM-DD').format('MMM DD');
@@ -376,12 +389,13 @@ export default class Calendar extends Component {
 
   renderCards = () => {
     const {
-      appointments, rooms, selectedProvider, displayMode, startDate,
+      appointments, rooms, selectedFilter,
+      selectedProvider, displayMode, startDate,
     } = this.props;
     if (appointments) {
-      const isAllProviderView = selectedProvider === 'all';
-      const isRoom = selectedProvider === 'rooms';
-      const isResource = selectedProvider === 'resources';
+      const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
+      const isRoom = selectedFilter === 'rooms';
+      const isResource = selectedFilter === 'resources';
       if (isRoom) {
         const filteredAppointments = filter(appointments, appt => appt.room !== null);
         return filteredAppointments.map(this.renderCard);
@@ -401,9 +415,14 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
-    const { apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading, filterOptions } = this.props;
-    const { calendarMeasure, calendarOffset,showFirstAvailable, activeCard, buffer} = this.state;
-    const isAllProviderView = selectedProvider === 'all';
+    const {
+      apptGridSettings, headerData, selectedProvider, selectedFilter,
+      displayMode, appointments, providerSchedule, isLoading, filterOptions,
+    } = this.props;
+    const {
+      calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
+    } = this.state;
+    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = !!activeCard && activeCard.appointment.id === appointment.id || buffer.findIndex(appt => appt.id === appointment.id) > -1;
     if (appointment.employee) {
@@ -423,7 +442,8 @@ export default class Calendar extends Component {
           onDrop={this.handleDrop}
           onResize={this.handleResize}
           cellWidth={this.cellWidth}
-          displayMode={isAllProviderView ? 'all' : displayMode}
+          selectedFilter={selectedFilter}
+          displayMode={displayMode}
           selectedProvider={selectedProvider}
           startTime={startTime}
           appointments={appointments}
@@ -456,11 +476,11 @@ export default class Calendar extends Component {
 
   render() {
     const {
-      isLoading, headerData, apptGridSettings, dataSource, selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
+      isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
+      selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
+      isRoom, isResource,
     } = this.props;
-    const isRoom = selectedProvider === 'rooms';
-    const isResource = selectedProvider === 'resources';
-    const isDate = selectedProvider !== 'all' && !isRoom && !isResource;
+    const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
     const { alert, activeCard, showFirstAvailable } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');

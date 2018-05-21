@@ -18,7 +18,8 @@ import SalonAvatar from '../../components/SalonAvatar';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import OthersTab from './components/OthersTab';
-import SalonResourceList from './components/SalonResourceList';
+import DeskStaffTab from './components/DeskStaffTab';
+
 
 const TAB_PROVIDERS = 0;
 const TAB_DESK_STAFF = 1;
@@ -161,7 +162,7 @@ export default class FilterOptionsScreen extends React.Component {
         );
       case TAB_DESK_STAFF:
         return (
-          <SalonResourceList />
+          <DeskStaffTab handleSelect={this.handleChangeDeskStaff} />
         );
       case TAB_OTHERS:
         return (

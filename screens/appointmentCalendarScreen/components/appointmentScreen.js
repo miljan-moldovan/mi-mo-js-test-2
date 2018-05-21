@@ -152,30 +152,37 @@ export default class AppointmentScreen extends Component {
   onCalendarCellPressed = (cellId, colData) => {
     const {
       startDate,
+      selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
     const startTime = moment(cellId, 'HH:mm A');
     const endTime = moment(startTime).add(15, 'minute');
 
-    if (selectedProvider === 'all') {
-      this.props.newAppointmentActions.setNewApptEmployee(colData);
-      this.props.newAppointmentActions.setNewApptDate(startDate);
+    if (selectedFilter === 'providers') {
+      if (selectedProvider === 'all') {
+        this.props.newAppointmentActions.setNewApptEmployee(colData);
+        this.props.newAppointmentActions.setNewApptDate(startDate);
+      } else {
+        this.props.newAppointmentActions.setNewApptEmployee(selectedProvider);
+        this.props.newAppointmentActions.setNewApptDate(colData);
+      }
     } else {
-      this.props.newAppointmentActions.setNewApptEmployee(selectedProvider);
-      this.props.newAppointmentActions.setNewApptDate(colData);
+      this.props.newAppointmentActions.setNewApptEmployee(null);
+      this.props.newAppointmentActions.setNewApptDate(startDate);
     }
-    this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
 
+    this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
     this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
   }
 
   selectFilterProvider = (filterProvider) => {
     if (filterProvider === 'all') {
-      this.props.navigation.setParams({ filterProvider: null, currentFilter: 'all' });
+      this.props.navigation.setParams({ filterProvider: null, currentFilter: 'providers' });
       this.props.appointmentCalendarActions.setPickerMode('day');
     } else {
       this.props.navigation.setParams({ filterProvider });
     }
+    this.props.appointmentCalendarActions.setSelectedFilter('providers');
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.setGridView();
     requestAnimationFrame(() => this.manageBuffer(false));
@@ -184,7 +191,7 @@ export default class AppointmentScreen extends Component {
   selectFilter = (filter) => {
     this.props.navigation.setParams({ filterProvider: null, currentFilter: filter });
     this.props.appointmentCalendarActions.setPickerMode('day');
-    this.props.appointmentCalendarActions.setSelectedProvider(filter);
+    this.props.appointmentCalendarActions.setSelectedFilter(filter);
     this.props.appointmentCalendarActions.setGridView();
     requestAnimationFrame(() => this.manageBuffer(false));
   }
@@ -203,6 +210,7 @@ export default class AppointmentScreen extends Component {
       startDate,
       endDate,
       selectedProvider,
+      selectedFilter,
       providerSchedule,
       apptGridSettings,
       providerAppointments,
@@ -214,23 +222,42 @@ export default class AppointmentScreen extends Component {
       rooms,
       roomAppointments,
       resources,
+      deskStaff,
       resourceAppointments,
     } = this.props.appointmentScreenState;
     // debugger //eslint-disable-line
     const { isLoading, bufferVisible } = this.state;
     const { appointmentCalendarActions } = this.props;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
-    let headerData = selectedProvider === 'all' ? providers : dates;
-    let dataSource = providerAppointments;
-    if (selectedProvider === 'rooms') {
-      headerData = rooms;
-      dataSource = roomAppointments;
+    let headerData = null;
+    let dataSource = null;
+    let isDate = false;
+    switch (selectedFilter) {
+      case 'rooms': {
+        headerData = rooms;
+        dataSource = roomAppointments;
+        break;
+      }
+      case 'resources': {
+        headerData = resources;
+        dataSource = resourceAppointments;
+        break;
+      }
+      case 'providers': {
+        isDate = selectedProvider !== 'all';
+        headerData = isDate ? dates : providers;
+        dataSource = providerAppointments;
+        break;
+      }
+      case 'deskStaff': {
+        headerData = deskStaff;
+        dataSource = providerAppointments;
+        break;
+      }
+      default:
+        break;
     }
-    if (selectedProvider === 'resources') {
-      headerData = resources;
-      dataSource = resourceAppointments;
-    }
-    
+
     return (
       <View style={{ flex: 1 }}>
         <SalonDatePickerBar
@@ -250,8 +277,12 @@ export default class AppointmentScreen extends Component {
           dataSource={dataSource}
           appointments={appointments}
           headerData={headerData}
+          isDate={isDate}
+          isRoom={selectedFilter === 'rooms'}
+          isResource={selectedFilter === 'resources'}
           onDrop={this.props.appointmentActions.postAppointmentMove}
           onResize={this.props.appointmentActions.postAppointmentResize}
+          selectedFilter={selectedFilter}
           selectedProvider={selectedProvider}
           displayMode={pickerMode}
           providerSchedule={providerSchedule}
@@ -270,7 +301,7 @@ export default class AppointmentScreen extends Component {
              ><ActivityIndicator />
              </View> : null
         }
-        {selectedProvider !== 'all' && selectedProvider !== 'rooms' && selectedProvider !== 'resources' && (
+        {selectedProvider !== 'all' && selectedFilter === 'providers' && (
           <ChangeViewFloatingButton
             handlePress={(isWeek) => {
               const pickerMode = isWeek ? 'week' : 'day';

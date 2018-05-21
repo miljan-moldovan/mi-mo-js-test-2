@@ -224,11 +224,19 @@ export default function newAppointmentReducer(state = initialState, action) {
         client: data.client,
       };
     case SET_NEW_APPT_EMPLOYEE:
-      body.bookedByEmployeeId = data.employee.id;
-      body.bookedByEmployee = data.employee;
-      body.items[data.index].employee = data.employee;
-      body.items[data.index].employeeId = data.employee.id;
-      body.items[data.index].bookedByEmployeeId = data.employee.id;
+      if (data.employee !== null) {
+        body.bookedByEmployeeId = data.employee.id;
+        body.bookedByEmployee = data.employee;
+        body.items[data.index].employee = data.employee;
+        body.items[data.index].employeeId = data.employee.id;
+        body.items[data.index].bookedByEmployeeId = data.employee.id;
+      } else {
+        body.bookedByEmployeeId = null;
+        body.bookedByEmployee = null;
+        body.items[data.index].employee = null;
+        body.items[data.index].employeeId = null;
+        body.items[data.index].bookedByEmployeeId = null;
+      }
       return {
         ...state,
         body,

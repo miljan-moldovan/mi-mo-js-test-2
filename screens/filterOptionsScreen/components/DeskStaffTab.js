@@ -1,15 +1,18 @@
 import React from 'react';
 import {
   View,
+  Text,
   FlatList,
   StyleSheet,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import WordHighlighter from '../../../components/wordHighlighter';
 import apiWrapper from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import SalonAvatar from '../../../components/SalonAvatar';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,15 +63,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class SalonResourceList extends React.Component {
+export default class DeskStaffTab extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      resources: [],
+      activeData: [],
       searchText: null,
       refreshing: false,
-      selectedResource: null,
+      isLoading: false,
     };
   }
 
@@ -79,11 +82,14 @@ export default class SalonResourceList extends React.Component {
   onRefresh = () => this.getData();
 
   getData = () => {
-    apiWrapper.doRequest('getResources', {})
-      .then((resources) => {
-        this.setState({ resources });
+    this.setState({ isLoading: true });
+    apiWrapper.doRequest('getEmployees', {})
+      .then((providers) => {
+        const filtered = providers.filter(provider => provider.isReceptionist);
+        this.setState({ isLoading: false, activeData: filtered });
       })
       .catch((err) => {
+        this.setState({ isLoading: false });
         console.warn(err);
       });
   }
@@ -101,20 +107,27 @@ export default class SalonResourceList extends React.Component {
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
       style={styles.itemRow}
-      onPress={() => {}}
+      onPress={() => this._handleOnChangeProvider(item)}
       key={index}
     >
       <View style={styles.inputRow}>
+        <SalonAvatar
+          wrapperStyle={styles.providerRound}
+          width={30}
+          borderWidth={1}
+          borderColor="transparent"
+          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
+        />
         <WordHighlighter
           highlight={this.state.searchText}
-          style={this.state.selectedResource === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
           highlightStyle={{ color: '#1DBF12' }}
         >
           {item.fullName}
         </WordHighlighter>
       </View>
       <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedResource === item.id && (
+        {this.state.selectedProvider === item.id && (
         <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
         )}
       </View>
@@ -123,17 +136,33 @@ export default class SalonResourceList extends React.Component {
 
   render() {
     return (
-      <FlatList
-        data={this.state.resources}
-        ItemSeparatorComponent={this.renderSeparator}
-        renderItem={this.renderItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.onRefresh}
-          />
+      <View style={styles.container}>
+        <SalonTouchableOpacity
+          style={styles.row}
+          onPress={() => this._handleOnChangeProvider('all')}
+        >
+          <Text style={styles.rowText}>View All Desk Staff</Text>
+        </SalonTouchableOpacity>
+        {this.state.isLoading
+          ? (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <FlatList
+              data={this.state.activeData}
+              ItemSeparatorComponent={this.renderSeparator}
+              renderItem={this.renderItem}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+            />
+          )
         }
-      />
+      </View>
     );
   }
 }

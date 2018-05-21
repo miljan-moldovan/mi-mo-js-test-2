@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
 export default class Header extends Component {
   renderColumnLabel = (data, index) => {
     const { isDate, isRoom, isResource } = this.props;
+
     if (isDate) {
       return this.renderDate(data, index);
     }
@@ -123,7 +124,9 @@ export default class Header extends Component {
   }
 
   render() {
-    const { isDate, isRoom, isResource, showFirstAvailable, handleShowfirstAvailalble } = this.props;
+    const {
+      isDate, isRoom, isResource, showFirstAvailable, handleShowfirstAvailalble,
+    } = this.props;
     const width = isDate || isRoom || isResource ? 36 : 100;
 
     return (

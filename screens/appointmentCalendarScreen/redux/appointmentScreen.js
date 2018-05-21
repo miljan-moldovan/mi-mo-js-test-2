@@ -17,6 +17,7 @@ export const SET_GRID_DAY_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WE
 export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
 export const SET_PICKER_MODE = 'appointmentCalendar/SET_PICKER_MODE';
 export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER';
+export const SET_SELECTED_FILTER = 'appointmentCalendar/SET_SELECTED_FILTER';
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
@@ -152,6 +153,7 @@ const setGridResourceViewSuccess = (resources, schedule, resourceAppointments, a
 
 const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const {
+    selectedFilter,
     selectedProvider,
     startDate,
     endDate,
@@ -162,40 +164,75 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const typeView = selectedProvider !== 'all' ||
                    selectedProvider !== 'rooms' ||
                    selectedProvider !== 'resources' ? selectedProvider : pickerMode;
+
   const date = startDate.format('YYYY-MM-DD');
   const serialized = serializeFilterOptions(filterOptions);
 
-  switch (typeView) {
-    case 'all': {
-      Promise.all([
-        apiWrapper.doRequest('getAppointmentBookEmployees', {
-          path: {
-            date,
-          },
-          query: serializeFilterOptions(filterOptions),
-        }),
-        apiWrapper.doRequest('getAppointmentsByDate', {
-          path: {
-            date,
-          },
-        }),
-        apiWrapper.doRequest('getAppointmentBookAvailability', {
-          path: {
-            date,
-          },
-        }),
-      ])
-        .then(([employees, appointments, availabilityItem]) => {
-          const employeesAppointment = orderBy(employees, 'appointmentOrder');
-          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
-          dispatch(setGridAllViewSuccess(
-            employeesAppointment,
-            orderedAppointments, availabilityItem.timeSlots,
-          ));
-        })
-        .catch((ex) => {
-          // TODO
-        });
+  switch (selectedFilter) {
+    case 'providers': {
+      if (selectedProvider === 'all') {
+        Promise.all([
+          apiWrapper.doRequest('getAppointmentBookEmployees', {
+            path: {
+              date,
+            },
+            query: serializeFilterOptions(filterOptions),
+          }),
+          apiWrapper.doRequest('getAppointmentsByDate', {
+            path: {
+              date,
+            },
+          }),
+          apiWrapper.doRequest('getAppointmentBookAvailability', {
+            path: {
+              date,
+            },
+          }),
+        ])
+          .then(([employees, appointments, availabilityItem]) => {
+            const employeesAppointment = orderBy(employees, 'appointmentOrder');
+            const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+            dispatch(setGridAllViewSuccess(
+              employeesAppointment,
+              orderedAppointments, availabilityItem.timeSlots,
+            ));
+          })
+          .catch((ex) => {
+            // TODO
+          });
+      } else {
+        switch (pickerMode) {
+          case 'day':
+          case 'week': {
+            const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
+            Promise.all([
+              apiWrapper.doRequest('getEmployeeScheduleRange', {
+                path: { id: selectedProvider.id, startDate: startDate.format('YYYY-MM-DD'), endDate: dateTo },
+              }),
+              apiWrapper.doRequest('getEmployeeAppointments', {
+                path: { id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo },
+              }),
+            ])
+              .then(([providerSchedule, appointments]) => {
+                const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
+                const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+                dispatch(setGridDayWeekViewSuccess(
+                  orderedAppointments,
+                  groupedProviderSchedule,
+                  apptGridSettings,
+                  startDate,
+                  pickerMode,
+                ));
+              })
+              .catch((ex) => {
+                // TODO
+              });
+            break;
+          }
+          default:
+            break;
+        }
+      }
       break;
     }
     case 'rooms': {
@@ -261,33 +298,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             resourceAppointments,
             appointments,
             availability.timeSlots,
-          ));
-        })
-        .catch((ex) => {
-          // TODO
-        });
-      break;
-    }
-    case 'day':
-    case 'week': {
-      const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
-      Promise.all([
-        apiWrapper.doRequest('getEmployeeScheduleRange', {
-          path: { id: selectedProvider.id, startDate: startDate.format('YYYY-MM-DD'), endDate: dateTo },
-        }),
-        apiWrapper.doRequest('getEmployeeAppointments', {
-          path: { id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo },
-        }),
-      ])
-        .then(([providerSchedule, appointments]) => {
-          const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
-          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
-          dispatch(setGridDayWeekViewSuccess(
-            orderedAppointments,
-            groupedProviderSchedule,
-            apptGridSettings,
-            startDate,
-            pickerMode,
           ));
         })
         .catch((ex) => {
@@ -389,6 +399,11 @@ const setSelectedProvider = selectedProvider => ({
   data: { selectedProvider },
 });
 
+const setSelectedFilter = selectedFilter => ({
+  type: SET_SELECTED_FILTER,
+  data: { selectedFilter },
+});
+
 const hideToast = () => ({
   type: HIDE_TOAST,
 });
@@ -398,6 +413,7 @@ export const appointmentCalendarActions = {
   setProviderScheduleDates,
   setPickerMode,
   setSelectedProvider,
+  setSelectedFilter,
   setStoreWeeklySchedule,
   setFilterOptionCompany,
   setFilterOptionPosition,
@@ -410,11 +426,12 @@ const initialState = {
   isLoading: false,
   isLoadingSchedule: false,
   error: null,
+  selectedFilter: 'providers',
+  selectedProvider: 'all',
   pickerMode: 'day',
   startDate: moment(),
   endDate: moment(),
   dates: [moment()],
-  selectedProvider: 'all',
   providerAppointments: [],
   roomAppointments: [],
   resourceAppointments: [],
@@ -461,7 +478,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         filterOptions,
       };
-    case SET_FILTER_OPTION_OFF_EMPLOYEES:
+    case SET_FILTER_OPTION_MULTIBLOCK:
       filterOptions.showMultiBlock = data.showMultiBlock;
       return {
         ...state,
@@ -495,6 +512,11 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         selectedProvider: data.selectedProvider,
         // isLoading: true,
+      };
+    case SET_SELECTED_FILTER:
+      return {
+        ...state,
+        selectedFilter: data.selectedFilter,
       };
     case SET_PROVIDER_DATES:
       return {
