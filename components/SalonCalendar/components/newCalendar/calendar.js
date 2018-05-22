@@ -478,7 +478,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource,
+      isRoom, isResource, filterOptions,
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
@@ -513,16 +513,17 @@ export default class Calendar extends Component {
                 onCellPressed={this.props.onCellPressed}
                 columns={headerData}
                 rows={this.schedule}
+                startTime={startTime}
                 apptGridSettings={apptGridSettings}
                 timeSchedules={dataSource}
                 showAvailability={!isDate && !isRoom && !isResource}
                 cellWidth={this.cellWidth}
-                isDate={isDate}
-                isRoom={isRoom}
-                isResource={isResource}
+                displayMode={displayMode}
+                selectedProvider={selectedProvider}
+                selectedFilter={selectedFilter}
+                showRoomAssignments={filterOptions.showRoomAssignments}
                 providerSchedule={providerSchedule}
                 availability={availability}
-                displayMode={displayMode}
                 isLoading={isLoading}
               />
               { this.renderCards() }

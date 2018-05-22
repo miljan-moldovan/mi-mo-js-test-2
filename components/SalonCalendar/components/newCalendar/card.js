@@ -122,8 +122,7 @@ class Card extends Component {
         break;
       case 'providers':
         if (selectedProvider === 'all') {
-          left = providers.findIndex(provider => provider.id
-          === appointment.employee.id) * cellWidth + 64;
+          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 64;
         } else if (selectedProvider !== 'all' && displayMode === 'week') {
           const apptDate = moment(appointment.date).format('YYYY-DD-MM');
           left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
@@ -306,7 +305,7 @@ class Card extends Component {
           height,
           borderColor,
           backgroundColor: colors[color].light,
-                      left,
+          left,
           top: this.state.top,
           opacity: this.state.opacity,
           borderStyle,
