@@ -77,37 +77,55 @@ const styles = StyleSheet.create({
 export default class FilterOptionsScreen extends React.Component {
   static navigationOptions = rootProps => ({
     title: 'Filter Options',
-    leftButton: (
-      <HeaderLateral>
+    headerLeft: (
+      <SalonTouchableOpacity wait={3000} onPress={() => rootProps.navigation.state.params.handleReset()}>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
-          Cancel
+          Reset
         </Text>
-      </HeaderLateral>
-    ),
-    rightButton: (
-      <HeaderLateral>
-        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto-Medium' }}>
-          Done
-        </Text>
-      </HeaderLateral>
+      </SalonTouchableOpacity>
     ),
   });
+
+  static flexFilter(list, info) {
+    let matchesFilter = [];
+    const matches = [];
+
+    matchesFilter = function match(item) {
+      let count = 0;
+      for (let n = 0; n < info.length; n += 1) {
+        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+          count += 1;
+        }
+      }
+      return count > 0;
+    };
+
+    for (let i = 0; i < list.length; i += 1) {
+      if (matchesFilter(list[i])) {
+        matches.push(list[i]);
+      }
+    }
+
+    return matches;
+  }
 
   constructor(props) {
     super(props);
 
     this.state = {
       activeTab: TAB_PROVIDERS,
+      searchText: '',
     };
+
+    this.props.navigation.setParams({ handleReset: this.handleReset });
   }
 
   componentWillMount() {
-    this.props.providersActions.getProviders({
-      filterRule: 'none',
-      maxCount: 100,
-      sortOrder: 'asc',
-      sortField: 'fullName',
-    });
+    this.onRefresh();
+  }
+
+  handleReset = () => {
+    this._handleOnChangeProvider('all');
   }
 
   onPressTab = (ev, index) => {
@@ -121,6 +139,25 @@ export default class FilterOptionsScreen extends React.Component {
       sortOrder: 'asc',
       sortField: 'fullName',
     });
+  }
+
+  filterProviders = (searchText) => {
+    if (searchText && searchText.length > 0) {
+      const criteria = [
+        { Field: 'name', Values: [searchText.toLowerCase()] },
+        { Field: 'lastName', Values: [searchText.toLowerCase()] },
+      ];
+
+      const filtered = FilterOptionsScreen.flexFilter(this.props.providersState.providers, criteria);
+      this.props.providersActions.setFilteredProviders(filtered);
+    } else {
+      this.props.providersActions.setFilteredProviders(this.props.providersState.providers);
+    }
+  }
+
+  filterList = (searchText) => {
+    this.filterProviders(searchText);
+    this.setState({ searchText });
   }
 
   renderActiveTab = () => {
@@ -162,7 +199,13 @@ export default class FilterOptionsScreen extends React.Component {
         );
       case TAB_DESK_STAFF:
         return (
-          <DeskStaffTab handleSelect={this.handleChangeDeskStaff} />
+          <DeskStaffTab
+            searchText={this.state.searchText}
+            onRefresh={this.onRefresh}
+            isLoading={this.props.providersState.isLoading}
+            data={this.props.providersState.currentDeskStaffData}
+            handleSelect={this.handleChangeDeskStaff}
+          />
         );
       case TAB_OTHERS:
         return (
@@ -224,10 +267,12 @@ export default class FilterOptionsScreen extends React.Component {
             iconsColor="#727A8F"
             fontColor="#727A8F"
             backgroundColor="rgba(142,142,147,0.24)"
-          // backgroundColor="#F1F1F1"
+            // backgroundColor="#F1F1F1"
             borderColor="transparent"
             placeHolderText="Start typing to search"
-            onChangeText={this.onChangeText}
+            onChangeText={(text) => {
+              this.filterList(text);
+            }}
           />
         </View>
         <View style={{
