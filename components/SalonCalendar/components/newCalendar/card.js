@@ -97,6 +97,7 @@ class Card extends Component {
       isResizeing: false,
       opacity: new Animated.Value(1),
       cardWidth,
+      cardHeight: height,
       zIndex,
       step,
       usedBlocks,
@@ -213,6 +214,46 @@ class Card extends Component {
     });
   }
 
+  renderAssistant = () => {
+    const {
+      cardHeight,
+    } = this.state;
+    return (
+      <View
+        key={Math.random()}
+        style={{
+          position: 'absolute',
+          top: 6,
+          right: 4,
+          width: 15,
+          height: cardHeight - 10,
+          backgroundColor: 'rgba(47, 49, 66, 0.3)',
+          borderRadius: 2,
+          zIndex: 99,
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 10,
+            lineHeight: 10,
+            minHeight: 10,
+            width: cardHeight,
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+            color: 'white',
+            transform: [{ rotate: '-90deg' }],
+          }}
+          numberOfLines={1}
+        >Assistant Assigned
+        </Text>
+      </View>
+    );
+  }
+
   renderSingleBlock = () => {
     const {
       client,
@@ -282,7 +323,7 @@ class Card extends Component {
       mainServiceColor,
       isFirstAvailable,
     } = this.props.appointment;
-    const { showFirstAvailable, isActive } = this.props;
+    const { showFirstAvailable, showAssistant, isActive } = this.props;
     const {
       zIndex, cardWidth, left, isActiveEmployeeInCellTime,
     } = this.state;
@@ -294,7 +335,6 @@ class Card extends Component {
     const countGap = 0;
     let countOpacity2 = 0;
     let countGap2 = 0;
-
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     return (
       <Animated.View key={id} style={{ position: 'absolute', zIndex }}>
@@ -354,6 +394,7 @@ class Card extends Component {
             disabled={isActive}
           >
             {this.props.isMultiBlock ? this.renderMultiBlock() : this.renderSingleBlock()}
+            { showAssistant ? this.renderAssistant() : null }
           </TouchableOpacity>
         </Animated.View>
         {/* <Animated.View

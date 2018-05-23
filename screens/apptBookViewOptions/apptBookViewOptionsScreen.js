@@ -102,11 +102,13 @@ class ApptBookViewOptionsScreen extends Component {
       showMultiBlock,
       showOffEmployees,
       showRoomAssignments,
+      showAssistantAssignments,
     } = this.state.options;
     this.props.apptBookActions.setFilterOptionCompany(company);
     this.props.apptBookActions.setFilterOptionPosition(position);
     this.props.apptBookActions.setFilterOptionShowOffEmployees(showOffEmployees);
     this.props.apptBookActions.setFilterOptionRoomAssignments(showRoomAssignments);
+    this.props.apptBookActions.setFilterOptionAssistantAssignments(showAssistantAssignments);
     this.props.apptBookActions.setFilterOptionShowMultiBlock(showMultiBlock);
 
     this.props.apptBookActions.setGridView();
@@ -265,11 +267,11 @@ class ApptBookViewOptionsScreen extends Component {
                   textStyle={{ color: '#000000' }}
                   onChange={(state) => {
                     const { options } = this.state;
-                    options.assistantAssigments = !options.assistantAssigments;
+                    options.showAssistantAssignments = !options.showAssistantAssignments;
                     this.shouldSave = true;
                     this.setState({ options });
                   }}
-                  value={this.state.options.assistantAssigments}
+                  value={this.state.options.showAssistantAssignments}
                   text="Assistant Assigments"
                 />,
                 <InputDivider key={Math.random()} />,

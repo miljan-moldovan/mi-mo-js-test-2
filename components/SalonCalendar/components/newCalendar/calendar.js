@@ -429,6 +429,7 @@ export default class Calendar extends Component {
       return (
         <Card
           isMultiBlock={filterOptions.showMultiBlock}
+          showAssistant={filterOptions.showAssistantAssignments}
           isActive={isActive}
           key={appointment.id}
           providers={headerData}
@@ -451,7 +452,8 @@ export default class Calendar extends Component {
           groupedProviders={this.groupedProviders}
           providerSchedule={providerSchedule}
           isLoading={isLoading}
-        />);
+        />
+      );
     }
     return null;
   }

@@ -102,7 +102,7 @@ export default class Column extends Component {
       const endTimeDifference = this.convertFromTimeToMoment(room.toTime).diff(startTimeMoment, 'minutes');
       const startPosition = (startTimeDifference / apptGridSettings.step) * 30;
       const endPosition = (endTimeDifference / apptGridSettings.step) * 30;
-
+      const height = endPosition - startPosition;
       return (
         <View
           key={`room-${i}`}
@@ -110,20 +110,32 @@ export default class Column extends Component {
             position: 'absolute',
             top: startPosition,
             width: 16,
-            height: endPosition - startPosition,
+            height,
             backgroundColor: '#082E66',
             right: 0,
             borderRadius: 3,
             zIndex: 9999,
-            // alignItems: 'center',
-            // justifyContent: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
           }}
         >
-          <Text style={{
-            color: 'white',
-            transform: [{ rotateX: '90deg' }],
-          }}
-          >Room {room.roomId}
+          <Text
+            style={{
+              fontSize: 11,
+              lineHeight: 11,
+              minHeight: 11,
+              maxHeight: height,
+              minWidth: height,
+              maxWidth: height,
+              textAlign: 'center',
+              margin: 0,
+              padding: 0,
+              color: 'white',
+              transform: [{ rotate: '-90deg' }],
+            }}
+            numberOfLines={1}
+          >{`Room ${room.roomId}`}
           </Text>
         </View>
       );
