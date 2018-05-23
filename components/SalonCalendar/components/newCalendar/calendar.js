@@ -63,20 +63,32 @@ export default class Calendar extends Component {
       showFirstAvailable: false,
       buffer: [],
       pan: new Animated.ValueXY({ x: 0, y: 0 }),
+      isResizeing: false,
     };
     this.size = { width: 0, height: 0 };
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => !!this.state.activeCard,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => !!this.state.activeCard,
+      onMoveShouldSetPanResponder: (evt, gestureState) => {console.log('BaconMoveSet'); return this.state.activeCard},
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {console.log('BaconMoveCapture'); return this.state.activeCard},
       onPanResponderMove: (e, gesture) => {
+        console.log('BaconMovePre')
+        const { dy, dx } = gesture;
         if (this.state.activeCard) {
-          this.moveX = gesture.dx;
-          this.moveY = gesture.dy;
-          return Animated.event([null, {
-            dx: this.state.pan.x,
-            dy: this.state.pan.y,
-          }])(e, gesture);
+          if (!this.state.isResizeing) {
+            this.moveX = dx;
+            this.moveY = dy;
+            return Animated.event([null, {
+              dx: this.state.pan.x,
+              dy: this.state.pan.y,
+            }])(e, gesture);
+          }
+          const size = this.moveY ? dy - this.moveY : dy;
+          this.moveY = dy;
+          console.log('BaconMove')
+          if (this.resizeCard) {
+            this.state.activeCard.height = this.resizeCard.resizeCard(size);
+            console.log('BaconMoveRe', this.state.activeCard.height)
+          }
         }
         return null;
       },
@@ -197,13 +209,7 @@ export default class Calendar extends Component {
           if (this.offset.x < 0) {
             this.offset.x = 0;
           }
-          this.scrollToX(this.offset.x, () => {
-            pan.setOffset({
-              x: pan.x._offset + dx,
-              y: pan.y._offset,
-            });
-            pan.setValue({ x: pan.x._value, y: pan.y._value });
-          });
+          this.scrollToX(this.offset.x);
         } else {
           const headerHeight = 40;
           const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height + bufferHeight;
@@ -226,17 +232,51 @@ export default class Calendar extends Component {
             if (this.offset.y < 0) {
               this.offset.y = 0;
             }
-            this.scrollToY(this.offset.y, () => {
-              pan.setOffset({
-                y: pan.y._offset + dy,
-                x: pan.x._offset,
-              });
-              pan.setValue({ y: pan.y._value, x: pan.x._value });
-            });
+            this.scrollToY(this.offset.y);
           }
         }
       }
       requestAnimationFrame(this.scrollAnimation);
+    }
+  }
+
+  scrollAnimationResize = () => {
+    const { cellWidth, moveY } = this;
+    const {
+      selectedProvider, headerData, apptGridSettings, bufferVisible, displayMode,
+    } = this.props;
+    const { calendarMeasure, pan, activeCard } = this.state;
+    let dy = 0;
+    const boundLength = 30;
+    const maxScrollChange = 15
+    if (activeCard) {
+      const coordinatesY = activeCard.top;// + offsetY;
+      const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height;
+      const scrollVerticalBoundTop = this.offset.y + calendarMeasure.height - boundLength;
+      const scrollVerticalBoundBottom = this.offset.y + boundLength;
+      const newMoveY = coordinatesY + activeCard.height;
+      if (scrollVerticalBoundTop < newMoveY) {
+        //debugger
+        dy = this.offset.y < maxHeigth ? newMoveY - scrollVerticalBoundTop : 0;
+      } else if (scrollVerticalBoundBottom > newMoveY) {
+        //debugger
+        dy = newMoveY - scrollVerticalBoundBottom;
+      }
+      if (dy !== 0) {
+        dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
+        dy = dy * maxScrollChange / boundLength;
+        this.offset.y += dy;
+        if (this.offset.y > maxHeigth) {
+          this.offset.y = maxHeigth;
+        }
+        if (this.offset.y < 0) {
+          this.offset.y = 0;
+        }
+        activeCard.height = this.resizeCard.resizeCard(dy);
+        this.scrollToY(this.offset.y);
+      }
+      console.log('BaconScroll', moveY);
+      requestAnimationFrame(this.scrollAnimationResize);
     }
   }
 
@@ -257,11 +297,12 @@ export default class Calendar extends Component {
       this.state.pan.setValue({ x: 0, y: 0 });
       pan.setOffset({ x: newLeft, y: newTop });
       pan.setValue({ x: 0, y: 0 });
+      // const height = new Animated.Value(heightValue);
       newState = {
         activeCard: {
           appointment,
-          left: newLeft,
-          top: newTop,
+          left,
+          top,
           cardWidth,
           height,
           isBufferCard,
@@ -273,6 +314,28 @@ export default class Calendar extends Component {
         activeCard: null,
       };
       this.setState(newState);
+    }
+  }
+
+  handleOnResize = () => {
+    const { activeCard, isResizeing } = this.state;
+    if (!isResizeing) {
+      this.moveX = 0;
+      this.moveY = 0;
+      // const offsetY = this.offset.y - 40;
+      // const offsetX = this.offset.x - 36;
+      // const { pan } = this.state;
+      // const newTop = pan.y._value + pan.y._offset + offsetY;
+      // const newLeft = pan.x._value + pan.x._offset + offsetX;
+      // debugger
+      // pan.setOffset({ x: newLeft, y: newTop });
+      // pan.setValue({ x: 0, y: 0 });
+      const newState = {
+        isResizeing: true,
+      };
+      console.log('BaconMovePress');
+      this.setState(newState, this.scrollAnimationResize);
+      //this.setState(newState);
     }
   }
 
@@ -316,17 +379,26 @@ export default class Calendar extends Component {
   }
 
   handleMove = (date, newTime, employeeId, appointmentId) => {
-    const { onDrop } = this.props;
+    const { onDrop, appointments } = this.props;
     const { buffer } = this.state;
-    onDrop(appointmentId, {
-      date,
-      newTime,
-      employeeId,
-    });
     const index = buffer.findIndex(appt => appt.id === appointmentId);
+    let oldAppointment = null;
     if (index > -1) {
+      oldAppointment = buffer[index];
       buffer.splice(index, 1);
+    } else {
+      oldAppointment = appointments.find(item => item.id === appointmentId);
     }
+
+    onDrop(
+      appointmentId,
+      {
+        date,
+        newTime,
+        employeeId,
+      },
+      oldAppointment,
+    );
     this.handleOnDrag(true);
     this.hideAlert();
   }
@@ -460,17 +532,55 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
     } = this.props;
-    const { activeCard } = this.state;
+    const { activeCard, calendarMeasure, isResizeing } = this.state;
     return activeCard ? (
       <NewCard
         appointment={activeCard.appointment}
-        left={activeCard.left}
-        top={activeCard.top}
+        apptGridSettings={apptGridSettings}
+        onScrollY={this.scrollToY}
+        calendarMeasure={calendarMeasure}
+        calendarOffset={this.offset}
+        onResize={this.handleOnResize}
         cardWidth={activeCard.cardWidth}
         height={activeCard.height}
         onDrop={this.handleBufferDrop}
         pan={this.state.pan}
         isActive
+        opacity={isResizeing ? 0 : 1}
+        isResizeing={this.state.isResizeing}
+        isBufferCard={activeCard.isBufferCard}
+      />) : null;
+  }
+
+  renderResizeCard =() => {
+    const {
+      apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
+    } = this.props;
+    console.log('baconmoverenderesize')
+    const { activeCard, calendarMeasure, isResizeing } = this.state;
+    const offsetY = this.offset.y - 40;
+    const offsetX = this.offset.x - 36;
+    const { pan } = this.state;
+    const newTop = pan.y._value + pan.y._offset + offsetY;
+    const newLeft = pan.x._value + pan.x._offset + offsetX;
+    const newPan = new Animated.ValueXY({ x: newLeft, y: newTop });
+    return isResizeing ? (
+      <NewCard
+        ref={(card) => { this.resizeCard = card; }}
+        appointment={activeCard.appointment}
+        apptGridSettings={apptGridSettings}
+        onScrollY={this.scrollToY}
+        calendarMeasure={calendarMeasure}
+        calendarOffset={this.offset}
+        onResize={this.handleOnResize}
+        cardWidth={activeCard.cardWidth}
+        height={activeCard.height}
+        onDrop={this.handleBufferDrop}
+        opacity={isResizeing ? 1 : 0}
+        pan={newPan}
+        isActive
+        isResizeing={this.state.isResizeing}
+        isBufferCard={activeCard.isBufferCard}
       />) : null;
   }
 
@@ -482,7 +592,7 @@ export default class Calendar extends Component {
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
-    const { alert, activeCard, showFirstAvailable } = this.state;
+    const { alert, activeCard, showFirstAvailable, isResizeing } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const size = {
       width: this.size.width,
@@ -526,6 +636,7 @@ export default class Calendar extends Component {
                 isLoading={isLoading}
               />
               { this.renderCards() }
+              {this.renderResizeCard()}
             </ScrollViewChild>
             <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
               <TimeColumn schedule={this.schedule} />
@@ -552,7 +663,7 @@ export default class Calendar extends Component {
             onCardLongPress={this.handleOnDrag}
             screenHeight={screenHeight}
           />
-          {this.renderActiveCard()}
+          { this.renderActiveCard() }
           <SalonAlert
             visible={!!alert}
             title={alert ? alert.title : ''}

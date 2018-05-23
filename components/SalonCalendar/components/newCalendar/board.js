@@ -17,6 +17,7 @@ export default class Board extends Component {
   }
 
   renderCol = (col, key) => {
+    console.log('BaconBoard')
     const {
       apptGridSettings, rows, cellWidth, isDate, isRoom, isResource, providerSchedule,
     } = this.props;

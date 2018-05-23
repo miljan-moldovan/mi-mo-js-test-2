@@ -64,6 +64,12 @@ class Card extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    return nextProps.isActive !== this.props.isActive
+    || nextProps.cellWidth !== this.props.cellWidth ||
+      (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading);
+  }
+
   calcualteStateValues = (props) => {
     const {
       toTime, fromTime, employee, date,
@@ -274,6 +280,7 @@ class Card extends Component {
   }
 
   render() {
+    console.log('BaconCard');
     const {
       client,
       service,

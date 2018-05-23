@@ -79,6 +79,19 @@ class SalonToast extends Component {
     }
   }
 
+  undo = () => {
+    if (!this.ishidding) {
+      this.ishidding = true;
+      Animated.timing(
+        this.state.top,
+        {
+          toValue: -44,
+          duration: 600,
+        },
+      ).start(this.props.undo);
+    }
+  }
+
   render() {
     const { top, visible } = this.state;
     const { type, description, btnRightText, btnLeftText } = this.props;
@@ -87,7 +100,7 @@ class SalonToast extends Component {
         <Animated.View style={[styles.toast, { backgroundColor: colors[type], top }]}>
           <Text style={styles.description}>{description}</Text>
           <View style={styles.btnContainer}>
-            <TouchableOpacity onPress={this.hide}>
+            <TouchableOpacity onPress={this.undo}>
               <Text style={styles.btn}>{btnLeftText}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={this.hide}>
