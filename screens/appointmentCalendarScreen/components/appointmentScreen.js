@@ -363,15 +363,9 @@ export default class AppointmentScreen extends Component {
               this.setState({ visibleNewAppointment: false });
               this.props.navigation.navigate('NewAppointment');
           }}
-          handlePressProvider={() => {
-            this.props.navigation.navigate('Providers', {
-              actionType: 'update',
-              dismissOnSelect: true,
-              onChangeProvider: (provider) => {
-                this.props.newAppointmentActions.setNewApptEmployee(provider);
-                this.setState({ visibleNewAppointment: true });
-              },
-            });
+          handlePressProvider={(provider) => {
+            this.props.newAppointmentActions.setNewApptEmployee(provider);
+            this.setState({ visibleNewAppointment: true });
           }}
           handlePressService={() => {
             this.props.navigation.navigate('Services', {
@@ -384,6 +378,7 @@ export default class AppointmentScreen extends Component {
             });
           }}
           handlePressClient={() => {
+            this.setState({ visibleNewAppointment: false });
             this.props.navigation.navigate('ChangeClient', {
               actionType: 'update',
               dismissOnSelect: true,
