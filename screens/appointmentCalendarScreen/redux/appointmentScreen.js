@@ -15,6 +15,8 @@ export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_CO
 export const SET_FILTER_OPTION_POSITION = 'appointmentScreen/SET_FILTER_OPTION_POSITION';
 export const SET_FILTER_OPTION_OFF_EMPLOYEES = 'appointmentScreen/SET_FILTER_OPTION_OFF_EMPLOYEES';
 export const SET_FILTER_OPTION_MULTIBLOCK = 'appointmentScreen/SET_FILTER_OPTION_MULTIBLOCK';
+export const SET_FILTER_OPTION_ROOM_ASSIGNMENTS = 'appointmentScreen/SET_FILTER_OPTION_ROOM_ASSIGNMENTS';
+export const SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS = 'appointmentScreen/SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS';
 export const SET_GRID_VIEW = 'appointmentScreen/SET_GRID_VIEW';
 export const SET_GRID_ROOM_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_ROOM_VIEW_SUCCESS';
 export const SET_GRID_RESOURCE_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_RESOURCE_VIEW_SUCCESS';
@@ -59,6 +61,16 @@ const setFilterOptionPosition = position => ({
 const setFilterOptionShowOffEmployees = showOffEmployees => ({
   type: SET_FILTER_OPTION_OFF_EMPLOYEES,
   data: { showOffEmployees },
+});
+
+const setFilterOptionRoomAssignments = showRoomAssignments => ({
+  type: SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
+  data: { showRoomAssignments },
+});
+
+const setFilterOptionAssistantAssignments = showAssistantAssignments => ({
+  type: SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
+  data: { showAssistantAssignments },
 });
 
 const setFilterOptionShowMultiBlock = showMultiBlock => ({
@@ -370,6 +382,8 @@ export const appointmentCalendarActions = {
   setFilterOptionCompany,
   setFilterOptionPosition,
   setFilterOptionShowMultiBlock,
+  setFilterOptionRoomAssignments,
+  setFilterOptionAssistantAssignments,
   setFilterOptionShowOffEmployees,
   hideToast,
 };
@@ -399,6 +413,8 @@ const initialState = {
     position: null,
     serviceProxy: null,
     showOffEmployees: false,
+    showRoomAssignments: false,
+    showAssistantAssignments: false,
   },
   providers: [],
   rooms: [],
@@ -426,6 +442,18 @@ export default function appointmentScreenReducer(state = initialState, action) {
       };
     case SET_FILTER_OPTION_OFF_EMPLOYEES:
       filterOptions.showOffEmployees = data.showOffEmployees;
+      return {
+        ...state,
+        filterOptions,
+      };
+    case SET_FILTER_OPTION_ROOM_ASSIGNMENTS:
+      filterOptions.showRoomAssignments = data.showRoomAssignments;
+      return {
+        ...state,
+        filterOptions,
+      };
+    case SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS:
+      filterOptions.showAssistantAssignments = data.showAssistantAssignments;
       return {
         ...state,
         filterOptions,

@@ -93,6 +93,7 @@ class Card extends Component {
       isResizeing: false,
       opacity,
       cardWidth,
+      cardHeight: height,
       zIndex,
       step,
       usedBlocks,
@@ -113,13 +114,12 @@ class Card extends Component {
       case 'rooms':
         left = providers.findIndex(room => room.id === appointment.room.id) * cellWidth;
         break;
-      case 'rooms':
+      case 'resources':
         left = providers.findIndex(resource => resource.id === appointment.resource.id) * cellWidth;
         break;
       case 'providers':
         if (selectedProvider === 'all') {
-          left = providers.findIndex(provider => provider.id
-          === appointment.employee.id) * cellWidth + 64;
+          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 102;
         } else if (selectedProvider !== 'all' && displayMode === 'week') {
           const apptDate = moment(appointment.date).format('YYYY-DD-MM');
           left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
@@ -165,12 +165,53 @@ class Card extends Component {
     // ).start();
   }
 
+  renderAssistant = () => {
+    const {
+      cardHeight,
+    } = this.state;
+    return (
+      <View
+        key={Math.random()}
+        style={{
+          position: 'absolute',
+          top: 6,
+          right: 4,
+          width: 15,
+          height: cardHeight - 10,
+          backgroundColor: 'rgba(47, 49, 66, 0.3)',
+          borderRadius: 2,
+          zIndex: 99,
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 10,
+            lineHeight: 10,
+            minHeight: 10,
+            width: cardHeight,
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+            color: 'white',
+            transform: [{ rotate: '-90deg' }],
+          }}
+          numberOfLines={1}
+        >Assistant Assigned
+        </Text>
+      </View>
+    );
+  }
+
   renderSingleBlock = () => {
     const {
       client,
       service,
       mainServiceColor,
     } = this.props.appointment;
+    const { usedBlocks } = this.state;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const serviceTextColor = '#1D1E29';
@@ -178,7 +219,7 @@ class Card extends Component {
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
 
     return (
-      <View style={{ width: '100%', height: '100%' }}>
+      <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
         <Text
           numberOfLines={1}
@@ -186,12 +227,14 @@ class Card extends Component {
         >
           {clientName}
         </Text>
-        <Text
-          numberOfLines={1}
-          style={[styles.serviceText, { color: serviceTextColor }]}
-        >
-          {serviceName}
-        </Text>
+        { usedBlocks > 1 && (
+          <Text
+            numberOfLines={1}
+            style={[styles.serviceText, { color: serviceTextColor }]}
+          >
+            {serviceName}
+          </Text>
+        )}
       </View>
     );
   }
@@ -236,7 +279,7 @@ class Card extends Component {
       mainServiceColor,
       isFirstAvailable,
     } = this.props.appointment;
-    const { showFirstAvailable, isActive } = this.props;
+    const { showFirstAvailable, showAssistant, isActive } = this.props;
     const {
       zIndex, cardWidth, left, isActiveEmployeeInCellTime,
     } = this.state;
@@ -248,7 +291,6 @@ class Card extends Component {
     const countGap = 0;
     let countOpacity2 = 0;
     let countGap2 = 0;
-
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     const opacity = this.props.isActive && this.props.isResizeing ? 0 : 1;
     return (
@@ -260,7 +302,7 @@ class Card extends Component {
           height,
           borderColor,
           backgroundColor: colors[color].light,
-                      left,
+          left,
           top: this.state.top,
           opacity: this.state.opacity,
           borderStyle,
@@ -305,10 +347,12 @@ class Card extends Component {
             : null
           }
           <TouchableOpacity
+            onPress={() => this.props.onPress(this.props.appointment)}
             onLongPress={this.handleOnLongPress}
             disabled={isActive}
           >
             {this.props.isMultiBlock ? this.renderMultiBlock() : this.renderSingleBlock()}
+            { showAssistant ? this.renderAssistant() : null }
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>

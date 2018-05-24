@@ -69,6 +69,7 @@ export default class DeskStaffTab extends React.Component {
 
     this.state = {
       activeData: [],
+      deskStaff: [],
       searchText: null,
       refreshing: false,
       isLoading: false,
@@ -86,7 +87,7 @@ export default class DeskStaffTab extends React.Component {
     apiWrapper.doRequest('getEmployees', {})
       .then((providers) => {
         const filtered = providers.filter(provider => provider.isReceptionist);
-        this.setState({ isLoading: false, activeData: filtered });
+        this.setState({ isLoading: false, activeData: filtered, deskStaff: filtered });
       })
       .catch((err) => {
         this.setState({ isLoading: false });
@@ -119,7 +120,7 @@ export default class DeskStaffTab extends React.Component {
           image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
-          highlight={this.state.searchText}
+          highlight={this.props.searchText}
           style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
           highlightStyle={{ color: '#1DBF12' }}
         >
@@ -143,20 +144,20 @@ export default class DeskStaffTab extends React.Component {
         >
           <Text style={styles.rowText}>View All Desk Staff</Text>
         </SalonTouchableOpacity>
-        {this.state.isLoading
+        {this.props.isLoading
           ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <ActivityIndicator />
             </View>
           ) : (
             <FlatList
-              data={this.state.activeData}
+              data={this.props.data}
               ItemSeparatorComponent={this.renderSeparator}
               renderItem={this.renderItem}
               refreshControl={
                 <RefreshControl
                   refreshing={this.state.refreshing}
-                  onRefresh={this.onRefresh}
+                  onRefresh={this.props.onRefresh}
                 />
               }
             />

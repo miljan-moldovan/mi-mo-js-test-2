@@ -18,20 +18,30 @@ export default class Board extends Component {
 
   renderCol = (col, key) => {
     const {
-      apptGridSettings, rows, cellWidth, isDate, isRoom, isResource, providerSchedule,
+      apptGridSettings,
+      showRoomAssignments,
+      rows,
+      cellWidth,
+      selectedFilter,
+      providerSchedule,
+      selectedProvider,
+      startTime,
+      displayMode,
     } = this.props;
+    const isDate = selectedFilter === 'providers' && selectedProvider !== 'all';
     return (
       <Column
         key={key}
         rows={rows}
-        colData={col}
         cellWidth={cellWidth}
+        colData={col}
         isDate={isDate}
-        isResource={isResource}
-        isRoom={isRoom}
+        startTime={startTime}
+        selectedFilter={selectedFilter}
         providerSchedule={providerSchedule}
-        onCellPressed={this.props.onCellPressed}
         apptGridSettings={apptGridSettings}
+        onCellPressed={this.props.onCellPressed}
+        showRoomAssignments={showRoomAssignments}
       />
     );
   }
@@ -40,6 +50,7 @@ export default class Board extends Component {
     const {
       columns, apptGridSettings, availability, showAvailability,
     } = this.props;
+
     return (
       <View style={styles.container}>
         { showAvailability ?

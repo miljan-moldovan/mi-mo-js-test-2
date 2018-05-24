@@ -9,6 +9,7 @@ import formCache from './formCache';
 import appointmentNotesReducer from './appointmentNotes';
 import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
+import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
 import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/components/appointmentFormulas/redux';
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
 import appointmentScreenReducer from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
@@ -47,4 +48,5 @@ export default combineReducers({
   apptBookSetEmployeeOrderReducer,
   turnAway,
   newAppointmentReducer,
+  modifyApptReducer,
 });

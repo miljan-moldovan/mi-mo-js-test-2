@@ -296,6 +296,21 @@ const styles = StyleSheet.create({
   },
 });
 
+export const AppointmentTime = props => (
+  <View style={styles.clockIconContainer}>
+    <Icon style={{ paddingTop: 5, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="light" />
+    <Text style={styles.timeText}>{moment(props.startTime, 'HH:mm').format('HH:mm A')}</Text>
+    <Icon
+      name="angleRight"
+      size={15}
+      style={{ paddingTop: 4, paddingLeft: 4 }}
+      color="#000000"
+      type="light"
+    />
+    <Text style={styles.timeText}>{moment(props.endTime, 'HH:mm').format('HH:mm A')}</Text>
+  </View>
+);
+
 const BookNow = props => (
   <SalonTouchableOpacity
     style={styles.bookApptContainer}
@@ -436,18 +451,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                     {moment(this.props.date).format('ddd, MMM D')}
                   </Text>
 
-                  <View style={styles.clockIconContainer}>
-                    <Icon style={{ paddingTop: 5, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="light" />
-                    <Text style={styles.timeText}>{moment(this.props.startTime, 'HH:mm').format('HH:mm A')}</Text>
-                    <Icon
-                      name="angleRight"
-                      size={15}
-                      style={{ paddingTop: 4, paddingLeft: 4 }}
-                      color="#000000"
-                      type="light"
-                    />
-                    <Text style={styles.timeText}>{moment(this.props.endTime, 'HH:mm').format('HH:mm A')}</Text>
-                  </View>
+                  <AppointmentTime startTime={this.props.startTime} endTime={this.props.endTime} />
                 </View>
 
                 <View style={styles.panelMiddleSection}>
@@ -491,8 +495,9 @@ export default class SalonNewAppointmentSlide extends React.Component {
                         contentStyle={{ alignItems: 'flex-start' }}
                         iconStyle={{ color: '#115ECD' }}
                         avatarSize={20}
+                        onPress={() => this.hidePanel()}
                         navigate={this.props.navigation.navigate}
-                        onChange={() => { this.hidePanel(); this.props.handlePressProvider(); }}
+                        onChange={(provider) => { this.props.handlePressProvider(provider); }}
                       />,
                     ]}
                   </InputGroup>

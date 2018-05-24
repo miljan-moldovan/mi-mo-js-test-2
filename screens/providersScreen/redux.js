@@ -18,6 +18,9 @@ const initialState = {
   filtered: [],
   providers: [],
   currentData: [],
+  deskStaff: [],
+  filteredDeskStaff: [],
+  currentDeskStaffData: [],
   selectedProvider: null,
   isLoading: false,
 };
@@ -43,6 +46,8 @@ export function providersReducer(state = initialState, action) {
         isLoading: false,
         providers: data.providers,
         currentData: data.providers,
+        deskStaff: data.deskStaff,
+        currentDeskStaffData: data.deskStaff,
       };
     case GET_PROVIDERS_ERROR:
       return {
@@ -50,6 +55,7 @@ export function providersReducer(state = initialState, action) {
         error: data.error,
         isLoading: true,
         providers: [],
+        deskStaff: [],
       };
     case SET_FILTERED_PROVIDERS:
       return {
@@ -57,6 +63,8 @@ export function providersReducer(state = initialState, action) {
         isLoading: false,
         filtered: data.filtered,
         currentData: data.filtered,
+        filteredDeskStaff: data.filteredDeskStaff,
+        currentDeskStaffData: data.filteredDeskStaff,
       };
     default:
       return state;
@@ -68,10 +76,13 @@ const setSelectedProvider = selectedProvider => ({
   data: { selectedProvider },
 });
 
-const getProvidersSuccess = providers => ({
-  type: GET_PROVIDERS_SUCCESS,
-  data: { providers },
-});
+const getProvidersSuccess = (providers) => {
+  const deskStaff = providers.filter(item => item.isReceptionist);
+  return {
+    type: GET_PROVIDERS_SUCCESS,
+    data: { providers, deskStaff },
+  };
+};
 
 const getProvidersError = error => ({
   type: GET_PROVIDERS_ERROR,
@@ -111,10 +122,13 @@ const getProviders = (params, filterByService = false) => (dispatch, getState) =
     });
 };
 
-const setFilteredProviders = filtered => ({
-  type: SET_FILTERED_PROVIDERS,
-  data: { filtered },
-});
+const setFilteredProviders = (filtered) => {
+  const filteredDeskStaff = filtered.filter(item => item.isReceptionist);
+  return {
+    type: SET_FILTERED_PROVIDERS,
+    data: { filtered, filteredDeskStaff },
+  };
+};
 
 const providersActions = {
   getProviders,

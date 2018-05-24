@@ -446,14 +446,17 @@ export class ServiceInput extends React.Component {
     this.props.navigate('Services', {
       selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
-      filterByProvider: this.props.filterByProvider ? true : false,
+      filterByProvider: !!this.props.filterByProvider,
       dismissOnSelect: true,
       onChangeService: service => this.handleServiceSelection(service),
     });
   }
 
   render() {
-    const value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : (this.state.selectedService && 'serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
+    let value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : (this.state.selectedService && 'serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
+    if (value === null) {
+      value = this.state.selectedService.description;
+    }
     return (
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }]}
@@ -485,11 +488,13 @@ export class ProviderInput extends React.Component {
   }
 
   handlePress = () => {
+    if (this.props.onPress) { this.props.onPress(); }
+
     this.props.navigate('Providers', {
       selectedProvider: this.state.selectedProvider,
       actionType: 'update',
       dismissOnSelect: true,
-      filterByService: this.props.filterByService ? true : false,
+      filterByService: !!this.props.filterByService,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }

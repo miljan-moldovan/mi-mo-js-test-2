@@ -4,6 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -101,10 +102,14 @@ class ApptBookViewOptionsScreen extends Component {
       position,
       showMultiBlock,
       showOffEmployees,
+      showRoomAssignments,
+      showAssistantAssignments,
     } = this.state.options;
     this.props.apptBookActions.setFilterOptionCompany(company);
     this.props.apptBookActions.setFilterOptionPosition(position);
     this.props.apptBookActions.setFilterOptionShowOffEmployees(showOffEmployees);
+    this.props.apptBookActions.setFilterOptionRoomAssignments(showRoomAssignments);
+    this.props.apptBookActions.setFilterOptionAssistantAssignments(showAssistantAssignments);
     this.props.apptBookActions.setFilterOptionShowMultiBlock(showMultiBlock);
 
     this.props.apptBookActions.setGridView();
@@ -153,8 +158,6 @@ class ApptBookViewOptionsScreen extends Component {
     const {
       position,
       company,
-      showMultiBlock,
-      showOffEmployees,
     } = this.state.options;
 
     return (
@@ -251,11 +254,11 @@ class ApptBookViewOptionsScreen extends Component {
                 textStyle={{ color: '#000000' }}
                 onChange={(state) => {
                   const { options } = this.state;
-                  options.roomAssigments = !options.roomAssigments;
+                  options.showRoomAssignments = !options.showRoomAssignments;
                   this.shouldSave = true;
                   this.setState({ options });
                 }}
-                value={this.state.options.roomAssigments}
+                value={this.state.options.showRoomAssignments}
                 text="Room Assigments"
               />,
                 <InputDivider key={Math.random()} />,
@@ -265,11 +268,11 @@ class ApptBookViewOptionsScreen extends Component {
                   textStyle={{ color: '#000000' }}
                   onChange={(state) => {
                     const { options } = this.state;
-                    options.assistantAssigments = !options.assistantAssigments;
+                    options.showAssistantAssignments = !options.showAssistantAssignments;
                     this.shouldSave = true;
                     this.setState({ options });
                   }}
-                  value={this.state.options.assistantAssigments}
+                  value={this.state.options.showAssistantAssignments}
                   text="Assistant Assigments"
                 />,
                 <InputDivider key={Math.random()} />,
@@ -299,8 +302,7 @@ class ApptBookViewOptionsScreen extends Component {
                       }}
                   value={this.state.options.showOffEmployees}
                   text="Show employees that are off"
-                />,
-                <InputDivider key={Math.random()} />]}
+                />]}
             </InputGroup>
           </KeyboardAwareScrollView>
         </View>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import moment from 'moment';
 
 const styles = StyleSheet.create({
@@ -34,18 +34,32 @@ export default class Column extends Component {
     this.props.onCellPressed(cellId, colData);
   }
 
+  convertFromTimeToMoment = time => moment(time, 'HH:mm');
+
   renderCell = (cell, index) => {
-    const { apptGridSettings, colData, cellWidth, isDate, isRoom, isResource, providerSchedule } = this.props;
+    const {
+      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule,
+    } = this.props;
     const time = moment(cell, 'HH:mm A');
     let style = styles.cellContainerDisabled;
     let schedule;
-    if (isDate) {
-      schedule = providerSchedule[colData.format('YYYY-MM-DD')][0];
-      schedule = schedule ? schedule.scheduledIntervals : null;
-    } else if (isRoom || isResource) {
-      schedule = providerSchedule.scheduledIntervals;
-    } else {
-      schedule = colData.scheduledIntervals;
+    switch (selectedFilter) {
+      case 'providers': {
+        if (isDate) {
+          [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
+          schedule = schedule ? schedule.scheduledIntervals : null;
+        } else {
+          schedule = colData.scheduledIntervals;
+        }
+        break;
+      }
+      case 'resources':
+      case 'rooms': {
+        schedule = providerSchedule.scheduledIntervals;
+        break;
+      }
+      default:
+        break;
     }
     if (schedule) {
       for (let i = 0; i < schedule.length; i += 1) {
@@ -72,11 +86,69 @@ export default class Column extends Component {
     );
   }
 
+  renderRooms() {
+    const {
+      colData, apptGridSettings, selectedFilter,
+    } = this.props;
+
+    if (selectedFilter !== 'providers' || !colData || !colData.roomAssignments || !colData.roomAssignments.length) {
+      return null;
+    }
+
+    const startTime = apptGridSettings.minStartTime;
+    const startTimeMoment = this.convertFromTimeToMoment(startTime);
+    return colData.roomAssignments.map((room, i) => {
+      const startTimeDifference = this.convertFromTimeToMoment(room.fromTime).diff(startTimeMoment, 'minutes');
+      const endTimeDifference = this.convertFromTimeToMoment(room.toTime).diff(startTimeMoment, 'minutes');
+      const startPosition = (startTimeDifference / apptGridSettings.step) * 30;
+      const endPosition = (endTimeDifference / apptGridSettings.step) * 30;
+      const height = endPosition - startPosition;
+      return (
+        <View
+          key={`room-${i}`}
+          style={{
+            position: 'absolute',
+            top: startPosition,
+            width: 16,
+            height,
+            backgroundColor: '#082E66',
+            right: 0,
+            borderRadius: 3,
+            zIndex: 9999,
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 11,
+              lineHeight: 11,
+              minHeight: 11,
+              maxHeight: height,
+              minWidth: height,
+              maxWidth: height,
+              textAlign: 'center',
+              margin: 0,
+              padding: 0,
+              color: 'white',
+              transform: [{ rotate: '-90deg' }],
+            }}
+            numberOfLines={1}
+          >{`Room ${room.roomId}`}
+          </Text>
+        </View>
+      );
+    });
+  }
+
   render() {
-    const { rows } = this.props;
+    const { rows, showRoomAssignments } = this.props;
+    const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>
         { rows.map(this.renderCell) }
+        { rooms }
       </View>
     );
   }
