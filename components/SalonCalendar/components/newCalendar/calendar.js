@@ -69,7 +69,7 @@ export default class Calendar extends Component {
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
       onMoveShouldSetPanResponder: (evt, gestureState) => this.state.activeCard,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => return this.state.activeCard,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.activeCard,
       onPanResponderMove: (e, gesture) => {
         const { dy, dx } = gesture;
         if (this.state.activeCard) {
@@ -295,7 +295,6 @@ export default class Calendar extends Component {
       this.state.pan.setValue({ x: 0, y: 0 });
       pan.setOffset({ x: newLeft, y: newTop });
       pan.setValue({ x: 0, y: 0 });
-      // const height = new Animated.Value(heightValue);
       newState = {
         activeCard: {
           appointment,
@@ -350,15 +349,32 @@ export default class Calendar extends Component {
   handleResizeCard = () => {
     this.moveX = null;
     this.moveY = null;
+    const { apptGridSettings } = this.props;
     const { activeCard } = this.state;
     const newHeight = Math.round(activeCard.height / 30);
     activeCard.height = newHeight * 30;
     const params = { newLength: newHeight };
+
+    const clientName = `${activeCard.appointment.client.name} ${activeCard.appointment.client.lastName}`;
+    const date = moment(activeCard.appointment.date, 'YYYY-MM-DD').format('MMM DD');
+
+    const fromTime = moment(activeCard.appointment.fromTime, 'HH:mm').format('h:mma');
+    const oldToTime = moment(activeCard.appointment.toTime, 'HH:mm').format('h:mma');
+    const newToTime = moment(activeCard.appointment.fromTime, 'HH:mm').add(newHeight * apptGridSettings.step, 'm').format('h:mma');
+    const alert = {
+      title: 'Resize Appointment',
+      description: `Resize ${clientName} Appt. from ${date} ${fromTime}-${oldToTime} to ${date} ${fromTime}-${newToTime}?`,
+      btnLeftText: 'Cancel',
+      btnRightText: 'Resize',
+      handleMove: () => {
+        this.props.onResize(activeCard.appointment.id, params, activeCard.appointment);
+        this.hideAlert();
+      }
+    }
     this.setState({
-      isResizeing: false,
-      activeCard
-    },
-      () => this.props.onResize(activeCard.appointment.id, params));
+      alert,
+      activeCard,
+    });
   }
 
   handleCardDrop = () => {
@@ -450,7 +466,7 @@ export default class Calendar extends Component {
     }
   }
 
-  hideAlert = () => this.setState({ alert: null, activeCard: null });
+  hideAlert = () => this.setState({ alert: null, activeCard: null, isResizeing: false });
 
   handleShowfirstAvailalble = () => {
     const { showFirstAvailable } = this.state;
@@ -562,7 +578,7 @@ export default class Calendar extends Component {
     const newTop = pan.y._value + pan.y._offset + offsetY;
     const newLeft = pan.x._value + pan.x._offset + offsetX;
     const newPan = new Animated.ValueXY({ x: newLeft, y: newTop });
-    return isResizeing ? (
+    return isResizeing && activeCard ? (
       <NewCard
         ref={(card) => { this.resizeCard = card; }}
         appointment={activeCard.appointment}

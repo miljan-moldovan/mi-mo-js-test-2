@@ -562,14 +562,19 @@ export default function appointmentScreenReducer(state = initialState, action) {
         appointments.push(data.appointment);
       }
       const newTime = moment(data.appointment.fromTime, 'HH:mm').format('h:mm a');
+      const newToTime = moment(data.appointment.toTime, 'HH:mm').format('h:mm a');
       const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
-      const showToast = data.oldAppointment ? `Moved to - ${newTime} ${newDate}` : null;
+      const toastText = type === POST_APPOINTMENT_MOVE_SUCCESS ?
+        `Moved to - ${newTime} ${newDate}` : `Moved to - ${newTime} to ${newToTime}`;
+      const showToast = data.oldAppointment ? toastText : null;
+      const undoType = type === POST_APPOINTMENT_MOVE_SUCCESS ? 'move' : 'resize';
       return {
         ...state,
         appointments,
         isLoading: false,
         showToast,
-        oldAppointmet: data.oldAppointment,
+        oldAppointment: data.oldAppointment,
+        undoType
       };
     }
     case POST_APPOINTMENT_MOVE_FAILED:
@@ -583,6 +588,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         showToast: false,
         oldAppointment: null,
+        undoType: null,
       };
     default:
       return state;
