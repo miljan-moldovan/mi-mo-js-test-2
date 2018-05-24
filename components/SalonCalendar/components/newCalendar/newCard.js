@@ -50,15 +50,28 @@ class Card extends Component {
     super(props);
     this.scrollValue = 0;
     this.state = {
-      isActive: props.isActive,
+      height: props.height,
     };
   }
 
+  componentWillUpdate(nextProps) {
+    this.state.height = nextProps.height !== this.props.height ? nextProps.height : this.state.height;
+  }
+
   handleOnLongPress = () => {
-    const { appointment, cardWidth, height, onLongPress } = this.props
-    this.card.measureInWindow((x, y) => {
-      onLongPress(false, appointment, x, y, cardWidth, height, true);
-    });
+    // const { appointment, cardWidth, height, onLongPress } = this.props
+    // this.card.measureInWindow((x, y) => {
+    //   onLongPress(false, appointment, x, y, cardWidth, height, true);
+    // });
+  }
+
+  resizeCard = (size) => {
+    let { height } = this.state;
+    if (height + size >= 30) {
+      height += size;
+      this.setState({ height });
+    }
+    return height;
   }
 
   render() {
@@ -71,27 +84,27 @@ class Card extends Component {
       mainServiceColor,
       isFirstAvailable,
     } = this.props.appointment;
-    const { cardWidth, height, left } = this.props;
+    const { height } = this.state;
+    const { calendarMeasure, calendarOffset, onScrollY, cardWidth, isActive, isBufferCard, apptGridSettings, opacity } = this.props;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const borderColor = colors[color].dark;
-    const contentColor = left > 0 ? colors[color].dark : colors[color].light;
-    const serviceTextColor = left > 0 ? '#fff' : '#1D1E29';
-    const clientTextColor = left > 0 ? '#fff' : '#2F3142';
+    const contentColor = isActive ? colors[color].dark : colors[color].light;
+    const serviceTextColor = isActive ? '#fff' : '#1D1E29';
+    const clientTextColor = isActive ? '#fff' : '#2F3142';
     const shadow = {
       shadowColor: '#3C4A5A',
       shadowOffset: { height: 2, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 4,
     };
-    const position = left > 0 ? { position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow } : { position: 'relative'};
+    const position = isActive ? { position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow } : { position: 'relative'};
     return (
       <Animated.View
-        // {...this.panResponder.panHandlers}
         key={id}
         style={[styles.container,
-          { width: cardWidth, height, borderColor, backgroundColor: contentColor },
+          { opacity, width: cardWidth, height, borderColor, backgroundColor: contentColor },
           position,]}
       >
         <TouchableOpacity
@@ -113,6 +126,21 @@ class Card extends Component {
             </Text>
           </View>
         </TouchableOpacity>
+        {isActive && !isBufferCard ?
+          <ResizeButton
+            //onRelease={this.handleResizeReleaseBottom}
+            onPress={this.props.onResize}
+            onResize={this.resizeCard}
+            color={colors[color].dark}
+            position={{ left: -13, bottom: -27}}
+            apptGridSettings={apptGridSettings}
+            height={height}
+            calendarMeasure={calendarMeasure}
+            calendarOffset={calendarOffset}
+            onScrollY={onScrollY}
+            isDisabled={this.props.isResizeing}
+            top={this.props.pan.y._value + this.props.pan.y._offset}
+          /> : null }
       </Animated.View>
     );
   }

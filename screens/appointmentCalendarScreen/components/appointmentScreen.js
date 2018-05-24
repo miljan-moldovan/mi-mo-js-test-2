@@ -236,7 +236,7 @@ export default class AppointmentScreen extends Component {
     } = this.props.appointmentScreenState;
 
     const { isLoading, bufferVisible } = this.state;
-    const { appointmentCalendarActions } = this.props;
+    const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     let headerData = null;
     let dataSource = null;
@@ -418,7 +418,7 @@ export default class AppointmentScreen extends Component {
         />
         {
           showToast ?
-            <SalonToast type="success" description={showToast} hide={appointmentCalendarActions.hideToast} btnRightText="OK" btnLeftText="UNDO" /> : null
+            <SalonToast type="success" description={showToast} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText="OK" btnLeftText="UNDO" /> : null
         }
       </View>
     );

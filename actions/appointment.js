@@ -10,6 +10,8 @@ export const POST_APPOINTMENT_MOVE_FAILED = 'appointment/POST_APPOINTMENT_MOVE_F
 export const POST_APPOINTMENT_RESIZE = 'appointment/POST_APPOINTMENT_RESIZE';
 export const POST_APPOINTMENT_RESIZE_SUCCESS = 'appointment/POST_APPOINTMENT_RESIZE_SUCCESS';
 export const POST_APPOINTMENT_RESIZE_FAILED = 'appointment/POST_APPOINTMENT_RESIZE_FAILED';
+export const UNDO_MOVE = 'appointment/UNDO_MOVE';
+export const UNDO_MOVE_SUCCESS = 'appointment/UNDO_MOVE_SUCCESS';
 
 const addAppointment = appointment => ({
   type: ADD_APPOINTMENT,
@@ -26,9 +28,9 @@ const getAppointmentsFailed = error => ({
   data: { error },
 });
 
-const postAppointmentMoveSuccess = appointment => ({
+const postAppointmentMoveSuccess = (appointment, oldAppointment) => ({
   type: POST_APPOINTMENT_MOVE_SUCCESS,
-  data: { appointment },
+  data: { appointment, oldAppointment },
 });
 
 const postAppointmentMoveFailed = error => ({
@@ -36,9 +38,9 @@ const postAppointmentMoveFailed = error => ({
   data: { error },
 });
 
-const postAppointmentResizeSuccess = response => ({
+const postAppointmentResizeSuccess = appointment => ({
   type: POST_APPOINTMENT_RESIZE_SUCCESS,
-  data: { response },
+  data: { appointment },
 });
 
 const postAppointmentResizeFailed = error => ({
@@ -57,7 +59,7 @@ const getAppoinments = date => (dispatch) => {
     .catch(error => dispatch(getAppointmentsFailed(error)));
 };
 
-const postAppointmentMove = (appointmentId, params) => (dispatch) => {
+const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_MOVE });
   return apiWrapper.doRequest('postAppointmentMove', {
     path: {
@@ -70,8 +72,19 @@ const postAppointmentMove = (appointmentId, params) => (dispatch) => {
     .then(response => apiWrapper.doRequest('getAppointmentsById', {
       path: {
         id: appointmentId,
-      }}).then(resp => dispatch(postAppointmentMoveSuccess(resp))))
+      }}).then(resp => dispatch(postAppointmentMoveSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
+};
+
+const undoMove = () => (dispatch, getState) => {
+  const { oldAppointmet } = getState().appointmentScreenReducer;
+  const params = {
+    date: oldAppointmet.date,
+    newTime: oldAppointmet.fromTime,
+    employeeId: oldAppointmet.employee.id,
+  };
+  dispatch({ type: UNDO_MOVE });
+  return dispatch(postAppointmentMove(oldAppointmet.id, params, null));
 };
 
 const postAppointmentResize = (appointmentId, params) => (dispatch) => {
@@ -83,8 +96,11 @@ const postAppointmentResize = (appointmentId, params) => (dispatch) => {
     body: {
       ...params,
     },
-  })
-    .then(response => dispatch(postAppointmentResizeSuccess(response)))
+  }).then(response => apiWrapper.doRequest('getAppointmentsById', {
+    path: {
+      id: appointmentId,
+    }
+  }).then(resp => dispatch(postAppointmentResizeSuccess(resp))))
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };
 
@@ -93,6 +109,7 @@ const appointmentActions = {
   getAppoinments,
   postAppointmentMove,
   postAppointmentResize,
+  undoMove,
 };
 
 export default appointmentActions;

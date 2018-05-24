@@ -52,16 +52,11 @@ class Card extends Component {
     this.state = this.calcualteStateValues(props);
   }
 
-  componentWillUpdate(nextProps) {
-    if (nextProps.cellWidth !== this.props.cellWidth ||
-      (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading)) {
-      this.setState(this.calcualteStateValues(nextProps));
-    }
-    if (nextProps.isActive !== this.props.isActive) {
-      if (!nextProps.isActive) {
-        this.setState({ opacity: new Animated.Value(1) });
-      }
-    }
+  shouldComponentUpdate(nextProps) {
+    return nextProps.isActive !== this.props.isActive
+    || nextProps.cellWidth !== this.props.cellWidth ||
+      !nextProps.isLoading && this.props.isLoading ||
+      (this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
   }
 
   calcualteStateValues = (props) => {
@@ -89,13 +84,14 @@ class Card extends Component {
       isActiveEmployeeInCellTime = start.diff(employeeStartTime, 'm') >= 0 &&
         end.diff(employeeEndTime, 'm') <= 0;
     }
+    const opacity = !props.isActive ? 1 : 0.7;
     return {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
       top: new Animated.Value(top),
       height: new Animated.Value(height),
       isResizeing: false,
-      opacity: new Animated.Value(1),
+      opacity,
       cardWidth,
       cardHeight: height,
       zIndex,
@@ -160,58 +156,13 @@ class Card extends Component {
       false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
       this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height._value,
     );
-    Animated.timing(
-      this.state.opacity,
-      {
-        toValue: 0.7,
-      },
-    ).start();
-  }
-
-  resizeTop = (size) => {
-    const { height } = this.state;
-    if (height._value - size >= 30) {
-      this.setState({ height: new Animated.Value(height._value - size), top: new Animated.Value(this.state.top._value + size) });
-      this.state.pan.setValue({ x: this.state.pan.x._value, y: this.state.pan.y._value + size });
-    }
-  }
-
-  resizeBottom = (size) => {
-    const { height } = this.state;
-    if (height._value + size >= 30) {
-      this.setState({ height: new Animated.Value(height._value + size) });
-    }
-  }
-
-  handleResizeReleaseTop = () => {
-    const { height, top, pan } = this.state;
-    const remainderH = height._value % 30;
-    const remainderT = top._value % 30;
-    const newSize = remainderH < 30 / 2 ? height._value - remainderH : height._value + 30 - remainderH;
-    const newTop = remainderH < 30 / 2 ? top._value + remainderH : top._value - 30 + remainderH;
-    Animated.parallel([Animated.spring(this.state.height, { toValue: newSize }),
-      Animated.spring(this.state.top, { toValue: newTop }),
-      Animated.spring(
-        this.state.pan,
-        { toValue: { x: pan.x._value, y: newTop - pan.y._offset } },
-      )]).start(() => {
-      this.setState({ isResizeing: false });
-      this.props.onResize(this.props.appointment.id, {
-        newLength: (this.state.height._value / 30) * this.props.apptGridSettings.step,
-      });
-    });
-  }
-
-  handleResizeReleaseBottom = () => {
-    const { height } = this.state;
-    const remainder = this.state.height._value % 30;
-    const newSize = remainder < 30 / 2 ? height._value - remainder : height._value + 30 - remainder;
-    Animated.spring(this.state.height, { toValue: newSize }).start(() => {
-      this.setState({ isResizeing: false });
-      this.props.onResize(this.props.appointment.id, {
-        newLength: (this.state.height._value / 30) * this.props.apptGridSettings.step,
-      });
-    });
+    //this.setState({ opacity: 0.7 })
+    // Animated.timing(
+    //   this.state.opacity,
+    //   {
+    //     toValue: 0.7,
+    //   },
+    // ).start();
   }
 
   renderAssistant = () => {
@@ -317,6 +268,8 @@ class Card extends Component {
   }
 
   render() {
+    this.state = this.calcualteStateValues(this.props);
+    this.state.opacity = this.props.isActive ? this.state.opacity : 1;
     const {
       client,
       service,
@@ -339,8 +292,9 @@ class Card extends Component {
     let countOpacity2 = 0;
     let countGap2 = 0;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
+    const opacity = this.props.isActive && this.props.isResizeing ? 0 : 1;
     return (
-      <Animated.View key={id} style={{ position: 'absolute', zIndex }}>
+      <Animated.View key={id} style={{ position: 'absolute', zIndex, opacity }}>
         <Animated.View
           style={[styles.container,
             {
@@ -401,96 +355,6 @@ class Card extends Component {
             { showAssistant ? this.renderAssistant() : null }
           </TouchableOpacity>
         </Animated.View>
-        {/* <Animated.View
-          // {...this.panResponder.panHandlers}
-          key={id}
-          style={[styles.container,
-            { width: cardWidth, height, borderColor, backgroundColor: contentColor, borderStyle: isActive ? 'solid' : borderStyle },
-            this.state.pan.getLayout(), shadow,]}
-        >
-          {!isActiveEmployeeInCellTime && !isActive ?
-            <Svg
-              height={height._value - 2}
-              width={cardWidth - 2}
-              style={styles.stripesContainer}
-            >
-              <Defs>
-                <LinearGradient id="grad" x1={0} y1={cardWidth > height._value ?  cardWidth : height._value}
-                  x2={cardWidth > height._value ?  cardWidth : height._value}
-                  y2={0}
-                >
-                  {
-                   times(50).map((index) => {
-                    const gap = countGap;
-                    countGap = index % 2 === 0 ? countGap + 2 : countGap;
-                    if (countOpacity > 0 && countOpacity % 2 === 0) {
-                      countOpacity = index % 2 === 0 ? countOpacity : 0;
-                      return (<Stop key={index} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />)
-                    }
-                    countOpacity += 1;
-                      return (<Stop key={index} offset={`${index + gap}%`} stopColor={contentColor} />)
-                  })
-                  }
-                </LinearGradient>
-              </Defs>
-              <Rect
-                width={cardWidth}
-                height={height._value}
-                fill="url(#grad)"
-                strokeLinecap="round"
-              />
-            </Svg>
-            : null
-          }
-          <TouchableOpacity
-            onLongPress={this.handleOnLongPress}
-            disabled={isActive}
-          >
-            <View style={{ width: '100%', height: '100%' }}>
-              <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-              <Text
-                numberOfLines={1}
-                style={[styles.clientText, { color: clientTextColor }]}
-              >
-                {clientName}
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[styles.serviceText, { color: serviceTextColor }]}
-              >
-                {serviceName}
-              </Text>
-            </View>
-          </TouchableOpacity>
-          {isActive ?
-            <ResizeButton
-              onPress={() => this.setState({ isResizeing: true })}
-              onRelease={this.handleResizeReleaseBottom}
-              onResize={this.resizeBottom}
-              color={colors[color].dark}
-              position={{ left: -8, bottom: -22}}
-              apptGridSettings={this.props.apptGridSettings}
-              height={height._value}
-              calendarMeasure={this.props.calendarMeasure}
-              calendarOffset={this.props.calendarOffset}
-              onScrollY={this.props.onScrollY}
-              top={this.state.top._value}
-            /> : null }
-          {isActive ?
-            <ResizeButton
-              onPress={() => this.setState({ isResizeing: true })}
-              onRelease={this.handleResizeReleaseTop}
-              onResize={this.resizeTop}
-              color={colors[color].dark}
-              position={{ right: -8, top: -22 }}
-              apptGridSettings={this.props.apptGridSettings}
-              height={height._value}
-              calendarMeasure={this.props.calendarMeasure}
-              calendarOffset={this.props.calendarOffset}
-              onScrollY={this.props.onScrollY}
-              top={this.state.top._value}
-            /> : null }
-        </Animated.View> */}
       </Animated.View>
     );
   }

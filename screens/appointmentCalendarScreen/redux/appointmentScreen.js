@@ -2,7 +2,13 @@ import moment from 'moment';
 import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import apiWrapper from '../../../utilities/apiWrapper';
 
-import { POST_APPOINTMENT_MOVE_SUCCESS, POST_APPOINTMENT_MOVE, POST_APPOINTMENT_MOVE_FAILED } from '../../../actions/appointment';
+import { POST_APPOINTMENT_RESIZE,
+  POST_APPOINTMENT_RESIZE_SUCCESS,
+  POST_APPOINTMENT_MOVE_SUCCESS,
+  POST_APPOINTMENT_MOVE,
+  POST_APPOINTMENT_MOVE_FAILED,
+  UNDO_MOVE,
+} from '../../../actions/appointment';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_COMPANY';
@@ -168,17 +174,11 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     selectedFilter,
     selectedProvider,
     startDate,
-    endDate,
     pickerMode,
     apptGridSettings,
     filterOptions,
   } = getState().appointmentScreenReducer;
-  const typeView = selectedProvider !== 'all' ||
-                   selectedProvider !== 'rooms' ||
-                   selectedProvider !== 'resources' ? selectedProvider : pickerMode;
-
   const date = startDate.format('YYYY-MM-DD');
-  const serialized = serializeFilterOptions(filterOptions);
 
   switch (selectedFilter) {
     case 'providers': {
@@ -319,54 +319,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     }
     default:
       break;
-    //
-    // case 'Rooms': {
-    //   Promise.all([
-    //     API.getAppointmentEmployees(date),
-    //     API.getAppointmentsForDate(date),
-    //     api.get(`AppointmentBook/${date}/Rooms/Appointments`),
-    //   ])
-    //     .then(([employees, appointments, rooms]: [AppointmentEmployee[], AppointmentCard[], AppointmentRoom[]]) => {
-    //       dispatch(employeesAppointmentReceived(employees));
-    //       dispatch(getAppointmentByDateSuccess(appointments));
-    //
-    //       dispatch({
-    //         type: consts.APPTB_GET_ROOMS_BY_DATE_SUCCESS,
-    //         data: rooms
-    //       });
-    //
-    //       const idEmpls = employees.map(item => item.id);
-    //
-    //       API.getEmployeeStatsForDay(date, idEmpls)
-    //         .then( (stats: EmployeesStats[]) => dispatch(getEmployeeStatsForDaySuccess(stats)))
-    //         .catch(error => dispatch(getEmployeeStatsForDayFail(error)));
-    //     });
-    //
-    //   break;
-    // }
-    //
-    // case 'Resources': {
-    //   Promise.all([
-    //     API.getAppointmentsResourcesForDate(date),
-    //     API.getSalonResources(),
-    //     API.getAppointmentsForDate(date),
-    //   ])
-    //     .then(([appointmentResources, resources, appointments]: [AppointmentResource[], Resource[], AppointmentCard[]]) => {
-    //       dispatch({
-    //         type: consts.APPTB_GET_RESOURCES_APPOINTMENTS_BY_DATE_SUCCESS,
-    //         data: appointmentResources,
-    //       });
-    //
-    //       dispatch({
-    //         type: consts.APPTB_GET_RESOURCES_SUCCESS,
-    //         data: resources,
-    //       });
-    //
-    //       dispatch(getAppointmentByDateSuccess(appointments));
-    //     });
-    //
-    //   break;
-    // }
   }
 };
 
@@ -624,12 +576,13 @@ export default function appointmentScreenReducer(state = initialState, action) {
         providerSchedule: data.providerSchedule,
       };
     case POST_APPOINTMENT_MOVE:
+    case POST_APPOINTMENT_RESIZE:
       return {
         ...state,
         isLoading: true,
       };
-    case POST_APPOINTMENT_MOVE_SUCCESS: {
-      const appointments = state.appointments;
+    case POST_APPOINTMENT_MOVE_SUCCESS:
+    case POST_APPOINTMENT_RESIZE_SUCCESS: {
       const index = appointments.findIndex(appt => appt.id === data.appointment.id);
       if (index > -1) {
         appointments[index] = data.appointment;
@@ -638,11 +591,13 @@ export default function appointmentScreenReducer(state = initialState, action) {
       }
       const newTime = moment(data.appointment.fromTime, 'HH:mm').format('h:mm a');
       const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
+      const showToast = data.oldAppointment ? `Moved to - ${newTime} ${newDate}` : null;
       return {
         ...state,
         appointments,
         isLoading: false,
-        showToast: `Moved to - ${newTime} ${newDate}`,
+        showToast,
+        oldAppointmet: data.oldAppointment,
       };
     }
     case POST_APPOINTMENT_MOVE_FAILED:
@@ -651,9 +606,11 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: false,
       };
     case HIDE_TOAST:
+    case UNDO_MOVE:
       return {
         ...state,
         showToast: false,
+        oldAppointment: null,
       };
     default:
       return state;
