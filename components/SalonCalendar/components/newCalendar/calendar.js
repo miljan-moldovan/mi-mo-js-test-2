@@ -68,8 +68,8 @@ export default class Calendar extends Component {
     this.size = { width: 0, height: 0 };
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.activeCard,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.activeCard,
+      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.activeCard && !this.state.alert,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.activeCard && !this.state.alert,
       onPanResponderMove: (e, gesture) => {
         const { dy, dx } = gesture;
         if (this.state.activeCard) {
@@ -91,10 +91,10 @@ export default class Calendar extends Component {
       },
       onPanResponderRelease: (e, gesture) => {
         if (this.state.activeCard) {
-          if (!this.state.isResizeing) {
-            this.handleCardDrop();
-          } else {
+          if (this.state.isResizeing) {
             this.handleResizeCard();
+          } else if (this.moveX && this.moveY) {
+            this.handleCardDrop();
           }
         }
       },
@@ -508,9 +508,9 @@ export default class Calendar extends Component {
     const {
       calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
     } = this.state;
-    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
-    const isActive = activeCard && activeCard.appointment.id === appointment.id || buffer.findIndex(appt => appt.id === appointment.id) > -1;
+    const isActive = activeCard && activeCard.appointment.id === appointment.id;
+    const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1
     if (appointment.employee) {
       return (
         <Card
@@ -519,6 +519,7 @@ export default class Calendar extends Component {
           isMultiBlock={filterOptions.showMultiBlock}
           showAssistant={filterOptions.showAssistantAssignments}
           isActive={isActive}
+          isInBuffer={isInBuffer}
           key={appointment.id}
           providers={headerData}
           appointment={appointment}

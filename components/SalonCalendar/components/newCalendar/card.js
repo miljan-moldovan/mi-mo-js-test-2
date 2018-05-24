@@ -53,7 +53,7 @@ class Card extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.isActive !== this.props.isActive
+    return nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
       (this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
@@ -84,7 +84,8 @@ class Card extends Component {
       isActiveEmployeeInCellTime = start.diff(employeeStartTime, 'm') >= 0 &&
         end.diff(employeeEndTime, 'm') <= 0;
     }
-    const opacity = !props.isActive ? 1 : 0.7;
+    const opacity = !props.isActive && !props.isInBuffer ? 1 : 0.7;
+    debugger
     return {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
@@ -269,7 +270,6 @@ class Card extends Component {
 
   render() {
     this.state = this.calcualteStateValues(this.props);
-    this.state.opacity = this.props.isActive ? this.state.opacity : 1;
     const {
       client,
       service,
