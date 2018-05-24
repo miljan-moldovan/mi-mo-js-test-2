@@ -123,7 +123,7 @@ class Card extends Component {
         break;
       case 'providers':
         if (selectedProvider === 'all') {
-          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 64;
+          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 102;
         } else if (selectedProvider !== 'all' && displayMode === 'week') {
           const apptDate = moment(appointment.date).format('YYYY-DD-MM');
           left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
@@ -260,6 +260,7 @@ class Card extends Component {
       service,
       mainServiceColor,
     } = this.props.appointment;
+    const { usedBlocks } = this.state;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
     const serviceTextColor = '#1D1E29';
@@ -267,7 +268,7 @@ class Card extends Component {
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
 
     return (
-      <View style={{ width: '100%', height: '100%' }}>
+      <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
         <Text
           numberOfLines={1}
@@ -275,12 +276,14 @@ class Card extends Component {
         >
           {clientName}
         </Text>
-        <Text
-          numberOfLines={1}
-          style={[styles.serviceText, { color: serviceTextColor }]}
-        >
-          {serviceName}
-        </Text>
+        { usedBlocks > 1 && (
+          <Text
+            numberOfLines={1}
+            style={[styles.serviceText, { color: serviceTextColor }]}
+          >
+            {serviceName}
+          </Text>
+        )}
       </View>
     );
   }
@@ -390,6 +393,7 @@ class Card extends Component {
             : null
           }
           <TouchableOpacity
+            onPress={() => this.props.onPress(this.props.appointment)}
             onLongPress={this.handleOnLongPress}
             disabled={isActive}
           >

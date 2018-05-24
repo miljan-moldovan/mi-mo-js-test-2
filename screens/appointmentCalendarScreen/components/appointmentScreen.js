@@ -97,6 +97,7 @@ export default class AppointmentScreen extends Component {
       isLoading: true,
       bufferVisible: false,
       isAlertVisible: false,
+      selectedAppointment: null,
     };
 
     this.props.navigation.setParams({
@@ -149,6 +150,14 @@ export default class AppointmentScreen extends Component {
     this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
   }
 
+  onCardPressed = (appointment) => {
+    console.log('appt', appointment);
+    this.props.modifyApptActions.setSelectedAppt(appointment);
+    this.setState({
+      visibleAppointment: true,
+    });
+  }
+
   onCalendarCellPressed = (cellId, colData) => {
     const {
       startDate,
@@ -180,7 +189,7 @@ export default class AppointmentScreen extends Component {
       this.props.navigation.setParams({ filterProvider: null, currentFilter: 'providers' });
       this.props.appointmentCalendarActions.setPickerMode('day');
     } else {
-      this.props.navigation.setParams({ filterProvider });
+      this.props.navigation.setParams({ filterProvider, currentFilter: 'providers' });
     }
     this.props.appointmentCalendarActions.setSelectedFilter('providers');
     this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
@@ -225,7 +234,7 @@ export default class AppointmentScreen extends Component {
       deskStaff,
       resourceAppointments,
     } = this.props.appointmentScreenState;
-    // debugger //eslint-disable-line
+
     const { isLoading, bufferVisible } = this.state;
     const { appointmentCalendarActions } = this.props;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
@@ -273,6 +282,7 @@ export default class AppointmentScreen extends Component {
         <SalonCalendar
           onPressAvailability={this.onAvailabilityCellPressed}
           onCellPressed={this.onCalendarCellPressed}
+          onCardPressed={this.onCardPressed}
           apptGridSettings={apptGridSettings}
           dataSource={dataSource}
           appointments={appointments}
@@ -396,8 +406,14 @@ export default class AppointmentScreen extends Component {
         <SalonAppointmentSlide
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
+          appointment={this.props.modifyApptState.appointment}
           onHide={() => {
             this.setState({ visibleAppointment: false });
+          }}
+          handleModify={() => {
+            const { selectedAppointment } = this.state;
+            this.setState({ visibleAppointment: false });
+            this.props.navigation.navigate('ModifyAppointment');
           }}
         />
         {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { ScrollView, Text, Animated, View, StyleSheet } from 'react-native';
+
 import Icon from './../UI/Icon';
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
-
 import ModalBox from './ModalBox';
-
+import { AppointmentTime } from './SalonNewAppointmentSlide';
 import {
   InputGroup,
   InputButton,
@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   panel: {
     flexDirection: 'column',
     backgroundColor: 'transparent',
-    flex: 1,
   },
   panelContainer: {
     backgroundColor: '#FFFFFF',
@@ -48,7 +47,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   panelBlurredSection: {
-    height: 47,
     backgroundColor: 'transparent',
   },
   panelTopIcon: {
@@ -60,6 +58,10 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.20,
+    shadowRadius: 10,
   },
   panelTop: {
     backgroundColor: '#FFFFFF',
@@ -277,16 +279,17 @@ const styles = StyleSheet.create({
 
 });
 
+const AdaptableView = ({isOpen, children}) => (
+  isOpen ? <ScrollView>{children}</ScrollView> : <View>{children}</View>
+);
+
 export default class SalonAppointmentSlide extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: false,
       visible: props.visible,
     };
-  }
-
-  state:{
-    visible: false,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -297,70 +300,95 @@ export default class SalonAppointmentSlide extends React.Component {
 
   _draggedValue = new Animated.Value(-120);
 
-  hidePanel = () => {
-    this.setState({ visible: false });
-    this.props.onHide();
-  }
+  hidePanel = () => this.props.onHide();
 
   keyExtractor = (item, index) => item.id;
 
   render() {
+    const {
+      appointment,
+    } = this.props;
+    if (appointment === null) {
+      return null;
+    }
+    const {
+      client,
+      service,
+      employee,
+    } = appointment;
+    const { isOpen } = this.state;
     return (
       <ModalBox
         isOpen={this.props.visible}
-        coverScreen
+        coverScreen={false}
         onClosingState={() => this.hidePanel()}
-        backdrop={null}
+        backdrop={this.state.isOpen}
+        style={{ flex: 1 }}
       >
-
-        <View style={styles.panel} key={Math.random()}>
-          <View style={styles.panelBlurredSection} />
+        <View
+          style={[styles.panel, { height: new Animated.Value(isOpen ? 300 : 40) }]}
+          key={Math.random()}
+        >
+          <View style={[
+              styles.panelBlurredSection,
+              { height: new Animated.Value(isOpen ? 40 : 300) },
+            ]}
+          />
           <View style={styles.panelContainer}>
-            <SalonTouchableOpacity style={styles.panelTopIcon} onPress={() => this.setState({ visible: false })}>
-              <Icon name="minus" size={45} color="#CCCCCC" type="solid" />
+            <SalonTouchableOpacity
+              style={styles.panelTopIcon}
+              onPress={() => this.setState({ isOpen: !isOpen })}
+            >
+              <View
+                style={{
+                  height: 5,
+                  width: 36,
+                  opacity: 0.2,
+                  borderRadius: 5 / 2,
+                  backgroundColor: '#000000',
+                }}
+              />
             </SalonTouchableOpacity>
             <View style={styles.panelTop}>
               <View style={[styles.panelTopLine, { flex: 1 }]}>
                 <View style={styles.panelTopLineLeft}>
-                  <Text style={styles.panelTopName}>Francis Perci</Text>
-                  <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="solid" />
+                  <Text style={styles.panelTopName}>{`${client.name} ${client.lastName}`}</Text>
+                  <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
                 </View>
                 <View style={styles.panelTopLineRight}>
-                  <SalonTouchableOpacity onPress={() => this.setState({ visible: false })}>
+                  <SalonTouchableOpacity onPress={() => this.hidePanel()}>
                     <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
                   </SalonTouchableOpacity>
                 </View>
               </View>
               <View style={[styles.panelTopLine, { flex: 1 }]}>
                 <View style={styles.panelTopLineLeft}>
-                  <Text style={styles.panelTopService}>Pedicure</Text>
+                  <Text style={styles.panelTopService}>{service.description}</Text>
                 </View>
               </View>
 
               <View style={[styles.panelTopLine, { flex: 1 }]}>
                 <View style={styles.panelTopLineLeft}>
-                  <Icon style={{ paddingTop: 4 }} name="clockO" size={12} color="#AAB3BA" type="solid" />
-                  <Text style={styles.panelTopTimeText}>
-                    {'11:00 AM > 11:15 AM'}
-                  </Text>
+                  <AppointmentTime startTime={appointment.fromTime} endTime={appointment.toTime} />
                 </View>
               </View>
 
-              <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-                <View style={styles.panelTopLineLeft}>
-                  <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
-                </View>
-              </View>
-
-              <View style={[styles.panelTopLine, { alignItems: 'center', height: 25, backgroundColor: '#F1F1F1' }]}>
-                <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
-                  <Text style={styles.panelTopRemarks}>Text of remarks goes here</Text>
-                </View>
-              </View>
+              {appointment.remarks !== '' && [
+                <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+                  <View style={styles.panelTopLineLeft}>
+                    <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+                  </View>
+                </View>,
+                <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
+                  <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+                    <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+                  </View>
+                </View>,
+              ]}
             </View>
 
             <View style={{ height: 600, backgroundColor: '#FFFFFF' }}>
-              <ScrollView >
+              <AdaptableView isOpen={isOpen}>
                 <SalonTouchableOpacity activeOpacity={1}>
                   <View style={styles.panelMiddle}>
                     <View style={styles.panelIcons}>
@@ -395,7 +423,7 @@ export default class SalonAppointmentSlide extends React.Component {
                       </View>
 
                       <View style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => this.props.handleModify()}>
                           <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Modifiy</Text>
@@ -448,7 +476,7 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                          </View>]}
+                            </View>]}
                         </InputButton>,
 
                         <InputButton
@@ -459,7 +487,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Rebook Appointment"
                         >
                           {[<View style={styles.iconContainer}><Icon name="undo" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
                         ]}
                     </InputGroup>
@@ -478,7 +506,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Edit Remarks"
                         >
                           {[<View style={styles.iconContainer}><Icon name="edit" size={18} color="#115ECD" type="solid" />
-                          </View>]}
+                            </View>]}
                         </InputButton>,
 
                         <InputButton
@@ -499,7 +527,7 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                          </View>]}
+                            </View>]}
                         </InputButton>,
                         ]}
                     </InputGroup>
@@ -518,8 +546,11 @@ export default class SalonAppointmentSlide extends React.Component {
                           onPress={() => { alert('Not implemented'); }}
                           label="Email Client"
                         >
-                          {[<View style={styles.iconContainer}><Icon name="envelope" size={18} color="#115ECD" type="solid" />
-                          </View>]}
+                          {[
+                            <View style={styles.iconContainer}>
+                              <Icon name="envelope" size={18} color="#115ECD" type="solid" />
+                            </View>,
+                          ]}
                         </InputButton>,
                         <InputButton
                           noIcon
@@ -529,7 +560,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="SMS Client"
                         >
                           {[<View style={styles.iconContainer}><Icon name="comments" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
                         <InputButton
                           noIcon
@@ -539,7 +570,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Recommended Products"
                         >
                           {[<View style={styles.iconContainer}><Icon name="star" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
 
                         ]}
@@ -547,7 +578,7 @@ export default class SalonAppointmentSlide extends React.Component {
                   </View>
                   <View style={styles.panelDiff} />
                 </SalonTouchableOpacity>
-              </ScrollView>
+              </AdaptableView>
             </View>
           </View>
         </View>

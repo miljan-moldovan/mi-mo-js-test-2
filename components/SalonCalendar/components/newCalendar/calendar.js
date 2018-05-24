@@ -428,6 +428,7 @@ export default class Calendar extends Component {
     if (appointment.employee) {
       return (
         <Card
+          onPress={this.props.onCardPressed}
           isMultiBlock={filterOptions.showMultiBlock}
           showAssistant={filterOptions.showAssistantAssignments}
           isActive={isActive}

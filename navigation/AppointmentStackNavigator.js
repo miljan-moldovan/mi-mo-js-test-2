@@ -42,6 +42,7 @@ import ServiceCheckScreen from './../screens/serviceCheckScreen';
 import ServiceCheckResultScreen from './../screens/serviceCheckResultScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
+import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -92,6 +93,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
+    },
+    ModifyAppointment: {
+      screen: ModifyAppointmentScreen,
     },
     // ModifyService2: {
     //   screen: ModifyServiceScreen,

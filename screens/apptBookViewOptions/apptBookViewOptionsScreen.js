@@ -4,6 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -301,8 +302,7 @@ class ApptBookViewOptionsScreen extends Component {
                       }}
                   value={this.state.options.showOffEmployees}
                   text="Show employees that are off"
-                />,
-                <InputDivider key={Math.random()} />]}
+                />]}
             </InputGroup>
           </KeyboardAwareScrollView>
         </View>

@@ -127,7 +127,7 @@ export default class Header extends Component {
     const {
       isDate, isRoom, isResource, showFirstAvailable, handleShowfirstAvailalble,
     } = this.props;
-    const width = isDate || isRoom || isResource ? 36 : 100;
+    const width = isDate || isRoom || isResource ? 36 : 138;
 
     return (
       <View style={styles.container} pointerEvents="box-none">
