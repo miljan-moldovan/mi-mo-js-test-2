@@ -54,11 +54,15 @@ class Card extends Component {
     };
   }
 
+  componentWillUpdate(nextProps) {
+    this.state.height = nextProps.height !== this.props.height ? nextProps.height : this.state.height;
+  }
+
   handleOnLongPress = () => {
-    const { appointment, cardWidth, height, onLongPress } = this.props
-    this.card.measureInWindow((x, y) => {
-      onLongPress(false, appointment, x, y, cardWidth, height, true);
-    });
+    // const { appointment, cardWidth, height, onLongPress } = this.props
+    // this.card.measureInWindow((x, y) => {
+    //   onLongPress(false, appointment, x, y, cardWidth, height, true);
+    // });
   }
 
   resizeCard = (size) => {
@@ -71,7 +75,6 @@ class Card extends Component {
   }
 
   render() {
-    console.log('BaconNewCard')
     const {
       client,
       service,

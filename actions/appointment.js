@@ -38,9 +38,9 @@ const postAppointmentMoveFailed = error => ({
   data: { error },
 });
 
-const postAppointmentResizeSuccess = response => ({
+const postAppointmentResizeSuccess = appointment => ({
   type: POST_APPOINTMENT_RESIZE_SUCCESS,
-  data: { response },
+  data: { appointment },
 });
 
 const postAppointmentResizeFailed = error => ({
@@ -96,8 +96,11 @@ const postAppointmentResize = (appointmentId, params) => (dispatch) => {
     body: {
       ...params,
     },
-  })
-    .then(response => dispatch(postAppointmentResizeSuccess(response)))
+  }).then(response => apiWrapper.doRequest('getAppointmentsById', {
+    path: {
+      id: appointmentId,
+    }
+  }).then(resp => dispatch(postAppointmentResizeSuccess(resp))))
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };
 

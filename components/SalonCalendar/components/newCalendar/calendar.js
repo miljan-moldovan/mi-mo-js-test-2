@@ -68,10 +68,9 @@ export default class Calendar extends Component {
     this.size = { width: 0, height: 0 };
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
-      onMoveShouldSetPanResponder: (evt, gestureState) => {console.log('BaconMoveSet'); return this.state.activeCard},
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {console.log('BaconMoveCapture'); return this.state.activeCard},
+      onMoveShouldSetPanResponder: (evt, gestureState) => this.state.activeCard,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => return this.state.activeCard,
       onPanResponderMove: (e, gesture) => {
-        console.log('BaconMovePre')
         const { dy, dx } = gesture;
         if (this.state.activeCard) {
           if (!this.state.isResizeing) {
@@ -84,17 +83,19 @@ export default class Calendar extends Component {
           }
           const size = this.moveY ? dy - this.moveY : dy;
           this.moveY = dy;
-          console.log('BaconMove')
           if (this.resizeCard) {
             this.state.activeCard.height = this.resizeCard.resizeCard(size);
-            console.log('BaconMoveRe', this.state.activeCard.height)
           }
         }
         return null;
       },
       onPanResponderRelease: (e, gesture) => {
         if (this.state.activeCard) {
-          this.handleBufferDrop();
+          if (!this.state.isResizeing) {
+            this.handleCardDrop();
+          } else {
+            this.handleResizeCard();
+          }
         }
       },
     });
@@ -245,21 +246,19 @@ export default class Calendar extends Component {
     const {
       selectedProvider, headerData, apptGridSettings, bufferVisible, displayMode,
     } = this.props;
-    const { calendarMeasure, pan, activeCard } = this.state;
+    const { calendarMeasure, pan, activeCard, isResizeing } = this.state;
     let dy = 0;
     const boundLength = 30;
     const maxScrollChange = 15
-    if (activeCard) {
-      const coordinatesY = activeCard.top;// + offsetY;
+    if (isResizeing) {
+      const coordinatesY = activeCard.top;
       const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height;
       const scrollVerticalBoundTop = this.offset.y + calendarMeasure.height - boundLength;
       const scrollVerticalBoundBottom = this.offset.y + boundLength;
       const newMoveY = coordinatesY + activeCard.height;
       if (scrollVerticalBoundTop < newMoveY) {
-        //debugger
         dy = this.offset.y < maxHeigth ? newMoveY - scrollVerticalBoundTop : 0;
       } else if (scrollVerticalBoundBottom > newMoveY) {
-        //debugger
         dy = newMoveY - scrollVerticalBoundBottom;
       }
       if (dy !== 0) {
@@ -275,7 +274,6 @@ export default class Calendar extends Component {
         activeCard.height = this.resizeCard.resizeCard(dy);
         this.scrollToY(this.offset.y);
       }
-      console.log('BaconScroll', moveY);
       requestAnimationFrame(this.scrollAnimationResize);
     }
   }
@@ -322,20 +320,10 @@ export default class Calendar extends Component {
     if (!isResizeing) {
       this.moveX = 0;
       this.moveY = 0;
-      // const offsetY = this.offset.y - 40;
-      // const offsetX = this.offset.x - 36;
-      // const { pan } = this.state;
-      // const newTop = pan.y._value + pan.y._offset + offsetY;
-      // const newLeft = pan.x._value + pan.x._offset + offsetX;
-      // debugger
-      // pan.setOffset({ x: newLeft, y: newTop });
-      // pan.setValue({ x: 0, y: 0 });
       const newState = {
         isResizeing: true,
       };
-      console.log('BaconMovePress');
       this.setState(newState, this.scrollAnimationResize);
-      //this.setState(newState);
     }
   }
 
@@ -359,7 +347,21 @@ export default class Calendar extends Component {
     this.props.onDrop(appointmentId, params);
   }
 
-  handleBufferDrop = () => {
+  handleResizeCard = () => {
+    this.moveX = null;
+    this.moveY = null;
+    const { activeCard } = this.state;
+    const newHeight = Math.round(activeCard.height / 30);
+    activeCard.height = newHeight * 30;
+    const params = { newLength: newHeight };
+    this.setState({
+      isResizeing: false,
+      activeCard
+    },
+      () => this.props.onResize(activeCard.appointment.id, params));
+  }
+
+  handleCardDrop = () => {
     if (this.props.bufferVisible) {
       const {
         buffer, activeCard, pan, calendarMeasure: { height },
@@ -373,7 +375,7 @@ export default class Calendar extends Component {
         }
         this.setState({ activeCard: null });
       } else {
-        this.handleReleaseAll();
+        this.handleReleaseCard();
       }
     }
   }
@@ -403,7 +405,7 @@ export default class Calendar extends Component {
     this.hideAlert();
   }
 
-  handleReleaseAll = () => {
+  handleReleaseCard = () => {
     this.moveX = null;
     this.moveY = null;
     const cellHeight = 30;
@@ -446,10 +448,6 @@ export default class Calendar extends Component {
         },
       });
     }
-  }
-
-  handleResize = (appointmentId, params) => {
-    this.props.onResize(appointmentId, params);
   }
 
   hideAlert = () => this.setState({ alert: null, activeCard: null });
@@ -496,10 +494,11 @@ export default class Calendar extends Component {
     } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
-    const isActive = !!activeCard && activeCard.appointment.id === appointment.id || buffer.findIndex(appt => appt.id === appointment.id) > -1;
+    const isActive = activeCard && activeCard.appointment.id === appointment.id || buffer.findIndex(appt => appt.id === appointment.id) > -1;
     if (appointment.employee) {
       return (
         <Card
+          isResizeing={this.state.isResizeing}
           isMultiBlock={filterOptions.showMultiBlock}
           isActive={isActive}
           key={appointment.id}
@@ -543,7 +542,7 @@ export default class Calendar extends Component {
         onResize={this.handleOnResize}
         cardWidth={activeCard.cardWidth}
         height={activeCard.height}
-        onDrop={this.handleBufferDrop}
+        onDrop={this.handleCardDrop}
         pan={this.state.pan}
         isActive
         opacity={isResizeing ? 0 : 1}
@@ -556,7 +555,6 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
     } = this.props;
-    console.log('baconmoverenderesize')
     const { activeCard, calendarMeasure, isResizeing } = this.state;
     const offsetY = this.offset.y - 40;
     const offsetX = this.offset.x - 36;
@@ -575,7 +573,7 @@ export default class Calendar extends Component {
         onResize={this.handleOnResize}
         cardWidth={activeCard.cardWidth}
         height={activeCard.height}
-        onDrop={this.handleBufferDrop}
+        onDrop={this.handleCardDrop}
         opacity={isResizeing ? 1 : 0}
         pan={newPan}
         isActive
@@ -598,7 +596,6 @@ export default class Calendar extends Component {
       width: this.size.width,
       height: bufferVisible ? this.size.height + 110 : this.size.heigh,
     };
-    // debugger//eslint-disable-line
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <View style={{ flex: 1, backgroundColor: '#fff' }} {...this.panResponder.panHandlers} ref={(view) => { this.calendar = view; }}>

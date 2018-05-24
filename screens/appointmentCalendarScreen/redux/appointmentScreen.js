@@ -2,7 +2,13 @@ import moment from 'moment';
 import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import apiWrapper from '../../../utilities/apiWrapper';
 
-import { POST_APPOINTMENT_MOVE_SUCCESS, POST_APPOINTMENT_MOVE, POST_APPOINTMENT_MOVE_FAILED, UNDO_MOVE } from '../../../actions/appointment';
+import { POST_APPOINTMENT_RESIZE,
+  POST_APPOINTMENT_RESIZE_SUCCESS,
+  POST_APPOINTMENT_MOVE_SUCCESS,
+  POST_APPOINTMENT_MOVE,
+  POST_APPOINTMENT_MOVE_FAILED,
+  UNDO_MOVE,
+} from '../../../actions/appointment';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_COMPANY';
@@ -542,26 +548,22 @@ export default function appointmentScreenReducer(state = initialState, action) {
         providerSchedule: data.providerSchedule,
       };
     case POST_APPOINTMENT_MOVE:
+    case POST_APPOINTMENT_RESIZE:
       return {
         ...state,
         isLoading: true,
       };
-    case POST_APPOINTMENT_MOVE_SUCCESS: {
+    case POST_APPOINTMENT_MOVE_SUCCESS:
+    case POST_APPOINTMENT_RESIZE_SUCCESS: {
       const index = appointments.findIndex(appt => appt.id === data.appointment.id);
       if (index > -1) {
-        const oldDate = moment(appointments[index].date, 'YYYY-MM-DD').format('YYYY-MM-DD');
-        const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('YYYY-MM-DD');
-        if (oldDate !== newDate) {
-          appointments.splice(index, 1);
-        } else {
-          appointments[index] = data.appointment;
-        }
+        appointments[index] = data.appointment;
       } else {
         appointments.push(data.appointment);
       }
       const newTime = moment(data.appointment.fromTime, 'HH:mm').format('h:mm a');
       const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
-      const showToast = !!data.oldAppointment ? `Moved to - ${newTime} ${newDate}` : null;
+      const showToast = data.oldAppointment ? `Moved to - ${newTime} ${newDate}` : null;
       return {
         ...state,
         appointments,
