@@ -453,9 +453,14 @@ export class ServiceInput extends React.Component {
   }
 
   render() {
-    let value = this.state.selectedService && this.state.selectedService.name ? this.state.selectedService.name : (this.state.selectedService && 'serviceName' in this.state.selectedService ? this.state.selectedService.serviceName : null);
-    if (value === null) {
-      value = this.state.selectedService.description;
+    const {
+      selectedService,
+    } = this.state;
+    let value = selectedService && selectedService.name ?
+      selectedService.name :
+      selectedService && 'serviceName' in selectedService ? selectedService.serviceName : null;
+    if (value === null && selectedService !== null) {
+      value = selectedService.description;
     }
     return (
       <SalonTouchableOpacity

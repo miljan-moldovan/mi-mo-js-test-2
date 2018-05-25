@@ -69,7 +69,7 @@ const setFilterOptionRoomAssignments = showRoomAssignments => ({
 });
 
 const setFilterOptionAssistantAssignments = showAssistantAssignments => ({
-  type: SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
+  type: SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS,
   data: { showAssistantAssignments },
 });
 

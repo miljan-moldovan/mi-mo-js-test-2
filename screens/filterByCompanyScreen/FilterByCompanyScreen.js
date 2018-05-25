@@ -68,7 +68,7 @@ export default class FilterByCompanyScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Filter By Position',
     headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.goBack()}>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
           Cancel
         </Text>
@@ -109,7 +109,10 @@ export default class FilterByCompanyScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setParams({ handleSave: this.handleSave });
+    this.props.navigation.setParams({
+      handleSave: this.handleSave,
+      goBack: this.goBack,
+    });
     this.state = {
       isLoading: false,
       refreshing: false,
@@ -163,6 +166,14 @@ export default class FilterByCompanyScreen extends React.Component {
     const { onChangeCompany, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeCompany) { onChangeCompany(this.state.selectedCompany); }
     if (dismissOnSelect) { onNavigateBack(); }
+  }
+
+  goBack = () => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
+    if (dismissOnSelect) { onNavigateBack(); this.props.navigation.goBack(); }
   }
 
   renderItem = ({ item, index }) => {
