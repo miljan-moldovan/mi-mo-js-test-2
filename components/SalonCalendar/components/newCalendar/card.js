@@ -68,7 +68,7 @@ class Card extends Component {
       startTime, cellWidth, displayMode, selectedProvider, groupedProviders, providerSchedule,
     } = props;
     const apptDate = moment(date).format('YYYY-MM-DD');
-    const provider = displayMode === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
+    const provider = selectedProvider === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
@@ -85,7 +85,6 @@ class Card extends Component {
         end.diff(employeeEndTime, 'm') <= 0;
     }
     const opacity = !props.isActive && !props.isInBuffer ? 1 : 0.7;
-    debugger
     return {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
