@@ -69,7 +69,7 @@ export default class Calendar extends Component {
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
       onMoveShouldSetPanResponder: (evt, gestureState) => this.state.activeCard,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => return this.state.activeCard,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.activeCard,
       onPanResponderMove: (e, gesture) => {
         const { dy, dx } = gesture;
         if (this.state.activeCard) {
@@ -124,10 +124,11 @@ export default class Calendar extends Component {
 
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
-      if (selectedFilter === 'providers') {
+      if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
         if (selectedProvider === 'all') {
+          const firstColumnWidth = selectedFilter === 'providers' ? 138 : 36;
           this.size = {
-            width: headerData.length * providerWidth + 100,
+            width: headerData.length * providerWidth + firstColumnWidth,
             height: apptGridSettings.numOfRow * 30 + headerHeight,
           };
           this.cellWidth = providerWidth;
@@ -246,10 +247,12 @@ export default class Calendar extends Component {
     const {
       selectedProvider, headerData, apptGridSettings, bufferVisible, displayMode,
     } = this.props;
-    const { calendarMeasure, pan, activeCard, isResizeing } = this.state;
+    const {
+      calendarMeasure, pan, activeCard, isResizeing,
+    } = this.state;
     let dy = 0;
     const boundLength = 30;
-    const maxScrollChange = 15
+    const maxScrollChange = 15;
     if (isResizeing) {
       const coordinatesY = activeCard.top;
       const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height;
@@ -354,11 +357,13 @@ export default class Calendar extends Component {
     const newHeight = Math.round(activeCard.height / 30);
     activeCard.height = newHeight * 30;
     const params = { newLength: newHeight };
-    this.setState({
-      isResizeing: false,
-      activeCard
-    },
-      () => this.props.onResize(activeCard.appointment.id, params));
+    this.setState(
+      {
+        isResizeing: false,
+        activeCard,
+      },
+      () => this.props.onResize(activeCard.appointment.id, params),
+    );
   }
 
   handleCardDrop = () => {
@@ -593,7 +598,9 @@ export default class Calendar extends Component {
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
-    const { alert, activeCard, showFirstAvailable, isResizeing } = this.state;
+    const {
+      alert, activeCard, showFirstAvailable, isResizeing,
+    } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const size = {
       width: this.size.width,
@@ -626,7 +633,7 @@ export default class Calendar extends Component {
                 startTime={startTime}
                 apptGridSettings={apptGridSettings}
                 timeSchedules={dataSource}
-                showAvailability={!isDate && !isRoom && !isResource}
+                showAvailability={selectedFilter === 'providers' && !isDate}
                 cellWidth={this.cellWidth}
                 displayMode={displayMode}
                 selectedProvider={selectedProvider}
@@ -648,8 +655,7 @@ export default class Calendar extends Component {
                 <Header
                   dataSource={headerData}
                   isDate={isDate}
-                  isRoom={isRoom}
-                  isResource={isResource}
+                  selectedFilter={selectedFilter}
                   cellWidth={this.cellWidth}
                   handleShowfirstAvailalble={this.handleShowfirstAvailalble}
                   showFirstAvailable={showFirstAvailable}

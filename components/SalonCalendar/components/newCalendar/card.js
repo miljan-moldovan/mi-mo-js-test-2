@@ -117,9 +117,10 @@ class Card extends Component {
       case 'resources':
         left = providers.findIndex(resource => resource.id === appointment.resource.id) * cellWidth;
         break;
+      case 'deskStaff':
       case 'providers':
         if (selectedProvider === 'all') {
-          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 102;
+          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 138;
         } else if (selectedProvider !== 'all' && displayMode === 'week') {
           const apptDate = moment(appointment.date).format('YYYY-DD-MM');
           left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
@@ -156,7 +157,7 @@ class Card extends Component {
       false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
       this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height._value,
     );
-    //this.setState({ opacity: 0.7 })
+    // this.setState({ opacity: 0.7 })
     // Animated.timing(
     //   this.state.opacity,
     //   {

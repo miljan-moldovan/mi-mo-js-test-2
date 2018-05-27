@@ -32,14 +32,16 @@ const styles = {
     flexDirection: 'row',
     backgroundColor: '#D8D8D8',
     borderRadius: 4,
-    paddingHorizontal: 4,
+    paddingHorizontal: 2,
     borderStyle: 'dashed',
     borderWidth: 1,
     borderColor: '#c7c7ce',
   },
   listView: {
     height: 56,
+    width: '100%',
     alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   title: {
     fontFamily: 'Roboto',
@@ -64,20 +66,18 @@ const styles = {
 };
 
 export default class calendarBuffer extends React.Component {
-  renderCard = ({item}) => {
-    return (
-      <NewCard
-        key={item.id}
-        appointment={item}
-        cardWidth={85}
-        height={46}
-        left={0}
-        top={0}
-        onDrop={() => {}}
-        onLongPress={this.props.onCardLongPress}
-      />
-    )
-  }
+  renderCard = ({ item }) => (
+    <NewCard
+      key={item.id}
+      appointment={item}
+      cardWidth={85}
+      height={46}
+      left={0}
+      top={0}
+      onDrop={() => {}}
+      onLongPress={this.props.onCardLongPress}
+    />
+  )
 
   handleDragEnd = (position) => {
     const { screenHeight } = this.props;
@@ -96,7 +96,7 @@ export default class calendarBuffer extends React.Component {
     }
   }
 
-  renderSeparator = () => (<View style={{width: 4, opacity: 0}}/>);
+  renderSeparator = () => (<View style={{ width: 4, opacity: 0 }} />);
 
   render() {
     return (
@@ -110,9 +110,9 @@ export default class calendarBuffer extends React.Component {
           ref={(view) => { this.slider = view; }}
         >
           <View style={styles.cardContainer}>
-            <View style={{flexDirection: 'row', justifyContent:'center',alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.titleContainers}>
-                <View style={styles.dragHandle}/>
+                <View style={styles.dragHandle} />
                 <Text style={styles.title}>MOVE APPOINTMENT</Text>
               </View>
               <TouchableOpacity
@@ -127,15 +127,18 @@ export default class calendarBuffer extends React.Component {
                 />
               </TouchableOpacity>
             </View>
-            <View style={styles.listContainer}>
-              <FlatList
+            <View style={[styles.listContainer]}>
+              {/* <FlatList
                 contentContainerStyle={styles.listView}
                 style={{ flex: 1 }}
                 horizontal
                 data={this.props.dataSource}
                 renderItem={this.renderCard}
                 ItemSeparatorComponent={this.renderSeparator}
-              />
+              /> */}
+              <View style={[{ flexDirection: 'row' }, styles.listView]}>
+                {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt }))}
+              </View>
             </View>
           </View>
         </SlidingUpPanel>

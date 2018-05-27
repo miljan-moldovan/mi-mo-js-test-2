@@ -44,6 +44,7 @@ export default class Column extends Component {
     let style = styles.cellContainerDisabled;
     let schedule;
     switch (selectedFilter) {
+      case 'deskStaff':
       case 'providers': {
         if (isDate) {
           [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
@@ -144,6 +145,9 @@ export default class Column extends Component {
 
   render() {
     const { rows, showRoomAssignments } = this.props;
+    // if (!rows) {
+    //   return null;
+    // }
     const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>

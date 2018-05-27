@@ -231,7 +231,7 @@ export const InputButton = props => (
       {
         typeof props.value === 'string'
         ? (
-          <Text style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
+          <Text numberOfLines={1} style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
         ) :
           props.value
       }

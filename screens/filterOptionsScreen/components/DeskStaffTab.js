@@ -108,7 +108,7 @@ export default class DeskStaffTab extends React.Component {
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
       style={styles.itemRow}
-      onPress={() => this._handleOnChangeProvider(item)}
+      onPress={() => this.props.handleSelect(item)}
       key={index}
     >
       <View style={styles.inputRow}>
@@ -140,7 +140,7 @@ export default class DeskStaffTab extends React.Component {
       <View style={styles.container}>
         <SalonTouchableOpacity
           style={styles.row}
-          onPress={() => this._handleOnChangeProvider('all')}
+          onPress={() => this.props.handleSelect('all')}
         >
           <Text style={styles.rowText}>View All Desk Staff</Text>
         </SalonTouchableOpacity>
