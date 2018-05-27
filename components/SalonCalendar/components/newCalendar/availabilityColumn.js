@@ -48,7 +48,8 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}) => {
 const availabilityColumn = ({ availability, apptGridSettings, onPress }) => (
   <View>
     {
-      availability.map((item, index) => renderItems(item, index, apptGridSettings, onPress))
+      availability.length > 0 ? availability.map((item, index) => renderItems(item, index, apptGridSettings, onPress))
+      : null
     }
   </View>
 );

@@ -404,6 +404,9 @@ export default class Calendar extends Component {
     if (index > -1) {
       oldAppointment = buffer[index];
       buffer.splice(index, 1);
+      if (buffer.length < 1) {
+        this.props.manageBuffer(false);
+      }
     } else {
       oldAppointment = appointments.find(item => item.id === appointmentId);
     }
@@ -473,6 +476,27 @@ export default class Calendar extends Component {
     this.setState({ showFirstAvailable: !showFirstAvailable });
   }
 
+  closeBuffer = () => {
+    const { buffer } = this.state;
+    const alert = buffer.length > 0 ? {
+      title: 'Close Move Bar',
+      description: 'You still have appointments in the move bar. Do you want to return all of these appointments to their original place and close the move bar?',
+      btnLeftText: 'No',
+      btnRightText: 'Yes',
+      handleMove: () => {
+        this.props.manageBuffer(false);
+        this.setState({ buffer: [], alert: null });
+      }
+    } : null;
+
+    if (!alert) {
+      this.props.manageBuffer(false);
+      this.setState({ buffer: [] });
+    } else {
+      this.setState({ alert });
+    }
+  }
+
   renderCards = () => {
     const {
       appointments, rooms, selectedFilter,
@@ -510,7 +534,8 @@ export default class Calendar extends Component {
     } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
-    const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1
+    const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
+    debugger
     if (appointment.employee) {
       return (
         <Card
@@ -680,6 +705,7 @@ export default class Calendar extends Component {
             manageBuffer={this.props.manageBuffer}
             onCardLongPress={this.handleOnDrag}
             screenHeight={screenHeight}
+            closeBuffer={this.closeBuffer}
           />
           { this.renderActiveCard() }
           <SalonAlert
