@@ -53,7 +53,7 @@ class Card extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.isActive !== this.props.isActive
+    return nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
       (this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
@@ -68,7 +68,7 @@ class Card extends Component {
       startTime, cellWidth, displayMode, selectedProvider, groupedProviders, providerSchedule,
     } = props;
     const apptDate = moment(date).format('YYYY-MM-DD');
-    const provider = displayMode === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
+    const provider = selectedProvider === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
@@ -84,7 +84,7 @@ class Card extends Component {
       isActiveEmployeeInCellTime = start.diff(employeeStartTime, 'm') >= 0 &&
         end.diff(employeeEndTime, 'm') <= 0;
     }
-    const opacity = !props.isActive ? 1 : 0.7;
+    const opacity = !props.isActive && !props.isInBuffer ? 1 : 0.7;
     return {
       pan: new Animated.ValueXY({ x: left, y: top }),
       left,
@@ -270,7 +270,6 @@ class Card extends Component {
 
   render() {
     this.state = this.calcualteStateValues(this.props);
-    this.state.opacity = this.props.isActive ? this.state.opacity : 1;
     const {
       client,
       service,

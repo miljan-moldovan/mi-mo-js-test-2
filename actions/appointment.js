@@ -1,3 +1,4 @@
+import moment from 'moment';
 import apiWrapper from '../utilities/apiWrapper';
 
 export const ADD_APPOINTMENT = 'appointment/ADD_APPOINTMENT';
@@ -38,9 +39,9 @@ const postAppointmentMoveFailed = error => ({
   data: { error },
 });
 
-const postAppointmentResizeSuccess = appointment => ({
+const postAppointmentResizeSuccess = (appointment, oldAppointment) => ({
   type: POST_APPOINTMENT_RESIZE_SUCCESS,
-  data: { appointment },
+  data: { appointment, oldAppointment },
 });
 
 const postAppointmentResizeFailed = error => ({
@@ -76,18 +77,7 @@ const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
 
-const undoMove = () => (dispatch, getState) => {
-  const { oldAppointmet } = getState().appointmentScreenReducer;
-  const params = {
-    date: oldAppointmet.date,
-    newTime: oldAppointmet.fromTime,
-    employeeId: oldAppointmet.employee.id,
-  };
-  dispatch({ type: UNDO_MOVE });
-  return dispatch(postAppointmentMove(oldAppointmet.id, params, null));
-};
-
-const postAppointmentResize = (appointmentId, params) => (dispatch) => {
+const postAppointmentResize = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_RESIZE });
   return apiWrapper.doRequest('postAppointmentResize', {
     path: {
@@ -100,9 +90,39 @@ const postAppointmentResize = (appointmentId, params) => (dispatch) => {
     path: {
       id: appointmentId,
     }
-  }).then(resp => dispatch(postAppointmentResizeSuccess(resp))))
+  }).then(resp => dispatch(postAppointmentResizeSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };
+
+const undoMove = () => (dispatch, getState) => {
+  const { oldAppointment, undoType, apptGridSettings } = getState().appointmentScreenReducer;
+  let params;
+  switch (undoType) {
+    case 'move': {
+      params = {
+        date: oldAppointment.date,
+        newTime: oldAppointment.fromTime,
+        employeeId: oldAppointment.employee.id,
+      };
+      dispatch({ type: UNDO_MOVE });
+      return dispatch(postAppointmentMove(oldAppointment.id, params, null));
+    }
+    case 'resize': {
+      const toTime = moment(oldAppointment.toTime, 'HH:mm');
+      const fromTime = moment(oldAppointment.fromTime, 'HH:mm');
+      const newLength = toTime.diff(fromTime, 'minutes') / apptGridSettings.step;
+      params = {
+        newLength,
+      };
+      dispatch({ type: UNDO_MOVE });
+      return dispatch(postAppointmentResize(oldAppointment.id, params, null));
+    }
+    default:
+      break;
+  }
+
+};
+
 
 const appointmentActions = {
   addAppointment,

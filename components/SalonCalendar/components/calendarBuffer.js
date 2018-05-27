@@ -61,7 +61,7 @@ const styles = {
   titleContainers: {
     alignItems: 'center',
     flex: 1,
-    paddingLeft: 16,
+    paddingLeft: 46,
   },
 };
 

@@ -59,10 +59,12 @@ class Card extends Component {
   }
 
   handleOnLongPress = () => {
-    // const { appointment, cardWidth, height, onLongPress } = this.props
-    // this.card.measureInWindow((x, y) => {
-    //   onLongPress(false, appointment, x, y, cardWidth, height, true);
-    // });
+    const { appointment, cardWidth, height, onLongPress } = this.props
+    if (onLongPress) {
+      this.card.measureInWindow((x, y) => {
+        onLongPress(false, appointment, x, y, cardWidth, height, true);
+      });
+    }
   }
 
   resizeCard = (size) => {
@@ -142,7 +144,6 @@ class Card extends Component {
         </TouchableOpacity>
         {isActive && !isBufferCard ?
           <ResizeButton
-            // onRelease={this.handleResizeReleaseBottom}
             onPress={this.props.onResize}
             onResize={this.resizeCard}
             color={colors[color].dark}
