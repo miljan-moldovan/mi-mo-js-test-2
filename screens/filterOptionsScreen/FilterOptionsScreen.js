@@ -124,10 +124,6 @@ export default class FilterOptionsScreen extends React.Component {
     this.onRefresh();
   }
 
-  handleReset = () => {
-    this._handleOnChangeProvider('all');
-  }
-
   onPressTab = (ev, index) => {
     this.setState({ activeTab: index });
   }
@@ -139,6 +135,37 @@ export default class FilterOptionsScreen extends React.Component {
       sortOrder: 'asc',
       sortField: 'fullName',
     });
+  }
+
+  handleReset = () => {
+    this.handleChangeProvider('all');
+  }
+
+  handleChangeProvider = (provider) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter('providers', provider); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
+
+  handleChangeDeskStaff = (provider) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter('deskStaff', provider); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  }
+
+  handleChangeOther = (filter) => {
+    if (!this.props.navigation.state || !this.props.navigation.state.params) {
+      return;
+    }
+    const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter(filter); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   filterProviders = (searchText) => {
@@ -167,7 +194,7 @@ export default class FilterOptionsScreen extends React.Component {
           <View style={styles.container}>
             <SalonTouchableOpacity
               style={styles.row}
-              onPress={() => this._handleOnChangeProvider('all')}
+              onPress={() => this.handleChangeProvider('all')}
             >
               <Text style={styles.rowText}>View all providers</Text>
             </SalonTouchableOpacity>
@@ -221,7 +248,7 @@ export default class FilterOptionsScreen extends React.Component {
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
       style={styles.itemRow}
-      onPress={() => this._handleOnChangeProvider(item)}
+      onPress={() => this.handleChangeProvider(item)}
       key={index}
     >
       <View style={styles.inputRow}>
@@ -303,23 +330,5 @@ export default class FilterOptionsScreen extends React.Component {
         </View>
       </View>
     );
-  }
-
-  _handleOnChangeProvider = (provider) => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
-    }
-    const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
-  }
-
-  handleChangeOther = (filter) => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
-    }
-    const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter(filter); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 }

@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
 
 });
 
-const AdaptableView = ({isOpen, children}) => (
+const AdaptableView = ({ isOpen, children }) => (
   isOpen ? <ScrollView>{children}</ScrollView> : <View>{children}</View>
 );
 
@@ -320,21 +320,25 @@ export default class SalonAppointmentSlide extends React.Component {
     return (
       <ModalBox
         isOpen={this.props.visible}
-        coverScreen={false}
+        coverScreen
         onClosingState={() => this.hidePanel()}
-        backdrop={this.state.isOpen}
+        backdrop
         style={{ flex: 1 }}
       >
         <View
-          style={[styles.panel, { height: new Animated.Value(isOpen ? 300 : 40) }]}
+          style={[styles.panel, { flex: 1 }]}
           key={Math.random()}
         >
           <View style={[
               styles.panelBlurredSection,
-              { height: new Animated.Value(isOpen ? 40 : 300) },
+              { flex: isOpen ? 1 / 11 : 3 / 5 },
             ]}
           />
-          <View style={styles.panelContainer}>
+          <View style={[
+            styles.panelContainer,
+            { flex: isOpen ? 10 / 11 : 2 / 5 },
+          ]}
+          >
             <SalonTouchableOpacity
               style={styles.panelTopIcon}
               onPress={() => this.setState({ isOpen: !isOpen })}

@@ -5,9 +5,9 @@ import Svg, {
   LinearGradient,
   Rect,
   Defs,
-  Stop
+  Stop,
 } from 'react-native-svg';
-import { times } from 'lodash'
+import { times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
 import ResizeButton from '../resizeButtons';
@@ -87,7 +87,9 @@ class Card extends Component {
       isFirstAvailable,
     } = this.props.appointment;
     const { height } = this.state;
-    const { calendarMeasure, calendarOffset, onScrollY, cardWidth, isActive, isBufferCard, apptGridSettings, opacity } = this.props;
+    const {
+      calendarMeasure, calendarOffset, onScrollY, cardWidth, isActive, isBufferCard, apptGridSettings, opacity,
+    } = this.props;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const clientName = `${client.name} ${client.lastName}`;
     const serviceName = service.description;
@@ -101,13 +103,25 @@ class Card extends Component {
       shadowOpacity: 0.4,
       shadowRadius: 4,
     };
-    const position = isActive ? { position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow } : { position: 'relative'};
+    const position = isActive ? {
+      position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow,
+    } : { position: 'relative' };
     return (
       <Animated.View
         key={id}
-        style={[styles.container,
-          { opacity, width: cardWidth, height, borderColor, backgroundColor: contentColor },
-          position,]}
+        style={[
+          styles.container,
+          {
+            opacity,
+            // width: cardWidth,
+            flex: 1 / 4,
+            marginHorizontal: 2,
+            height,
+            borderColor,
+            backgroundColor: contentColor,
+          },
+          position,
+        ]}
       >
         <TouchableOpacity
           onLongPress={this.handleOnLongPress}
@@ -133,7 +147,7 @@ class Card extends Component {
             onPress={this.props.onResize}
             onResize={this.resizeCard}
             color={colors[color].dark}
-            position={{ left: -13, bottom: -27}}
+            position={{ left: -13, bottom: -27 }}
             apptGridSettings={apptGridSettings}
             height={height}
             calendarMeasure={calendarMeasure}

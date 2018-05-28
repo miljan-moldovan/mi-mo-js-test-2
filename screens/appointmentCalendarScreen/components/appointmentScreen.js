@@ -22,6 +22,9 @@ export default class AppointmentScreen extends Component {
 
     if (params && 'currentFilter' in params) {
       switch (params.currentFilter) {
+        case 'deskStaff':
+          currentFilter = 'Desk Staff';
+          break;
         case 'rooms':
           currentFilter = 'All Rooms';
           break;
@@ -123,7 +126,6 @@ export default class AppointmentScreen extends Component {
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
     dismissOnSelect: true,
-    onChangeProvider: this.selectFilterProvider,
     onChangeFilter: this.selectFilter,
   });
 
@@ -185,22 +187,44 @@ export default class AppointmentScreen extends Component {
   }
 
   selectFilterProvider = (filterProvider) => {
-    if (filterProvider === 'all') {
-      this.props.navigation.setParams({ filterProvider: null, currentFilter: 'providers' });
-      this.props.appointmentCalendarActions.setPickerMode('day');
-    } else {
-      this.props.navigation.setParams({ filterProvider, currentFilter: 'providers' });
-    }
-    this.props.appointmentCalendarActions.setSelectedFilter('providers');
-    this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
     this.props.appointmentCalendarActions.setGridView();
     requestAnimationFrame(() => this.manageBuffer(false));
   }
 
-  selectFilter = (filter) => {
-    this.props.navigation.setParams({ filterProvider: null, currentFilter: filter });
-    this.props.appointmentCalendarActions.setPickerMode('day');
-    this.props.appointmentCalendarActions.setSelectedFilter(filter);
+  selectFilter = (filter, filterProvider = null) => {
+    switch (filter) {
+      case 'deskStaff': {
+        if (filterProvider === 'all') {
+          this.props.navigation.setParams({ filterProvider: null, currentFilter: 'deskStaff' });
+          this.props.appointmentCalendarActions.setPickerMode('day');
+        } else {
+          this.props.navigation.setParams({ filterProvider, currentFilter: 'deskStaff' });
+        }
+        this.props.appointmentCalendarActions.setSelectedFilter('deskStaff');
+        this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
+        break;
+      }
+      case 'rooms':
+      case 'resources': {
+        this.props.navigation.setParams({ filterProvider: null, currentFilter: filter });
+        this.props.appointmentCalendarActions.setPickerMode('day');
+        this.props.appointmentCalendarActions.setSelectedFilter(filter);
+        break;
+      }
+      case 'providers':
+      default: {
+        if (filterProvider === 'all') {
+          this.props.navigation.setParams({ filterProvider: null, currentFilter: 'providers' });
+          this.props.appointmentCalendarActions.setPickerMode('day');
+        } else {
+          this.props.navigation.setParams({ filterProvider, currentFilter: 'providers' });
+        }
+        this.props.appointmentCalendarActions.setSelectedFilter('providers');
+        this.props.appointmentCalendarActions.setSelectedProvider(filterProvider);
+
+        break;
+      }
+    }
     this.props.appointmentCalendarActions.setGridView();
     requestAnimationFrame(() => this.manageBuffer(false));
   }
@@ -252,14 +276,10 @@ export default class AppointmentScreen extends Component {
         dataSource = resourceAppointments;
         break;
       }
+      case 'deskStaff':
       case 'providers': {
         isDate = selectedProvider !== 'all';
         headerData = isDate ? dates : providers;
-        dataSource = providerAppointments;
-        break;
-      }
-      case 'deskStaff': {
-        headerData = deskStaff;
         dataSource = providerAppointments;
         break;
       }
@@ -311,7 +331,7 @@ export default class AppointmentScreen extends Component {
              ><ActivityIndicator />
              </View> : null
         }
-        {selectedProvider !== 'all' && selectedFilter === 'providers' && (
+        {selectedFilter === 'providers' && selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
             handlePress={(isWeek) => {
               const pickerMode = isWeek ? 'week' : 'day';

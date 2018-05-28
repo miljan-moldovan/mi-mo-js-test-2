@@ -179,13 +179,11 @@ class ApptBookSetEmployeeOrderScreen extends Component {
       <View style={styles.container}>
         <SortableListView
           style={{ flex: 1, marginBottom: 0 }}
-
           renderRow={row => <RowComponent employee={row} />}
           order={this.state.order}
           data={this.state.employees}
           onRowMoved={(e) => {
             let order = this.state.order;
-
             order = order.splice(e.to, 0, order.splice(e.from, 1)[0]);
           }}
 

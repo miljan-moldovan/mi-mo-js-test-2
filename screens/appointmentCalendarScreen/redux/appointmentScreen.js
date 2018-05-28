@@ -69,7 +69,7 @@ const setFilterOptionRoomAssignments = showRoomAssignments => ({
 });
 
 const setFilterOptionAssistantAssignments = showAssistantAssignments => ({
-  type: SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
+  type: SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS,
   data: { showAssistantAssignments },
 });
 
@@ -180,6 +180,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const date = startDate.format('YYYY-MM-DD');
 
   switch (selectedFilter) {
+    case 'deskStaff':
     case 'providers': {
       if (selectedProvider === 'all') {
         Promise.all([
@@ -201,7 +202,13 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           }),
         ])
           .then(([employees, appointments, availabilityItem]) => {
-            const employeesAppointment = orderBy(employees, 'appointmentOrder');
+            let filteredEmployees = [];
+            filteredEmployees = employees.filter(employee => !employee.isOff);
+
+            if (selectedFilter === 'deskStaff') {
+              filteredEmployees = filteredEmployees.filter(employee => employee.isReceptionist);
+            }
+            const employeesAppointment = orderBy(filteredEmployees, 'appointmentOrder');
             const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
             dispatch(setGridAllViewSuccess(
               employeesAppointment,
@@ -244,6 +251,9 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             break;
         }
       }
+      break;
+    }
+    case 'deskStaff': {
       break;
     }
     case 'rooms': {
@@ -418,6 +428,7 @@ const initialState = {
   providers: [],
   rooms: [],
   resources: [],
+  deskStaff: [],
   storeSchedule: [],
   providerSchedule: [],
   showToast: false,
@@ -602,7 +613,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: false,
         showToast,
         oldAppointment: data.oldAppointment,
-        undoType
+        undoType,
       };
     }
     case POST_APPOINTMENT_MOVE_FAILED:

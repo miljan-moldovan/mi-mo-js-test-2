@@ -67,15 +67,22 @@ const styles = StyleSheet.create({
 
 export default class Header extends Component {
   renderColumnLabel = (data, index) => {
-    const { isDate, isRoom, isResource } = this.props;
+    const { isDate, selectedFilter } = this.props;
 
-    if (isDate) {
-      return this.renderDate(data, index);
+    switch (selectedFilter) {
+      case 'rooms':
+      case 'resources': {
+        return this.renderStore(data, index);
+      }
+      case 'providers':
+      case 'deskStaff':
+      default: {
+        if (isDate) {
+          return this.renderDate(data, index);
+        }
+        return this.renderProvider(data, index);
+      }
     }
-    if (isRoom || isResource) {
-      return this.renderStore(data, index);
-    }
-    return this.renderProvider(data, index);
   }
 
   renderProvider = (data, index) => {
@@ -125,18 +132,19 @@ export default class Header extends Component {
 
   render() {
     const {
-      isDate, isRoom, isResource, showFirstAvailable, handleShowfirstAvailalble,
+      isDate, selectedFilter, showFirstAvailable, handleShowfirstAvailalble,
     } = this.props;
-    const width = isDate || isRoom || isResource ? 36 : 138;
+    const width = selectedFilter === 'providers' && !isDate ? 138 : 36;
 
     return (
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
-          { isDate || isRoom || isResource ? null :
-          <FirstAvailableBtn
-            value={showFirstAvailable}
-            onChange={handleShowfirstAvailalble}
-          />
+          { selectedFilter === 'providers' && !isDate ? (
+            <FirstAvailableBtn
+              value={showFirstAvailable}
+              onChange={handleShowfirstAvailalble}
+            />
+          ) : null
           }
         </View>
         { this.props.dataSource.map((data, index) => this.renderColumnLabel(data, index)) }

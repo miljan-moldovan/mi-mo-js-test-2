@@ -68,6 +68,9 @@ export default class TimeColumn extends Component {
   }
 
   render() {
+    if (!this.props.schedule) {
+      return null;
+    }
     return (
       <View style={styles.container} pointerEvents="box-none">
         { this.props.schedule.map((row, index) => this.renderRowLabel(row, index)) }
