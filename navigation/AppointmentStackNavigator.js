@@ -3,6 +3,8 @@ import React from 'react';
 import { Image, View, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
+import Icon from '../components/UI/Icon';
+
 import AppointmentScreen from '../screens/AppointmentsScreen.js';
 // import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
@@ -127,7 +129,7 @@ const AppointmentStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <View />,
+        headerTitle: 'Clients',
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
@@ -138,36 +140,35 @@ const AppointmentStackNavigator = StackNavigator(
                 justifyContent: 'center',
               }}
             >
-              <Image
-                style={{
-                      width: 15,
-                      height: 15,
-                    }}
-                source={require('../assets/images/icons/icon_menu.png')}
+              <Icon
+                name="angleLeft"
+                type="regular"
+                size={22}
+                color="white"
               />
             </View>
           ),
         }),
-        headerRight: HeaderLateral({
-          handlePress: () => rootProps.params.handlePress(),
-          params: rootProps.navigation.state.params,
-          button:
-  <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            }}
-  >
-    <Image
-      style={{
-              width: 24,
-              height: 24,
-            }}
-      source={require('../assets/images/icons/icon_filter.png')}
-    />
-  </View>,
-        }),
+        //       headerRight: HeaderLateral({
+        //         handlePress: () => rootProps.params.handlePress(),
+        //         params: rootProps.navigation.state.params,
+        //         button:
+        //         <View style={{
+        //           flex: 1,
+        //           flexDirection: 'row',
+        //           alignItems: 'center',
+        //           justifyContent: 'center',
+        //           }}
+        //         >
+        //   <Image
+        //     style={{
+        //             width: 24,
+        //             height: 24,
+        //           }}
+        //     source={require('../assets/images/icons/icon_filter.png')}
+        //   />
+        // </View>,
+        //       }),
         header: props => (
           <ImageHeader
             {...props}

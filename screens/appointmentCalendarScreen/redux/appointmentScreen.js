@@ -254,9 +254,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
       }
       break;
     }
-    case 'deskStaff': {
-      break;
-    }
     case 'rooms': {
       Promise.all([
         apiWrapper.doRequest('getRooms', {}),
