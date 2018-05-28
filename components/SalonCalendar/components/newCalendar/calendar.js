@@ -372,8 +372,8 @@ export default class Calendar extends Component {
       handleMove: () => {
         this.props.onResize(activeCard.appointment.id, params, activeCard.appointment);
         this.hideAlert();
-      }
-    }
+      },
+    };
     this.setState({
       alert,
       activeCard,
@@ -489,7 +489,7 @@ export default class Calendar extends Component {
       handleMove: () => {
         this.props.manageBuffer(false);
         this.setState({ buffer: [], alert: null });
-      }
+      },
     } : null;
 
     if (!alert) {
@@ -538,7 +538,7 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
-    debugger
+
     if (appointment.employee) {
       return (
         <Card
@@ -646,6 +646,7 @@ export default class Calendar extends Component {
       width: this.size.width,
       height: bufferVisible ? this.size.height + 110 : this.size.heigh,
     };
+    const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <View style={{ flex: 1, backgroundColor: '#fff' }} {...this.panResponder.panHandlers} ref={(view) => { this.calendar = view; }}>
@@ -673,7 +674,7 @@ export default class Calendar extends Component {
                 startTime={startTime}
                 apptGridSettings={apptGridSettings}
                 timeSchedules={dataSource}
-                showAvailability={selectedFilter === 'providers' && !isDate}
+                showAvailability={showAvailability}
                 cellWidth={this.cellWidth}
                 displayMode={displayMode}
                 selectedProvider={selectedProvider}
