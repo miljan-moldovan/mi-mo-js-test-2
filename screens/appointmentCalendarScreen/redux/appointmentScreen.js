@@ -613,7 +613,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: false,
         showToast,
         oldAppointment: data.oldAppointment,
-        undoType
+        undoType,
       };
     }
     case POST_APPOINTMENT_MOVE_FAILED:
