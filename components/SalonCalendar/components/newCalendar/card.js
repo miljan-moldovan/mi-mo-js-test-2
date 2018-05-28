@@ -120,7 +120,8 @@ class Card extends Component {
       case 'deskStaff':
       case 'providers':
         if (selectedProvider === 'all') {
-          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + 138;
+          const firstCellWidth = selectedFilter === 'providers' ? 103 : 0;
+          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + firstCellWidth;
         } else if (selectedProvider !== 'all' && displayMode === 'week') {
           const apptDate = moment(appointment.date).format('YYYY-DD-MM');
           left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
