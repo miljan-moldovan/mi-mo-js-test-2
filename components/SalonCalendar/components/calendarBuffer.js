@@ -116,7 +116,7 @@ export default class calendarBuffer extends React.Component {
                 <Text style={styles.title}>MOVE APPOINTMENT</Text>
               </View>
               <TouchableOpacity
-                onPress={() => this.props.manageBuffer(false)}
+                onPress={this.props.closeBuffer}
               >
                 <SalonIcon
                   color="#C0C1C6"
