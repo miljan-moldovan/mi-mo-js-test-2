@@ -106,11 +106,7 @@ class QueueScreen extends React.Component {
   onChangeSearchText = (searchText) => {
     this.setState({ searchText }, () => this.props.navigation.setParams({ searchText }));
   }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.error) {
-      Alert.alert('Error', nextProps.error.toString());
-    }
-  }
+  
   _refreshData = () => {
     this.props.actions.receiveQueue();
   }

@@ -538,7 +538,6 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
-    debugger
     if (appointment.employee) {
       return (
         <Card
