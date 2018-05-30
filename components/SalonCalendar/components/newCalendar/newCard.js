@@ -104,8 +104,8 @@ class Card extends Component {
       shadowRadius: 4,
     };
     const position = isActive ? {
-      position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow,
-    } : { position: 'relative' };
+      position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow, width: cardWidth
+    } : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
     return (
       <Animated.View
         key={id}
@@ -113,9 +113,6 @@ class Card extends Component {
           styles.container,
           {
             opacity,
-            // width: cardWidth,
-            flex: 1 / 4,
-            marginHorizontal: 2,
             height,
             borderColor,
             backgroundColor: contentColor,
