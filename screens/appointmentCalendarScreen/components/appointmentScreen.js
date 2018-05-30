@@ -186,6 +186,14 @@ export default class AppointmentScreen extends Component {
     this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
   }
 
+  setSelectedProvider= (provider) => {
+    this.props.appointmentCalendarActions.setSelectedProvider(provider);
+    this.props.appointmentCalendarActions.setGridView();
+    this.props.navigation.setParams({
+      filterProvider: provider
+    });
+  }
+
   selectFilterProvider = (filterProvider) => {
     this.props.appointmentCalendarActions.setGridView();
     requestAnimationFrame(() => this.manageBuffer(false));
@@ -322,6 +330,7 @@ export default class AppointmentScreen extends Component {
           bufferVisible={bufferVisible}
           manageBuffer={this.manageBuffer}
           filterOptions={filterOptions}
+          setSelectedProvider={this.setSelectedProvider}
         />
         {
            isLoading ?

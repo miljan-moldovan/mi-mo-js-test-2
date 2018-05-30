@@ -538,7 +538,6 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
-    debugger
     if (appointment.employee) {
       return (
         <Card
@@ -634,7 +633,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions,
+      isRoom, isResource, filterOptions, setSelectedProvider
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
@@ -699,6 +698,7 @@ export default class Calendar extends Component {
                   cellWidth={this.cellWidth}
                   handleShowfirstAvailalble={this.handleShowfirstAvailalble}
                   showFirstAvailable={showFirstAvailable}
+                  setSelectedProvider={setSelectedProvider}
                 />
               </ScrollViewChild> : null
             }

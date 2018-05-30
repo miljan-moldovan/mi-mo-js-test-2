@@ -53,13 +53,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 40,
+    paddingVertical: 13,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   iconStyle: {
     width: 35,
-    height: 15,
+    height: 10,
   },
   weekJumpContainer: {
     height: 44,
@@ -221,7 +221,7 @@ export default class SalonDatePickerSlide extends React.Component {
             <View style={styles.panelTopArrow}>
               <SalonTouchableOpacity onPress={this.hidePanel}>
                 <View>
-                  <Image source={require('../../assets/images/icons/chevronDown.png')} style={styles.iconStyle} />
+                  <Image source={require('../../assets/images/icons/Chevron.png')}  />
                 </View>
               </SalonTouchableOpacity>
             </View>
