@@ -120,7 +120,7 @@ class Card extends Component {
       case 'deskStaff':
       case 'providers':
         if (selectedProvider === 'all') {
-          const firstCellWidth = selectedFilter === 'providers' ? 103 : 0;
+          const firstCellWidth = selectedFilter === 'providers' ? 102 : 0;
           left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + firstCellWidth;
         } else if (selectedProvider !== 'all' && displayMode === 'week') {
           const apptDate = moment(appointment.date).format('YYYY-DD-MM');
@@ -288,8 +288,6 @@ class Card extends Component {
     const { height } = this.state;
     const borderColor = colors[color].dark;
     const contentColor = colors[color].light;
-    const countOpacity = 0;
-    const countGap = 0;
     let countOpacity2 = 0;
     let countGap2 = 0;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';

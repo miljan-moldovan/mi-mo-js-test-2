@@ -48,15 +48,13 @@ const styles = {
     fontWeight: '500',
     fontSize: 12,
     color: '#4D5067',
-    paddingTop: 12,
-    paddingBottom: 6,
+    paddingBottom: 10,
   },
   dragHandle: {
     width: 36,
     height: 5,
     borderRadius: 2.5,
     backgroundColor: 'rgb(204, 204, 204)',
-    marginTop: 6,
   },
   titleContainers: {
     alignItems: 'center',
@@ -66,6 +64,11 @@ const styles = {
 };
 
 export default class calendarBuffer extends React.Component {
+  constructor(props) {
+    super();
+    this.state = { bufferPosition: props.screenHeight };
+  }
+
   renderCard = ({ item }) => (
     <NewCard
       key={item.id}
@@ -81,38 +84,64 @@ export default class calendarBuffer extends React.Component {
 
   handleDragEnd = (position) => {
     const { screenHeight } = this.props;
-    const boundLength = 30;
-    const sliderHeight = 110;
-    const diff = screenHeight - position;
-    if (diff >= boundLength) {
+    const boundLength = 20;
+    const diff = this.state.bufferPosition - position;
+    const hidePosition = screenHeight - 75;
+    if (diff > boundLength) {
+      this.state.bufferPosition = hidePosition;
       this.slider.transitionTo({
-        toValue: screenHeight - sliderHeight,
-        onAnimationEnd: () => this.props.manageBuffer(false),
+        toValue: hidePosition,
+      });
+    } else if (diff < -boundLength) {
+      this.state.bufferPosition = screenHeight;
+      this.slider.transitionTo({
+        toValue: screenHeight,
+        onAnimationEnd: () => this.props.setBufferCollapsed(false)
       });
     } else {
       this.slider.transitionTo({
-        toValue: screenHeight,
+        toValue: this.state.bufferPosition,
+        onAnimationEnd: () => this.props.setBufferCollapsed(true)
       });
     }
   }
 
-  renderSeparator = () => (<View style={{ width: 4, opacity: 0 }} />);
+  manageBuffer = () => {
+    const { bufferPosition } = this.state;
+    const { screenHeight } = this.props;
+    const hidePosition = screenHeight - 75;
+    if (bufferPosition === hidePosition) {
+      this.state.bufferPosition = screenHeight;
+      this.slider.transitionTo({
+        toValue: screenHeight,
+        onAnimationEnd: () => this.props.setBufferCollapsed(false)
+      });
+    } else {
+      this.state.bufferPosition = hidePosition;
+      this.slider.transitionTo({
+        toValue: hidePosition,
+        onAnimationEnd: () => this.props.setBufferCollapsed(true)
+      });
+    }
+  }
 
   render() {
     return (
       <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel
           visible={this.props.visible}
-          onRequestClose={() => this.props.manageBuffer(false)}
           showBackdrop={false}
           height={110}
           onDragEnd={this.handleDragEnd}
           ref={(view) => { this.slider = view; }}
+          allowMomentum={false}
         >
           <View style={styles.cardContainer}>
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.titleContainers}>
-                <View style={styles.dragHandle} />
+                <TouchableOpacity onPress={this.manageBuffer} style={{paddingVertical: 10}}>
+                  <View style={styles.dragHandle} />
+                </TouchableOpacity>
                 <Text style={styles.title}>MOVE APPOINTMENT</Text>
               </View>
               <TouchableOpacity
@@ -128,14 +157,6 @@ export default class calendarBuffer extends React.Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.listContainer]}>
-              {/* <FlatList
-                contentContainerStyle={styles.listView}
-                style={{ flex: 1 }}
-                horizontal
-                data={this.props.dataSource}
-                renderItem={this.renderCard}
-                ItemSeparatorComponent={this.renderSeparator}
-              /> */}
               <View style={[{ flexDirection: 'row' }, styles.listView]}>
                 {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt }))}
               </View>

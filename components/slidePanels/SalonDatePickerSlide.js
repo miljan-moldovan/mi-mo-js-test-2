@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   panelTopSection: {
     backgroundColor: '#FFFFFF',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
     height: 345,
@@ -249,21 +249,6 @@ export default class SalonDatePickerSlide extends React.Component {
                   },
                 }}
                 theme={{
-                  // textSectionTitleColor: '#115ECD',
-                  // selectedDayBackgroundColor: '#1DBF12',
-                  // selectedDayTextColor: '#FFFFFF',
-                  // todayTextColor: '#727A8F',
-                  // dayTextColor: '#110A24',
-                  // dotColor: '#727A8F',
-                  // selectedDotColor: '#FFFFFF',
-                  // arrowColor: '#727A8F',
-                  // monthTextColor: '#110A24',
-                  // textDayFontFamily: 'Roboto',
-                  // textMonthFontFamily: 'Roboto-Bold',
-                  // textDayHeaderFontFamily: 'Roboto',
-                  // textDayFontSize: 16,
-                  // textMonthFontSize: 18,
-                  // textDayHeaderFontSize: 16,
                   'stylesheet.calendar.header': {
                     week: {
                       marginTop: 20,
