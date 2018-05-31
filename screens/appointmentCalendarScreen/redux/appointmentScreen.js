@@ -102,7 +102,7 @@ const setStoreWeeklySchedule = () => (dispatch) => {
     dispatch(setStoreWeeklyScheduleSuccess(weeklySchedule));
   }).catch((ex) => {
     // TODO
-    console.log(ex);
+
   });
 };
 
@@ -570,7 +570,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         isLoading: false,
         error: null,
         apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime, numOfRow
+          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime, numOfRow,
         },
         providers: data.employees,
         appointments: data.appointments,

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 20,
+    height: 13,
     width: '100%',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -238,13 +238,15 @@ const styles = StyleSheet.create({
   },
   panelTopName: {
     color: '#111415',
-    fontSize: 18,
-    fontFamily: 'Roboto',
+    fontSize: 16,
+    paddingTop: 2,
+    fontFamily: 'Roboto-Medium',
     backgroundColor: 'transparent',
   },
   panelTopService: {
     color: '#111415',
     fontSize: 12,
+    lineHeight: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
@@ -331,12 +333,12 @@ export default class SalonAppointmentSlide extends React.Component {
         >
           <View style={[
               styles.panelBlurredSection,
-              { flex: isOpen ? 1 / 11 : 3 / 5 },
+              { flex: isOpen ? 1 / 15 : 3 / 5 },
             ]}
           />
           <View style={[
             styles.panelContainer,
-            { flex: isOpen ? 10 / 11 : 2 / 5 },
+            { flex: isOpen ? 14 / 15 : 2 / 5 },
           ]}
           >
             <SalonTouchableOpacity
@@ -353,8 +355,8 @@ export default class SalonAppointmentSlide extends React.Component {
                 }}
               />
             </SalonTouchableOpacity>
-            <View style={styles.panelTop}>
-              <View style={[styles.panelTopLine, { flex: 1 }]}>
+            <View style={[styles.panelTop, { justifyContent: 'flex-start' }]}>
+              <View style={[styles.panelTopLine]}>
                 <View style={styles.panelTopLineLeft}>
                   <Text style={styles.panelTopName}>{`${client.name} ${client.lastName}`}</Text>
                   <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
@@ -365,13 +367,13 @@ export default class SalonAppointmentSlide extends React.Component {
                   </SalonTouchableOpacity>
                 </View>
               </View>
-              <View style={[styles.panelTopLine, { flex: 1 }]}>
+              <View style={[styles.panelTopLine]}>
                 <View style={styles.panelTopLineLeft}>
                   <Text style={styles.panelTopService}>{service.description}</Text>
                 </View>
               </View>
 
-              <View style={[styles.panelTopLine, { flex: 1 }]}>
+              <View style={[styles.panelTopLine]}>
                 <View style={styles.panelTopLineLeft}>
                   <AppointmentTime startTime={appointment.fromTime} endTime={appointment.toTime} />
                 </View>
@@ -480,7 +482,7 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                            </View>]}
+                          </View>]}
                         </InputButton>,
 
                         <InputButton
@@ -491,7 +493,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Rebook Appointment"
                         >
                           {[<View style={styles.iconContainer}><Icon name="undo" size={18} color="#115ECD" type="solid" />
-                          </View>]}
+                            </View>]}
                         </InputButton>,
                         ]}
                     </InputGroup>
@@ -510,7 +512,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Edit Remarks"
                         >
                           {[<View style={styles.iconContainer}><Icon name="edit" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
 
                         <InputButton
@@ -531,7 +533,7 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                            </View>]}
+                          </View>]}
                         </InputButton>,
                         ]}
                     </InputGroup>
@@ -564,7 +566,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="SMS Client"
                         >
                           {[<View style={styles.iconContainer}><Icon name="comments" size={18} color="#115ECD" type="solid" />
-                          </View>]}
+                            </View>]}
                         </InputButton>,
                         <InputButton
                           noIcon
@@ -574,7 +576,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Recommended Products"
                         >
                           {[<View style={styles.iconContainer}><Icon name="star" size={18} color="#115ECD" type="solid" />
-                          </View>]}
+                            </View>]}
                         </InputButton>,
 
                         ]}

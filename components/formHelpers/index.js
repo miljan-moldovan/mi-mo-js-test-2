@@ -501,6 +501,7 @@ export class ProviderInput extends React.Component {
       dismissOnSelect: true,
       filterByService: !!this.props.filterByService,
       onChangeProvider: provider => this.handleProviderSelection(provider),
+      leftButton: <Text style={{fontSize:22,color:'red'}}>Sup</Text>,
     });
   }
 

@@ -435,13 +435,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                 </View>
               </View>
 
-              <SalonTouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
-                <View style={styles.doneButtonContainer}>
-                  <Text style={styles.doneButtonText}>
-                    Done
-                  </Text>
-                </View>
-              </SalonTouchableOpacity>
+              <View style={{ flex: 1 }} />
             </View>
 
             {this.state.selectedFilter === 0 &&

@@ -66,7 +66,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
   const { type, data, error } = action;
-  console.log('***** queue.reducer', type, data, error);
+
 
   switch (type) {
     case QUEUE:
@@ -88,7 +88,6 @@ export default (state = initialState, action) => {
 
         if (item.groupId) {
           if (! initialGroups[item.groupId]) {
-            console.log('init group', item.groupId);
             initialGroups[item.groupId] = {
               clients: [],
               groupLeadName: null,
@@ -99,7 +98,6 @@ export default (state = initialState, action) => {
             isGroupLeader: item.isGroupLeader,
           });
           if (item.isGroupLeader) {
-            console.log('here', item.client.fullName, item.groupId);
             initialGroups[item.groupId].groupLeadName = item.client.fullName;
           }
         }
@@ -152,7 +150,7 @@ export default (state = initialState, action) => {
       if (serviceQueueDeletedIndex !== -1) {
         state.serviceQueue.splice(serviceQueueDeletedIndex, 1);
       }
-      console.log('QUEUE_DELETE_ITEM', waitingQueueDeletedIndex, serviceQueueDeletedIndex, state.waitingQueue, state.serviceQueue);
+
       return {
         ...state,
         waitingQueue: waitingQueueIndex !== -1 ? [...state.waitingQueue] : state.waitingQueue,
@@ -168,7 +166,7 @@ export default (state = initialState, action) => {
       if (serviceQueueIndex !== -1) {
         state.serviceQueue[serviceQueueIndex] = queueItem;
       }
-      console.log('QUEUE_UPDATE_ITEM', waitingQueueIndex, serviceQueueIndex, state.waitingQueue, state.serviceQueue);
+
       return {
         ...state,
         waitingQueue: waitingQueueIndex !== -1 ? [...state.waitingQueue] : state.waitingQueue,
