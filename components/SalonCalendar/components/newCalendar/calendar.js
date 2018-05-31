@@ -192,6 +192,9 @@ export default class Calendar extends Component {
     const bufferHeight = bufferVisible ? 110 : 0;
     if (activeCard) {
       if (moveX && moveY) {
+        if (!this.props.bufferVisible && this.moveY > 10) {
+          this.props.manageBuffer(true);
+        }
         const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 64;
         const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth + 36;
         const scrollHorizontalBoundLeft = boundLength;
@@ -286,9 +289,6 @@ export default class Calendar extends Component {
     this.moveX = null;
     this.moveY = null;
     if (!isScrollEnabled) {
-      if (!this.props.bufferVisible) {
-        this.props.manageBuffer(true);
-      }
       const offsetY = isBufferCard ? -this.calendarPosition.y : 40 - this.offset.y;
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
       const { pan } = this.state;
@@ -396,6 +396,8 @@ export default class Calendar extends Component {
       } else {
         this.handleReleaseCard();
       }
+    } else {
+      this.handleReleaseCard();
     }
   }
 
@@ -469,10 +471,17 @@ export default class Calendar extends Component {
           handleMove: () => this.handleMove(date.format('YYYY-MM-DD'), newTime.format('HH:mm'), employeeId, appointment.id),
         },
       });
+    } else {
+      this.setState({ activeCard: null });
     }
   }
 
-  hideAlert = () => this.setState({ alert: null, activeCard: null, isResizeing: false });
+  hideAlert = () => {
+    if (this.props.bufferVisible && this.state.buffer.length < 1) {
+      this.props.manageBuffer(false);
+    }
+    this.setState({ alert: null, activeCard: null, isResizeing: false });
+  }
 
   handleShowfirstAvailalble = () => {
     const { showFirstAvailable } = this.state;
