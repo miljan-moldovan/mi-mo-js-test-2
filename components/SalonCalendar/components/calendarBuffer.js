@@ -48,7 +48,6 @@ const styles = {
     fontWeight: '500',
     fontSize: 12,
     color: '#4D5067',
-    paddingTop: 8,
     paddingBottom: 10,
   },
   dragHandle: {
@@ -56,7 +55,6 @@ const styles = {
     height: 5,
     borderRadius: 2.5,
     backgroundColor: 'rgb(204, 204, 204)',
-    marginTop: 6,
   },
   titleContainers: {
     alignItems: 'center',
@@ -98,10 +96,12 @@ export default class calendarBuffer extends React.Component {
       this.state.bufferPosition = screenHeight;
       this.slider.transitionTo({
         toValue: screenHeight,
+        onAnimationEnd: () => this.props.setBufferCollapsed(false)
       });
     } else {
       this.slider.transitionTo({
         toValue: this.state.bufferPosition,
+        onAnimationEnd: () => this.props.setBufferCollapsed(true)
       });
     }
   }
@@ -114,11 +114,13 @@ export default class calendarBuffer extends React.Component {
       this.state.bufferPosition = screenHeight;
       this.slider.transitionTo({
         toValue: screenHeight,
+        onAnimationEnd: () => this.props.setBufferCollapsed(false)
       });
     } else {
       this.state.bufferPosition = hidePosition;
       this.slider.transitionTo({
         toValue: hidePosition,
+        onAnimationEnd: () => this.props.setBufferCollapsed(true)
       });
     }
   }
@@ -128,7 +130,6 @@ export default class calendarBuffer extends React.Component {
       <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel
           visible={this.props.visible}
-          onRequestClose={() => {}}
           showBackdrop={false}
           height={110}
           onDragEnd={this.handleDragEnd}
@@ -138,7 +139,7 @@ export default class calendarBuffer extends React.Component {
           <View style={styles.cardContainer}>
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.titleContainers}>
-                <TouchableOpacity onPress={this.manageBuffer}>
+                <TouchableOpacity onPress={this.manageBuffer} style={{paddingVertical: 10}}>
                   <View style={styles.dragHandle} />
                 </TouchableOpacity>
                 <Text style={styles.title}>MOVE APPOINTMENT</Text>

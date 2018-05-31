@@ -189,7 +189,8 @@ export default class Calendar extends Component {
     let dy = 0;
     const boundLength = 30;
     const maxScrollChange = 15;
-    const bufferHeight = bufferVisible ? 110 : 0;
+    const bufferHeights = this.isBufferCollapsed ? 35 : 110;
+    const bufferHeight = bufferVisible ? bufferHeights : 0;
     if (activeCard) {
       if (moveX && moveY) {
         if (!this.props.bufferVisible && this.moveY > 10) {
@@ -498,15 +499,21 @@ export default class Calendar extends Component {
       handleMove: () => {
         this.props.manageBuffer(false);
         this.setState({ buffer: [], alert: null });
+        this.isBufferCollapsed = false;
       }
     } : null;
 
     if (!alert) {
       this.props.manageBuffer(false);
+      this.isBufferCollapsed = false;
       this.setState({ buffer: [] });
     } else {
       this.setState({ alert });
     }
+  }
+
+  setBufferCollapsed= (isCollapsed) => {
+    this.isBufferCollapsed = isCollapsed;
   }
 
   renderCards = () => {
@@ -544,6 +551,14 @@ export default class Calendar extends Component {
     const {
       calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
     } = this.state;
+    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
+    if (isAllProviderView) {
+      const doesProviderExsit =
+      headerData.findIndex(provider => provider.id === appointment.employee.id) > -1;
+      if (!doesProviderExsit) {
+        return null;
+      }
+    }
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
@@ -719,6 +734,7 @@ export default class Calendar extends Component {
             onCardLongPress={this.handleOnDrag}
             screenHeight={screenHeight}
             closeBuffer={this.closeBuffer}
+            setBufferCollapsed={this.setBufferCollapsed}
           />
           { this.renderActiveCard() }
           <SalonAlert
