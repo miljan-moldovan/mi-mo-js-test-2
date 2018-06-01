@@ -463,7 +463,7 @@ export default class NewAppointmentScreen extends React.Component {
         </InputGroup>
         <View>
           <SubTitle title={this.props.newAppointmentState.guests.length > 0 ? 'Main Client' : 'Services'} />
-          {body.items.map((item, itemIndex) => (item.service !== null ? (
+          {body.items.map((item, itemIndex) => (item.employee !== null && item.service !== null ? (
             <ServiceCard
               onPress={this.onPressService}
               onPressDelete={() => this.props.newAppointmentActions.removeNewApptItem(itemIndex)}

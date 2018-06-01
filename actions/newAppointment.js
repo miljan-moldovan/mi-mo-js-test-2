@@ -366,7 +366,7 @@ const setNewApptDuration = (index = 0) => (dispatch, getState) => {
 
 const bookNewAppt = callback => (dispatch, getState) => {
   const { body, guests } = getState().newAppointmentReducer;
-  debugger//eslint-disable-line
+
   checkConflicts(body);
   const requestBody = serializeApptToRequestData(body, guests);
   dispatch({ type: BOOK_NEW_APPT });
