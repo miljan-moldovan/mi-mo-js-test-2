@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
 
 import SalonAvatar from '../../../SalonAvatar';
 import apiWrapper from '../../../../utilities/apiWrapper';
@@ -85,27 +85,31 @@ export default class Header extends Component {
     }
   }
 
+
+
   renderProvider = (data, index) => {
-    const { cellWidth } = this.props;
+    const { cellWidth, setSelectedProvider } = this.props;
     const uri = apiWrapper.getEmployeePhoto(data.id);
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';
     return (
-      <View key={data.id} style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
-        <SalonAvatar
-          wrapperStyle={styles.avatarStyle}
-          width={24}
-          borderWidth={hasBorder ? 3 : 0}
-          borderColor={borderColor}
-          image={{ uri }}
-          // hasBadge
-          // badgeComponent={
-          //   <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
-          // }
-        />
-        <Text numberOfLines={1} style={styles.columnTitle}>{`${data.name} ${data.lastName[0]}.`}</Text>
-      </View>
+      <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)}underlayColor="rgba(0, 0, 0, 0.5)">
+        <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
+          <SalonAvatar
+            wrapperStyle={styles.avatarStyle}
+            width={24}
+            borderWidth={hasBorder ? 3 : 0}
+            borderColor={borderColor}
+            image={{ uri }}
+            // hasBadge
+            // badgeComponent={
+            //   <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
+            // }
+          />
+          <Text numberOfLines={1} style={styles.columnTitle}>{`${data.name} ${data.lastName[0]}.`}</Text>
+        </View>
+      </TouchableHighlight>
     );
   }
 

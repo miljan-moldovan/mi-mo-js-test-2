@@ -108,7 +108,6 @@ const setStoreWeeklySchedule = () => (dispatch) => {
 
 const setGridAllViewSuccess = (employees, appointments, availability) => {
   const apptGridSettings = {
-    numOfRow: availability.length,
     step: 15,
   };
   return {
@@ -562,12 +561,13 @@ export default function appointmentScreenReducer(state = initialState, action) {
     case SET_GRID_ALL_VIEW_SUCCESS: {
       const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
       const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;
+      const numOfRow = moment(maxEndTime, 'HH:mm').diff(moment(minStartTime, 'HH:mm'), 'minutes') / state.apptGridSettings.step;
       return {
         ...state,
         isLoading: false,
         error: null,
         apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
+          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime, numOfRow
         },
         providers: data.employees,
         appointments: data.appointments,
