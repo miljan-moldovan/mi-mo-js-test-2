@@ -13,6 +13,9 @@ export const ADD_GUEST_SERVICE = 'newAppointment/ADD_GUEST_SERVICE';
 export const REMOVE_GUEST_SERVICE = 'newAppointment/REMOVE_GUEST_SERVICE';
 
 export const UPDATE_TOTALS = 'newAppointment/UPDATE_TOTALS';
+export const CHECK_CONFLICTS = 'newAppointment/CHECK_CONFLICTS';
+export const CHECK_CONFLICTS_SUCCESS = 'newAppointment/CHECK_CONFLICTS_SUCCESS';
+export const CHECK_CONFLICTS_FAILED = 'newAppointment/CHECK_CONFLICTS_FAILED';
 export const ADD_NEW_APPT_ITEM = 'newAppointment/ADD_NEW_APPT_ITEM';
 export const REMOVE_NEW_APPT_ITEM = 'newAppointment/REMOVE_NEW_APPT_ITEM';
 export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
@@ -43,8 +46,8 @@ export function serializeNewApptItem(appointment, service) {
     fromTime: service.fromTime, // moment(service.fromTime, 'HH:mm').format('hh:mm:ss'),
     toTime: service.toTime, // moment(service.toTime, 'HH:mm').format('hh:mm:ss'),
     bookBetween: false, // TODO
-    requested: service.requested,
-    isFirstAvailable: service.employee.isFirstAvailable,
+    requested: get(service, 'requested', false),
+    isFirstAvailable: get(service.employee, 'isFirstAvailable', false),
     bookedByEmployeeId: get(appointment.bookedByEmployee, 'id'),
   };
 
@@ -64,11 +67,6 @@ export function serializeNewApptItem(appointment, service) {
   return itemData;
 }
 
-const setBookedBy = employee => ({
-  type: SET_BOOKED_BY,
-  data: { employee },
-});
-
 export function serializeApptToRequestData(appt, extraServices) {
   const services = appt.items;
   for (let i = 0; i < extraServices.length; i += 1) {
@@ -83,6 +81,7 @@ export function serializeApptToRequestData(appt, extraServices) {
     dateRequired: true,
     date: moment(appt.date).format('YYYY-MM-DD'),
     bookedByEmployeeId: get(appt.bookedByEmployee, 'id'),
+    rebooked: get(appt, 'rebooked', false),
     remarks: appt.remarks,
     // displayColor: appt.displayColor,
     clientInfo: {
@@ -104,6 +103,134 @@ export function serializeApptToRequestData(appt, extraServices) {
 
   return data;
 }
+
+const setBookedBy = employee => ({
+  type: SET_BOOKED_BY,
+  data: { employee },
+});
+
+const checkConflictsSuccess = (conflicts, callback = false) => (dispatch) => {
+  dispatch({
+    type: CHECK_CONFLICTS_SUCCESS,
+    data: { conflicts },
+  });
+  return !conflicts.length && callback ? callback() : true;
+};
+
+const checkConflictsFailed = () => ({
+  type: CHECK_CONFLICTS_FAILED,
+});
+
+const checkConflicts = (appt, multipleClients, callback = false) => (dispatch) => {
+  dispatch({ type: CHECK_CONFLICTS });
+
+  const serviceItems = appt.items;
+  let servicesToCheck = [];
+  if (!appt.client || !appt.bookedByEmployee) {
+    return;
+  }
+
+  servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service &&
+      serviceItem.employee && serviceItem.client);
+
+  if (!servicesToCheck.length) {
+    return;
+  }
+
+  const conflictData = {
+    bookedByEmployeeId: appt.bookedByEmployee.id,
+    date: appt.date.format('YYYY-MM-DD'),
+    clientId: appt.client.id,
+    items: [],
+  };
+
+  servicesToCheck.forEach((serviceItem) => {
+    if (serviceItem.service && serviceItem.employee && serviceItem.employee.id === 0) {
+      return;
+    }
+
+    const formattedItem = {
+      appointmentId: serviceItem.id ? serviceItem.id : null,
+      clientId: multipleClients ? serviceItem.client.id : appt.client.id,
+      serviceId: serviceItem.service.id,
+      employeeId: serviceItem.employee.id,
+      fromTime: moment(serviceItem.fromTime, 'HH:mm').format('HH:mm:ss', { trim: false }),
+      toTime: moment(serviceItem.toTime, 'HH:mm').format('HH:mm:ss', { trim: false }),
+      gapTime: moment().startOf('day').add(moment.duration(serviceItem.gapTime, 'm')).format('HH:mm:ss', { trim: false }),
+      afterTime: moment().startOf('day').add(moment.duration(serviceItem.afterTime, 'm')).format('HH:mm:ss', { trim: false }),
+      bookBetween: !!serviceItem.gapTime,
+    };
+
+    if (serviceItem.room) {
+      formattedItem.roomId = get(serviceItem, 'roomId', null);
+      formattedItem.roomOrdinal = get(serviceItem, 'roomOrdinal', null);
+    }
+    if (serviceItem.resource) {
+      formattedItem.resourceId = get(serviceItem, 'resourceId', null);
+      formattedItem.resourceOrdinal = get(serviceItem, 'resourceOrdinal', null);
+    }
+
+    conflictData.items.push(formattedItem);
+  });
+
+  apiWrapper.doRequest('checkConflicts', {
+    body: conflictData,
+  })
+    .then(data => dispatch(checkConflictsSuccess(data, callback)))
+    .catch(err => dispatch(checkConflictsFailed(err)));
+};
+
+const quickBookAppt = callback => (dispatch, getState) => {
+  const {
+    date,
+    service,
+    client,
+    startTime,
+    bookedByEmployee,
+  } = getState().newAppointmentReducer;
+
+  const fromTime = moment(startTime, 'HH:mm');
+  const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
+  const newAppt = {
+    date,
+    bookedByEmployee,
+    service,
+    client,
+    rebooked: false,
+    items: [
+      {
+        service,
+        client,
+        employee: bookedByEmployee,
+        isGuest: false,
+        fromTime: fromTime.format('HH:mm:ss', { trim: false }),
+        toTime: toTime.format('HH:mm:ss', { trim: false }),
+      },
+    ],
+  };
+  const bookCallback = () => {
+    const requestBody = serializeApptToRequestData(newAppt, []);
+    dispatch({ type: BOOK_NEW_APPT });
+    return apiWrapper.doRequest('postNewAppointment', {
+      body: requestBody,
+    })
+      .then((res) => {
+        dispatch({
+          type: ADD_APPOINTMENT,
+          data: { appointment: res },
+        });
+        dispatch(bookNewApptSuccess(callback));
+      })
+      .catch((err) => {
+        dispatch({
+          type: BOOK_NEW_APPT_FAILED,
+          data: { error: err },
+        });
+      });
+  };
+
+  return dispatch(checkConflicts(newAppt, false, bookCallback));
+};
 
 const udpateTotals = () => ({
   type: UPDATE_TOTALS,
@@ -239,6 +366,8 @@ const setNewApptDuration = (index = 0) => (dispatch, getState) => {
 
 const bookNewAppt = callback => (dispatch, getState) => {
   const { body, guests } = getState().newAppointmentReducer;
+  debugger//eslint-disable-line
+  checkConflicts(body);
   const requestBody = serializeApptToRequestData(body, guests);
   dispatch({ type: BOOK_NEW_APPT });
   return apiWrapper.doRequest('postNewAppointment', {
@@ -280,6 +409,7 @@ const newAppointmentActions = {
   addNewApptItem,
   removeNewApptItem,
   bookNewAppt,
+  quickBookAppt,
   addGuest,
   removeGuest,
   setGuestClient,

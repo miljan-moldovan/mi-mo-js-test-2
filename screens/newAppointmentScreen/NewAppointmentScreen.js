@@ -362,7 +362,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   render() {
     const {
-      employee,
+      bookedByEmployee: employee,
       service,
       client,
       body,
@@ -372,6 +372,7 @@ export default class NewAppointmentScreen extends React.Component {
       totalDuration,
       totalPrice,
     } = this.props.newAppointmentState;
+
     const { params } = this.props.navigation.state;
     if (params !== undefined) {
       if ('redirect' in params && params.redirect) {
@@ -481,7 +482,7 @@ export default class NewAppointmentScreen extends React.Component {
             title="Add service"
           />
         </View>
-        <View>
+        {this.props.newAppointmentState.guests.length > 0 && (<View>
           <SubTitle title={guestsLabel} />
           {
             this.props.newAppointmentState.guests.map((guest, guestIndex) => (
@@ -518,7 +519,7 @@ export default class NewAppointmentScreen extends React.Component {
               </View>
             ))
           }
-        </View>
+        </View>)}
         <InputGroup>
           <InputSwitch
             text="Recurring appt."

@@ -27,6 +27,9 @@ import newAppointmentActions, {
   SET_NEW_APPT_RECURRING,
   SET_NEW_APPT_RECURRING_TYPE,
   SET_BOOKED_BY,
+  CHECK_CONFLICTS_SUCCESS,
+  CHECK_CONFLICTS_FAILED,
+  CHECK_CONFLICTS,
 } from '../actions/newAppointment';
 
 const itemShape = {
@@ -36,11 +39,16 @@ const itemShape = {
   client: null,
   fromTime: 'string',
   toTime: 'string',
-  employeeId: 0,
   bookedByEmployeeId: 0,
-  serviceId: 0,
-  clientId: 0,
-  requested: true,
+  gapTime: 0,
+  afterTime: 0,
+  length: 0,
+  price: 0,
+  serviceType: '',
+  room: null,
+  roomOrdinal: 0,
+  resource: null,
+  resourceOrdinal: 0,
   isFirstAvailable: false,
 };
 
@@ -71,13 +79,18 @@ const initialState = {
   isLoading: false,
   hasConflicts: false,
   startTime: '',
+  endTime: '',
+  date: moment(),
   service: null,
   employee: null,
   client: null,
+  bookedByEmployee: null,
   totalPrice: 0,
   totalDuration: moment.duration(0, 'second'),
   recurringType: 'week',
   guests: [],
+  conflicts: [],
+  quickApptConflicts: [],
   body: {
     date: moment(),
     bookedByEmployee: null,
@@ -89,10 +102,42 @@ const initialState = {
       itemShape,
     ],
   },
+  appt: {
+    date: moment(),
+    client: null,
+    bookedByEmployee: null,
+    clientEmail: '',
+    phones: [],
+    confirmationType: '',
+    displayColor: '',
+    remarks: '',
+    rebooked: false,
+  },
+  serviceItems: [
+    {
+      id: null,
+      client: null,
+      service: null,
+      provider: null,
+      requested: false,
+      bookBetween: false,
+      fromTime: moment.Duration,
+      toTime: moment.Duration,
+      gapTime: 0,
+      afterTime: 0,
+      length: 0,
+      price: 0,
+      serviceType: '',
+      isFirstAvailable: false,
+    },
+  ],
 };
 
 export default function newAppointmentReducer(state = initialState, action) {
   const { type, data } = action;
+  if (type.indexOf('newAppointment') >= 0) {
+    console.log(`New Appt Reducer ${type}`, data);
+  }
   const {
     body,
     guests,
@@ -103,6 +148,24 @@ export default function newAppointmentReducer(state = initialState, action) {
   const newTotalDuration = moment.duration();
   let newTotalPrice = 0;
   switch (type) {
+    case CHECK_CONFLICTS:
+      return {
+        ...state,
+        isLoading: true,
+        conflicts: [],
+      };
+    case CHECK_CONFLICTS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        conflicts: data.conflicts,
+      };
+    case CHECK_CONFLICTS_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        conflicts: [],
+      };
     case UPDATE_TOTALS:
       for (let i = 0; i < body.items.length; i += 1) {
         if (body.items[i].service !== null) {
@@ -124,6 +187,11 @@ export default function newAppointmentReducer(state = initialState, action) {
         ...state,
         totalDuration: newTotalDuration,
         totalPrice: newTotalPrice,
+      };
+    case SET_BOOKED_BY:
+      return {
+        ...state,
+        bookedByEmployee: data.employee,
       };
     case ADD_NEW_APPT_ITEM:
       body.items.push(data.item);
@@ -203,6 +271,7 @@ export default function newAppointmentReducer(state = initialState, action) {
       body.items[data.index].date = data.date;
       return {
         ...state,
+        date: data.date,
         body,
       };
     case SET_NEW_APPT_START_TIME:
@@ -212,6 +281,7 @@ export default function newAppointmentReducer(state = initialState, action) {
         ...state,
         body,
         startTime: moment(data.startTime, 'HH:mm A').format('HH:mm'),
+        endTime: moment(data.endTime, 'HH:mm A').format('HH:mm'),
       };
     case SET_NEW_APPT_CLIENT:
       body.clientInfo = data.client;

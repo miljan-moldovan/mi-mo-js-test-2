@@ -113,7 +113,7 @@ class ClientsScreen extends React.Component {
       rightButtonOnPress: () => { navigation.navigate('NewClientScreen'); },
     };
     const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
-
+    console.log('client: ', navigation.state.params);
     const { leftButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&

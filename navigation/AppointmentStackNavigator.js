@@ -45,6 +45,7 @@ import ServiceCheckResultScreen from './../screens/serviceCheckResultScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
 import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
+import ConflictsScreen from '../screens/conflictsScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -99,9 +100,21 @@ const AppointmentStackNavigator = StackNavigator(
     ModifyAppointment: {
       screen: ModifyAppointmentScreen,
     },
+    Conflicts: {
+      screen: ConflictsScreen,
+    },
     // ModifyService2: {
     //   screen: ModifyServiceScreen,
     // },
+    ApptBookClient: {
+      screen: ClientsScreen,
+    },
+    ApptBookService: {
+      screen: ServicesScreen,
+    },
+    ApptBookProvider: {
+      screen: ProvidersScreen,
+    },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({

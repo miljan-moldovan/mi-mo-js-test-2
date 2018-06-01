@@ -373,8 +373,8 @@ export default class Calendar extends Component {
       handleMove: () => {
         this.props.onResize(activeCard.appointment.id, params, activeCard.appointment);
         this.hideAlert();
-      }
-    }
+      },
+    };
     this.setState({
       alert,
       activeCard,
@@ -500,7 +500,7 @@ export default class Calendar extends Component {
         this.props.manageBuffer(false);
         this.setState({ buffer: [], alert: null });
         this.isBufferCollapsed = false;
-      }
+      },
     } : null;
 
     if (!alert) {
@@ -657,7 +657,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions, setSelectedProvider
+      isRoom, isResource, filterOptions, setSelectedProvider,
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
@@ -669,6 +669,7 @@ export default class Calendar extends Component {
       width: this.size.width,
       height: bufferVisible ? this.size.height + 110 : this.size.heigh,
     };
+    const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
         <View style={{ flex: 1, backgroundColor: '#fff' }} {...this.panResponder.panHandlers} ref={(view) => { this.calendar = view; }}>
@@ -696,7 +697,7 @@ export default class Calendar extends Component {
                 startTime={startTime}
                 apptGridSettings={apptGridSettings}
                 timeSchedules={dataSource}
-                showAvailability={selectedFilter === 'providers' && !isDate}
+                showAvailability={showAvailability}
                 cellWidth={this.cellWidth}
                 displayMode={displayMode}
                 selectedProvider={selectedProvider}

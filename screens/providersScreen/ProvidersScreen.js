@@ -89,23 +89,32 @@ const styles = StyleSheet.create({
 
 class ProviderScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params ? navigation.state.params.defaultProps : {};
-    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
+      title: 'Providers',
+      subTitle: null,
+      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+    };
 
+    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: <Text style={{ fontSize: 14, color: '#fff' }}>Cancel</Text> };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: null };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav
-    && navigation.state.params.headerProps.leftButtonOnPress
-      ? navigation.state.params.headerProps : { leftButtonOnPress: () => navigation.goBack() };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: null };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
     const { title } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: 'Providers' };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: '' };
+    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+    let customLeftButton = false;
+    if (navigation.state.params) {
+      if (navigation.state.params.headerProps && navigation.state.params.headerProps.leftButtonOnPress) {
+        customLeftButton = true;
+      }
+    }
 
     return {
       headerTitle: (
@@ -121,7 +130,7 @@ class ProviderScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={leftButtonOnPress}>
+        <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={customLeftButton ? () => leftButtonOnPress(navigation) : leftButtonOnPress}>
           { leftButton }
         </SalonTouchableOpacity>
       ),
@@ -207,7 +216,7 @@ class ProviderScreen extends React.Component {
     }
 
     this.props.providersActions.setSelectedProvider(provider);
-    
+
     const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
