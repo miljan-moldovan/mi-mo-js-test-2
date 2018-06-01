@@ -500,7 +500,7 @@ export default class Calendar extends Component {
         this.props.manageBuffer(false);
         this.setState({ buffer: [], alert: null });
         this.isBufferCollapsed = false;
-      }
+      },
     } : null;
 
     if (!alert) {
@@ -562,10 +562,6 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
-<<<<<<< HEAD
-
-=======
->>>>>>> 672c28ed2af4f5e0b4975894c77d8e63666c390d
     if (appointment.employee) {
       return (
         <Card
@@ -661,7 +657,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions, setSelectedProvider
+      isRoom, isResource, filterOptions, setSelectedProvider,
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;

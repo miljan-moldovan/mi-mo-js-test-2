@@ -429,13 +429,13 @@ export class ClientInput extends React.Component {
         ]}
         >
           {!this.props.noLabel && (
-            <Text style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
+            <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
           )}
           {value !== null && (
-          <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+          <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
           )}
           {value === null && placeholder !== null && (
-            <Text style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+            <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
           )}
         </View>
         {'extraComponents' in this.props && (
@@ -467,7 +467,9 @@ export class ServiceInput extends React.Component {
     this.props.navigate(this.props.apptBook ? 'ApptBookService' : 'Services', {
       selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
+      employeeId: this.props.selectedProvider ? this.props.selectedProvider.id : false,
       filterByProvider: !!this.props.filterByProvider,
+      selectedProvider: this.props.selectedProvider ? this.props.selectedProvider : null,
       headerProps: this.props.headerProps ? this.props.headerProps : {},
       dismissOnSelect: true,
       onChangeService: service => this.handleServiceSelection(service),
@@ -495,10 +497,10 @@ export class ServiceInput extends React.Component {
         onPress={this.handlePress}
       >
         {value === null && placeholder !== null && (
-          <Text style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+          <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
         )}
         <View style={[{ flex: 1, alignItems: 'flex-end' }, this.props.contentStyle]}>
-          <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+          <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
         </View>
         <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>
@@ -556,7 +558,7 @@ export class ProviderInput extends React.Component {
         onPress={this.handlePress}
       >
         {!this.props.noLabel && (
-          <Text style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
+          <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
         )}
         <View style={[
           { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
@@ -575,11 +577,11 @@ export class ProviderInput extends React.Component {
                   defaultComponent={<DefaultAvatar provider={this.state.selectedProvider} />}
                 />
               )}
-              <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+              <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
             </View>
           )}
           {value === null && placeholder !== null && (
-            <Text style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+            <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
           )}
         </View>
         <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
@@ -619,7 +621,7 @@ export class PromotionInput extends React.Component {
       >
         <Text style={[styles.labelText]}>Promotion</Text>
         <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          <Text style={[styles.inputText]}>{value}</Text>
+          <Text numberOfLines={1} style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>
