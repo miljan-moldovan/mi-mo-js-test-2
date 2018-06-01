@@ -42,7 +42,7 @@ export function serializeNewApptItem(appointment, service) {
   const itemData = {
     clientId: service.isGuest ? get(service.client, 'id') : get(appointment.client, 'id'),
     serviceId: get(service.service, 'id'),
-    employeeId: get(service.employee, 'id'),
+    employeeId: get(service.employee, 'id', null),
     fromTime: service.fromTime, // moment(service.fromTime, 'HH:mm').format('hh:mm:ss'),
     toTime: service.toTime, // moment(service.toTime, 'HH:mm').format('hh:mm:ss'),
     bookBetween: false, // TODO
@@ -286,22 +286,22 @@ const setNewApptStartTime = startTime => ({
   data: { startTime },
 });
 
-const setNewApptTime = (startTime, endTime, index = 0) => ({
+const setNewApptTime = (startTime, endTime, index = false) => ({
   type: SET_NEW_APPT_START_TIME,
   data: { index, startTime, endTime },
 });
 
-const setNewApptDate = (date, index = 0) => ({
+const setNewApptDate = (date, index = false) => ({
   type: SET_NEW_APPT_DATE,
   data: { index, date },
 });
 
-const setNewApptEmployee = (employee, index = 0) => ({
+const setNewApptEmployee = (employee, index = false) => ({
   type: SET_NEW_APPT_EMPLOYEE,
   data: { index, employee },
 });
 
-const setNewApptService = (service, index = 0) => (dispatch) => {
+const setNewApptService = (service, index = false) => (dispatch) => {
   dispatch({
     type: SET_NEW_APPT_SERVICE,
     data: { index, service },
@@ -310,64 +310,64 @@ const setNewApptService = (service, index = 0) => (dispatch) => {
   return dispatch(setNewApptDuration());
 };
 
-const setNewApptClient = (client, index = 0) => ({
+const setNewApptClient = (client, index = false) => ({
   type: SET_NEW_APPT_CLIENT,
   data: { index, client },
 });
 
-const setNewApptRequested = (requested, index = 0) => ({
+const setNewApptRequested = (requested, index = false) => ({
   type: SET_NEW_APPT_REQUESTED,
   data: { index, requested },
 });
 
-const setNewApptRecurring = (recurring, index = 0) => ({
+const setNewApptRecurring = (recurring, index = false) => ({
   type: SET_NEW_APPT_RECURRING,
   data: { index, recurring },
 });
 
-const setNewApptRecurringType = (recurringType, index = 0) => ({
+const setNewApptRecurringType = (recurringType, index = false) => ({
   type: SET_NEW_APPT_RECURRING_TYPE,
-  data: { recurringType },
+  data: { recurringType, index },
 });
 
-const setNewApptRepeatPeriod = (repeatPeriod, index = 0) => ({
+const setNewApptRepeatPeriod = (repeatPeriod, index = false) => ({
   type: SET_NEW_APPT_REPEAT_PERIOD,
   data: { repeatPeriod, index },
 });
 
-const setNewApptEndsAfter = (endsAfter, index = 0) => ({
+const setNewApptEndsAfter = (endsAfter, index = false) => ({
   type: SET_NEW_APPT_ENDS_AFTER,
   data: { endsAfter, index },
 });
 
-const setNewApptEndsOnDate = (date, index = 0) => ({
+const setNewApptEndsOnDate = (date, index = false) => ({
   type: SET_NEW_APPT_ENDS_ON_DATE,
   data: { date, index },
 });
 
-const setNewApptFirstAvailable = (isFirstAvailable, index = 0) => ({
+const setNewApptFirstAvailable = (isFirstAvailable, index = false) => ({
   type: SET_NEW_APPT_FIRST_AVAILABLE,
   data: { index, isFirstAvailable },
 });
 
-const setNewApptRemarks = (remarks, index = 0) => ({
+const setNewApptRemarks = (remarks, index = false) => ({
   type: SET_NEW_APPT_REMARKS,
   data: { index, remarks },
 });
 
-const setNewApptDuration = (index = 0) => (dispatch, getState) => {
-  const { service, body: { items } } = getState().newAppointmentReducer;
-  const { fromTime } = items[index];
+const setNewApptDuration = (index = false) => (dispatch, getState) => {
+  const {
+    service, startTime, body: { items },
+  } = getState().newAppointmentReducer;
   const serviceDuration = moment.duration(service.maxDuration);
-  const endTime = moment(fromTime, 'HH:mm').add(serviceDuration);
+  const endTime = moment(startTime, 'HH:mm').add(serviceDuration);
 
-  return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime: fromTime, endTime, index } });
+  return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime, endTime, index } });
 };
 
 const bookNewAppt = callback => (dispatch, getState) => {
   const { body, guests } = getState().newAppointmentReducer;
 
-  checkConflicts(body);
   const requestBody = serializeApptToRequestData(body, guests);
   dispatch({ type: BOOK_NEW_APPT });
   return apiWrapper.doRequest('postNewAppointment', {

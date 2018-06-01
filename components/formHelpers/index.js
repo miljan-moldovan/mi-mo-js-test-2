@@ -423,14 +423,16 @@ export class ClientInput extends React.Component {
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.style]}
         onPress={this.handlePress}
       >
+        {!this.props.noLabel && (
+          <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
+        )}
         <View style={[
-          { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
+          {
+          flex: 1, alignItems: 'flex-end', justifyContent: 'center',
+          },
           this.props.contentStyle,
         ]}
         >
-          {!this.props.noLabel && (
-            <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
-          )}
           {value !== null && (
           <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
           )}

@@ -4,6 +4,7 @@ import {
   View,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
@@ -354,10 +355,12 @@ export default class NewAppointmentScreen extends React.Component {
 
   handleSave = () => {
     const callback = () => {
-      this.props.navigation.goBack();
+      debugger //eslint-disable-line
+      this.props.navigation.navigate('SalonCalendar');
+      this.props.apptBookActions.setGridView();
     };
     this.props.navigation.setParams({ redirect: true });
-    this.props.newAppointmentActions.bookNewAppt();
+    this.props.newAppointmentActions.bookNewAppt(callback);
   }
 
   render() {
@@ -371,6 +374,7 @@ export default class NewAppointmentScreen extends React.Component {
       guests,
       totalDuration,
       totalPrice,
+      isLoading,
     } = this.props.newAppointmentState;
 
     const { params } = this.props.navigation.state;
@@ -382,7 +386,11 @@ export default class NewAppointmentScreen extends React.Component {
 
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
-    return (
+    return isLoading ? (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    ) : (
       <ScrollView style={styles.container}>
         <InputGroup style={{ marginTop: 15 }}>
           <InputLabel
@@ -407,6 +415,8 @@ export default class NewAppointmentScreen extends React.Component {
         <InputGroup>
           <ClientInput
             navigate={this.props.navigation.navigate}
+            contentStyle={{ justifyContent: 'flex-start', flexDirection: 'row' }}
+            noLabel
             selectedClient={client}
             onChange={this.props.newAppointmentActions.setNewApptClient}
             extraComponents={[
@@ -472,6 +482,7 @@ export default class NewAppointmentScreen extends React.Component {
             />
           ) : null))}
           <AddButton
+            style={{ marginVertical: 5 }}
             onPress={() => {
               if (client !== null) {
                 return this.props.navigation.navigate('ModifyApptService', { client });
@@ -482,44 +493,47 @@ export default class NewAppointmentScreen extends React.Component {
             title="Add service"
           />
         </View>
-        {this.props.newAppointmentState.guests.length > 0 && (<View>
-          <SubTitle title={guestsLabel} />
-          {
-            this.props.newAppointmentState.guests.map((guest, guestIndex) => (
-              <View>
-                <Guest
-                  index={guestIndex}
-                  navigate={this.props.navigation.navigate}
-                  selectedClient={guest.client}
-                  onPress={this.onPressGuest}
-                  onChange={selectedClient =>
-                    this.props.newAppointmentActions.setGuestClient(guestIndex, selectedClient)
-                  }
-                />
-                {
-                  guest.services.map((item, serviceIndex) => (
-                    <ServiceCard
-                      data={item}
-                      key={Math.random().toString()}
-                      onPress={this.onPressService}
-                      onPressDelete={() => this.props.newAppointmentActions.removeGuestService(guestIndex, serviceIndex)}
-                    />
-                  ))
-                }
-                <AddButton
-                  onPress={() => {
-                    if (guest.client !== null) {
-                      return this.props.navigation.navigate('ModifyApptService', { guestIndex, client: guest.client });
+        {this.props.newAppointmentState.guests.length > 0 && (
+          <View>
+            <SubTitle title={guestsLabel} />
+            {
+              this.props.newAppointmentState.guests.map((guest, guestIndex) => (
+                <View>
+                  <Guest
+                    index={guestIndex}
+                    navigate={this.props.navigation.navigate}
+                    selectedClient={guest.client}
+                    onPress={this.onPressGuest}
+                    onChange={selectedClient =>
+                      this.props.newAppointmentActions.setGuestClient(guestIndex, selectedClient)
                     }
-                      return alert('Select a guest first');
-                  }}
-                  iconStyle={{ marginLeft: 10, marginRight: 6 }}
-                  title="Add service"
-                />
-              </View>
-            ))
-          }
-        </View>)}
+                  />
+                  {
+                    guest.services.map((item, serviceIndex) => (
+                      <ServiceCard
+                        data={item}
+                        key={Math.random().toString()}
+                        onPress={this.onPressService}
+                        onPressDelete={() => this.props.newAppointmentActions.removeGuestService(guestIndex, serviceIndex)}
+                      />
+                    ))
+                  }
+                  <AddButton
+                    style={{ marginVertical: 5 }}
+                    onPress={() => {
+                      if (guest.client !== null) {
+                        return this.props.navigation.navigate('ModifyApptService', { guestIndex, client: guest.client });
+                      }
+                        return alert('Select a guest first');
+                    }}
+                    iconStyle={{ marginLeft: 10, marginRight: 6 }}
+                    title="Add service"
+                  />
+                </View>
+              ))
+            }
+          </View>
+        )}
         <InputGroup>
           <InputSwitch
             text="Recurring appt."

@@ -380,10 +380,10 @@ export default class AppointmentScreen extends Component {
           selectedFilter={this.state.newAppointmentFilter}
           isLoading={this.props.newAppointmentState.isLoading}
           hasConflicts={this.props.newAppointmentState.conflicts.length > 0}
-          date={this.props.newAppointmentState.body.date}
-          startTime={this.props.newAppointmentState.body.items[0].fromTime}
-          endTime={this.props.newAppointmentState.body.items[0].toTime}
-          isProviderRequested={this.props.newAppointmentState.body.items[0].requested}
+          date={this.props.newAppointmentState.date}
+          startTime={this.props.newAppointmentState.startTime}
+          endTime={this.props.newAppointmentState.endTime}
+          isProviderRequested={false}
           client={this.props.newAppointmentState.client}
           provider={this.props.newAppointmentState.bookedByEmployee}
           service={this.props.newAppointmentState.service}
