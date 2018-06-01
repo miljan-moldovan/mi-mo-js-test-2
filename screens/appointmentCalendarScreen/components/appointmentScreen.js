@@ -369,7 +369,8 @@ export default class AppointmentScreen extends Component {
         <SalonNewAppointmentSlide
           navigation={this.props.navigation}
           selectedFilter={this.state.newAppointmentFilter}
-          hasConflicts={!!this.props.newAppointmentState.conflicts.length}
+          isLoading={this.props.newAppointmentState.isLoading}
+          hasConflicts={this.props.newAppointmentState.conflicts.length > 0}
           date={this.props.newAppointmentState.body.date}
           startTime={this.props.newAppointmentState.body.items[0].fromTime}
           endTime={this.props.newAppointmentState.body.items[0].toTime}
@@ -381,6 +382,7 @@ export default class AppointmentScreen extends Component {
           onHide={() => {
             this.setState({ visibleNewAppointment: false });
           }}
+          show={() => this.setState({ visibleNewAppointment: true })}
           handlePressBook={() => {
             const callback = () => {
               this.setState({ visibleNewAppointment: false });
@@ -396,23 +398,23 @@ export default class AppointmentScreen extends Component {
             this.props.newAppointmentActions.setBookedBy(provider);
             this.setState({ visibleNewAppointment: true });
           }}
-          handlePressService={() => {
-            this.props.navigation.navigate('Services', {
-              actionType: 'update',
-              dismissOnSelect: true,
-              onChangeService: (service) => {
-                this.props.newAppointmentActions.setNewApptService(service);
-                this.setState({ visibleNewAppointment: true });
-              },
-            });
+          handlePressService={(service) => {
+            this.props.newAppointmentActions.setNewApptService(service);
+            this.setState({ visibleNewAppointment: true });
           }}
-          handlePressClient={() => {
+          handlePressClient={(client) => {
+            this.props.newAppointmentActions.setNewApptClient(client);
+            this.setState({ visibleNewAppointment: true });
+          }}
+          handlePressConflicts={() => {
+            const { newAppointmentState: state } = this.props;
             this.setState({ visibleNewAppointment: false });
-            this.props.navigation.navigate('ChangeClient', {
-              actionType: 'update',
-              dismissOnSelect: true,
-              onChangeClient: (client) => {
-                this.props.newAppointmentActions.setNewApptClient(client);
+            this.props.navigation.navigate('Conflicts', {
+              startTime: state.startTime,
+              endTime: state.endTime,
+              date: state.body.date,
+              conflicts: state.conflicts,
+              handleGoBack: () => {
                 this.setState({ visibleNewAppointment: true });
               },
             });

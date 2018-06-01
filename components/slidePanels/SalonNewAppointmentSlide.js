@@ -13,6 +13,8 @@ import {
   InputSwitch,
   InputDivider,
   ProviderInput,
+  ServiceInput,
+  ClientInput,
 } from '../../components/formHelpers';
 
 const styles = StyleSheet.create({
@@ -183,8 +185,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-    paddingTop: 2,
-    paddingLeft: 4,
+    paddingHorizontal: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -297,13 +298,19 @@ const styles = StyleSheet.create({
 });
 
 export const AppointmentTime = props => (
-  <View style={styles.clockIconContainer}>
-    <Icon style={{ paddingTop: 5, paddingLeft: 4 }} name="clockO" size={14} color="#AAB3BA" type="light" />
+  <View style={[styles.clockIconContainer, props.containerStyle]}>
+    <Icon
+      style={{ paddingRight: 2 }}
+      name="clockO"
+      size={15}
+      color="#AAB3BA"
+      type="light"
+    />
     <Text style={styles.timeText}>{moment(props.startTime, 'HH:mm').format('HH:mm A')}</Text>
     <Icon
       name="angleRight"
       size={15}
-      style={{ paddingTop: 4, paddingLeft: 4 }}
+      style={{ paddingHorizontal: 2 }}
       color="#000000"
       type="light"
     />
@@ -324,7 +331,7 @@ const BookNow = props => (
       }
     >
       <Text style={styles.blueButtonText}>
-      BOOK APPOINTMENT
+        {props.isLoading ? 'BOOKING APPOINTMENT...' : 'BOOK APPOINTMENT'}
       </Text>
     </View>
   </SalonTouchableOpacity>
@@ -366,6 +373,14 @@ export default class SalonNewAppointmentSlide extends React.Component {
     });
   }
 
+  cancelButton = () => ({
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      this.props.show();
+      navigation.goBack();
+    },
+  })
+
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => {
@@ -401,7 +416,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
       this.props.service !== null &&
       this.props.client !== null &&
       this.props.provider !== null;
-
+    const selectedStyle = { fontSize: 14, lineHeight: 22, color: this.props.hasConflicts ? 'red' : 'black' };
     return (
       <ModalBox
         coverScreen
@@ -414,7 +429,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
           <View style={styles.panelContainer}>
             <View style={styles.panelTop}>
 
-              <SalonTouchableOpacity style={{ flex: 1 }} onPress={this.hidePanel}>
+              <SalonTouchableOpacity style={{ flex: 1 }} onPress={() => this.hidePanel()}>
                 <View style={styles.cancelButtonContainer}>
                   <Text style={styles.cancelButtonText}>
                     Cancel
@@ -453,44 +468,53 @@ export default class SalonNewAppointmentSlide extends React.Component {
                     style={styles.middleSectionGroup}
                   >
                     {[
-                      <InputButton
+                      <ClientInput
+                        noLabel
+                        apptBook
                         style={{ height: 39 }}
-                        labelStyle={{ fontSize: 14, color: this.props.client ? '#000000' : '#727A8F' }}
-                        // onPress={this.props.handlePressClient}
-                        onPress={() => { this.hidePanel(); this.props.handlePressClient(); }}
-                        label={this.props.client ? `${this.props.client.name} ${this.props.client.lastName}` : 'Select Client'}
+                        selectedClient={this.props.client}
+                        placeholder="Select a Client"
+                        placeholderStyle={styles.placeholderText}
+                        contentStyle={{ alignItems: 'flex-start' }}
+                        selectedStyle={selectedStyle}
+                        onPress={() => this.hidePanel()}
+                        navigate={this.props.navigation.navigate}
+                        headerProps={{ title: 'Clients', ...this.cancelButton() }}
                         iconStyle={{ color: '#115ECD' }}
+                        onChange={(client) => { this.props.handlePressClient(client); }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
-                      <InputButton
-                        style={{ height: 39 }}
-                        labelStyle={{ fontSize: 14, color: this.props.service ? '#000000' : '#727A8F' }}
-                        value={(
-                          <Text style={{
-                            fontSize: 12,
-                            color: '#727A8F',
-                            fontFamily: 'Roboto-Bold',
-                          }}
-                          >{length}
-                          </Text>
-                        )}
-                        onPress={() => { this.hidePanel(); this.props.handlePressService(); }}
-                        label={this.props.service ? `${this.props.service.name}` : 'Select a Service'}
+                      <ServiceInput
+                        apptBook
+                        filterByProvider
+                        selectedService={this.props.service}
+                        rootStyle={{ height: 39 }}
+                        selectedStyle={selectedStyle}
+                        placeholder="Select a Service"
+                        placeholderStyle={styles.placeholderText}
+                        contentStyle={{ alignItems: 'flex-start' }}
+                        onPress={() => this.hidePanel()}
+                        navigate={this.props.navigation.navigate}
+                        headerProps={{ title: 'Services', ...this.cancelButton() }}
                         iconStyle={{ color: '#115ECD' }}
+                        onChange={(service) => { this.props.handlePressService(service); }}
                       />,
                       <InputDivider style={styles.middleSectionDivider} />,
                       <ProviderInput
                         noLabel
+                        apptBook
+                        filterByService
                         rootStyle={{ height: 39 }}
                         selectedProvider={this.props.provider}
                         placeholder="Select a Provider"
                         placeholderStyle={styles.placeholderText}
-                        selectedStyle={{ fontSize: 14, lineHeight: 22, color: 'black' }}
+                        selectedStyle={selectedStyle}
                         contentStyle={{ alignItems: 'flex-start' }}
                         iconStyle={{ color: '#115ECD' }}
                         avatarSize={20}
                         onPress={() => this.hidePanel()}
                         navigate={this.props.navigation.navigate}
+                        headerProps={{ title: 'Providers', ...this.cancelButton() }}
                         onChange={(provider) => { this.props.handlePressProvider(provider); }}
                       />,
                     ]}
@@ -533,8 +557,9 @@ export default class SalonNewAppointmentSlide extends React.Component {
                 <View style={styles.panelBottomSection}>
                   <View style={styles.btnTop}>
                     <BookNow
-                      disabled={!bookButtonEnabled}
+                      disabled={!bookButtonEnabled || this.props.isLoading}
                       onPress={this.props.handlePressBook}
+                      isLoading={this.props.isLoading}
                     />
                   </View>
                   <View style={styles.btnBottom}>
@@ -591,8 +616,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                      </View>]}
-                  </InputButton>,
+                    </View>]}
+                    </InputButton>,
 
                     <InputButton
                       noIcon
@@ -613,7 +638,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                             type="solid"
                           />
                         </View>
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -624,7 +649,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Room Assignment"
                     >
                       {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -635,7 +660,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Turn Away"
                     >
                       {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -646,7 +671,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message Provider's Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
                     <InputButton
                       noIcon
@@ -656,7 +681,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message All Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>]}
                 </InputGroup>
               </View>

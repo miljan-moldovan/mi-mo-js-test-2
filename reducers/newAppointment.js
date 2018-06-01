@@ -79,6 +79,8 @@ const initialState = {
   isLoading: false,
   hasConflicts: false,
   startTime: '',
+  endTime: '',
+  date: moment(),
   service: null,
   employee: null,
   client: null,
@@ -88,6 +90,7 @@ const initialState = {
   recurringType: 'week',
   guests: [],
   conflicts: [],
+  quickApptConflicts: [],
   body: {
     date: moment(),
     bookedByEmployee: null,
@@ -132,7 +135,9 @@ const initialState = {
 
 export default function newAppointmentReducer(state = initialState, action) {
   const { type, data } = action;
-  console.log(`New Appt Reducer ${type}`, data);
+  if (type.indexOf('newAppointment') >= 0) {
+    console.log(`New Appt Reducer ${type}`, data);
+  }
   const {
     body,
     guests,
@@ -266,6 +271,7 @@ export default function newAppointmentReducer(state = initialState, action) {
       body.items[data.index].date = data.date;
       return {
         ...state,
+        date: data.date,
         body,
       };
     case SET_NEW_APPT_START_TIME:
@@ -275,6 +281,7 @@ export default function newAppointmentReducer(state = initialState, action) {
         ...state,
         body,
         startTime: moment(data.startTime, 'HH:mm A').format('HH:mm'),
+        endTime: moment(data.endTime, 'HH:mm A').format('HH:mm'),
       };
     case SET_NEW_APPT_CLIENT:
       body.clientInfo = data.client;

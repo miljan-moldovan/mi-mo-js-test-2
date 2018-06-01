@@ -182,7 +182,7 @@ const checkConflicts = (appt, multipleClients, callback = false) => (dispatch) =
 
 const quickBookAppt = callback => (dispatch, getState) => {
   const {
-    body: { date },
+    date,
     service,
     client,
     startTime,
@@ -209,7 +209,6 @@ const quickBookAppt = callback => (dispatch, getState) => {
     ],
   };
   const bookCallback = () => {
-    debugger //eslint-disable-line
     const requestBody = serializeApptToRequestData(newAppt, []);
     dispatch({ type: BOOK_NEW_APPT });
     return apiWrapper.doRequest('postNewAppointment', {
