@@ -189,9 +189,13 @@ export default class Calendar extends Component {
     let dy = 0;
     const boundLength = 30;
     const maxScrollChange = 15;
-    const bufferHeight = bufferVisible ? 110 : 0;
+    const bufferHeights = this.isBufferCollapsed ? 35 : 110;
+    const bufferHeight = bufferVisible ? bufferHeights : 0;
     if (activeCard) {
       if (moveX && moveY) {
+        if (!this.props.bufferVisible && this.moveY > 10) {
+          this.props.manageBuffer(true);
+        }
         const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 64;
         const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth + 36;
         const scrollHorizontalBoundLeft = boundLength;
@@ -286,9 +290,6 @@ export default class Calendar extends Component {
     this.moveX = null;
     this.moveY = null;
     if (!isScrollEnabled) {
-      if (!this.props.bufferVisible) {
-        this.props.manageBuffer(true);
-      }
       const offsetY = isBufferCard ? -this.calendarPosition.y : 40 - this.offset.y;
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
       const { pan } = this.state;
@@ -396,6 +397,8 @@ export default class Calendar extends Component {
       } else {
         this.handleReleaseCard();
       }
+    } else {
+      this.handleReleaseCard();
     }
   }
 
@@ -469,10 +472,17 @@ export default class Calendar extends Component {
           handleMove: () => this.handleMove(date.format('YYYY-MM-DD'), newTime.format('HH:mm'), employeeId, appointment.id),
         },
       });
+    } else {
+      this.setState({ activeCard: null });
     }
   }
 
-  hideAlert = () => this.setState({ alert: null, activeCard: null, isResizeing: false });
+  hideAlert = () => {
+    if (this.props.bufferVisible && this.state.buffer.length < 1) {
+      this.props.manageBuffer(false);
+    }
+    this.setState({ alert: null, activeCard: null, isResizeing: false });
+  }
 
   handleShowfirstAvailalble = () => {
     const { showFirstAvailable } = this.state;
@@ -489,15 +499,21 @@ export default class Calendar extends Component {
       handleMove: () => {
         this.props.manageBuffer(false);
         this.setState({ buffer: [], alert: null });
-      },
+        this.isBufferCollapsed = false;
+      }
     } : null;
 
     if (!alert) {
       this.props.manageBuffer(false);
+      this.isBufferCollapsed = false;
       this.setState({ buffer: [] });
     } else {
       this.setState({ alert });
     }
+  }
+
+  setBufferCollapsed= (isCollapsed) => {
+    this.isBufferCollapsed = isCollapsed;
   }
 
   renderCards = () => {
@@ -535,10 +551,21 @@ export default class Calendar extends Component {
     const {
       calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
     } = this.state;
+    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
+    if (isAllProviderView) {
+      const doesProviderExsit =
+      headerData.findIndex(provider => provider.id === appointment.employee.id) > -1;
+      if (!doesProviderExsit) {
+        return null;
+      }
+    }
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 672c28ed2af4f5e0b4975894c77d8e63666c390d
     if (appointment.employee) {
       return (
         <Card
@@ -634,7 +661,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions,
+      isRoom, isResource, filterOptions, setSelectedProvider
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
@@ -700,6 +727,7 @@ export default class Calendar extends Component {
                   cellWidth={this.cellWidth}
                   handleShowfirstAvailalble={this.handleShowfirstAvailalble}
                   showFirstAvailable={showFirstAvailable}
+                  setSelectedProvider={setSelectedProvider}
                 />
               </ScrollViewChild> : null
             }
@@ -711,6 +739,7 @@ export default class Calendar extends Component {
             onCardLongPress={this.handleOnDrag}
             screenHeight={screenHeight}
             closeBuffer={this.closeBuffer}
+            setBufferCollapsed={this.setBufferCollapsed}
           />
           { this.renderActiveCard() }
           <SalonAlert

@@ -15,6 +15,8 @@ import SideMenuItem from '../components/SideMenuItem';
 
 const URLKEY = '@APISettings:url';
 const STOREKEY = '@APISettings:store';
+const USERKEY = '@APISettings:user';
+const PASSWORDKEY = '@APISettings:password';
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -38,18 +40,32 @@ export default class SettingsScreen extends React.Component {
     try {
       const apiURL = await AsyncStorage.getItem(URLKEY);
       const store = await AsyncStorage.getItem(STOREKEY);
+      const user = await AsyncStorage.getItem(USERKEY);
+      const password = await AsyncStorage.getItem(PASSWORDKEY);
       if (apiURL !== null || store !== null) {
-        this.setState({ apiURL, store });
+        this.setState({
+          apiURL,
+          store,
+          user,
+          password,
+        });
       }
     } catch (error) {
       // Error retrieving data
     }
   }
   saveSettings = async () => {
-    const { store, apiURL } = this.state;
+    const {
+      store,
+      apiURL,
+      user,
+      password
+    } = this.state;
     try {
       await AsyncStorage.setItem(URLKEY, apiURL);
       await AsyncStorage.setItem(STOREKEY, store);
+      await AsyncStorage.setItem(USERKEY, user);
+      await AsyncStorage.setItem(PASSWORDKEY, password);
       Alert.alert('Settings saved!');
       // Keyboard.dismiss();
       // this.refs.secondTextInput.unFocus();
@@ -59,10 +75,11 @@ export default class SettingsScreen extends React.Component {
     }
   }
   clearSettings = async () => {
-    const { store, apiURL } = this.state;
     try {
       await AsyncStorage.removeItem(URLKEY);
       await AsyncStorage.removeItem(STOREKEY);
+      await AsyncStorage.removeItem(USERKEY);
+      await AsyncStorage.removeItem(PASSWORDKEY);
       Alert.alert('Settings cleared!');
     } catch (error) {
       Alert.alert('Error clearing data', JSON.stringify(error));
@@ -70,6 +87,8 @@ export default class SettingsScreen extends React.Component {
   }
   _handleURLChange = apiURL => this.setState({ apiURL });
   _handleStoreChange = store => this.setState({ store });
+  _handleUserChange = user => this.setState({ user });
+  _handlePasswordChange = password => this.setState({ password });
 
   render() {
     return (
@@ -92,6 +111,14 @@ marginTop: 60, marginBottom: 20, fontSize: 22, fontWeight: '600',
             <Item>
               <Label>Store</Label>
               <Input autoCorrect={false} autoCapitalize="none" onChangeText={this._handleStoreChange} value={this.state.store} />
+            </Item>
+            <Item>
+              <Label>User</Label>
+              <Input autoCorrect={false} autoCapitalize="none" onChangeText={this._handleUserChange} value={this.state.user} />
+            </Item>
+            <Item>
+              <Label>Password</Label>
+              <Input autoCorrect={false} autoCapitalize="none" onChangeText={this._handlePasswordChange} value={this.state.password} />
             </Item>
             <View style={{ flexDirection: 'row' }}>
               <Button rounded bordered onPress={this.saveSettings} style={{ padding: 20, marginTop: 20, marginRight: 20 }}><Text>Save</Text></Button>
