@@ -21,11 +21,11 @@ const getServicesFailed = error => ({
   data: { error },
 });
 
-const getServices = (params, filterByProvider = false) => (dispatch, getState) => {
+const getServices = (params, filterByProvider = false, filterProvider = null) => (dispatch, getState) => {
   dispatch({ type: GET_SERVICES });
-  const { selectedProvider } = getState().providersReducer;
-  if (selectedProvider !== null && filterByProvider) {
-    params.employeeId = selectedProvider.id;
+  if (filterByProvider) {
+    const { selectedProvider } = getState().providersReducer;
+    params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
   }
 
   return apiWrapper.doRequest('getServiceTree', params)

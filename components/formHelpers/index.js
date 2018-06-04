@@ -390,6 +390,7 @@ export class ClientInput extends React.Component {
     super(props);
 
     this.state = {
+      labelText: 'labelText' in this.props ? this.props.labelText : 'Client',
       selectedClient: 'selectedClient' in this.props ? this.props.selectedClient : null,
     };
   }
@@ -400,29 +401,49 @@ export class ClientInput extends React.Component {
   }
 
   handlePress = () => {
-    this.props.navigate('ChangeClient', {
+    if (this.props.onPress) { this.props.onPress(); }
+
+    this.props.navigate(this.props.apptBook ? 'ApptBookClient' : 'ChangeClient', {
       selectedClient: 'selectedClient' in this.state ? this.state.selectedClient : null,
       actionType: 'update',
       dismissOnSelect: true,
       onChangeClient: client => this.handleClientSelection(client),
+      headerProps: this.props.headerProps ? this.props.headerProps : {},
     });
   }
 
   render() {
+    let placeholder = 'placeholder' in this.props ? this.props.placeholder : 'Select Client';
+    if (this.props.noPlaceholder) {
+      placeholder = null;
+    }
     const value = this.props.selectedClient ? `${this.props.selectedClient.name} ${this.props.selectedClient.lastName}` : null;
     return (
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.style]}
         onPress={this.handlePress}
       >
-        <Text style={[styles.labelText]}>Client</Text>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          <Text style={[styles.inputText]}>{value}</Text>
+        {!this.props.noLabel && (
+          <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
+        )}
+        <View style={[
+          {
+          flex: 1, alignItems: 'flex-end', justifyContent: 'center',
+          },
+          this.props.contentStyle,
+        ]}
+        >
+          {value !== null && (
+          <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+          )}
+          {value === null && placeholder !== null && (
+            <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+          )}
         </View>
         {'extraComponents' in this.props && (
           <View style={{ marginHorizontal: 5, flexDirection: 'row' }}>{this.props.extraComponents}</View>
         )}
-        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+        <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>
     );
   }
@@ -443,10 +464,15 @@ export class ServiceInput extends React.Component {
   }
 
   handlePress = () => {
-    this.props.navigate('Services', {
+    if (this.props.onPress) { this.props.onPress(); }
+
+    this.props.navigate(this.props.apptBook ? 'ApptBookService' : 'Services', {
       selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
+      employeeId: this.props.selectedProvider ? this.props.selectedProvider.id : false,
       filterByProvider: !!this.props.filterByProvider,
+      selectedProvider: this.props.selectedProvider ? this.props.selectedProvider : null,
+      headerProps: this.props.headerProps ? this.props.headerProps : {},
       dismissOnSelect: true,
       onChangeService: service => this.handleServiceSelection(service),
     });
@@ -456,6 +482,11 @@ export class ServiceInput extends React.Component {
     const {
       selectedService,
     } = this.state;
+    let placeholder = 'placeholder' in this.props ? this.props.placeholder : 'Select Service';
+    if (this.props.noPlaceholder) {
+      placeholder = null;
+    }
+
     let value = selectedService && selectedService.name ?
       selectedService.name :
       selectedService && 'serviceName' in selectedService ? selectedService.serviceName : null;
@@ -464,14 +495,16 @@ export class ServiceInput extends React.Component {
     }
     return (
       <SalonTouchableOpacity
-        style={[styles.inputRow, { justifyContent: 'center' }]}
+        style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
         onPress={this.handlePress}
       >
-        <Text style={[styles.labelText]}>Service</Text>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          <Text style={[styles.inputText]}>{value}</Text>
+        {value === null && placeholder !== null && (
+          <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+        )}
+        <View style={[{ flex: 1, alignItems: 'flex-end' }, this.props.contentStyle]}>
+          <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
         </View>
-        <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
+        <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>
     );
   }
@@ -495,12 +528,13 @@ export class ProviderInput extends React.Component {
   handlePress = () => {
     if (this.props.onPress) { this.props.onPress(); }
 
-    this.props.navigate('Providers', {
+    this.props.navigate(this.props.apptBook ? 'ApptBookProvider' : 'Providers', {
       selectedProvider: this.state.selectedProvider,
       actionType: 'update',
       dismissOnSelect: true,
       filterByService: !!this.props.filterByService,
       onChangeProvider: provider => this.handleProviderSelection(provider),
+      headerProps: this.props.headerProps ? this.props.headerProps : {},
     });
   }
 
@@ -526,7 +560,7 @@ export class ProviderInput extends React.Component {
         onPress={this.handlePress}
       >
         {!this.props.noLabel && (
-          <Text style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
+          <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
         )}
         <View style={[
           { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
@@ -545,11 +579,11 @@ export class ProviderInput extends React.Component {
                   defaultComponent={<DefaultAvatar provider={this.state.selectedProvider} />}
                 />
               )}
-              <Text style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+              <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
             </View>
           )}
           {value === null && placeholder !== null && (
-            <Text style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+            <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
           )}
         </View>
         <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
@@ -589,7 +623,7 @@ export class PromotionInput extends React.Component {
       >
         <Text style={[styles.labelText]}>Promotion</Text>
         <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          <Text style={[styles.inputText]}>{value}</Text>
+          <Text numberOfLines={1} style={[styles.inputText]}>{value}</Text>
         </View>
         <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>

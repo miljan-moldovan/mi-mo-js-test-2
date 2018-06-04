@@ -14,7 +14,7 @@ function getHeader() {
   const header = {
     'Content-Type': 'application/json',
     'X-SU-store-key': '1',
-    'X-SU-user-name': 'Imported',
+    'X-SU-user-id': '60',
   };
   return header;
 }

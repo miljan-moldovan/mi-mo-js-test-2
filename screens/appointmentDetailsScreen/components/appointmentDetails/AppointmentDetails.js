@@ -364,13 +364,13 @@ CircularIcon.defaultProps = {
 export const AddButton = props => (
   <SalonTouchableOpacity
     onPress={props.onPress}
-    style={{
+    style={[{
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
       paddingHorizontal: 12,
       paddingTop: 12,
-    }}
+    }, props.style]}
   >
     <CircularIcon style={props.iconStyle} />
     <Text style={styles.addButtonText}> {props.title}</Text>

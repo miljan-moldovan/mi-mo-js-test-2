@@ -5,14 +5,14 @@ import AT from '../actions/types.js';
 function auth(state: Object = {}, action: Object) {
   switch (action.type) {
     case AT.LOGIN_SUCCESS:
-      console.log('LOGIN_SUCCESS', action.data);
+
       return {
         ...state,
         loggedIn: true,
         jws: action.data.jws,
       };
     case AT.LOGIN_FAILURE:
-      console.log('LOGIN_FAILURE', action.data);
+
       return {
         loggedIn: false,
       };

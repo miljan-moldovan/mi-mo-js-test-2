@@ -222,7 +222,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             label="Length"
             value={
               this.state.selectedService === null
-              ? '' : moment.duration(this.state.selectedService.maxDuration).humanize()
+              ? '' : `${moment.duration(this.state.selectedService.maxDuration).asMinutes()} min`
             }
           />
           <InputDivider />

@@ -3,6 +3,8 @@ import React from 'react';
 import { Image, View, Text } from 'react-native';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
+import Icon from '../components/UI/Icon';
+
 import AppointmentScreen from '../screens/AppointmentsScreen.js';
 // import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
@@ -43,6 +45,7 @@ import ServiceCheckResultScreen from './../screens/serviceCheckResultScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
 import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
+import ConflictsScreen from '../screens/conflictsScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -97,9 +100,21 @@ const AppointmentStackNavigator = StackNavigator(
     ModifyAppointment: {
       screen: ModifyAppointmentScreen,
     },
+    Conflicts: {
+      screen: ConflictsScreen,
+    },
     // ModifyService2: {
     //   screen: ModifyServiceScreen,
     // },
+    ApptBookClient: {
+      screen: ClientsScreen,
+    },
+    ApptBookService: {
+      screen: ServicesScreen,
+    },
+    ApptBookProvider: {
+      screen: ProvidersScreen,
+    },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
@@ -127,7 +142,7 @@ const AppointmentStackNavigator = StackNavigator(
           backgroundColor: 'transparent',
           borderBottomWidth: 0,
         },
-        headerTitle: <View />,
+        headerTitle: 'Clients',
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
@@ -138,36 +153,35 @@ const AppointmentStackNavigator = StackNavigator(
                 justifyContent: 'center',
               }}
             >
-              <Image
-                style={{
-                      width: 15,
-                      height: 15,
-                    }}
-                source={require('../assets/images/icons/icon_menu.png')}
+              <Icon
+                name="angleLeft"
+                type="regular"
+                size={22}
+                color="white"
               />
             </View>
           ),
         }),
-        headerRight: HeaderLateral({
-          handlePress: () => rootProps.params.handlePress(),
-          params: rootProps.navigation.state.params,
-          button:
-  <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            }}
-  >
-    <Image
-      style={{
-              width: 24,
-              height: 24,
-            }}
-      source={require('../assets/images/icons/icon_filter.png')}
-    />
-  </View>,
-        }),
+        //       headerRight: HeaderLateral({
+        //         handlePress: () => rootProps.params.handlePress(),
+        //         params: rootProps.navigation.state.params,
+        //         button:
+        //         <View style={{
+        //           flex: 1,
+        //           flexDirection: 'row',
+        //           alignItems: 'center',
+        //           justifyContent: 'center',
+        //           }}
+        //         >
+        //   <Image
+        //     style={{
+        //             width: 24,
+        //             height: 24,
+        //           }}
+        //     source={require('../assets/images/icons/icon_filter.png')}
+        //   />
+        // </View>,
+        //       }),
         header: props => (
           <ImageHeader
             {...props}

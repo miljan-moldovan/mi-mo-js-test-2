@@ -31,6 +31,11 @@ const resources = {
     method: 'get',
     disableCache: true,
   },
+  checkConflicts: {
+    path: 'AppointmentBook/Conflicts',
+    method: 'post',
+    disableCache: true,
+  },
 };
 
 export default {

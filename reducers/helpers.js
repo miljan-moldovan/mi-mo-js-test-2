@@ -58,14 +58,14 @@ export function getWorkingTime(item) {
 // let minutes = moment(item.servicedTimeAt).minutes();
 //   return Math.ceil(minutes);
     let time =  moment(item.processTime, 'hh:mm:ss');
-    console.log('time service', time);
+
     return time.add(1, 'minutes').format('hh:mm:ss');
 }
 
 export function getWaitTime(item) {
   if (item.status === 0) {
     let time =  moment(item.processTime, 'hh:mm:ss');
-    console.log('time wait', time);
+
     return time.add(1, 'minutes').format('hh:mm:ss');
 
     // const enteredTime = new Date().setHours(0, 0, +item.enteredTimeAt);
@@ -105,9 +105,9 @@ export function getProcentCompleted(item) {
     // let progressMaxTime =  moment(item.progressMaxTime, 'hh:mm:ss').minutes();
     // let processTime =  moment(item.processTime, 'hh:mm:ss').minutes();
     // let time = ( (progressMaxTime - processTime) / progressMaxTime ) * 100;
-    // console.log('progressMaxTime', progressMaxTime);
-    // console.log('processTime', processTime);
-    // console.log('time', time);
+    //
+    //
+    //
 //     item.completed += 100 / item.estimatedTime;
 //   }
 //   return item.completed;
