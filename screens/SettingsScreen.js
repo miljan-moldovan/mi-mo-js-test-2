@@ -32,16 +32,18 @@ export default class SettingsScreen extends React.Component {
     loaded: false,
     store: '4',
     apiURL: 'http://zenithnew.dev.cicd.salondev.net',
+    user: '',
+    password: '',
   }
   componentWillMount() {
     this.loadSettings();
   }
   loadSettings = async () => {
     try {
-      const apiURL = await AsyncStorage.getItem(URLKEY);
-      const store = await AsyncStorage.getItem(STOREKEY);
-      const user = await AsyncStorage.getItem(USERKEY);
-      const password = await AsyncStorage.getItem(PASSWORDKEY);
+      const apiURL = await AsyncStorage.getItem(URLKEY) || '';
+      const store = await AsyncStorage.getItem(STOREKEY) || '';
+      const user = await AsyncStorage.getItem(USERKEY) || '';
+      const password = await AsyncStorage.getItem(PASSWORDKEY) || '';
       if (apiURL !== null || store !== null) {
         this.setState({
           apiURL,
@@ -61,6 +63,7 @@ export default class SettingsScreen extends React.Component {
       user,
       password
     } = this.state;
+    debugger
     try {
       await AsyncStorage.setItem(URLKEY, apiURL);
       await AsyncStorage.setItem(STOREKEY, store);
