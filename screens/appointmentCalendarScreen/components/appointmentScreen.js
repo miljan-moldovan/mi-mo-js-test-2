@@ -114,10 +114,6 @@ export default class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setGridView();
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    this.state.isLoading = nextProps.appointmentScreenState.isLoading || nextProps.appointmentScreenState.isLoadingSchedule;
-  }
-
   onPressMenu = () => alert('Not Implemented');
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
@@ -264,10 +260,13 @@ export default class AppointmentScreen extends Component {
       resources,
       deskStaff,
       resourceAppointments,
+      blockTimes,
     } = this.props.appointmentScreenState;
 
-    const { isLoading, bufferVisible } = this.state;
+    const { bufferVisible } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
+    const isLoading = this.props.appointmentScreenState.isLoading
+     || this.props.appointmentScreenState.isLoadingSchedule;
     const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     let headerData = null;
     let dataSource = null;
@@ -313,6 +312,7 @@ export default class AppointmentScreen extends Component {
           apptGridSettings={apptGridSettings}
           dataSource={dataSource}
           appointments={appointments}
+          blockTimes={blockTimes}
           headerData={headerData}
           isDate={isDate}
           isRoom={selectedFilter === 'rooms'}

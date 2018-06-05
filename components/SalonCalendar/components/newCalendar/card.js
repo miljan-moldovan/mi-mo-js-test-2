@@ -56,7 +56,7 @@ class Card extends Component {
     return nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
-      (this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
   }
 
   calcualteStateValues = (props) => {
@@ -280,7 +280,7 @@ class Card extends Component {
       mainServiceColor,
       isFirstAvailable,
     } = this.props.appointment;
-    const { showFirstAvailable, showAssistant, isActive } = this.props;
+    const { showFirstAvailable, showAssistant, isActive, isInBuffer } = this.props;
     const {
       zIndex, cardWidth, left, isActiveEmployeeInCellTime,
     } = this.state;
@@ -291,7 +291,7 @@ class Card extends Component {
     let countOpacity2 = 0;
     let countGap2 = 0;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
-    const opacity = this.props.isActive && this.props.isResizeing ? 0 : 1;
+    const opacity = isActive && this.props.isResizeing ? 0 : 1;
     return (
       <Animated.View key={id} style={{ position: 'absolute', zIndex, opacity }}>
         <Animated.View
@@ -346,9 +346,11 @@ class Card extends Component {
             : null
           }
           <TouchableOpacity
-            onPress={() => this.props.onPress(this.props.appointment)}
+            onPress={() => {
+              this.props.onPress(this.props.appointment)
+            }}
             onLongPress={this.handleOnLongPress}
-            disabled={isActive}
+            disabled={isActive || isInBuffer}
           >
             {this.props.isMultiBlock ? this.renderMultiBlock() : this.renderSingleBlock()}
             { showAssistant ? this.renderAssistant() : null }

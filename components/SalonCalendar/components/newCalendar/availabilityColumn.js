@@ -58,21 +58,6 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
   timeSplit = startTime.split(':');
   minutesSplit = timeSplit[1];
   style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
-  // const time = moment(apptGridSettings.minStartTime, 'HH:mm').add(15 * index, 'm');
-  // let areAllAvailable = false;
-  // for (let i = 0; i < providers.length && !areAllAvailable; i += 1) {
-  //   const schedule = providers[i].scheduledIntervals;
-  //   if (schedule) {
-  //     for (let j = 0; j < schedule.length && !areAllAvailable; j += 1) {
-  //       if (time.isSameOrAfter(moment(schedule[j].start, 'HH:mm')) &&
-  //       time.isBefore(moment(schedule[j].end, 'HH:mm'))) {
-  //         areAllAvailable = true;
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
-  //const renderText = areAllAvailable ? 'All available' : 'No availability';
   return (
     <SalonTouchableOpacity
       enabled={false}
