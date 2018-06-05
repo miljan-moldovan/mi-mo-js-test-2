@@ -12,6 +12,7 @@ import NewCard from './newCard';
 import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
 import SalonAlert from './SalonAlert';
+import BlockTime from './blockCard';
 
 const styles = StyleSheet.create({
   container: {
@@ -365,20 +366,29 @@ export default class Calendar extends Component {
     const fromTime = moment(activeCard.appointment.fromTime, 'HH:mm').format('h:mma');
     const oldToTime = moment(activeCard.appointment.toTime, 'HH:mm').format('h:mma');
     const newToTime = moment(activeCard.appointment.fromTime, 'HH:mm').add(newHeight * apptGridSettings.step, 'm').format('h:mma');
-    const alert = {
-      title: 'Resize Appointment',
-      description: `Resize ${clientName} Appt. from ${date} ${fromTime}-${oldToTime} to ${date} ${fromTime}-${newToTime}?`,
-      btnLeftText: 'Cancel',
-      btnRightText: 'Resize',
-      handleMove: () => {
-        this.props.onResize(activeCard.appointment.id, params, activeCard.appointment);
-        this.hideAlert();
-      },
-    };
-    this.setState({
-      alert,
-      activeCard,
-    });
+    const timeHasChanged = oldToTime !== newToTime;
+    if (timeHasChanged) {
+      const alert = {
+        title: 'Resize Appointment',
+        description: `Resize ${clientName} Appt. from ${date} ${fromTime}-${oldToTime} to ${date} ${fromTime}-${newToTime}?`,
+        btnLeftText: 'Cancel',
+        btnRightText: 'Resize',
+        handleMove: () => {
+          this.props.onResize(activeCard.appointment.id, params, activeCard.appointment);
+          this.hideAlert();
+        },
+      };
+      this.setState({
+        alert,
+        activeCard,
+      });
+    } else {
+      this.setState({
+        alert: null,
+        activeCard: null,
+        isResizeing: false,
+      });
+    }
   }
 
   handleCardDrop = () => {
@@ -539,6 +549,51 @@ export default class Calendar extends Component {
         return filteredAppointments.map(this.renderCard);
       }
       return appointments.map(this.renderCard);
+    }
+    return null;
+  }
+
+  renderBlockTimes = () => {
+    const {
+      blockTimes, rooms, selectedFilter,
+      selectedProvider, displayMode, startDate,
+    } = this.props;
+    if (blockTimes) {
+      return blockTimes.map(this.renderBlock);
+    }
+    return null;
+  }
+
+  renderBlock = (blockTime) => {
+    const {
+      apptGridSettings, headerData, selectedProvider, selectedFilter,
+      displayMode, appointments, providerSchedule, isLoading, filterOptions,
+    } = this.props;
+    const {
+      calendarMeasure, calendarOffset, activeBlock,
+    } = this.state;
+    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
+    const isActive = activeBlock && activeBlock.blockTime.id === blockTime.id;
+    if (blockTime.employeeId) {
+      return (
+        <BlockTime
+          onPress={this.props.onCardPressed}
+          isResizeing={this.state.isResizeing}
+          isActive={isActive}
+          key={blockTime.id}
+          providers={headerData}
+          block={blockTime}
+          apptGridSettings={apptGridSettings}
+          onDrag={this.handleOnDrag}
+          calendarOffset={calendarOffset}
+          onDrop={this.handleDrop}
+          onResize={this.handleResize}
+          cellWidth={this.cellWidth}
+          startTime={startTime}
+          groupedProviders={this.groupedProviders}
+          isLoading={isLoading}
+        />
+      );
     }
     return null;
   }
@@ -708,6 +763,7 @@ export default class Calendar extends Component {
                 isLoading={isLoading}
               />
               { this.renderCards() }
+              { this.renderBlockTimes() }
               {this.renderResizeCard()}
             </ScrollViewChild>
             <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>

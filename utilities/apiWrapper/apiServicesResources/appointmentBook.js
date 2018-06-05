@@ -31,6 +31,11 @@ const resources = {
     method: 'get',
     disableCache: true,
   },
+  getBlockTimes: {
+    path: 'AppointmentBook/:date/BlockTime',
+    method: 'get',
+    disableCache: true,
+  },
   checkConflicts: {
     path: 'AppointmentBook/Conflicts',
     method: 'post',

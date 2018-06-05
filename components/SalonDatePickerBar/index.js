@@ -184,7 +184,7 @@ export default class SalonDatePickerBar extends Component {
                 }
 
                 {this.state.mode === 'day' && <Text style={styles.date} >
-                  {moment(this.state.startDate).format('dddd, MMM. DD')}
+                  {moment(this.state.startDate).format('dddd, MMM DD')}
                 </Text>
                 }
               </View>

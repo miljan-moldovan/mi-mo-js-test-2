@@ -61,9 +61,8 @@ export default class SettingsScreen extends React.Component {
       store,
       apiURL,
       user,
-      password
+      password,
     } = this.state;
-    debugger
     try {
       await AsyncStorage.setItem(URLKEY, apiURL);
       await AsyncStorage.setItem(STOREKEY, store);

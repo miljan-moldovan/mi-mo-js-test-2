@@ -56,7 +56,7 @@ class Card extends Component {
     return nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
-      (this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
   }
 
   calcualteStateValues = (props) => {

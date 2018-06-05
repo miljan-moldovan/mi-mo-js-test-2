@@ -106,14 +106,14 @@ const setStoreWeeklySchedule = () => (dispatch) => {
   });
 };
 
-const setGridAllViewSuccess = (employees, appointments, availability) => {
+const setGridAllViewSuccess = (employees, appointments, availability, blockTimes) => {
   const apptGridSettings = {
     step: 15,
   };
   return {
     type: SET_GRID_ALL_VIEW_SUCCESS,
     data: {
-      employees, appointments, apptGridSettings, availability,
+      employees, appointments, apptGridSettings, availability, blockTimes
     },
   };
 };
@@ -200,8 +200,13 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               date,
             },
           }),
+          apiWrapper.doRequest('getBlockTimes', {
+            path: {
+              date,
+            },
+          }),
         ])
-          .then(([employees, appointments, availabilityItem]) => {
+          .then(([employees, appointments, availabilityItem, blockTimes]) => {
             let filteredEmployees = [];
             filteredEmployees = employees.filter(employee => !employee.isOff);
 
@@ -212,7 +217,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
             dispatch(setGridAllViewSuccess(
               employeesAppointment,
-              orderedAppointments, availabilityItem.timeSlots,
+              orderedAppointments, availabilityItem.timeSlots, blockTimes
             ));
           })
           .catch((ex) => {
@@ -429,6 +434,7 @@ const initialState = {
   storeSchedule: [],
   providerSchedule: [],
   showToast: false,
+  blockTimes: [],
 };
 
 export default function appointmentScreenReducer(state = initialState, action) {
@@ -572,6 +578,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         providers: data.employees,
         appointments: data.appointments,
         availability: data.availability,
+        blockTimes: data.blockTimes,
       };
     }
     case SET_GRID_DAY_WEEK_VIEW_SUCCESS:

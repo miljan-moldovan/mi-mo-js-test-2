@@ -34,13 +34,8 @@ const getClients = () => (dispatch) => {
       'nameFilter.FilterRule': 'none',
     },
   })
-    .then(response =>{
-      debugger
-      return dispatch(getClientsSuccess(response))
-    })
-    .catch(error =>
-      {  debugger
-        dispatch(getClientsFailed(error))});
+    .then(response => dispatch(getClientsSuccess(response)))
+    .catch(error => dispatch(getClientsFailed(error)));
 };
 
 function setClients(clients) {
