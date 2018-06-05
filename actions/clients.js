@@ -26,13 +26,13 @@ const getClientsFailed = error => ({
   data: { error },
 });
 
-const getClients = () => (dispatch) => {
+const getClients = (params = {
+  fromAllStores: false,
+  'nameFilter.FilterRule': 'none',
+}) => (dispatch) => {
   dispatch({ type: GET_CLIENTS });
   return apiWrapper.doRequest('getClients', {
-    query: {
-      fromAllStores: false,
-      'nameFilter.FilterRule': 'none',
-    },
+    query: params,
   })
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));

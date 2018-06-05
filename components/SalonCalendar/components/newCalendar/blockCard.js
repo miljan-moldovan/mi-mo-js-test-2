@@ -49,7 +49,7 @@ class BlockCard extends Component {
     return nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
-      (this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
   }
 
   calcualteStateValues = (props) => {

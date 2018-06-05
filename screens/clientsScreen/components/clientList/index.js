@@ -9,6 +9,7 @@ import ClientListHeader from './clientListHeader';
 
 import ListLetterFilter from '../../../../components/listLetterFilter';
 import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
+import EmptyList from './emptyClientList';
 
 const ITEM_HEIGHT = 60;
 const HEADER_HEIGHT = 30;
@@ -20,13 +21,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#E7E7E7',
   },
   guideContainer: {
     flex: 1,
     height: '100%',
     flexDirection: 'column',
-    backgroundColor: '#FFFFFF',
   },
   letterContainer: {
     backgroundColor: 'transparent',
@@ -236,10 +235,13 @@ class ClientList extends React.Component {
                 )}
               renderSectionHeader={item => ClientList.renderSection(item)}
               ItemSeparatorComponent={() => ClientList.renderSeparator()}
+              ListEmptyComponent={EmptyList}
+              refreshing={this.props.refreshing}
             />
-            <ListLetterFilter
+
+            {this.state.dataSource.length > 0 ? <ListLetterFilter
               onPress={(letter) => { this.scrollToIndex(letter); }}
-            />
+            /> : null }
           </View>
         );
       }
