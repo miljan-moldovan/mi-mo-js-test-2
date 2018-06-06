@@ -4,6 +4,7 @@ import { LocaleConfig, Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import ModalBox from './ModalBox';
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
+import Icon from '../UI/Icon';
 
 LocaleConfig.locales.en = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -192,6 +193,12 @@ export default class SalonDatePickerSlide extends React.Component {
     }, 10);
   }
 
+  renderArrow = (direction) => {
+    return direction === 'left' ?
+      (<Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />) :
+      (<Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />)
+  }
+
   render() {
     console.log({
       [moment(this.state.selected).format('YYYY-MM-DD')]: {
@@ -275,6 +282,7 @@ export default class SalonDatePickerSlide extends React.Component {
                     },
                   },
                 }}
+                renderArrow={this.renderArrow}
                 hideExtraDays
                 onPressArrowLeft={this.props.onPressArrowLeft}
                 onPressArrowRight={this.props.onPressArrowRight}

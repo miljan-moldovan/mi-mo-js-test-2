@@ -58,7 +58,7 @@ export default class TimeColumn extends Component {
           <Text style={style}>
             {text}
           </Text>
-          <View />
+          {isOClock ? <View style={{width: 4, height: 1, backgroundColor: '#000', position: 'absolute', top: -1, right: -1}}/> : null }
         </View>
       );
     }
