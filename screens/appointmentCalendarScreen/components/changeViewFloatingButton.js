@@ -73,7 +73,7 @@ export default class ChangeViewFloatingButton extends Component {
           </View>
 
           <View style={styles.container}>
-            <Icon name="calendar" size={21} color="#FFFFFF" type="solid" />
+            <Icon name="calendar" size={21} color="#FFFFFF" type="regularFree" />
             <Text style={styles.text}>Week</Text>
           </View>
         </View>
