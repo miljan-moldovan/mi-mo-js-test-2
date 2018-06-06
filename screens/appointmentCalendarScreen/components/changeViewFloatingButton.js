@@ -42,15 +42,10 @@ const styles = StyleSheet.create({
 });
 
 export default class ChangeViewFloatingButton extends Component {
-  state = {
-    week: true,
-  }
 
   handlePress = () => {
-    this.setState({ week: !this.state.week });
-
     if (this.props.handlePress) {
-      this.props.handlePress(this.state.week);
+      this.props.handlePress();
     }
   }
 
@@ -66,28 +61,27 @@ export default class ChangeViewFloatingButton extends Component {
           right: 16,
         }}
       >
-        {this.state.week &&
-        <View>
-          <View style={[styles.numberContainer, { marginTop: 12, marginLeft: 12 }]}>
-            <Text style={styles.numberText}>7</Text>
-          </View>
+        {this.props.pickerMode === 'day' ?
+          <View>
+            <View style={[styles.numberContainer, { marginTop: 12, marginLeft: 12 }]}>
+              <Text style={styles.numberText}>7</Text>
+            </View>
 
-          <View style={styles.container}>
-            <Icon name="calendar" size={21} color="#FFFFFF" type="regularFree" />
-            <Text style={styles.text}>Week</Text>
+            <View style={styles.container}>
+              <Icon name="calendar" size={21} color="#FFFFFF" type="regularFree" />
+              <Text style={styles.text}>Week</Text>
+            </View>
           </View>
-        </View>
-          }
-        {!this.state.week &&
-        <View>
-          <View style={[styles.numberContainer, { marginTop: 7, marginLeft: 2.5 }]}>
-            <Text style={styles.numberText}>1</Text>
+          :
+          <View>
+            <View style={[styles.numberContainer, { marginTop: 7, marginLeft: 2.5 }]}>
+              <Text style={styles.numberText}>1</Text>
+            </View>
+            <View style={styles.container}>
+              <Icon name="calendarO" size={21} color="#FFFFFF" type="solid" />
+              <Text style={styles.text}>Day</Text>
+            </View>
           </View>
-          <View style={styles.container}>
-            <Icon name="calendarO" size={21} color="#FFFFFF" type="solid" />
-            <Text style={styles.text}>Day</Text>
-          </View>
-        </View>
           }
       </FloatingButton>
     );
