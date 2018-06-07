@@ -47,8 +47,11 @@ export default class Column extends Component {
       case 'deskStaff':
       case 'providers': {
         if (isDate) {
-          [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
-          schedule = schedule ? schedule.scheduledIntervals : null;
+          const hasSchedule = providerSchedule[colData.format('YYYY-MM-DD')];
+          if (hasSchedule) {
+            [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
+            schedule = schedule ? schedule.scheduledIntervals : null;
+          }
         } else {
           schedule = colData.scheduledIntervals;
         }
@@ -62,6 +65,7 @@ export default class Column extends Component {
       default:
         break;
     }
+    if (schedule) {
     if (schedule) {
       for (let i = 0; i < schedule.length; i += 1) {
         if (time.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
@@ -145,9 +149,6 @@ export default class Column extends Component {
 
   render() {
     const { rows, showRoomAssignments } = this.props;
-    // if (!rows) {
-    //   return null;
-    // }
     const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>

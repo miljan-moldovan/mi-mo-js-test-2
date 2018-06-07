@@ -94,7 +94,7 @@ export default class Header extends Component {
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';
     return (
-      <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)}underlayColor="rgba(0, 0, 0, 0.5)">
+      <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)} underlayColor="rgba(0, 0, 0, 0.5)">
         <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
           <SalonAvatar
             wrapperStyle={styles.avatarStyle}
@@ -114,14 +114,16 @@ export default class Header extends Component {
   }
 
   renderDate = (data, index) => {
-    const { cellWidth } = this.props;
+    const { cellWidth, setSelectedDay } = this.props;
     const dayName = data.format('ddd').toString();
     const day = data.format('D').toString();
     return (
-      <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents="box-none">
-        <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
-        <Text numberOfLines={1} style={styles.columnDay}>{day}</Text>
-      </View>
+      <TouchableHighlight key={data.id} onPress={() => setSelectedDay(data)} underlayColor="rgba(0, 0, 0, 0.5)">
+        <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents="box-none">
+          <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
+          <Text numberOfLines={1} style={styles.columnDay}>{day}</Text>
+        </View>
+      </TouchableHighlight>
     );
   }
 

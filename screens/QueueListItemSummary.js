@@ -202,7 +202,9 @@ handlePressProvider = (service) => {
   });
   this.props.onDonePress();
 };
+
 render() {
+  const employeeInitials = this.props.service.employeeFirstName ? `${this.props.service.employeeFirstName[0]}${this.props.service.employeeLastName[0]}` : '';
   return (<View>
     <View style={styles.serviceContainer}>
       <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
@@ -228,7 +230,7 @@ render() {
               </FontAwesome>}
             defaultComponent={
               <View style={styles.avatarDefaultComponent}>
-                <Text style={styles.avatarDefaultComponentText}>{!this.props.service.isFirstAvailable ? `${this.props.service.employeeFirstName[0]}${this.props.service.employeeLastName[0]}` : 'FA'}</Text>
+                <Text style={styles.avatarDefaultComponentText}>{!this.props.service.isFirstAvailable ? employeeInitials : 'FA'}</Text>
               </View>
 }
           />

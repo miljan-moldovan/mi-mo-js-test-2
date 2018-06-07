@@ -189,6 +189,11 @@ export default class AppointmentScreen extends Component {
     });
   }
 
+  setSelectedDay= (day) => {
+    this.props.appointmentCalendarActions.setPickerMode('day')
+    this.props.appointmentCalendarActions.setProviderScheduleDates(day, day);
+  }
+
   selectFilterProvider = (filterProvider) => {
     this.props.appointmentCalendarActions.setGridView();
     requestAnimationFrame(() => this.manageBuffer(false));
@@ -330,6 +335,7 @@ export default class AppointmentScreen extends Component {
           manageBuffer={this.manageBuffer}
           filterOptions={filterOptions}
           setSelectedProvider={this.setSelectedProvider}
+          setSelectedDay={this.setSelectedDay}
         />
         {
            isLoading ?
@@ -341,9 +347,13 @@ export default class AppointmentScreen extends Component {
         }
         {selectedFilter === 'providers' && selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
-            handlePress={(isWeek) => {
-              const pickerMode = isWeek ? 'week' : 'day';
-              this.props.appointmentCalendarActions.setPickerMode(pickerMode);
+            pickerMode={pickerMode}
+            handlePress={() => {
+              const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
+              this.props.appointmentCalendarActions.setPickerMode(newPickerMode);
+              if(startDate.format('YYYY-MM-DD') === endDate.format('YYYY-MM-DD')) {
+                this.props.appointmentCalendarActions.setGridView();
+              }
             }}
           />
         )}

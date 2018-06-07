@@ -37,12 +37,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
   },
-  stripesContainer: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-    borderRadius: 4,
-  },
 });
 
 class Card extends Component {
@@ -99,12 +93,12 @@ class Card extends Component {
     const clientTextColor = isActive ? '#fff' : '#2F3142';
     const shadow = {
       shadowColor: '#3C4A5A',
-      shadowOffset: { height: 2, width: 0 },
+      shadowOffset: { height: 8, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 4,
     };
     const position = isActive ? {
-      position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, ...shadow, width: cardWidth
+      position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, width: cardWidth
     } : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
     return (
       <Animated.View
@@ -120,6 +114,7 @@ class Card extends Component {
           position,
         ]}
       >
+        <View style={isActive ? shadow : ''}>
         <TouchableOpacity
           onLongPress={this.handleOnLongPress}
         >
@@ -153,6 +148,7 @@ class Card extends Component {
             isDisabled={this.props.isResizeing}
             top={this.props.pan.y._value + this.props.pan.y._offset}
           /> : null }
+        </View>
       </Animated.View>
     );
   }

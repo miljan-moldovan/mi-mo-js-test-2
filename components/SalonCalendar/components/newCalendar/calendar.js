@@ -712,7 +712,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions, setSelectedProvider,
+      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
@@ -763,7 +763,7 @@ export default class Calendar extends Component {
                 isLoading={isLoading}
               />
               { this.renderCards() }
-              { this.renderBlockTimes() }
+              { showAvailability ? this.renderBlockTimes() : null }
               {this.renderResizeCard()}
             </ScrollViewChild>
             <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
@@ -780,6 +780,7 @@ export default class Calendar extends Component {
                   handleShowfirstAvailalble={this.handleShowfirstAvailalble}
                   showFirstAvailable={showFirstAvailable}
                   setSelectedProvider={setSelectedProvider}
+                  setSelectedDay={setSelectedDay}
                 />
               </ScrollViewChild> : null
             }

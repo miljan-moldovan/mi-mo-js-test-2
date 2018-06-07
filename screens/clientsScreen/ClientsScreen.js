@@ -173,10 +173,10 @@ class ClientsScreen extends React.Component {
     return matches;
   }
 
-  componentWillMount() {
-    this.props.salonSearchHeaderActions.setShowFilter(false);
-    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
-  }
+  // componentWillMount() {
+  //   //this.props.salonSearchHeaderActions.setShowFilter(false);
+  //   this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
+  // }
 
   constructor(props) {
     super(props);
@@ -184,18 +184,20 @@ class ClientsScreen extends React.Component {
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
-    this.props.clientsActions.getClients().then((response) => {
-      if (response.data.error) {
-        // this.props.navigation.goBack();
-      } else {
-        const { clients } = response.data;
-        this.props.clientsActions.setClients(clients);
-        this.props.clientsActions.setFilteredClients(clients);
-        const suggestionList = this.getSuggestionsList(clients);
-        this.props.clientsActions.setSuggestionsList(suggestionList);
-        this.props.clientsActions.setFilteredSuggestions(suggestionList);
-      }
-    });
+    //this.props.clientsActions.getClients();
+    this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
+    // .then((response) => {
+    //   if (response.data.error) {
+    //     // this.props.navigation.goBack();
+    //   } else {
+    //     const { clients } = response.data;
+    //     this.props.clientsActions.setClients(clients);
+    //     this.props.clientsActions.setFilteredClients(clients);
+    //     const suggestionList = this.getSuggestionsList(clients);
+    //     this.props.clientsActions.setSuggestionsList(suggestionList);
+    //     this.props.clientsActions.setFilteredSuggestions(suggestionList);
+    //   }
+    // });
   }
 
   state = {
@@ -241,21 +243,29 @@ class ClientsScreen extends React.Component {
 
   filterClients = (searchText) => {
     if (searchText && searchText.length > 0) {
-      const criteria = [
-        { Field: 'name', Values: [searchText.toLowerCase()] },
-        { Field: 'lastName', Values: [searchText.toLowerCase()] },
-        { Field: 'email', Values: [searchText.toLowerCase()] },
-      ];
-
-      const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
-      this.props.clientsActions.setFilteredClients(filtered);
-    } else {
-      this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
+      const params = {
+        fromAllStores: false,
+        'nameFilter.FilterRule': 'contains',
+        'nameFilter.FilterValue': searchText,
+        'nameFilter.SortOrder': 'asc'
+      }
+      this.props.clientsActions.getClients(params);
     }
+    //   const criteria = [
+    //     { Field: 'name', Values: [searchText.toLowerCase()] },
+    //     { Field: 'lastName', Values: [searchText.toLowerCase()] },
+    //     { Field: 'email', Values: [searchText.toLowerCase()] },
+    //   ];
+    //
+    //   const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
+    //   this.props.clientsActions.setFilteredClients(filtered);
+    // } else {
+    //   this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
+    // }
 
-    this.props.navigation.setParams({
-      searchText: this.props.salonSearchHeaderState.searchText,
-    });
+    // this.props.navigation.setParams({
+    //   searchText: this.props.salonSearchHeaderState.searchText,
+    // });
   }
 
   onPressItem = (item) => {
@@ -299,42 +309,21 @@ class ClientsScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
-
-          {false && this.props.clientsState.filtered.length === 0 &&
-
-            <View style={styles.searchClients}>
-              <Icon name="circle" size={100} color="#C0C1C6" type="solid" />
-              <View style={styles.searchIconContainer}>
-                <Icon
-                  style={styles.subIcon}
-                  name="search"
-                  size={50}
-                  color="#C0C1C6"
-                  type="solid"
-                />
-              </View>
-
-              <Text style={styles.searchClientsTitle}>Search for clients above.</Text>
-              <Text style={styles.searchClientsText}>Type name, code, phone number or email</Text>
-            </View>
-          }
-
-          { (!this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
             <ClientList
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.clientListContainer}
-              clients={this.props.clientsState.filtered}
+              clients={this.props.clientsState.clients}
               onChangeClient={onChangeClient}
+              refreshing={this.props.salonSearchHeaderState.isLoading}
             />
-           }
 
-          { (this.props.salonSearchHeaderState.showFilter && this.props.clientsState.filtered.length > 0) &&
-          <ClientSuggestions
-            {...this.props}
-            onPressItem={this.onPressItem}
-            list={this.props.clientsState.suggestionsList}
-          />
-            }
+          {/* { this.props.salonSearchHeaderState.showFilter ?
+            <ClientSuggestions
+              {...this.props}
+              onPressItem={this.onPressItem}
+              list={this.props.clientsState.suggestionsList}
+            /> : null
+            } */}
 
         </View>
 

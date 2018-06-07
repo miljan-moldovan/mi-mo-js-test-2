@@ -163,7 +163,7 @@ export default class SalonDatePickerBar extends Component {
         <View style={styles.datesStrip}>
           <SalonTouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', padding: 10, marginLeft: 8 }]} onPress={this.getPrevious}>
             <View>
-              <Icon name="angleLeft" size={20} color="#727A8F" type="solid" />
+              <Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />
             </View>
           </SalonTouchableOpacity>
 
@@ -198,7 +198,7 @@ export default class SalonDatePickerBar extends Component {
           </View>
           <SalonTouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', padding: 10, marginRight: 8 }]} onPress={this.getNext}>
             <View>
-              <Icon name="angleRight" size={20} color="#727A8F" type="solid" />
+              <Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />
             </View>
           </SalonTouchableOpacity>
         </View>

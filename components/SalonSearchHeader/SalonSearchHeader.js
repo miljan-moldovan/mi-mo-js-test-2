@@ -176,7 +176,7 @@ class SalonSearchHeader extends React.Component {
             iconsColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
             fontColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
             borderColor="transparent"
-            backgroundColor={!this.props.salonSearchHeaderState.showFilter ? 'rgba(142, 142, 147, 0.24)' : '#0C4699'}
+            backgroundColor={!this.props.salonSearchHeaderState.showFilter ? 'rgba(142,142,147,0.24)' : '#0C4699'}
             onChangeText={(searchText) => {
                 this.props.salonSearchHeaderActions.setSearchText(searchText);
                 this.props.salonSearchHeaderState.filterList(searchText);
