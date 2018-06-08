@@ -85,6 +85,7 @@ const initialState = {
   employee: null,
   client: null,
   bookedByEmployee: null,
+  mainRequested: true,
   totalPrice: 0,
   totalDuration: moment.duration(0, 'second'),
   recurringType: 'week',
@@ -135,9 +136,9 @@ const initialState = {
 
 export default function newAppointmentReducer(state = initialState, action) {
   const { type, data } = action;
-  if (type.indexOf('newAppointment') >= 0) {
-    console.log(`New Appt Reducer ${type}`, data);
-  }
+  // if (type.indexOf('newAppointment') >= 0) {
+  //   console.log(`New Appt Reducer ${type}`, data);
+  // }
   const {
     body,
     guests,
@@ -224,7 +225,7 @@ export default function newAppointmentReducer(state = initialState, action) {
         guests,
       };
     case SET_GUEST_CLIENT:
-      if (data.index) {
+      if (data.guestIndex) {
         newGuests[data.guestIndex].client = data.client;
       }
       return {
@@ -232,7 +233,7 @@ export default function newAppointmentReducer(state = initialState, action) {
         guests: newGuests,
       };
     case ADD_GUEST_SERVICE:
-      if (data.index) {
+      if (data.guestIndex) {
         newGuests[data.guestIndex].services.push(data.item);
       }
       return {
@@ -240,7 +241,7 @@ export default function newAppointmentReducer(state = initialState, action) {
         guests: newGuests,
       };
     case REMOVE_GUEST_SERVICE:
-      if (data.index) {
+      if (data.guestIndex) {
         newGuests[data.guestIndex].services.splice(data.serviceIndex, 1);
       }
       return {
@@ -254,6 +255,7 @@ export default function newAppointmentReducer(state = initialState, action) {
       return {
         ...state,
         body,
+        mainRequested: data.requested,
       };
     case SET_NEW_APPT_RECURRING:
       if (data.index) {
@@ -356,7 +358,8 @@ export default function newAppointmentReducer(state = initialState, action) {
       };
     case BOOK_NEW_APPT_SUCCESS:
       return {
-        ...initialState,
+        // ...initialState,
+        ...state,
         isLoading: false,
       };
     case BOOK_NEW_APPT_FAILED:

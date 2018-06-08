@@ -6,6 +6,7 @@ import {
   ScrollView,
 } from 'react-native';
 import moment from 'moment';
+import { get } from 'lodash';
 
 import {
   InputGroup,
@@ -53,6 +54,9 @@ const styles = StyleSheet.create({
 
 export default class ModifyApptServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+    const canSave = params.canSave || false;
+
     let title = 'New Service';
     if ('params' in navigation.state && navigation.state.params !== undefined) {
       if ('item' in navigation.state.params) {
@@ -76,12 +80,12 @@ export default class ModifyApptServiceScreen extends React.Component {
       ),
       headerRight: (
         <SalonTouchableOpacity
-          onPress={() => navigation.state.params.handleSave()}
+          onPress={() => (canSave ? navigation.state.params.handleSave() : null)}
         >
           <Text style={{
             fontSize: 14,
             lineHeight: 22,
-            color: 'white',
+            color: canSave ? 'white' : 'rgba(0,0,0,.3)',
           }}
           >Done
           </Text>
@@ -95,16 +99,20 @@ export default class ModifyApptServiceScreen extends React.Component {
     const {
       body,
     } = this.props.newAppointmentState;
-    const { client } = this.props.navigation.state.params;
+    const params = this.props.navigation.state.params || {};
+    const client = params.client || null;
+
+    const startTime = params.startTime || moment();
     this.props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
-      selectedClient: null,
+      selectedClient: client,
       selectedProvider: null,
       selectedService: null,
-      startTime: null,
+      startTime,
+      canRemove: params.onRemoveService || false,
       endTime: null,
       length: null,
-      gap: false,
+      bookBetween: false,
       gapTime: 0,
       afterGap: 0,
       assignedRoom: null,
@@ -119,41 +127,46 @@ export default class ModifyApptServiceScreen extends React.Component {
   }
 
   handleSelectService = (selectedService) => {
-    const {
-      startTime,
-    } = this.props.newAppointmentState;
     const newBody = this.state.body;
-
+    const { startTime } = this.state;
     let endTime = null;
     if ('maxDuration' in selectedService) {
-      endTime = moment(startTime, 'HH:mm').add(moment.duration(selectedService.maxDuration));
+      endTime = moment(startTime).add(moment.duration(selectedService.maxDuration));
     }
 
     newBody.service = selectedService;
     newBody.serviceId = selectedService.id;
     newBody.fromTime = startTime;
-    newBody.toTime = endTime.format('HH:mm');
-    this.setState({ selectedService, body: newBody, endTime: endTime.format('HH:mm A') });
+    newBody.toTime = endTime;
+    this.setState({
+      selectedService,
+      endTime,
+      body: newBody,
+    }, this.validate);
   }
 
   handleSave = () => {
-    const { body } = this.state;
-    const { params } = this.props.navigation.state;
-    if ('guestIndex' in params) {
-      this.props.newAppointmentActions.addGuestService(params.guestIndex, body);
-    } else {
-      this.props.newAppointmentActions.addNewApptItem(body);
+    if (this.state.canSave) {
+      const { body } = this.state;
+      const { params } = this.props.navigation.state;
+
+      if ('guestId' in params) {
+        params.onSaveService(body, params.guestId);
+      } else {
+        params.onSaveService(body);
+      }
+      this.props.navigation.goBack();
     }
-    this.props.navigation.goBack();
   }
 
   handleSelectProvider = (selectedProvider) => {
     const newBody = this.state.body;
 
-    newBody.bookedByEmployeeId = selectedProvider.id;
-    newBody.employeeId = selectedProvider.id;
     newBody.employee = selectedProvider;
-    this.setState({ selectedProvider, body: newBody });
+    this.setState({
+      selectedProvider,
+      body: newBody,
+    }, this.validate);
   }
 
   handleRequested = (requested) => {
@@ -163,36 +176,62 @@ export default class ModifyApptServiceScreen extends React.Component {
   }
 
   onPressRemove = () => {
-    const { body } = this.state;
     const { params } = this.props.navigation.state;
     if (!('serviceIndex' in params)) {
       return this.props.navigation.goBack();
     }
 
-    if ('guestIndex' in params) {
-      this.props.newAppointmentActions.removeGuestService(params.guestIndex, serviceIndex);
-    } else {
-      this.props.newAppointmentActions.removeService(body, params.serviceIndex);
-    }
-
-    this.props.navigation.goBack();
+    params.onRemoveService(params.serviceIndex, params.guestIndex || false);
+    return this.props.navigation.goBack();
   };
 
+  cancelButton = () => ({
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: navigation => navigation.goBack(),
+  })
+
+  validate = () => {
+    const {
+      selectedProvider,
+      selectedService,
+    } = this.state;
+    let valid = false;
+    if (selectedProvider !== null || selectedService !== null) {
+      valid = true;
+    }
+    this.setState({ canSave: valid });
+    this.props.navigation.setParams({ canSave: valid });
+  }
+
   render() {
+    const {
+      selectedProvider,
+      selectedService,
+      startTime,
+      endTime,
+    } = this.state;
     return (
       <ScrollView style={styles.container}>
         <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
+            apptBook
+            noPlaceholder
+            selectedProvider={selectedProvider}
             navigate={this.props.navigation.navigate}
-            selectedService={this.state.selectedService}
+            selectedService={selectedService}
             onChange={this.handleSelectService}
+            headerProps={{ title: 'Services', ...this.cancelButton() }}
           />
           <InputDivider />
           <ProviderInput
-            placeholder=""
+            apptBook
+            filterByService
+            filterList={this.props.apptBookState.providers}
+            noPlaceholder
             navigate={this.props.navigation.navigate}
             selectedProvider={this.state.selectedProvider}
             onChange={this.handleSelectProvider}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
           <InputDivider />
           <InputSwitch
@@ -210,28 +249,28 @@ export default class ModifyApptServiceScreen extends React.Component {
         <InputGroup>
           <InputLabel
             label="Starts"
-            value={moment(this.props.newAppointmentState.startTime, 'HH:mm').format('HH:mm A')}
+            value={startTime.format('HH:mm A')}
           />
           <InputDivider />
           <InputLabel
             label="Ends"
-            value={this.state.endTime}
+            value={moment(endTime).isValid() ? endTime.format('HH:mm A') : '-'}
           />
           <InputDivider />
           <InputLabel
             label="Length"
             value={
               this.state.selectedService === null
-              ? '' : `${moment.duration(this.state.selectedService.maxDuration).asMinutes()} min`
+              ? '-' : `${moment.duration(this.state.selectedService.maxDuration).asMinutes()} min`
             }
           />
           <InputDivider />
           <InputSwitch
             text="Gap"
-            value={this.state.gap}
-            onChange={gap => this.setState({ gap: !gap })}
+            value={this.state.bookBetween}
+            onChange={bookBetween => this.setState({ bookBetween: !bookBetween })}
           />
-          {this.state.gap && (
+          {this.state.bookBetween && (
             <View>
               <InputDivider />
               <InputNumber
@@ -267,7 +306,9 @@ export default class ModifyApptServiceScreen extends React.Component {
           />
         </InputGroup>
         <SectionDivider />
-        <RemoveButton title="Remove Service" onPress={this.onPressRemove} />
+        {this.state.canRemove && (
+          <RemoveButton title="Remove Service" onPress={this.onPressRemove} />
+        )}
         <SectionDivider />
       </ScrollView>
     );

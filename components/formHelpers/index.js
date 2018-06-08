@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   Switch,
+  ActivityIndicator,
   ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -426,11 +427,11 @@ export class ClientInput extends React.Component {
         {!this.props.noLabel && (
           <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
         )}
-        <View style={[
-          {
-          flex: 1, alignItems: 'flex-end', justifyContent: 'center',
-          },
-          this.props.contentStyle,
+        <View style={[{
+            flex: 1,
+            alignItems: this.props.noLabel ? 'flex-start' : 'flex-end',
+            justifyContent: 'center',
+          }, this.props.contentStyle,
         ]}
         >
           {value !== null && (
@@ -454,6 +455,7 @@ export class ServiceInput extends React.Component {
     super(props);
 
     this.state = {
+      labelText: 'labelText' in this.props ? this.props.labelText : 'Service',
       selectedService: 'selectedService' in this.props ? this.props.selectedService : null,
     };
   }
@@ -469,7 +471,7 @@ export class ServiceInput extends React.Component {
     this.props.navigate(this.props.apptBook ? 'ApptBookService' : 'Services', {
       selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
       actionType: 'update',
-      employeeId: this.props.selectedProvider ? this.props.selectedProvider.id : false,
+      employeeId: this.props.selectedProvider && this.props.selectedProvider !== null ? this.props.selectedProvider.id : false,
       filterByProvider: !!this.props.filterByProvider,
       selectedProvider: this.props.selectedProvider ? this.props.selectedProvider : null,
       headerProps: this.props.headerProps ? this.props.headerProps : {},
@@ -498,11 +500,16 @@ export class ServiceInput extends React.Component {
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
         onPress={this.handlePress}
       >
-        {value === null && placeholder !== null && (
-          <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+        {!this.props.noLabel && (
+          <Text numberOfLines={1} style={[styles.labelText, this.props.labelStyle]}>{this.state.labelText}</Text>
         )}
-        <View style={[{ flex: 1, alignItems: 'flex-end' }, this.props.contentStyle]}>
-          <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+        <View style={[{ flex: 1, alignItems: this.props.noLabel ? 'flex-start' : 'flex-end' }, this.props.contentStyle]}>
+          {value !== null && (
+            <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+          )}
+          {value === null && placeholder !== null && (
+            <Text numberOfLines={1} style={[styles.labelText, this.props.placeholderStyle]}>{placeholder}</Text>
+          )}
         </View>
         <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
       </SalonTouchableOpacity>
@@ -533,6 +540,7 @@ export class ProviderInput extends React.Component {
       actionType: 'update',
       dismissOnSelect: true,
       filterByService: !!this.props.filterByService,
+      filterList: this.props.filterList ? this.props.filterList : false,
       onChangeProvider: provider => this.handleProviderSelection(provider),
       headerProps: this.props.headerProps ? this.props.headerProps : {},
     });
@@ -576,7 +584,7 @@ export class ProviderInput extends React.Component {
                   borderWidth={1}
                   borderColor="transparent"
                   image={{ uri: employeePhoto }}
-                  defaultComponent={<DefaultAvatar provider={this.state.selectedProvider} />}
+                  defaultComponent={<ActivityIndicator />}
                 />
               )}
               <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
