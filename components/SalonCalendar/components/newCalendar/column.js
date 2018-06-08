@@ -65,7 +65,7 @@ export default class Column extends Component {
       default:
         break;
     }
-    if (schedule) {
+
     if (schedule) {
       for (let i = 0; i < schedule.length; i += 1) {
         if (time.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
