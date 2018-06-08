@@ -145,7 +145,10 @@ export default class AppointmentScreen extends Component {
 
     this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
 
-    this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
+    this.setState({
+      newAppointmentFilter: 0,
+      visibleNewAppointment: true
+    }, this.props.newAppointmentActions.checkConflicts());
   }
 
   onCardPressed = (appointment) => {
