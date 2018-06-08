@@ -176,7 +176,14 @@ class ProviderScreen extends React.Component {
     this.state = {
       selectedProvider: 'selectedProvider' in params ? params.selectedProvider : null,
       filterByService: 'filterByService' in params ? params.filterByService : false,
+      filterList: 'filterList' in params ? params.filterList : false,
       refreshing: false,
+      headerProps: {
+        title: 'Providers',
+        subTitle: null,
+        leftButtonOnPress: () => { this.props.navigation.goBack(); },
+        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      },
     };
   }
 
@@ -186,14 +193,14 @@ class ProviderScreen extends React.Component {
     this.onRefresh();
   }
 
-  state = {
-    headerProps: {
-      title: 'Providers',
-      subTitle: null,
-      leftButtonOnPress: () => { this.props.navigation.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-    },
-  }
+  // state = {
+  // headerProps: {
+  //   title: 'Providers',
+  //   subTitle: null,
+  //   leftButtonOnPress: () => { this.props.navigation.goBack(); },
+  //   leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+  // },
+  // }
 
   getFirstItemForLetter = (letter) => {
     const { currentData } = this.props.providersState;
@@ -253,12 +260,17 @@ class ProviderScreen extends React.Component {
   }
 
   onRefresh = () => {
-    this.props.providersActions.getProviders({
-      filterRule: 'none',
-      maxCount: 100,
-      sortOrder: 'asc',
-      sortField: 'fullName',
-    }, this.state.filterByService);
+    const { filterByService, filterList } = this.state;
+    this.props.providersActions.getProviders(
+      {
+        filterRule: 'none',
+        maxCount: 100,
+        sortOrder: 'asc',
+        sortField: 'fullName',
+      },
+      filterByService,
+      filterList,
+    );
   }
 
   renderItem = ({ item, index }) => (

@@ -145,7 +145,10 @@ export default class AppointmentScreen extends Component {
 
     this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
 
-    this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
+    this.setState({
+      newAppointmentFilter: 0,
+      visibleNewAppointment: true
+    }, this.props.newAppointmentActions.checkConflicts());
   }
 
   onCardPressed = (appointment) => {
@@ -185,7 +188,7 @@ export default class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setSelectedProvider(provider);
     this.props.appointmentCalendarActions.setGridView();
     this.props.navigation.setParams({
-      filterProvider: provider
+      filterProvider: provider,
     });
   }
 
@@ -393,7 +396,7 @@ export default class AppointmentScreen extends Component {
           date={this.props.newAppointmentState.date}
           startTime={this.props.newAppointmentState.startTime}
           endTime={this.props.newAppointmentState.endTime}
-          isProviderRequested={false}
+          isProviderRequested={this.props.newAppointmentState.mainRequested}
           client={this.props.newAppointmentState.client}
           provider={this.props.newAppointmentState.bookedByEmployee}
           service={this.props.newAppointmentState.service}
@@ -410,20 +413,41 @@ export default class AppointmentScreen extends Component {
             this.props.newAppointmentActions.quickBookAppt(callback);
           }}
           handlePressMore={() => {
-              this.setState({ visibleNewAppointment: false });
-              this.props.navigation.navigate('NewAppointment');
+            const {
+              date,
+              service,
+              client,
+              startTime,
+              bookedByEmployee,
+              mainRequested,
+            } = this.props.newAppointmentState;
+
+            const fromTime = moment(startTime, 'HH:mm');
+            const timeToAdd = service !== null ? moment.duration(service.maxDuration) : moment.duration(apptGridSettings.step, 'min');
+            const toTime = moment(fromTime).add(timeToAdd);
+            const newAppt = {
+              date,
+              bookedByEmployee,
+              service,
+              client,
+              fromTime,
+              toTime,
+              requested: mainRequested,
+            };
+            this.setState({ visibleNewAppointment: false });
+            this.props.navigation.navigate('NewAppointment', { newAppt });
           }}
           handlePressProvider={(provider) => {
             this.props.newAppointmentActions.setBookedBy(provider);
-            this.setState({ visibleNewAppointment: true });
+            this.setState({ visibleNewAppointment: true }, this.props.newAppointmentActions.checkConflicts());
           }}
           handlePressService={(service) => {
             this.props.newAppointmentActions.setNewApptService(service);
-            this.setState({ visibleNewAppointment: true });
+            this.setState({ visibleNewAppointment: true }, this.props.newAppointmentActions.checkConflicts());
           }}
           handlePressClient={(client) => {
             this.props.newAppointmentActions.setNewApptClient(client);
-            this.setState({ visibleNewAppointment: true });
+            this.setState({ visibleNewAppointment: true }, this.props.newAppointmentActions.checkConflicts());
           }}
           handlePressConflicts={() => {
             const { newAppointmentState: state } = this.props;
@@ -439,8 +463,9 @@ export default class AppointmentScreen extends Component {
             });
           }}
           handleChangeRequested={(requested) => {
-            this.props.newAppointmentActions.setNewApptRequested(requested);
+            this.props.newAppointmentActions.setNewApptRequested(!requested);
           }}
+          filterProviders={providers}
         />
 
         <SalonAppointmentSlide

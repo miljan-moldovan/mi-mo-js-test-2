@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   panelContainer: {
     backgroundColor: '#FFFFFF',
     flexDirection: 'column',
-    height: 462,
+    minHeight: 462,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     width: '100%',
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 16,
     width: '100%',
-    height: 462,
+    minHeight: 462,
   },
   panelBlurredSection: {
     flex: 1,
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   otherOptionsLabels: { color: '#115ECD', fontSize: 16 },
   conflictBox: {
     height: 32,
-    width: 343,
+    alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -296,6 +296,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Bold',
   },
 });
+
+export const ConflictBox = props => (
+  <SalonTouchableOpacity
+    style={[styles.conflictBox, props.style]}
+    onPress={props.onPress}
+  >
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Icon type="solid" name="warning" color="#D1242A" size={12} />
+      <Text style={styles.conflictBoxText}>Conflicts found</Text>
+    </View>
+    <Text style={styles.conflictBoxLink}>Show conflicts</Text>
+  </SalonTouchableOpacity>
+);
 
 export const AppointmentTime = props => (
   <View style={[styles.clockIconContainer, props.containerStyle]}>
@@ -423,7 +436,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
         isOpen={this.props.visible}
         onClosingState={() => this.hidePanel()}
       >
-        <View style={styles.panel}>
+        <View style={[styles.panel, { height: this.props.hasConflicts ? 462 + 56 : 462 }]}>
           <View style={styles.panelBlurredSection} />
 
           <View style={styles.panelContainer}>
@@ -454,7 +467,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
             </View>
 
             {this.state.selectedFilter === 0 &&
-              <ScrollView style={styles.tab} >
+              <View style={[styles.tab, { height: this.props.hasConflicts ? 462 + 56 : 462 }]} >
                 <View style={styles.panelTopSection}>
                   <Text style={styles.dateText}>
                     {moment(this.props.date).format('ddd, MMM D')}
@@ -471,6 +484,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       <ClientInput
                         noLabel
                         apptBook
+                        key={Math.random().toString()}
                         style={{ height: 39 }}
                         selectedClient={this.props.client}
                         placeholder="Select a Client"
@@ -483,9 +497,11 @@ export default class SalonNewAppointmentSlide extends React.Component {
                         iconStyle={{ color: '#115ECD' }}
                         onChange={(client) => { this.props.handlePressClient(client); }}
                       />,
-                      <InputDivider style={styles.middleSectionDivider} />,
+                      <InputDivider key={Math.random().toString()} style={styles.middleSectionDivider} />,
                       <ServiceInput
+                        key={Math.random().toString()}
                         apptBook
+                        noLabel
                         selectedProvider={this.props.provider}
                         selectedService={this.props.service}
                         rootStyle={{ height: 39 }}
@@ -499,11 +515,13 @@ export default class SalonNewAppointmentSlide extends React.Component {
                         iconStyle={{ color: '#115ECD' }}
                         onChange={(service) => { this.props.handlePressService(service); }}
                       />,
-                      <InputDivider style={styles.middleSectionDivider} />,
+                      <InputDivider key={Math.random().toString()} style={styles.middleSectionDivider} />,
                       <ProviderInput
+                        key={Math.random().toString()}
                         noLabel
                         apptBook
                         filterByService
+                        filterList={this.props.filterProviders}
                         rootStyle={{ height: 39 }}
                         selectedProvider={this.props.provider}
                         placeholder="Select a Provider"
@@ -521,16 +539,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   </InputGroup>
 
                   {this.props.hasConflicts && (
-                    <SalonTouchableOpacity
-                      style={styles.conflictBox}
-                      onPress={this.props.handlePressConflicts}
-                    >
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Icon type="solid" name="warning" color="#D1242A" size={12} />
-                        <Text style={styles.conflictBoxText}>Conflicts found</Text>
-                      </View>
-                      <Text style={styles.conflictBoxLink}>Show conflicts</Text>
-                    </SalonTouchableOpacity>
+                    <ConflictBox style={{ alignSelf: 'flex-start', width: '90%' }} onPress={this.props.handlePressConflicts} />
                   )}
 
                   <InputGroup
@@ -586,7 +595,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                     </SalonTouchableOpacity>
                   </View>
                 </View>
-              </ScrollView>
+              </View>
             }
             {this.state.selectedFilter === 1 &&
               <View style={styles.tab}>
@@ -616,8 +625,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                      </View>]}
-                  </InputButton>,
+                    </View>]}
+                    </InputButton>,
 
                     <InputButton
                       noIcon
@@ -638,7 +647,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                             type="solid"
                           />
                         </View>
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -649,7 +658,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Room Assignment"
                     >
                       {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -660,7 +669,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Turn Away"
                     >
                       {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -671,7 +680,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message Provider's Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>,
                     <InputButton
                       noIcon
@@ -681,7 +690,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message All Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                      </View>]}
+                        </View>]}
                     </InputButton>]}
                 </InputGroup>
               </View>
