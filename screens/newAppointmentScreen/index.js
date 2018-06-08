@@ -6,6 +6,7 @@ import NewAppointmentScreen from './NewAppointmentScreen';
 
 const mapStateToProps = state => ({
   newAppointmentState: state.newAppointmentReducer,
+  apptBookState: state.appointmentScreenReducer,
 });
 
 const mapActionsToProps = dispatch => ({

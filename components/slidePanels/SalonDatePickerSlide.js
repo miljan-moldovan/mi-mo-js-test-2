@@ -193,20 +193,6 @@ export default class SalonDatePickerSlide extends React.Component {
   }
 
   render() {
-    console.log({
-      [moment(this.state.selected).format('YYYY-MM-DD')]: {
-        customStyles: {
-          container: {
-            backgroundColor: '#727A8F',
-          },
-          text: {
-            fontFamily: 'Roboto-Bold',
-            color: 'white',
-          },
-        },
-      },
-      ...this.props.markedDates,
-    });
     return (
       <ModalBox
         isOpen={this.props.visible}

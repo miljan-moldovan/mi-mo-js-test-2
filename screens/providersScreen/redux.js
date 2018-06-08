@@ -76,8 +76,13 @@ const setSelectedProvider = selectedProvider => ({
   data: { selectedProvider },
 });
 
-const getProvidersSuccess = (providers) => {
+const getProvidersSuccess = (providerList, filterList = false) => {
+  let providers = providerList;
   const deskStaff = providers.filter(item => item.isReceptionist);
+  if (filterList) {
+    const filterProviderIds = filterList.map(item => item.id);
+    providers = providers.filter(item => filterProviderIds.includes(item.id));
+  }
   return {
     type: GET_PROVIDERS_SUCCESS,
     data: { providers, deskStaff },
@@ -89,7 +94,7 @@ const getProvidersError = error => ({
   data: { error },
 });
 
-const getProviders = (params, filterByService = false) => (dispatch, getState) => {
+const getProviders = (params, filterByService = false, filterList = false) => (dispatch, getState) => {
   dispatch({ type: GET_PROVIDERS });
   const { selectedService } = getState().serviceReducer;
   if (selectedService !== null && filterByService && 'id' in selectedService) {
@@ -102,7 +107,7 @@ const getProviders = (params, filterByService = false) => (dispatch, getState) =
       },
     })
       .then((providers) => {
-        dispatch(getProvidersSuccess(providers.sort(alphabeticFilter)));
+        dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
       })
       .catch((err) => {
         dispatch(getProvidersError(err));
@@ -115,7 +120,7 @@ const getProviders = (params, filterByService = false) => (dispatch, getState) =
     },
   })
     .then((providers) => {
-      dispatch(getProvidersSuccess(providers.sort(alphabeticFilter)));
+      dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
     })
     .catch((err) => {
       dispatch(getProvidersError(err));

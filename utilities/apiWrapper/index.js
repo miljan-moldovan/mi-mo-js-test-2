@@ -125,7 +125,7 @@ function doRequest(key, parameters, options = {
       }
     } catch (error) {
       // Error retrieving data, keep default settings
-      console.log('APIWrapper no store found');
+
     }
 
 
