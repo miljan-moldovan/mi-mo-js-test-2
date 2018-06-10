@@ -482,8 +482,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                   >
                     {[
                       <ClientInput
-                        noLabel
                         apptBook
+                        label={false}
                         key={Math.random().toString()}
                         style={{ height: 39 }}
                         selectedClient={this.props.client}

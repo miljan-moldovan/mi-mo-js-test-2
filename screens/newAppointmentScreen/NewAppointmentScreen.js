@@ -93,7 +93,7 @@ const Guest = props => (
     bodyChildren={(
       <ClientInput
         style={{ flex: 1, height: 40 }}
-        noLabel
+        label={false}
         apptBook
         placeholder="Select a Client"
         selectedClient={props.selectedClient}
@@ -489,6 +489,8 @@ export default class NewAppointmentScreen extends React.Component {
     this.setState({ client }, this.validate);
   }
 
+  onChangeRemarks = remarks => this.setState({ remarks })
+
   onChangeGuestNumber = (action, guestNumber) => {
     const newGuests = this.state.guests;
     if (this.state.guests.length < guestNumber) {
@@ -619,6 +621,41 @@ export default class NewAppointmentScreen extends React.Component {
     });
   }
 
+  renderExtraClientButtons = () => ([
+    <SalonTouchableOpacity
+      key={Math.random().toString()}
+      onPress={() => {
+        this.props.navigation.navigate('AppointmentFormulas');
+      }}
+      style={{
+        marginHorizontal: 5,
+      }}
+    >
+      <Icon
+        name="fileText"
+        size={20}
+        color="#115ECD"
+        type="regular"
+      />
+    </SalonTouchableOpacity>,
+    <SalonTouchableOpacity
+      key={Math.random().toString()}
+      onPress={() => {
+        this.props.navigation.navigate('AppointmentFormulas');
+      }}
+      style={{
+        marginHorizontal: 5,
+      }}
+    >
+      <Icon
+        name="infoCircle"
+        size={20}
+        color="#115ECD"
+        type="regular"
+      />
+    </SalonTouchableOpacity>,
+  ]);
+
   render() {
     const {
       date,
@@ -657,8 +694,8 @@ export default class NewAppointmentScreen extends React.Component {
         <InputGroup>
           <ClientInput
             navigate={this.props.navigation.navigate}
-            noPlaceholder
             apptBook
+            label={client === null ? 'Select Client' : 'Client'}
             headerProps={{
               title: 'Clients',
               leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
@@ -668,40 +705,7 @@ export default class NewAppointmentScreen extends React.Component {
             }}
             selectedClient={client}
             onChange={this.onChangeClient}
-            extraComponents={[
-              <SalonTouchableOpacity
-                key={Math.random().toString()}
-                onPress={() => {
-                  this.props.navigation.navigate('AppointmentFormulas');
-                }}
-                style={{
-                  marginHorizontal: 5,
-                }}
-              >
-                <Icon
-                  name="fileText"
-                  size={20}
-                  color="#115ECD"
-                  type="regular"
-                />
-              </SalonTouchableOpacity>,
-              <SalonTouchableOpacity
-                key={Math.random().toString()}
-                onPress={() => {
-                  this.props.navigation.navigate('AppointmentFormulas');
-                }}
-                style={{
-                  marginHorizontal: 5,
-                }}
-              >
-                <Icon
-                  name="infoCircle"
-                  size={20}
-                  color="#115ECD"
-                  type="regular"
-                />
-              </SalonTouchableOpacity>,
-            ]}
+            extraComponents={client !== null && this.renderExtraClientButtons()}
           />
           <InputDivider />
           <InputLabel
@@ -875,7 +879,7 @@ export default class NewAppointmentScreen extends React.Component {
           <LabeledTextarea
             label="Remarks"
             placeholder="Please specify"
-            onChangeText={this.props.newAppointmentActions.setNewApptRemarks}
+            onChangeText={this.onChangeRemarks}
           />
         </InputGroup>
       </ScrollView>

@@ -366,6 +366,39 @@ export default class ModifyAppointmentScreen extends React.Component {
     );
   }
 
+  renderExtraClientButtons = () => [
+    <SalonTouchableOpacity
+      onPress={() => {
+        this.props.navigation.navigate('AppointmentFormulas');
+      }}
+      style={{
+        marginHorizontal: 5,
+      }}
+    >
+      <Icon
+        name="fileAlt"
+        size={20}
+        color="#115ECD"
+        type="regular"
+      />
+    </SalonTouchableOpacity>,
+    <SalonTouchableOpacity
+      onPress={() => {
+        this.props.navigation.navigate('AppointmentFormulas');
+      }}
+      style={{
+        marginHorizontal: 5,
+      }}
+    >
+      <Icon
+        name="infoCircle"
+        size={20}
+        color="#115ECD"
+        type="regular"
+      />
+    </SalonTouchableOpacity>,
+  ];
+
   render() {
     const { appointment } = this.props.state;
     if (appointment === null) {
@@ -380,7 +413,7 @@ export default class ModifyAppointmentScreen extends React.Component {
     const startTime = moment(appointment.fromTime, 'HH:mm');
     const startTimeText = startTime.format('HH:mm A');
     const endTime = moment(appointment.toTime, 'HH:mm');
-    const endTimeText = moment(appointment.toTime, 'HH:mm').format('HH:mm A')
+    const endTimeText = moment(appointment.toTime, 'HH:mm').format('HH:mm A');
     const duration = startTime.diff(endTime);
     return (
       <ScrollView style={styles.container}>
@@ -409,38 +442,7 @@ export default class ModifyAppointmentScreen extends React.Component {
             navigate={this.props.navigation.navigate}
             selectedClient={client}
             onChange={newClient => alert(`newClient selected ${newClient.name}`)}
-            extraComponents={[
-              <SalonTouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate('AppointmentFormulas');
-                }}
-                style={{
-                  marginHorizontal: 5,
-                }}
-              >
-                <Icon
-                  name="fileAlt"
-                  size={20}
-                  color="#115ECD"
-                  type="regular"
-                />
-              </SalonTouchableOpacity>,
-              <SalonTouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate('AppointmentFormulas');
-                }}
-                style={{
-                  marginHorizontal: 5,
-                }}
-              >
-                <Icon
-                  name="infoCircle"
-                  size={20}
-                  color="#115ECD"
-                  type="regular"
-                />
-              </SalonTouchableOpacity>,
-            ]}
+            extraComponents={client !== null ? this.renderExtraClientButtons : []}
           />
           <InputDivider />
           <InputLabel
@@ -492,7 +494,7 @@ export default class ModifyAppointmentScreen extends React.Component {
             value={`${moment.duration(duration).asMinutes()} min`}
           />
         </InputGroup>
-        
+
         <InputGroup style={{
           marginVertical: 30,
           paddingVertical: 10,
@@ -502,7 +504,7 @@ export default class ModifyAppointmentScreen extends React.Component {
             label="Remarks"
             placeholder="Please specify"
             value={this.state.remarks}
-            onChangeText={(text) => this.setState({ remarks: text })}
+            onChangeText={text => this.setState({ remarks: text })}
           />
         </InputGroup>
       </ScrollView>

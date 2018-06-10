@@ -184,7 +184,7 @@ class ClientsScreen extends React.Component {
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
-    //this.props.clientsActions.getClients();
+    // this.props.clientsActions.getClients();
     this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
     // .then((response) => {
     //   if (response.data.error) {
@@ -247,8 +247,8 @@ class ClientsScreen extends React.Component {
         fromAllStores: false,
         'nameFilter.FilterRule': 'contains',
         'nameFilter.FilterValue': searchText,
-        'nameFilter.SortOrder': 'asc'
-      }
+        'nameFilter.SortOrder': 'asc',
+      };
       this.props.clientsActions.getClients(params);
     }
     //   const criteria = [
@@ -309,7 +309,7 @@ class ClientsScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
-            <ClientList
+          <ClientList
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.clientListContainer}
               clients={this.props.clientsState.clients}
