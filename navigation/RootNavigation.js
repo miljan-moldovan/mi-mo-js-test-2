@@ -33,7 +33,7 @@ const RootDrawerNavigator = TabNavigator(
   },
   {
 
-    navigationOptions: ({ navigation }) => ({
+    navigationOptions: ({navigation, screenProps}) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
@@ -57,6 +57,12 @@ const RootDrawerNavigator = TabNavigator(
         // icon component from react-native-vector-icons
         return <Icon name={iconName} size={23} color={tintColor} type={type} fontWeight={fontWeight} />;
       },
+      tabBarOnPress: ({ previousScene, scene, jumpToIndex }) => {
+        if (previousScene.routeName === 'Clients' && previousScene.route !== scene.route) {
+          screenProps.clientsActions.setClients([]);
+        }
+        jumpToIndex(scene.index);
+      }
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',
@@ -89,7 +95,7 @@ class RootNavigator extends React.Component {
 
     // if user is logged in AND fingerprint identification is NOT enabled
     if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
-      return <RootDrawerNavigator />;
+      return <RootDrawerNavigator screenProps={{clientsActions: this.props.clientsActions}} />;
     }
     // else redirect to login screen so the user can authenticate (user/pass or touchID)
     return <LoginStackNavigator />;
