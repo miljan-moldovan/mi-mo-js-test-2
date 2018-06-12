@@ -307,6 +307,20 @@ LabeledButton.defaultProps = {
   value: null,
 };
 
+const LabeledTextInput = props => (
+  <View style={[styles.inputRow, { justifyContent: 'space-between' }, props.style]}>
+    <Text style={[styles.labelText]}>{props.label}</Text>
+    <TextInput
+      {...props}
+      style={[styles.inputText, { textAlign: 'right', flex: 1 }]}
+      numberOfLines={1}
+      value={props.value}
+      placeholder={props.placeholder}
+      placeholderTextColor="#727A8F"
+    />
+  </View>
+);
+
 const InputText = props => (
   <View style={{}}>
     <TextInput
@@ -337,6 +351,7 @@ export {
   InputSwitch,
   SectionDivider,
   LabeledButton,
+  LabeledTextInput,
   ClientInput,
   ServiceInput,
   ProviderInput,

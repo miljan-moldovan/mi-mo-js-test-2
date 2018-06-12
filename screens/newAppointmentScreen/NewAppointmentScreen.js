@@ -14,6 +14,7 @@ import { last, get, flatten, isNil, sortBy, chain } from 'lodash';
 
 import {
   DefaultAvatar,
+  LabeledTextInput,
   InputGroup,
   InputText,
   InputLabel,
@@ -92,12 +93,13 @@ const Guest = props => (
     bodyStyles={{ paddingVertical: 0 }}
     bodyChildren={(
       <ClientInput
-        style={{ flex: 1, height: 40 }}
+        style={{ flex: 1, height: 40, paddingRight: 0 }}
         label={false}
         apptBook
         placeholder="Select a Client"
         selectedClient={props.selectedClient}
         onChange={client => props.onChange(client)}
+        iconStyle={{ color: '#115ECD' }}
         headerProps={{
           title: 'Clients',
           leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
@@ -350,6 +352,7 @@ export default class NewAppointmentScreen extends React.Component {
       // endTime,
       totalPrice: 0,
       totalDuration: 0,
+      clientEmail: 'asdasd',
     };
   }
 
@@ -440,11 +443,28 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   addService = (service, guestId = false) => {
-    const { serviceItems } = this.state;
+    const {
+      client,
+      startTime,
+      serviceItems,
+      totalDuration,
+      bookedByEmployee,
+    } = this.state;
+    const fromTime = moment(startTime).add(moment.duration(totalDuration));
+    const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
+    const newServiceItem = {
+      service,
+      client: guestId ? this.getGuest(guestId) : client,
+      requested: true,
+      employee: bookedByEmployee,
+      fromTime,
+      toTime,
+    };
+
     serviceItems.push({
       itemId: uuid(),
       guestId,
-      service,
+      service: newServiceItem,
     });
     this.setState({ serviceItems }, this.validate);
   }
@@ -505,16 +525,13 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleAddMainService = () => {
-    const {
-      client,
-      startTime,
-      totalDuration,
-    } = this.state;
-    if (this.state.client !== null) {
-      return this.props.navigation.navigate('ModifyApptService', {
-        client,
-        startTime: moment(startTime).add(moment.duration(totalDuration)),
-        onSaveService: this.addService,
+    const { client, bookedByEmployee } = this.state;
+    if (client !== null) {
+      return this.props.navigation.navigate('ApptBookService', {
+        dismissOnSelect: true,
+        filterByProvider: true,
+        employeeId: bookedByEmployee.id,
+        onChangeService: this.addService,
       });
     }
     return alert('Select a client first');
@@ -523,17 +540,13 @@ export default class NewAppointmentScreen extends React.Component {
   getMainServices = () => this.state.serviceItems.filter(item => !item.guestId)
 
   handleAddGuestService = (guestId) => {
-    const {
-      startTime,
-      totalDuration,
-    } = this.state;
-    const guest = this.getGuest(guestId);
-    if (guest.client !== null) {
-      return this.props.navigation.navigate('ModifyApptService', {
-        guestId,
-        client: guest.client,
-        startTime: moment(startTime).add(moment.duration(totalDuration)),
-        onSaveService: this.addService,
+    const { bookedByEmployee } = this.state;
+    if (guestId !== null) {
+      return this.props.navigation.navigate('ApptBookService', {
+        dismissOnSelect: true,
+        filterByProvider: true,
+        employeeId: bookedByEmployee.id,
+        onChangeService: service => this.addService(service, guestId),
       });
     }
     return alert('Select a guest first');
@@ -665,6 +678,7 @@ export default class NewAppointmentScreen extends React.Component {
       guests,
       totalPrice,
       totalDuration,
+      clientEmail,
       isLoading,
     } = this.state;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
@@ -706,6 +720,12 @@ export default class NewAppointmentScreen extends React.Component {
             selectedClient={client}
             onChange={this.onChangeClient}
             extraComponents={client !== null && this.renderExtraClientButtons()}
+          />
+          <InputDivider />
+          <LabeledTextInput
+            label="Email"
+            value={clientEmail}
+            onChangeText={clientEmail => this.setState({ clientEmail })}
           />
           <InputDivider />
           <InputLabel
