@@ -85,7 +85,7 @@ class SalonSearchBar extends Component {
 
 
   handleChange= (searchText) => {
-    if (searchText.length > 2 && this.props.onChangeText) {
+    if (this.props.onChangeText) {
       this.props.onChangeText(searchText);
     }
     this.setState({ searchText });
