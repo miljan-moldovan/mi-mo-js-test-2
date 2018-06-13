@@ -91,12 +91,12 @@ function setFilteredEmployees(filtered) {
 }
 
 
-const postEmployeesAppointmentOrderSuccess = (notes, employeesArray) => {
+const postEmployeesAppointmentOrderSuccess = (employeesArray) => {
   const orderInitials = createInitialsString(employeesArray);
   const employees = keyBy(employeesArray, item => indexOf(employeesArray, item));
   return {
     type: POST_EMPLOYEES_APPOINTMENT_ORDER_SUCCESS,
-    data: { notes, employees, orderInitials },
+    data: { employees, orderInitials },
   };
 };
 
@@ -111,8 +111,7 @@ const postEmployeesAppointmentOrder = appointmentOrders => (dispatch) => {
     body: appointmentOrders,
   })
     .then((response) => {
-      dispatch(purgeForm('AppointmentNoteScreenNew'));
-      return dispatch(postEmployeesAppointmentOrderSuccess(response, appointmentOrders));
+      return dispatch(postEmployeesAppointmentOrderSuccess(appointmentOrders));
     })
     .catch((error) => {
       if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
