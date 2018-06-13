@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import apptBookSetEmployeeOrderActions from '../../actions/apptBookSetEmployeeOrder';
-import ApptBookSetEmployeeOrderScreen from './apptBookSetEmployeeOrderScreen';
+import SetEmployeesOrderScreen from './components/setEmployeesOrderScreen';
 
 const mapStateToProps = state => ({
   apptBookSetEmployeeOrderState: state.apptBookSetEmployeeOrderReducer,
@@ -12,4 +12,5 @@ const mapActionsToProps = dispatch => ({
   apptBookSetEmployeeOrderActions: bindActionCreators({ ...apptBookSetEmployeeOrderActions }, dispatch),
 });
 
-export default connect(mapStateToProps, mapActionsToProps)(ApptBookSetEmployeeOrderScreen);
+//export default connect(mapStateToProps, mapActionsToProps)(ApptBookSetEmployeeOrderScreen);
+export default connect(mapStateToProps, mapActionsToProps)(SetEmployeesOrderScreen);

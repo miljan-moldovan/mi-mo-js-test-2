@@ -124,6 +124,7 @@ class ApptBookViewOptionsScreen extends Component {
   handleOnNavigateBack = () => {
     const { navigate } = this.props.navigation;
     this.setState({ isVisibleViewOptions: true });
+    //this.props.navigation.goBack();
     // navigate('ApptBookViewOptions');
   }
 
