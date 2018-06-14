@@ -128,7 +128,9 @@ export default class ConflictsScreen extends React.Component {
     headerLeft: null,
     headerRight: (
       <SalonTouchableOpacity onPress={() => {
-        navigation.state.params.handleGoBack();
+        if (navigation.state.params.handleGoBack) {
+          navigation.state.params.handleGoBack();
+        }
         navigation.goBack();
       }}
       >

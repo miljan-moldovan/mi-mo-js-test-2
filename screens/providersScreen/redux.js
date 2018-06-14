@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import apiWrapper from '../../utilities/apiWrapper';
 
 const alphabeticFilter = (a, b) => {
@@ -97,10 +98,11 @@ const getProvidersError = error => ({
 const getProviders = (params, filterByService = false, filterList = false) => (dispatch, getState) => {
   dispatch({ type: GET_PROVIDERS });
   const { selectedService } = getState().serviceReducer;
-  if (selectedService !== null && filterByService && 'id' in selectedService) {
+  const serviceId = get(selectedService || {}, 'id', false);
+  if (serviceId && filterByService) {
     return apiWrapper.doRequest('getEmployeesByService', {
       path: {
-        serviceId: selectedService.id,
+        serviceId,
       },
       query: {
         ...params,

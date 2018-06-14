@@ -10,7 +10,7 @@ import {
   Text,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import { get } from 'lodash';
 import apiWrapper from '../../utilities/apiWrapper';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
@@ -172,11 +172,11 @@ class ProviderScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const { params } = this.props.navigation.state;
+    const params = this.props.navigation.state.params || {};
     this.state = {
-      selectedProvider: 'selectedProvider' in params ? params.selectedProvider : null,
-      filterByService: 'filterByService' in params ? params.filterByService : false,
-      filterList: 'filterList' in params ? params.filterList : false,
+      selectedProvider: get(params, 'selectedProvider', null),
+      filterByService: get(params, 'filterByService', false),
+      filterList: get(params, 'filterList', false),
       refreshing: false,
       headerProps: {
         title: 'Providers',
