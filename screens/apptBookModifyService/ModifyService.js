@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { get } from 'lodash';
+import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
 import {
   InputGroup,
@@ -22,7 +23,7 @@ import {
   RemoveButton,
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity'
 
 const styles = StyleSheet.create({
   container: {
@@ -122,6 +123,8 @@ export default class ModifyApptServiceScreen extends React.Component {
       afterGap: +get(serviceItem.service, 'afterGap', 0),
       assignedRoom: get(serviceItem.service, 'assignedRoom', null),
       assignedResource: get(serviceItem.service, 'assignedResource', null),
+      startTimePickerOpen: false,
+      endTimePickerOpen: false,
     };
 
     state.length = moment.duration(state.endTime.diff(state.startTime));
@@ -272,15 +275,61 @@ export default class ModifyApptServiceScreen extends React.Component {
         </InputGroup>
         <SectionTitle value="Time" />
         <InputGroup>
-          <InputLabel
+          <InputButton
             label="Starts"
             value={startTime.format('HH:mm A')}
+            onPress={() => this.setState({ startTimePickerOpen: !this.state.startTimePickerOpen })}
+            style={{ paddingLeft: 0 }}
           />
+          {this.state.startTimePickerOpen && (
+          <View style={{
+                flexDirection: 'row',
+                alignSelf: 'stretch',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }}
+          >
+            <DatePicker
+              style={{ flex: 1 }}
+              itemStyle={{ backgroundColor: 'white' }}
+              date={startTime.toDate()}
+              mode="time"
+              onDateChange={recurringNumber => {
+                debugger
+                console.log('bacon')
+              }}
+            />
+          </View>
+          )}
           <InputDivider />
-          <InputLabel
+          <InputButton
             label="Ends"
             value={moment(endTime).isValid() ? endTime.format('HH:mm A') : '-'}
+            onPress={() => this.setState({ endTimePickerOpen: !this.state.endTimePickerOpen })}
+            style={{ paddingLeft: 0 }}
           />
+          {this.state.endTimePickerOpen && (
+          <View style={{
+                flexDirection: 'row',
+                alignSelf: 'stretch',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }}
+          >
+            <DatePicker
+              style={{ flex: 1 }}
+              itemStyle={{ backgroundColor: 'white' }}
+              date={moment(endTime).isValid() ? endTime.toDate() : ''}
+              mode="time"
+              onDateChange={recurringNumber => {
+                debugger
+                console.log('bacon')
+              }}
+            />
+          </View>
+          )}
           <InputDivider />
           <InputLabel
             label="Length"
