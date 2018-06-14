@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 });
 
 
-export default class ApptBookSetEmployeeOrderHeader extends React.Component {
+export default class ApptBookSetEmployeeOrderHeader extends React.PureComponent {
   render() {
     return (<View style={styles.header}>
 

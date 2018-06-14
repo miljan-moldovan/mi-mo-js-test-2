@@ -1,6 +1,7 @@
 import apiWrapper from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
 import ApptBookSetEmployeeOrderScreen from '../screens/apptBookSetEmployeeOrder';
+import { keyBy, indexOf } from 'lodash';
 
 export const SET_EMPLOYEES = 'employees/SET_EMPLOYEES';
 export const SET_FILTERED_EMPLOYEES = 'employees/SET_FILTERED_EMPLOYEES';
@@ -32,26 +33,12 @@ export const createInitialsString = (employees) => {
   return initials;
 };
 
-const setOrderInitials = (initials = false) => (dispatch, getState) => {
-  let orderInitials = initials;
-  if (!orderInitials) {
-    const { providers } = getState().appointmentScreenReducer;
-    debugger //eslint-disable-line
-    orderInitials = createInitialsString(providers.sort(ApptBookSetEmployeeOrderScreen.compareByOrder));
-  }
-
-  return dispatch({
-    type: SET_ORDER_INITIALS,
-    data: { orderInitials },
-  });
-};
-
-const getEmployeesSuccess = employees => (dispatch) => {
-  dispatch(setOrderInitials(createInitialsString(employees)));
-
+const getEmployeesSuccess = employeesArray => (dispatch) => {
+  const orderInitials = createInitialsString(employeesArray);
+  const employees = keyBy(employeesArray, item => indexOf(employeesArray, item));
   return dispatch({
     type: GET_EMPLOYEES_SUCCESS,
-    data: { employees },
+    data: { employees, orderInitials },
   });
 };
 
@@ -104,10 +91,14 @@ function setFilteredEmployees(filtered) {
 }
 
 
-const postEmployeesAppointmentOrderSuccess = notes => ({
-  type: POST_EMPLOYEES_APPOINTMENT_ORDER_SUCCESS,
-  data: { notes },
-});
+const postEmployeesAppointmentOrderSuccess = (employeesArray) => {
+  const orderInitials = createInitialsString(employeesArray);
+  const employees = keyBy(employeesArray, item => indexOf(employeesArray, item));
+  return {
+    type: POST_EMPLOYEES_APPOINTMENT_ORDER_SUCCESS,
+    data: { employees, orderInitials },
+  };
+};
 
 const postEmployeesAppointmentOrderFailed = error => ({
   type: POST_EMPLOYEES_APPOINTMENT_ORDER_FAILED,
@@ -120,8 +111,7 @@ const postEmployeesAppointmentOrder = appointmentOrders => (dispatch) => {
     body: appointmentOrders,
   })
     .then((response) => {
-      dispatch(purgeForm('AppointmentNoteScreenNew'));
-      return dispatch(postEmployeesAppointmentOrderSuccess(response));
+      return dispatch(postEmployeesAppointmentOrderSuccess(appointmentOrders));
     })
     .catch((error) => {
       if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
@@ -139,7 +129,6 @@ const apptBookSetEmployeeOrderActions = {
   setCategoryEmployees,
   setSelectedEmployee,
   postEmployeesAppointmentOrder,
-  setOrderInitials,
 };
 
 export default apptBookSetEmployeeOrderActions;

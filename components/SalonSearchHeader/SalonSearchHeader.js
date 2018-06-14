@@ -178,8 +178,10 @@ class SalonSearchHeader extends React.Component {
             borderColor="transparent"
             backgroundColor={!this.props.salonSearchHeaderState.showFilter ? 'rgba(142,142,147,0.24)' : '#0C4699'}
             onChangeText={(searchText) => {
-                this.props.salonSearchHeaderActions.setSearchText(searchText);
-                this.props.salonSearchHeaderState.filterList(searchText);
+                if (searchText.length > 2) {
+                  this.props.salonSearchHeaderActions.setSearchText(searchText);
+                  this.props.salonSearchHeaderState.filterList(searchText);
+                }
                 if (searchText && searchText.length > 0) {
                   this.props.salonSearchHeaderActions.setShowFilter(true);
                 } else {

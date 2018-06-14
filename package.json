@@ -30,7 +30,7 @@
     "react-native-modalbox": "^1.4.2",
     "react-native-offline-api": "^2.2.0",
     "react-native-picker": "^4.3.5",
-    "react-native-sortable-listview": "^0.2.8",
+    "react-native-sortable-list": "0.0.22",
     "react-native-svg": "6.3.1",
     "react-native-swipeable": "^0.6.0",
     "react-native-touch-id": "^4.0.0",
@@ -41,6 +41,7 @@
     "redux-persist": "4.10.2",
     "redux-thunk": "2.2.0",
     "rn-sliding-up-panel": "1.2.0",
+    "shouldcomponentupdate-children": "1.1.0",
     "url-parse": "^1.4.0",
     "uuid": "^3.2.1"
   },

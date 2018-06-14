@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
-// import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Icon from './../components/UI/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
@@ -86,8 +85,10 @@ class SalonSearchBar extends Component {
 
 
   handleChange= (searchText) => {
+    if (this.props.onChangeText) {
+      this.props.onChangeText(searchText);
+    }
     this.setState({ searchText });
-    if (this.props.onChangeText) this.props.onChangeText(searchText);
   }
 
   render() {

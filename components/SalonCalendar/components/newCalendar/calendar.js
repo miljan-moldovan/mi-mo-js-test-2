@@ -259,28 +259,30 @@ export default class Calendar extends Component {
     const boundLength = 30;
     const maxScrollChange = 15;
     if (isResizeing) {
-      const coordinatesY = activeCard.top;
-      const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height;
-      const scrollVerticalBoundTop = this.offset.y + calendarMeasure.height - boundLength;
-      const scrollVerticalBoundBottom = this.offset.y + boundLength;
-      const newMoveY = coordinatesY + activeCard.height;
-      if (scrollVerticalBoundTop < newMoveY) {
-        dy = this.offset.y < maxHeigth ? newMoveY - scrollVerticalBoundTop : 0;
-      } else if (scrollVerticalBoundBottom > newMoveY) {
-        dy = newMoveY - scrollVerticalBoundBottom;
-      }
-      if (dy !== 0) {
-        dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
-        dy = dy * maxScrollChange / boundLength;
-        this.offset.y += dy;
-        if (this.offset.y > maxHeigth) {
-          this.offset.y = maxHeigth;
+      if (this.moveY) {
+        const coordinatesY = activeCard.top;
+        const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height;
+        const scrollVerticalBoundTop = this.offset.y + calendarMeasure.height - boundLength;
+        const scrollVerticalBoundBottom = this.offset.y + boundLength;
+        const newMoveY = coordinatesY + activeCard.height;
+        if (scrollVerticalBoundTop < newMoveY) {
+          dy = this.offset.y < maxHeigth ? newMoveY - scrollVerticalBoundTop : 0;
+        } else if (scrollVerticalBoundBottom > newMoveY) {
+          dy = newMoveY - scrollVerticalBoundBottom;
         }
-        if (this.offset.y < 0) {
-          this.offset.y = 0;
+        if (dy !== 0) {
+          dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
+          dy = dy * maxScrollChange / boundLength;
+          this.offset.y += dy;
+          if (this.offset.y > maxHeigth) {
+            this.offset.y = maxHeigth;
+          }
+          if (this.offset.y < 0) {
+            this.offset.y = 0;
+          }
+          activeCard.height = this.resizeCard.resizeCard(dy);
+          this.scrollToY(this.offset.y);
         }
-        activeCard.height = this.resizeCard.resizeCard(dy);
-        this.scrollToY(this.offset.y);
       }
       requestAnimationFrame(this.scrollAnimationResize);
     }
@@ -357,7 +359,6 @@ export default class Calendar extends Component {
     const { apptGridSettings } = this.props;
     const { activeCard } = this.state;
     const newHeight = Math.round(activeCard.height / 30);
-    activeCard.height = newHeight * 30;
     const params = { newLength: newHeight };
 
     const clientName = `${activeCard.appointment.client.name} ${activeCard.appointment.client.lastName}`;
@@ -380,7 +381,6 @@ export default class Calendar extends Component {
       };
       this.setState({
         alert,
-        activeCard,
       });
     } else {
       this.setState({
@@ -682,12 +682,6 @@ export default class Calendar extends Component {
       apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
     } = this.props;
     const { activeCard, calendarMeasure, isResizeing } = this.state;
-    const offsetY = this.offset.y - 40;
-    const offsetX = this.offset.x - 36;
-    const { pan } = this.state;
-    const newTop = pan.y._value + pan.y._offset + offsetY;
-    const newLeft = pan.x._value + pan.x._offset + offsetX;
-    const newPan = new Animated.ValueXY({ x: newLeft, y: newTop });
     return isResizeing && activeCard ? (
       <NewCard
         ref={(card) => { this.resizeCard = card; }}
@@ -701,10 +695,11 @@ export default class Calendar extends Component {
         height={activeCard.height}
         onDrop={this.handleCardDrop}
         opacity={isResizeing ? 1 : 0}
-        pan={newPan}
         isActive
         isResizeing={this.state.isResizeing}
         isBufferCard={activeCard.isBufferCard}
+        top={activeCard.top}
+        left={activeCard.left}
       />) : null;
   }
 
