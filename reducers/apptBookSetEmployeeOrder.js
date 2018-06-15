@@ -9,7 +9,7 @@ import apptBookSetEmployeeOrderActions, {
   SET_CATEGORY_EMPLOYEES,
   GET_CATEGORY_EMPLOYEES,
   SET_SELECTED_EMPLOYEE,
-  SET_ORDER_INITIALS,
+  POST_EMPLOYEES_APPOINTMENT_ORDER_SUCCESS,
 } from '../actions/apptBookSetEmployeeOrder';
 
 const initialState = {
@@ -24,11 +24,6 @@ const initialState = {
 export default function employeeReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
-    case SET_ORDER_INITIALS:
-      return {
-        ...state,
-        orderInitials: data.orderInitials,
-      };
     case GET_CATEGORY_EMPLOYEES:
       return {
         ...state,
@@ -61,6 +56,7 @@ export default function employeeReducer(state = initialState, action) {
         ...state,
         isLoading: false,
         employees: data.employees,
+        orderInitials: data.orderInitials,
         error: null,
       };
     case GET_EMPLOYEES_FAILED:
@@ -87,6 +83,12 @@ export default function employeeReducer(state = initialState, action) {
         ...state,
         error: null,
         filtered: data.filtered,
+      };
+    case POST_EMPLOYEES_APPOINTMENT_ORDER_SUCCESS:
+      return {
+        ...state,
+        employees: data.employees,
+        orderInitials: data.orderInitials,
       };
     default:
       return state;

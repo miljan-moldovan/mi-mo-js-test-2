@@ -82,7 +82,7 @@ class Card extends Component {
     } = this.props.appointment;
     const { height } = this.state;
     const {
-      calendarMeasure, calendarOffset, onScrollY, cardWidth, isActive, isBufferCard, apptGridSettings, opacity,
+      calendarMeasure, calendarOffset, onScrollY, cardWidth, isActive, isBufferCard, apptGridSettings, opacity, top, left
     } = this.props;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const clientName = `${client.name} ${client.lastName}`;
@@ -97,9 +97,10 @@ class Card extends Component {
       shadowOpacity: 0.4,
       shadowRadius: 4,
     };
-    const position = isActive ? {
+    const activePosition = top ? { position: 'absolute', top, left, width: cardWidth } : {
       position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, width: cardWidth
-    } : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
+    };
+    const position = isActive ? activePosition : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
     return (
       <Animated.View
         key={id}
@@ -146,7 +147,6 @@ class Card extends Component {
             calendarOffset={calendarOffset}
             onScrollY={onScrollY}
             isDisabled={this.props.isResizeing}
-            top={this.props.pan.y._value + this.props.pan.y._offset}
           /> : null }
         </View>
       </Animated.View>
