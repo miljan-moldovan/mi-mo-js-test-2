@@ -166,7 +166,7 @@ const MainNavigator = StackNavigator(
       }),
       navigationOptions: { tabBarVisible: false },
     },
-    Clients: {
+    ClientsQueue: {
       screen: ClientsScreen,
     },
     NewClient: {
