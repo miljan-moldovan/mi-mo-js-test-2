@@ -679,7 +679,7 @@ export default class NewAppointmentScreen extends React.Component {
     items.forEach((item, i) => {
       if (i > index) {
         const prevItem = items[i - 1];
-        debugger // eslint-disable-line
+
         item.service.fromTime = prevItem && prevItem.service.toTime.clone() || initialFromTime;
         item.service.toTime = item.service.fromTime.clone().add(item.service.maxDuration);
       }
@@ -740,14 +740,13 @@ export default class NewAppointmentScreen extends React.Component {
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
     return (
       <ScrollView style={styles.container}>
-        {isLoading ? (
+        {isLoading && (
           <View style={{
-            position: 'absolute', top: 60, paddingBottom: 60, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
+            position: 'absolute', zIndex: 999, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
           }}
           ><ActivityIndicator />
           </View>
-        ) : null
-        }
+        )}
         <InputGroup style={{ marginTop: 15 }}>
           <InputLabel
             label="Booked by"
