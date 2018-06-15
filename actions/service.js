@@ -25,7 +25,7 @@ const getServices = (params, filterByProvider = false, filterProvider = null) =>
   dispatch({ type: GET_SERVICES });
   if (filterByProvider) {
     const { selectedProvider } = getState().providersReducer;
-    params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
+    // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
   }
 
   return apiWrapper.doRequest('getServiceTree', params)

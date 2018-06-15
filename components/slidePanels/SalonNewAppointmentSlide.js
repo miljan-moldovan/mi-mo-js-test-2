@@ -585,7 +585,9 @@ export default class SalonNewAppointmentSlide extends React.Component {
                     <View style={{ width: '8%' }} />
                     <SalonTouchableOpacity
                       style={{ width: '46%' }}
-                      onPress={() => { alert('Not implemented'); }}
+                      onPress={() => {
+                        // this.props.navigation.navigate('AddonServices');
+                      }}
                     >
                       <View style={styles.whiteButtonContainer}>
                         <Text style={styles.whiteButtonText}>
@@ -625,8 +627,8 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                    </View>]}
-                    </InputButton>,
+                      </View>]}
+                  </InputButton>,
 
                     <InputButton
                       noIcon
@@ -647,7 +649,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                             type="solid"
                           />
                         </View>
-                        </View>]}
+                      </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -658,7 +660,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Room Assignment"
                     >
                       {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -669,7 +671,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Turn Away"
                     >
                       {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>,
 
                     <InputButton
@@ -680,7 +682,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message Provider's Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>,
                     <InputButton
                       noIcon
@@ -690,7 +692,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
                       label="Message All Clients"
                     >
                       {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                        </View>]}
+                      </View>]}
                     </InputButton>]}
                 </InputGroup>
               </View>

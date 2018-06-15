@@ -46,10 +46,15 @@ export function serializeNewApptItem(appointment, service) {
     employeeId: isFirstAvailable ? null : get(service.employee, 'id', null),
     fromTime: moment(service.fromTime, 'HH:mm').format('HH:mm:ss'),
     toTime: moment(service.toTime, 'HH:mm').format('HH:mm:ss'),
-    bookBetween: false, // TODO
+    bookBetween: get(service, 'bookBetween', false),
     requested: get(service, 'requested', false),
     isFirstAvailable,
     bookedByEmployeeId: get(appointment.bookedByEmployee, 'id'),
+    roomId: get(service.room, 'id', null),
+    roomOrdinal: get(service, 'roomOrdinal', null),
+    resourceId: get(service.resource, 'id', null),
+    resourceOrdinal: get(service, 'resourceOrdinal', null),
+
   };
 
   if (!isNil(service.gapTime)) {

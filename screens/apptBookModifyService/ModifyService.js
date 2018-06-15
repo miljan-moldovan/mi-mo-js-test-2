@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { get } from 'lodash';
+import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
 import {
   InputGroup,
@@ -30,27 +31,6 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
 });
-
-// const shape = {
-//   date: moment(),
-//   fromTime: '',
-//   toTime: '',
-//   gapTime: '',
-//   afterTime: '',
-//   bookBetween: false,
-//   employeeId: 0,
-//   bookedByEmployeeId: 0,
-//   serviceId: 0,
-//   clientId: 0,
-//   requested: false,
-//   roomId: 0,
-//   roomOrdinal: 0,
-//   resourceId: 0,
-//   resourceOrdinal: 0,
-//   primaryAppointmentId: 0,
-//   isFirstAvailable: false,
-// };
-
 
 export default class ModifyApptServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -96,94 +76,137 @@ export default class ModifyApptServiceScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const {
-      body,
-    } = this.props.newAppointmentState;
-    const params = this.props.navigation.state.params || {};
-    const client = params.client || null;
 
-    const startTime = params.startTime || moment();
+    this.state = this.getStateFromParams();
     this.props.navigation.setParams({ handleSave: this.handleSave });
-    this.state = {
-      selectedClient: client,
-      selectedProvider: null,
-      selectedService: null,
-      startTime,
-      canRemove: params.onRemoveService || false,
-      endTime: null,
-      length: null,
-      bookBetween: false,
-      gapTime: 0,
-      afterGap: 0,
-      assignedRoom: null,
-      assignedResource: null,
-      body: {
-        date: body.date,
-        client,
-        requested: false,
-        clientId: client.id,
-      },
+  }
+
+  getStateFromParams = () => {
+    const params = this.props.navigation.state.params || {};
+    const serviceItem = params.serviceItem || false;
+    const client = params.client || null;
+    const date = params.date || moment();
+
+    const state = {
+      date,
+      canSave: false,
+      canRemove: !!params.onRemoveService,
+      selectedClient: serviceItem.guestId ? get(serviceItem.service, 'client', null) : client,
+      selectedProvider: get(serviceItem.service, 'employee', null),
+      selectedService: get(serviceItem.service, 'service'),
+      startTime: get(serviceItem.service, 'fromTime', moment()),
+      endTime: get(serviceItem.service, 'toTime', moment().add(15, 'm')),
+      requested: get(serviceItem.service, 'requested', true),
+      bookBetween: get(serviceItem.service, 'bookBetween', false),
+      gapTime: +get(serviceItem.service, 'gapTime', 0),
+      afterTime: +get(serviceItem.service, 'afterTime', 0),
+      assignedRoom: get(serviceItem.service, 'assignedRoom', null),
+      assignedResource: get(serviceItem.service, 'assignedResource', null),
+      startTimePickerOpen: false,
+      endTimePickerOpen: false,
     };
+
+    state.length = moment.duration(state.endTime.diff(state.startTime));
+
+    return state;
+  }
+
+  componentDidMount() {
+    this.validate();
   }
 
   handleSelectService = (selectedService) => {
-    const newBody = this.state.body;
     const { startTime } = this.state;
     let endTime = null;
     if ('maxDuration' in selectedService) {
       endTime = moment(startTime).add(moment.duration(selectedService.maxDuration));
     }
-
-    newBody.service = selectedService;
-    newBody.serviceId = selectedService.id;
-    newBody.fromTime = startTime;
-    newBody.toTime = endTime;
+    const length = moment.duration(endTime.diff(startTime));
     this.setState({
       selectedService,
       endTime,
-      body: newBody,
+      length,
     }, this.validate);
   }
 
   handleSave = () => {
-    if (this.state.canSave) {
-      const { body } = this.state;
-      const { params } = this.props.navigation.state;
+    const {
+      canSave,
+      selectedClient,
+      selectedProvider,
+      selectedService,
+      startTime,
+      endTime,
+      requested,
+      bookBetween,
+      gapTime,
+      afterTime,
+      assignedRoom,
+      assignedResource,
+    } = this.state;
 
-      if ('guestId' in params) {
-        params.onSaveService(body, params.guestId);
-      } else {
-        params.onSaveService(body);
-      }
+    if (canSave) {
+      const { params } = this.props.navigation.state;
+      const serviceItem = {
+        client: selectedClient,
+        employee: selectedProvider,
+        service: selectedService,
+        fromTime: startTime,
+        toTime: endTime,
+        requested,
+        bookBetween,
+        gapTime,
+        afterTime,
+        room: assignedRoom,
+        resource: assignedResource,
+      };
+
+      params.onSaveService(serviceItem);
       this.props.navigation.goBack();
     }
   }
 
   handleSelectProvider = (selectedProvider) => {
-    const newBody = this.state.body;
-
-    newBody.employee = selectedProvider;
     this.setState({
       selectedProvider,
-      body: newBody,
     }, this.validate);
   }
 
   handleRequested = (requested) => {
-    const newBody = this.state.body;
-    newBody.requested = !requested;
-    this.setState({ body: newBody });
+    this.setState({ requested: !requested });
+  }
+
+  handleChangeEndTime = (endTimeDateObj) => {
+    const { startTime } = this.state;
+    const endTime = moment(endTimeDateObj);
+    if (startTime.isAfter(endTime)) {
+      return alert("Start time can't be after end time");
+    }
+    return this.setState({
+      endTime,
+      length: moment.duration(endTime.diff(startTime)),
+    });
+  }
+
+  handleChangeStartTime = (startTimeDateObj) => {
+    const { endTime } = this.state;
+    const startTime = moment(startTimeDateObj);
+    if (startTime.isAfter(endTime)) {
+      return alert("Start time can't be after end time");
+    }
+    return this.setState({
+      startTime,
+      length: moment.duration(endTime.diff(startTime)),
+    });
   }
 
   onPressRemove = () => {
-    const { params } = this.props.navigation.state;
-    if (!('serviceIndex' in params)) {
-      return this.props.navigation.goBack();
+    const params = this.props.navigation.state.params || {};
+    if (params.onRemoveService) {
+      params.onRemoveService();
     }
-
-    params.onRemoveService(params.serviceIndex, params.guestIndex || false);
     return this.props.navigation.goBack();
-  };
+  }
 
   cancelButton = () => ({
     leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
@@ -205,10 +228,18 @@ export default class ModifyApptServiceScreen extends React.Component {
 
   render() {
     const {
+      canRemove,
       selectedProvider,
       selectedService,
       startTime,
       endTime,
+      requested,
+      bookBetween,
+      gapTime,
+      afterTime,
+      length,
+      assignedRoom,
+      assignedResource,
     } = this.state;
     return (
       <ScrollView style={styles.container}>
@@ -229,52 +260,91 @@ export default class ModifyApptServiceScreen extends React.Component {
             filterList={this.props.apptBookState.providers}
             noPlaceholder
             navigate={this.props.navigation.navigate}
-            selectedProvider={this.state.selectedProvider}
+            selectedProvider={selectedProvider}
             onChange={this.handleSelectProvider}
             headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
           <InputDivider />
           <InputSwitch
             text="Provider is requested"
-            value={this.state.body.requested}
+            value={requested}
             onChange={this.handleRequested}
           />
           <InputDivider />
           <InputLabel
             label="Price"
-            value={this.state.selectedService === null ? '' : `$${this.state.selectedService.price}`}
+            value={selectedService === null ? '' : `$${selectedService.price}`}
           />
         </InputGroup>
         <SectionTitle value="Time" />
         <InputGroup>
-          <InputLabel
+          <InputButton
             label="Starts"
             value={startTime.format('HH:mm A')}
+            valueStyle={this.state.startTimePickerOpen ? { color: '#1B65CF' } : null}
+            onPress={() => this.setState({ startTimePickerOpen: !this.state.startTimePickerOpen })}
+            style={{ paddingLeft: 0 }}
           />
+          {this.state.startTimePickerOpen && (
+          <View style={{
+                flexDirection: 'row',
+                alignSelf: 'stretch',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }}
+          >
+            <DatePicker
+              style={{ flex: 1 }}
+              itemStyle={{ backgroundColor: 'white' }}
+              date={startTime.toDate()}
+              mode="time"
+              onDateChange={this.handleChangeStartTime}
+            />
+          </View>
+          )}
           <InputDivider />
-          <InputLabel
+          <InputButton
             label="Ends"
             value={moment(endTime).isValid() ? endTime.format('HH:mm A') : '-'}
+            valueStyle={this.state.endTimePickerOpen ? { color: '#1B65CF' } : null}
+            onPress={() => this.setState({ endTimePickerOpen: !this.state.endTimePickerOpen })}
+            style={{ paddingLeft: 0 }}
           />
+          {this.state.endTimePickerOpen && (
+          <View style={{
+                flexDirection: 'row',
+                alignSelf: 'stretch',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }}
+          >
+            <DatePicker
+              style={{ flex: 1 }}
+              itemStyle={{ backgroundColor: 'white' }}
+              date={moment(endTime).isValid() ? endTime.toDate() : ''}
+              mode="time"
+              onDateChange={this.handleChangeEndTime}
+            />
+          </View>
+          )}
           <InputDivider />
           <InputLabel
             label="Length"
-            value={
-              this.state.selectedService === null
-              ? '-' : `${moment.duration(this.state.selectedService.maxDuration).asMinutes()} min`
-            }
+            value={`${moment.duration(length).asMinutes()} min`}
           />
           <InputDivider />
           <InputSwitch
             text="Gap"
-            value={this.state.bookBetween}
+            value={bookBetween}
             onChange={bookBetween => this.setState({ bookBetween: !bookBetween })}
           />
-          {this.state.bookBetween && (
+          {bookBetween && (
             <View>
               <InputDivider />
               <InputNumber
-                value={this.state.gapTime}
+                value={gapTime}
                 onChange={(action, gapTime) => this.setState({ gapTime })}
                 label="Gap Time"
                 singularText="min"
@@ -282,8 +352,8 @@ export default class ModifyApptServiceScreen extends React.Component {
               />
               <InputDivider />
               <InputNumber
-                value={this.state.afterGap}
-                onChange={(action, afterGap) => this.setState({ afterGap })}
+                value={afterTime}
+                onChange={(action, afterTime) => this.setState({ afterTime })}
                 label="After"
                 singularText="min"
                 pluralText="min"
@@ -306,7 +376,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           />
         </InputGroup>
         <SectionDivider />
-        {this.state.canRemove && (
+        {canRemove && (
           <RemoveButton title="Remove Service" onPress={this.onPressRemove} />
         )}
         <SectionDivider />
