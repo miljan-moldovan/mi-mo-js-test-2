@@ -549,7 +549,7 @@ export default class NewAppointmentScreen extends React.Component {
     apiWrapper.doRequest('checkConflicts', {
       body: conflictData,
     })
-      .then((conflicts) => this.setState({ conflicts }));
+      .then(conflicts => this.setState({ conflicts }));
   }
 
   handleAddGuestService = (guestId) => {
@@ -685,6 +685,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   render() {
     const {
+      isLoading,
       date,
       client,
       bookedByEmployee: employee,
@@ -695,7 +696,6 @@ export default class NewAppointmentScreen extends React.Component {
       totalDuration,
       clientEmail,
       clientPhone,
-      isLoading,
     } = this.state;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
@@ -723,8 +723,8 @@ export default class NewAppointmentScreen extends React.Component {
         <SectionTitle style={{ height: 46 }} value="Client" />
         <InputGroup>
           <ClientInput
-            navigate={this.props.navigation.navigate}
             apptBook
+            navigate={this.props.navigation.navigate}
             label={client === null ? 'Select Client' : 'Client'}
             headerProps={{
               title: 'Clients',
@@ -764,7 +764,7 @@ export default class NewAppointmentScreen extends React.Component {
             <ConflictBox
               style={{
                 marginHorizontal: 10,
-                marginVertical: 3,
+                marginVertical: 10,
               }}
               onPress={() => this.props.navigation.navigate('Conflicts', {
                 date,
@@ -818,7 +818,7 @@ export default class NewAppointmentScreen extends React.Component {
                     style={{ marginVertical: 5 }}
                     onPress={() => this.handleAddGuestService(guest.guestId)}
                     iconStyle={{ marginLeft: 10, marginRight: 6 }}
-                    title="Add service"
+                    title="add service"
                   />
                 </View>
               ))
@@ -829,7 +829,8 @@ export default class NewAppointmentScreen extends React.Component {
           <InputSwitch
             text="Recurring appt."
             value={this.state.isRecurring}
-            onChange={this.onChangeRecurring}
+            // onChange={this.onChangeRecurring}
+            onChange={() => alert('API not implemented')}
           />
         </InputGroup>
         {this.state.isRecurring && (

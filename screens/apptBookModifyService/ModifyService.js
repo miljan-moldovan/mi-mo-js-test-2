@@ -119,7 +119,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       requested: get(serviceItem.service, 'requested', true),
       bookBetween: get(serviceItem.service, 'bookBetween', false),
       gapTime: +get(serviceItem.service, 'gapTime', 0),
-      afterGap: +get(serviceItem.service, 'afterGap', 0),
+      afterTime: +get(serviceItem.service, 'afterTime', 0),
       assignedRoom: get(serviceItem.service, 'assignedRoom', null),
       assignedResource: get(serviceItem.service, 'assignedResource', null),
     };
@@ -158,7 +158,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       requested,
       bookBetween,
       gapTime,
-      afterGap,
+      afterTime,
       assignedRoom,
       assignedResource,
     } = this.state;
@@ -174,7 +174,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         requested,
         bookBetween,
         gapTime,
-        afterGap,
+        afterTime,
         room: assignedRoom,
         resource: assignedResource,
       };
@@ -230,7 +230,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       requested,
       bookBetween,
       gapTime,
-      afterGap,
+      afterTime,
       length,
       assignedRoom,
       assignedResource,
@@ -304,8 +304,8 @@ export default class ModifyApptServiceScreen extends React.Component {
               />
               <InputDivider />
               <InputNumber
-                value={afterGap}
-                onChange={(action, afterGap) => this.setState({ afterGap })}
+                value={afterTime}
+                onChange={(action, afterTime) => this.setState({ afterTime })}
                 label="After"
                 singularText="min"
                 pluralText="min"

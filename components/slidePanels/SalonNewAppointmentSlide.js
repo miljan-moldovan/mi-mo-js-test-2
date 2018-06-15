@@ -344,7 +344,7 @@ const BookNow = props => (
       }
     >
       <Text style={styles.blueButtonText}>
-        {props.isLoading ? 'BOOKING APPOINTMENT...' : 'BOOK APPOINTMENT'}
+        {props.isLoading ? 'LOADING...' : 'BOOK APPOINTMENT'}
       </Text>
     </View>
   </SalonTouchableOpacity>
