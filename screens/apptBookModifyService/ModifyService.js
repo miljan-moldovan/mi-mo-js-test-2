@@ -23,7 +23,7 @@ import {
   RemoveButton,
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity'
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,27 +31,6 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
 });
-
-// const shape = {
-//   date: moment(),
-//   fromTime: '',
-//   toTime: '',
-//   gapTime: '',
-//   afterTime: '',
-//   bookBetween: false,
-//   employeeId: 0,
-//   bookedByEmployeeId: 0,
-//   serviceId: 0,
-//   clientId: 0,
-//   requested: false,
-//   roomId: 0,
-//   roomOrdinal: 0,
-//   resourceId: 0,
-//   resourceOrdinal: 0,
-//   primaryAppointmentId: 0,
-//   isFirstAvailable: false,
-// };
-
 
 export default class ModifyApptServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -197,6 +176,30 @@ export default class ModifyApptServiceScreen extends React.Component {
     this.setState({ requested: !requested });
   }
 
+  handleChangeEndTime = (endTimeDateObj) => {
+    const { startTime } = this.state;
+    const endTime = moment(endTimeDateObj);
+    if (startTime.isAfter(endTime)) {
+      return alert("Start time can't be after end time");
+    }
+    return this.setState({
+      endTime,
+      length: moment.duration(endTime.diff(startTime)),
+    });
+  }
+
+  handleChangeStartTime = (startTimeDateObj) => {
+    const { endTime } = this.state;
+    const startTime = moment(startTimeDateObj);
+    if (startTime.isAfter(endTime)) {
+      return alert("Start time can't be after end time");
+    }
+    return this.setState({
+      startTime,
+      length: moment.duration(endTime.diff(startTime)),
+    });
+  }
+
   onPressRemove = () => {
     const params = this.props.navigation.state.params || {};
     if (params.onRemoveService) {
@@ -278,6 +281,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           <InputButton
             label="Starts"
             value={startTime.format('HH:mm A')}
+            valueStyle={this.state.startTimePickerOpen ? { color: '#1B65CF' } : null}
             onPress={() => this.setState({ startTimePickerOpen: !this.state.startTimePickerOpen })}
             style={{ paddingLeft: 0 }}
           />
@@ -295,10 +299,7 @@ export default class ModifyApptServiceScreen extends React.Component {
               itemStyle={{ backgroundColor: 'white' }}
               date={startTime.toDate()}
               mode="time"
-              onDateChange={recurringNumber => {
-                debugger
-                console.log('bacon')
-              }}
+              onDateChange={this.handleChangeStartTime}
             />
           </View>
           )}
@@ -306,6 +307,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           <InputButton
             label="Ends"
             value={moment(endTime).isValid() ? endTime.format('HH:mm A') : '-'}
+            valueStyle={this.state.endTimePickerOpen ? { color: '#1B65CF' } : null}
             onPress={() => this.setState({ endTimePickerOpen: !this.state.endTimePickerOpen })}
             style={{ paddingLeft: 0 }}
           />
@@ -323,10 +325,7 @@ export default class ModifyApptServiceScreen extends React.Component {
               itemStyle={{ backgroundColor: 'white' }}
               date={moment(endTime).isValid() ? endTime.toDate() : ''}
               mode="time"
-              onDateChange={recurringNumber => {
-                debugger
-                console.log('bacon')
-              }}
+              onDateChange={this.handleChangeEndTime}
             />
           </View>
           )}
