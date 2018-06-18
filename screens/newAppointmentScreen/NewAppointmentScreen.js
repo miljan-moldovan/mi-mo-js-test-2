@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   serviceTitle: {
-    flex: 1,
+
     fontSize: 14,
     lineHeight: 24,
     color: '#110A24',
@@ -180,6 +180,7 @@ const ServiceCard = ({ data, ...props }) => {
   const employeePhoto = apiWrapper.getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
   return ([
     <SalonCard
+      key={props.id}
       containerStyles={{ marginVertical: 0, marginBottom: 10 }}
       bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
       backgroundColor="white"
@@ -189,7 +190,40 @@ const ServiceCard = ({ data, ...props }) => {
             style={{ flexDirection: 'row' }}
             onPress={props.onPress}
           >
-            <Text style={styles.serviceTitle}>{data.service.name}</Text>
+            {props.isAddon && (
+              <Icon
+                style={{
+                  marginRight: 10,
+                  transform: [{ rotate: '90deg' }],
+                }}
+                name="levelUp"
+                type="regular"
+                color="black"
+                size={12}
+              />
+            )}
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+              }}
+            >
+              <Text style={[styles.serviceTitle, props.hasConflicts ? { color: 'red' } : {}]}>
+                {data.service.name}
+              </Text>
+              {props.isRequired && (
+                <Text style={{
+                  fontSize: 10,
+                  marginLeft: 6,
+                  color: '#1DBF12',
+                }}
+                >
+                  REQUIRED
+                </Text>
+              )}
+            </View>
             <View style={{
                 flexDirection: 'row',
                 justifyContent: 'flex-end',
@@ -235,7 +269,7 @@ const ServiceCard = ({ data, ...props }) => {
               style={{
                 fontSize: 14,
                 lineHeight: 22,
-                color: '#2F3142',
+                color: props.hasConflicts ? 'red' : '#2F3142',
               }}
             >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
             </Text>
@@ -261,13 +295,6 @@ const ServiceCard = ({ data, ...props }) => {
         </View>
       }
     />,
-    props.hasConflicts ? (<ConflictBox
-      style={{
-        marginHorizontal: 10,
-        marginVertical: 3,
-      }}
-      onPress={() => alert('conflicts')}
-    />) : null,
   ]);
 };
 
@@ -403,9 +430,10 @@ export default class NewAppointmentScreen extends React.Component {
       totalDuration,
       bookedByEmployee,
     } = this.state;
+
     const fromTime = moment(startTime).add(moment.duration(totalDuration));
     const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
-    const newServiceItem = {
+    const newService = {
       service,
       client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
       requested: true,
@@ -414,11 +442,99 @@ export default class NewAppointmentScreen extends React.Component {
       toTime,
     };
 
-    serviceItems.push({
+    const newServiceItem = {
       itemId: uuid(),
       guestId,
-      service: newServiceItem,
+      service: newService,
+    };
+    serviceItems.push(newServiceItem);
+    this.setState({ serviceItems }, () => {
+      this.validate();
+      if (service.addons.length > 0) {
+        return this.props.navigation.navigate('AddonServices', {
+          serviceTitle: service.name,
+          services: service.addons,
+          onSave: services => this.addAddonServices(newServiceItem.itemId, services),
+        });
+      }
     });
+  }
+
+  addAddonServices = (serviceId, services) => {
+    const {
+      client,
+      startTime,
+      totalDuration,
+      bookedByEmployee,
+    } = this.state;
+
+    const parentService = this.getServiceItem(serviceId);
+    const newServiceItems = [];
+    services.forEach((service) => {
+      const fromTime = moment(startTime).add(moment.duration(totalDuration));
+      const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
+      const newService = {
+        service,
+        client: parentService.guestId ? get(this.getGuest(parentService.guestId), 'client', null) : client,
+        requested: true,
+        employee: bookedByEmployee,
+        fromTime,
+        toTime,
+      };
+
+      newServiceItems.push({
+        itemId: uuid(),
+        parentId: parentService.itemId,
+        guestId: parentService.guestId,
+        service: newService,
+      });
+    });
+
+
+    this.setState({
+      serviceItems: [...this.state.serviceItems, ...newServiceItems],
+    }, () => {
+      this.validate();
+      if (parentService.service.service.requiredServices.length > 0) {
+        return this.props.navigation.navigate('RequiredServices', {
+          serviceTitle: parentService.service.service.name,
+          services: parentService.service.service.requiredServices,
+          onSave: selectedService => this.addRequiredServices(parentService.itemId, selectedService),
+        });
+      }
+    });
+  }
+
+  addRequiredServices = (serviceId, service) => {
+    const {
+      client,
+      startTime,
+      serviceItems,
+      totalDuration,
+      bookedByEmployee,
+    } = this.state;
+
+    const parentService = this.getServiceItem(serviceId);
+    const fromTime = moment(startTime).add(moment.duration(totalDuration));
+    const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
+    const newService = {
+      service,
+      client: parentService.guestId ? get(this.getGuest(parentService.guestId), 'client', null) : client,
+      requested: true,
+      employee: bookedByEmployee,
+      fromTime,
+      toTime,
+    };
+
+    serviceItems.push({
+      itemId: uuid(),
+      isRequired: true,
+      parentId: parentService.itemId,
+      guestId: parentService.guestId,
+      service: newService,
+    });
+
+
     this.setState({ serviceItems }, this.validate);
   }
 
@@ -517,7 +633,9 @@ export default class NewAppointmentScreen extends React.Component {
     return alert('Select a client first');
   }
 
-  getMainServices = () => this.state.serviceItems.filter(item => !item.guestId)
+  getMainServices = () => this.state.serviceItems.filter(item => !item.guestId && !item.parentId)
+
+  getAddonsForService = serviceId => this.state.serviceItems.filter(item => item.parentId === serviceId)
 
   checkConflicts = () => {
     const {
@@ -530,9 +648,9 @@ export default class NewAppointmentScreen extends React.Component {
 
     let servicesToCheck = [];
 
-    // this.setState({
-    //   conflicts: [],
-    // });
+    this.setState({
+      conflicts: [],
+    });
 
     if (!client || !bookedByEmployee) {
       return;
@@ -820,14 +938,29 @@ export default class NewAppointmentScreen extends React.Component {
               })}
             />
           )}
-          {this.getMainServices().map((item, itemIndex) => (
-            <ServiceCard
-              onPress={() => this.onPressService(item.itemId)}
-              onPressDelete={() => this.removeService(item.itemId)}
-              key={item.itemId}
-              data={item.service}
-            />
-          ))}
+          {this.getMainServices().map((item, itemIndex) => [
+            (
+              <ServiceCard
+                hasConflicts={conflicts.length > 0}
+                onPress={() => this.onPressService(item.itemId)}
+                onPressDelete={() => this.removeService(item.itemId)}
+                key={item.itemId}
+                addons={this.getAddonsForService(item.itemId)}
+                data={item.service}
+              />
+            ),
+            this.getAddonsForService(item.itemId).map(addon => (
+              <ServiceCard
+                key={addon.itemId}
+                data={addon.service}
+                isAddon
+                isRequired={addon.isRequired}
+                hasConflicts={conflicts.length > 0}
+                onPress={() => this.onPressService(addon.itemId)}
+                onPressDelete={() => this.removeService(addon.itemId)}
+              />
+            )),
+          ])}
           <AddButton
             style={{
               marginVertical: 5,
@@ -853,6 +986,7 @@ export default class NewAppointmentScreen extends React.Component {
                   {
                     this.getGuestServices(guest.guestId).map(item => (
                       <ServiceCard
+                        hasConflicts={conflicts.length > 0}
                         key={item.itemId}
                         data={item.service}
                         onPress={() => this.onPressService(item.itemId, guest.guestId)}

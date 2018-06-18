@@ -47,6 +47,7 @@ import RepeatsOnScreen from './../screens/repeatsOnScreen';
 import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 import ConflictsScreen from '../screens/conflictsScreen';
 import AddonServicesScreen from '../screens/addonServicesScreen';
+import RequiredServicesScreen from '../screens/requiredServicesScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -70,6 +71,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     AddonServices: {
       screen: AddonServicesScreen,
+    },
+    RequiredServices: {
+      screen: RequiredServicesScreen,
     },
     RepeatsOn: {
       screen: RepeatsOnScreen,
