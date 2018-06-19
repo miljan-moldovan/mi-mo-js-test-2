@@ -496,6 +496,51 @@ export default class NewAppointmentScreen extends React.Component {
     }, () => {
       this.validate();
       if (parentService.service.service.requiredServices.length > 0) {
+        return this.props.navigation.navigate('RecommendedServices', {
+          serviceTitle: parentService.service.service.name,
+          services: parentService.service.service.requiredServices,
+          onSave: selectedServices => this.addRecommendedServices(parentService.itemId, selectedServices),
+        });
+      }
+    });
+  }
+
+  addRecommendedServices = (serviceId, services) => {
+    const {
+      client,
+      startTime,
+      totalDuration,
+      bookedByEmployee,
+    } = this.state;
+
+    const parentService = this.getServiceItem(serviceId);
+    const newServiceItems = [];
+    services.forEach((service) => {
+      const fromTime = moment(startTime).add(moment.duration(totalDuration));
+      const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
+      const newService = {
+        service,
+        client: parentService.guestId ? get(this.getGuest(parentService.guestId), 'client', null) : client,
+        requested: true,
+        employee: bookedByEmployee,
+        fromTime,
+        toTime,
+      };
+
+      newServiceItems.push({
+        itemId: uuid(),
+        parentId: parentService.itemId,
+        guestId: parentService.guestId,
+        service: newService,
+      });
+    });
+
+
+    this.setState({
+      serviceItems: [...this.state.serviceItems, ...newServiceItems],
+    }, () => {
+      this.validate();
+      if (parentService.service.service.requiredServices.length > 0) {
         return this.props.navigation.navigate('RequiredServices', {
           serviceTitle: parentService.service.service.name,
           services: parentService.service.service.requiredServices,
@@ -567,9 +612,10 @@ export default class NewAppointmentScreen extends React.Component {
     const removedAppt = newServiceItems.splice(serviceIndex, 1)[0];
     const serviceItems = this.resetTimeForServices(
       newServiceItems,
-      serviceIndex,
+      serviceIndex - 1,
       removedAppt.service.fromTime,
     );
+    debugger //eslint-disable-line
     this.setState({
       serviceItems,
     }, this.validate);
@@ -798,8 +844,8 @@ export default class NewAppointmentScreen extends React.Component {
       if (i > index) {
         const prevItem = items[i - 1];
 
-        item.service.fromTime = prevItem && prevItem.service.toTime.clone() || initialFromTime;
-        item.service.toTime = item.service.fromTime.clone().add(item.service.maxDuration);
+        item.service.fromTime = (prevItem && prevItem.service.toTime.clone()) || initialFromTime;
+        item.service.toTime = item.service.fromTime.clone().add(moment.duration(item.service.maxDuration));
       }
     });
     return items;
