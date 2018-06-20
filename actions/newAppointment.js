@@ -12,6 +12,7 @@ export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
 export const ADD_GUEST_SERVICE = 'newAppointment/ADD_GUEST_SERVICE';
 export const REMOVE_GUEST_SERVICE = 'newAppointment/REMOVE_GUEST_SERVICE';
 
+export const CLEAN_FORM = 'newAppointment/CLEAN_FORM';
 export const UPDATE_TOTALS = 'newAppointment/UPDATE_TOTALS';
 export const CHECK_CONFLICTS = 'newAppointment/CHECK_CONFLICTS';
 export const CHECK_CONFLICTS_SUCCESS = 'newAppointment/CHECK_CONFLICTS_SUCCESS';
@@ -46,10 +47,15 @@ export function serializeNewApptItem(appointment, service) {
     employeeId: isFirstAvailable ? null : get(service.employee, 'id', null),
     fromTime: moment(service.fromTime, 'HH:mm').format('HH:mm:ss'),
     toTime: moment(service.toTime, 'HH:mm').format('HH:mm:ss'),
-    bookBetween: false, // TODO
+    bookBetween: get(service, 'bookBetween', false),
     requested: get(service, 'requested', false),
     isFirstAvailable,
     bookedByEmployeeId: get(appointment.bookedByEmployee, 'id'),
+    roomId: get(service.room, 'id', null),
+    roomOrdinal: get(service, 'roomOrdinal', null),
+    resourceId: get(service.resource, 'id', null),
+    resourceOrdinal: get(service, 'resourceOrdinal', null),
+
   };
 
   if (!isNil(service.gapTime)) {
@@ -104,6 +110,10 @@ export function serializeApptToRequestData(appt, extraServices) {
 
   return data;
 }
+
+const cleanForm = () => ({
+  type: CLEAN_FORM,
+});
 
 const setBookedBy = employee => ({
   type: SET_BOOKED_BY,
@@ -450,5 +460,6 @@ const newAppointmentActions = {
   udpateTotals,
   setBookedBy,
   checkConflicts,
+  cleanForm,
 };
 export default newAppointmentActions;

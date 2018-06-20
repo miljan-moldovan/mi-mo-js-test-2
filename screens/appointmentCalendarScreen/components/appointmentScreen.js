@@ -147,7 +147,7 @@ export default class AppointmentScreen extends Component {
 
     this.setState({
       newAppointmentFilter: 0,
-      visibleNewAppointment: true
+      visibleNewAppointment: true,
     }, this.props.newAppointmentActions.checkConflicts());
   }
 
@@ -164,23 +164,26 @@ export default class AppointmentScreen extends Component {
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
+    const { newAppointmentActions } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
     const endTime = moment(startTime).add(15, 'minute');
 
+    newAppointmentActions.cleanForm();
+
     if (selectedFilter === 'providers') {
       if (selectedProvider === 'all') {
-        this.props.newAppointmentActions.setBookedBy(colData);
-        this.props.newAppointmentActions.setNewApptDate(startDate);
+        newAppointmentActions.setBookedBy(colData);
+        newAppointmentActions.setNewApptDate(startDate);
       } else {
-        this.props.newAppointmentActions.setBookedBy(selectedProvider);
-        this.props.newAppointmentActions.setNewApptDate(colData);
+        newAppointmentActions.setBookedBy(selectedProvider);
+        newAppointmentActions.setNewApptDate(colData);
       }
     } else {
-      this.props.newAppointmentActions.setBookedBy(null);
-      this.props.newAppointmentActions.setNewApptDate(startDate);
+      newAppointmentActions.setBookedBy(null);
+      newAppointmentActions.setNewApptDate(startDate);
     }
 
-    this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
+    newAppointmentActions.setNewApptTime(startTime, endTime);
     this.setState({ newAppointmentFilter: 0, visibleNewAppointment: true });
   }
 
@@ -193,7 +196,7 @@ export default class AppointmentScreen extends Component {
   }
 
   setSelectedDay= (day) => {
-    this.props.appointmentCalendarActions.setPickerMode('day')
+    this.props.appointmentCalendarActions.setPickerMode('day');
     this.props.appointmentCalendarActions.setProviderScheduleDates(day, day);
   }
 
@@ -354,7 +357,7 @@ export default class AppointmentScreen extends Component {
             handlePress={() => {
               const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
               this.props.appointmentCalendarActions.setPickerMode(newPickerMode);
-              if(startDate.format('YYYY-MM-DD') === endDate.format('YYYY-MM-DD')) {
+              if (startDate.format('YYYY-MM-DD') === endDate.format('YYYY-MM-DD')) {
                 this.props.appointmentCalendarActions.setGridView();
               }
             }}

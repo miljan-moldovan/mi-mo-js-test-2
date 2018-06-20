@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import newAppointmentActions, {
+  CLEAN_FORM,
   ADD_GUEST,
   REMOVE_GUEST,
   SET_GUEST_CLIENT,
@@ -149,6 +150,10 @@ export default function newAppointmentReducer(state = initialState, action) {
   const newTotalDuration = moment.duration();
   let newTotalPrice = 0;
   switch (type) {
+    case CLEAN_FORM:
+      return {
+        ...initialState,
+      };
     case CHECK_CONFLICTS:
       return {
         ...state,
