@@ -652,7 +652,7 @@ export default class NewAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        this.props.navigation.navigate('AppointmentFormulas');
+        this.props.navigation.navigate('ClientNotes', { client: this.state.client });
       }}
       style={{
         marginHorizontal: 5,
@@ -668,7 +668,8 @@ export default class NewAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        this.props.navigation.navigate('AppointmentFormulas');
+        debugger
+        this.props.navigation.navigate('ClientNotes', { client: this.state.client });
       }}
       style={{
         marginHorizontal: 5,

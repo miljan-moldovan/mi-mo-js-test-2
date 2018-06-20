@@ -21,6 +21,11 @@ const resources = {
     method: 'post',
     disableCache: true,
   },
+  clientFormulasAndNotes: {
+    path: 'Clients/:id/FormulasAndNotes',
+    method: 'get',
+    expiration: apiConstants.expiration,
+  },
 };
 
 export default {

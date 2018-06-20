@@ -5,12 +5,9 @@ import { StackNavigator, DrawerNavigator } from 'react-navigation';
 
 import Icon from '../components/UI/Icon';
 
-import AppointmentScreen from '../screens/AppointmentsScreen.js';
-// import NewAppointmentScreen from '../screens/NewAppointmentScreen.js';
+import AppointmentScreen from '../screens/AppointmentsScreen';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
-import NewClientScreen from '../screens/NewClientScreen';
-import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
 
 import SideMenuItem from '../components/SideMenuItem';
@@ -21,21 +18,15 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
+import ClientNotes from './../screens/clientNotes';
 
-import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from './../screens/apptBookViewOptions';
 
-
-import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/AppointmentDetailsScreen';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
 import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 
-import AppointmentNoteScreen from './../screens/appointmentNote';
-import AppointmentNoteHeader from '../screens/appointmentNote/components/appointmentNoteHeader';
-
-import ModifyServiceScreen from './../screens/modifyServiceScreen';
 import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
@@ -118,6 +109,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ApptBookProvider: {
       screen: ProvidersScreen,
+    },
+    ClientNotes: {
+      screen: ClientNotes,
     },
     Services: {
       screen: ServicesScreen,
