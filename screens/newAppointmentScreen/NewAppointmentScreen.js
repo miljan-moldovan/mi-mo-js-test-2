@@ -422,7 +422,7 @@ export default class NewAppointmentScreen extends React.Component {
     this.setState({ guests: newGuests });
   }
 
-  addService = (service, guestId = false) => {
+  addService = async (service, guestId = false) => {
     const {
       client,
       startTime,
@@ -442,14 +442,23 @@ export default class NewAppointmentScreen extends React.Component {
       toTime,
     };
 
+    if (service.requireRoom) {
+      const room = await this.getRoomInfo(service.requireRoom);
+      if (room) {
+        newService.room = room;
+      }
+    }
+
     const newServiceItem = {
       itemId: uuid(),
       guestId,
       service: newService,
     };
+    console.log(newServiceItem);
     serviceItems.push(newServiceItem);
     this.setState({ serviceItems }, () => {
       this.validate();
+
       if (service.addons.length > 0) {
         return this.props.navigation.navigate('AddonServices', {
           serviceTitle: service.name,
@@ -459,6 +468,12 @@ export default class NewAppointmentScreen extends React.Component {
       }
     });
   }
+
+  getRoomInfo = roomId => new Promise((resolve, reject) => {
+    apiWrapper.doRequest('getRooms', {})
+      .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+      .catch(err => reject(err));
+  })
 
   addAddonServices = (serviceId, services) => {
     const {
@@ -615,7 +630,7 @@ export default class NewAppointmentScreen extends React.Component {
       serviceIndex - 1,
       removedAppt.service.fromTime,
     );
-    debugger //eslint-disable-line
+
     this.setState({
       serviceItems,
     }, this.validate);
@@ -871,7 +886,6 @@ export default class NewAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        debugger
         this.props.navigation.navigate('ClientNotes', { client: this.state.client });
       }}
       style={{

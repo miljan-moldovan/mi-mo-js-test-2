@@ -100,8 +100,8 @@ export default class ModifyApptServiceScreen extends React.Component {
       bookBetween: get(serviceItem.service, 'bookBetween', false),
       gapTime: +get(serviceItem.service, 'gapTime', 0),
       afterTime: +get(serviceItem.service, 'afterTime', 0),
-      assignedRoom: get(serviceItem.service, 'assignedRoom', null),
-      assignedResource: get(serviceItem.service, 'assignedResource', null),
+      room: get(serviceItem.service, 'room', null),
+      resource: get(serviceItem.service, 'resource', null),
       startTimePickerOpen: false,
       endTimePickerOpen: false,
     };
@@ -141,8 +141,8 @@ export default class ModifyApptServiceScreen extends React.Component {
       bookBetween,
       gapTime,
       afterTime,
-      assignedRoom,
-      assignedResource,
+      room,
+      resource,
     } = this.state;
 
     if (canSave) {
@@ -157,8 +157,8 @@ export default class ModifyApptServiceScreen extends React.Component {
         bookBetween,
         gapTime,
         afterTime,
-        room: assignedRoom,
-        resource: assignedResource,
+        room,
+        resource,
       };
 
       params.onSaveService(serviceItem);
@@ -238,8 +238,8 @@ export default class ModifyApptServiceScreen extends React.Component {
       gapTime,
       afterTime,
       length,
-      assignedRoom,
-      assignedResource,
+      room,
+      resource,
     } = this.state;
     return (
       <ScrollView style={styles.container}>
@@ -364,15 +364,19 @@ export default class ModifyApptServiceScreen extends React.Component {
         <SectionTitle value="Room & Resource" />
         <InputGroup>
           <InputButton
-            onPress={() => alert('Not Implemented')}
+            onPress={() => {
+              this.props.navigation.navigate('SelectRoom', {
+                onSelect: selectedRoom => this.setState({ room: selectedRoom }),
+              });
+            }}
             label="Assigned Room"
-            value="None"
+            value={room ? room.name : 'None'}
           />
           <InputDivider />
           <InputButton
             onPress={() => alert('Not Implemented')}
             label="Assigned Resource"
-            value="None"
+            value={resource ? resource.name : 'None'}
           />
         </InputGroup>
         <SectionDivider />

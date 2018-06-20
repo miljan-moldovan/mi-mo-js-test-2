@@ -18,7 +18,7 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
-import ClientNotes from './../screens/clientNotes';
+// import ClientNotes from './../screens/clientNotes';
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -40,6 +40,8 @@ import ConflictsScreen from '../screens/conflictsScreen';
 import AddonServicesScreen from '../screens/addonServicesScreen';
 import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
 import RequiredServicesScreen from '../screens/requiredServicesScreen';
+
+import SelectRoomScreen from '../screens/apptBookSelectRoom';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -118,9 +120,12 @@ const AppointmentStackNavigator = StackNavigator(
     ApptBookProvider: {
       screen: ProvidersScreen,
     },
-    ClientNotes: {
-      screen: ClientNotes,
+    SelectRoom: {
+      screen: SelectRoomScreen,
     },
+    // ClientNotes: {
+    //   screen: ClientNotes,
+    // },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
