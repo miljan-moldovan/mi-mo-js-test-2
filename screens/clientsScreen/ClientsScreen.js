@@ -126,13 +126,20 @@ class ClientsScreen extends React.Component {
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
-
+    const clearSearch = navigation.state.params &&
+    navigation.state.params.clearSearch ? navigation.state.params.clearSearch :  null;
     return {
       header: props => (<SalonSearchHeader
         title={title}
         subTitle={subTitle}
         leftButton={leftButton}
-        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+        leftButtonOnPress={() => {
+            if (clearSearch) {
+              clearSearch();
+            }
+            leftButtonOnPress(navigation);
+          }
+        }
         rightButton={rightButton}
         rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
         hasFilter
@@ -180,24 +187,11 @@ class ClientsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.props.navigation.setParams({ defaultProps: this.state.headerProps, ignoreNav: false });
+    this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch(), ignoreNav: false });
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
-    // this.props.clientsActions.getClients();
     this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
-    // .then((response) => {
-    //   if (response.data.error) {
-    //     // this.props.navigation.goBack();
-    //   } else {
-    //     const { clients } = response.data;
-    //     this.props.clientsActions.setClients(clients);
-    //     this.props.clientsActions.setFilteredClients(clients);
-    //     const suggestionList = this.getSuggestionsList(clients);
-    //     this.props.clientsActions.setSuggestionsList(suggestionList);
-    //     this.props.clientsActions.setFilteredSuggestions(suggestionList);
-    //   }
-    // });
   }
 
   state = {
@@ -209,6 +203,10 @@ class ClientsScreen extends React.Component {
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
       rightButtonOnPress: () => { this.props.navigation.navigate('NewClientScreen'); },
     },
+  }
+
+  clearSearch = () => {
+    this.props.clientsActions.setClients([]);
   }
 
   getSuggestionsList = (clients) => {
@@ -251,21 +249,6 @@ class ClientsScreen extends React.Component {
       };
       this.props.clientsActions.getClients(params);
     }
-    //   const criteria = [
-    //     { Field: 'name', Values: [searchText.toLowerCase()] },
-    //     { Field: 'lastName', Values: [searchText.toLowerCase()] },
-    //     { Field: 'email', Values: [searchText.toLowerCase()] },
-    //   ];
-    //
-    //   const filtered = ClientsScreen.flexFilter(this.props.clientsState.clients, criteria);
-    //   this.props.clientsActions.setFilteredClients(filtered);
-    // } else {
-    //   this.props.clientsActions.setFilteredClients(this.props.clientsState.clients);
-    // }
-
-    // this.props.navigation.setParams({
-    //   searchText: this.props.salonSearchHeaderState.searchText,
-    // });
   }
 
   onPressItem = (item) => {

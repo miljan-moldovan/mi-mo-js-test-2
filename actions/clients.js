@@ -9,6 +9,10 @@ export const GET_CLIENTS = 'clients/GET_CLIENTS';
 export const GET_CLIENTS_SUCCESS = 'clients/GET_CLIENTS_SUCCESS';
 export const GET_CLIENTS_FAILED = 'clients/GET_CLIENTS_FAILED';
 
+export const GET_FORMULAS_AND_NOTES = 'clients/GET_FORMULAS_AND_NOTES';
+export const GET_FORMULAS_AND_NOTES_SUCCESS = 'clients/GET_FORMULAS_AND_NOTES_SUCCESS';
+export const GET_FORMULAS_AND_NOTES_FAILED = 'clients/GET_FORMULAS_AND_NOTES_FAILED';
+
 export const GET_MERGEABLE_CLIENTS = 'clients/GET_MERGEABLE_CLIENTS';
 export const GET_MERGEABLE_CLIENTS_SUCCESS = 'clients/GET_MERGEABLE_CLIENTS_SUCCESS';
 export const GET_MERGEABLE_CLIENTS_FAILED = 'clients/GET_MERGEABLE_CLIENTS_FAILED';
@@ -36,6 +40,27 @@ const getClients = (params = {
   })
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));
+};
+
+const getFormulasAndNotesSuccess = ({ formulas, notes }) => ({
+  type: GET_FORMULAS_AND_NOTES_SUCCESS,
+  data: { formulas, notes },
+});
+
+const getFormulasAndNotesFailed = error => ({
+  type: GET_FORMULAS_AND_NOTES_FAILED,
+  data: { error },
+});
+
+const getFormulasAndNotes = clientId => (dispatch) => {
+  dispatch({ type: GET_FORMULAS_AND_NOTES });
+  return apiWrapper.doRequest('getClients', {
+    path: {
+      id: clientId,
+    },
+  })
+    .then(response => dispatch(getFormulasAndNotesSuccess(response)))
+    .catch(error => dispatch(getFormulasAndNotesFailed(error)));
 };
 
 function setClients(clients) {
@@ -99,6 +124,7 @@ const clientsActions = {
   setSuggestionsList,
   setFilteredSuggestions,
   getClients,
+  getFormulasAndNotes,
 };
 
 export default clientsActions;

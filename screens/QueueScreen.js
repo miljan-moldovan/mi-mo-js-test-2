@@ -26,7 +26,6 @@ import Icon from '../components/UI/Icon';
 import SalonModal from '../components/SalonModal';
 import SalonTextInput from '../components/SalonTextInput';
 import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
-import clientsActions from '../actions/clients';
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -292,7 +291,6 @@ class QueueScreen extends React.Component {
     </Text>
   </View>,
         leftButtonOnPress: (navigation) => {
-          this.props.clientsActions.setClients([]);
           navigation.goBack(); },
       },
     });
@@ -454,7 +452,6 @@ const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   checkinActions: bindActionCreators({ ...checkinActions }, dispatch),
   serviceActions: bindActionCreators({ ...serviceActions }, dispatch),
-  clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);
 
