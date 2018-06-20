@@ -12,6 +12,7 @@ export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
 export const ADD_GUEST_SERVICE = 'newAppointment/ADD_GUEST_SERVICE';
 export const REMOVE_GUEST_SERVICE = 'newAppointment/REMOVE_GUEST_SERVICE';
 
+export const CLEAN_FORM = 'newAppointment/CLEAN_FORM';
 export const UPDATE_TOTALS = 'newAppointment/UPDATE_TOTALS';
 export const CHECK_CONFLICTS = 'newAppointment/CHECK_CONFLICTS';
 export const CHECK_CONFLICTS_SUCCESS = 'newAppointment/CHECK_CONFLICTS_SUCCESS';
@@ -109,6 +110,10 @@ export function serializeApptToRequestData(appt, extraServices) {
 
   return data;
 }
+
+const cleanForm = () => ({
+  type: CLEAN_FORM,
+});
 
 const setBookedBy = employee => ({
   type: SET_BOOKED_BY,
@@ -455,5 +460,6 @@ const newAppointmentActions = {
   udpateTotals,
   setBookedBy,
   checkConflicts,
+  cleanForm,
 };
 export default newAppointmentActions;
