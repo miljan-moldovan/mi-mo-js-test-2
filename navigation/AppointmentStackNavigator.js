@@ -42,6 +42,7 @@ import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
 import RequiredServicesScreen from '../screens/requiredServicesScreen';
 
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
+import SelectResourceScreen from '../screens/apptBookSelectResource';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -122,6 +123,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     SelectRoom: {
       screen: SelectRoomScreen,
+    },
+    SelectResource: {
+      screen: SelectResourceScreen,
     },
     // ClientNotes: {
     //   screen: ClientNotes,

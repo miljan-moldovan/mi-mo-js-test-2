@@ -374,7 +374,11 @@ export default class ModifyApptServiceScreen extends React.Component {
           />
           <InputDivider />
           <InputButton
-            onPress={() => alert('Not Implemented')}
+            onPress={() => {
+              this.props.navigation.navigate('SelectResource', {
+                onSelect: selectedResource => this.setState({ resource: selectedResource }),
+              });
+            }}
             label="Assigned Resource"
             value={resource ? resource.name : 'None'}
           />

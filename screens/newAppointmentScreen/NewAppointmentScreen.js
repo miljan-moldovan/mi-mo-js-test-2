@@ -449,12 +449,19 @@ export default class NewAppointmentScreen extends React.Component {
       }
     }
 
+    if (service.requiredResourceId) {
+      const resource = await this.getResourceInfo(service.requiredResourceId);
+      if (resource) {
+        newService.resource = resource;
+      }
+    }
+
     const newServiceItem = {
       itemId: uuid(),
       guestId,
       service: newService,
     };
-    console.log(newServiceItem);
+
     serviceItems.push(newServiceItem);
     this.setState({ serviceItems }, () => {
       this.validate();
@@ -472,6 +479,12 @@ export default class NewAppointmentScreen extends React.Component {
   getRoomInfo = roomId => new Promise((resolve, reject) => {
     apiWrapper.doRequest('getRooms', {})
       .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+      .catch(err => reject(err));
+  })
+
+  getResourceInfo = resourceId => new Promise((resolve, reject) => {
+    apiWrapper.doRequest('getResources', {})
+      .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
       .catch(err => reject(err));
   })
 
