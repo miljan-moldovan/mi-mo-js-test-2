@@ -16,6 +16,7 @@ const resources = {
     path: 'Services/:id',
     method: 'get',
     expiration: apiConstants.expiration,
+    disableCache: true,
   },
   getServiceEmployeeCheck: {
     path: 'Services/:serviceId/Check/Employee/:employeeId',

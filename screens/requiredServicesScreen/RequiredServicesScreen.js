@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AddonServicesScreen extends React.Component {
+export default class RequiredServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: (
       <View style={{
@@ -35,7 +35,7 @@ export default class AddonServicesScreen extends React.Component {
           color: 'white',
         }}
         >
-          Add-on Services
+          Required Services
         </Text>
         <Text style={{
           fontFamily: 'Roboto',
@@ -53,17 +53,12 @@ export default class AddonServicesScreen extends React.Component {
         <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
       </SalonTouchableOpacity>
     ),
-    headerRight: (
-      <SalonTouchableOpacity onPress={() => navigation.state.params.handleSave()}>
-        <Text style={{ fontSize: 14, fontFamily: 'Roboto-Medium', color: 'white' }}>Done</Text>
-      </SalonTouchableOpacity>
-    ),
+    headerRight: null,
   });
 
   constructor(props) {
     super(props);
 
-    this.props.navigation.setParams({ handleSave: this.handleSave });
     const params = this.props.navigation.state.params || {};
     const serviceIds = params.services || [];
 
@@ -81,18 +76,16 @@ export default class AddonServicesScreen extends React.Component {
       this.setState({ isLoading: true }, () => {
         const servicePromises = serviceIds.map(item => this.getService(item.id));
         return Promise.all(servicePromises)
-          .then((services) => {
-            this.setState({
-              isLoading: false,
-              services: services.map(item => ({
-                id: item.id,
-                name: item.description,
-                maxDuration: item.duration,
-                minDuration: item.duration,
-                price: item.price,
-              })),
-            });
-          })
+          .then(services => this.setState({
+            isLoading: false,
+            services: services.map(item => ({
+              id: item.id,
+              name: item.description,
+              maxDuration: item.duration,
+              minDuration: item.duration,
+              price: item.price,
+            })),
+          }))
           .catch(() => this.setState({ isLoading: false }));
       });
     }
@@ -100,18 +93,11 @@ export default class AddonServicesScreen extends React.Component {
 
   getService = id => apiWrapper.doRequest('getService', { path: { id } })
 
-  handlePressRow = (index) => {
-    const { services } = this.state;
-    services[index].selected = !services[index].selected;
-    this.setState({ services });
-  }
-
-  handleSave = () => {
-    const { services } = this.state;
+  handlePressRow = (item) => {
     const params = this.props.navigation.state.params || {};
     const onSave = params.onSave || false;
     if (onSave) {
-      onSave(services.filter(item => item.selected));
+      onSave(item);
       this.props.navigation.goBack();
     }
   }
@@ -125,7 +111,7 @@ export default class AddonServicesScreen extends React.Component {
         paddingHorizontal: 16,
         alignItems: 'center',
       }}
-      onPress={() => this.handlePressRow(index)}
+      onPress={() => this.handlePressRow(item)}
     >
       <View style={{
           flex: 9 / 10,

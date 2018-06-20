@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AddonServicesScreen extends React.Component {
+export default class RecommendedServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: (
       <View style={{
@@ -35,7 +35,7 @@ export default class AddonServicesScreen extends React.Component {
           color: 'white',
         }}
         >
-          Add-on Services
+          Recommended Services
         </Text>
         <Text style={{
           fontFamily: 'Roboto',
