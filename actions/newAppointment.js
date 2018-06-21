@@ -409,25 +409,20 @@ const setNewApptDuration = (index = false) => (dispatch, getState) => {
   return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime, endTime, index } });
 };
 
-const bookNewAppt = (appt, callback) => (dispatch, getState) => {
+const bookNewAppt = appt => (dispatch) => {
   const requestBody = serializeApptToRequestData(appt, []);
   dispatch({ type: BOOK_NEW_APPT });
-  return apiWrapper.doRequest('postNewAppointment', {
-    body: requestBody,
-  })
-    .then((res) => {
-      dispatch({
-        type: ADD_APPOINTMENT,
-        data: { appointment: res },
-      });
-      dispatch(bookNewApptSuccess(callback));
+  return new Promise((resolve, reject) => {
+    apiWrapper.doRequest('postNewAppointment', {
+      body: requestBody,
     })
-    .catch((err) => {
-      dispatch({
-        type: BOOK_NEW_APPT_FAILED,
-        data: { error: err },
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
       });
-    });
+  });
 };
 
 const bookNewApptSuccess = (callback = false) => (dispatch) => {

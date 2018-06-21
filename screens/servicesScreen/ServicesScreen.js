@@ -159,13 +159,22 @@ class ServicesScreen extends React.Component {
 
   getServices = (callback) => {
     this.props.servicesActions.setShowCategoryServices(false);
+    const params = this.props.navigation.state.params || {};
+    const clientId = params.clientId || false;
+    const employeeId = params.employeeId || false;
+    const filterByProvider = params.filterByProvider || false;
 
-    const employeeId = this.props.navigation.state.params ? this.props.navigation.state.params.employeeId : null;
-    const filterByProvider = this.props.navigation.state.params ? this.props.navigation.state.params.filterByProvider : false;
+    const opts = {
+      query: {},
+    };
+    if (clientId) {
+      opts.query.clientId = clientId;
+    }
+    if (employeeId) {
+      opts.query.employeeId = employeeId;
+    }
 
-    const params = employeeId ? { query: { employeeId } } : {};
-
-    this.props.servicesActions.getServices(params, filterByProvider).then((response) => {
+    this.props.servicesActions.getServices(opts, filterByProvider).then((response) => {
       if (response.data.error) {
         this.goBack();
       } else {

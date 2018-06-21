@@ -442,19 +442,19 @@ export default class NewAppointmentScreen extends React.Component {
       toTime,
     };
 
-    if (service.requireRoom) {
-      const room = await this.getRoomInfo(service.requireRoom);
-      if (room) {
-        newService.room = room;
-      }
-    }
+    // if (service.requireRoom) {
+    //   const room = await this.getRoomInfo(service.requireRoom);
+    //   if (room) {
+    //     newService.room = room;
+    //   }
+    // }
 
-    if (service.requiredResourceId) {
-      const resource = await this.getResourceInfo(service.requiredResourceId);
-      if (resource) {
-        newService.resource = resource;
-      }
-    }
+    // if (service.requiredResourceId) {
+    //   const resource = await this.getResourceInfo(service.requiredResourceId);
+    //   if (resource) {
+    //     newService.resource = resource;
+    //   }
+    // }
 
     const newServiceItem = {
       itemId: uuid(),
@@ -487,6 +487,35 @@ export default class NewAppointmentScreen extends React.Component {
       .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
       .catch(err => reject(err));
   })
+
+  updateContactInformation = () => {
+    const {
+      client,
+      clientEmail,
+      clientPhone,
+      clientPhoneType,
+    } = this.state;
+
+    apiWrapper.doRequest('setContactInformation', {
+      path: { id: client.id },
+      body: {
+        id: client.id,
+        email: clientEmail || null,
+        phones: [
+          {
+            type: clientPhoneType,
+            value: clientPhone,
+          },
+          ...client.phones.filter(phone => phone.value && phone.type !== clientPhoneType),
+        ],
+        confirmationType: 1,
+      },
+    })
+      .then((res) => {
+
+      })
+      .catch(err => console.warn(err));
+  }
 
   addAddonServices = (serviceId, services) => {
     const {
@@ -700,6 +729,7 @@ export default class NewAppointmentScreen extends React.Component {
       return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
         filterByProvider: true,
+        clientId: client.id,
         employeeId: bookedByEmployee.id,
         onChangeService: this.addService,
       });
@@ -785,6 +815,7 @@ export default class NewAppointmentScreen extends React.Component {
       return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
         filterByProvider: true,
+        clientId: this.getGuest(guestId).client.id,
         employeeId: bookedByEmployee.id,
         onChangeService: service => this.addService(service, guestId),
       });
@@ -807,6 +838,7 @@ export default class NewAppointmentScreen extends React.Component {
       };
       // this.props.navigation.setParams({ redirect: true });
       this.setState({ isLoading: true }, () => {
+        this.updateContactInformation();
         this.props.newAppointmentActions.bookNewAppt({
           date,
           client,
@@ -814,7 +846,15 @@ export default class NewAppointmentScreen extends React.Component {
           remarks,
           rebooked: false,
           items: serviceItems.map(item => ({ isGuest: item.guestId, ...item.service })),
-        }, callback);
+        }, callback)
+          .then((res) => {
+            this.props.navigation.navigate('SalonCalendar');
+            this.props.apptBookActions.setGridView();
+          })
+          .catch((err) => {
+            console.warn(err);
+            this.setState({ isLoading: false });
+          });
       });
     }
   }

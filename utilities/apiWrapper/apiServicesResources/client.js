@@ -26,6 +26,11 @@ const resources = {
     method: 'get',
     expiration: apiConstants.expiration,
   },
+  setContactInformation: {
+    path: 'Clients/:id/ContactInformation',
+    method: 'put',
+    disableCache: true,
+  },
 };
 
 export default {
