@@ -672,10 +672,6 @@ export default class NewAppointmentScreen extends React.Component {
       serviceIndex - 1,
       removedAppt.service.fromTime,
     );
-<<<<<<< HEAD
-
-=======
->>>>>>> 5302af5205e245454a55ed881424b1a157128e9f
     this.setState({
       serviceItems,
     }, this.validate);

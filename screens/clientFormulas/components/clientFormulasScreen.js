@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
 export default class AppointmentFormulas extends Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
-    const { client } = params.client;
+    const { client } = params;
     return {
       headerTitle:
         (
