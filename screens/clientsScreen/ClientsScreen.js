@@ -236,7 +236,10 @@ class ClientsScreen extends React.Component {
     }
     const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
+    if (dismissOnSelect) {
+      this.props.salonSearchHeaderActions.setShowFilter(false); 
+      this.props.navigation.goBack();
+    }
   }
 
   filterClients = (searchText) => {

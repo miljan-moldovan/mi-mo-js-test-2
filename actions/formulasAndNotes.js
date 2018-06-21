@@ -1,0 +1,33 @@
+import apiWrapper from '../utilities/apiWrapper';
+
+export const GET_FORMULAS_AND_NOTES = 'clients/GET_FORMULAS_AND_NOTES';
+export const GET_FORMULAS_AND_NOTES_SUCCESS = 'clients/GET_FORMULAS_AND_NOTES_SUCCESS';
+export const GET_FORMULAS_AND_NOTES_FAILED = 'clients/GET_FORMULAS_AND_NOTES_FAILED';
+
+const getFormulasAndNotesSuccess = ({ formulas, notes }) => ({
+  type: GET_FORMULAS_AND_NOTES_SUCCESS,
+  data: { formulas, notes },
+});
+
+const getFormulasAndNotesFailed = error => ({
+  type: GET_FORMULAS_AND_NOTES_FAILED,
+  data: { error },
+});
+
+const getFormulasAndNotes = clientId => (dispatch) => {
+  dispatch({ type: GET_FORMULAS_AND_NOTES });
+  return apiWrapper.doRequest('getFormulasAndNotes', {
+    path: {
+      id: clientId,
+    },
+  })
+    .then(response => {
+      return dispatch(getFormulasAndNotesSuccess(response))})
+    .catch(error => dispatch(getFormulasAndNotesFailed(error)));
+};
+
+const formulasAndNotesActions = {
+  getFormulasAndNotes,
+};
+
+export default formulasAndNotesActions;

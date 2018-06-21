@@ -162,7 +162,7 @@ const getAppointmentNotes = clientId => (dispatch) => {
     'getClientNotes',
     {
       path: { clientId },
-      query: { filterRule: 'none' },
+      //query: { filterRule: 'none' },
     },
   )
     .then(response => dispatch(getAppointmentNotesSuccess(response)))

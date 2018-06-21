@@ -434,7 +434,9 @@ export default class SalonNewAppointmentSlide extends React.Component {
       <ModalBox
         coverScreen
         isOpen={this.props.visible}
-        onClosingState={() => this.hidePanel()}
+        onClosingState={() => {
+          this.hidePanel()}}
+        backdropPressToClose={false}
       >
         <View style={[styles.panel, { height: this.props.hasConflicts ? 462 + 56 : 462 }]}>
           <View style={styles.panelBlurredSection} />

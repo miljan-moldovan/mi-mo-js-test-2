@@ -12,7 +12,7 @@ import clientsActions, {
   GET_MERGEABLE_CLIENTS_FAILED,
   MERGE_CLIENTS,
   MERGE_CLIENTS_SUCCESS,
-  MERGE_CLIENTS_FAILED
+  MERGE_CLIENTS_FAILED,
 } from '../actions/clients';
 
 const initialState = {
