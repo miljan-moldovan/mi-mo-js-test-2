@@ -294,9 +294,9 @@ export default function newAppointmentReducer(state = initialState, action) {
         body.items[data.index].date = data.date;
       }
       return {
+        ...state,
         date: data.date,
         body,
-        ...state,
       };
     case SET_NEW_APPT_START_TIME:
       if (data.index) {
