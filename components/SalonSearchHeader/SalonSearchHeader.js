@@ -135,7 +135,7 @@ class SalonSearchHeader extends React.Component {
             <View style={styles.leftButton}>
               <SalonTouchableOpacity
                 style={{ flex: 1 }}
-                onPress={() => { this.props.leftButtonOnPress(); }}
+                onPress={() => { this.props.leftButtonOnPress();  }}
               >
                 {this.props.leftButton}
               </SalonTouchableOpacity>

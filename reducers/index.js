@@ -23,6 +23,7 @@ import newAppointmentReducer from './newAppointment';
 import apptBookViewOptionsReducer from './apptBookViewOptions';
 import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
 import turnAway from './turnAway';
+import formulasAndNotesReducer from './formulasAndNotes';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -49,4 +50,5 @@ export default combineReducers({
   turnAway,
   newAppointmentReducer,
   modifyApptReducer,
+  formulasAndNotesReducer,
 });

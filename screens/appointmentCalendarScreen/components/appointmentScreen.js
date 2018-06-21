@@ -81,8 +81,21 @@ export default class AppointmentScreen extends Component {
       tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
     };
   };
-  constructor(props) {
-    super(props);
+
+  state = {
+    visible: false,
+    newAppointmentFilter: 0,
+    visibleNewAppointment: false,
+    visibleAppointment: false,
+    isLoading: true,
+    bufferVisible: false,
+    isAlertVisible: false,
+    selectedAppointment: null,
+  };
+
+  componentDidMount() {
+    //super(props);
+    const props = this.props;
     props.appointmentCalendarActions.setStoreWeeklySchedule();
     let filterProvider = 'all';
     const { params } = this.props.navigation.state;
@@ -91,17 +104,6 @@ export default class AppointmentScreen extends Component {
         filterProvider = this.props.navigation.state.params.filterProvider;
       }
     }
-
-    this.state = {
-      visible: false,
-      newAppointmentFilter: 0,
-      visibleNewAppointment: false,
-      visibleAppointment: false,
-      isLoading: true,
-      bufferVisible: false,
-      isAlertVisible: false,
-      selectedAppointment: null,
-    };
 
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,

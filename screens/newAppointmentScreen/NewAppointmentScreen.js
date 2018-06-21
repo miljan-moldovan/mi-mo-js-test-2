@@ -615,7 +615,6 @@ export default class NewAppointmentScreen extends React.Component {
       serviceIndex - 1,
       removedAppt.service.fromTime,
     );
-    debugger //eslint-disable-line
     this.setState({
       serviceItems,
     }, this.validate);
@@ -855,7 +854,8 @@ export default class NewAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        this.props.navigation.navigate('ClientNotes', { client: this.state.client });
+        const url = this.props.settingState.data.PrintToTicket === 'Formulas' ? 'ClientFormulas' : 'ClientNotes';
+        this.props.navigation.navigate(url, { client: this.state.client });
       }}
       style={{
         marginHorizontal: 5,
@@ -871,8 +871,7 @@ export default class NewAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        debugger
-        this.props.navigation.navigate('ClientNotes', { client: this.state.client });
+        //TODO
       }}
       style={{
         marginHorizontal: 5,

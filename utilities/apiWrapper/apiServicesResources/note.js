@@ -2,7 +2,7 @@ import apiConstants from '../apiConstants';
 
 const resources = {
   getClientNotes: {
-    path: 'Client/:clientId/Note',
+    path: 'Clients/:clientId/Notes',
     method: 'get',
     expiration: apiConstants.expiration,
   },

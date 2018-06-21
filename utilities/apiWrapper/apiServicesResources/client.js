@@ -21,7 +21,7 @@ const resources = {
     method: 'post',
     disableCache: true,
   },
-  clientFormulasAndNotes: {
+  getFormulasAndNotes: {
     path: 'Clients/:id/FormulasAndNotes',
     method: 'get',
     expiration: apiConstants.expiration,

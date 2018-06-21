@@ -124,6 +124,7 @@ export default function clientsReducer(state = initialState, action) {
         ...state,
         isLoading: false,
         notes: data.notes,
+        filtered: data.notes,
         error: null,
       };
     case GET_APPOINTMENT_NOTES_FAILED:
