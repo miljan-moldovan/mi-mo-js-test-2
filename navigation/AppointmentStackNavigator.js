@@ -18,7 +18,11 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
+<<<<<<< HEAD
 // import ClientNotes from './../screens/clientNotes';
+=======
+//import ClientNotes from './../screens/clientNotes';
+>>>>>>> ce3fc04ce642472fccdef2c32914de974dbe6fd2
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -127,9 +131,9 @@ const AppointmentStackNavigator = StackNavigator(
     SelectResource: {
       screen: SelectResourceScreen,
     },
-    // ClientNotes: {
-    //   screen: ClientNotes,
-    // },
+    ClientNotes: {
+      screen: ClientNotes,
+    },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
