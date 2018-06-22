@@ -740,7 +740,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   getAddonsForService = serviceId => this.state.serviceItems.filter(item => item.parentId === serviceId)
 
-  checkConflicts = () => {
+  checkConflicts = (prevValue) => {
     const {
       date,
       client,
@@ -792,9 +792,9 @@ export default class NewAppointmentScreen extends React.Component {
         gapTime: moment().startOf('day').add(moment.duration(+serviceItem.service.gapTime, 'm')).format('HH:mm:ss', { trim: false }),
         afterTime: moment().startOf('day').add(moment.duration(+serviceItem.service.afterTime, 'm')).format('HH:mm:ss', { trim: false }),
         bookBetween: !!serviceItem.service.gapTime,
-        roomId: get(serviceItem.service, 'roomId', null),
+        roomId: get(get(serviceItem.service, 'room', null), 'id', null),
         roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
-        resourceId: get(serviceItem.service, 'resourceId', null),
+        resourceId: get(get(serviceItem.service, 'resource', null), 'id', null),
         resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
       });
     });
@@ -804,7 +804,7 @@ export default class NewAppointmentScreen extends React.Component {
     })
       .then(conflicts => this.setState({
         conflicts,
-        canSave: conflicts.length > 0 ? false : this.state.canSave,
+        canSave: conflicts.length > 0 ? false : prevValue,
       }));
   }
 
@@ -891,7 +891,7 @@ export default class NewAppointmentScreen extends React.Component {
     }
     this.props.navigation.setParams({ canSave: valid });
     this.setState({ canSave: valid }, () => {
-      this.checkConflicts();
+      this.checkConflicts(valid);
       this.calculateTotals();
     });
   }
@@ -912,7 +912,7 @@ export default class NewAppointmentScreen extends React.Component {
         const prevItem = items[i - 1];
 
         item.service.fromTime = (prevItem && prevItem.service.toTime.clone()) || initialFromTime;
-        item.service.toTime = item.service.fromTime.clone().add(moment.duration(item.service.maxDuration));
+        item.service.toTime = item.service.fromTime.clone().add(moment.duration(item.service.toTime));
       }
     });
     return items;
@@ -939,7 +939,7 @@ export default class NewAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        //TODO
+        // TODO
       }}
       style={{
         marginHorizontal: 5,

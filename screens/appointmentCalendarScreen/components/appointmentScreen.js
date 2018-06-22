@@ -94,7 +94,7 @@ export default class AppointmentScreen extends Component {
   };
 
   componentDidMount() {
-    //super(props);
+    // super(props);
     const props = this.props;
     props.appointmentCalendarActions.setStoreWeeklySchedule();
     let filterProvider = 'all';
@@ -427,6 +427,9 @@ export default class AppointmentScreen extends Component {
               mainRequested,
             } = this.props.newAppointmentState;
 
+            if (!bookedByEmployee) {
+              return alert('Please select a provider first');
+            }
             const fromTime = moment(startTime, 'HH:mm');
             const timeToAdd = service !== null ? moment.duration(service.maxDuration) : moment.duration(apptGridSettings.step, 'min');
             const toTime = moment(fromTime).add(timeToAdd);
