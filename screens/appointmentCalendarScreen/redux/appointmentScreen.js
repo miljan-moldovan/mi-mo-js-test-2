@@ -113,7 +113,7 @@ const setGridAllViewSuccess = (employees, appointments, availability, blockTimes
   return {
     type: SET_GRID_ALL_VIEW_SUCCESS,
     data: {
-      employees, appointments, apptGridSettings, availability, blockTimes
+      employees, appointments, apptGridSettings, availability, blockTimes,
     },
   };
 };
@@ -207,9 +207,10 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           }),
         ])
           .then(([employees, appointments, availabilityItem, blockTimes]) => {
-            let filteredEmployees = [];
-            filteredEmployees = employees.filter(employee => !employee.isOff);
-
+            let filteredEmployees = employees;
+            if (!filterOptions.showOffEmployees) {
+              filteredEmployees = employees.filter(employee => !employee.isOff);
+            }
             if (selectedFilter === 'deskStaff') {
               filteredEmployees = filteredEmployees.filter(employee => employee.isReceptionist);
             }
@@ -217,7 +218,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
             dispatch(setGridAllViewSuccess(
               employeesAppointment,
-              orderedAppointments, availabilityItem.timeSlots, blockTimes
+              orderedAppointments, availabilityItem.timeSlots, blockTimes,
             ));
           })
           .catch((ex) => {

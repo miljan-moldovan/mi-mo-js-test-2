@@ -3,6 +3,7 @@ import {
   Text,
   View,
   ViewPropTypes,
+  TouchableOpacity,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -53,7 +54,7 @@ export default class InputNumber extends React.Component {
         <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>
           {countComponent}
           <View style={[styles.inputNumber, this.props.inputNumberStyle]}>
-            <SalonTouchableOpacity
+            <TouchableOpacity
               style={[styles.inputNumberButton, {
                 borderRightColor: '#1DBF12',
                 borderRightWidth: 1,
@@ -61,13 +62,13 @@ export default class InputNumber extends React.Component {
               onPress={this.handleSubstractPress}
             >
               <Text style={[styles.inputNumberLabelText]}>-</Text>
-            </SalonTouchableOpacity>
-            <SalonTouchableOpacity
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[styles.inputNumberButton]}
               onPress={this.handleAddPress}
             >
               <Text style={[styles.inputNumberLabelText]}>+</Text>
-            </SalonTouchableOpacity>
+            </TouchableOpacity>
           </View>
         </View>
       );

@@ -4,7 +4,8 @@ const resources = {
   getClients: {
     path: 'Clients',
     method: 'get',
-    expiration: apiConstants.expiration,
+    // expiration: apiConstants.expiration,
+    disableCache: true,
   },
   clientFormulas: {
     path: 'Clients/:id/Formulas',
