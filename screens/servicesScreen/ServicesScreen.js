@@ -174,18 +174,29 @@ class ServicesScreen extends React.Component {
       opts.query.employeeId = employeeId;
     }
 
-    this.props.servicesActions.getServices(opts, filterByProvider).then((response) => {
-      if (response.data.error) {
+    this.props.servicesActions.getServices(opts, filterByProvider).then((services) => {
+      if (!services) {
         this.goBack();
       } else {
-        const services = response.data.services;
-        this.props.servicesActions.setServices(services);
-        this.props.servicesActions.setFilteredServices(services);
+        const filtered = services.reduce((filtered, category) => {
+          if (category.services && category.services.length) {
+            const filteredServices = category.services.filter(service => !service.isAddon);
+            if (filteredServices.length > 0) {
+              return [...filtered, { ...category, services: filteredServices }];
+            }
+          }
+
+          return filtered;
+        }, []);
+
+        this.props.servicesActions.setServices(filtered);
+        this.props.servicesActions.setFilteredServices(filtered);
         if (callback) {
           callback();
         }
       }
     }).catch((error) => {
+      this.goBack();
     });
   }
 

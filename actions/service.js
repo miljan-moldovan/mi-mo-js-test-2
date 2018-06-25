@@ -21,17 +21,16 @@ const getServicesFailed = error => ({
   data: { error },
 });
 
-const getServices = (params, filterByProvider = false, filterProvider = null) => (dispatch, getState) => {
-  dispatch({ type: GET_SERVICES });
-  if (filterByProvider) {
-    const { selectedProvider } = getState().providersReducer;
+const getServices = (params, filterByProvider = false, filterProvider = null) =>
+  (dispatch, getState) => {
+    dispatch({ type: GET_SERVICES });
+    if (filterByProvider) {
+      const { selectedProvider } = getState().providersReducer;
     // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
-  }
+    }
 
-  return apiWrapper.doRequest('getServiceTree', params)
-    .then(response => dispatch(getServicesSuccess(response)))
-    .catch(error => dispatch(getServicesFailed(error)));
-};
+    return apiWrapper.doRequest('getServiceTree', params);
+  };
 
 function setServices(services) {
   return {

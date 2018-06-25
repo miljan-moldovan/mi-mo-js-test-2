@@ -44,6 +44,7 @@ export default class App extends Component<{}> {
         blacklist: [
           'walkInReducer',
           'queue',
+          'serviceReducer',
           'appointmentFormulasReducer', 'appointmentNotesReducer', 'queue',
           'providersReducer',
           'clientsReducer',
