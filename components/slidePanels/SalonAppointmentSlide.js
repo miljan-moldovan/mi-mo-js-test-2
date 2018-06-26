@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    height: 355,
+    minHeight: 200,
     borderBottomColor: '#CACBCF',
     borderBottomWidth: 1 / 2,
   },
@@ -466,10 +466,19 @@ export default class SalonAppointmentSlide extends React.Component {
                         <Text style={styles.panelIconText}>Modifiy</Text>
                       </View>
                     </View>
-                    <AuditInformation
-                      audit={auditAppt}
-                      isLoading={this.state.isLoadingAudits}
-                    />
+                    <View
+                      style={{
+                        flex: 1,
+                        alignSelf: 'stretch',
+                        alignItems: 'center',
+                        // justifyContent: 'center',
+                      }}
+                    >
+                      <AuditInformation
+                        audit={auditAppt}
+                        isLoading={this.state.isLoadingAudits}
+                      />
+                    </View>
                   </View>
                   <View style={styles.panelBottom}>
                     <InputGroup

@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    width: '90%',
+    // width: '90%',
   },
   panelInfoTitle: {
     marginTop: 5,
@@ -186,13 +186,20 @@ export default class AuditInformation extends React.Component {
     const { audit, isBlockTime, isOpen } = this.state;
 
     return this.props.isLoading ? (
-      <ActivityIndicator />
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      >
+        <ActivityIndicator />
+      </View>
     ) : (
       [
         <View
           style={[
             styles.panelInfo,
-            isOpen ? { minHeight: 230 } : { maxHeight: 230 },
+            isOpen ? { } : { maxHeight: 230 },
           ]}
         >
           {audit.map((item, index) => (
