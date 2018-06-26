@@ -415,7 +415,7 @@ export default class ModifyAppointmentScreen extends React.Component {
     const startTimeText = startTime.format('HH:mm A');
     const endTime = moment(appointment.toTime, 'HH:mm');
     const endTimeText = moment(appointment.toTime, 'HH:mm').format('HH:mm A');
-    const duration = startTime.diff(endTime);
+    const duration = endTime.diff(startTime);
     return (
       <ScrollView style={styles.container}>
         <InputGroup style={{ marginTop: 15 }}>

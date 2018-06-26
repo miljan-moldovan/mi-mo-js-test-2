@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, Animated, View, StyleSheet } from 'react-native';
+import { get } from 'lodash';
 
 import Icon from './../UI/Icon';
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
@@ -9,6 +10,9 @@ import {
   InputGroup,
   InputButton,
 } from '../../components/formHelpers';
+import AuditInformation from '../AuditInformation';
+
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   modal: {
@@ -135,8 +139,10 @@ const styles = StyleSheet.create({
   plusIconContainer: {
     position: 'absolute',
     backgroundColor: 'transparent',
-    paddingTop: 5,
-    paddingRight: 0,
+    // marginTop: 105,
+    paddingVertical: 1,
+    paddingHorizontal: 2,
+    // paddingRight: 0,
   },
   panelIcons: {
     flexDirection: 'row',
@@ -278,7 +284,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 12,
   },
-
 });
 
 const AdaptableView = ({ isOpen, children }) => (
@@ -289,15 +294,35 @@ export default class SalonAppointmentSlide extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: false,
+      isLoadingAudits: false,
+      auditAppt: [],
+      isOpen: true,
       visible: props.visible,
     };
+  }
+
+  componentDidMount() {
+    this.getAuditInformation();
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       visible: nextProps.visible,
-    });
+    }, this.getAuditInformation);
+  }
+
+  getAuditInformation = () => {
+    const { appointment } = this.props;
+    const id = get(appointment, 'id', false);
+    if (id) {
+      this.setState({ isLoadingAudits: true }, () => {
+        apiWrapper.doRequest('getApptAudit', {
+          path: { id },
+        })
+          .then(auditAppt => this.setState({ isLoadingAudits: false, auditAppt }))
+          .catch(err => console.warn(err));
+      });
+    }
   }
 
   _draggedValue = new Animated.Value(-120);
@@ -305,6 +330,7 @@ export default class SalonAppointmentSlide extends React.Component {
   hidePanel = () => this.props.onHide();
 
   keyExtractor = (item, index) => item.id;
+
 
   render() {
     const {
@@ -318,8 +344,9 @@ export default class SalonAppointmentSlide extends React.Component {
       service,
       employee,
     } = appointment;
-    const { isOpen } = this.state;
-    return (
+    const { isOpen, auditAppt } = this.state;
+
+    return this.props.appointment && (
       <ModalBox
         isOpen={this.props.visible}
         coverScreen
@@ -415,10 +442,14 @@ export default class SalonAppointmentSlide extends React.Component {
                       <View style={styles.panelIcon}>
                         <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
                           <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
-                          <View style={styles.plusIconContainer}>
+                          <View style={[
+                            styles.plusIconContainer,
+                            { top: 19, backgroundColor: '#727A8F' },
+                          ]}
+                          >
                             <Icon
                               style={styles.subIcon}
-                              name="plus"
+                              name="times"
                               size={9}
                               color="#FFFFFF"
                               type="solid"
@@ -435,29 +466,10 @@ export default class SalonAppointmentSlide extends React.Component {
                         <Text style={styles.panelIconText}>Modifiy</Text>
                       </View>
                     </View>
-                    <View style={styles.panelInfo}>
-                      <View style={[styles.panelInfoLine, { paddingTop: 5 }]}>
-                        <Text style={styles.panelInfoTitle}>BOOKED</Text>
-                        <Text style={styles.panelInfoText}>Womans haircut with Susan A. on 04/04 at 9AM</Text>
-                        <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
-                      </View>
-
-                      <View style={styles.panelInfoLine}>
-                        <Text style={styles.panelInfoTitle}>MODIFIED</Text>
-                        <Text style={styles.panelInfoText}>Beard trim with Susan A. on 04/04 at 9AM</Text>
-                        <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
-                      </View>
-
-                      <View style={styles.panelInfoLine}>
-                        <Text style={styles.panelInfoTitle}>MODIFIED</Text>
-                        <Text style={styles.panelInfoText}>Womans haircut with Susan A. on 04/04 at 9AM</Text>
-                        <Text style={styles.panelInfoDate}>by jada C on 04/02 at 7:58Am</Text>
-                      </View>
-
-                    </View>
-                    <SalonTouchableOpacity style={styles.panelInfoShowMore} onPress={() => { alert('Not implemented'); }}>
-                      <Text style={styles.panelInfoShowMoreText}>SHOW MORE</Text>
-                    </SalonTouchableOpacity>
+                    <AuditInformation
+                      audit={auditAppt}
+                      isLoading={this.state.isLoadingAudits}
+                    />
                   </View>
                   <View style={styles.panelBottom}>
                     <InputGroup
@@ -482,7 +494,7 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                          </View>]}
+                            </View>]}
                         </InputButton>,
 
                         <InputButton
@@ -493,7 +505,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Rebook Appointment"
                         >
                           {[<View style={styles.iconContainer}><Icon name="undo" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
                         ]}
                     </InputGroup>
@@ -512,7 +524,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Edit Remarks"
                         >
                           {[<View style={styles.iconContainer}><Icon name="edit" size={18} color="#115ECD" type="solid" />
-                          </View>]}
+                            </View>]}
                         </InputButton>,
 
                         <InputButton
@@ -533,7 +545,7 @@ export default class SalonAppointmentSlide extends React.Component {
                                 type="solid"
                               />
                             </View>
-                          </View>]}
+                            </View>]}
                         </InputButton>,
                         ]}
                     </InputGroup>
@@ -566,7 +578,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="SMS Client"
                         >
                           {[<View style={styles.iconContainer}><Icon name="comments" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
                         <InputButton
                           noIcon
@@ -576,7 +588,7 @@ export default class SalonAppointmentSlide extends React.Component {
                           label="Recommended Products"
                         >
                           {[<View style={styles.iconContainer}><Icon name="star" size={18} color="#115ECD" type="solid" />
-                            </View>]}
+                          </View>]}
                         </InputButton>,
 
                         ]}
