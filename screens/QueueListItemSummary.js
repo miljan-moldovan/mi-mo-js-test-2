@@ -234,7 +234,7 @@ render() {
               </View>
 }
           />
-          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable ? `${this.props.service.employeeFirstName} ${this.props.service.employeeLastName}` : 'First Available'}</Text>
+          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employeeFirstName ? `${this.props.service.employeeFirstName} ${this.props.service.employeeLastName}` : 'First Available'}</Text>
           <View style={styles.iconContainer}>
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
           </View>
