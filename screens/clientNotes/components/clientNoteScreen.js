@@ -257,7 +257,7 @@ export default class AppointmentNotesScreen extends Component {
   }
 
   componentWillMount() {
-    this.getNotes();
+    //this.getNotes();
   }
 
   getNotes = () => {

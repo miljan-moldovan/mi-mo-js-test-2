@@ -407,7 +407,7 @@ renderItem = (row) => {
   const groupLeaderName = this.getGroupLeaderName(item);
   const firstService = item.services[0] || {};
   const serviceName = (firstService.serviceName || '').toUpperCase();
-  const employee = !firstService.isFirstAvailable ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
+  const employee = !firstService.isFirstAvailable && firstService.employeeFirstName ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
 
   const isBookedByWeb = item.queueType === 3;
 

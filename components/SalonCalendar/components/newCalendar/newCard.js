@@ -11,6 +11,8 @@ import { times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
 import ResizeButton from '../resizeButtons';
+import Badge from '../../../SalonBadge';
+import Icon from '../../../UI/Icon';
 
 const styles = StyleSheet.create({
   clientText: {
@@ -70,6 +72,39 @@ class Card extends Component {
     return height;
   }
 
+  renderBadges = () => {
+    const { appointment } = this.props;
+    const { badgeData } = appointment;
+    const users = appointment.isMultipleProviders ? <Icon color="#082E66" size={16} name="users" type="solid" /> : null;
+    const star = badgeData.clientHasMembership ? <Icon color="#082E66" size={16} name="star" type="solid" /> : null;
+    const birthdayCake = badgeData.clientBirthday ? <Icon color="#082E66" size={16} name="birthdayCake" type="regular" /> : null;
+    const checkCircle = appointment.confirmationStatus ? <Icon color="#082E66" size={16} name="checkCircle" type="solid" /> : null;
+    const repeat = badgeData.isRecurring ? <Icon color="#082E66" size={16} name="repeatAlt" type="solid" /> : null;
+    const badgeNL = badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
+    const badgeN = badgeData.clientIsNew ? <Badge text="N" /> : null;
+    const badgeO = badgeData.isOnlineBooking ? <Badge text="O" /> : null;
+    const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
+    const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
+    const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
+    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    return (
+      <React.Fragment>
+        { users }
+        { star }
+        { birthdayCake }
+        { checkCircle }
+        { repeat }
+        { badgeNL }
+        { badgeN }
+        { badgeO }
+        { badgeW }
+        { badgeS }
+        { badgeF }
+        { badgeR }
+      </React.Fragment>
+    );
+  }
+
   render() {
     const {
       client,
@@ -121,12 +156,15 @@ class Card extends Component {
         >
           <View style={{ width: '100%', height: '100%' }} ref={(view) => { this.card = view; }}>
             <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-            <Text
-              numberOfLines={1}
-              style={[styles.clientText, { color: clientTextColor }]}
-            >
-              {clientName}
-            </Text>
+            <View style={{flexDirection: 'row', paddingHorizontal: 2}}>
+              {this.renderBadges()}
+              <Text
+                numberOfLines={1}
+                style={[styles.clientText, { color: clientTextColor }]}
+              >
+                {clientName}
+              </Text>
+            </View>
             <Text
               numberOfLines={1}
               style={[styles.serviceText, { color: serviceTextColor }]}

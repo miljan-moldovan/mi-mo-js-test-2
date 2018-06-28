@@ -281,7 +281,7 @@ export default class AppointmentFormulas extends Component {
 
   componentWillMount() {
     const clientId = this.props.navigation.state.params.client.id;
-    this.props.formulaActions.getFormulasAndNotes(clientId);
+    //this.props.formulaActions.getFormulasAndNotes(clientId);
 
     // this.props.appointmentFormulasActions.setFilteredFormulas(formulas);
     // this.setState({
