@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -10,7 +10,8 @@ import Svg, {
 import { times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
-import ResizeButton from '../resizeButtons';
+import Icon from '../../../UI/Icon';
+import Badge from '../../../SalonBadge';
 
 const styles = StyleSheet.create({
   clientText: {
@@ -158,13 +159,6 @@ class Card extends Component {
       false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
       this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height._value,
     );
-    // this.setState({ opacity: 0.7 })
-    // Animated.timing(
-    //   this.state.opacity,
-    //   {
-    //     toValue: 0.7,
-    //   },
-    // ).start();
   }
 
   renderAssistant = () => {
@@ -207,6 +201,39 @@ class Card extends Component {
     );
   }
 
+  renderBadges = () => {
+    const { appointment } = this.props;
+    const { badgeData } = appointment;
+    const users = appointment.isMultipleProviders ? <Icon color="#082E66" size={16} name="users" type="solid" /> : null;
+    const star = badgeData.clientHasMembership ? <Icon color="#082E66" size={16} name="star" type="solid" /> : null;
+    const birthdayCake = badgeData.clientBirthday ? <Icon color="#082E66" size={16} name="birthdayCake" type="regular" /> : null;
+    const checkCircle = appointment.confirmationStatus ? <Icon color="#082E66" size={16} name="checkCircle" type="solid" /> : null;
+    const repeat = badgeData.isRecurring ? <Icon color="#082E66" size={16} name="repeatAlt" type="solid" /> : null;
+    const badgeNL = badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
+    const badgeN = badgeData.clientIsNew ? <Badge text="N" /> : null;
+    const badgeO = badgeData.isOnlineBooking ? <Badge text="O" /> : null;
+    const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
+    const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
+    const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
+    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    return (
+      <React.Fragment>
+        { users }
+        { star }
+        { birthdayCake }
+        { checkCircle }
+        { repeat }
+        { badgeNL }
+        { badgeN }
+        { badgeO }
+        { badgeW }
+        { badgeS }
+        { badgeF }
+        { badgeR }
+      </React.Fragment>
+    );
+  }
+
   renderSingleBlock = () => {
     const {
       client,
@@ -223,20 +250,25 @@ class Card extends Component {
     return (
       <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-        <Text
-          numberOfLines={1}
-          style={[styles.clientText, { color: clientTextColor }]}
-        >
-          {clientName}
-        </Text>
-        { usedBlocks > 1 && (
-          <Text
-            numberOfLines={1}
-            style={[styles.serviceText, { color: serviceTextColor }]}
-          >
-            {serviceName}
-          </Text>
-        )}
+        <View style={{ flexDirection: 'row', paddingHorizontal: 2 }}>
+          {this.renderBadges()}
+          <View>
+            <Text
+              numberOfLines={1}
+              style={[styles.clientText, { color: clientTextColor }]}
+            >
+              {clientName}
+            </Text>
+            { usedBlocks > 1 && (
+              <Text
+                numberOfLines={1}
+                style={[styles.serviceText, { color: serviceTextColor }]}
+              >
+                {serviceName}
+              </Text>
+            )}
+          </View>
+        </View>
       </View>
     );
   }
@@ -257,14 +289,19 @@ class Card extends Component {
     return (
       <View style={{ width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-        {times(usedBlocks).map(index => (
-          <Text
-            numberOfLines={1}
-            style={[styles.clientText, { lineHeight: 30, color: clientTextColor }]}
-          >
-            {clientName}
-          </Text>
-        ))}
+        <View style={{ flexDirection: 'row', paddingHorizontal: 2 }}>
+          {this.renderBadges()}
+          <View>
+            {times(usedBlocks).map(index => (
+              <Text
+                numberOfLines={1}
+                style={[styles.clientText, { lineHeight: 30, color: clientTextColor }]}
+              >
+                {clientName}
+              </Text>
+            ))}
+          </View>
+        </View>
       </View>
     );
   }
