@@ -29,10 +29,17 @@ const getClientsFailed = error => ({
 const getClients = (params = {
   fromAllStores: false,
   'nameFilter.FilterRule': 'none',
+  'NameFilter.SortOrder': 1,
+  'NameFilter.SortField': 'name',
 }) => (dispatch) => {
   dispatch({ type: GET_CLIENTS });
+  const newParams = {
+    ...params,
+    'NameFilter.SortOrder': 1,
+    'NameFilter.SortField': 'firstName',
+  };
   return apiWrapper.doRequest('getClients', {
-    query: params,
+    query: newParams,
   })
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));

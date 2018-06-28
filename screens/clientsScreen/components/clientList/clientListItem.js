@@ -75,40 +75,15 @@ const styles = StyleSheet.create({
 });
 
 class ClientListItem extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    const phones = props.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
-
-    this.state = {
-      client: props.client,
-      name: `${props.client.name} ${props.client.lastName}`,
-      boldWords: props.boldWords,
-      onPress: props.onPress,
-      email: props.client.email ? props.client.email : null,
-      phone: phones.length > 0 ? phones : null,
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const phones = nextProps.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
-
-
-    this.setState({
-      client: nextProps.client,
-      name: `${nextProps.client.name} ${nextProps.client.lastName}`,
-      email: nextProps.client.email ? nextProps.client.email : null,
-      phone: phones.length > 0 ? phones : null,
-      boldWords: nextProps.boldWords,
-      onPress: nextProps.onPress,
-    });
-  }
-
   render() {
+    const phones = this.props.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
+    const name = `${this.props.client.name} ${this.props.client.lastName}`;
+    const phone = phones.length > 0 ? phones : null;
+    const email = this.props.client.email ? this.props.client.email : null;
     return (
       <SalonTouchableHighlight
         style={styles.container}
-        underlayColor="transparent"
+        underlayColor="black"
         onPress={() => { this.props.onPress(this.props.client); }}
       >
         <View style={styles.container}>
@@ -120,31 +95,31 @@ class ClientListItem extends React.PureComponent {
                   highlightStyle={styles.highlightStyle}
                   style={styles.clientName}
                 >
-                  {this.state.name}
+                  {name}
                 </WordHighlighter>
               </View>
             </View>
             <View style={styles.bottomContainer}>
-              {this.state.phone &&
+              {phone &&
               <FontAwesome style={styles.phoneIconLeft}>{Icons.mobile}</FontAwesome>}
-              {this.state.phone &&
+              {phone &&
               <WordHighlighter
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientPhone}
               >
-                {this.state.phone}
+                {phone}
               </WordHighlighter>
 }
 
 
-              {this.state.email &&
+              {email &&
               <WordHighlighter
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientEmail}
               >
-                {this.state.email}
+                {email}
               </WordHighlighter>
 }
             </View>
