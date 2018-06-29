@@ -3,6 +3,7 @@ import React from 'react';
 import {
   View,
   StyleSheet,
+  TouchableHighlight
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
@@ -81,7 +82,7 @@ class ClientListItem extends React.PureComponent {
     const phone = phones.length > 0 ? phones : null;
     const email = this.props.client.email ? this.props.client.email : null;
     return (
-      <SalonTouchableHighlight
+      <TouchableHighlight
         style={styles.container}
         underlayColor="black"
         onPress={() => { this.props.onPress(this.props.client); }}
@@ -126,7 +127,7 @@ class ClientListItem extends React.PureComponent {
           </View>
 
         </View>
-      </SalonTouchableHighlight>
+      </TouchableHighlight>
     );
   }
 }
