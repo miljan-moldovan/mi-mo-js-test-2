@@ -552,6 +552,7 @@ const Icons = {
   renren: '\uf18b',
   reorder: '\uf0c9',
   repeat: '\uf01e',
+  repeatAlt: '\uf364',
   reply: '\uf112',
   replyAll: '\uf122',
   resistance: '\uf1d0',

@@ -56,47 +56,6 @@ const styles = StyleSheet.create({
 });
 
 class ClientList extends React.Component {
-  static compareByName(a, b) {
-    if (a.name < b.name) { return -1; }
-    if (a.name > b.name) { return 1; }
-    return 0;
-  }
-
-  static getByValue(arr, value, attr) {
-    for (let i = 0, iLen = arr.length; i < iLen; i += 1) {
-      if (arr[i][attr] === value) return arr[i];
-    }
-    return null;
-  }
-
-
-  static clients(clients) {
-    const clientsLetters = [];
-
-    // {data: [...], title: ...},
-
-    for (let i = 0; i < clients.length; i += 1) {
-      const client = clients[i];
-
-      let firstLetter = client.name.substring(0, 1).toUpperCase();
-      const isNumber = !isNaN(parseInt(firstLetter, 10));
-      firstLetter = isNumber ? '#' : firstLetter;
-
-
-      const result = ClientList.getByValue(
-        clientsLetters,
-        firstLetter, 'title',
-      );
-
-      if (result) {
-        result.data.push(client);
-      } else {
-        clientsLetters.push({ data: [client], title: firstLetter });
-      }
-    }
-
-    return clientsLetters;
-  }
 
   static renderSeparator() {
     return (<View
@@ -110,23 +69,11 @@ class ClientList extends React.Component {
 
 
   static renderSection(item) {
-    return (<View style={styles.topBar}>
-      <ClientListHeader header={item.section.title} />
-            </View>);
-  }
-
-
-  constructor(props) {
-    super(props);
-
-    const clients = props.clients.sort(ClientList.compareByName);
-
-    this.state = {
-      clients,
-      dataSource: ClientList.clients(clients),
-      letterGuide: [],
-      boldWords: props.boldWords,
-    };
+    return (
+      <View style={styles.topBar}>
+        <ClientListHeader header={item.section.title} />
+      </View>
+    );
   }
 
   componentWillMount() {
@@ -140,13 +87,6 @@ class ClientList extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    const clients = nextProps.clients.sort(ClientList.compareByName);
-    this.setState({
-      dataSource: ClientList.clients(clients),
-      boldWords: nextProps.boldWords,
-    });
-  }
 
       scrollToIndex = (letter) => {
         let total = 0;
@@ -154,7 +94,7 @@ class ClientList extends React.Component {
 
         for (let i = 0; i < abecedary.length; i += 1) {
           const letterClients = ClientList.getByValue(
-            this.state.dataSource,
+            this.props.clients,
             abecedary[i], 'title',
           );
 
@@ -179,7 +119,7 @@ class ClientList extends React.Component {
         <View key={Math.random().toString()} style={{ height: ITEM_HEIGHT }}>
           <ClientListItem
             client={obj.item}
-            boldWords={this.state.boldWords}
+            boldWords={this.props.boldWords}
             onPress={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
           />
         </View>)
@@ -187,11 +127,12 @@ class ClientList extends React.Component {
       renderLetterGuide = () => {
         const clientsLetters = [];
 
-        for (let i = 0; i < this.state.clients.length; i += 1) {
-          const client = this.state.clients[i];
-          if (clientsLetters.indexOf(client.name.substring(0, 1).toUpperCase()) === -1) {
-            clientsLetters.push(client.name.substring(0, 1).toUpperCase());
-          }
+        for (let i = 0; i < this.props.clients.length; i += 1) {
+          const letter = this.props.clients[i].title;
+          clientsLetters.push(letter.toUpperCase());
+          // if (clientsLetters.indexOf(client.name.substring(0, 1).toUpperCase()) === -1) {
+          //   clientsLetters.push(client.name.substring(0, 1).toUpperCase());
+          // }
         }
 
         const letterGuide = [];
@@ -225,9 +166,9 @@ class ClientList extends React.Component {
               key={Math.random().toString()}
               enableEmptySections
               keyboardShouldPersistTaps="always"
-              initialNumToRender={this.state.dataSource.length}
+              initialNumToRender={this.props.clients.length}
               ref={(ref) => { this.sectionListRef = ref; }}
-              sections={this.state.dataSource}
+              sections={this.props.clients}
               renderItem={this.renderItem}
               stickySectionHeadersEnabled
               getItemLayout={(data, index) => (
@@ -239,7 +180,7 @@ class ClientList extends React.Component {
               refreshing={this.props.refreshing}
             />
 
-            {this.state.dataSource.length > 0 ? <ListLetterFilter
+            {this.props.clients.length > 0 ? <ListLetterFilter
               onPress={(letter) => { this.scrollToIndex(letter); }}
             /> : null }
           </View>

@@ -40,6 +40,7 @@
     "redux": "^3.7.2",
     "redux-persist": "4.10.2",
     "redux-thunk": "2.2.0",
+    "reselect": "3.0.1",
     "rn-sliding-up-panel": "1.2.0",
     "shouldcomponentupdate-children": "1.1.0",
     "url-parse": "^1.4.0",

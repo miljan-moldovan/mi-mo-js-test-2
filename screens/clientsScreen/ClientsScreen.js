@@ -180,11 +180,6 @@ class ClientsScreen extends React.Component {
     return matches;
   }
 
-  // componentWillMount() {
-  //   //this.props.salonSearchHeaderActions.setShowFilter(false);
-  //   this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
-  // }
-
   constructor(props) {
     super(props);
     this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch(), ignoreNav: false });
@@ -237,7 +232,7 @@ class ClientsScreen extends React.Component {
     const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
     if (dismissOnSelect) {
-      this.props.salonSearchHeaderActions.setShowFilter(false); 
+      this.props.salonSearchHeaderActions.setShowFilter(false);
       this.props.navigation.goBack();
     }
   }
@@ -298,19 +293,10 @@ class ClientsScreen extends React.Component {
           <ClientList
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.clientListContainer}
-              clients={this.props.clientsState.clients}
+              clients={this.props.clientsSectionDataSource}
               onChangeClient={onChangeClient}
               refreshing={this.props.salonSearchHeaderState.isLoading}
             />
-
-          {/* { this.props.salonSearchHeaderState.showFilter ?
-            <ClientSuggestions
-              {...this.props}
-              onPressItem={this.onPressItem}
-              list={this.props.clientsState.suggestionsList}
-            /> : null
-            } */}
-
         </View>
 
       </View>
