@@ -14,6 +14,7 @@ import apiWrapper from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonToast from './SalonToast';
+import NewApptSlide from '../../../components/slidePanels/NewApptSlide';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -366,6 +367,15 @@ export default class AppointmentScreen extends Component {
           />
         )}
 
+        <NewApptSlide
+          navigation={this.props.navigation}
+          visible
+          hide={() => {
+            this.setState({ visibleNewAppointment: false });
+          }}
+          show={() => this.setState({ visibleNewAppointment: true })}
+        />
+
         <SalonDatePickerSlide
           mode={pickerMode}
           visible={this.state.visible}
@@ -405,7 +415,7 @@ export default class AppointmentScreen extends Component {
           client={this.props.newAppointmentState.client}
           provider={this.props.newAppointmentState.bookedByEmployee}
           service={this.props.newAppointmentState.service}
-          visible={this.state.visibleNewAppointment}
+          visible={false}
           onHide={() => {
             this.setState({ visibleNewAppointment: false });
           }}
