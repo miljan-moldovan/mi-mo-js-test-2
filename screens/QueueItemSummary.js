@@ -337,7 +337,6 @@ render() {
 
   const { translateYAnim } = this.state;
 
-
   if (this.state.isVisible) {
     return (
       <Modal

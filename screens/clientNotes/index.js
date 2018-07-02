@@ -5,7 +5,7 @@ import ClientNoteScreen from './components/clientNoteScreen';
 
 const mapStateToProps = state => ({
   clientsState: state.clientsReducer,
-  appointmentNotesState: state.appointmentNotesReducer,
+  appointmentNotesState: state.formulasAndNotesReducer,
 });
 
 const mapActionsToProps = dispatch => ({
