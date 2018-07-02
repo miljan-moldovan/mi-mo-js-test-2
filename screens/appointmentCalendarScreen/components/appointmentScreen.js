@@ -86,7 +86,7 @@ export default class AppointmentScreen extends Component {
   state = {
     visible: false,
     newAppointmentFilter: 0,
-    visibleNewAppointment: false,
+    visibleNewAppointment: true,
     visibleAppointment: false,
     isLoading: true,
     bufferVisible: false,
@@ -369,7 +369,7 @@ export default class AppointmentScreen extends Component {
 
         <NewApptSlide
           navigation={this.props.navigation}
-          visible
+          visible={this.state.visibleNewAppointment}
           hide={() => {
             this.setState({ visibleNewAppointment: false });
           }}

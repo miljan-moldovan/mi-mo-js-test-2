@@ -20,6 +20,7 @@ import {
 } from '../formHelpers';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
+import Icon from '../UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
@@ -89,6 +90,76 @@ const Button = props => (
   </SalonTouchableOpacity>
 );
 
+const Addon = props => (
+  <SalonTouchableOpacity
+    style={{
+      height: 39,
+      flexDirection: 'row',
+      paddingLeft: 11,
+      paddingRight: 16,
+    }}
+  >
+    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+      <Icon
+        style={{
+          marginRight: 10,
+          transform: [{ rotate: '90deg' }],
+        }}
+        name="levelUp"
+        type="regular"
+        color="black"
+        size={12}
+      />
+      <Text
+        style={{
+          fontSize: 14,
+          lineHeight: 22,
+          color: '#110A24',
+        }}
+        numberOfLines={1}
+      >Add-on Keratin Treatment
+      </Text>
+      <View style={{
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: 'white',
+        padding: 5,
+        marginLeft: 10,
+      }}
+      >
+        <Text style={{
+          fontSize: 12,
+          color: '#115ECD',
+          fontFamily: 'Roboto-Bold',
+        }}
+        >+211
+        </Text>
+      </View>
+    </View>
+    <View style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+    }}
+    >
+      <Text style={{
+        fontSize: 12,
+        lineHeight: 18,
+        color: '#727A8F',
+        opacity: 0.9,
+        marginRight: 10,
+      }}
+      >
+        30 min
+      </Text>
+      <Icon
+        name="angleRight"
+        type="light"
+        color="#115ECD"
+        size={24}
+      />
+    </View>
+  </SalonTouchableOpacity>
+);
 export default class NewApptSlide extends React.Component {
   constructor(props) {
     super(props);
@@ -182,11 +253,12 @@ export default class NewApptSlide extends React.Component {
               borderTopColor: 'transparent',
               borderColor: '#F4F7FC',
               borderWidth: 1,
-              marginVertical: 15,
+              marginTop: 15,
               shadowColor: '#000000',
               shadowOpacity: 0.2,
               shadowRadius: 2,
               elevation: 1,
+              zIndex: 2,
               shadowOffset: { width: 0, height: 2 },
               backgroundColor: '#F3F7FC',
             }}
@@ -245,6 +317,46 @@ export default class NewApptSlide extends React.Component {
                   headerProps={{ title: 'Providers', ...this.cancelButton() }}
                   onChange={this.setProvider}
                 />
+              </View>
+              <View style={{
+                marginHorizontal: 1,
+                backgroundColor: '#F1F1F1',
+                borderBottomLeftRadius: 4,
+                borderBottomRightRadius: 4,
+                paddingBottom: 9,
+                paddingHorizontal: 8,
+                marginBottom: 15,
+              }}
+              >
+                <Text style={{
+                  fontSize: 9,
+                  lineHeight: 22,
+                  color: '#727A8F',
+                  // opacity: 0.5,
+                }}
+                >ADD-ONS / RECOMMENDED / REQUIRED
+                </Text>
+                <View style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 4,
+                  borderBottomColor: 'transparent',
+                  borderTopColor: 'transparent',
+                  borderColor: '#F4F7FC',
+                  borderWidth: 1,
+                  shadowColor: '#000000',
+                  shadowOpacity: 0.2,
+                  shadowRadius: 2,
+                  elevation: 1,
+                  zIndex: 2,
+                  shadowOffset: { width: 0, height: 2 },
+                  backgroundColor: '#F3F7FC',
+                }}
+                >
+                  <Addon />
+                  <InputDivider style={styles.middleSectionDivider} />
+                  <Addon />
+                </View>
               </View>
               <View style={{
               flexDirection: 'row',
