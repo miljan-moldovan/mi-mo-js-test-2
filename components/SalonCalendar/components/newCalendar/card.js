@@ -246,19 +246,21 @@ class Card extends Component {
     const serviceTextColor = '#1D1E29';
     const clientTextColor = '#2F3142';
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-
+    const flexWrap = this.state.height._value > 28 ? { flexWrap: 'wrap' } : '';
     return (
       <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
         <View style={{ flexDirection: 'row', paddingHorizontal: 2 }}>
           {this.renderBadges()}
           <View>
-            <Text
-              numberOfLines={1}
-              style={[styles.clientText, { color: clientTextColor }]}
-            >
-              {clientName}
-            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <Text
+                numberOfLines={flexWrap ? 0 : 1}
+                style={[styles.clientText, { width: '100%', color: clientTextColor }, flexWrap]}
+              >
+                {clientName}dddddd
+              </Text>
+            </View>
             { usedBlocks > 1 && (
               <Text
                 numberOfLines={1}

@@ -165,6 +165,9 @@ class SalonSearchBar extends Component {
               onPress={
                 () => {
                   this.handleChange('');
+                  if (this.props.handleCancel) {
+                    this.props.handleCancel();
+                  }
                 }
               }
             >
