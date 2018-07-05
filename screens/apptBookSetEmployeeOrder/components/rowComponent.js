@@ -3,7 +3,7 @@ import { Animated, Platform, Text, StyleSheet, Easing } from 'react-native';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   row: {
@@ -102,7 +102,7 @@ export default class Row extends React.PureComponent {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: apiWrapper.getEmployeePhoto(data.id) }}
+          image={{ uri: getEmployeePhoto(data.id) }}
         />
         <Text style={styles.text}>{data.fullName}</Text>
         <Icon name="bars" size={14} color="#C0C1C6" type="regular" />

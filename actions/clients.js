@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Client} from '../utilities/apiWrapper';
 
 export const SET_CLIENTS = 'clients/SET_CLIENTS';
 export const SET_FILTERED_CLIENTS = 'clients/SET_FILTERED_CLIENTS';
@@ -38,9 +38,7 @@ const getClients = (params = {
     'NameFilter.SortOrder': 1,
     'NameFilter.SortField': 'firstName',
   };
-  return apiWrapper.doRequest('getClients', {
-    query: newParams,
-  })
+  return Client.getClients(newParams)
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));
 };
@@ -75,9 +73,7 @@ function setSuggestionsList(suggestionsList) {
 export const getMergeableClients = (clientId: string) => async (dispatch: Object => void) => {
   try {
     dispatch({ type: GET_MERGEABLE_CLIENTS });
-    const mergeableClients = await apiWrapper.doRequest('getMergeableClients', {
-      path: { id: clientId },
-    });
+    const mergeableClients = await Client.getMergeableClients({ id: clientId });
     dispatch({ type: GET_MERGEABLE_CLIENTS_SUCCESS, data: { mergeableClients } });
   } catch (error) {
     dispatch({ type: GET_MERGEABLE_CLIENTS_FAILED, data: { error } });

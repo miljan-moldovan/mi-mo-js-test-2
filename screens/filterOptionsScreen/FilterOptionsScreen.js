@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import apiWrapper from '../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
@@ -257,7 +257,7 @@ export default class FilterOptionsScreen extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
+          image={{ uri: getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
           highlight={this.state.searchText}

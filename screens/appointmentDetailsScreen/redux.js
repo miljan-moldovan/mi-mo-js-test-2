@@ -1,4 +1,4 @@
-import apiWrapper from '../../utilities/apiWrapper';
+import { Services} from '../../utilities/apiWrapper';
 
 export const SET_APPOINTMENT = 'appointmentDetails/SET_APPOINTMENT';
 export const ADD_SERVICE = 'appointmentDetails/ADD_SERVICE';
@@ -138,7 +138,7 @@ const fetchServiceError = error => ({
 const fetchService = (id, index) => (dispatch) => {
   dispatch({ type: FETCH_SERVICE });
 
-  return apiWrapper.doRequest('getService', { query: { id } })
+  return Services.getService(id)
     .then((service) => {
       dispatch(fetchServiceSuccess(service, index));
     })

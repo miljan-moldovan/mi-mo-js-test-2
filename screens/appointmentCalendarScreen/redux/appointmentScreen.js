@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { pick, omit, get, groupBy, orderBy, maxBy, minBy, times } from 'lodash';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { Store, AppointmentBook, Appointment, Employees } from '../../../utilities/apiWrapper';
 
 import { POST_APPOINTMENT_RESIZE,
   POST_APPOINTMENT_RESIZE_SUCCESS,
@@ -98,7 +98,7 @@ const setStoreWeeklySchedule = () => (dispatch) => {
   dispatch({
     type: SET_WEEKLY_SCHEDULE,
   });
-  apiWrapper.doRequest('getStoreWeeklySchedule', {}).then((weeklySchedule) => {
+  Store.getStoreWeeklySchedule().then((weeklySchedule) => {
     dispatch(setStoreWeeklyScheduleSuccess(weeklySchedule));
   }).catch((ex) => {
     // TODO
@@ -184,27 +184,10 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     case 'providers': {
       if (selectedProvider === 'all') {
         Promise.all([
-          apiWrapper.doRequest('getAppointmentBookEmployees', {
-            path: {
-              date,
-            },
-            query: serializeFilterOptions(filterOptions),
-          }),
-          apiWrapper.doRequest('getAppointmentsByDate', {
-            path: {
-              date,
-            },
-          }),
-          apiWrapper.doRequest('getAppointmentBookAvailability', {
-            path: {
-              date,
-            },
-          }),
-          apiWrapper.doRequest('getBlockTimes', {
-            path: {
-              date,
-            },
-          }),
+          AppointmentBook.getAppointmentBookEmployees(date, filterOptions),
+          Appointment.getAppointmentsByDate(date),
+          AppointmentBook.getAppointmentBookAvailability(date),
+          AppointmentBook.getBlockTimes(date),
         ])
           .then(([employees, appointments, availabilityItem, blockTimes]) => {
             let filteredEmployees = employees;
@@ -230,12 +213,12 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           case 'week': {
             const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
             Promise.all([
-              apiWrapper.doRequest('getEmployeeScheduleRange', {
-                path: { id: selectedProvider.id, startDate: startDate.format('YYYY-MM-DD'), endDate: dateTo },
+              Employees.getEmployeeScheduleRange({
+                id: selectedProvider.id,
+                startDate: startDate.format('YYYY-MM-DD'),
+                endDate: dateTo,
               }),
-              apiWrapper.doRequest('getEmployeeAppointments', {
-                path: { id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo },
-              }),
+              Employees.getEmployeeAppointments({ id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo }),
             ])
               .then(([providerSchedule, appointments]) => {
                 const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
@@ -261,23 +244,11 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     }
     case 'rooms': {
       Promise.all([
-        apiWrapper.doRequest('getRooms', {}),
-        apiWrapper.doRequest('getStoreSchedule', {
-          path: { date },
-        }),
-        apiWrapper.doRequest('getRoomAppointments', {
-          path: { date },
-        }),
-        apiWrapper.doRequest('getAppointmentsByDate', {
-          path: {
-            date,
-          },
-        }),
-        apiWrapper.doRequest('getAppointmentBookAvailability', {
-          path: {
-            date,
-          },
-        }),
+        Store.getRooms(),
+        AppointmentBook.getStoreSchedule(date),
+        AppointmentBook.getRoomAppointments(date),
+        Appointment.getAppointmentsByDate(date),
+        AppointmentBook.getAppointmentBookAvailability(date),
       ])
         .then(([rooms, schedule, roomAppointments, appointments, availability]) => {
           const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
@@ -296,23 +267,11 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     }
     case 'resources': {
       Promise.all([
-        apiWrapper.doRequest('getResources', {}),
-        apiWrapper.doRequest('getStoreSchedule', {
-          path: { date },
-        }),
-        apiWrapper.doRequest('getResourceAppointments', {
-          path: { date },
-        }),
-        apiWrapper.doRequest('getAppointmentsByDate', {
-          path: {
-            date,
-          },
-        }),
-        apiWrapper.doRequest('getAppointmentBookAvailability', {
-          path: {
-            date,
-          },
-        }),
+        Store.getResources(),
+        AppointmentBook.getStoreSchedule(date),
+        AppointmentBook.getResourceAppointments(date),
+        Appointment.getAppointmentsByDate(date),
+        AppointmentBook.getAppointmentBookAvailability(date),
       ])
         .then(([resources, schedule, resourceAppointments, appointments, availability]) => {
           const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());

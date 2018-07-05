@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
-import apiWrapper from '../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../utilities/apiWrapper';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -285,7 +285,7 @@ class ProviderScreen extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
+          image={{ uri: getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
           highlight={this.state.searchText}
@@ -366,7 +366,7 @@ class ProviderScreen extends React.Component {
                   width={30}
                   borderWidth={1}
                   borderColor="transparent"
-                  image={{ uri: apiWrapper.getEmployeePhoto(0) }}
+                  image={{ uri: getEmployeePhoto(0) }}
                 />
                 <Text style={styles.providerName}>First Available</Text>
               </View>

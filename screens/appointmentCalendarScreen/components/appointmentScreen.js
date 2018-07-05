@@ -10,7 +10,7 @@ import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePicke
 import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonToast from './SalonToast';
@@ -57,7 +57,7 @@ export default class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: apiWrapper.getEmployeePhoto(params.filterProvider.id) }}
+            image={{ uri: getEmployeePhoto(params.filterProvider.id) }}
           />
           <Text style={{
           fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',

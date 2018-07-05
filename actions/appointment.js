@@ -1,5 +1,5 @@
 import moment from 'moment';
-import apiWrapper from '../utilities/apiWrapper';
+import { Appointment } from '../utilities/apiWrapper';
 
 export const ADD_APPOINTMENT = 'appointment/ADD_APPOINTMENT';
 export const GET_APPOINTMENTS = 'appointment/GET_APPOINTMENTS';
@@ -51,46 +51,24 @@ const postAppointmentResizeFailed = error => ({
 
 const getAppoinments = date => (dispatch) => {
   dispatch({ type: GET_APPOINTMENTS });
-  return apiWrapper.doRequest('getAppointmentsByDate', {
-    path: {
-      date,
-    },
-  })
+  return Appointment.getAppointmentsByDate(date)
     .then(response => dispatch(getAppointmentsSuccess(response)))
     .catch(error => dispatch(getAppointmentsFailed(error)));
 };
 
 const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_MOVE });
-  return apiWrapper.doRequest('postAppointmentMove', {
-    path: {
-      appointmentId,
-    },
-    body: {
-      ...params,
-    },
-  })
-    .then(response => apiWrapper.doRequest('getAppointmentsById', {
-      path: {
-        id: appointmentId,
-      }}).then(resp => dispatch(postAppointmentMoveSuccess(resp, oldAppointment))))
+  return Appointment.postAppointmentMove(appointmentId, params)
+    .then(response => Appointment.getAppointmentsById(appointmentId)
+      .then(resp => dispatch(postAppointmentMoveSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
 
 const postAppointmentResize = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_RESIZE });
-  return apiWrapper.doRequest('postAppointmentResize', {
-    path: {
-      appointmentId,
-    },
-    body: {
-      ...params,
-    },
-  }).then(response => apiWrapper.doRequest('getAppointmentsById', {
-    path: {
-      id: appointmentId,
-    }
-  }).then(resp => dispatch(postAppointmentResizeSuccess(resp, oldAppointment))))
+  return Appointment.postAppointmentResize(appointmentId, params)
+    .then(response => Appointment.getAppointmentsById(appointmentId)
+      .then(resp => dispatch(postAppointmentResizeSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };
 
@@ -120,7 +98,6 @@ const undoMove = () => (dispatch, getState) => {
     default:
       break;
   }
-
 };
 
 

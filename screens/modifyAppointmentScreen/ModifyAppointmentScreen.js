@@ -33,7 +33,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
-import apiWrapper from '../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -160,7 +160,7 @@ const SalonAppointmentTime = props => (
 );
 
 const ServiceCard = ({ data, ...props }) => {
-  const employeePhoto = apiWrapper.getEmployeePhoto(!data.employee.isFirstAvailable ? data.employee.id : 0);
+  const employeePhoto = getEmployeePhoto(!data.employee.isFirstAvailable ? data.employee.id : 0);
   return (
     <SalonCard
       bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}

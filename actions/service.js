@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Services } from '../utilities/apiWrapper';
 
 export const SET_SERVICES = 'services/SET_SERVICES';
 export const SET_FILTERED_SERVICES = 'services/SET_FILTERED_SERVICES';
@@ -28,7 +28,7 @@ const getServices = (params, filterByProvider = false, filterProvider = null) =>
     // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
   }
 
-  return apiWrapper.doRequest('getServiceTree', params)
+  return Services.getServiceTree(params)
     .then(response => dispatch(getServicesSuccess(response)))
     .catch(error => dispatch(getServicesFailed(error)));
 };

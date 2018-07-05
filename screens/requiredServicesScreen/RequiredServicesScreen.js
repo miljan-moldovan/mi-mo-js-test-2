@@ -9,7 +9,7 @@ import {
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Services } from '../../utilities/apiWrapper';
 
 
 const styles = StyleSheet.create({
@@ -91,7 +91,7 @@ export default class RequiredServicesScreen extends React.Component {
     }
   }
 
-  getService = id => apiWrapper.doRequest('getService', { path: { id } })
+  getService = id => Services.getService(id)
 
   handlePressRow = (item) => {
     const params = this.props.navigation.state.params || {};
