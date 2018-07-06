@@ -258,7 +258,7 @@ class Card extends Component {
                 numberOfLines={flexWrap ? 0 : 1}
                 style={[styles.clientText, { width: '100%', color: clientTextColor }, flexWrap]}
               >
-                {clientName}dddddd
+                {clientName}
               </Text>
             </View>
             { usedBlocks > 1 && (
