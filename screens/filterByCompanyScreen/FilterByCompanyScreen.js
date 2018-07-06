@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import apiWrapper from '../../utilities/apiWrapper';
+import { Store } from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -130,7 +130,7 @@ export default class FilterByCompanyScreen extends React.Component {
 
   getData = () => {
     this.setState({ isLoading: true });
-    apiWrapper.doRequest('getCompanies', {})
+    Store.getCompanies()
       .then(companies => this.setState({ isLoading: false, companies, activeData: companies }))
       .catch((err) => {
         console.warn(err);

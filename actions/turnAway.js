@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { TurnAway } from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
 
 export const SET_ON_EDITION_TURN_AWAY = 'turnAway/SET_ON_EDITION_TURN_AWAY';
@@ -27,10 +27,8 @@ const postTurnAwayFailed = error => ({
 
 const postTurnAway = turnAway => (dispatch) => {
   dispatch({ type: POST_TURN_AWAY });
-  
-  return apiWrapper.doRequest('postTurnAway', {
-    body: turnAway,
-  })
+
+  return TurnAway.postTurnAway(turnAway)
     .then(response =>
     //  dispatch(purgeForm('TurnAwayScreenNew', clientId.toString()));
       dispatch(postTurnAwaySuccess(response)))

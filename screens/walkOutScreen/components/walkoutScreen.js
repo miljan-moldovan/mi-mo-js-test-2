@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import reasonTypeModel from '../../../utilities/models/reasonType';
 import fetchFormCache from '../../../utilities/fetchFormCache';
 import SalonAvatar from '../../../components/SalonAvatar';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import {
   InputDivider,
@@ -296,7 +296,7 @@ class WalkoutScreen extends Component {
                 width={30}
                 borderWidth={1}
                 borderColor="transparent"
-                image={{ uri: apiWrapper.getEmployeePhoto(!service.isFirstAvailable ? service.employeeId : 0) }}
+                image={{ uri: getEmployeePhoto(!service.isFirstAvailable ? service.employeeId : 0) }}
               />
               <Text style={styles.textData}>{fullName}</Text>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>

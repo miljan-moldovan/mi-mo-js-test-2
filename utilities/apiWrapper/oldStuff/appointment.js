@@ -39,6 +39,11 @@ const resources = {
     method: 'post',
     disableCache: true,
   },
+  getApptAudit: {
+    path: 'Appointment/:id/Audit',
+    method: 'get',
+    disableCache: true,
+  },
 };
 
 export default {

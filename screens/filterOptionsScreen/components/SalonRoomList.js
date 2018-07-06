@@ -8,7 +8,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import WordHighlighter from '../../../components/wordHighlighter';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { Store } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
@@ -79,7 +79,7 @@ export default class SalonRoomList extends React.Component {
   onRefresh = () => this.getData();
 
   getData = () => {
-    apiWrapper.doRequest('getRooms', {})
+    Store.getRooms()
       .then((rooms) => {
         this.setState({ rooms });
       })

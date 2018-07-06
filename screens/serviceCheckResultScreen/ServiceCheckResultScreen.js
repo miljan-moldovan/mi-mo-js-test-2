@@ -16,7 +16,7 @@ import {
   ServiceInput,
   InputDivider,
 } from '../../components/formHelpers';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Services, getEmployeePhoto } from '../../utilities/apiWrapper';
 import Icon from '../../components/UI/Icon';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -138,11 +138,9 @@ export default class ServiceCheckResultScreen extends React.Component {
   }
 
   componentDidMount() {
-    apiWrapper.doRequest('getServiceEmployeeCheck', {
-      path: {
-        serviceId: this.state.selectedService.id,
-        employeeId: this.state.selectedProvider.id,
-      },
+    Services.getServiceEmployeeCheck({
+      serviceId: this.state.selectedService.id,
+      employeeId: this.state.selectedProvider.id,
     })
       .then(result => this.setState({ result, isLoading: false }))
       .catch((err) => {
@@ -200,7 +198,7 @@ export default class ServiceCheckResultScreen extends React.Component {
                     width={30}
                     borderWidth={1}
                     borderColor="transparent"
-                    image={{ uri: apiWrapper.getEmployeePhoto(result.employeeId) }}
+                    image={{ uri: getEmployeePhoto(result.employeeId) }}
                   />
                   <Text style={{
                       color: '#110A24',

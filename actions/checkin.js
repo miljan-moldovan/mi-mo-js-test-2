@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { QueueStatus } from '../utilities/apiWrapper';
 
 export const PUT_CHECK_IN = 'checkIn/PUT_CHECK_IN';
 export const PUT_CHECK_IN_SUCCESS = 'checkIn/PUT_CHECK_IN_SUCCESS';
@@ -16,11 +16,7 @@ const putCheckinFailed = error => ({
 
 const putCheckin = clientQueueItemId => (dispatch) => {
   dispatch({ type: PUT_CHECK_IN });
-  return apiWrapper.doRequest('putCheckIn', {
-    path: {
-      clientQueueItemId,
-    },
-  })
+  return QueueStatus.putCheckIn(clientQueueItemId)
     .then(response => dispatch(putCheckinSuccess(response)))
     .catch(error => dispatch(putCheckinFailed(error)));
 };

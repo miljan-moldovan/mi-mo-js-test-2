@@ -10,7 +10,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import WordHighlighter from '../../../components/wordHighlighter';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { Employees } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonAvatar from '../../../components/SalonAvatar';
 
@@ -84,7 +84,7 @@ export default class DeskStaffTab extends React.Component {
 
   getData = () => {
     this.setState({ isLoading: true });
-    apiWrapper.doRequest('getEmployees', {})
+    Employees.getEmployees()
       .then((providers) => {
         const filtered = providers.filter(provider => provider.isReceptionist);
         this.setState({ isLoading: false, activeData: filtered, deskStaff: filtered });
@@ -117,7 +117,7 @@ export default class DeskStaffTab extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: apiWrapper.getEmployeePhoto(item.id) }}
+          image={{ uri: Employees.getEmployeePhoto(item.id) }}
         />
         <WordHighlighter
           highlight={this.props.searchText}

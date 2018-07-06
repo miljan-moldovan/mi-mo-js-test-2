@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Services } from '../../utilities/apiWrapper';
 
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 
@@ -46,7 +46,7 @@ export default class SalonServiceList extends React.Component {
   }
 
   componentWillMount() {
-    apiWrapper.doRequest('getServiceTree', {})
+    Services.getServiceTree()
       .then((services) => {
         this.setState({ services });
       })

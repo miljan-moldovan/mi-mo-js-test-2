@@ -10,7 +10,7 @@ import sectionString from './sectionString';
 
 let textIndex = 0;
 
-export default class WordHighlighter extends React.Component {
+export default class WordHighlighter extends React.PureComponent {
   constructor(props) {
     super(props);
   }

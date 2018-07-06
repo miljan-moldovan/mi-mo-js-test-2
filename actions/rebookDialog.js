@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { AppointmentBook } from '../utilities/apiWrapper';
 import apiConstants from '../utilities/apiWrapper/apiConstants';
 import { storeForm, purgeForm } from './formCache';
 
@@ -22,12 +22,7 @@ const postRebookFailed = error => ({
 
 const postRebook = (appointmentId, rebook) => (dispatch) => {
   dispatch({ type: POST_REBOOK });
-  return apiWrapper.doRequest('postAppointmentBookRebook', {
-    path: {
-      appointmentId,
-    },
-    body: rebook,
-  })
+  return AppointmentBook.postAppointmentBookRebook(appointmentId, rebook)
     .then((response) => {
       dispatch(purgeForm('RebookScreen', appointmentId.toString()));
       return dispatch(postRebookSuccess(response));

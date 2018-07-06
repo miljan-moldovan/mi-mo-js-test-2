@@ -1,7 +1,7 @@
 import moment, { updateLocale } from 'moment';
 import { get, isNil } from 'lodash';
 
-import apiWrapper from '../utilities/apiWrapper';
+import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
 } from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
@@ -93,8 +93,8 @@ export function serializeApptToRequestData(appt, extraServices) {
     // displayColor: appt.displayColor,
     clientInfo: {
       id: get(appt.client, 'id'),
-      email: appt.client.email,
-      phones: appt.client.phones,
+      email: appt.client.email || '',
+      phones: appt.client.phones || [],
       // confirmationType: appt.client.confirmationType
     },
     items: filteredServices.map(srv => serializeNewApptItem(appt, srv)),
@@ -217,9 +217,7 @@ const checkConflicts = (appt = false, multipleClients = false, callback = false)
     conflictData.items.push(formattedItem);
   });
 
-  apiWrapper.doRequest('checkConflicts', {
-    body: conflictData,
-  })
+  AppointmentBook.postCheckConflicts(conflictData)
     .then(data => dispatch(checkConflictsSuccess(data, callback)))
     .catch(err => dispatch(checkConflictsFailed(err)));
 };
@@ -255,9 +253,7 @@ const quickBookAppt = callback => (dispatch, getState) => {
   const bookCallback = () => {
     const requestBody = serializeApptToRequestData(newAppt, []);
     dispatch({ type: BOOK_NEW_APPT });
-    return apiWrapper.doRequest('postNewAppointment', {
-      body: requestBody,
-    })
+    return Appointment.postNewAppointment(requestBody)
       .then((res) => {
         dispatch({
           type: ADD_APPOINTMENT,
@@ -413,9 +409,7 @@ const bookNewAppt = appt => (dispatch) => {
   const requestBody = serializeApptToRequestData(appt, []);
   dispatch({ type: BOOK_NEW_APPT });
   return new Promise((resolve, reject) => {
-    apiWrapper.doRequest('postNewAppointment', {
-      body: requestBody,
-    })
+    Appointment.postNewAppointment(requestBody)
       .then((res) => {
         resolve(res);
       })

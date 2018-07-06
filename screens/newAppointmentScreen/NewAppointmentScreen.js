@@ -919,7 +919,7 @@ export default class NewAppointmentScreen extends React.Component {
     return items;
   }
 
-  renderExtraClientButtons = (isDisabled) => ([
+  renderExtraClientButtons = isDisabled => ([
     <SalonTouchableOpacity
       disabled={isDisabled}
       key={Math.random().toString()}

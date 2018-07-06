@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -100,17 +101,17 @@ class ServicesScreen extends React.Component {
 
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
     const { title } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
 
     return {
       header: props => (<SalonSearchHeader
@@ -155,54 +156,26 @@ class ServicesScreen extends React.Component {
   constructor(props) {
     super(props);
     this.getServices();
-  }
-
-  getServices = (callback) => {
-    this.props.servicesActions.setShowCategoryServices(false);
     const params = this.props.navigation.state.params || {};
-    const clientId = params.clientId || false;
-    const employeeId = params.employeeId || false;
-    const filterByProvider = params.filterByProvider || false;
+    const selectedService = params.selectedService || null;
 
-    const opts = {
-      query: {},
-    };
-    if (clientId) {
-      opts.query.clientId = clientId;
-    }
-    if (employeeId) {
-      opts.query.employeeId = employeeId;
-    }
+    this.props.servicesActions.setSelectedService(selectedService);
 
-    this.props.servicesActions.getServices(opts, filterByProvider).then((services) => {
-      if (!services) {
-        this.goBack();
-      } else {
-        const filtered = services.reduce((filtered, category) => {
-          if (category.services && category.services.length) {
-            const filteredServices = category.services.filter(service => !service.isAddon);
-            if (filteredServices.length > 0) {
-              return [...filtered, { ...category, services: filteredServices }];
-            }
-          }
-
-          return filtered;
-        }, []);
-
-        this.props.servicesActions.setServices(filtered);
-        this.props.servicesActions.setFilteredServices(filtered);
-        if (callback) {
-          callback();
-        }
-      }
-    }).catch((error) => {
-      this.goBack();
+    this.props.navigation.setParams({
+      selectedService,
+      ignoreNav: false,
+      defaultProps: this.state.defaultHeaderProps,
     });
   }
 
   state = {
+    hasViewedAddons: false,
+    hasViewedRecommended: false,
+    hasViewedRequired: false,
+    selectedAddons: [],
+    selectedRecommendeds: [],
+    selectedRequired: null,
     prevHeaderProps: {
-
     },
     headerProps: {
       title: 'Services',
@@ -219,11 +192,26 @@ class ServicesScreen extends React.Component {
   }
 
   componentWillMount() {
-    const selectedService = this.props.navigation.state.params ? this.props.navigation.state.params.selectedService : null;
+  }
 
-    this.props.servicesActions.setSelectedService(selectedService);
+  getServices = () => {
+    this.props.servicesActions.setShowCategoryServices(false);
+    const params = this.props.navigation.state.params || {};
+    const clientId = params.clientId || false;
+    const employeeId = params.employeeId || false;
+    const filterByProvider = params.filterByProvider || false;
 
-    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false, selectedService });
+    const opts = {
+      query: {},
+    };
+    if (clientId) {
+      opts.query.clientId = clientId;
+    }
+    if (employeeId) {
+      opts.query.employeeId = employeeId;
+    }
+
+    this.props.servicesActions.getServices(opts, filterByProvider);
   }
 
   setHeaderData(props, ignoreNav = false) {
@@ -245,13 +233,137 @@ class ServicesScreen extends React.Component {
   }
 
   handleOnChangeService = (service) => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
-    }
-    const { onChangeService, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeService) { onChangeService(service); }
+    // const params = this.props.navigation.state.params || {};
+    // const {
+    //   onChangeService = false,
+    //   dismissOnSelect = false,
+    //   selectExtraServices = false,
+    // } = params;
 
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
+    // if (selectExtraServices && !this.shouldSelectExtras()) {
+    //   if (onChangeService) {
+    //     onChangeService(service);
+    //   }
+    //   if (dismissOnSelect) {
+    //     this.props.navigation.goBack();
+    //   }
+    // }
+    this.props.servicesActions.setSelectedService(service);
+    this.setState({
+      isLoading: true,
+      selectedService: service,
+    }, () => {
+      this.selectRequiredService()
+        .selectRecommendedServices()
+        .selectAddonServices()
+        .shouldPerformOnChange();
+    });
+  }
+
+  shouldPerformOnChange = () => {
+    const params = this.props.navigation.state.params || {};
+    const {
+      onChangeService = false,
+      dismissOnSelect = false,
+      selectExtraServices = false,
+    } = params;
+    const {
+      hasViewedAddons,
+      hasViewedRecommended,
+      hasViewedRequired,
+      selectedAddons,
+      selectedRequired,
+      selectedRecommendeds,
+    } = this.state;
+    const { selectedService } = this.props.servicesState;
+
+    if (onChangeService && !this.shouldSelectExtras()) {
+      onChangeService(selectExtraServices ? {
+        service: selectedService,
+        addons: selectedAddons,
+        recommended: selectedRecommendeds,
+        required: selectedRequired,
+      } : selectedService);
+
+      if (dismissOnSelect) {
+        this.props.navigation.goBack();
+      }
+    }
+
+    return this;
+  }
+
+  shouldSelectExtras = () => {
+    const { selectedService } = this.props.servicesState;
+    const {
+      addons = [],
+      requiredServices = [],
+      recommendedServices = [],
+    } = selectedService || {};
+    const {
+      hasViewedAddons,
+      hasViewedRequired,
+      hasViewedRecommended,
+    } = this.state;
+
+    if (!hasViewedAddons && addons.length > 0) {
+      return true;// this.selectAddonServices().shouldSelectExtras();
+    }
+    if (!hasViewedRecommended && recommendedServices.length > 0) {
+      return true;// this.selectRecommendedServices().shouldSelectExtras();
+    }
+    if (!hasViewedRequired && requiredServices.length > 0) {
+      return true;// this.selectRequiredService().shouldSelectExtras();
+    }
+
+    return false;
+  }
+
+  selectRequiredService = () => {
+    const { selectedService } = this.props.servicesState;
+    if (selectedService && selectedService.requiredServices.length > 0) {
+      this.props.navigation.navigate('RequiredServices', {
+        serviceTitle: selectedService.name,
+        services: selectedService.requiredServices,
+        onSave: selectedRequired => this.setState({
+          selectedRequired,
+          hasViewedRequired: true,
+        }, this.shouldPerformOnChange),
+      });
+    }
+
+    return this;
+  }
+
+  selectAddonServices = () => {
+    const { selectedService } = this.props.servicesState;
+    // debugger//eslint-disable-line
+    if (selectedService && selectedService.addons.length > 0) {
+      this.props.navigation.navigate('AddonServices', {
+        serviceTitle: selectedService.name,
+        services: selectedService.addons,
+        onSave: selectedAddons => this.setState({
+          selectedAddons,
+          hasViewedAddons: true,
+        }, this.shouldPerformOnChange),
+      });
+    }
+    return this;
+  }
+
+  selectRecommendedServices = () => {
+    const { selectedService } = this.props.servicesState;
+    if (selectedService && selectedService.recommendedServices.length > 0) {
+      this.props.navigation.navigate('RecommendedServices', {
+        serviceTitle: selectedService.name,
+        services: selectedService.recommendedServices,
+        onSave: selectedRecommendeds => this.setState({
+          selectedRecommendeds,
+          hasViewedRecommended: true,
+        }, this.shouldPerformOnChange),
+      });
+    }
+    return this;
   }
 
   filterServices = (searchText) => {
@@ -285,12 +397,6 @@ class ServicesScreen extends React.Component {
     });
   }
 
-  onPressItem = (item) => {
-    this.props.salonSearchHeaderActions.setSearchText(item);
-    this.filterServices(item);
-    this.props.salonSearchHeaderActions.setShowFilter(false);
-  }
-
   filterList = (searchText) => {
     this.props.servicesActions.setShowCategoryServices(false);
     this.filterServices(searchText);
@@ -300,14 +406,15 @@ class ServicesScreen extends React.Component {
     this.setHeaderData({
       title: item.name,
       subTitle: null,
-      leftButton:
-  <SalonTouchableOpacity style={styles.leftButton} onPress={() => { this.goBack(); }}>
-    <View style={styles.leftButtonContainer}>
-      <Text style={styles.leftButtonText}>
-        <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-      </Text>
-    </View>
-  </SalonTouchableOpacity>,
+      leftButton: (
+        <SalonTouchableOpacity style={styles.leftButton} onPress={() => { this.goBack(); }}>
+          <View style={styles.leftButtonContainer}>
+            <Text style={styles.leftButtonText}>
+              <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+            </Text>
+          </View>
+        </SalonTouchableOpacity>
+      ),
     }, true);
     this.props.servicesActions.setShowCategoryServices(true);
     this.props.servicesActions.setCategoryServices(item.services);
@@ -316,13 +423,23 @@ class ServicesScreen extends React.Component {
   render() {
     let onChangeService = null;
     const { state } = this.props.navigation;
+    const { servicesState } = this.props;
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
 
-    return (
+    return servicesState.isLoading ? (
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      >
+        <ActivityIndicator />
+      </View>
+    ) : (
       <View style={styles.container}>
         <View style={styles.servicesList}>
-          { (!this.props.servicesState.showCategoryServices
+          {(!this.props.servicesState.showCategoryServices
             && !this.props.salonSearchHeaderState.showFilter
             && this.props.servicesState.filtered.length > 0) &&
             <ServiceCategoryList
@@ -332,7 +449,7 @@ class ServicesScreen extends React.Component {
             />
           }
 
-          { (!this.props.servicesState.showCategoryServices
+          {(!this.props.servicesState.showCategoryServices
             && this.props.salonSearchHeaderState.showFilter
             && this.props.servicesState.filtered.length > 0) &&
             <ServiceList
@@ -341,16 +458,16 @@ class ServicesScreen extends React.Component {
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.serviceListContainer}
               services={this.props.servicesState.filtered}
-              onChangeService={onChangeService}
+              onChangeService={this.handleOnChangeService}
             />
           }
 
-          { (this.props.servicesState.showCategoryServices
+          {(this.props.servicesState.showCategoryServices
             && this.props.servicesState.filtered.length > 0) &&
             <CategoryServicesList
               {...this.props}
               onRefresh={this.getServices}
-              onChangeService={onChangeService}
+              onChangeService={this.handleOnChangeService}
               categoryServices={this.props.servicesState.categoryServices}
             />
           }

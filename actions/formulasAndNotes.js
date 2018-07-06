@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Client } from '../utilities/apiWrapper';
 
 export const GET_FORMULAS_AND_NOTES = 'clients/GET_FORMULAS_AND_NOTES';
 export const GET_FORMULAS_AND_NOTES_SUCCESS = 'clients/GET_FORMULAS_AND_NOTES_SUCCESS';
@@ -16,13 +16,8 @@ const getFormulasAndNotesFailed = error => ({
 
 const getFormulasAndNotes = clientId => (dispatch) => {
   dispatch({ type: GET_FORMULAS_AND_NOTES });
-  return apiWrapper.doRequest('getFormulasAndNotes', {
-    path: {
-      id: clientId,
-    },
-  })
-    .then(response => {
-      return dispatch(getFormulasAndNotesSuccess(response))})
+  return Client.getFormulasAndNotes(clientId)
+    .then(response => dispatch(getFormulasAndNotesSuccess(response)))
     .catch(error => dispatch(getFormulasAndNotesFailed(error)));
 };
 

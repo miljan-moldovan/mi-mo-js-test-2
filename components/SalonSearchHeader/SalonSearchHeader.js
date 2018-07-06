@@ -190,6 +190,7 @@ class SalonSearchHeader extends React.Component {
               }
             }
             onFocus={() => { this.showSuggestions(); }}
+            handleCancel={this.props.leftButtonOnPress}
           />
         </View>
 

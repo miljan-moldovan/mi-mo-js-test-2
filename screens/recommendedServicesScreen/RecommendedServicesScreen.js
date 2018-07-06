@@ -9,8 +9,7 @@ import {
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
-import apiWrapper from '../../utilities/apiWrapper';
-
+import { getApiInstance } from '../../utilities/apiWrapper/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,8 +74,10 @@ export default class RecommendedServicesScreen extends React.Component {
     };
   }
 
-  componentWillMount() {
+  async componentWillMount() {
     const { serviceIds } = this.state;
+    this.apiInstance = await getApiInstance();
+
     if (serviceIds.length) {
       this.setState({ isLoading: true }, () => {
         const servicePromises = serviceIds.map(item => this.getService(item.id));
@@ -84,7 +85,7 @@ export default class RecommendedServicesScreen extends React.Component {
           .then((services) => {
             this.setState({
               isLoading: false,
-              services: services.map(item => ({
+              services: services.map(({ data: { response: item } }) => ({
                 id: item.id,
                 name: item.description,
                 maxDuration: item.duration,
@@ -93,12 +94,15 @@ export default class RecommendedServicesScreen extends React.Component {
               })),
             });
           })
-          .catch(() => this.setState({ isLoading: false }));
+          .catch(() => {
+            this.setState({ isLoading: false });
+          });
       });
     }
   }
 
-  getService = id => apiWrapper.doRequest('getService', { path: { id } })
+  // getService = id => Services.getService(id)
+  getService = id => this.apiInstance.get(`Services/${id}`, {})
 
   handlePressRow = (index) => {
     const { services } = this.state;

@@ -6,7 +6,7 @@ import { View,
   FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import SalonAvatar from '../SalonAvatar';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Employees } from '../../utilities/apiWrapper';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
@@ -182,7 +182,7 @@ class ProviderList extends React.Component {
       }
       this.setState({ refresh: false });
     }
-    const image = apiWrapper.doRequest('getEmployeePhoto', { path: { id: provider.id } })
+    const image = Employees.getEmployeePhoto(provider.id)
       .then((pic) => {
 
       });

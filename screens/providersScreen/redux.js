@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Services, Employees } from '../../utilities/apiWrapper';
 
 const alphabeticFilter = (a, b) => {
   if (a.fullName < b.fullName) return -1;
@@ -100,14 +100,7 @@ const getProviders = (params, filterByService = false, filterList = false) => (d
   const { selectedService } = getState().serviceReducer;
   const serviceId = get(selectedService || {}, 'id', false);
   if (serviceId && filterByService) {
-    return apiWrapper.doRequest('getEmployeesByService', {
-      path: {
-        serviceId,
-      },
-      query: {
-        ...params,
-      },
-    })
+    return Services.getEmployeesByService(serviceId, params)
       .then((providers) => {
         dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
       })
@@ -116,11 +109,7 @@ const getProviders = (params, filterByService = false, filterList = false) => (d
       });
   }
 
-  return apiWrapper.doRequest('getEmployees', {
-    query: {
-      ...params,
-    },
-  })
+  return Employees.getEmployees(params)
     .then((providers) => {
       dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
     })

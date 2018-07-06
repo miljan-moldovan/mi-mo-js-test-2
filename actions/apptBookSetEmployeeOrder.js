@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Appointment } from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
 import ApptBookSetEmployeeOrderScreen from '../screens/apptBookSetEmployeeOrder';
 import { keyBy, indexOf } from 'lodash';
@@ -49,7 +49,7 @@ const getEmployeesFailed = error => ({
 
 const getEmployees = () => (dispatch) => {
   dispatch({ type: GET_EMPLOYEES });
-  return apiWrapper.doRequest('getEmployeesAppointmentOrder', {})
+  return Appointment.getEmployeesAppointmentOrder()
     .then(response => dispatch(getEmployeesSuccess(response)))
     .catch(error => dispatch(getEmployeesFailed(error)));
 };
@@ -107,9 +107,7 @@ const postEmployeesAppointmentOrderFailed = error => ({
 
 const postEmployeesAppointmentOrder = appointmentOrders => (dispatch) => {
   dispatch({ type: POST_EMPLOYEES_APPOINTMENT_ORDER });
-  return apiWrapper.doRequest('postEmployeesAppointmentOrder', {
-    body: appointmentOrders,
-  })
+  return Appointment.postEmployeesAppointmentOrder(appointmentOrders)
     .then((response) => {
       return dispatch(postEmployeesAppointmentOrderSuccess(appointmentOrders));
     })
