@@ -35,7 +35,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
-import { Store, Client, AppointmentBook, getEmployeePhoto } from '../../utilities/apiWrapper';
+import apiWrapper from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -177,7 +177,7 @@ const SalonAppointmentTime = props => (
 const ServiceCard = ({ data, ...props }) => {
   const employee = data.employee || null;
   const isFirstAvailable = data.isFirstAvailable || false;
-  const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  const employeePhoto = apiWrapper.getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
   return ([
     <SalonCard
       key={props.id}
@@ -477,13 +477,13 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   getRoomInfo = roomId => new Promise((resolve, reject) => {
-    Store.getRooms()
+    apiWrapper.doRequest('getRooms', {})
       .then(rooms => resolve(rooms.find(room => room.id === roomId)))
       .catch(err => reject(err));
   })
 
   getResourceInfo = resourceId => new Promise((resolve, reject) => {
-    Store.getResources()
+    apiWrapper.doRequest('getResources', {})
       .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
       .catch(err => reject(err));
   })
@@ -496,17 +496,20 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType,
     } = this.state;
 
-    Client.putContactInformation(client.id, {
-      id: client.id,
-      email: clientEmail || null,
-      phones: [
-        {
-          type: clientPhoneType,
-          value: clientPhone,
-        },
-        ...client.phones.filter(phone => phone.value && phone.type !== clientPhoneType),
-      ],
-      confirmationType: 1,
+    apiWrapper.doRequest('setContactInformation', {
+      path: { id: client.id },
+      body: {
+        id: client.id,
+        email: clientEmail || null,
+        phones: [
+          {
+            type: clientPhoneType,
+            value: clientPhone,
+          },
+          ...client.phones.filter(phone => phone.value && phone.type !== clientPhoneType),
+        ],
+        confirmationType: 1,
+      },
     })
       .then((res) => {
 
@@ -797,7 +800,9 @@ export default class NewAppointmentScreen extends React.Component {
       });
     });
 
-    AppointmentBook.checkConflicts(conflictData)
+    apiWrapper.doRequest('checkConflicts', {
+      body: conflictData,
+    })
       .then(conflicts => this.setState({
         conflicts,
         canSave: conflicts.length > 0 ? false : prevValue,

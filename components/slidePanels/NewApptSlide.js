@@ -20,6 +20,7 @@ import {
 } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import { AppointmentBook } from '../../utilities/apiWrapper';
 import { AppointmentTime } from './SalonNewAppointmentSlide';
 import {
   InputDivider,
@@ -259,7 +260,8 @@ const Addon = props => (
 );
 
 const ConflictBox = props => (
-  <View style={[{
+  <SalonTouchableOpacity
+    style={[{
     alignSelf: 'stretch',
     backgroundColor: '#FFF7CC',
     borderRadius: 4,
@@ -269,6 +271,7 @@ const ConflictBox = props => (
     height: 32,
     alignItems: 'center',
   }, props.style]}
+    onPress={() => props.onPress()}
   >
     <View style={{
       flex: 1,
@@ -296,7 +299,7 @@ const ConflictBox = props => (
     >
       Show Conflicts
     </Text>
-  </View>
+  </SalonTouchableOpacity>
 );
 
 export default class NewApptSlide extends React.Component {
@@ -347,14 +350,16 @@ export default class NewApptSlide extends React.Component {
     },
   )
 
-  setClient = client => this.setState({ client }, this.showPanel)
+  setClient = client => this.setState({ client }, () => {
+    this.showPanel().checkConflicts();
+  })
 
   setService = ({
     service, addons, recommended, required,
   }) => this.setState({
     service, addons, recommended, required,
   }, () => {
-    this.showPanel();
+    this.showPanel().checkConflicts();
   })
 
   openAddons = () => {
@@ -369,7 +374,9 @@ export default class NewApptSlide extends React.Component {
     }
   }
 
-  setProvider = provider => this.setState({ provider }, this.showPanel)
+  setProvider = provider => this.setState({ provider }, () => {
+    this.showPanel().checkConflicts();
+  })
 
   resetTimeForServices = (items, index, initialFromTime) => {
     items.forEach((item, i) => {
@@ -377,30 +384,34 @@ export default class NewApptSlide extends React.Component {
         const prevItem = items[i - 1];
 
         item.fromTime = prevItem && prevItem.toTime ? moment(prevItem.toTime) : initialFromTime;
-        item.toTime = moment(item.fromTime).add(moment.duration(item.service.maxDuration));
+        item.toTime = moment(item.fromTime).add(moment.duration(item.service ? item.service.maxDuration : item.maxDuration));
       }
     });
 
     return items;
   }
 
-  getTotalLength = (index = false) => {
+  getAllServices = () => {
     const {
       service,
       addons,
-      required,
       recommended,
-    } = this.state;
-    const allServices = [
-      service,
       required,
+    } = this.state;
+    return compact([
+      service,
       ...addons,
       ...recommended,
-    ];
+      required,
+    ]);
+  }
+
+  getTotalLength = (index = false) => {
+    const allServices = this.getAllServices();
     if (index) {
       slice(allServices, index);
     }
-    return compact(allServices).reduce((duration, curr) => {
+    return allServices.reduce((duration, curr) => {
       if (curr && curr.maxDuration) {
         return duration.add(curr.maxDuration);
       }
@@ -423,72 +434,51 @@ export default class NewApptSlide extends React.Component {
     return 'BOOK NOW';
   }
 
-  checkConflicts = (prevValue) => {
+  async checkConflicts() {
     const {
-      date,
       client,
-      bookedByEmployee,
-      serviceItems,
-      guests,
+      provider,
     } = this.state;
-
-    let servicesToCheck = [];
-
+    const { date, startTime } = this.props;
+    const services = this.getAllServices();
+    const servicesToCheck = [];
     this.setState({
       conflicts: [],
+      isLoading: true,
     });
-
-    if (!client || !bookedByEmployee) {
+    if (!client || !provider || services.length <= 0) {
       return;
     }
-
-    servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service.service &&
-      serviceItem.service.employee &&
-      serviceItem.service.employee.id !== null &&
-      (serviceItem.guestId ? serviceItem.service.client : true));
-
-    if (!servicesToCheck.length) {
-      return;
-    }
+    this.resetTimeForServices(services, -1, moment(startTime, 'HH:mm'));
 
     const conflictData = {
       date: date.format('YYYY-MM-DD'),
       clientId: client.id,
       items: [],
     };
-    servicesToCheck.forEach((serviceItem) => {
-      if (
-        serviceItem.service &&
-        serviceItem.service.employee &&
-        serviceItem.service.employee.id === 0
-      ) {
-        return;
-      }
-
+    services.forEach((service) => {
       conflictData.items.push({
-        appointmentId: serviceItem.service.id ? serviceItem.service.id : null,
-        clientId: serviceItem.guestId ? serviceItem.service.client.id : client.id,
-        serviceId: serviceItem.service.service.id,
-        employeeId: serviceItem.service.employee.id,
-        fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
-        toTime: serviceItem.service.toTime.format('HH:mm:ss', { trim: false }),
-        gapTime: moment().startOf('day').add(moment.duration(+serviceItem.service.gapTime, 'm')).format('HH:mm:ss', { trim: false }),
-        afterTime: moment().startOf('day').add(moment.duration(+serviceItem.service.afterTime, 'm')).format('HH:mm:ss', { trim: false }),
-        bookBetween: !!serviceItem.service.gapTime,
-        roomId: get(get(serviceItem.service, 'room', null), 'id', null),
-        roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
-        resourceId: get(get(serviceItem.service, 'resource', null), 'id', null),
-        resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
+        // appointmentId: serviceItem.service.id ? serviceItem.service.id : null,
+        clientId: client.id,
+        serviceId: service.id,
+        employeeId: provider.id,
+        fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
+        toTime: service.toTime.format('HH:mm:ss', { trim: false }),
+        bookBetween: false,
+        roomId: get(get(service, 'room', null), 'id', null),
+        roomOrdinal: get(service, 'roomOrdinal', null),
+        resourceId: get(get(service, 'resource', null), 'id', null),
+        resourceOrdinal: get(service, 'resourceOrdinal', null),
       });
     });
 
-    apiWrapper.doRequest('checkConflicts', {
-      body: conflictData,
-    })
-      .then(conflicts => this.setState({
-        conflicts,
-        canSave: conflicts.length > 0 ? false : prevValue,
-      }));
+    const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
+    this.setState({
+      conflicts,
+      isLoading: false,
+    });
+
+    return this;
   }
 
   canBook = () => {
@@ -552,6 +542,8 @@ export default class NewApptSlide extends React.Component {
     return this.props.handleBook(appt);
   }
 
+  onItemPress = () => {}
+
   addServiceItem = (service) => {
     const {
       client,
@@ -573,13 +565,13 @@ export default class NewApptSlide extends React.Component {
   }
 
   showPanel = () => {
-    this.animateHeight(650).start(() => {
+    this.animateHeight(580).start(() => {
       this.props.show();
       Animated.timing(
         this.state.addonsHeight,
         {
           toValue: 500,
-          duration: 300,
+          duration: 500,
         },
       ).start();
     });
@@ -591,7 +583,7 @@ export default class NewApptSlide extends React.Component {
       this.state.addonsHeight,
       {
         toValue: 0,
-        duration: 300,
+        duration: 150,
       },
     ).start(() => {
       this.animateHeight(0).start(() => {
@@ -628,7 +620,7 @@ export default class NewApptSlide extends React.Component {
       <Modal
         visible={this.props.visible}
         transparent
-      // style={styles.container}
+        style={{ paddingBottom: 50 }}
       >
         <View style={[
           styles.container,
@@ -702,7 +694,6 @@ export default class NewApptSlide extends React.Component {
                   <ClientInput
                     apptBook
                     label={false}
-                    key={Math.random().toString()}
                     style={{ height: 39 }}
                     selectedClient={client}
                     placeholder={client === null ? 'Select Client' : 'Client'}
@@ -715,9 +706,8 @@ export default class NewApptSlide extends React.Component {
                     iconStyle={{ color: '#115ECD' }}
                     onChange={this.setClient}
                   />
-                  <InputDivider key={Math.random().toString()} style={styles.middleSectionDivider} />
+                  <InputDivider style={styles.middleSectionDivider} />
                   <ServiceInput
-                    key={Math.random().toString()}
                     apptBook
                     noLabel
                     showLength
@@ -735,9 +725,8 @@ export default class NewApptSlide extends React.Component {
                     iconStyle={{ color: '#115ECD' }}
                     onChange={this.setService}
                   />
-                  <InputDivider key={Math.random().toString()} style={styles.middleSectionDivider} />
+                  <InputDivider style={styles.middleSectionDivider} />
                   <ProviderInput
-                    key={Math.random().toString()}
                     noLabel
                     apptBook
                     filterByService
@@ -766,9 +755,22 @@ export default class NewApptSlide extends React.Component {
                   onPressAddons={() => {
 
                   }}
+                  onPressRequired={() => {
+
+                  }}
                 />
-                {1 === 1 && ( // this.state.conflicts.length > 0 && (
-                  <ConflictBox />
+                {this.state.conflicts.length > 0 && (
+                  <ConflictBox
+                    onPress={() => {
+                      this.hidePanel().props.navigation.navigate('Conflicts', {
+                        date: this.props.date,
+                        conflicts: this.state.conflicts,
+                        startTime: this.props.startTime,
+                        endTime: moment(this.props.startTime).add(moment.duration(this.getTotalLength())),
+                        handleGoBack: () => this.showPanel(),
+                      });
+                    }}
+                  />
                 )}
                 <View style={{
                   flexDirection: 'row',
