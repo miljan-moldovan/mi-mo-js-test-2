@@ -93,8 +93,8 @@ export function serializeApptToRequestData(appt, extraServices) {
     // displayColor: appt.displayColor,
     clientInfo: {
       id: get(appt.client, 'id'),
-      email: appt.client.email,
-      phones: appt.client.phones,
+      email: appt.client.email || '',
+      phones: appt.client.phones || [],
       // confirmationType: appt.client.confirmationType
     },
     items: filteredServices.map(srv => serializeNewApptItem(appt, srv)),

@@ -12,6 +12,7 @@ import servicesActions, {
 } from '../actions/service';
 
 const initialState = {
+  isLoading: false,
   filtered: [],
   services: [],
   showCategoryServices: false,
@@ -21,6 +22,10 @@ const initialState = {
 
 export default function serviceReducer(state = initialState, action) {
   const { type, data } = action;
+  // if (type.indexOf('services/') >= 0) {
+  //   console.log(`Doing Stuff: ${type}`);
+  //   console.log(data);
+  // }
   switch (type) {
     case GET_CATEGORY_SERVICES:
       return {
@@ -52,9 +57,10 @@ export default function serviceReducer(state = initialState, action) {
     case GET_SERVICES_SUCCESS:
       return {
         ...state,
-        isLoading: false,
-        services: data.services,
         error: null,
+        filtered: data.services,
+        services: data.services,
+        isLoading: false,
       };
     case GET_SERVICES_FAILED:
       return {

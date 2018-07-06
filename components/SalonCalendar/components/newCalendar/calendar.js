@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, Animated, PanResponder, Alert, Modal, Text } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
-import { times, groupBy, filter } from 'lodash';
+import { get, times, groupBy, filter } from 'lodash';
 import moment from 'moment';
 
 import Board from './board';
@@ -609,7 +609,7 @@ export default class Calendar extends Component {
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     if (isAllProviderView) {
       const doesProviderExsit =
-      headerData.findIndex(provider => provider.id === appointment.employee.id) > -1;
+      headerData.findIndex(provider => provider.id === get(appointment.employee, 'id', false)) > -1;
       if (!doesProviderExsit) {
         return null;
       }

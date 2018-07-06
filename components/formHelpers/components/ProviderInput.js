@@ -79,6 +79,14 @@ export default class ProviderInput extends React.Component {
                     width={'avatarSize' in this.props ? this.props.avatarSize : 30}
                     borderWidth={1}
                     borderColor="transparent"
+                    hasBadge={this.props.isRequested}
+                    badgeComponent={(
+                      <FontAwesome style={{
+                        color: '#1DBF12', fontSize: 10,
+                      }}
+                      >{Icons.lock}
+                      </FontAwesome>
+                    )}
                     image={{ uri: employeePhoto }}
                     defaultComponent={<ActivityIndicator />}
                   />

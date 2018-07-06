@@ -26,10 +26,25 @@ const getServices = (params, filterByProvider = false, filterProvider = null) =>
     dispatch({ type: GET_SERVICES });
     if (filterByProvider) {
       const { selectedProvider } = getState().providersReducer;
-    // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
+      // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
     }
 
-    return apiWrapper.doRequest('getServiceTree', params);
+    return apiWrapper.doRequest('getServiceTree', params)
+      .then((services) => {
+        const filtered = services.reduce((aggregator, category) => {
+          if (category.services && category.services.length) {
+            const filteredServices = category.services.filter(service => !service.isAddon);
+            if (filteredServices.length > 0) {
+              return [...aggregator, { ...category, services: filteredServices }];
+            }
+          }
+
+          return aggregator;
+        }, []);
+
+        dispatch(getServicesSuccess(filtered));
+      })
+      .catch(() => dispatch({ type: GET_SERVICES_FAILED }));
   };
 
 function setServices(services) {

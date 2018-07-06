@@ -7,7 +7,7 @@ import Svg, {
   Defs,
   Stop,
 } from 'react-native-svg';
-import { times } from 'lodash';
+import { get, times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
 import Icon from '../../../UI/Icon';
@@ -136,7 +136,7 @@ class Card extends Component {
       const currentAppt = appointments[i];
       const currentDate = moment(currentAppt.date);
       if (date.format('YYYY-MM-DD') === currentDate.format('YYYY-MM-DD')
-    && currentAppt.employee.id === appointment.employee.id) {
+    && get(currentAppt.employee, 'id', false) === get(appointment.employee, 'id', false)) {
         if (currentAppt.id !== appointment.id) {
           const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
           const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
