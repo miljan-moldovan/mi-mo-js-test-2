@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Queue } from '../utilities/apiWrapper';
 
 export const SET_ESTIMATED_TIME = 'walkIn/SET_ESTIMATED_TIME';
 export const SET_CURRENT_STEP = 'walkIn/SET_CURRENT_STEP';
@@ -64,11 +64,7 @@ const postWalkinClientFailed = error => ({
 
 const postWalkinClient = params => (dispatch) => {
   dispatch({ type: POST_WALKIN_CLIENT });
-  return apiWrapper.doRequest('postQueueWalkinClient', {
-    body: {
-      ...params,
-    },
-  })
+  return Queue.postQueueWalkinClient(params)
     .then((response) => {
       // dispatch(purgeForm('WalkoutScreen', clientQueueItemId.toString()));
       return dispatch(postWalkinClientsSuccess(response));

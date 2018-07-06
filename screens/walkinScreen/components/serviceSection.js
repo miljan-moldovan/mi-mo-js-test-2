@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import { InputSwitch, InputDivider, InputGroup, InputButton } from '../../../components/formHelpers';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 
 
 const styles = StyleSheet.create({
@@ -130,7 +130,7 @@ class ServiceSection extends Component {
             width={26}
             borderWidth={1}
             borderColor="transparent"
-            image={{ uri: apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0) }}
+            image={{ uri: getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0) }}
           />
           <Text style={styles.textData}>{`${providerName}`}</Text>
         </View>

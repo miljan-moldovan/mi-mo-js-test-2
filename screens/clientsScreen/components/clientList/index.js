@@ -116,7 +116,7 @@ class ClientList extends React.Component {
       }
 
       renderItem = obj => (
-        <View key={Math.random().toString()} style={{ height: ITEM_HEIGHT }}>
+        <View key={obj.item.id} style={{ height: ITEM_HEIGHT }}>
           <ClientListItem
             client={obj.item}
             boldWords={this.props.boldWords}
@@ -148,7 +148,7 @@ class ClientList extends React.Component {
 
           letterGuide.push(<SalonTouchableHighlight
             underlayColor="transparent"
-            key={Math.random().toString()}
+            key={letter}
             onPress={() => { this.scrollToIndex((i), letter); }}
           >
             <View style={styles.letterContainer}>{letterComponent}</View>
@@ -163,7 +163,6 @@ class ClientList extends React.Component {
           <View style={styles.container}>
 
             <SectionList
-              key={Math.random().toString()}
               enableEmptySections
               keyboardShouldPersistTaps="always"
               initialNumToRender={this.props.clients.length}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import apiWrapper from '../utilities/apiWrapper';
+import { getEmployeePhoto } from '../utilities/apiWrapper';
 import * as actions from '../actions/queue';
 import SalonAvatar from '../components/SalonAvatar';
 import { connect } from 'react-redux';
@@ -222,7 +222,7 @@ render() {
             borderWidth={2}
             wrapperStyle={styles.providerRound}
             width={26}
-            image={{ uri: apiWrapper.getEmployeePhoto(!this.props.service.isFirstAvailable ? this.props.service.employeeId : 0) }}
+            image={{ uri: getEmployeePhoto(!this.props.service.isFirstAvailable ? this.props.service.employeeId : 0) }}
             hasBadge
             badgeComponent={
               <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>

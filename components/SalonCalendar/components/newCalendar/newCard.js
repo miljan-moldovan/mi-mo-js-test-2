@@ -132,7 +132,7 @@ class Card extends Component {
       shadowOpacity: 0.4,
       shadowRadius: 4,
     };
-    const activePosition = top ? { position: 'absolute', top, left, width: cardWidth } : {
+    const activePosition = top || !this.props.pan ? { position: 'absolute', top, left, width: cardWidth } : {
       position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, width: cardWidth
     };
     const position = isActive ? activePosition : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
@@ -151,41 +151,41 @@ class Card extends Component {
         ]}
       >
         <View style={isActive ? shadow : ''}>
-        <TouchableOpacity
-          onLongPress={this.handleOnLongPress}
-        >
-          <View style={{ width: '100%', height: '100%' }} ref={(view) => { this.card = view; }}>
-            <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-            <View style={{flexDirection: 'row', paddingHorizontal: 2}}>
-              {this.renderBadges()}
+          <TouchableOpacity
+            onLongPress={this.handleOnLongPress}
+            style={{ overflow: 'hidden' }}
+          >
+            <View style={{ width: '100%', height: '100%' }} ref={(view) => { this.card = view; }}>
+              <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
+              <View style={{flexDirection: 'row', paddingHorizontal: 2}}>
+                {this.renderBadges()}
+                <Text
+                  style={[styles.clientText, { flex: 1, flexWrap: 'wrap', color: clientTextColor }]}
+                >
+                  {clientName}dddddd
+                </Text>
+              </View>
               <Text
                 numberOfLines={1}
-                style={[styles.clientText, { color: clientTextColor }]}
+                style={[styles.serviceText, { color: serviceTextColor }]}
               >
-                {clientName}
+                {serviceName}
               </Text>
             </View>
-            <Text
-              numberOfLines={1}
-              style={[styles.serviceText, { color: serviceTextColor }]}
-            >
-              {serviceName}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        {isActive && !isBufferCard ?
-          <ResizeButton
-            onPress={this.props.onResize}
-            onResize={this.resizeCard}
-            color={colors[color].dark}
-            position={{ left: -13, bottom: -27 }}
-            apptGridSettings={apptGridSettings}
-            height={height}
-            calendarMeasure={calendarMeasure}
-            calendarOffset={calendarOffset}
-            onScrollY={onScrollY}
-            isDisabled={this.props.isResizeing}
-          /> : null }
+          </TouchableOpacity>
+          {isActive && !isBufferCard ?
+            <ResizeButton
+              onPress={this.props.onResize}
+              onResize={this.resizeCard}
+              color={colors[color].dark}
+              position={{ left: -13, bottom: -27 }}
+              apptGridSettings={apptGridSettings}
+              height={height}
+              calendarMeasure={calendarMeasure}
+              calendarOffset={calendarOffset}
+              onScrollY={onScrollY}
+              isDisabled={this.props.isResizeing}
+            /> : null }
         </View>
       </Animated.View>
     );

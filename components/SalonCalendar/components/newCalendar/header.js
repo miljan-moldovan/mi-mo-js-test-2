@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
 
 import SalonAvatar from '../../../SalonAvatar';
-import apiWrapper from '../../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
 import FirstAvailableBtn from '../firstAvailableBtn';
 import colors from '../../../../constants/appointmentColors';
 
@@ -89,7 +89,7 @@ export default class Header extends Component {
 
   renderProvider = (data, index) => {
     const { cellWidth, setSelectedProvider } = this.props;
-    const uri = apiWrapper.getEmployeePhoto(data.id);
+    const uri = getEmployeePhoto(data.id);
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';

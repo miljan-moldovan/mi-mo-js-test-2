@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Services } from '../utilities/apiWrapper';
 
 export const SET_SERVICES = 'services/SET_SERVICES';
 export const SET_FILTERED_SERVICES = 'services/SET_FILTERED_SERVICES';
@@ -21,31 +21,17 @@ const getServicesFailed = error => ({
   data: { error },
 });
 
-const getServices = (params, filterByProvider = false, filterProvider = null) =>
-  (dispatch, getState) => {
-    dispatch({ type: GET_SERVICES });
-    if (filterByProvider) {
-      const { selectedProvider } = getState().providersReducer;
-      // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
-    }
+const getServices = (params, filterByProvider = false, filterProvider = null) => (dispatch, getState) => {
+  dispatch({ type: GET_SERVICES });
+  if (filterByProvider) {
+    const { selectedProvider } = getState().providersReducer;
+    // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
+  }
 
-    return apiWrapper.doRequest('getServiceTree', params)
-      .then((services) => {
-        const filtered = services.reduce((aggregator, category) => {
-          if (category.services && category.services.length) {
-            const filteredServices = category.services.filter(service => !service.isAddon);
-            if (filteredServices.length > 0) {
-              return [...aggregator, { ...category, services: filteredServices }];
-            }
-          }
-
-          return aggregator;
-        }, []);
-
-        dispatch(getServicesSuccess(filtered));
-      })
-      .catch(() => dispatch({ type: GET_SERVICES_FAILED }));
-  };
+  return Services.getServiceTree(params)
+    .then(response => dispatch(getServicesSuccess(response)))
+    .catch(error => dispatch(getServicesFailed(error)));
+};
 
 function setServices(services) {
   return {

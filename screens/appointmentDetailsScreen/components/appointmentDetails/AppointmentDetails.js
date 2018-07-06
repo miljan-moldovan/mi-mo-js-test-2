@@ -18,7 +18,7 @@ import SalonCard from '../../../../components/SalonCard';
 import { InputButton, SectionDivider } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
-import apiWrapper from '../../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../../../../components/QueueTimeNote';
 import Icon from '../../../../components/UI/Icon';
@@ -283,7 +283,7 @@ const ServiceCard = (props) => {
                   >{Icons.lock}
                   </FontAwesome>
               }
-                image={{ uri: apiWrapper.getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
+                image={{ uri: getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
 
               />
               <Text style={[styles.employeeText, { marginLeft: 8 }]}>{providerName}</Text>

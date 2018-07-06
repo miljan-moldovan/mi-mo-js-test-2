@@ -1,5 +1,3 @@
-import apiWrapper from '../utilities/apiWrapper';
-
 export const SET_PRODUCTS = 'products/SET_PRODUCTS';
 export const SET_FILTERED_PRODUCTS = 'products/SET_FILTERED_PRODUCTS';
 export const SET_SHOW_CATEGORY_PRODUCTS = 'products/SET_SHOW_CATEGORY_PRODUCTS';

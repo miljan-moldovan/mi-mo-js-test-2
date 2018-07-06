@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { QueueStatus } from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
 
 export const GET_REMOVAL_REASON_TYPES = 'walkOut/GET_REMOVAL_REASON_TYPES';
@@ -30,14 +30,7 @@ const putWalkoutFailed = error => ({
 
 const putWalkout = (clientQueueItemId, params) => (dispatch) => {
   dispatch({ type: PUT_WALKOUT });
-  return apiWrapper.doRequest('putWalkOut', {
-    path: {
-      clientQueueItemId,
-    },
-    body: {
-      ...params,
-    },
-  })
+  return QueueStatus.putWalkOut(clientQueueItemId, params)
     .then((response) => {
       dispatch(purgeForm('WalkoutScreen', clientQueueItemId.toString()));
       return dispatch(putWalkoutSuccess(response));
@@ -52,7 +45,7 @@ const putWalkout = (clientQueueItemId, params) => (dispatch) => {
 
 const getRemovalReasonTypes = () => (dispatch) => {
   dispatch({ type: GET_REMOVAL_REASON_TYPES });
-  return apiWrapper.doRequest('getReasonTypes', {})
+  return QueueStatus.getReasonTypes()
     .then(response => dispatch(getRemovalReasonTypesSuccess(response)))
     .catch(error => dispatch(getRemovalReasonTypesFailed(error)));
 };

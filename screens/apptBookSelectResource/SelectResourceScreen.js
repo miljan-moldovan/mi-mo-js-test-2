@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Store } from '../../utilities/apiWrapper';
 import {
   InputGroup,
   InputLabel,
@@ -40,7 +40,7 @@ export default class SelectRoomScreen extends React.Component {
 
   componentDidMount() {
     this.setState({ isLoading: true }, () => {
-      apiWrapper.doRequest('getResources', {})
+      Store.getResources()
         .then(resources => this.setState({ isLoading: false, resources }))
         .catch(err => this.setState({ isLoading: false }));
     });

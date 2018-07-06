@@ -1,4 +1,4 @@
-import apiWrapper from '../utilities/apiWrapper';
+import { Note } from '../utilities/apiWrapper';
 import apiConstants from '../utilities/apiWrapper/apiConstants';
 import { storeForm, purgeForm } from './formCache';
 
@@ -42,13 +42,7 @@ const putAppointmentNotesFailed = error => ({
 
 const putAppointmentNotes = (clientId, note) => (dispatch) => {
   dispatch({ type: PUT_APPOINTMENT_NOTE });
-  return apiWrapper.doRequest('putClientNote', {
-    path: {
-      clientId,
-      id: note.id,
-    },
-    body: note,
-  })
+  return Note.putClientNote({ clientId, id: note.id }, note)
     .then((response) => {
       dispatch(purgeForm('AppointmentNoteScreenUpdate', note.id.toString()));
       return dispatch(putAppointmentNotesSuccess(response));
@@ -81,12 +75,7 @@ const undeleteAppointmentNotesFailed = error => ({
 
 const undeleteAppointmentNotes = (clientId, id) => (dispatch) => {
   dispatch({ type: UNDELETE_APPOINTMENT_NOTE });
-  return apiWrapper.doRequest(
-    'postUndeleteClientNote',
-    {
-      path: { clientId, id },
-    },
-  )
+  return Note.postUndeleteClientNote({ clientId, id })
     .then(response => dispatch(undeleteAppointmentNotesSuccess(response)))
     .catch(error => dispatch(undeleteAppointmentNotesFailed(error)));
 };
@@ -101,14 +90,9 @@ const deleteAppointmentNotesFailed = error => ({
   data: { error },
 });
 
-const deleteAppointmentNotes = (clientId, id) => (dispatch) => {
+const deleteAppointmentNotes = (clientId, noteId) => (dispatch) => {
   dispatch({ type: DELETE_APPOINTMENT_NOTE });
-  return apiWrapper.doRequest(
-    'deleteClientNote',
-    {
-      path: { clientId, id },
-    },
-  )
+  return Note.deleteClientNote({ clientId, noteId })
     .then(response => dispatch(deleteAppointmentNotesSuccess(response)))
     .catch(error => dispatch(deleteAppointmentNotesFailed(error)));
 };
@@ -125,12 +109,7 @@ const postAppointmentNotesFailed = error => ({
 
 const postAppointmentNotes = (clientId, note) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_NOTE });
-  return apiWrapper.doRequest('postClientNote', {
-    path: {
-      clientId,
-    },
-    body: note,
-  })
+  return Note.postClientNote(clientId, note)
     .then((response) => {
       dispatch(purgeForm('AppointmentNoteScreenNew', clientId.toString()));
       return dispatch(postAppointmentNotesSuccess(response));
@@ -158,13 +137,7 @@ const getAppointmentNotesFailed = error => ({
 
 const getAppointmentNotes = clientId => (dispatch) => {
   dispatch({ type: GET_APPOINTMENT_NOTES });
-  return apiWrapper.doRequest(
-    'getClientNotes',
-    {
-      path: { clientId },
-      //query: { filterRule: 'none' },
-    },
-  )
+  return Note.getClientNotes(clientId)
     .then(response => dispatch(getAppointmentNotesSuccess(response)))
     .catch(error => dispatch(getAppointmentNotesFailed(error)));
 };

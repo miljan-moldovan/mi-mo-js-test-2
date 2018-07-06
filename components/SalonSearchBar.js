@@ -85,10 +85,11 @@ class SalonSearchBar extends Component {
 
 
   handleChange= (searchText) => {
-    if (this.props.onChangeText) {
-      this.props.onChangeText(searchText);
-    }
-    this.setState({ searchText });
+    this.setState({ searchText }, () => {
+      if (this.props.onChangeText) {
+        this.props.onChangeText(searchText);
+      }
+    });
   }
 
   render() {
@@ -165,6 +166,9 @@ class SalonSearchBar extends Component {
               onPress={
                 () => {
                   this.handleChange('');
+                  if (this.props.handleCancel) {
+                    this.props.handleCancel();
+                  }
                 }
               }
             >

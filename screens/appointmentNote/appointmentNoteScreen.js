@@ -21,7 +21,7 @@ import {
 import fetchFormCache from '../../utilities/fetchFormCache';
 import AppointmentNoteHeader from './components/appointmentNoteHeader';
 import SalonAvatar from '../../components/SalonAvatar';
-import apiWrapper from '../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../utilities/apiWrapper';
 
 
 const styles = StyleSheet.create({
@@ -249,7 +249,7 @@ class AppointmentNoteScreen extends Component {
                   width={30}
                   borderWidth={1}
                   borderColor="transparent"
-                  image={{ uri: apiWrapper.getEmployeePhoto(!this.props.appointmentNotesState.selectedProvider.isFirstAvailable ? this.props.appointmentNotesState.selectedProvider.id : 0) }}
+                  image={{ uri: getEmployeePhoto(!this.props.appointmentNotesState.selectedProvider.isFirstAvailable ? this.props.appointmentNotesState.selectedProvider.id : 0) }}
                 />}
                 </InputButton>]}
             </InputGroup>

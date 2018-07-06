@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import apiWrapper from '../../utilities/apiWrapper';
+import { Employees } from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
@@ -133,7 +133,7 @@ export default class FilterByPositionScreen extends React.Component {
 
   getData = () => {
     this.setState({ isLoading: true });
-    apiWrapper.doRequest('getEmployeePositions', {})
+    Employees.getEmployeePositions()
       .then(positions => this.setState({ isLoading: false, positions, activeData: positions }))
       .catch((err) => {
         console.warn(err);

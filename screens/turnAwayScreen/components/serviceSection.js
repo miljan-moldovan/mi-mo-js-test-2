@@ -4,7 +4,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
-import apiWrapper from '../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
@@ -156,7 +156,7 @@ class ServiceSection extends Component {
 
   renderProvider = (provider) => {
     const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
-    const providerPhoto = provider ? (apiWrapper.getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
+    const providerPhoto = provider ? (getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 
     if (provider) {
       return (<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>

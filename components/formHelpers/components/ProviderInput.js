@@ -8,7 +8,7 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import apiWrapper from '../../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../SalonAvatar';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles } from '../index';
@@ -56,7 +56,7 @@ export default class ProviderInput extends React.Component {
         }
       }
 
-      const employeePhoto = this.state.selectedProvider ? apiWrapper.getEmployeePhoto(this.state.selectedProvider !== null && !this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
+      const employeePhoto = this.state.selectedProvider ? getEmployeePhoto(this.state.selectedProvider !== null && !this.state.selectedProvider.isFirstAvailable ? this.state.selectedProvider.id : 0) : '';
 
       return (
         <SalonTouchableOpacity

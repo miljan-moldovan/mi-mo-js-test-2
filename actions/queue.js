@@ -47,14 +47,14 @@ import {
   PUT_QUEUE_SUCCESS,
   PUT_QUEUE_FAILED,
 } from './constants';
-import apiWrapper from '../utilities/apiWrapper';
+import { QueueStatus, Queue } from '../utilities/apiWrapper';
 
 const queueData = require('./queueNew.json');
 
 export const receiveQueue = () => async (dispatch: Object => void) => {
   dispatch({ type: QUEUE });
   try {
-    const data = await apiWrapper.doRequest('getQueue', {});
+    const data = await Queue.getQueue();
     dispatch({ type: QUEUE_RECEIVED, data });
   } catch (error) {
     dispatch({ type: QUEUE_FAILED, error });
@@ -76,7 +76,7 @@ export function saveQueueItem(queueItem) {
 export const startService = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_START_SERVICE, data: { id } });
   try {
-    const data = await apiWrapper.doRequest('putStartService', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putStartService(id);
     dispatch({ type: CLIENT_START_SERVICE_RECEIVED, data });
   } catch (error) {
     dispatch({ type: CLIENT_START_SERVICE_FAILED, error });
@@ -87,7 +87,7 @@ export const startService = id => async (dispatch: Object => void) => {
 export const checkInClient = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_CHECKED_IN, data: { id } });
   try {
-    const data = await apiWrapper.doRequest('putCheckIn', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putCheckIn(id);
     dispatch({ type: CLIENT_CHECKED_IN_RECEIVED, data });
   } catch (error) {
     dispatch({ type: CLIENT_CHECKED_IN_FAILED, error });
@@ -98,7 +98,7 @@ export const returnLater = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_RETURNED_LATER, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putReturnLater', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putReturnLater(id);
 
     dispatch({ type: CLIENT_RETURNED_LATER_RECEIVED, data });
   } catch (error) {
@@ -111,7 +111,7 @@ export const returned = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_RETURNED, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putReturned', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putReturned(id);
 
     dispatch({ type: CLIENT_RETURNED_RECEIVED, data });
   } catch (error) {
@@ -123,7 +123,7 @@ export const walkOut = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_WALKED_OUT, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putWalkOut', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putWalkOut(id);
 
     dispatch({ type: CLIENT_WALKED_OUT_RECEIVED, data });
   } catch (error) {
@@ -135,7 +135,7 @@ export const noShow = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_NO_SHOW, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putNoShow', { path: { clientQueueItemId: id } });
+    const data = QueueStatus.putNoShow(id);
 
     dispatch({ type: CLIENT_NO_SHOW_RECEIVED, data });
   } catch (error) {
@@ -147,7 +147,7 @@ export const finishService = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_FINISH_SERVICE, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putFinish', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putFinish(id);
 
     dispatch({ type: CLIENT_FINISH_SERVICE_RECEIVED, data });
   } catch (error) {
@@ -160,7 +160,7 @@ export const undoFinishService = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_UNDOFINISH_SERVICE, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putUndoFinish', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putUndoFinish(id);
 
     dispatch({ type: CLIENT_UNDOFINISH_SERVICE_RECEIVED, data });
   } catch (error) {
@@ -172,7 +172,7 @@ export const toWaiting = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_TO_WAITING, data: { id } });
 
   try {
-    const data = await apiWrapper.doRequest('putToWaiting', { path: { clientQueueItemId: id } });
+    const data = await QueueStatus.putToWaiting(id);
 
     dispatch({ type: CLIENT_TO_WAITING_RECEIVED, data });
   } catch (error) {
@@ -218,9 +218,7 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
       }
     });
 
-    const response = await apiWrapper.doRequest('postQueueGroup', {
-      body: JSON.stringify(data),
-    });
+    const response = await Queue.postQueueGroup(data);
 
     dispatch(receiveQueue());
   } catch (error) {
@@ -233,9 +231,7 @@ export const updateGroupLeaders = (groups: Object) => async (dispatch: Object =>
 
     for (const groupId in groups) {
       const clientQueueId = groups[groupId];
-      const response = await apiWrapper.doRequest('putQueueGroupLeader', { // putQueueGroupLeader
-        path: { groupId, clientQueueId },
-      });
+      const response = await Queue.putQueueGroupLeader({ groupId, clientQueueId });
     }
 
     dispatch(receiveQueue());
@@ -256,9 +252,7 @@ export const uncombine = (groupId: number) => async (dispatch: Object => void) =
   try {
     dispatch({ type: QUEUE });
 
-    const response = await apiWrapper.doRequest('deleteQueueGroup', {
-      path: { groupId },
-    });
+    const response = await Queue.deleteQueueGroup(groupId);
 
     dispatch(receiveQueue());
   } catch (error) {
@@ -285,12 +279,7 @@ export const putQueueFailed = error => ({
 
 export const putQueue = (queueId, queue) => (dispatch) => {
   dispatch({ type: PUT_QUEUE });
-  return apiWrapper.doRequest('putQueue', {
-    path: {
-      queueId,
-    },
-    body: queue,
-  })
+  return Queue.putQueue(queueId, queue)
     .then(response => dispatch(putQueueSuccess(response)))
     .catch(error => dispatch(putQueueFailed(error)));
 };
