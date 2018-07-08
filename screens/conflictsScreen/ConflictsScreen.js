@@ -163,9 +163,7 @@ export default class ConflictsScreen extends React.Component {
     <View style={{ height: 9 }} />
   )
 
-  renderItem = ({ item: conflict, index }) => {
-
-    return (
+  renderItem = ({ item: conflict, index }) => (
     <View key={index}>
       <SalonCard
         key={index}
@@ -184,7 +182,7 @@ export default class ConflictsScreen extends React.Component {
                 />
                 <Text style={styles.conflictReasonText}>{conflict.reason}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                  <Text style={styles.conflictServiceText}>{`${conflict.serviceDescription} ${conflict.employeeFullName ? 'with' : ''}`}</Text>
+                  <Text style={styles.conflictServiceText}>{`${conflict.serviceDescription} ${conflict.employeeFullName ? 'with ' : ''}`}</Text>
                   <Text style={[styles.conflictServiceText, { fontFamily: 'Roboto-Medium' }]}>{conflict.employeeFullName}</Text>
                 </View>
               </View>
@@ -192,7 +190,7 @@ export default class ConflictsScreen extends React.Component {
                 <View style={styles.conflictTypeContainer}>
                   <Text style={styles.conflictTypeText}>OVERLAP</Text>
                   <View style={{ flexDirection: 'row' }}>
-                    <Text style={[styles.conflictDurationText, {fontSize: 14}]}>{moment.duration(conflict.overlap).asMinutes()}</Text>
+                    <Text style={[styles.conflictDurationText, { fontSize: 14 }]}>{moment.duration(conflict.overlap).asMinutes()}</Text>
                     <Text style={styles.conflictDurationText}> min</Text>
                   </View>
                 </View>
@@ -202,7 +200,7 @@ export default class ConflictsScreen extends React.Component {
         )}
       />
     </View>
-  )}
+  )
 
   render() {
     return (

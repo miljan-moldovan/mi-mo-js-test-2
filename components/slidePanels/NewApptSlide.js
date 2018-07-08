@@ -4,9 +4,7 @@ import {
   Text,
   Modal,
   StyleSheet,
-  ActivityIndicator,
   ScrollView,
-  FlatList,
   Animated,
   Switch,
   TouchableWithoutFeedback,
@@ -16,9 +14,7 @@ import {
   compact,
   get,
   slice,
-  reverse,
 } from 'lodash';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import { AppointmentBook } from '../../utilities/apiWrapper';
 import { AppointmentTime } from './SalonNewAppointmentSlide';
@@ -31,7 +27,6 @@ import {
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
 import Icon from '../UI/Icon';
-// import { start } from 'repl';
 
 const styles = StyleSheet.create({
   container: {
@@ -109,62 +104,66 @@ const AddonsContainer = (props) => {
     }
     return aggregator;
   }, moment.duration());
-  return !props.visible ? null : (
+  return (
     <Animated.View style={{
-      marginHorizontal: 2,
-      backgroundColor: '#F1F1F1',
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      paddingBottom: 9,
-      paddingHorizontal: 8,
       maxHeight: props.height,
       overflow: 'hidden',
     }}
     >
-      <Text style={{
-        fontSize: 9,
-        lineHeight: 22,
-        color: '#727A8F',
-      }}
-      >ADD-ONS / RECOMMENDED / REQUIRED
-      </Text>
       <View style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 4,
-        borderBottomColor: 'transparent',
-        borderTopColor: 'transparent',
-        borderColor: '#F4F7FC',
-        borderWidth: 1,
-        shadowColor: '#000000',
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 1,
-        zIndex: 2,
-        shadowOffset: { width: 0, height: 2 },
-        backgroundColor: '#F3F7FC',
+        marginHorizontal: 2,
+        backgroundColor: '#F1F1F1',
+        borderBottomLeftRadius: 4,
+        borderBottomRightRadius: 4,
+        paddingBottom: 9,
+        paddingHorizontal: 8,
       }}
       >
-        {extrasArray.length > 0 && (
-          <Addon
-            title={extrasArray[0].name}
-            number={extrasArray.length - 1}
-            onPress={props.onPressAddons}
-            length={`${extrasLength.asMinutes()} min`}
-          />
-        )}
-        {extrasArray.length > 0 && props.required !== null && (
-          <InputDivider style={styles.middleSectionDivider} />
-        )}
-        {props.required !== null && (
-          <Addon
-            required
-            icon="times"
-            title={props.required.name}
-            length={`${moment.duration(props.required.maxDuration).asMinutes()} min`}
-            onPress={props.onPressRequired}
-          />
-        )}
+        <Text style={{
+          fontSize: 9,
+          lineHeight: 22,
+          color: '#727A8F',
+        }}
+        >ADD-ONS / RECOMMENDED / REQUIRED
+        </Text>
+        <View style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 4,
+          borderBottomColor: 'transparent',
+          borderTopColor: 'transparent',
+          borderColor: '#F4F7FC',
+          borderWidth: 1,
+          shadowColor: '#000000',
+          shadowOpacity: 0.2,
+          shadowRadius: 2,
+          elevation: 1,
+          zIndex: 2,
+          shadowOffset: { width: 0, height: 2 },
+          backgroundColor: '#F3F7FC',
+        }}
+        >
+          {extrasArray.length > 0 && (
+            <Addon
+              title={extrasArray[0].name}
+              number={extrasArray.length - 1}
+              onPress={props.onPressAddons}
+              length={`${extrasLength.asMinutes()} min`}
+            />
+          )}
+          {extrasArray.length > 0 && props.required !== null && (
+            <InputDivider style={styles.middleSectionDivider} />
+          )}
+          {props.required !== null && (
+            <Addon
+              required
+              icon="times"
+              title={props.required.name}
+              length={`${moment.duration(props.required.maxDuration).asMinutes()} min`}
+              onPress={props.onPressRequired}
+            />
+          )}
+        </View>
       </View>
     </Animated.View>
   );
@@ -262,15 +261,15 @@ const Addon = props => (
 const ConflictBox = props => (
   <SalonTouchableOpacity
     style={[{
-    alignSelf: 'stretch',
-    backgroundColor: '#FFF7CC',
-    borderRadius: 4,
-    marginVertical: 8,
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    height: 32,
-    alignItems: 'center',
-  }, props.style]}
+      alignSelf: 'stretch',
+      backgroundColor: '#FFF7CC',
+      borderRadius: 4,
+      marginVertical: 8,
+      flexDirection: 'row',
+      paddingHorizontal: 12,
+      height: 32,
+      alignItems: 'center',
+    }, props.style]}
     onPress={() => props.onPress()}
   >
     <View style={{
@@ -310,6 +309,7 @@ export default class NewApptSlide extends React.Component {
     this.state = {
       isLoading: false,
       visible: false,
+      isAnimating: false,
       // isBooking: false,
       canBook: false,
       service: null,
@@ -333,14 +333,6 @@ export default class NewApptSlide extends React.Component {
       this.hidePanel();
     }
   }
-  // shouldComponentUpdate(nextProps) {
-  //   if (nextProps.provider !== this.state.provider) {
-  //     this.setState({ provider: nextProps.provider });
-  //     return true;
-  //   }
-
-  //   return false;
-  // }
 
   animateHeight = value => Animated.timing(
     this.state.height,
@@ -374,17 +366,20 @@ export default class NewApptSlide extends React.Component {
     }
   }
 
-  setProvider = provider => this.setState({ provider }, () => {
-    this.showPanel().checkConflicts();
-  })
+  setProvider = (provider) => {
+    this.props.onChangeProvider(provider);
+    return this.showPanel().checkConflicts();
+  }
 
   resetTimeForServices = (items, index, initialFromTime) => {
     items.forEach((item, i) => {
       if (i > index) {
         const prevItem = items[i - 1];
 
-        item.fromTime = prevItem && prevItem.toTime ? moment(prevItem.toTime) : initialFromTime;
-        item.toTime = moment(item.fromTime).add(moment.duration(item.service ? item.service.maxDuration : item.maxDuration));
+        item.fromTime = prevItem && prevItem.toTime ?
+          moment(prevItem.toTime) : initialFromTime;
+        item.toTime = moment(item.fromTime).add(moment.duration(item.service ?
+          item.service.maxDuration : item.maxDuration));
       }
     });
 
@@ -437,11 +432,9 @@ export default class NewApptSlide extends React.Component {
   async checkConflicts() {
     const {
       client,
-      provider,
     } = this.state;
-    const { date, startTime } = this.props;
+    const { date, startTime, provider } = this.props;
     const services = this.getAllServices();
-    const servicesToCheck = [];
     this.setState({
       conflicts: [],
       isLoading: true,
@@ -458,7 +451,6 @@ export default class NewApptSlide extends React.Component {
     };
     services.forEach((service) => {
       conflictData.items.push({
-        // appointmentId: serviceItem.service.id ? serviceItem.service.id : null,
         clientId: client.id,
         serviceId: service.id,
         employeeId: provider.id,
@@ -477,26 +469,26 @@ export default class NewApptSlide extends React.Component {
       conflicts,
       isLoading: false,
     });
-
-    return this;
   }
 
   canBook = () => {
     const {
       service,
       client,
-      provider,
       conflicts,
       isLoading,
-      // isBooking,
     } = this.state;
+    const {
+      provider,
+      isBooking,
+    } = this.props;
     if (
       service === null ||
       client === null ||
       provider === null ||
       conflicts.length > 0 ||
       isLoading ||
-      this.props.isBooking
+      isBooking
     ) {
       return false;
     }
@@ -511,13 +503,12 @@ export default class NewApptSlide extends React.Component {
     const {
       service,
       client,
-      provider,
       addons,
       required,
       isRequested,
       recommended,
     } = this.state;
-    const { startTime } = this.props;
+    const { startTime, provider } = this.props;
     const totalServices = [
       required,
       ...recommended,
@@ -542,55 +533,84 @@ export default class NewApptSlide extends React.Component {
     return this.props.handleBook(appt);
   }
 
-  onItemPress = () => {}
-
-  addServiceItem = (service) => {
-    const {
-      client,
-      provider,
-      startTime,
-      serviceItems,
-    } = this.state;
-    const fromTime = moment(startTime).add(this.getTotalLength()).format('hh:mm:ss');
-    const endTime = moment(fromTime).add(moment.duration(service.maxDuration)).format('hh:mm:ss');
-    serviceItems.push({
-      service,
-      client,
-      employee: provider,
-      fromTime,
-      endTime,
-    });
-
-    this.setState({ serviceItems });
-  }
+  onItemPress = () => { }
 
   showPanel = () => {
-    this.animateHeight(580).start(() => {
-      this.props.show();
-      Animated.timing(
-        this.state.addonsHeight,
-        {
-          toValue: 500,
-          duration: 500,
-        },
-      ).start();
-    });
+    if (!this.state.isAnimating) {
+      this.setState({ isAnimating: true }, () => {
+        this.animateHeight(580).start(() => {
+          this.props.show();
+          this.setState({ isAnimating: false }, () => {
+            if (this.shouldShowExtras()) {
+              Animated.timing(
+                this.state.addonsHeight,
+                {
+                  toValue: 500,
+                  duration: 500,
+                },
+              ).start();
+            }
+          });
+        });
+      });
+    }
     return this;
   }
 
-  hidePanel = () => {
-    Animated.timing(
-      this.state.addonsHeight,
-      {
-        toValue: 0,
-        duration: 150,
-      },
-    ).start(() => {
-      this.animateHeight(0).start(() => {
-        this.props.hide();
+  hidePanel = (callback = () => {}) => {
+    if (!this.state.isAnimating) {
+      this.setState({ isAnimating: true }, () => {
+        const animateClose = () => {
+          this.animateHeight(0).start(() => {
+            this.props.hide();
+            this.setState({ isAnimating: false }, callback);
+          });
+        };
+        if (this.shouldShowExtras()) {
+          Animated.timing(
+            this.state.addonsHeight,
+            {
+              toValue: 0,
+              duration: 500,
+            },
+          ).start(() => animateClose());
+        } else {
+          animateClose();
+        }
       });
-    });
+    }
+
     return this;
+  }
+
+  goToFullForm = () => {
+    const {
+      client,
+      service,
+      isRequested,
+    } = this.state;
+    const {
+      date,
+      provider: bookedByEmployee,
+      startTime,
+    } = this.props;
+    if (!provider) {
+      return alert('Please select a provider first');
+    }
+    const fromTime = moment(startTime, 'HH:mm');
+    const toTime = moment(fromTime).add(this.getTotalLength());
+    const services = this.getAllServices();
+
+    const newAppt = {
+      date,
+      bookedByEmployee,
+      service,
+      client,
+      fromTime,
+      toTime,
+      requested: isRequested,
+    };
+    this.hidePanel().props.navigation.navigate('NewAppointment', { newAppt });
   }
 
   cancelButton = () => ({
@@ -610,17 +630,22 @@ export default class NewApptSlide extends React.Component {
     const {
       client,
       service,
-      provider,
       isRequested,
     } = this.state;
-
+    const {
+      date,
+      startTime,
+      provider,
+      filterProviders,
+      navigation,
+    } = this.props;
     const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
     const selectedStyle = { fontSize: 14, lineHeight: 22, color: this.state.conflicts.length > 0 ? 'red' : 'black' };
     return (
       <Modal
         visible={this.props.visible}
         transparent
-        style={{ paddingBottom: 50 }}
+        style={{ marginBottom: 60 }}
       >
         <View style={[
           styles.container,
@@ -665,12 +690,12 @@ export default class NewApptSlide extends React.Component {
             </View>
             <View style={styles.body}>
               <ScrollView style={{ paddingVertical: 15 }}>
-                <Text style={styles.dateText}>{moment(this.props.date).format('ddd, MMM D')}</Text>
+                <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
                 <AppointmentTime
                   containerStyle={{
                     justifyContent: 'flex-start',
                   }}
-                  startTime={this.props.startTime}
+                  startTime={startTime}
                   endTime={this.getEndTime()}
                 />
                 <View style={{
@@ -701,7 +726,7 @@ export default class NewApptSlide extends React.Component {
                     contentStyle={contentStyle}
                     selectedStyle={selectedStyle}
                     onPress={() => this.hidePanel()}
-                    navigate={this.props.navigation.navigate}
+                    navigate={navigation.navigate}
                     headerProps={{ title: 'Clients', ...this.cancelButton() }}
                     iconStyle={{ color: '#115ECD' }}
                     onChange={this.setClient}
@@ -720,7 +745,7 @@ export default class NewApptSlide extends React.Component {
                     placeholderStyle={styles.placeholderText}
                     contentStyle={contentStyle}
                     onPress={() => this.hidePanel()}
-                    navigate={this.props.navigation.navigate}
+                    navigate={navigation.navigate}
                     headerProps={{ title: 'Services', ...this.cancelButton() }}
                     iconStyle={{ color: '#115ECD' }}
                     onChange={this.setService}
@@ -731,7 +756,7 @@ export default class NewApptSlide extends React.Component {
                     apptBook
                     filterByService
                     isRequested={isRequested}
-                    filterList={this.props.filterProviders}
+                    filterList={filterProviders}
                     rootStyle={{ height: 39 }}
                     selectedProvider={provider}
                     placeholder="Select a Provider"
@@ -741,7 +766,7 @@ export default class NewApptSlide extends React.Component {
                     iconStyle={{ color: '#115ECD' }}
                     avatarSize={20}
                     onPress={() => this.hidePanel()}
-                    navigate={this.props.navigation.navigate}
+                    navigate={navigation.navigate}
                     headerProps={{ title: 'Providers', ...this.cancelButton() }}
                     onChange={this.setProvider}
                   />
@@ -762,13 +787,16 @@ export default class NewApptSlide extends React.Component {
                 {this.state.conflicts.length > 0 && (
                   <ConflictBox
                     onPress={() => {
-                      this.hidePanel().props.navigation.navigate('Conflicts', {
-                        date: this.props.date,
-                        conflicts: this.state.conflicts,
-                        startTime: this.props.startTime,
-                        endTime: moment(this.props.startTime).add(moment.duration(this.getTotalLength())),
-                        handleGoBack: () => this.showPanel(),
-                      });
+                      const callback = () => {
+                        this.props.navigation.navigate('Conflicts', {
+                          date,
+                          conflicts: this.state.conflicts,
+                          startTime,
+                          endTime: moment(startTime).add(moment.duration(this.getTotalLength())),
+                          handleGoBack: () => this.showPanel(),
+                        });
+                      };
+                      return this.hidePanel(callback);
                     }}
                   />
                 )}
