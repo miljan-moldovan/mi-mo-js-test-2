@@ -477,7 +477,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   getRoomInfo = roomId => new Promise((resolve, reject) => {
-    Store.getRooms())
+    Store.getRooms()
       .then(rooms => resolve(rooms.find(room => room.id === roomId)))
       .catch(err => reject(err));
   })
