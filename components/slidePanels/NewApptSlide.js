@@ -14,6 +14,7 @@ import {
   compact,
   get,
   slice,
+  isFunction,
 } from 'lodash';
 
 import { AppointmentBook } from '../../utilities/apiWrapper';
@@ -435,39 +436,40 @@ export default class NewApptSlide extends React.Component {
     } = this.state;
     const { date, startTime, provider } = this.props;
     const services = this.getAllServices();
+    if (!client || !provider || !services.length > 0) {
+      return;
+    }
     this.setState({
       conflicts: [],
       isLoading: true,
-    });
-    if (!client || !provider || services.length <= 0) {
-      return;
-    }
-    this.resetTimeForServices(services, -1, moment(startTime, 'HH:mm'));
+    }, async () => {
+      this.resetTimeForServices(services, -1, moment(startTime, 'HH:mm'));
 
-    const conflictData = {
-      date: date.format('YYYY-MM-DD'),
-      clientId: client.id,
-      items: [],
-    };
-    services.forEach((service) => {
-      conflictData.items.push({
+      const conflictData = {
+        date: date.format('YYYY-MM-DD'),
         clientId: client.id,
-        serviceId: service.id,
-        employeeId: provider.id,
-        fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
-        toTime: service.toTime.format('HH:mm:ss', { trim: false }),
-        bookBetween: false,
-        roomId: get(get(service, 'room', null), 'id', null),
-        roomOrdinal: get(service, 'roomOrdinal', null),
-        resourceId: get(get(service, 'resource', null), 'id', null),
-        resourceOrdinal: get(service, 'resourceOrdinal', null),
+        items: [],
+      };
+      services.forEach((service) => {
+        conflictData.items.push({
+          clientId: client.id,
+          serviceId: service.id,
+          employeeId: provider.id,
+          fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
+          toTime: service.toTime.format('HH:mm:ss', { trim: false }),
+          bookBetween: false,
+          roomId: get(get(service, 'room', null), 'id', null),
+          roomOrdinal: get(service, 'roomOrdinal', null),
+          resourceId: get(get(service, 'resource', null), 'id', null),
+          resourceOrdinal: get(service, 'resourceOrdinal', null),
+        });
       });
-    });
 
-    const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
-    this.setState({
-      conflicts,
-      isLoading: false,
+      const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
+      this.setState({
+        conflicts,
+        isLoading: false,
+      });
     });
   }
 
@@ -557,13 +559,18 @@ export default class NewApptSlide extends React.Component {
     return this;
   }
 
-  hidePanel = (callback = () => {}) => {
+  hidePanel = (callback = false) => {
     if (!this.state.isAnimating) {
       this.setState({ isAnimating: true }, () => {
         const animateClose = () => {
           this.animateHeight(0).start(() => {
             this.props.hide();
-            this.setState({ isAnimating: false }, callback);
+            this.setState({ isAnimating: false }, () => {
+              if (isFunction(callback)) {
+                return callback();
+              }
+              return false;
+            });
           });
         };
         if (this.shouldShowExtras()) {
@@ -594,7 +601,7 @@ export default class NewApptSlide extends React.Component {
       provider: bookedByEmployee,
       startTime,
     } = this.props;
-    if (!provider) {
+    if (!bookedByEmployee) {
       return alert('Please select a provider first');
     }
     const fromTime = moment(startTime, 'HH:mm');
@@ -610,6 +617,7 @@ export default class NewApptSlide extends React.Component {
       toTime,
       requested: isRequested,
     };
+
     this.hidePanel().props.navigation.navigate('NewAppointment', { newAppt });
   }
 
@@ -651,7 +659,7 @@ export default class NewApptSlide extends React.Component {
           styles.container,
         ]}
         >
-          <TouchableWithoutFeedback onPress={this.hidePanel}>
+          <TouchableWithoutFeedback onPress={() => this.hidePanel()}>
             <View style={{ flex: 1, backgroundColor: 'transparent' }} />
           </TouchableWithoutFeedback>
           <Animated.View style={{
@@ -662,7 +670,7 @@ export default class NewApptSlide extends React.Component {
             <View style={styles.header}>
               <SalonTouchableOpacity
                 style={{ flex: 4 / 17, justifyContent: 'flex-start' }}
-                onPress={this.hidePanel}
+                onPress={() => this.hidePanel()}
               >
                 <Text style={{
                   color: 'white',
@@ -867,15 +875,15 @@ export default class NewApptSlide extends React.Component {
                   >
                     <Button
                       style={{ flex: 8 / 17 }}
-                      onPress={() => this.setState({ canBook: !this.state.canBook })}
-                      disabled={this.state.canBook}
+                      onPress={this.goToFullForm}
+                      // disabled={this.state.canBook}
                       backgroundColor="white"
                       color="#115ECD"
                       text="MORE OPTIONS"
                     />
                     <Button
                       style={{ flex: 8 / 17 }}
-                      onPress={() => this.setState({ canBook: !this.state.canBook })}
+                      onPress={() => alert('Not Implemented')}
                       disabled={this.state.canBook}
                       backgroundColor="white"
                       color="#115ECD"
