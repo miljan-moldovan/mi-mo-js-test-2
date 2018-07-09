@@ -305,27 +305,27 @@ const ConflictBox = props => (
 export default class NewApptSlide extends React.Component {
   constructor(props) {
     super(props);
-
-    const provider = this.props.provider || null;
-    this.state = {
-      isLoading: false,
-      visible: false,
-      isAnimating: false,
-      // isBooking: false,
-      canBook: false,
-      service: null,
-      client: null,
-      provider,
-      addons: [],
-      recommended: [],
-      required: null,
-      conflicts: [],
-      isRequested: true,
-      serviceItems: [],
-      addonsHeight: new Animated.Value(0),
-      height: new Animated.Value(0),
-    };
+    this.state = this.getInitialState();
   }
+
+  getInitialState = () => ({
+    isLoading: false,
+    visible: false,
+    isAnimating: false,
+    canBook: false,
+    service: null,
+    client: null,
+    addons: [],
+    recommended: [],
+    required: null,
+    conflicts: [],
+    isRequested: true,
+    serviceItems: [],
+    addonsHeight: new Animated.Value(0),
+    height: new Animated.Value(0),
+  });
+
+  resetForm = () => this.setState(this.getInitialState())
 
   componentWillReceiveProps(newProps) {
     if (!this.props.visible && newProps.visible) {

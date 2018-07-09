@@ -172,11 +172,9 @@ export default class AppointmentScreen extends Component {
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
-    const { newAppointmentActions } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
-    const endTime = moment(startTime).add(15, 'minute');
 
-    // newAppointmentActions.cleanForm();
+    this.newApptSlide.resetForm();
     const newState = {
       newApptStartTime: startTime,
     };
@@ -379,6 +377,7 @@ export default class AppointmentScreen extends Component {
         )}
 
         <NewApptSlide
+          ref={newApptSlide => this.newApptSlide = newApptSlide}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           date={this.state.newApptDate}
