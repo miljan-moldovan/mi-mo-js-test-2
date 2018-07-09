@@ -162,7 +162,7 @@ class Card extends Component {
                 <Text
                   style={[styles.clientText, { flex: 1, flexWrap: 'wrap', color: clientTextColor }]}
                 >
-                  {clientName}dddddd
+                  {clientName}
                 </Text>
               </View>
               <Text

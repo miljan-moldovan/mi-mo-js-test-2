@@ -12,7 +12,7 @@ import {
 } from '../../components/formHelpers';
 import AuditInformation from '../AuditInformation';
 
-import apiWrapper from '../../utilities/apiWrapper';
+import { Appointment } from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   modal: {
@@ -316,9 +316,7 @@ export default class SalonAppointmentSlide extends React.Component {
     const id = get(appointment, 'id', false);
     if (id) {
       this.setState({ isLoadingAudits: true }, () => {
-        apiWrapper.doRequest('getApptAudit', {
-          path: { id },
-        })
+        Appointment.getApptAudit(id)
           .then(auditAppt => this.setState({ isLoadingAudits: false, auditAppt }))
           .catch(err => console.warn(err));
       });
