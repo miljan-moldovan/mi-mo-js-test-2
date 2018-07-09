@@ -35,7 +35,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
-import apiWrapper from '../../utilities/apiWrapper';
+import { Store, Client } from '../../utilities/apiWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -477,13 +477,13 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   getRoomInfo = roomId => new Promise((resolve, reject) => {
-    apiWrapper.doRequest('getRooms', {})
+    Store.getRooms())
       .then(rooms => resolve(rooms.find(room => room.id === roomId)))
       .catch(err => reject(err));
   })
 
   getResourceInfo = resourceId => new Promise((resolve, reject) => {
-    apiWrapper.doRequest('getResources', {})
+    Store.getResources()
       .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
       .catch(err => reject(err));
   })
@@ -496,9 +496,8 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType,
     } = this.state;
 
-    apiWrapper.doRequest('setContactInformation', {
-      path: { id: client.id },
-      body: {
+    Client.putContactInformation(client.id ,
+      {
         id: client.id,
         email: clientEmail || null,
         phones: [
@@ -509,8 +508,7 @@ export default class NewAppointmentScreen extends React.Component {
           ...client.phones.filter(phone => phone.value && phone.type !== clientPhoneType),
         ],
         confirmationType: 1,
-      },
-    })
+      })
       .then((res) => {
 
       })
@@ -800,9 +798,7 @@ export default class NewAppointmentScreen extends React.Component {
       });
     });
 
-    apiWrapper.doRequest('checkConflicts', {
-      body: conflictData,
-    })
+    AppointmentBook.checkConflicts(conflictData)
       .then(conflicts => this.setState({
         conflicts,
         canSave: conflicts.length > 0 ? false : prevValue,
