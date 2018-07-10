@@ -369,7 +369,6 @@ const initialState = {
   startDate: moment(),
   endDate: moment(),
   dates: [moment()],
-  providerAppointments: [],
   roomAppointments: [],
   resourceAppointments: [],
   apptGridSettings: {
@@ -395,6 +394,7 @@ const initialState = {
   providerSchedule: [],
   showToast: false,
   blockTimes: [],
+  appointments: [],
 };
 
 export default function appointmentScreenReducer(state = initialState, action) {
