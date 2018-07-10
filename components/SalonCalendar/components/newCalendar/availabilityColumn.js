@@ -43,6 +43,7 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
     timeSplit = startTime.split(':');
     minutesSplit = timeSplit[1];
     style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
+    const availableText = item.availableSlots / item.totalSlots === 1 ? 'All available' : `${item.availableSlots} available`;
     return (
       <SalonTouchableOpacity
         wait={3000}
@@ -50,7 +51,7 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
         key={item.startTime}
         style={style}
       >
-        <Text style={styles.textStyle}>{`${item.availableSlots} available`}</Text>
+        <Text style={styles.textStyle}>{availableText}</Text>
       </SalonTouchableOpacity>
     );
   }

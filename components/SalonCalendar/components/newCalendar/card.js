@@ -246,7 +246,7 @@ class Card extends Component {
     const serviceTextColor = '#1D1E29';
     const clientTextColor = '#2F3142';
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const flexWrap = this.state.height._value > 30 ? { flexWrap: 'wrap' } :{ ellipsizeMode: 'tial'} ;
+    const flexWrap = this.state.height._value > 30 ? { flexWrap: 'wrap' } : { ellipsizeMode: 'tail'} ;
     return (
       <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
