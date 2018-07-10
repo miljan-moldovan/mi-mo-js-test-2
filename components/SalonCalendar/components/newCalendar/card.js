@@ -246,17 +246,17 @@ class Card extends Component {
     const serviceTextColor = '#1D1E29';
     const clientTextColor = '#2F3142';
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const flexWrap = this.state.height._value > 28 ? { flexWrap: 'wrap' } : '';
+    const flexWrap = this.state.height._value > 30 ? { flexWrap: 'wrap' } :{ ellipsizeMode: 'tial'} ;
     return (
       <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
         <View style={{ flexDirection: 'row', paddingHorizontal: 2 }}>
           {this.renderBadges()}
-          <View>
+          <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row' }}>
               <Text
-                numberOfLines={flexWrap ? 0 : 1}
-                style={[styles.clientText, { width: '100%', color: clientTextColor }, flexWrap]}
+                numberOfLines={this.state.height._value > 30 ? 0 : 1}
+                style={[styles.clientText, { flex: 1, color: clientTextColor }, flexWrap]}
               >
                 {clientName}
               </Text>
