@@ -189,26 +189,28 @@ let headers = {
 let axiosInstance = null;
 
 const getApiInstance = async () => {
-  try {
-    const apiURL = await AsyncStorage.getItem(URLKEY);
-    const store = await AsyncStorage.getItem(STOREKEY);
-    if (apiURL !== null || store !== null) {
-      headers = { ...headers, 'X-SU-store-key': store };
-      // setting option domains parameter during fetch doesn't work, so we need to reset the API
-      // fetchData.domains = { default: apiURL };
-      BASEURL = apiURL;
-    } else {
-      BASEURL = 'https://zenithnew-mob.qa.cicd.salondev.net/api/v1/';
-      headers = { ...headers, 'X-SU-store-key': 1 };
-      axiosInstance = axios.create({
-        baseURL: 'https://zenithnew-mob.qa.cicd.salondev.net/api/v1/',
-        timeout: 3000,
-        headers,
-      });
-    }
-  } catch (error) {
-    // Error retrieving data, keep default settings
+  if (!axiosInstance) {
+    try {
+      const apiURL = await AsyncStorage.getItem(URLKEY);
+      const store = await AsyncStorage.getItem(STOREKEY);
+      if (apiURL !== null || store !== null) {
+        headers = { ...headers, 'X-SU-store-key': store };
+        // setting option domains parameter during fetch doesn't work, so we need to reset the API
+        // fetchData.domains = { default: apiURL };
+        BASEURL = apiURL;
+      } else {
+        BASEURL = 'https://zenithnew-mob.qa.cicd.salondev.net/api/v1/';
+        headers = { ...headers, 'X-SU-store-key': 1 };
+      }
+    } catch (error) {
+      // Error retrieving data, keep default settings
 
+    }
+    axiosInstance = axios.create({
+      baseURL: BASEURL,
+      timeout: 3000,
+      headers,
+    });
   }
   return axiosInstance;
 };

@@ -75,7 +75,7 @@ class ClientMergeItem extends React.PureComponent {
         {this.renderCheckContainer()}
         <View style={styles.itemSummary}>
           <View>
-            <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="middle">{fullName}</Text>
+            <Text style={styles.clientName} numberOfLines={1} ellipsizemode="middle">{fullName}</Text>
             <View style={styles.clientMobileAddress}>
               <Icon name="mobile" type="regular" size={16} color="#4D5067" style={{ marginRight: 5 }} />
               <Text style={styles.clientMobileAddressText} numberOfLines={1} ellipsizeMode="tail">

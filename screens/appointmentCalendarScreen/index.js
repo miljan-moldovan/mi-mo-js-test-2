@@ -5,6 +5,8 @@ import appointmentActions from '../../actions/appointment';
 import newAppointmentActions from '../../actions/newAppointment';
 import modifyApptActions from '../modifyAppointmentScreen/redux';
 import AppointmentScreen from './components/appointmentScreen';
+import visbleBlocksSelector from '../../redux/selectors/blocksSelector';
+import visibleApptsSelector from '../../redux/selectors/appointmentSelector';
 
 const mapStateToProps = state => ({
   appointmentScreenState: state.appointmentScreenReducer,
@@ -12,6 +14,8 @@ const mapStateToProps = state => ({
   providersState: state.providersReducer,
   newAppointmentState: state.newAppointmentReducer,
   modifyApptState: state.modifyApptReducer,
+  blockTimes: visbleBlocksSelector(state),
+  appointments: visibleApptsSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({
