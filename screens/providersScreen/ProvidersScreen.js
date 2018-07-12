@@ -342,9 +342,6 @@ class ProviderScreen extends React.Component {
           onChangeText={(text) => {
             this.filterList(text);
           }}
-          // filterList={(searchText) => {
-          //   debugger//eslint-disable-line
-          // }}
         />
 
         <View style={{ flexDirection: 'row' }}>

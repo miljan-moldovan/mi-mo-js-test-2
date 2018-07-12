@@ -27,6 +27,7 @@ export default class Board extends Component {
       selectedProvider,
       startTime,
       displayMode,
+      storeSchedule,
     } = this.props;
     const isDate = selectedFilter === 'providers' && selectedProvider !== 'all';
     return (
@@ -42,15 +43,15 @@ export default class Board extends Component {
         apptGridSettings={apptGridSettings}
         onCellPressed={this.props.onCellPressed}
         showRoomAssignments={showRoomAssignments}
+        storeSchedule={storeSchedule}
       />
     );
   }
 
   render() {
     const {
-      columns, apptGridSettings, availability, showAvailability,
+      columns, apptGridSettings, availability, showAvailability
     } = this.props;
-
     return (
       <View style={styles.container}>
         { showAvailability ?
