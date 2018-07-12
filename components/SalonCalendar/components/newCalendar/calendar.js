@@ -707,8 +707,9 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay
+      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule
     } = this.props;
+    
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
     const {
@@ -756,6 +757,7 @@ export default class Calendar extends Component {
                 providerSchedule={providerSchedule}
                 availability={availability}
                 isLoading={isLoading}
+                storeSchedule={storeSchedule}
               />
               { this.renderCards() }
               { showAvailability ? this.renderBlockTimes() : null }

@@ -38,7 +38,7 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
   let timeSplit;
   let minutesSplit;
   let style;
-  if (item) {
+  if (item && item.availableSlots > 0) {
     startTime = moment(item.startTime, 'HH:mm').add(15, 'm').format('HH:mm');
     timeSplit = startTime.split(':');
     minutesSplit = timeSplit[1];
@@ -74,8 +74,8 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
 const availabilityColumn = ({ availability, apptGridSettings, onPress, providers }) => (
   <View>
     {
-      availability.length > 0 ? availability.map((item, index) => renderItems(item, index, apptGridSettings, onPress, providers))
-      : times(apptGridSettings.numOfRow, index => renderItems(null, index, apptGridSettings, onPress, providers))
+      availability.length > 0 ? availability.map((item, index) =>
+        renderItems(item, index, apptGridSettings, onPress, providers)) : null
     }
   </View>
 );

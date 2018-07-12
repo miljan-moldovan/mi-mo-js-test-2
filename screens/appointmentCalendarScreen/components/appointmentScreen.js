@@ -281,7 +281,6 @@ export default class AppointmentScreen extends Component {
       apptGridSettings,
       providerAppointments,
       providers,
-      availability,
       showToast,
       filterOptions,
       rooms,
@@ -289,8 +288,9 @@ export default class AppointmentScreen extends Component {
       resources,
       deskStaff,
       resourceAppointments,
+      storeSchedule
     } = this.props.appointmentScreenState;
-    const { appointments, blockTimes } = this.props;
+    const { availability, appointments, blockTimes } = this.props;
     const { bufferVisible } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
@@ -359,6 +359,7 @@ export default class AppointmentScreen extends Component {
           filterOptions={filterOptions}
           setSelectedProvider={this.setSelectedProvider}
           setSelectedDay={this.setSelectedDay}
+          storeSchedule={storeSchedule}
         />
         {
           isLoading ?
