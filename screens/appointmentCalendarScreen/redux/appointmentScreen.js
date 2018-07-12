@@ -107,7 +107,6 @@ const setGridAllViewSuccess =
     const { scheduledIntervals } = schedule;
     const step = 15;
     // min start time calulation
-    debugger
     const minScheduleTime = scheduledIntervals.length > 0 ? moment(scheduledIntervals[0].start, 'HH:mm') : moment('07:00', 'HH:mm');
     const minAppointmentStartTime = appointments.length > 0 ? moment(minBy(appointments, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minScheduleTime;
     const minBlokTimeStartTime = blockTimes.length > 0 ? moment(minBy(blockTimes, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minScheduleTime;
@@ -230,7 +229,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           })
           .catch((ex) => {
             // TODO
-            debugger
+            console.log(ex);
           });
       } else {
         switch (pickerMode) {
@@ -551,7 +550,6 @@ export default function appointmentScreenReducer(state = initialState, action) {
       };
     }
     case SET_GRID_ALL_VIEW_SUCCESS: {
-      debugger
       return {
         ...state,
         isLoading: false,
