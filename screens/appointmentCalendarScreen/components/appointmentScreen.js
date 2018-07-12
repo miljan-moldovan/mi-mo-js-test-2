@@ -100,15 +100,10 @@ export default class AppointmentScreen extends Component {
 
   componentDidMount() {
     // super(props);
-    const props = this.props;
+    const { props } = this;
     props.appointmentCalendarActions.setStoreWeeklySchedule();
-    let filterProvider = 'all';
-    const { params } = this.props.navigation.state;
-    if (params !== undefined) {
-      if ('filterProvider' in params) {
-        filterProvider = this.props.navigation.state.params.filterProvider;
-      }
-    }
+    const params = props.navigation.state.params || {};
+    const filterProvider = params.filterProvider || 'all';
 
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
@@ -177,11 +172,9 @@ export default class AppointmentScreen extends Component {
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
-    const { newAppointmentActions } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
-    const endTime = moment(startTime).add(15, 'minute');
 
-    // newAppointmentActions.cleanForm();
+    this.newApptSlide.resetForm();
     const newState = {
       newApptStartTime: startTime,
     };
@@ -383,6 +376,7 @@ export default class AppointmentScreen extends Component {
         )}
 
         <NewApptSlide
+          ref={newApptSlide => this.newApptSlide = newApptSlide}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           date={this.state.newApptDate}
@@ -413,6 +407,7 @@ export default class AppointmentScreen extends Component {
                   visibleNewAppointment: true,
                 })));
           }}
+          onChangeProvider={newApptProvider => this.setState({ newApptProvider })}
         />
 
         <SalonDatePickerSlide
