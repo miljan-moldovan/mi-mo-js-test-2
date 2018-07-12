@@ -379,7 +379,7 @@ class ProviderScreen extends React.Component {
             { this.props.providersState.isLoading ?
               (
                 <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
-                  <ActivityIndicator size="small" color="rgba(0,0,0,.3)" />
+                  <ActivityIndicator />
                 </View>
               )
               : (

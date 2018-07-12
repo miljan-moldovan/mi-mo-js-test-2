@@ -15,27 +15,164 @@ export default class ServiceInput extends React.Component {
     super(props);
 
     this.state = {
-      labelText: 'labelText' in this.props ? this.props.labelText : 'Service',
-      selectedService: 'selectedService' in this.props ? this.props.selectedService : null,
+      isSelectingAddons: false,
+      isSelectingRecommended: false,
+      labelText: props.labelText || 'Service',
+      selectedService: props.selectedService || null,
+      addons: props.addons || [],
+      recommended: props.recommended || [],
+      required: props.required || null,
     };
   }
 
-  handleServiceSelection = selectedService => this.props.onChange(selectedService)
+  handleServiceSelection = ({
+    service, required,
+    addons, recommended,
+  }) => {
+    this.setState({
+      selectedService: service,
+      required,
+      addons,
+      recommended,
+    });
+    this.props.onChange({
+      service,
+      required,
+      addons,
+      recommended,
+    });
+  }
+
+  performOnChange = () => {
+    const {
+      addons,
+      required,
+      recommended,
+      selectedService,
+      isSelectingAddons,
+      isSelectingRecommended,
+    } = this.state;
+
+    if (!isSelectingAddons && !isSelectingRecommended) {
+      return this.props.onChange({
+        service: selectedService,
+        required,
+        addons,
+        recommended,
+      });
+    }
+  }
 
   handlePress = () => {
-    if (this.props.onPress) { this.props.onPress(); }
+    const {
+      navigate,
+      onPress = false,
+      apptBook = false,
+      selectedClient = null,
+      selectedProvider = null,
+      actionType = 'addons',
+      headerProps = {},
+    } = this.props;
+    const { selectedService } = this.state;
+    if (onPress) { onPress(); }
 
-    this.props.navigate(this.props.apptBook ? 'ApptBookService' : 'Services', {
-      selectedService: 'selectedService' in this.state ? this.state.selectedService : null,
-      actionType: 'update',
-      employeeId: this.props.selectedProvider && this.props.selectedProvider !== null ? this.props.selectedProvider.id : false,
-      filterByProvider: !!this.props.filterByProvider,
-      selectedProvider: this.props.selectedProvider ? this.props.selectedProvider : null,
-      headerProps: this.props.headerProps ? this.props.headerProps : {},
+    navigate(apptBook ? 'ApptBookService' : 'Services', {
+      actionType,
+      headerProps,
+      selectedClient,
+      selectedService,
+      selectedProvider,
+      employeeId: selectedProvider.id || false,
       dismissOnSelect: true,
+      filterByProvider: !!selectedProvider,
       selectExtraServices: true,
       onChangeService: service => this.handleServiceSelection(service),
     });
+  }
+
+  selectAddons = (callback = addons => addons) => {
+    const { selectedService } = this.state;
+    const { onPress = false } = this.props;
+    if (onPress) { onPress(); }
+    if (selectedService && selectedService.addons.length > 0) {
+      this.setState({
+        isSelectingAddons: true,
+      }, () => {
+        this.props.navigate('AddonServices', {
+          serviceTitle: selectedService.name,
+          services: selectedService.addons,
+          onSave: (addons) => {
+            // this.props.onChange({
+            //   service: this.state.selectedService,
+            //   addons,
+            //   recommended: this.state.recommended,
+            //   required: this.state.required,
+            // });
+            this.setState(state => ({
+              ...state,
+              addons,
+              isSelectingAddons: false,
+            }), this.performOnChange);
+          },
+        });
+      });
+    }
+    return this;
+  }
+
+  selectRecommended = (callback = recommended => recommended) => {
+    const { selectedService } = this.state;
+    const { onPress = false } = this.props;
+    if (onPress) { onPress(); }
+    if (selectedService && selectedService.recommendedServices.length > 0) {
+      this.setState({
+        isSelectingRecommended: true,
+      }, () => {
+        this.props.navigate('RecommendedServices', {
+          serviceTitle: selectedService.name,
+          services: selectedService.recommendedServices,
+          onSave: (recommended) => {
+            this.props.onChange({
+              service: this.state.selectedService,
+              addons: this.state.addons,
+              recommended,
+              required: this.state.required,
+            });
+            this.setState(state => ({
+              ...state,
+              recommended,
+              isSelectingRecommended: false,
+            }), this.performOnChange);
+          },
+        });
+      });
+    }
+    return this;
+  }
+
+  selectRequired = (callback = required => required) => {
+    const { selectedService } = this.state;
+    const { onPress = false } = this.props;
+    if (onPress) { onPress(); }
+    if (selectedService && selectedService.requiredServices.length > 0) {
+      this.props.navigate('RequiredServices', {
+        serviceTitle: selectedService.name,
+        services: selectedService.requiredServices,
+        onSave: (required) => {
+          this.props.onChange({
+            service: this.state.selectedService,
+            addons: this.state.addons,
+            required,
+            recommended: this.state.recommended,
+          });
+          this.setState(state => ({
+            ...state,
+            required,
+          }));
+        },
+      });
+    }
+    return this;
   }
 
   render() {

@@ -155,43 +155,57 @@ class ServicesScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.getServices();
     const params = this.props.navigation.state.params || {};
+    const action = params.action || 'services';
     const selectedService = params.selectedService || null;
+    const selectedAddons = params.selectedAddons || [];
+    const selectedRecommendeds = params.selectedRecommendeds || [];
+    const selectedRequired = params.selectedRequired || null;
 
+    switch (action) {
+      case 'addons':
+        this.selectAddonServices();
+        break;
+      case 'recommended':
+        this.selectRecommendedServices();
+        break;
+      case 'required':
+        this.selectRequiredService();
+        break;
+      default:
+        break;
+    }
+
+    this.getServices();
     this.props.servicesActions.setSelectedService(selectedService);
 
+    this.state = {
+      hasViewedAddons: false,
+      hasViewedRecommended: false,
+      hasViewedRequired: false,
+      selectedAddons,
+      selectedRecommendeds,
+      selectedRequired,
+      prevHeaderProps: {
+      },
+      headerProps: {
+        title: 'Services',
+        subTitle: null,
+        leftButtonOnPress: () => { this.goBack(); },
+        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      },
+      defaultHeaderProps: {
+        title: 'Services',
+        subTitle: null,
+        leftButtonOnPress: () => { this.goBack(); },
+        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      },
+    };
     this.props.navigation.setParams({
       selectedService,
       ignoreNav: false,
       defaultProps: this.state.defaultHeaderProps,
     });
-  }
-
-  state = {
-    hasViewedAddons: false,
-    hasViewedRecommended: false,
-    hasViewedRequired: false,
-    selectedAddons: [],
-    selectedRecommendeds: [],
-    selectedRequired: null,
-    prevHeaderProps: {
-    },
-    headerProps: {
-      title: 'Services',
-      subTitle: null,
-      leftButtonOnPress: () => { this.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-    },
-    defaultHeaderProps: {
-      title: 'Services',
-      subTitle: null,
-      leftButtonOnPress: () => { this.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-    },
-  }
-
-  componentWillMount() {
   }
 
   getServices = () => {

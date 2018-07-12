@@ -160,6 +160,7 @@ const AddonsContainer = (props) => {
               required
               icon="times"
               title={props.required.name}
+              onPressIcon={props.onRemoveRequired}
               length={`${moment.duration(props.required.maxDuration).asMinutes()} min`}
               onPress={props.onPressRequired}
             />
@@ -249,12 +250,14 @@ const Addon = props => (
           {props.length}
         </Text>
       )}
-      <Icon
-        name={props.required ? 'times' : 'angleRight'}
-        type="light"
-        color="#115ECD"
-        size={props.required ? 15 : 24}
-      />
+      <SalonTouchableOpacity onPress={props.onPressIcon || null}>
+        <Icon
+          name={props.required ? 'times' : 'angleRight'}
+          type="light"
+          color="#115ECD"
+          size={props.required ? 15 : 24}
+        />
+      </SalonTouchableOpacity>
     </View>
   </SalonTouchableOpacity>
 );
@@ -535,7 +538,7 @@ export default class NewApptSlide extends React.Component {
     return this.props.handleBook(appt);
   }
 
-  onItemPress = () => { }
+  handleTabChange = () => ({})
 
   showPanel = () => {
     if (!this.state.isAnimating) {
@@ -638,14 +641,17 @@ export default class NewApptSlide extends React.Component {
     const {
       client,
       service,
+      addons,
+      required,
+      recommended,
       isRequested,
     } = this.state;
     const {
       date,
-      startTime,
       provider,
-      filterProviders,
+      startTime,
       navigation,
+      filterProviders,
     } = this.props;
     const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
     const selectedStyle = { fontSize: 14, lineHeight: 22, color: this.state.conflicts.length > 0 ? 'red' : 'black' };
@@ -691,7 +697,7 @@ export default class NewApptSlide extends React.Component {
                   selectedTextColor="#115ECD"
                   unSelectedTextColor="#FFFFFF"
                   textFontSize={13}
-                  onItemPress={this.handleTypeChange}
+                  onItemPress={this.handleTabChange}
                   selectedIndex={this.state.selectedFilter}
                 />
               </View>
@@ -747,6 +753,9 @@ export default class NewApptSlide extends React.Component {
                     ref={(serviceInput) => { this.serviceInput = serviceInput; }}
                     selectedProvider={provider}
                     selectedService={service}
+                    addons={addons}
+                    required={required}
+                    recommended={recommended}
                     rootStyle={{ height: 39 }}
                     selectedStyle={selectedStyle}
                     placeholder="Select a Service"
@@ -786,11 +795,20 @@ export default class NewApptSlide extends React.Component {
                   recommended={this.state.recommended}
                   height={this.state.addonsHeight}
                   onPressAddons={() => {
-
+                    this.serviceInput.selectRecommended().selectAddons().performOnChange();
+                    // this.serviceInput.selectAddons();
+                    // this.showPanel().checkConflicts();
+                    // this.setState({
+                    //   addons: selectedAddons,
+                    //   recommended: selectedRecommended,
+                    // }, () => {
+                    //   this.showPanel().checkConflicts();
+                    // });
                   }}
                   onPressRequired={() => {
-
+                    this.serviceInput.selectRequired();
                   }}
+                  onRemoveRequired={() => this.setState({ required: null }, this.checkConflicts)}
                 />
                 {this.state.conflicts.length > 0 && (
                   <ConflictBox
