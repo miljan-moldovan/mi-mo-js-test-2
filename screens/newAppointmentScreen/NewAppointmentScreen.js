@@ -35,7 +35,8 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
-import { Store, Client } from '../../utilities/apiWrapper';
+import { Store, Client, AppointmentBook } from '../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../utilities/apiWrapper/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -177,7 +178,7 @@ const SalonAppointmentTime = props => (
 const ServiceCard = ({ data, ...props }) => {
   const employee = data.employee || null;
   const isFirstAvailable = data.isFirstAvailable || false;
-  const employeePhoto = apiWrapper.getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
   return ([
     <SalonCard
       key={props.id}
@@ -798,7 +799,7 @@ export default class NewAppointmentScreen extends React.Component {
       });
     });
 
-    AppointmentBook.checkConflicts(conflictData)
+    AppointmentBook.postCheckConflicts(conflictData)
       .then(conflicts => this.setState({
         conflicts,
         canSave: conflicts.length > 0 ? false : prevValue,
