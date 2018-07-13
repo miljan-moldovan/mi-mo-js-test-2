@@ -483,14 +483,14 @@ export class NewApptSlide extends React.Component {
 
   canBook = () => {
     const {
+      service,
       client,
       conflicts,
       isLoading,
-      bookedByEmployee: provider,
-      isBooking,
     } = this.props.newApptState;
-    const service = this.getService();
     const {
+      provider,
+      isBooking,
     } = this.props;
     if (
       service === null ||
@@ -511,31 +511,30 @@ export class NewApptSlide extends React.Component {
       return false;
     }
     const {
+      service,
       client,
-      isQuickApptRequested: isRequested,
+      addons,
+      required,
+      isRequested,
       recommended,
-      date,
-      startTime,
-      serviceItems,
-      bookedByEmployee: provider,
-    } = this.props.newApptState;
-    // const { startTime, provider } = this.props;
-    // const totalServices = [
-    //   required,
-    //   ...recommended,
-    //   ...addons,
-    //   service,
-    // ];
+    } = this.state;
+    const { startTime, provider } = this.props;
+    const totalServices = [
+      required,
+      ...recommended,
+      ...addons,
+      service,
+    ];
 
-    const items = compact(serviceItems).map(item => ({
-      service: item.service.service,
+    const items = compact(totalServices).map(item => ({
+      service: item,
       client,
       employee: provider,
       requested: isRequested,
     }));
     this.resetTimeForServices(items, -1, moment(startTime, 'HH:mm'));
     const appt = {
-      date: moment(date).format('YYYY-MM-DD'),
+      date: moment(this.props.date).format('YYYY-MM-DD'),
       client,
       bookedByEmployee: provider,
       items,
@@ -609,7 +608,7 @@ export class NewApptSlide extends React.Component {
     } = this.props.newApptState;
     const service = this.getService();
 
-    if (!provider) {
+    if (!bookedByEmployee) {
       return alert('Please select a provider first');
     }
     const fromTime = moment(startTime, 'HH:mm');
@@ -617,7 +616,7 @@ export class NewApptSlide extends React.Component {
 
     const newAppt = {
       date,
-      bookedByEmployee: provider,
+      bookedByEmployee,
       service,
       client,
       fromTime,
