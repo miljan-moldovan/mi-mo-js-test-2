@@ -166,36 +166,70 @@ export default class AppointmentScreen extends Component {
     });
   }
 
+  // onCalendarCellPressed = (cellId, colData) => {
+  //   const {
+  //     startDate,
+  //     selectedFilter,
+  //     selectedProvider,
+  //   } = this.props.appointmentScreenState;
+  //   const { newAppointmentActions } = this.props;
+  //   const startTime = moment(cellId, 'HH:mm A');
+
+  //   this.newApptSlide.resetForm();
+  //   const newState = {
+  //     newApptStartTime: startTime,
+  //   };
+  //   if (selectedFilter === 'providers') {
+  //     if (selectedProvider === 'all') {
+  //       newState.newApptProvider = colData;
+  //       newState.newApptDate = startDate;
+  //     } else {
+  //       newState.newApptProvider = selectedProvider;
+  //       newState.newApptDate = colData;
+  //     }
+  //   } else {
+  //     newState.newApptProvider = null;
+  //     newState.newApptDate = startDate;
+  //   }
+
+
+  //   this.setState({
+  //     newAppointmentFilter: 0,
+  //     visibleNewAppointment: true,
+  //     ...newState,
+  //   });
+  // }
+
   onCalendarCellPressed = (cellId, colData) => {
     const {
       startDate,
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
+    const { newAppointmentActions } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
 
-    this.newApptSlide.resetForm();
-    const newState = {
-      newApptStartTime: startTime,
-    };
+    newAppointmentActions.cleanForm();
+    // const newState = {
+    //   newApptStartTime: startTime,
+    // };
     if (selectedFilter === 'providers') {
       if (selectedProvider === 'all') {
-        newState.newApptProvider = colData;
-        newState.newApptDate = startDate;
+        newAppointmentActions.setBookedBy(colData);
+        newAppointmentActions.setDate(startDate);
       } else {
-        newState.newApptProvider = selectedProvider;
-        newState.newApptDate = colData;
+        newAppointmentActions.setBookedBy(selectedProvider);
+        newAppointmentActions.setDate(colData);
       }
     } else {
-      newState.newApptProvider = null;
-      newState.newApptDate = startDate;
+      newAppointmentActions.setBookedBy(null);
+      newAppointmentActions.setDate(startDate);
     }
-
+    newAppointmentActions.setStartTime(startTime);
 
     this.setState({
       newAppointmentFilter: 0,
       visibleNewAppointment: true,
-      ...newState,
     });
   }
 
@@ -388,6 +422,8 @@ export default class AppointmentScreen extends Component {
             this.setState({ visibleNewAppointment: false });
           }}
           show={() => this.setState({ visibleNewAppointment: true })}
+          // newApptState={this.props.newAppointmentState}
+          // newApptActions={this.props.newAppointmentActions}
           isBooking={this.state.isBookingNewAppt}
           handleBook={(appt) => {
             this.setState({
@@ -438,7 +474,7 @@ export default class AppointmentScreen extends Component {
           }}
         />
 
-        <SalonNewAppointmentSlide
+        {/* <SalonNewAppointmentSlide
           navigation={this.props.navigation}
           selectedFilter={this.state.newAppointmentFilter}
           isLoading={this.props.newAppointmentState.isLoading}
@@ -519,7 +555,7 @@ export default class AppointmentScreen extends Component {
             this.props.newAppointmentActions.setNewApptRequested(!requested);
           }}
           filterProviders={providers}
-        />
+        /> */}
 
         <SalonAppointmentSlide
           navigation={this.props.navigation}

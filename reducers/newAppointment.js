@@ -2,6 +2,16 @@ import moment from 'moment';
 
 import newAppointmentActions, {
   CLEAN_FORM,
+  SET_BOOKED_BY,
+  SET_DATE,
+  SET_START_TIME,
+  SET_CLIENT,
+  SET_QUICK_APPT_REQUESTED,
+  CLEAR_SERVICE_ITEMS,
+  ADD_QUICK_SERVICE_ITEM,
+  ADD_SERVICE_ITEM,
+
+
   ADD_GUEST,
   REMOVE_GUEST,
   SET_GUEST_CLIENT,
@@ -27,7 +37,6 @@ import newAppointmentActions, {
   BOOK_NEW_APPT_FAILED,
   SET_NEW_APPT_RECURRING,
   SET_NEW_APPT_RECURRING_TYPE,
-  SET_BOOKED_BY,
   CHECK_CONFLICTS_SUCCESS,
   CHECK_CONFLICTS_FAILED,
   CHECK_CONFLICTS,
@@ -76,83 +85,70 @@ const guestShape = {
   services: [],
 };
 
-const initialState = {
+const defaultState = {
   isLoading: false,
-  hasConflicts: false,
-  startTime: '',
-  endTime: '',
+  isBooking: false,
+  isQuickApptRequested: true,
   date: moment(),
-  service: null,
-  employee: null,
+  startTime: moment(),
   client: null,
   bookedByEmployee: null,
-  mainRequested: true,
-  totalPrice: 0,
-  totalDuration: moment.duration(0, 'second'),
-  recurringType: 'week',
   guests: [],
   conflicts: [],
-  quickApptConflicts: [],
-  body: {
-    date: moment(),
-    bookedByEmployee: null,
-    remarks: '',
-    displayColor: '',
-    recurring: recurringShape,
-    clientInfo: clientInfoShape,
-    items: [
-      // itemShape,
-    ],
-  },
-  appt: {
-    date: moment(),
-    client: null,
-    bookedByEmployee: null,
-    clientEmail: '',
-    phones: [],
-    confirmationType: '',
-    displayColor: '',
-    remarks: '',
-    rebooked: false,
-  },
-  serviceItems: [
-    {
-      id: null,
-      client: null,
-      service: null,
-      provider: null,
-      requested: false,
-      bookBetween: false,
-      fromTime: moment.Duration,
-      toTime: moment.Duration,
-      gapTime: 0,
-      afterTime: 0,
-      length: 0,
-      price: 0,
-      serviceType: '',
-      isFirstAvailable: false,
-    },
-  ],
+  serviceItems: [{ service: {} }, { service: {} }],
+  remarks: '',
 };
 
-export default function newAppointmentReducer(state = initialState, action) {
+export default function newAppointmentReducer(state = defaultState, action) {
   const { type, data } = action;
-  // if (type.indexOf('newAppointment') >= 0) {
-  //   console.log(`New Appt Reducer ${type}`, data);
-  // }
-  const {
-    body,
-    guests,
-    totalPrice,
-    totalDuration,
-  } = state;
-  const newGuests = guests;
   const newTotalDuration = moment.duration();
+  const newServiceItems = state.serviceItems;
   let newTotalPrice = 0;
   switch (type) {
     case CLEAN_FORM:
       return {
-        ...initialState,
+        ...defaultState,
+      };
+    case SET_BOOKED_BY:
+      return {
+        ...state,
+        bookedByEmployee: data.employee,
+      };
+    case SET_CLIENT:
+      return {
+        ...state,
+        client: data.client,
+      };
+    case SET_DATE:
+      return {
+        ...state,
+        date: data.date,
+      };
+    case SET_START_TIME:
+      return {
+        ...state,
+        startTime: data.startTime,
+      };
+    case SET_QUICK_APPT_REQUESTED:
+      return {
+        ...state,
+        isQuickApptRequested: data.requested,
+      };
+    case CLEAR_SERVICE_ITEMS:
+      return {
+        ...state,
+        serviceItems: [],
+      };
+    case ADD_SERVICE_ITEM:
+      newServiceItems.push(data.serviceItem);
+      return {
+        ...state,
+        serviceItems: newServiceItems,
+      };
+    case ADD_QUICK_SERVICE_ITEM:
+      return {
+        ...state,
+        serviceItems: [data.serviceItem],
       };
     case CHECK_CONFLICTS:
       return {
@@ -193,14 +189,6 @@ export default function newAppointmentReducer(state = initialState, action) {
         ...state,
         totalDuration: newTotalDuration,
         totalPrice: newTotalPrice,
-      };
-    case SET_BOOKED_BY:
-      body.employee = data.employee;
-      body.bookedByEmployee = data.employee;
-      return {
-        ...state,
-        body,
-        bookedByEmployee: data.employee,
       };
     case ADD_NEW_APPT_ITEM:
       body.items.push(data.item);

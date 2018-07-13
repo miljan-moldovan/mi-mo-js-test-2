@@ -16,6 +16,14 @@ import {
   slice,
   isFunction,
 } from 'lodash';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import newAppointmentActions from '../../actions/newAppointment';
+import newAppointmentState from '../../reducers/newAppointment';
+import {
+  getEndTime,
+  appointmentLength,
+} from '../../redux/selectors/newAppt';
 
 import { AppointmentBook } from '../../utilities/apiWrapper';
 import { AppointmentTime } from './SalonNewAppointmentSlide';
@@ -305,9 +313,10 @@ const ConflictBox = props => (
   </SalonTouchableOpacity>
 );
 
-export default class NewApptSlide extends React.Component {
+export class NewApptSlide extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = this.getInitialState();
   }
 
@@ -346,17 +355,18 @@ export default class NewApptSlide extends React.Component {
     },
   )
 
-  setClient = client => this.setState({ client }, () => {
-    this.showPanel().checkConflicts();
-  })
+  setClient = (client) => {
+    this.props.newApptActions.setClient(client);
+    this.showPanel();
+  }
 
   setService = ({
     service, addons, recommended, required,
-  }) => this.setState({
-    service, addons, recommended, required,
-  }, () => {
-    this.showPanel().checkConflicts();
-  })
+  }) => {
+    // this.props.newApptActions.clearServiceItems();
+    this.props.newApptActions.addQuickServiceItem(service);
+    this.showPanel();
+  }
 
   openAddons = () => {
     if (this.shouldShowExtras()) {
@@ -371,8 +381,17 @@ export default class NewApptSlide extends React.Component {
   }
 
   setProvider = (provider) => {
-    this.props.onChangeProvider(provider);
-    return this.showPanel().checkConflicts();
+    this.props.newApptActions.setBookedBy(provider);
+    return this.showPanel();
+  }
+
+  getService = () => {
+    const { serviceItems } = this.props.newApptState;
+    const firstServiceItem = serviceItems[0] || { service: {} };
+    const {
+      service: { service = null },
+    } = firstServiceItem;
+    return service;
   }
 
   resetTimeForServices = (items, index, initialFromTime) => {
@@ -405,29 +424,15 @@ export default class NewApptSlide extends React.Component {
     ]);
   }
 
-  getTotalLength = (index = false) => {
-    const allServices = this.getAllServices();
-    if (index) {
-      slice(allServices, index);
-    }
-    return allServices.reduce((duration, curr) => {
-      if (curr && curr.maxDuration) {
-        return duration.add(curr.maxDuration);
-      }
-      return duration;
-    }, moment.duration());
-  }
+  getTotalLength = () => this.props.getLength;
 
-  getEndTime = () => {
-    const { startTime } = this.props;
-    return moment(startTime, 'HH:mm').add(this.getTotalLength());
-  }
+  getEndTime = () => this.props.getEndTime
 
   getBookButtonText = () => {
-    if (this.state.isLoading) {
+    if (this.props.newApptState.isLoading) {
       return 'LOADING...';
     }
-    if (this.props.isBooking) {
+    if (this.props.newApptState.isBooking) {
       return 'BOOKING APPOINTMENT...';
     }
     return 'BOOK NOW';
@@ -482,7 +487,7 @@ export default class NewApptSlide extends React.Component {
       client,
       conflicts,
       isLoading,
-    } = this.state;
+    } = this.props.newApptState;
     const {
       provider,
       isBooking,
@@ -595,21 +600,19 @@ export default class NewApptSlide extends React.Component {
 
   goToFullForm = () => {
     const {
-      client,
-      service,
-      isRequested,
-    } = this.state;
-    const {
       date,
-      provider: bookedByEmployee,
+      client,
+      bookedByEmployee: provider,
       startTime,
-    } = this.props;
+      isQuickApptRequested,
+    } = this.props.newApptState;
+    const service = this.getService();
+
     if (!bookedByEmployee) {
       return alert('Please select a provider first');
     }
     const fromTime = moment(startTime, 'HH:mm');
     const toTime = moment(fromTime).add(this.getTotalLength());
-    const services = this.getAllServices();
 
     const newAppt = {
       date,
@@ -618,7 +621,7 @@ export default class NewApptSlide extends React.Component {
       client,
       fromTime,
       toTime,
-      requested: isRequested,
+      requested: isQuickApptRequested,
     };
 
     this.hidePanel().props.navigation.navigate('NewAppointment', { newAppt });
@@ -639,20 +642,25 @@ export default class NewApptSlide extends React.Component {
 
   render() {
     const {
-      client,
-      service,
       addons,
       required,
       recommended,
-      isRequested,
     } = this.state;
     const {
-      date,
-      provider,
-      startTime,
       navigation,
       filterProviders,
     } = this.props;
+    const {
+      date,
+      startTime,
+      client,
+      bookedByEmployee: provider,
+      isQuickApptRequested,
+    } = this.props.newApptState;
+    const service = this.getService();
+    // if (service) {
+    //   debugger //eslint-disable-line
+    // }
     const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
     const selectedStyle = { fontSize: 14, lineHeight: 22, color: this.state.conflicts.length > 0 ? 'red' : 'black' };
     return (
@@ -772,7 +780,7 @@ export default class NewApptSlide extends React.Component {
                     noLabel
                     apptBook
                     filterByService
-                    isRequested={isRequested}
+                    isRequested={isQuickApptRequested}
                     filterList={filterProviders}
                     rootStyle={{ height: 39 }}
                     selectedProvider={provider}
@@ -841,8 +849,8 @@ export default class NewApptSlide extends React.Component {
                   >Provider is Requested?
                   </Text>
                   <Switch
-                    value={isRequested}
-                    onValueChange={isRequested => this.setState({ isRequested })}
+                    value={this.props.newApptState.isQuickApptRequested}
+                    onValueChange={isQuickApptRequested => this.props.newApptActions.setQuickApptRequested(isQuickApptRequested)}
                   />
                 </View>
                 <View style={{
@@ -917,3 +925,15 @@ export default class NewApptSlide extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  newApptState: state.newAppointmentReducer,
+  getLength: appointmentLength(state),
+  getEndTime: getEndTime(state),
+});
+
+const mapActionsToProps = dispatch => ({
+  newApptActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);

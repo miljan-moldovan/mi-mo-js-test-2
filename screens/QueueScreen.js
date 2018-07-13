@@ -84,8 +84,8 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.props.actions.receiveQueue();
-    setInterval(this.props.actions.receiveQueue, 15000);
+    // this.props.actions.receiveQueue();
+    // setInterval(this.props.actions.receiveQueue, 15000);
 
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
@@ -292,7 +292,8 @@ class QueueScreen extends React.Component {
     </Text>
   </View>,
         leftButtonOnPress: (navigation) => {
-          navigation.goBack(); },
+          navigation.goBack(); 
+},
       },
     });
   }
@@ -431,7 +432,7 @@ class QueueScreen extends React.Component {
                 <Text style={styles.walkoutTextOk}>Ok</Text>
               </SalonTouchableOpacity>
             </View>
-          </View>]}
+            </View>]}
         </SalonModal>
       </View>
     );

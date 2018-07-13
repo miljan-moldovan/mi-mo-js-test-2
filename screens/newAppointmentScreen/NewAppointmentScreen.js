@@ -179,122 +179,123 @@ const ServiceCard = ({ data, ...props }) => {
   const isFirstAvailable = data.isFirstAvailable || false;
   const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
   return ([
-    <SalonCard
-      key={props.id}
-      containerStyles={{ marginVertical: 0, marginBottom: 10 }}
-      bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
-      backgroundColor="white"
-      bodyChildren={
-        <View style={{ flex: 1, flexDirection: 'column' }}>
-          <SalonTouchableOpacity
-            style={{ flexDirection: 'row' }}
-            onPress={props.onPress}
-          >
-            {props.isAddon && (
-              <Icon
-                style={{
-                  marginRight: 10,
-                  transform: [{ rotate: '90deg' }],
-                }}
-                name="levelUp"
-                type="regular"
-                color="black"
-                size={12}
-              />
-            )}
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-              }}
-            >
-              <Text style={[styles.serviceTitle, props.hasConflicts ? { color: 'red' } : {}]}>
-                {data.service.name}
-              </Text>
-              {props.isRequired && (
-                <Text style={{
-                  fontSize: 10,
-                  marginLeft: 6,
-                  color: '#1DBF12',
-                }}
-                >
-                  REQUIRED
-                </Text>
+    <SalonTouchableOpacity
+      onPress={props.onPress}
+    >
+      <SalonCard
+        key={props.id}
+        containerStyles={{ marginVertical: 0, marginBottom: 10 }}
+        bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
+        backgroundColor="white"
+        bodyChildren={
+          <View style={{ flex: 1, flexDirection: 'column' }}>
+            <View style={{ flexDirection: 'row' }}>
+              {props.isAddon && (
+                <Icon
+                  style={{
+                    marginRight: 10,
+                    transform: [{ rotate: '90deg' }],
+                  }}
+                  name="levelUp"
+                  type="regular"
+                  color="black"
+                  size={12}
+                />
               )}
-            </View>
-            <View style={{
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <Text style={[styles.serviceTitle, props.hasConflicts ? { color: 'red' } : {}]}>
+                  {data.service.name}
+                </Text>
+                {props.isRequired && (
+                  <Text style={{
+                    fontSize: 10,
+                    marginLeft: 6,
+                    color: '#1DBF12',
+                  }}
+                  >
+                    REQUIRED
+                  </Text>
+                )}
+              </View>
+              <View style={{
                 flexDirection: 'row',
                 justifyContent: 'flex-end',
                 alignSelf: 'flex-end',
                 alignItems: 'center',
               }}
-            >
-              <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.service.maxDuration).asMinutes()}min`} />
-              <FontAwesome style={{
-                color: '#115ECD',
-                fontSize: 20,
-                marginLeft: 15,
-              }}
-              >{Icons.angleRight}
-              </FontAwesome>
-            </View>
-          </SalonTouchableOpacity>
-          <View style={{
-            flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
-          }}
-          >
-            <SalonAvatar
-              wrapperStyle={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 10,
-              }}
-              width={26}
-              borderWidth={1}
-              borderColor="transparent"
-              hasBadge={data.requested}
-              badgeComponent={
+              >
+                <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.service.maxDuration).asMinutes()}min`} />
                 <FontAwesome style={{
-                  color: '#1DBF12', fontSize: 10,
+                  color: '#115ECD',
+                  fontSize: 20,
+                  marginLeft: 15,
                 }}
-                >{Icons.lock}
+                >{Icons.angleRight}
                 </FontAwesome>
-              }
-              image={{ uri: employeePhoto }}
-              defaultComponent={<ActivityIndicator />}
-            />
-            <Text
-              style={{
-                fontSize: 14,
-                lineHeight: 22,
-                color: props.hasConflicts ? 'red' : '#2F3142',
-              }}
-            >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
-            </Text>
-          </View>
-          <View style={{
+              </View>
+            </View>
+            <View style={{
+              flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
+            }}
+            >
+              <SalonAvatar
+                wrapperStyle={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 10,
+                }}
+                width={26}
+                borderWidth={1}
+                borderColor="transparent"
+                hasBadge={data.requested}
+                badgeComponent={
+                  <FontAwesome style={{
+                    color: '#1DBF12', fontSize: 10,
+                  }}
+                  >{Icons.lock}
+                  </FontAwesome>
+                }
+                image={{ uri: employeePhoto }}
+                defaultComponent={<ActivityIndicator />}
+              />
+              <Text
+                style={{
+                  fontSize: 14,
+                  lineHeight: 22,
+                  color: props.hasConflicts ? 'red' : '#2F3142',
+                }}
+              >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
+              </Text>
+            </View>
+            <View style={{
               height: 1, alignSelf: 'stretch', backgroundColor: '#E0EAF7', marginVertical: 7,
             }}
-          />
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <SalonAppointmentTime
-              from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
-              to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
             />
-            <SalonTouchableOpacity onPress={props.onPressDelete}>
-              <Icon
-                name="trashAlt"
-                size={12}
-                color="#D1242A"
-                type="regular"
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <SalonAppointmentTime
+                from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
+                to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
               />
-            </SalonTouchableOpacity>
+              <SalonTouchableOpacity onPress={props.onPressDelete}>
+                <Icon
+                  name="trashAlt"
+                  size={12}
+                  color="#D1242A"
+                  type="regular"
+                />
+              </SalonTouchableOpacity>
+            </View>
           </View>
-        </View>
-      }
-    />,
+        }
+      />
+    </SalonTouchableOpacity>,
   ]);
 };
 
@@ -346,7 +347,6 @@ export default class NewAppointmentScreen extends React.Component {
       newAppt.service !== null &&
       newAppt.bookedByEmployee !== null
     ) {
-      debugger //eslint-disable-line
       serviceItems.push({
         itemId: uuid(),
         guestId: false,
@@ -466,14 +466,6 @@ export default class NewAppointmentScreen extends React.Component {
     serviceItems.push(newServiceItem);
     this.setState({ serviceItems }, () => {
       this.validate();
-
-      if (service.addons.length > 0) {
-        return this.props.navigation.navigate('AddonServices', {
-          serviceTitle: service.name,
-          services: service.addons,
-          onSave: services => this.addAddonServices(newServiceItem.itemId, services),
-        });
-      }
     });
   }
 
@@ -497,7 +489,8 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType,
     } = this.state;
 
-    Client.putContactInformation(client.id ,
+    Client.putContactInformation(
+      client.id,
       {
         id: client.id,
         email: clientEmail || null,
@@ -509,7 +502,8 @@ export default class NewAppointmentScreen extends React.Component {
           ...client.phones.filter(phone => phone.value && phone.type !== clientPhoneType),
         ],
         confirmationType: 1,
-      })
+      },
+    )
       .then((res) => {
 
       })
@@ -760,9 +754,9 @@ export default class NewAppointmentScreen extends React.Component {
     }
 
     servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service.service &&
-        serviceItem.service.employee &&
-        serviceItem.service.employee.id !== null &&
-        (serviceItem.guestId ? serviceItem.service.client : true));
+      serviceItem.service.employee &&
+      serviceItem.service.employee.id !== null &&
+      (serviceItem.guestId ? serviceItem.service.client : true));
 
     if (!servicesToCheck.length) {
       return;
@@ -1140,29 +1134,29 @@ export default class NewAppointmentScreen extends React.Component {
                 style={{ paddingLeft: 0 }}
               />
               {this.state.recurringPickerOpen && (
-              <View style={{
-                    flexDirection: 'row',
-                    alignSelf: 'stretch',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                  }}
-              >
-                <Picker
-                  style={{ flex: 1 }}
-                  itemStyle={{ backgroundColor: 'white' }}
-                  selectedValue={this.state.recurringNumber}
-                  pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-                  onValueChange={recurringNumber => this.setState({ recurringNumber })}
-                />
-                <Picker
-                  style={{ flex: 1 }}
-                  itemStyle={{ backgroundColor: 'white' }}
-                  selectedValue={this.state.recurringType}
-                  pickerData={['Weeks', 'Months']}
-                  onValueChange={recurringType => this.setState({ recurringType })}
-                />
-              </View>
+                <View style={{
+                  flexDirection: 'row',
+                  alignSelf: 'stretch',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                }}
+                >
+                  <Picker
+                    style={{ flex: 1 }}
+                    itemStyle={{ backgroundColor: 'white' }}
+                    selectedValue={this.state.recurringNumber}
+                    pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+                    onValueChange={recurringNumber => this.setState({ recurringNumber })}
+                  />
+                  <Picker
+                    style={{ flex: 1 }}
+                    itemStyle={{ backgroundColor: 'white' }}
+                    selectedValue={this.state.recurringType}
+                    pickerData={['Weeks', 'Months']}
+                    onValueChange={recurringType => this.setState({ recurringType })}
+                  />
+                </View>
               )}
               <InputDivider />
               <InputButton
@@ -1189,7 +1183,7 @@ export default class NewAppointmentScreen extends React.Component {
             >Event will occur every month on the same day each month
             </Text>
           </View>
-      )}
+        )}
         <View style={{ paddingHorizontal: 8, marginVertical: 10 }}>
           <View style={{ height: 2, alignSelf: 'stretch', backgroundColor: '#c2c2c2' }} />
         </View>

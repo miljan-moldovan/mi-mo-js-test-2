@@ -1,16 +1,33 @@
 import moment, { updateLocale } from 'moment';
 import { get, isNil } from 'lodash';
+import uuid from 'uuid/v4';
 
 import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
 } from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
+import {
+  appointmentLength,
+} from '../redux/selectors/newAppt';
 
 export const ADD_GUEST = 'newAppointment/ADD_GUEST';
 export const REMOVE_GUEST = 'newAppointment/REMOVE_GUEST';
+
+export const SET_DATE = 'newAppointment/SET_DATE';
+export const SET_START_TIME = 'newAppointment/SET_START_TIME';
+export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
+export const SET_CLIENT = 'newAppointment/SET_CLIENT';
+export const SET_QUICK_APPT_REQUESTED = 'newAppointment/SET_QUICK_APPT_REQUESTED';
+
 export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
 export const ADD_GUEST_SERVICE = 'newAppointment/ADD_GUEST_SERVICE';
 export const REMOVE_GUEST_SERVICE = 'newAppointment/REMOVE_GUEST_SERVICE';
+
+export const CLEAR_SERVICE_ITEMS = 'newAppointment/CLEAR_SERVICE_ITEMS';
+export const ADD_QUICK_SERVICE_ITEM = 'newAppointment/ADD_QUICK_SERVICE_ITEM';
+export const ADD_SERVICE_ITEM = 'newAppointment/ADD_SERVICE_ITEM';
+export const UPDATE_SERVICE_ITEM = 'newAppointment/UPDATE_SERVICE_ITEM';
+export const REMOVE_SERVICE_ITEM = 'newAppointment/REMOVE_SERVICE_ITEM';
 
 export const CLEAN_FORM = 'newAppointment/CLEAN_FORM';
 export const UPDATE_TOTALS = 'newAppointment/UPDATE_TOTALS';
@@ -19,8 +36,6 @@ export const CHECK_CONFLICTS_SUCCESS = 'newAppointment/CHECK_CONFLICTS_SUCCESS';
 export const CHECK_CONFLICTS_FAILED = 'newAppointment/CHECK_CONFLICTS_FAILED';
 export const ADD_NEW_APPT_ITEM = 'newAppointment/ADD_NEW_APPT_ITEM';
 export const REMOVE_NEW_APPT_ITEM = 'newAppointment/REMOVE_NEW_APPT_ITEM';
-export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
-export const SET_START_TIME = 'newAppointment/SET_START_TIME';
 export const SET_NEW_APPT_EMPLOYEE = 'newAppointment/SET_NEW_APPT_EMPLOYEE';
 export const SET_NEW_APPT_REMARKS = 'newAppointment/SET_NEW_APPT_REMARKS';
 export const SET_NEW_APPT_ENDS_AFTER = 'newAppointment/SET_NEW_APPT_ENDS_AFTER';
@@ -39,6 +54,46 @@ export const BOOK_NEW_APPT = 'newAppointment/BOOK_NEW_APPT';
 export const BOOK_NEW_APPT_SUCCESS = 'newAppointment/BOOK_NEW_APPT_SUCCESS';
 export const BOOK_NEW_APPT_FAILED = 'newAppointment/BOOK_NEW_APPT_FAILED';
 
+const clearServiceItems = () => ({
+  type: CLEAR_SERVICE_ITEMS,
+});
+
+// const addQuickServiceItem = (service, guestId = false) => (dispatch) => {
+//   dispatch(clearServiceItems());
+//   return dispatch(addServiceItem(service, guestId));
+// };
+
+const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) => {
+  const {
+    client,
+    guests,
+    startTime,
+    serviceItems,
+    bookedByEmployee,
+  } = getState().newAppointmentReducer;
+  const length = appointmentLength(getState());
+  const fromTime = moment(startTime).add(moment.duration(length));
+  const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
+  const newService = {
+    service,
+    client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
+    requested: true,
+    employee: bookedByEmployee,
+    fromTime,
+    toTime,
+  };
+  const serviceItem = {
+    itemId: uuid(),
+    guestId,
+    service: newService,
+  };
+
+  return dispatch({
+    type: ADD_QUICK_SERVICE_ITEM,
+    data: { serviceItem },
+  });
+};
+
 export function serializeNewApptItem(appointment, service) {
   const isFirstAvailable = get(service.employee, 'isFirstAvailable', false);
   const itemData = {
@@ -55,7 +110,6 @@ export function serializeNewApptItem(appointment, service) {
     roomOrdinal: get(service, 'roomOrdinal', null),
     resourceId: get(service.resource, 'id', null),
     resourceOrdinal: get(service, 'resourceOrdinal', null),
-
   };
 
   if (!isNil(service.gapTime)) {
@@ -72,6 +126,21 @@ export function serializeNewApptItem(appointment, service) {
   // }
 
   return itemData;
+}
+
+resetTimeForServices = (items, index, initialFromTime) => {
+  items.forEach((item, i) => {
+    if (i > index) {
+      const prevItem = items[i - 1];
+
+      item.fromTime = prevItem && prevItem.toTime ?
+        moment(prevItem.toTime) : initialFromTime;
+      item.toTime = moment(item.fromTime).add(moment.duration(item.service ?
+        item.service.maxDuration : item.maxDuration));
+    }
+  });
+
+  return items;
 }
 
 export function serializeApptToRequestData(appt, extraServices) {
@@ -111,6 +180,52 @@ export function serializeApptToRequestData(appt, extraServices) {
   return data;
 }
 
+const getConflicts => () => (dispatch, getState) => {
+  const {
+    client,
+    date,
+    startTime,
+    bookedByEmployee: provider,
+    serviceItems,
+  } = getState().newAppointmentReducer;
+  if (!client || !provider || !serviceItems.length > 0) {
+    return;
+  }
+  dispatch({
+    type: CHECK_CONFLICTS,
+  });
+
+  resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
+
+  const conflictData = {
+    date: date.format('YYYY-MM-DD'),
+    clientId: client.id,
+    items: [],
+  };
+  serviceItems.forEach((service) => {
+    conflictData.items.push({
+      clientId: client.id,
+      serviceId: service.service.id,
+      employeeId: provider.id,
+      fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
+      toTime: service.toTime.format('HH:mm:ss', { trim: false }),
+      bookBetween: false,
+      roomId: get(get(service, 'room', null), 'id', null),
+      roomOrdinal: get(service, 'roomOrdinal', null),
+      resourceId: get(get(service, 'resource', null), 'id', null),
+      resourceOrdinal: get(service, 'resourceOrdinal', null),
+    });
+  });
+
+  const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
+  this.setState({
+    conflicts,
+    isLoading: false,
+  });
+});
+}
+
+
 const cleanForm = () => ({
   type: CLEAN_FORM,
 });
@@ -118,6 +233,26 @@ const cleanForm = () => ({
 const setBookedBy = employee => ({
   type: SET_BOOKED_BY,
   data: { employee },
+});
+
+const setDate = date => ({
+  type: SET_DATE,
+  data: { date },
+});
+
+const setStartTime = startTime => ({
+  type: SET_START_TIME,
+  data: { startTime },
+});
+
+const setClient = client => ({
+  type: SET_CLIENT,
+  data: { client },
+});
+
+const setQuickApptRequested = requested => ({
+  type: SET_QUICK_APPT_REQUESTED,
+  data: { requested },
 });
 
 const checkConflictsSuccess = (conflicts, callback = false) => (dispatch) => {
@@ -175,7 +310,7 @@ const checkConflicts = (appt = false, multipleClients = false, callback = false)
   }
 
   servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service &&
-      serviceItem.employee && serviceItem.client);
+    serviceItem.employee && serviceItem.client);
 
   if (!servicesToCheck.length) {
     return;
@@ -272,139 +407,6 @@ const quickBookAppt = callback => (dispatch, getState) => {
   return dispatch(checkConflicts(newAppt, false, bookCallback));
 };
 
-const udpateTotals = () => ({
-  type: UPDATE_TOTALS,
-});
-
-const addGuest = () => ({
-  type: ADD_GUEST,
-});
-
-const removeGuest = () => ({
-  type: REMOVE_GUEST,
-});
-
-const setGuestClient = (guestIndex, client) => ({
-  type: SET_GUEST_CLIENT,
-  data: { guestIndex, client },
-});
-
-const addGuestService = (guestIndex, item) => (dispatch) => {
-  dispatch({
-    type: ADD_GUEST_SERVICE,
-    data: { guestIndex, item },
-  });
-  return dispatch(udpateTotals());
-};
-
-const removeGuestService = (guestIndex, serviceIndex) => (dispatch) => {
-  dispatch({
-    type: REMOVE_GUEST_SERVICE,
-    data: { guestIndex, serviceIndex },
-  });
-  return dispatch(udpateTotals());
-};
-
-const addNewApptItem = item => (dispatch) => {
-  dispatch({
-    type: ADD_NEW_APPT_ITEM,
-    data: { item },
-  });
-  return dispatch(udpateTotals());
-};
-
-const removeNewApptItem = index => (dispatch) => {
-  dispatch({
-    type: REMOVE_NEW_APPT_ITEM,
-    data: { index },
-  });
-  return dispatch(udpateTotals());
-};
-
-const setNewApptStartTime = startTime => ({
-  type: SET_START_TIME,
-  data: { startTime },
-});
-
-const setNewApptTime = (startTime, endTime, index = false) => ({
-  type: SET_NEW_APPT_START_TIME,
-  data: { index, startTime, endTime },
-});
-
-const setNewApptDate = (date, index = false) => ({
-  type: SET_NEW_APPT_DATE,
-  data: { index, date },
-});
-
-const setNewApptEmployee = (employee, index = false) => ({
-  type: SET_NEW_APPT_EMPLOYEE,
-  data: { index, employee },
-});
-
-const setNewApptService = (service, index = false) => (dispatch) => {
-  dispatch({
-    type: SET_NEW_APPT_SERVICE,
-    data: { index, service },
-  });
-
-  return dispatch(setNewApptDuration());
-};
-
-const setNewApptClient = (client, index = false) => ({
-  type: SET_NEW_APPT_CLIENT,
-  data: { index, client },
-});
-
-const setNewApptRequested = (requested, index = false) => ({
-  type: SET_NEW_APPT_REQUESTED,
-  data: { index, requested },
-});
-
-const setNewApptRecurring = (recurring, index = false) => ({
-  type: SET_NEW_APPT_RECURRING,
-  data: { index, recurring },
-});
-
-const setNewApptRecurringType = (recurringType, index = false) => ({
-  type: SET_NEW_APPT_RECURRING_TYPE,
-  data: { recurringType, index },
-});
-
-const setNewApptRepeatPeriod = (repeatPeriod, index = false) => ({
-  type: SET_NEW_APPT_REPEAT_PERIOD,
-  data: { repeatPeriod, index },
-});
-
-const setNewApptEndsAfter = (endsAfter, index = false) => ({
-  type: SET_NEW_APPT_ENDS_AFTER,
-  data: { endsAfter, index },
-});
-
-const setNewApptEndsOnDate = (date, index = false) => ({
-  type: SET_NEW_APPT_ENDS_ON_DATE,
-  data: { date, index },
-});
-
-const setNewApptFirstAvailable = (isFirstAvailable, index = false) => ({
-  type: SET_NEW_APPT_FIRST_AVAILABLE,
-  data: { index, isFirstAvailable },
-});
-
-const setNewApptRemarks = (remarks, index = false) => ({
-  type: SET_NEW_APPT_REMARKS,
-  data: { index, remarks },
-});
-
-const setNewApptDuration = (index = false) => (dispatch, getState) => {
-  const {
-    service, startTime, body: { items },
-  } = getState().newAppointmentReducer;
-  const serviceDuration = moment.duration(service.maxDuration);
-  const endTime = moment(startTime, 'HH:mm').add(serviceDuration);
-
-  return dispatch({ type: SET_NEW_APPT_START_TIME, data: { startTime, endTime, index } });
-};
-
 const bookNewAppt = appt => (dispatch) => {
   const requestBody = serializeApptToRequestData(appt, []);
   dispatch({ type: BOOK_NEW_APPT });
@@ -425,30 +427,17 @@ const bookNewApptSuccess = (callback = false) => (dispatch) => {
 };
 
 const newAppointmentActions = {
-  setNewApptStartTime,
-  setNewApptClient,
-  setNewApptDate,
-  setNewApptDuration,
-  setNewApptTime,
-  setNewApptEmployee,
-  setNewApptService,
-  setNewApptRequested,
-  setNewApptRecurring,
-  setNewApptRecurringType,
-  setNewApptFirstAvailable,
-  setNewApptRemarks,
-  addNewApptItem,
-  removeNewApptItem,
+  cleanForm,
+  setBookedBy,
+  setDate,
+  setClient,
+  setStartTime,
   bookNewAppt,
   quickBookAppt,
-  addGuest,
-  removeGuest,
-  setGuestClient,
-  addGuestService,
-  removeGuestService,
-  udpateTotals,
-  setBookedBy,
+  clearServiceItems,
+  addQuickServiceItem,
   checkConflicts,
-  cleanForm,
+  setQuickApptRequested,
+  getConflicts,
 };
 export default newAppointmentActions;
