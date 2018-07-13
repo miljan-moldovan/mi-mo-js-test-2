@@ -80,7 +80,7 @@ class Card extends Component {
     const birthdayCake = badgeData.clientBirthday ? <Icon color="#082E66" size={16} name="birthdayCake" type="regular" /> : null;
     const checkCircle = appointment.confirmationStatus ? <Icon color="#082E66" size={16} name="checkCircle" type="solid" /> : null;
     const repeat = badgeData.isRecurring ? <Icon color="#082E66" size={16} name="repeatAlt" type="solid" /> : null;
-    const badgeNL = badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
+    const badgeNL = !badgeData.clientIsNew && badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
     const badgeN = badgeData.clientIsNew ? <Badge text="N" /> : null;
     const badgeO = badgeData.isOnlineBooking ? <Badge text="O" /> : null;
     const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
@@ -136,6 +136,7 @@ class Card extends Component {
       position: 'absolute', ...this.props.pan.getLayout(), zIndex: 9999, width: cardWidth
     };
     const position = isActive ? activePosition : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
+    const wrap = height > 30 ? { flexWrap: 'wrap' } : { ellipsizeMode: 'tail' };
     return (
       <Animated.View
         key={id}
@@ -155,22 +156,26 @@ class Card extends Component {
             onLongPress={this.handleOnLongPress}
             style={{ overflow: 'hidden' }}
           >
-            <View style={{ width: '100%', height: '100%' }} ref={(view) => { this.card = view; }}>
+            <View style={{ width: '100%', height }} ref={(view) => { this.card = view; }}>
               <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
               <View style={{flexDirection: 'row', paddingHorizontal: 2}}>
                 {this.renderBadges()}
                 <Text
-                  style={[styles.clientText, { flex: 1, flexWrap: 'wrap', color: clientTextColor }]}
+                  numberOfLines={height > 30 ? 0 : 1}
+                  style={[styles.clientText, { flex: 1, color: clientTextColor }, wrap]}
                 >
                   {clientName}
                 </Text>
               </View>
-              <Text
-                numberOfLines={1}
-                style={[styles.serviceText, { color: serviceTextColor }]}
-              >
-                {serviceName}
-              </Text>
+              {
+                height > 30 ?
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.serviceText, { color: serviceTextColor }]}
+                  >
+                    {serviceName}
+                  </Text> : null
+              }
             </View>
           </TouchableOpacity>
           {isActive && !isBufferCard ?

@@ -351,7 +351,6 @@ class ServicesScreen extends React.Component {
 
   selectAddonServices = () => {
     const { selectedService } = this.props.servicesState;
-    // debugger//eslint-disable-line
     if (selectedService && selectedService.addons.length > 0) {
       this.props.navigation.navigate('AddonServices', {
         serviceTitle: selectedService.name,

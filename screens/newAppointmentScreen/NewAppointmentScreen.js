@@ -35,7 +35,8 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
-import { Store, Client, AppointmentBook, getEmployeePhoto } from '../../utilities/apiWrapper';
+import { Store, Client, AppointmentBook } from '../../utilities/apiWrapper';
+import { getEmployeePhoto } from '../../utilities/apiWrapper/api';
 
 const styles = StyleSheet.create({
   container: {

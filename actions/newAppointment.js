@@ -141,7 +141,7 @@ resetTimeForServices = (items, index, initialFromTime) => {
   });
 
   return items;
-}
+};
 
 export function serializeApptToRequestData(appt, extraServices) {
   const services = appt.items;
@@ -180,50 +180,45 @@ export function serializeApptToRequestData(appt, extraServices) {
   return data;
 }
 
-const getConflicts => () => (dispatch, getState) => {
-  const {
-    client,
-    date,
-    startTime,
-    bookedByEmployee: provider,
-    serviceItems,
-  } = getState().newAppointmentReducer;
-  if (!client || !provider || !serviceItems.length > 0) {
-    return;
-  }
-  dispatch({
-    type: CHECK_CONFLICTS,
-  });
+// const getConflicts => () => (dispatch, getState) => {
+//   const {
+//     client,
+//     date,
+//     startTime,
+//     bookedByEmployee: provider,
+//     serviceItems,
+//   } = getState().newAppointmentReducer;
+//   if (!client || !provider || !serviceItems.length > 0) {
+//     return;
+//   }
+//   dispatch({
+//     type: CHECK_CONFLICTS,
+//   });
 
-  resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
+//   resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
 
-  const conflictData = {
-    date: date.format('YYYY-MM-DD'),
-    clientId: client.id,
-    items: [],
-  };
-  serviceItems.forEach((service) => {
-    conflictData.items.push({
-      clientId: client.id,
-      serviceId: service.service.id,
-      employeeId: provider.id,
-      fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
-      toTime: service.toTime.format('HH:mm:ss', { trim: false }),
-      bookBetween: false,
-      roomId: get(get(service, 'room', null), 'id', null),
-      roomOrdinal: get(service, 'roomOrdinal', null),
-      resourceId: get(get(service, 'resource', null), 'id', null),
-      resourceOrdinal: get(service, 'resourceOrdinal', null),
-    });
-  });
+//   const conflictData = {
+//     date: date.format('YYYY-MM-DD'),
+//     clientId: client.id,
+//     items: [],
+//   };
+//   serviceItems.forEach((service) => {
+//     conflictData.items.push({
+//       clientId: client.id,
+//       serviceId: service.service.id,
+//       employeeId: provider.id,
+//       fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
+//       toTime: service.toTime.format('HH:mm:ss', { trim: false }),
+//       bookBetween: false,
+//       roomId: get(get(service, 'room', null), 'id', null),
+//       roomOrdinal: get(service, 'roomOrdinal', null),
+//       resourceId: get(get(service, 'resource', null), 'id', null),
+//       resourceOrdinal: get(service, 'resourceOrdinal', null),
+//     });
+//   });
 
-  const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
-  this.setState({
-    conflicts,
-    isLoading: false,
-  });
-});
-}
+//   const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
+// }
 
 
 const cleanForm = () => ({
@@ -438,6 +433,6 @@ const newAppointmentActions = {
   addQuickServiceItem,
   checkConflicts,
   setQuickApptRequested,
-  getConflicts,
+  // getConflicts,
 };
 export default newAppointmentActions;

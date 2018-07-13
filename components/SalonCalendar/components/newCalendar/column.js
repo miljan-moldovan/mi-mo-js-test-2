@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import { forEach } from 'lodash';
 import moment from 'moment';
 
 const styles = StyleSheet.create({
@@ -38,56 +39,69 @@ export default class Column extends Component {
 
   renderCell = (cell, index) => {
     const {
-      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule,
+      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule, storeSchedule
     } = this.props;
     const time = moment(cell, 'HH:mm A');
-    let style = styles.cellContainerDisabled;
-    let schedule;
-    switch (selectedFilter) {
-      case 'deskStaff':
-      case 'providers': {
-        if (isDate) {
-          const hasSchedule = providerSchedule[colData.format('YYYY-MM-DD')];
-          if (hasSchedule) {
-            [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
-            schedule = schedule ? schedule.scheduledIntervals : null;
-          }
-        } else {
-          schedule = colData.scheduledIntervals;
-        }
-        break;
-      }
-      case 'resources':
-      case 'rooms': {
-        schedule = providerSchedule.scheduledIntervals;
-        break;
-      }
-      default:
-        break;
+    let storeStartTime = '';
+    let storeEndTime = '';
+    let isStoreOpen = false;
+    for (let i = 0; i < storeSchedule.scheduledIntervals.length && !isStoreOpen; i += 1) {
+      storeStartTime = moment(storeSchedule.scheduledIntervals[i].start, 'HH:mm');
+      storeEndTime = moment(storeSchedule.scheduledIntervals[i].end, 'HH:mm');
+      isStoreOpen = time.isSameOrAfter(storeStartTime) && time.isBefore(storeEndTime);
     }
-
-    if (schedule) {
-      for (let i = 0; i < schedule.length; i += 1) {
-        if (time.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
-        time.isBefore(moment(schedule[i].end, 'HH:mm'))) {
-          style = styles.cellContainer;
+    if (isStoreOpen) {
+      let style = styles.cellContainerDisabled;
+      let schedule;
+      switch (selectedFilter) {
+        case 'deskStaff':
+        case 'providers': {
+          if (isDate) {
+            const hasSchedule = providerSchedule[colData.format('YYYY-MM-DD')];
+            if (hasSchedule) {
+              [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
+              schedule = schedule ? schedule.scheduledIntervals : null;
+            }
+          } else {
+            schedule = colData.scheduledIntervals;
+          }
           break;
         }
+        case 'resources':
+        case 'rooms': {
+          schedule = providerSchedule.scheduledIntervals;
+          break;
+        }
+        default:
+          break;
       }
-    }
-    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
-    const timeSplit = startTime.split(':');
-    const minutesSplit = timeSplit[1];
-    if (minutesSplit === '00') {
-      style = [style, styles.oClockBorder];
+
+      if (schedule) {
+        for (let i = 0; i < schedule.length; i += 1) {
+          if (time.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
+          time.isBefore(moment(schedule[i].end, 'HH:mm'))) {
+            style = styles.cellContainer;
+            break;
+          }
+        }
+      }
+      const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
+      const timeSplit = startTime.split(':');
+      const minutesSplit = timeSplit[1];
+      if (minutesSplit === '00') {
+        style = [style, styles.oClockBorder];
+      }
+      return (
+        <View key={cell}>
+          <TouchableOpacity
+            style={[style, { width: cellWidth }]}
+            onPress={() => { this.onCellPressed(cell, colData); }}
+          />
+        </View>
+      );
     }
     return (
-      <View key={cell}>
-        <TouchableOpacity
-          style={[style, { width: cellWidth }]}
-          onPress={() => { this.onCellPressed(cell, colData); }}
-        />
-      </View>
+      <View key={cell} style={[styles.cellContainer, { backgroundColor: '#80889a', width: cellWidth }]} />
     );
   }
 
