@@ -483,14 +483,14 @@ export class NewApptSlide extends React.Component {
 
   canBook = () => {
     const {
-      service,
       client,
       conflicts,
       isLoading,
-    } = this.props.newApptState;
-    const {
-      provider,
+      bookedByEmployee: provider,
       isBooking,
+    } = this.props.newApptState;
+    const service = this.getService();
+    const {
     } = this.props;
     if (
       service === null ||
@@ -511,30 +511,31 @@ export class NewApptSlide extends React.Component {
       return false;
     }
     const {
-      service,
       client,
-      addons,
-      required,
-      isRequested,
+      isQuickApptRequested: isRequested,
       recommended,
-    } = this.state;
-    const { startTime, provider } = this.props;
-    const totalServices = [
-      required,
-      ...recommended,
-      ...addons,
-      service,
-    ];
+      date,
+      startTime,
+      serviceItems,
+      bookedByEmployee: provider,
+    } = this.props.newApptState;
+    // const { startTime, provider } = this.props;
+    // const totalServices = [
+    //   required,
+    //   ...recommended,
+    //   ...addons,
+    //   service,
+    // ];
 
-    const items = compact(totalServices).map(item => ({
-      service: item,
+    const items = compact(serviceItems).map(item => ({
+      service: item.service.service,
       client,
       employee: provider,
       requested: isRequested,
     }));
     this.resetTimeForServices(items, -1, moment(startTime, 'HH:mm'));
     const appt = {
-      date: moment(this.props.date).format('YYYY-MM-DD'),
+      date: moment(date).format('YYYY-MM-DD'),
       client,
       bookedByEmployee: provider,
       items,
@@ -608,7 +609,7 @@ export class NewApptSlide extends React.Component {
     } = this.props.newApptState;
     const service = this.getService();
 
-    if (!bookedByEmployee) {
+    if (!provider) {
       return alert('Please select a provider first');
     }
     const fromTime = moment(startTime, 'HH:mm');
@@ -616,7 +617,7 @@ export class NewApptSlide extends React.Component {
 
     const newAppt = {
       date,
-      bookedByEmployee,
+      bookedByEmployee: provider,
       service,
       client,
       fromTime,
