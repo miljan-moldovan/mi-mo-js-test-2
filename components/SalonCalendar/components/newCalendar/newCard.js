@@ -80,7 +80,7 @@ class Card extends Component {
     const birthdayCake = badgeData.clientBirthday ? <Icon color="#082E66" size={16} name="birthdayCake" type="regular" /> : null;
     const checkCircle = appointment.confirmationStatus ? <Icon color="#082E66" size={16} name="checkCircle" type="solid" /> : null;
     const repeat = badgeData.isRecurring ? <Icon color="#082E66" size={16} name="repeatAlt" type="solid" /> : null;
-    const badgeNL = badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
+    const badgeNL = !badgeData.clientIsNew && badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
     const badgeN = badgeData.clientIsNew ? <Badge text="N" /> : null;
     const badgeO = badgeData.isOnlineBooking ? <Badge text="O" /> : null;
     const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
