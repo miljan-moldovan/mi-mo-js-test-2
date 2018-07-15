@@ -418,7 +418,7 @@ export default class SalonAppointmentSlide extends React.Component {
               ]}
             </View>
 
-            <View style={{ height: 600, backgroundColor: '#FFFFFF' }}>
+            <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
               <AdaptableView isOpen={isOpen}>
                 <SalonTouchableOpacity activeOpacity={1}>
                   <View style={styles.panelMiddle}>

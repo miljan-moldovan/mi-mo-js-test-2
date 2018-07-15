@@ -337,8 +337,6 @@ export class NewApptSlide extends React.Component {
     height: new Animated.Value(0),
   });
 
-  resetForm = () => this.setState(this.getInitialState())
-
   componentWillReceiveProps(newProps) {
     if (!this.props.visible && newProps.visible) {
       this.showPanel();
@@ -347,25 +345,53 @@ export class NewApptSlide extends React.Component {
     }
   }
 
-  animateHeight = value => Animated.timing(
-    this.state.height,
-    {
-      toValue: value,
-      duration: 300,
-    },
-  )
-
   setClient = (client) => {
     this.props.newApptActions.setClient(client);
-    this.showPanel();
+    this.showPanel().checkConflicts();
   }
 
-  setService = ({
-    service, addons, recommended, required,
-  }) => {
-    // this.props.newApptActions.clearServiceItems();
+  setService = (service) => {
     this.props.newApptActions.addQuickServiceItem(service);
-    this.showPanel();
+    this.showPanel().checkConflicts();
+  }
+
+  setAddons = (addons) => {
+    const parentService = this.getService();
+    // return this.props.newApptActions.addServiceItemAddons({
+    //   parentId: 
+    // })
+  }
+
+  setProvider = (provider) => {
+    this.props.newApptActions.setBookedBy(provider);
+    return this.showPanel().checkConflicts();
+  }
+
+  getService = () => {
+    const { serviceItems } = this.props.newApptState;
+    const firstServiceItem = serviceItems[0] || { service: {} };
+    const {
+      service: { service = null },
+    } = firstServiceItem;
+    return service;
+  }
+
+  getTotalLength = () => this.props.getLength;
+
+  getEndTime = () => this.props.getEndTime
+
+  getBookButtonText = () => {
+    const {
+      isLoading,
+      isBooking,
+    } = this.props.newApptState;
+    if (isLoading) {
+      return 'LOADING...';
+    }
+    if (isBooking) {
+      return 'BOOKING APPOINTMENT...';
+    }
+    return 'BOOK NOW';
   }
 
   openAddons = () => {
@@ -380,122 +406,29 @@ export class NewApptSlide extends React.Component {
     }
   }
 
-  setProvider = (provider) => {
-    this.props.newApptActions.setBookedBy(provider);
-    return this.showPanel();
-  }
+  animateHeight = value => Animated.timing(
+    this.state.height,
+    {
+      toValue: value,
+      duration: 300,
+    },
+  )
 
-  getService = () => {
-    const { serviceItems } = this.props.newApptState;
-    const firstServiceItem = serviceItems[0] || { service: {} };
-    const {
-      service: { service = null },
-    } = firstServiceItem;
-    return service;
-  }
-
-  resetTimeForServices = (items, index, initialFromTime) => {
-    items.forEach((item, i) => {
-      if (i > index) {
-        const prevItem = items[i - 1];
-
-        item.fromTime = prevItem && prevItem.toTime ?
-          moment(prevItem.toTime) : initialFromTime;
-        item.toTime = moment(item.fromTime).add(moment.duration(item.service ?
-          item.service.maxDuration : item.maxDuration));
-      }
-    });
-
-    return items;
-  }
-
-  getAllServices = () => {
-    const {
-      service,
-      addons,
-      recommended,
-      required,
-    } = this.state;
-    return compact([
-      service,
-      ...addons,
-      ...recommended,
-      required,
-    ]);
-  }
-
-  getTotalLength = () => this.props.getLength;
-
-  getEndTime = () => this.props.getEndTime
-
-  getBookButtonText = () => {
-    if (this.props.newApptState.isLoading) {
-      return 'LOADING...';
-    }
-    if (this.props.newApptState.isBooking) {
-      return 'BOOKING APPOINTMENT...';
-    }
-    return 'BOOK NOW';
-  }
-
-  async checkConflicts() {
-    const {
-      client,
-    } = this.state;
-    const { date, startTime, provider } = this.props;
-    const services = this.getAllServices();
-    if (!client || !provider || !services.length > 0) {
-      return;
-    }
-    this.setState({
-      conflicts: [],
-      isLoading: true,
-    }, async () => {
-      this.resetTimeForServices(services, -1, moment(startTime, 'HH:mm'));
-
-      const conflictData = {
-        date: date.format('YYYY-MM-DD'),
-        clientId: client.id,
-        items: [],
-      };
-      services.forEach((service) => {
-        conflictData.items.push({
-          clientId: client.id,
-          serviceId: service.id,
-          employeeId: provider.id,
-          fromTime: service.fromTime.format('HH:mm:ss', { trim: false }),
-          toTime: service.toTime.format('HH:mm:ss', { trim: false }),
-          bookBetween: false,
-          roomId: get(get(service, 'room', null), 'id', null),
-          roomOrdinal: get(service, 'roomOrdinal', null),
-          resourceId: get(get(service, 'resource', null), 'id', null),
-          resourceOrdinal: get(service, 'resourceOrdinal', null),
-        });
-      });
-
-      const conflicts = await AppointmentBook.postCheckConflicts(conflictData);
-      this.setState({
-        conflicts,
-        isLoading: false,
-      });
-    });
-  }
+  checkConflicts = () => this.props.newApptActions.getConflicts()
 
   canBook = () => {
     const {
-      service,
       client,
       conflicts,
       isLoading,
-    } = this.props.newApptState;
-    const {
-      provider,
       isBooking,
-    } = this.props;
+      bookedByEmployee,
+    } = this.props.newApptState;
+    const service = this.getService();
     if (
       service === null ||
       client === null ||
-      provider === null ||
+      bookedByEmployee === null ||
       conflicts.length > 0 ||
       isLoading ||
       isBooking
@@ -510,37 +443,8 @@ export class NewApptSlide extends React.Component {
     if (!this.canBook()) {
       return false;
     }
-    const {
-      service,
-      client,
-      addons,
-      required,
-      isRequested,
-      recommended,
-    } = this.state;
-    const { startTime, provider } = this.props;
-    const totalServices = [
-      required,
-      ...recommended,
-      ...addons,
-      service,
-    ];
 
-    const items = compact(totalServices).map(item => ({
-      service: item,
-      client,
-      employee: provider,
-      requested: isRequested,
-    }));
-    this.resetTimeForServices(items, -1, moment(startTime, 'HH:mm'));
-    const appt = {
-      date: moment(this.props.date).format('YYYY-MM-DD'),
-      client,
-      bookedByEmployee: provider,
-      items,
-    };
-
-    return this.props.handleBook(appt);
+    return this.props.handleBook();
   }
 
   handleTabChange = () => ({})
@@ -599,32 +503,8 @@ export class NewApptSlide extends React.Component {
   }
 
   goToFullForm = () => {
-    const {
-      date,
-      client,
-      bookedByEmployee: provider,
-      startTime,
-      isQuickApptRequested,
-    } = this.props.newApptState;
-    const service = this.getService();
-
-    if (!bookedByEmployee) {
-      return alert('Please select a provider first');
-    }
-    const fromTime = moment(startTime, 'HH:mm');
-    const toTime = moment(fromTime).add(this.getTotalLength());
-
-    const newAppt = {
-      date,
-      bookedByEmployee,
-      service,
-      client,
-      fromTime,
-      toTime,
-      requested: isQuickApptRequested,
-    };
-
-    this.hidePanel().props.navigation.navigate('NewAppointment', { newAppt });
+    const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
+    return this.hidePanel(navigateCallback);
   }
 
   cancelButton = () => ({
@@ -654,15 +534,14 @@ export class NewApptSlide extends React.Component {
       date,
       startTime,
       client,
+      conflicts,
       bookedByEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
     const service = this.getService();
-    // if (service) {
-    //   debugger //eslint-disable-line
-    // }
+
     const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
-    const selectedStyle = { fontSize: 14, lineHeight: 22, color: this.state.conflicts.length > 0 ? 'red' : 'black' };
+    const selectedStyle = { fontSize: 14, lineHeight: 22, color: conflicts.length > 0 ? 'red' : 'black' };
     return (
       <Modal
         visible={this.props.visible}
@@ -774,6 +653,9 @@ export class NewApptSlide extends React.Component {
                     headerProps={{ title: 'Services', ...this.cancelButton() }}
                     iconStyle={{ color: '#115ECD' }}
                     onChange={this.setService}
+                    onChangeAddons={this.setAddons}
+                    onChangeRecommended={this.setRecommended}
+                    onChangeRequired={this.setRequired}
                   />
                   <InputDivider style={styles.middleSectionDivider} />
                   <ProviderInput
@@ -803,7 +685,7 @@ export class NewApptSlide extends React.Component {
                   recommended={this.state.recommended}
                   height={this.state.addonsHeight}
                   onPressAddons={() => {
-                    this.serviceInput.selectRecommended().selectAddons().performOnChange();
+                    this.serviceInput.selectRecommended().selectAddons();
                     // this.serviceInput.selectAddons();
                     // this.showPanel().checkConflicts();
                     // this.setState({
@@ -818,13 +700,13 @@ export class NewApptSlide extends React.Component {
                   }}
                   onRemoveRequired={() => this.setState({ required: null }, this.checkConflicts)}
                 />
-                {this.state.conflicts.length > 0 && (
+                {conflicts.length > 0 && (
                   <ConflictBox
                     onPress={() => {
                       const callback = () => {
                         this.props.navigation.navigate('Conflicts', {
                           date,
-                          conflicts: this.state.conflicts,
+                          conflicts,
                           startTime,
                           endTime: moment(startTime).add(moment.duration(this.getTotalLength())),
                           handleGoBack: () => this.showPanel(),
