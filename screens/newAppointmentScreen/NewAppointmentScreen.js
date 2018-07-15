@@ -916,9 +916,9 @@ export default class NewAppointmentScreen extends React.Component {
       disabled={isDisabled}
       key={Math.random().toString()}
       onPress={() => {
-        const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
-        const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
-        this.props.navigation.navigate(url, { client: this.state.client });
+        //const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
+        //const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
+        this.props.navigation.navigate('ClientNotes', { client: this.state.client });
       }}
       style={{
         marginHorizontal: 5,
@@ -963,8 +963,8 @@ export default class NewAppointmentScreen extends React.Component {
       clientEmail,
       clientPhone,
     } = this.state;
-    const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
-    const isDisabled = isFormulas ? this.props.formulasAndNotesState.formulas.length < 1 : this.props.formulasAndNotesState.notes.length < 1;
+    //const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
+    const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
     return (
