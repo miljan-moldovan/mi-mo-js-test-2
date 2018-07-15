@@ -892,7 +892,7 @@ export default class NewAppointmentScreen extends React.Component {
       <Icon
         name="fileText"
         size={20}
-        color="#115ECD"
+        color={isDisabled ? '#ccc' : '#115ECD'}
         type="regular"
       />
     </SalonTouchableOpacity>,
