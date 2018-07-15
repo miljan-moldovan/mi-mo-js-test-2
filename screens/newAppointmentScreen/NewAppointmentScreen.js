@@ -340,53 +340,19 @@ export default class NewAppointmentScreen extends React.Component {
     super(props);
 
     this.props.navigation.setParams({ canSave: false, handleSave: this.handleSave });
-    const params = this.props.navigation.state.params || {};
-    const newAppt = params.newAppt || {};
-    const serviceItems = [];
-    if (
-      newAppt.client !== null &&
-      newAppt.service !== null &&
-      newAppt.bookedByEmployee !== null
-    ) {
-      serviceItems.push({
-        itemId: uuid(),
-        guestId: false,
-        service: {
-          employee: newAppt.bookedByEmployee,
-          service: newAppt.service,
-          client: newAppt.client,
-          fromTime: newAppt.fromTime,
-          toTime: newAppt.toTime,
-          requested: newAppt.requested,
-        },
-      });
-    }
-
+    const {
+      client,
+    } = this.props.newAppointmentState;
     const {
       clientEmail,
       clientPhone,
       clientPhoneType,
-    } = this.getClientInfo(newAppt.client);
+    } = this.getClientInfo(client);
 
     this.state = {
       isRecurring: false,
       isLoading: false,
       canSave: false,
-      date: get(newAppt, 'date', moment()),
-      bookedByEmployee: get(newAppt, 'bookedByEmployee', null),
-      client: get(newAppt, 'client', null),
-      startTime: get(newAppt, 'fromTime', moment().startOf('day').add(7 * 60, 'min')),
-      endTime: get(newAppt, 'toTime', moment().startOf('day').add((7 * 60) + 15, 'min')),
-      serviceItems,
-      guests: [],
-      conflicts: [],
-      recurringPickerOpen: false,
-      recurringNumber: 1,
-      recurringType: 'Weeks',
-      // startTime,
-      // endTime,
-      totalPrice: 0,
-      totalDuration: 0,
       clientEmail,
       clientPhone,
       clientPhoneType,
@@ -394,7 +360,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   componentDidMount() {
-    this.calculateTotals();
+    // this.calculateTotals();
     this.validate();
   }
 
@@ -678,11 +644,11 @@ export default class NewAppointmentScreen extends React.Component {
     this.setState({ guests: newGuests }, this.validate);
   }
 
-  getGuestServices = guestId => this.state.serviceItems.filter(item => item.guestId === guestId)
+  getGuestServices = guestId => this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId)
 
-  getGuest = guestId => this.state.guests.find(item => item.guestId === guestId)
+  getGuest = guestId => this.props.newAppointmentState.guests.find(item => item.guestId === guestId)
 
-  getServiceItem = serviceId => this.state.serviceItems.find(item => item.itemId === serviceId)
+  getServiceItem = serviceId => this.props.newAppointmentState.serviceItems.find(item => item.itemId === serviceId)
 
   onChangeRecurring = isRecurring => this.setState({ isRecurring: !isRecurring });
 
@@ -731,74 +697,76 @@ export default class NewAppointmentScreen extends React.Component {
     return alert('Select a client first');
   }
 
-  getMainServices = () => this.state.serviceItems.filter(item => !item.guestId && !item.parentId)
+  getMainServices = () => this.props.newAppointmentState.serviceItems.filter(item => !item.guestId && !item.parentId)
 
-  getAddonsForService = serviceId => this.state.serviceItems.filter(item => item.parentId === serviceId)
+  getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
 
   checkConflicts = (prevValue) => {
-    const {
-      date,
-      client,
-      bookedByEmployee,
-      serviceItems,
-      guests,
-    } = this.state;
+    // const {
+    //   date,
+    //   client,
+    //   bookedByEmployee,
+    //   serviceItems,
+    //   guests,
+    // } = this.state;
 
-    let servicesToCheck = [];
+    // let servicesToCheck = [];
 
-    this.setState({
-      conflicts: [],
-    });
+    // this.setState({
+    //   conflicts: [],
+    // });
 
-    if (!client || !bookedByEmployee) {
-      return;
-    }
+    // if (!client || !bookedByEmployee) {
+    //   return;
+    // }
 
-    servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service.service &&
-      serviceItem.service.employee &&
-      serviceItem.service.employee.id !== null &&
-      (serviceItem.guestId ? serviceItem.service.client : true));
+    // servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service.service &&
+    //   serviceItem.service.employee &&
+    //   serviceItem.service.employee.id !== null &&
+    //   (serviceItem.guestId ? serviceItem.service.client : true));
 
-    if (!servicesToCheck.length) {
-      return;
-    }
+    // if (!servicesToCheck.length) {
+    //   return;
+    // }
 
-    const conflictData = {
-      date: date.format('YYYY-MM-DD'),
-      clientId: client.id,
-      items: [],
-    };
-    servicesToCheck.forEach((serviceItem) => {
-      if (
-        serviceItem.service &&
-        serviceItem.service.employee &&
-        serviceItem.service.employee.id === 0
-      ) {
-        return;
-      }
+    // const conflictData = {
+    //   date: date.format('YYYY-MM-DD'),
+    //   clientId: client.id,
+    //   items: [],
+    // };
+    // servicesToCheck.forEach((serviceItem) => {
+    //   if (
+    //     serviceItem.service &&
+    //     serviceItem.service.employee &&
+    //     serviceItem.service.employee.id === 0
+    //   ) {
+    //     return;
+    //   }
 
-      conflictData.items.push({
-        appointmentId: serviceItem.service.id ? serviceItem.service.id : null,
-        clientId: serviceItem.guestId ? serviceItem.service.client.id : client.id,
-        serviceId: serviceItem.service.service.id,
-        employeeId: serviceItem.service.employee.id,
-        fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
-        toTime: serviceItem.service.toTime.format('HH:mm:ss', { trim: false }),
-        gapTime: moment().startOf('day').add(moment.duration(+serviceItem.service.gapTime, 'm')).format('HH:mm:ss', { trim: false }),
-        afterTime: moment().startOf('day').add(moment.duration(+serviceItem.service.afterTime, 'm')).format('HH:mm:ss', { trim: false }),
-        bookBetween: !!serviceItem.service.gapTime,
-        roomId: get(get(serviceItem.service, 'room', null), 'id', null),
-        roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
-        resourceId: get(get(serviceItem.service, 'resource', null), 'id', null),
-        resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
-      });
-    });
+    //   conflictData.items.push({
+    //     appointmentId: serviceItem.service.id ? serviceItem.service.id : null,
+    //     clientId: serviceItem.guestId ? serviceItem.service.client.id : client.id,
+    //     serviceId: serviceItem.service.service.id,
+    //     employeeId: serviceItem.service.employee.id,
+    //     fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
+    //     toTime: serviceItem.service.toTime.format('HH:mm:ss', { trim: false }),
+    //     gapTime: moment().startOf('day').add(moment.duration(+serviceItem.service.gapTime, 'm')).format('HH:mm:ss', { trim: false }),
+    //     afterTime: moment().startOf('day').add(moment.duration(+serviceItem.service.afterTime, 'm')).format('HH:mm:ss', { trim: false }),
+    //     bookBetween: !!serviceItem.service.gapTime,
+    //     roomId: get(get(serviceItem.service, 'room', null), 'id', null),
+    //     roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
+    //     resourceId: get(get(serviceItem.service, 'resource', null), 'id', null),
+    //     resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
+    //   });
+    // });
 
-    AppointmentBook.postCheckConflicts(conflictData)
-      .then(conflicts => this.setState({
-        conflicts,
-        canSave: conflicts.length > 0 ? false : prevValue,
-      }));
+    // AppointmentBook.postCheckConflicts(conflictData)
+    //   .then(conflicts => this.setState({
+    //     conflicts,
+    //     canSave: conflicts.length > 0 ? false : prevValue,
+    //   }));
+
+    return this.props.newAppointmentActions.getConflicts();
   }
 
   handleAddGuestService = (guestId) => {
@@ -866,11 +834,13 @@ export default class NewAppointmentScreen extends React.Component {
   validate = () => {
     const {
       date,
+      isLoading,
+      isBooking,
       bookedByEmployee,
       client,
       serviceItems,
       conflicts,
-    } = this.state;
+    } = this.props.newAppointmentState;
 
     let valid = false;
     if (
@@ -878,26 +848,21 @@ export default class NewAppointmentScreen extends React.Component {
       bookedByEmployee !== null &&
       client !== null &&
       serviceItems.length &&
-      !conflicts.length
+      !conflicts.length &&
+      !isLoading &&
+      !isBooking
     ) {
       valid = true;
     }
     this.props.navigation.setParams({ canSave: valid });
     this.setState({ canSave: valid }, () => {
       this.checkConflicts(valid);
-      this.calculateTotals();
     });
   }
 
-  totalPrice = () => this.state.serviceItems.reduce((currentPrice, serviceItem) => {
-    const servicePrice = serviceItem.service.service.price;
-    return currentPrice + servicePrice;
-  }, 0)
+  totalPrice = () => this.props.totalPrice
 
-  totalLength = () => this.state.serviceItems.reduce((currentLength, serviceItem) => {
-    const serviceLength = moment.duration(serviceItem.service.service.maxDuration);
-    return currentLength.add(serviceLength);
-  }, moment.duration(0))
+  totalLength = () => this.props.appointmentLength
 
   resetTimeForServices = (items, index, initialFromTime) => {
     items.forEach((item, i) => {
@@ -952,17 +917,23 @@ export default class NewAppointmentScreen extends React.Component {
   render() {
     const {
       isLoading,
+      isBooking,
       date,
       client,
       bookedByEmployee: employee,
       startTime,
       conflicts,
       guests,
-      totalPrice,
-      totalDuration,
+      // totalPrice,
+      // totalDuration,
+    } = this.props.newAppointmentState;
+    const {
       clientEmail,
       clientPhone,
     } = this.state;
+    const totalPrice = this.totalPrice();
+    const totalDuration = this.totalLength();
+
     const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const isDisabled = isFormulas ? this.props.formulasAndNotesState.formulas.length < 1 : this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
@@ -1026,7 +997,7 @@ export default class NewAppointmentScreen extends React.Component {
           />
           <InputDivider />
           <InputNumber
-            value={this.state.guests.length}
+            value={guests.length}
             onChange={this.onChangeGuestNumber}
             label="Multiple Guests"
             singularText="guest"
@@ -1082,11 +1053,11 @@ export default class NewAppointmentScreen extends React.Component {
             title="add service"
           />
         </View>
-        {this.state.guests.length > 0 && (
+        {guests.length > 0 && (
           <View>
             <SubTitle title={guestsLabel} />
             {
-              this.state.guests.map((guest, guestIndex) => (
+              guests.map((guest, guestIndex) => (
                 <View>
                   <Guest
                     index={guestIndex}

@@ -315,7 +315,7 @@ export default class AppointmentScreen extends Component {
       resources,
       deskStaff,
       resourceAppointments,
-      storeSchedule
+      storeSchedule,
     } = this.props.appointmentScreenState;
     const { availability, appointments, blockTimes } = this.props;
     const { bufferVisible } = this.state;
@@ -417,31 +417,19 @@ export default class AppointmentScreen extends Component {
           startTime={this.state.newApptStartTime}
           provider={this.state.newApptProvider}
           filterProviders={providers}
-          hide={() => {
-            this.setState({ visibleNewAppointment: false });
-          }}
+          hide={() => this.setState({ visibleNewAppointment: false })}
           show={() => this.setState({ visibleNewAppointment: true })}
-          // newApptState={this.props.newAppointmentState}
-          // newApptActions={this.props.newAppointmentActions}
           isBooking={this.state.isBookingNewAppt}
-          handleBook={(appt) => {
-            this.setState({
-              isBookingNewAppt: true,
-            }, () => this.props.newAppointmentActions.bookNewAppt({
-                ...appt,
-                remarks: '',
-                rebooked: false,
-              })
-                .then(() => this.setState({
-                    visibleNewAppointment: false,
-                    isBookingNewAppt: false,
-                  }, () => {
-                    this.props.appointmentCalendarActions.setGridView();
-                  }))
-                .catch(() => this.setState({
-                  isBookingNewAppt: false,
-                  visibleNewAppointment: true,
-                })));
+          handleBook={() => {
+            const callback = () => {
+              this.setState({
+                visibleNewAppointment: false,
+                isBookingNewAppt: false,
+              }, () => {
+                this.props.appointmentCalendarActions.setGridView();
+              });
+            };
+            this.props.newAppointmentActions.quickBookAppt(callback);
           }}
           onChangeProvider={newApptProvider => this.setState({ newApptProvider })}
         />
