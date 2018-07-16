@@ -18,7 +18,7 @@ import {
 } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import newAppointmentActions from '../../actions/newAppointment';
+import newApptActions from '../../actions/newAppointment';
 import newAppointmentState from '../../reducers/newAppointment';
 import {
   getEndTime,
@@ -357,9 +357,11 @@ export class NewApptSlide extends React.Component {
 
   setAddons = (addons) => {
     const parentService = this.getService();
-    // return this.props.newApptActions.addServiceItemAddons({
-    //   parentId: 
-    // })
+    this.props.newApptActions.addServiceItemExtras(
+      parentService.itemId,
+      'addon',
+      addons,
+    );
   }
 
   setProvider = (provider) => {
@@ -504,6 +506,7 @@ export class NewApptSlide extends React.Component {
 
   goToFullForm = () => {
     const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
+    this.props.newApptActions.isBookingQuickAppt(false);
     return this.hidePanel(navigateCallback);
   }
 
@@ -732,7 +735,7 @@ export class NewApptSlide extends React.Component {
                   </Text>
                   <Switch
                     value={this.props.newApptState.isQuickApptRequested}
-                    onValueChange={isQuickApptRequested => this.props.newApptActions.setQuickApptRequested(isQuickApptRequested)}
+                    onValueChange={requested => this.props.newApptActions.setQuickApptRequested(requested)}
                   />
                 </View>
                 <View style={{
@@ -815,7 +818,7 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  newApptActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
+  newApptActions: bindActionCreators({ ...newApptActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);

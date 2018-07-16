@@ -134,24 +134,16 @@ export default class AppointmentScreen extends Component {
     } = this.props.appointmentScreenState;
 
     const startTime = moment(time, 'HH:mm A');
-    const endTime = moment(startTime).add(15, 'minute');
-
     if (selectedProvider === 'all') {
-      this.setState({
-        newApptProvider: {
-          isFirstAvailable: true,
-          name: 'First',
-          lastName: 'Available',
-        },
-        newApptDate: startDate,
-        newApptStartTime: startTime,
-        newAppointmentFilter: 0,
-        visibleNewAppointment: true,
-      });
-      // this.props.newAppointmentActions.setNewApptDate(startDate);
+      const newApptProvider = {
+        isFirstAvailable: true,
+        name: 'First',
+        lastName: 'Available',
+      };
+      this.props.newAppointmentActions.setBookedBy(newApptProvider);
+      this.props.newAppointmentActions.setDate(startDate);
     }
-
-    // this.props.newAppointmentActions.setNewApptTime(startTime, endTime);
+    this.props.newAppointmentActions.setStartTime(startTime);
 
     this.setState({
       newAppointmentFilter: 0,
@@ -226,7 +218,7 @@ export default class AppointmentScreen extends Component {
       newAppointmentActions.setDate(startDate);
     }
     newAppointmentActions.setStartTime(startTime);
-
+    newAppointmentActions.isBookingQuickAppt(true);
     this.setState({
       newAppointmentFilter: 0,
       visibleNewAppointment: true,
@@ -410,16 +402,17 @@ export default class AppointmentScreen extends Component {
         )}
 
         <NewApptSlide
-          ref={newApptSlide => this.newApptSlide = newApptSlide}
+          ref={(newApptSlide) => {
+            this.newApptSlide = newApptSlide;
+            return newApptSlide;
+          }}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
-          date={this.state.newApptDate}
           startTime={this.state.newApptStartTime}
           provider={this.state.newApptProvider}
           filterProviders={providers}
           hide={() => this.setState({ visibleNewAppointment: false })}
           show={() => this.setState({ visibleNewAppointment: true })}
-          isBooking={this.state.isBookingNewAppt}
           handleBook={() => {
             const callback = () => {
               this.setState({
@@ -431,7 +424,6 @@ export default class AppointmentScreen extends Component {
             };
             this.props.newAppointmentActions.quickBookAppt(callback);
           }}
-          onChangeProvider={newApptProvider => this.setState({ newApptProvider })}
         />
 
         <SalonDatePickerSlide
