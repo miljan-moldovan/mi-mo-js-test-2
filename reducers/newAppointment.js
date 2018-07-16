@@ -10,6 +10,9 @@ import {
   CLEAR_SERVICE_ITEMS,
   ADD_QUICK_SERVICE_ITEM,
   ADD_SERVICE_ITEM,
+  UPDATE_SERVICE_ITEM,
+  REMOVE_SERVICE_ITEM,
+  ADD_SERVICE_ITEM_EXTRAS,
   BOOK_NEW_APPT,
   BOOK_NEW_APPT_SUCCESS,
   BOOK_NEW_APPT_FAILED,
@@ -19,6 +22,7 @@ import {
   ADD_GUEST,
   REMOVE_GUEST,
   SET_GUEST_CLIENT,
+  SET_REMARKS,
 } from '../actions/newAppointment';
 
 const defaultState = {
@@ -42,9 +46,7 @@ export default function newAppointmentReducer(state = defaultState, action) {
   const newGuests = state.guests;
   switch (type) {
     case CLEAN_FORM:
-      return {
-        ...defaultState,
-      };
+      return defaultState;
     case IS_BOOKING_QUICK_APPT:
       return {
         ...state,
@@ -70,6 +72,11 @@ export default function newAppointmentReducer(state = defaultState, action) {
         ...state,
         startTime: data.startTime,
       };
+    case SET_REMARKS:
+      return {
+        ...state,
+        remarks: data.remarks,
+      };
     case SET_QUICK_APPT_REQUESTED:
       return {
         ...state,
@@ -81,15 +88,29 @@ export default function newAppointmentReducer(state = defaultState, action) {
         serviceItems: [],
       };
     case ADD_SERVICE_ITEM:
-      newServiceItems.push(data.serviceItem);
       return {
         ...state,
-        serviceItems: newServiceItems,
+        serviceItems: data.serviceItems,
       };
     case ADD_QUICK_SERVICE_ITEM:
       return {
         ...state,
         serviceItems: [data.serviceItem],
+      };
+    case UPDATE_SERVICE_ITEM:
+      return {
+        ...state,
+        serviceItems: data.serviceItems,
+      };
+    case REMOVE_SERVICE_ITEM:
+      return {
+        ...state,
+        serviceItems: data.serviceItems,
+      };
+    case ADD_SERVICE_ITEM_EXTRAS:
+      return {
+        ...state,
+        serviceItems: data.serviceItems,
       };
     case CHECK_CONFLICTS:
       return {
@@ -110,14 +131,13 @@ export default function newAppointmentReducer(state = defaultState, action) {
         conflicts: [],
       };
     case BOOK_NEW_APPT:
+    case BOOK_NEW_APPT_SUCCESS:
+    case BOOK_NEW_APPT_FAILED:
       return {
         ...state,
         isLoading: false,
         isBooking: true,
       };
-    case BOOK_NEW_APPT_SUCCESS:
-    case BOOK_NEW_APPT_FAILED:
-      return defaultState;
     case ADD_GUEST:
       return {
         ...state,

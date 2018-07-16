@@ -201,7 +201,6 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   componentDidMount() {
-    // this.calculateTotals();
     this.validate();
   }
 
@@ -227,36 +226,26 @@ export default class NewAppointmentScreen extends React.Component {
       .catch(err => reject(err));
   })
 
-  deleteMainService = (serviceIndex) => {
-    const { serviceItems } = this.state;
-    serviceItems.splice(serviceIndex, 1);
-    this.setState({ serviceItems });
-  }
-
-  deleteGuestService = (guestIndex, serviceIndex) => {
-    const newGuests = this.state.guests;
-    const newGuest = newGuests[guestIndex];
-
-    newGuest.services.splice(serviceIndex, 1);
-    newGuests[guestIndex] = newGuest;
-
-    this.setState({ guests: newGuests });
-  }
-
-  addService = async (service, guestId = false) => {
-    debugger //eslint-disable-line
+  addService = (selectedServices, guestId = false) => {
     const {
       client,
       startTime,
-      serviceItems,
-      totalDuration,
       bookedByEmployee,
-    } = this.state;
+    } = this.props.newAppointmentState;
+    const {
+      service,
+      addons = [],
+      recommended = [],
+      required = null,
+    } = selectedServices;
+    const length = this.totalLength();
+    const serviceLength = moment.duration(service.maxDuration);
+    const fromTime = moment(startTime).add(length);
+    const toTime = moment(fromTime).add(serviceLength);
 
-    const fromTime = moment(startTime).add(moment.duration(totalDuration));
-    const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
     const newService = {
       service,
+      length: serviceLength,
       client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
       requested: true,
       employee: bookedByEmployee,
@@ -284,20 +273,33 @@ export default class NewAppointmentScreen extends React.Component {
       service: newService,
     };
 
-    serviceItems.push(newServiceItem);
-    this.setState({ serviceItems }, () => {
-      this.validate();
-    });
+    this.props.newAppointmentActions.addServiceItem(newServiceItem);
+    this.props.newAppointmentActions.addServiceItemExtras(
+      newServiceItem.itemId, // parentId
+      'addon', // extraService type
+      addons,
+    );
+    this.props.newAppointmentActions.addServiceItemExtras(
+      newServiceItem.itemId, // parentId
+      'recommended', // extraService type
+      recommended,
+    );
+    this.props.newAppointmentActions.addServiceItemExtras(
+      newServiceItem.itemId, // parentId
+      'required', // extraService type
+      required,
+    );
+
+    return this.validate();
   }
 
   updateContactInformation = () => {
     const {
-      client,
       clientEmail,
       clientPhone,
       clientPhoneType,
     } = this.state;
-
+    const { client } = this.props.newAppointmentState;
     Client.putContactInformation(
       client.id,
       {
@@ -319,164 +321,30 @@ export default class NewAppointmentScreen extends React.Component {
       .catch(err => console.warn(err));
   }
 
-  addAddonServices = (serviceId, services) => {
-    const {
-      client,
-      startTime,
-      totalDuration,
-      bookedByEmployee,
-    } = this.state;
-
-    const parentService = this.getServiceItem(serviceId);
-    const newServiceItems = [];
-    services.forEach((service) => {
-      const fromTime = moment(startTime).add(moment.duration(totalDuration));
-      const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
-      const newService = {
-        service,
-        client: parentService.guestId ? get(this.getGuest(parentService.guestId), 'client', null) : client,
-        requested: true,
-        employee: bookedByEmployee,
-        fromTime,
-        toTime,
-      };
-
-      newServiceItems.push({
-        itemId: uuid(),
-        parentId: parentService.itemId,
-        guestId: parentService.guestId,
-        service: newService,
-      });
-    });
-
-
-    this.setState({
-      serviceItems: [...this.state.serviceItems, ...newServiceItems],
-    }, () => {
-      this.validate();
-      if (parentService.service.service.requiredServices.length > 0) {
-        return this.props.navigation.navigate('RecommendedServices', {
-          serviceTitle: parentService.service.service.name,
-          services: parentService.service.service.requiredServices,
-          onSave: selectedServices => this.addRecommendedServices(parentService.itemId, selectedServices),
-        });
-      }
-    });
-  }
-
-  addRecommendedServices = (serviceId, services) => {
-    const {
-      client,
-      startTime,
-      totalDuration,
-      bookedByEmployee,
-    } = this.state;
-
-    const parentService = this.getServiceItem(serviceId);
-    const newServiceItems = [];
-    services.forEach((service) => {
-      const fromTime = moment(startTime).add(moment.duration(totalDuration));
-      const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
-      const newService = {
-        service,
-        client: parentService.guestId ? get(this.getGuest(parentService.guestId), 'client', null) : client,
-        requested: true,
-        employee: bookedByEmployee,
-        fromTime,
-        toTime,
-      };
-
-      newServiceItems.push({
-        itemId: uuid(),
-        parentId: parentService.itemId,
-        guestId: parentService.guestId,
-        service: newService,
-      });
-    });
-
-
-    this.setState({
-      serviceItems: [...this.state.serviceItems, ...newServiceItems],
-    }, () => {
-      this.validate();
-      if (parentService.service.service.requiredServices.length > 0) {
-        return this.props.navigation.navigate('RequiredServices', {
-          serviceTitle: parentService.service.service.name,
-          services: parentService.service.service.requiredServices,
-          onSave: selectedService => this.addRequiredServices(parentService.itemId, selectedService),
-        });
-      }
-    });
-  }
-
-  addRequiredServices = (serviceId, service) => {
-    const {
-      client,
-      startTime,
-      serviceItems,
-      totalDuration,
-      bookedByEmployee,
-    } = this.state;
-
-    const parentService = this.getServiceItem(serviceId);
-    const fromTime = moment(startTime).add(moment.duration(totalDuration));
-    const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
-    const newService = {
-      service,
-      client: parentService.guestId ? get(this.getGuest(parentService.guestId), 'client', null) : client,
-      requested: true,
-      employee: bookedByEmployee,
-      fromTime,
-      toTime,
-    };
-
-    serviceItems.push({
-      itemId: uuid(),
-      isRequired: true,
-      parentId: parentService.itemId,
-      guestId: parentService.guestId,
-      service: newService,
-    });
-
-
-    this.setState({ serviceItems }, this.validate);
-  }
-
   onPressService = (serviceId, guestId = false) => {
+    const {
+      date,
+      client: mainClient,
+    } = this.props.newAppointmentState;
+    const client = guestId ? get(this.getGuest(guestId), 'client', null) : mainClient;
     this.props.navigation.navigate('ModifyApptService', {
+      date,
       guestId,
-      client: guestId ? get(this.getGuest(guestId), 'client', null) : this.state.client,
-      date: this.state.date,
+      client,
       serviceItem: this.getServiceItem(serviceId),
       onSaveService: service => this.updateService(serviceId, service, guestId),
       onRemoveService: () => this.removeService(serviceId),
     });
   }
 
-  updateService = (itemId, updatedService, guestId = false) => {
-    const serviceIndex = this.state.serviceItems.findIndex(item => item.itemId === itemId);
-    const newServiceItems = this.state.serviceItems;
-    const serviceItem = {
-      guestId,
-      itemId,
-      service: updatedService,
-    };
-    newServiceItems.splice(serviceIndex, 1, serviceItem);
-    this.setState({ serviceItems: newServiceItems }, this.validate);
+  updateService = (serviceId, updatedService, guestId = false) => {
+    this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
+    this.validate();
   }
 
   removeService = (serviceId) => {
-    const serviceIndex = this.state.serviceItems.findIndex(item => item.itemId === serviceId);
-    const newServiceItems = this.state.serviceItems;
-    const removedAppt = newServiceItems.splice(serviceIndex, 1)[0];
-    const serviceItems = this.resetTimeForServices(
-      newServiceItems,
-      serviceIndex - 1,
-      removedAppt.service.fromTime,
-    );
-    this.setState({
-      serviceItems,
-    }, this.validate);
+    this.props.newAppointmentActions.removeServiceItem(serviceId);
+    this.validate();
   }
 
   setGuest = (client, guestId) => {
@@ -484,13 +352,13 @@ export default class NewAppointmentScreen extends React.Component {
     this.validate();
   }
 
-  getGuestServices = guestId => this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId)
+  getGuestServices = guestId => this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId && !item.parentId)
 
   getGuest = guestId => this.props.newAppointmentState.guests.find(item => item.guestId === guestId)
 
   getServiceItem = serviceId => this.props.newAppointmentState.serviceItems.find(item => item.itemId === serviceId)
 
-  onChangeRecurring = isRecurring => this.setState({ isRecurring: !isRecurring });
+  onChangeRecurring = isRecurring => isRecurring // this.setState({ isRecurring: !isRecurring });
 
   onChangeProvider = (employee) => {
     this.setState({ employee }, this.validate);
@@ -509,7 +377,7 @@ export default class NewAppointmentScreen extends React.Component {
     }, this.validate);
   }
 
-  onChangeRemarks = remarks => this.setState({ remarks })
+  onChangeRemarks = remarks => this.props.newAppointmentActions.setRemarks(remarks)
 
   onChangeGuestNumber = (action, guestNumber) => {
     if (this.props.newAppointmentState.guests.length < guestNumber) {
@@ -542,16 +410,20 @@ export default class NewAppointmentScreen extends React.Component {
   checkConflicts = prevValue => this.props.newAppointmentActions.getConflicts()
 
   handleAddGuestService = (guestId) => {
-    const { bookedByEmployee } = this.state;
-    if (guestId !== null) {
+    const { bookedByEmployee } = this.props.newAppointmentState;
+    const guest = this.getGuest(guestId);
+    const { client = null } = guest;
+    if (client !== null) {
       return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
+        selectExtraServices: true,
         filterByProvider: true,
-        clientId: this.getGuest(guestId).client.id,
+        clientId: get(client, 'id', null),
         employeeId: bookedByEmployee.id,
         onChangeService: service => this.addService(service, guestId),
       });
     }
+
     return alert('Select a guest first');
   }
 
@@ -563,44 +435,14 @@ export default class NewAppointmentScreen extends React.Component {
         bookedByEmployee,
         remarks,
         serviceItems,
-      } = this.state;
+      } = this.props.newAppointmentState;
       const callback = () => {
         this.props.navigation.navigate('SalonCalendar');
         this.props.apptBookActions.setGridView();
       };
-      // this.props.navigation.setParams({ redirect: true });
-      this.setState({ isLoading: true }, () => {
-        this.updateContactInformation();
-        this.props.newAppointmentActions.bookNewAppt({
-          date,
-          client,
-          bookedByEmployee,
-          remarks,
-          rebooked: false,
-          items: serviceItems.map(item => ({ isGuest: item.guestId, ...item.service })),
-        }, callback)
-          .then((res) => {
-            this.props.navigation.navigate('SalonCalendar');
-            this.props.apptBookActions.setGridView();
-          })
-          .catch((err) => {
-            console.warn(err);
-            this.setState({ isLoading: false });
-          });
-      });
+      this.updateContactInformation();
+      this.props.newAppointmentActions.quickBookAppt(callback);
     }
-  }
-
-  calculateTotals = () => {
-    const {
-      startTime,
-      serviceItems,
-    } = this.state;
-
-    this.setState({
-      totalDuration: this.totalLength(),
-      totalPrice: this.totalPrice(),
-    });
   }
 
   validate = () => {
@@ -836,15 +678,29 @@ export default class NewAppointmentScreen extends React.Component {
                     onChange={selectedClient => this.setGuest(selectedClient, guest.guestId)}
                   />
                   {
-                    this.getGuestServices(guest.guestId).map(item => (
-                      <ServiceCard
-                        hasConflicts={conflicts.length > 0}
-                        key={item.itemId}
-                        data={item.service}
-                        onPress={() => this.onPressService(item.itemId, guest.guestId)}
-                        onPressDelete={() => this.removeService(item.itemId)}
-                      />
-                    ))
+                    this.getGuestServices(guest.guestId).map(item => ([
+                      (
+                        <ServiceCard
+                          hasConflicts={conflicts.length > 0}
+                          onPress={() => this.onPressService(item.itemId)}
+                          onPressDelete={() => this.removeService(item.itemId)}
+                          key={item.itemId}
+                          addons={this.getAddonsForService(item.itemId)}
+                          data={item.service}
+                        />
+                      ),
+                      this.getAddonsForService(item.itemId).map(addon => (
+                        <ServiceCard
+                          key={addon.itemId}
+                          data={addon.service}
+                          isAddon
+                          isRequired={addon.isRequired}
+                          hasConflicts={conflicts.length > 0}
+                          onPress={() => this.onPressService(addon.itemId)}
+                          onPressDelete={() => this.removeService(addon.itemId)}
+                        />
+                      )),
+                    ]))
                   }
                   <AddButton
                     style={{ marginVertical: 5 }}

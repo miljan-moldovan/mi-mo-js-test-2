@@ -38,6 +38,7 @@ export default class ServiceInput extends React.Component {
       selectedClient = null,
       selectedProvider = null,
       actionType = 'service',
+      selectExtraServices = false,
       headerProps = {},
     } = this.props;
     const { selectedService } = this.state;
@@ -49,10 +50,10 @@ export default class ServiceInput extends React.Component {
       selectedClient,
       selectedService,
       selectedProvider,
-      employeeId: selectedProvider.id || false,
+      selectExtraServices,
       dismissOnSelect: true,
       filterByProvider: !!selectedProvider,
-      // selectExtraServices: true,
+      employeeId: selectedProvider.id || false,
       onChangeService: service => this.handleServiceSelection(service),
     });
   }

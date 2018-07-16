@@ -369,12 +369,44 @@ export class NewApptSlide extends React.Component {
     return this.showPanel().checkConflicts();
   }
 
-  getService = () => {
+  getService = (withExtras = false) => {
     const { serviceItems } = this.props.newApptState;
     const firstServiceItem = serviceItems[0] || { service: {} };
     const {
+      itemId: mainItemId = null,
       service: { service = null },
     } = firstServiceItem;
+
+    if (withExtras) {
+      const addons = [];
+      const recommended = [];
+      let required = null;
+      const extras = serviceItems.filter(item => item.parentId === mainItemId);
+      extras.forEach((extra) => {
+        switch (extra.type) {
+          case 'required': {
+            required = extra.service.service;
+            break;
+          }
+          case 'recommended': {
+            recommended.push(extra.service.service);
+            break;
+          }
+          case 'addon': {
+            addons.push(extra.service.service);
+            break;
+          }
+          default:
+            break;
+        }
+      });
+      return {
+        service,
+        addons,
+        recommended,
+        required,
+      };
+    }
     return service;
   }
 
@@ -519,16 +551,11 @@ export class NewApptSlide extends React.Component {
   })
 
   shouldShowExtras = () => {
-    const { addons, required, recommended } = this.state;
+    const { addons, required, recommended } = this.getService(true);
     return addons.length > 0 || recommended.length > 0 || required !== null;
   }
 
   render() {
-    const {
-      addons,
-      required,
-      recommended,
-    } = this.state;
     const {
       navigation,
       filterProviders,
@@ -541,7 +568,12 @@ export class NewApptSlide extends React.Component {
       bookedByEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
-    const service = this.getService();
+    const {
+      service = null,
+      addons = [],
+      recommended = [],
+      required = null,
+    } = this.getService(true);
 
     const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
     const selectedStyle = { fontSize: 14, lineHeight: 22, color: conflicts.length > 0 ? 'red' : 'black' };
@@ -640,6 +672,7 @@ export class NewApptSlide extends React.Component {
                     apptBook
                     noLabel
                     showLength
+                    selectExtraServices
                     ref={(serviceInput) => { this.serviceInput = serviceInput; }}
                     selectedProvider={provider}
                     selectedService={service}
@@ -683,12 +716,12 @@ export class NewApptSlide extends React.Component {
                 </View>
                 <AddonsContainer
                   visible={this.shouldShowExtras()}
-                  addons={this.state.addons}
-                  required={this.state.required}
-                  recommended={this.state.recommended}
+                  addons={addons}
+                  required={required}
+                  recommended={recommended}
                   height={this.state.addonsHeight}
                   onPressAddons={() => {
-                    this.serviceInput.selectRecommended().selectAddons();
+                    // this.serviceInput.selectRecommended().selectAddons();
                     // this.serviceInput.selectAddons();
                     // this.showPanel().checkConflicts();
                     // this.setState({
@@ -699,9 +732,11 @@ export class NewApptSlide extends React.Component {
                     // });
                   }}
                   onPressRequired={() => {
-                    this.serviceInput.selectRequired();
+                    // this.serviceInput.selectRequired();
                   }}
-                  onRemoveRequired={() => this.setState({ required: null }, this.checkConflicts)}
+                  onRemoveRequired={() => {
+                    // this.setState({ required: null }, this.checkConflicts);
+                  }}
                 />
                 {conflicts.length > 0 && (
                   <ConflictBox
