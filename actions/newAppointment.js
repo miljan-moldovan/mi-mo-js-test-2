@@ -348,7 +348,7 @@ const getConflicts = () => (dispatch, getState) => {
   };
   serviceItems.forEach((serviceItem) => {
     conflictData.items.push({
-      clientId: serviceItem.guestId ? client.id : serviceItem.service.client.id,
+      clientId: serviceItem.guestId ? client.id : get(serviceItem.service.client, 'id', client.id),
       serviceId: serviceItem.service.service.id,
       employeeId: serviceItem.service.employee.id,
       fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
