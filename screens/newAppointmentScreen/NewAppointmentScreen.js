@@ -201,7 +201,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   componentDidMount() {
-    this.validate();
+    this.checkConflicts();
   }
 
   getClientInfo = (client) => {
@@ -290,7 +290,7 @@ export default class NewAppointmentScreen extends React.Component {
       required,
     );
 
-    return this.validate();
+    return this.checkConflicts();
   }
 
   updateContactInformation = () => {
@@ -339,17 +339,17 @@ export default class NewAppointmentScreen extends React.Component {
 
   updateService = (serviceId, updatedService, guestId = false) => {
     this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
-    this.validate();
+    this.checkConflicts();
   }
 
   removeService = (serviceId) => {
     this.props.newAppointmentActions.removeServiceItem(serviceId);
-    this.validate();
+    this.checkConflicts();
   }
 
   setGuest = (client, guestId) => {
     this.props.newAppointmentActions.setGuestClient(guestId, client);
-    this.validate();
+    this.checkConflicts();
   }
 
   getGuestServices = guestId => this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId && !item.parentId)
@@ -361,7 +361,7 @@ export default class NewAppointmentScreen extends React.Component {
   onChangeRecurring = isRecurring => isRecurring // this.setState({ isRecurring: !isRecurring });
 
   onChangeProvider = (employee) => {
-    this.setState({ employee }, this.validate);
+    this.setState({ employee }, this.checkConflicts);
   }
 
   onChangeClient = (client) => {
@@ -374,7 +374,7 @@ export default class NewAppointmentScreen extends React.Component {
     this.props.newAppointmentActions.setClient(client);
     this.setState({
       clientEmail, clientPhone, clientPhoneType,
-    }, this.validate);
+    }, this.checkConflicts);
   }
 
   onChangeRemarks = remarks => this.props.newAppointmentActions.setRemarks(remarks)
@@ -385,7 +385,7 @@ export default class NewAppointmentScreen extends React.Component {
     } else {
       this.props.newAppointmentActions.removeGuest();
     }
-    this.validate();
+    this.checkConflicts();
   }
 
   handleAddMainService = () => {
@@ -407,7 +407,10 @@ export default class NewAppointmentScreen extends React.Component {
 
   getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
 
-  checkConflicts = prevValue => this.props.newAppointmentActions.getConflicts()
+  checkConflicts = () => {
+    this.props.newAppointmentActions.getConflicts();
+    return this.validate();
+  }
 
   handleAddGuestService = (guestId) => {
     const { bookedByEmployee } = this.props.newAppointmentState;
@@ -438,12 +441,14 @@ export default class NewAppointmentScreen extends React.Component {
       } = this.props.newAppointmentState;
       const callback = () => {
         this.props.navigation.navigate('SalonCalendar');
+        // this.props.newAppointmentActions.cleanForm();
         this.props.apptBookActions.setGridView();
       };
       this.updateContactInformation();
       this.props.newAppointmentActions.quickBookAppt(callback);
     }
   }
+
 
   validate = () => {
     const {
@@ -469,9 +474,7 @@ export default class NewAppointmentScreen extends React.Component {
       valid = true;
     }
     this.props.navigation.setParams({ canSave: valid });
-    this.setState({ canSave: valid }, () => {
-      this.checkConflicts(valid);
-    });
+    this.setState({ canSave: valid });
   }
 
   totalPrice = () => this.props.totalPrice
