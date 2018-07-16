@@ -548,7 +548,6 @@ export default function appointmentScreenReducer(state = initialState, action) {
       };
     }
     case SET_GRID_ALL_VIEW_SUCCESS: {
-      debugger
       return {
         ...state,
         isLoading: false,
