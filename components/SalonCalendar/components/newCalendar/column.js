@@ -50,8 +50,15 @@ export default class Column extends Component {
       storeEndTime = moment(storeSchedule.scheduledIntervals[i].end, 'HH:mm');
       isStoreOpen = time.isSameOrAfter(storeStartTime) && time.isBefore(storeEndTime);
     }
+    let styleOclock = '';
+    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
+    const timeSplit = startTime.split(':');
+    const minutesSplit = timeSplit[1];
+    if (minutesSplit === '00') {
+      styleOclock = styles.oClockBorder;
+    }
+    let style = styles.cellContainerDisabled;
     if (isStoreOpen) {
-      let style = styles.cellContainerDisabled;
       let schedule;
       switch (selectedFilter) {
         case 'deskStaff':
@@ -85,23 +92,22 @@ export default class Column extends Component {
           }
         }
       }
-      const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
-      const timeSplit = startTime.split(':');
-      const minutesSplit = timeSplit[1];
-      if (minutesSplit === '00') {
-        style = [style, styles.oClockBorder];
-      }
       return (
         <View key={cell}>
           <TouchableOpacity
-            style={[style, { width: cellWidth }]}
+            style={[style, { width: cellWidth }, styleOclock]}
             onPress={() => { this.onCellPressed(cell, colData); }}
           />
         </View>
       );
     }
     return (
-      <View key={cell} style={[styles.cellContainer, { backgroundColor: '#80889a', width: cellWidth }]} />
+      <View key={cell}>
+        <TouchableOpacity
+          style={[styles.cellContainer, { backgroundColor: '#80889a', width: cellWidth }, styleOclock]}
+          onPress={() => { this.onCellPressed(cell, colData); }}
+        />
+      </View>
     );
   }
 
@@ -166,7 +172,7 @@ export default class Column extends Component {
     const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>
-        { rows.map(this.renderCell) }
+        { rows ? rows.map(this.renderCell) : null }
         { rooms }
       </View>
     );
