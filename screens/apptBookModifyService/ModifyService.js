@@ -98,8 +98,8 @@ export default class ModifyApptServiceScreen extends React.Component {
       endTime: get(serviceItem.service, 'toTime', moment().add(15, 'm')),
       requested: get(serviceItem.service, 'requested', true),
       bookBetween: get(serviceItem.service, 'bookBetween', false),
-      gapTime: +get(serviceItem.service, 'gapTime', 0),
-      afterTime: +get(serviceItem.service, 'afterTime', 0),
+      gapTime: get(serviceItem.service, 'gapTime', 0),
+      afterTime: get(serviceItem.service, 'afterTime', 0),
       room: get(serviceItem.service, 'room', null),
       resource: get(serviceItem.service, 'resource', null),
       startTimePickerOpen: false,
@@ -143,6 +143,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       afterTime,
       room,
       resource,
+      length,
     } = this.state;
 
     if (canSave) {
@@ -159,6 +160,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         afterTime,
         room,
         resource,
+        length,
       };
 
       params.onSaveService(serviceItem);
@@ -346,6 +348,7 @@ export default class ModifyApptServiceScreen extends React.Component {
               <InputNumber
                 value={gapTime}
                 onChange={(action, gapTime) => this.setState({ gapTime })}
+                step={15} // TODO should be apptgrid step
                 label="Gap Time"
                 singularText="min"
                 pluralText="min"
@@ -355,6 +358,7 @@ export default class ModifyApptServiceScreen extends React.Component {
                 value={afterTime}
                 onChange={(action, afterTime) => this.setState({ afterTime })}
                 label="After"
+                step={15}
                 singularText="min"
                 pluralText="min"
               />

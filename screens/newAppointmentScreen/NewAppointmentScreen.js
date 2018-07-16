@@ -146,7 +146,6 @@ export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, ...props }) => {
     const { params } = navigation.state;
     const canSave = params ? params.canSave : false;
-
     return ({
       headerTitle: 'New Appointment',
       headerLeft: (
@@ -329,7 +328,6 @@ export default class NewAppointmentScreen extends React.Component {
     const client = guestId ? get(this.getGuest(guestId), 'client', null) : mainClient;
     this.props.navigation.navigate('ModifyApptService', {
       date,
-      guestId,
       client,
       serviceItem: this.getServiceItem(serviceId),
       onSaveService: service => this.updateService(serviceId, service, guestId),
@@ -407,10 +405,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
 
-  checkConflicts = () => {
-    this.props.newAppointmentActions.getConflicts();
-    return this.validate();
-  }
+  checkConflicts = () => this.props.newAppointmentActions.getConflicts(() => this.validate())
 
   handleAddGuestService = (guestId) => {
     const { bookedByEmployee } = this.props.newAppointmentState;
@@ -439,40 +434,21 @@ export default class NewAppointmentScreen extends React.Component {
         remarks,
         serviceItems,
       } = this.props.newAppointmentState;
-      const callback = () => {
+      const successCallback = () => {
         this.props.navigation.navigate('SalonCalendar');
         // this.props.newAppointmentActions.cleanForm();
         this.props.apptBookActions.setGridView();
       };
+      const errorCallback = () => {
+        this.checkConflicts();
+      };
       this.updateContactInformation();
-      this.props.newAppointmentActions.quickBookAppt(callback);
+      this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
     }
   }
 
-
   validate = () => {
-    const {
-      date,
-      isLoading,
-      isBooking,
-      bookedByEmployee,
-      client,
-      serviceItems,
-      conflicts,
-    } = this.props.newAppointmentState;
-
-    let valid = false;
-    if (
-      date &&
-      bookedByEmployee !== null &&
-      client !== null &&
-      serviceItems.length &&
-      !conflicts.length &&
-      !isLoading &&
-      !isBooking
-    ) {
-      valid = true;
-    }
+    const valid = this.props.isValidAppointment;
     this.props.navigation.setParams({ canSave: valid });
     this.setState({ canSave: valid });
   }
@@ -556,7 +532,14 @@ export default class NewAppointmentScreen extends React.Component {
       <View style={styles.container}>
         {(isLoading || isBooking) && (
           <View style={{
-            position: 'absolute', zIndex: 999, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#cccccc4d',
+            position: 'absolute',
+            top: 60,
+            paddingBottom: 60,
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#cccccc',
           }}
           ><ActivityIndicator />
           </View>
@@ -685,7 +668,7 @@ export default class NewAppointmentScreen extends React.Component {
                         (
                           <ServiceCard
                             hasConflicts={conflicts.length > 0}
-                            onPress={() => this.onPressService(item.itemId)}
+                            onPress={() => this.onPressService(item.itemId, guest.guestId)}
                             onPressDelete={() => this.removeService(item.itemId)}
                             key={item.itemId}
                             addons={this.getAddonsForService(item.itemId)}
@@ -699,7 +682,7 @@ export default class NewAppointmentScreen extends React.Component {
                             isAddon
                             isRequired={addon.isRequired}
                             hasConflicts={conflicts.length > 0}
-                            onPress={() => this.onPressService(addon.itemId)}
+                            onPress={() => this.onPressService(addon.itemId, guest.guestId)}
                             onPressDelete={() => this.removeService(addon.itemId)}
                           />
                         )),

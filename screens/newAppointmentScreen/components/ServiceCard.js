@@ -108,7 +108,7 @@ export class ServiceCard extends React.Component {
                   alignItems: 'center',
                 }}
                 >
-                  <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.service.maxDuration).asMinutes()} min`} />
+                  <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.length).asMinutes()} min`} />
                   <FontAwesome style={{
                     color: '#115ECD',
                     fontSize: 20,

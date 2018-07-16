@@ -131,12 +131,16 @@ export default function newAppointmentReducer(state = defaultState, action) {
         conflicts: [],
       };
     case BOOK_NEW_APPT:
+      return {
+        ...state,
+        isBooking: true,
+      };
     case BOOK_NEW_APPT_SUCCESS:
     case BOOK_NEW_APPT_FAILED:
       return {
         ...state,
         isLoading: false,
-        isBooking: true,
+        isBooking: false,
       };
     case ADD_GUEST:
       return {

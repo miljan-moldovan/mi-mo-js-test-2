@@ -324,7 +324,7 @@ export function serializeNewApptItem(appointment, service) {
   return itemData;
 }
 
-const getConflicts = () => (dispatch, getState) => {
+const getConflicts = callback => (dispatch, getState) => {
   const {
     client,
     date,
@@ -362,13 +362,19 @@ const getConflicts = () => (dispatch, getState) => {
   });
 
   AppointmentBook.postCheckConflicts(conflictData)
-    .then(conflicts => dispatch({
-      type: CHECK_CONFLICTS_SUCCESS,
-      data: { conflicts },
-    }))
-    .catch(err => dispatch({
-      type: CHECK_CONFLICTS_FAILED,
-    }));
+    .then((conflicts) => {
+      dispatch({
+        type: CHECK_CONFLICTS_SUCCESS,
+        data: { conflicts },
+      });
+      return isFunction(callback) ? callback() : true;
+    })
+    .catch((err) => {
+      dispatch({
+        type: CHECK_CONFLICTS_FAILED,
+      });
+      return isFunction(callback) ? callback() : false;
+    });
 };
 
 const cleanForm = () => ({
@@ -409,7 +415,7 @@ const checkConflictsFailed = () => ({
   type: CHECK_CONFLICTS_FAILED,
 });
 
-const quickBookAppt = (callback = false) => (dispatch, getState) => {
+const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) => {
   const {
     startTime,
     serviceItems,
@@ -427,7 +433,7 @@ const quickBookAppt = (callback = false) => (dispatch, getState) => {
         type: ADD_APPOINTMENT,
         data: { appointment: res },
       });
-      dispatch(bookNewApptSuccess(callback));
+      dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
       alert('There was an error posting the appointment, please try again');
@@ -435,6 +441,9 @@ const quickBookAppt = (callback = false) => (dispatch, getState) => {
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },
       });
+      if (isFunction(errorCallback)) {
+        errorCallback();
+      }
     });
 };
 
