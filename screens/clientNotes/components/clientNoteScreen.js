@@ -178,7 +178,7 @@ export default class AppointmentNotesScreen extends Component {
         (
           <View style={styles.headerNav}>
             <Text style={styles.nameText}>{`${client.name} ${client.lastName}`}</Text>
-            <Text style={styles.titleText}>Appointment formulas</Text>
+            <Text style={styles.titleText}>Appointment notes</Text>
           </View>
         ),
       headerLeft: (
@@ -404,7 +404,7 @@ export default class AppointmentNotesScreen extends Component {
               <FlatList
                 extraData={this.props}
                 keyExtractor={(item, index) => index}
-                data={this.props.appointmentNotesState.filtered}
+                data={this.props.appointmentNotesState.notes}
                 renderItem={({ item, index }) => (
                   <SalonCard
                     containerStyles={{ marginVertical: 2 }}

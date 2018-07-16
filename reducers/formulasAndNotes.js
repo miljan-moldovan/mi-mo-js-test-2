@@ -19,7 +19,7 @@ export default (state = initialState, action) => {
         ...state,
         isLoading: true,
       };
-    case GET_FORMULAS_AND_NOTES_SUCCESS:{
+    case GET_FORMULAS_AND_NOTES_SUCCESS: {
       return {
         ...state,
         isLoading: false,

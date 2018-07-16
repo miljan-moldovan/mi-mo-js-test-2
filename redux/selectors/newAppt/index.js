@@ -17,6 +17,8 @@ const startTimeSelector = state => state.newAppointmentReducer.startTime;
 
 const guestsSelector = state => state.newAppointmentReducer.guests;
 
+const isBookingQuickApptSelector = state => state.newAppointmentReducer.isBookingQuickAppt;
+
 const isQuickRequestedSelector = state => state.newAppointmentReducer.isQuickApptRequested;
 
 const newAppointmentInfoSelector = createSelector(
@@ -27,10 +29,21 @@ const newAppointmentInfoSelector = createSelector(
     guestsSelector,
     bookedByEmployeeSelector,
     serviceItemsSelector,
+    isBookingQuickApptSelector,
     isQuickRequestedSelector,
   ],
-  (date, startTime, client, guests, bookedByEmployee, serviceItems, isQuickApptRequested) => ({
-    date, startTime, client, guests, bookedByEmployee, serviceItems, isQuickApptRequested,
+  (
+    date, startTime, client, guests, bookedByEmployee,
+    serviceItems, isQuickBooking, isQuickApptRequested,
+  ) => ({
+    date,
+    startTime,
+    client,
+    guests,
+    bookedByEmployee,
+    serviceItems,
+    isQuickBooking,
+    isQuickApptRequested,
   }),
 );
 
@@ -99,7 +112,7 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   return itemData;
 };
 
-const serializeApptToRequestData = (isQuick = false) => createSelector(
+const serializeApptToRequestData = createSelector(
   [
     newAppointmentInfoSelector,
   ],
@@ -116,7 +129,7 @@ const serializeApptToRequestData = (isQuick = false) => createSelector(
       phones: get(appt.client, 'phones', []),
       // confirmationType: appt.client.confirmationType
     },
-    items: appt.serviceItems.map(srv => serializeApptItem(appt, srv, isQuick)),
+    items: appt.serviceItems.map(srv => serializeApptItem(appt, srv, appt.isQuickBooking)),
   }),
 );
 

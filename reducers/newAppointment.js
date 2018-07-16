@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {
   CLEAN_FORM,
+  IS_BOOKING_QUICK_APPT,
   SET_BOOKED_BY,
   SET_DATE,
   SET_START_TIME,
@@ -15,11 +16,15 @@ import {
   CHECK_CONFLICTS_SUCCESS,
   CHECK_CONFLICTS_FAILED,
   CHECK_CONFLICTS,
+  ADD_GUEST,
+  REMOVE_GUEST,
+  SET_GUEST_CLIENT,
 } from '../actions/newAppointment';
 
 const defaultState = {
   isLoading: false,
   isBooking: false,
+  isBookingQuickAppt: false,
   isQuickApptRequested: true,
   date: moment(),
   startTime: moment(),
@@ -34,10 +39,16 @@ const defaultState = {
 export default function newAppointmentReducer(state = defaultState, action) {
   const { type, data } = action;
   const newServiceItems = state.serviceItems;
+  const newGuests = state.guests;
   switch (type) {
     case CLEAN_FORM:
       return {
         ...defaultState,
+      };
+    case IS_BOOKING_QUICK_APPT:
+      return {
+        ...state,
+        isBookingQuickAppt: data.isBookingQuickAppt,
       };
     case SET_BOOKED_BY:
       return {
@@ -107,6 +118,22 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case BOOK_NEW_APPT_SUCCESS:
     case BOOK_NEW_APPT_FAILED:
       return defaultState;
+    case ADD_GUEST:
+      return {
+        ...state,
+        guests: [...state.guests, data.guest],
+      };
+    case REMOVE_GUEST:
+      newGuests.pop();
+      return {
+        ...state,
+        guests: newGuests,
+      };
+    case SET_GUEST_CLIENT:
+      return {
+        ...state,
+        guests: data.guests,
+      };
     default:
       return state;
   }

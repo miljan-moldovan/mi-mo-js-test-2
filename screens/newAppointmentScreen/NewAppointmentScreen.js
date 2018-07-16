@@ -38,7 +38,9 @@ import Icon from '../../components/UI/Icon';
 import { Store, Client, AppointmentBook } from '../../utilities/apiWrapper';
 import { getEmployeePhoto } from '../../utilities/apiWrapper/api';
 
-const styles = StyleSheet.create({
+import ServiceCard from './components/ServiceCard';
+
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
@@ -84,11 +86,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
-const caretRight = (
-  <FontAwesome style={styles.timeCaretIcon}>{Icons.angleRight}</FontAwesome>
-);
-
 const Guest = props => (
   <SalonCard
     bodyStyles={{ paddingVertical: 0 }}
@@ -113,13 +110,6 @@ const Guest = props => (
   />
 );
 
-const ServiceInfo = props => (
-  <Text style={styles.serviceInfo}>
-    <Text style={{ fontFamily: 'Roboto-Medium' }}>{props.waitTime}</Text>
-    <Text style={{ fontSize: 13 }}>  |  </Text>
-    <Text style={{ fontFamily: 'Roboto-Medium' }}>$ {props.price}</Text>
-  </Text>
-);
 
 const SubTitle = props => (
   <View style={{
@@ -151,154 +141,6 @@ const LabeledTextarea = props => (
     <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
   </View>
 );
-
-const SalonAppointmentTime = props => (
-  <View style={[styles.serviceTimeContainer, { alignItems: 'center' }]}>
-    <Icon
-      size={12}
-      color="#727A8F"
-      name="clockO"
-      type="light"
-      style={{ marginRight: 5 }}
-    />
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.serviceTime}>{props.from}</Text>
-      <Icon
-        name="longArrowRight"
-        size={11}
-        color="#727A8F"
-        type="light"
-        style={{ marginHorizontal: 5 }}
-      />
-      <Text style={styles.serviceTime}>{props.to}</Text>
-    </View>
-  </View>
-);
-
-const ServiceCard = ({ data, ...props }) => {
-  const employee = data.employee || null;
-  const isFirstAvailable = data.isFirstAvailable || false;
-  const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
-  return ([
-    <SalonTouchableOpacity
-      onPress={props.onPress}
-    >
-      <SalonCard
-        key={props.id}
-        containerStyles={{ marginVertical: 0, marginBottom: 10 }}
-        bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
-        backgroundColor="white"
-        bodyChildren={
-          <View style={{ flex: 1, flexDirection: 'column' }}>
-            <View style={{ flexDirection: 'row' }}>
-              {props.isAddon && (
-                <Icon
-                  style={{
-                    marginRight: 10,
-                    transform: [{ rotate: '90deg' }],
-                  }}
-                  name="levelUp"
-                  type="regular"
-                  color="black"
-                  size={12}
-                />
-              )}
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                }}
-              >
-                <Text style={[styles.serviceTitle, props.hasConflicts ? { color: 'red' } : {}]}>
-                  {data.service.name}
-                </Text>
-                {props.isRequired && (
-                  <Text style={{
-                    fontSize: 10,
-                    marginLeft: 6,
-                    color: '#1DBF12',
-                  }}
-                  >
-                    REQUIRED
-                  </Text>
-                )}
-              </View>
-              <View style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-end',
-                alignSelf: 'flex-end',
-                alignItems: 'center',
-              }}
-              >
-                <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.service.maxDuration).asMinutes()}min`} />
-                <FontAwesome style={{
-                  color: '#115ECD',
-                  fontSize: 20,
-                  marginLeft: 15,
-                }}
-                >{Icons.angleRight}
-                </FontAwesome>
-              </View>
-            </View>
-            <View style={{
-              flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
-            }}
-            >
-              <SalonAvatar
-                wrapperStyle={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 10,
-                }}
-                width={26}
-                borderWidth={1}
-                borderColor="transparent"
-                hasBadge={data.requested}
-                badgeComponent={
-                  <FontAwesome style={{
-                    color: '#1DBF12', fontSize: 10,
-                  }}
-                  >{Icons.lock}
-                  </FontAwesome>
-                }
-                image={{ uri: employeePhoto }}
-                defaultComponent={<ActivityIndicator />}
-              />
-              <Text
-                style={{
-                  fontSize: 14,
-                  lineHeight: 22,
-                  color: props.hasConflicts ? 'red' : '#2F3142',
-                }}
-              >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
-              </Text>
-            </View>
-            <View style={{
-              height: 1, alignSelf: 'stretch', backgroundColor: '#E0EAF7', marginVertical: 7,
-            }}
-            />
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <SalonAppointmentTime
-                from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
-                to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
-              />
-              <SalonTouchableOpacity onPress={props.onPressDelete}>
-                <Icon
-                  name="trashAlt"
-                  size={12}
-                  color="#D1242A"
-                  type="regular"
-                />
-              </SalonTouchableOpacity>
-            </View>
-          </View>
-        }
-      />
-    </SalonTouchableOpacity>,
-  ]);
-};
 
 export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, ...props }) => {
@@ -351,7 +193,6 @@ export default class NewAppointmentScreen extends React.Component {
 
     this.state = {
       isRecurring: false,
-      isLoading: false,
       canSave: false,
       clientEmail,
       clientPhone,
@@ -373,6 +214,18 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => phone.value === clientPhone) : 0,
     };
   }
+
+  getRoomInfo = roomId => new Promise((resolve, reject) => {
+    Store.getRooms()
+      .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+      .catch(err => reject(err));
+  })
+
+  getResourceInfo = resourceId => new Promise((resolve, reject) => {
+    Store.getResources()
+      .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
+      .catch(err => reject(err));
+  })
 
   deleteMainService = (serviceIndex) => {
     const { serviceItems } = this.state;
@@ -435,18 +288,6 @@ export default class NewAppointmentScreen extends React.Component {
       this.validate();
     });
   }
-
-  getRoomInfo = roomId => new Promise((resolve, reject) => {
-    Store.getRooms()
-      .then(rooms => resolve(rooms.find(room => room.id === roomId)))
-      .catch(err => reject(err));
-  })
-
-  getResourceInfo = resourceId => new Promise((resolve, reject) => {
-    Store.getResources()
-      .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
-      .catch(err => reject(err));
-  })
 
   updateContactInformation = () => {
     const {
@@ -638,10 +479,8 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   setGuest = (client, guestId) => {
-    const newGuests = this.state.guests;
-    const guestIndex = newGuests.findIndex(item => item.guestId === guestId);
-    newGuests[guestIndex].client = client;
-    this.setState({ guests: newGuests }, this.validate);
+    this.props.newAppointmentActions.setGuestClient(guestId, client);
+    this.validate();
   }
 
   getGuestServices = guestId => this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId)
@@ -663,31 +502,29 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType,
     } = this.getClientInfo(client);
     this.props.formulaActions.getFormulasAndNotes(client.id);
+    this.props.newAppointmentActions.setClient(client);
     this.setState({
-      client, clientEmail, clientPhone, clientPhoneType,
+      clientEmail, clientPhone, clientPhoneType,
     }, this.validate);
   }
 
   onChangeRemarks = remarks => this.setState({ remarks })
 
   onChangeGuestNumber = (action, guestNumber) => {
-    const newGuests = this.state.guests;
-    if (this.state.guests.length < guestNumber) {
-      newGuests.push({
-        guestId: uuid(),
-        client: null,
-      });
+    if (this.props.newAppointmentState.guests.length < guestNumber) {
+      this.props.newAppointmentActions.addGuest();
     } else {
-      newGuests.pop();
+      this.props.newAppointmentActions.removeGuest();
     }
-    this.setState({ guests: newGuests }, this.validate);
+    this.validate();
   }
 
   handleAddMainService = () => {
-    const { client, bookedByEmployee } = this.state;
+    const { client, bookedByEmployee } = this.props.newAppointmentState;
     if (client !== null) {
       return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
+        selectExtraServices: true,
         filterByProvider: true,
         clientId: client.id,
         employeeId: bookedByEmployee.id,
@@ -701,73 +538,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
 
-  checkConflicts = (prevValue) => {
-    // const {
-    //   date,
-    //   client,
-    //   bookedByEmployee,
-    //   serviceItems,
-    //   guests,
-    // } = this.state;
-
-    // let servicesToCheck = [];
-
-    // this.setState({
-    //   conflicts: [],
-    // });
-
-    // if (!client || !bookedByEmployee) {
-    //   return;
-    // }
-
-    // servicesToCheck = serviceItems.filter(serviceItem => serviceItem.service.service &&
-    //   serviceItem.service.employee &&
-    //   serviceItem.service.employee.id !== null &&
-    //   (serviceItem.guestId ? serviceItem.service.client : true));
-
-    // if (!servicesToCheck.length) {
-    //   return;
-    // }
-
-    // const conflictData = {
-    //   date: date.format('YYYY-MM-DD'),
-    //   clientId: client.id,
-    //   items: [],
-    // };
-    // servicesToCheck.forEach((serviceItem) => {
-    //   if (
-    //     serviceItem.service &&
-    //     serviceItem.service.employee &&
-    //     serviceItem.service.employee.id === 0
-    //   ) {
-    //     return;
-    //   }
-
-    //   conflictData.items.push({
-    //     appointmentId: serviceItem.service.id ? serviceItem.service.id : null,
-    //     clientId: serviceItem.guestId ? serviceItem.service.client.id : client.id,
-    //     serviceId: serviceItem.service.service.id,
-    //     employeeId: serviceItem.service.employee.id,
-    //     fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
-    //     toTime: serviceItem.service.toTime.format('HH:mm:ss', { trim: false }),
-    //     gapTime: moment().startOf('day').add(moment.duration(+serviceItem.service.gapTime, 'm')).format('HH:mm:ss', { trim: false }),
-    //     afterTime: moment().startOf('day').add(moment.duration(+serviceItem.service.afterTime, 'm')).format('HH:mm:ss', { trim: false }),
-    //     bookBetween: !!serviceItem.service.gapTime,
-    //     roomId: get(get(serviceItem.service, 'room', null), 'id', null),
-    //     roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
-    //     resourceId: get(get(serviceItem.service, 'resource', null), 'id', null),
-    //     resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
-    //   });
-    // });
-
-    // AppointmentBook.postCheckConflicts(conflictData)
-    //   .then(conflicts => this.setState({
-    //     conflicts,
-    //     canSave: conflicts.length > 0 ? false : prevValue,
-    //   }));
-
-    return this.props.newAppointmentActions.getConflicts();
-  }
+  checkConflicts = prevValue => this.props.newAppointmentActions.getConflicts()
 
   handleAddGuestService = (guestId) => {
     const { bookedByEmployee } = this.state;
@@ -883,7 +654,7 @@ export default class NewAppointmentScreen extends React.Component {
       onPress={() => {
         //const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
         //const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
-        this.props.navigation.navigate('ClientNotes', { client: this.state.client });
+        this.props.navigation.navigate('ClientNotes', { client: this.props.newAppointmentState.client });
       }}
       style={{
         marginHorizontal: 5,
@@ -924,8 +695,6 @@ export default class NewAppointmentScreen extends React.Component {
       startTime,
       conflicts,
       guests,
-      // totalPrice,
-      // totalDuration,
     } = this.props.newAppointmentState;
     const {
       clientEmail,

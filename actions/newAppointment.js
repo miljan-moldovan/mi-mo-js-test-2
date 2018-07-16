@@ -12,6 +12,7 @@ import {
 } from '../redux/selectors/newAppt';
 
 export const ADD_GUEST = 'newAppointment/ADD_GUEST';
+export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
 export const REMOVE_GUEST = 'newAppointment/REMOVE_GUEST';
 
 export const SET_DATE = 'newAppointment/SET_DATE';
@@ -27,6 +28,7 @@ export const UPDATE_SERVICE_ITEM = 'newAppointment/UPDATE_SERVICE_ITEM';
 export const REMOVE_SERVICE_ITEM = 'newAppointment/REMOVE_SERVICE_ITEM';
 
 export const CLEAN_FORM = 'newAppointment/CLEAN_FORM';
+export const IS_BOOKING_QUICK_APPT = 'newAppointment/IS_BOOKING_QUICK_APPT';
 export const CHECK_CONFLICTS = 'newAppointment/CHECK_CONFLICTS';
 export const CHECK_CONFLICTS_SUCCESS = 'newAppointment/CHECK_CONFLICTS_SUCCESS';
 export const CHECK_CONFLICTS_FAILED = 'newAppointment/CHECK_CONFLICTS_FAILED';
@@ -38,6 +40,31 @@ export const BOOK_NEW_APPT_FAILED = 'newAppointment/BOOK_NEW_APPT_FAILED';
 const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
+
+const addGuest = () => ({
+  type: ADD_GUEST,
+  data: {
+    guest: {
+      guestId: uuid(),
+      client: null,
+    },
+  },
+});
+
+const removeGuest = () => ({
+  type: REMOVE_GUEST,
+});
+
+const setGuestClient = (guestId, client) => (dispatch, getState) => {
+  const newGuests = getState().newAppointmentReducer.guests;
+  const guestIndex = newGuests.findIndex(item => item.guestId === guestId);
+  newGuests[guestIndex].client = client;
+
+  return dispatch({
+    type: SET_GUEST_CLIENT,
+    data: { guests: newGuests },
+  });
+};
 
 const resetTimeForServices = (items, index, initialFromTime) => {
   items.forEach((item, i) => {
@@ -53,6 +80,11 @@ const resetTimeForServices = (items, index, initialFromTime) => {
 
   return items;
 };
+
+const isBookingQuickAppt = isBookingQuickAppt => ({
+  type: IS_BOOKING_QUICK_APPT,
+  data: { isBookingQuickAppt },
+});
 
 const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) => {
   const {
@@ -83,6 +115,11 @@ const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) =
     data: { serviceItem },
   });
 };
+
+// const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) => {
+
+// };
+
 
 export function serializeNewApptItem(appointment, service) {
   const isFirstAvailable = get(service.employee, 'isFirstAvailable', false);
@@ -306,7 +343,7 @@ const quickBookAppt = (callback = false) => (dispatch, getState) => {
     type: BOOK_NEW_APPT,
   });
   resetTimeForServices(serviceItems, -1, startTime);
-  const requestBody = serializeApptToRequestData(getState(), true); //
+  const requestBody = serializeApptToRequestData(getState(), true);
 
   return Appointment.postNewAppointment(requestBody)
     .then((res) => {
@@ -339,8 +376,10 @@ const bookNewAppt = appt => (dispatch) => {
 };
 
 const bookNewApptSuccess = (callback = false) => (dispatch) => {
-  dispatch({ type: BOOK_NEW_APPT_SUCCESS });
-  return isFunction(callback) ? callback() : true;
+  if (isFunction(callback)) {
+    callback();
+  }
+  return dispatch({ type: BOOK_NEW_APPT_SUCCESS });
 };
 
 const newAppointmentActions = {
@@ -356,5 +395,9 @@ const newAppointmentActions = {
   checkConflicts,
   setQuickApptRequested,
   getConflicts,
+  isBookingQuickAppt,
+  addGuest,
+  setGuestClient,
+  removeGuest,
 };
 export default newAppointmentActions;
