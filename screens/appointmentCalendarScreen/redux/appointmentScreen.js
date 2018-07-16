@@ -214,9 +214,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         ])
           .then(([employees, appointments, availabilityItem, blockTimes, schedule]) => {
             let filteredEmployees = employees;
-            if (!filterOptions.showOffEmployees) {
-              filteredEmployees = employees.filter(employee => !employee.isOff);
-            }
+
             if (selectedFilter === 'deskStaff') {
               filteredEmployees = filteredEmployees.filter(employee => employee.isReceptionist);
             }
@@ -550,6 +548,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
       };
     }
     case SET_GRID_ALL_VIEW_SUCCESS: {
+      debugger
       return {
         ...state,
         isLoading: false,
