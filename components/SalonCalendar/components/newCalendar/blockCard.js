@@ -104,7 +104,7 @@ class BlockCard extends Component {
     let zIndex = 1;
     let left = 0;
     if (selectedProvider === 'all') {
-      const firstCellWidth = 102;
+      const firstCellWidth = 130;
       left = providers.findIndex(provider =>
         provider.id === block.employeeId) * cellWidth + firstCellWidth;
     } else if (selectedProvider !== 'all' && displayMode === 'week') {

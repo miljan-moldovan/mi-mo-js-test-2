@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   cellStyle: {
     height: 30,
-    width: 102,
+    width: 130,
     borderColor: '#C0C1C6',
     borderBottomWidth: 1,
     borderRightWidth: 1,
