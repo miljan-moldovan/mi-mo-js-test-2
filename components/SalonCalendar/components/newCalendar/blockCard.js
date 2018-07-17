@@ -61,7 +61,7 @@ class BlockCard extends Component {
       startTime, groupedProviders, selectedProvider, providerSchedule
     } = props;
     const apptDate = moment(date).format('YYYY-MM-DD');
-    const provider = selectedProvider === 'all' ? groupedProviders[employeeId] ? groupedProviders[employeeId][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null; d
+    const provider = selectedProvider === 'all' ? groupedProviders[employeeId] ? groupedProviders[employeeId][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
