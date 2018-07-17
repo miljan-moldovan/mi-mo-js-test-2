@@ -59,7 +59,7 @@ const getAppoinments = date => (dispatch) => {
 const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_MOVE });
   return Appointment.postAppointmentMove(appointmentId, params)
-    .then(response => Appointment.getAppointmentsById(appointmentId)
+    .then(response => Appointment.getAppointment(appointmentId)
       .then(resp => dispatch(postAppointmentMoveSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
@@ -67,7 +67,7 @@ const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch
 const postAppointmentResize = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_RESIZE });
   return Appointment.postAppointmentResize(appointmentId, params)
-    .then(response => Appointment.getAppointmentsById(appointmentId)
+    .then(response => Appointment.getAppointment(appointmentId)
       .then(resp => dispatch(postAppointmentResizeSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };

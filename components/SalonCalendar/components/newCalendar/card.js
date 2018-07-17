@@ -84,6 +84,8 @@ class Card extends Component {
       const employeeEndTime = moment(employeeTime.end, 'HH:mm');
       isActiveEmployeeInCellTime = start.diff(employeeStartTime, 'm') >= 0 &&
         end.diff(employeeEndTime, 'm') <= 0;
+    } else {
+      //debugger
     }
     const opacity = !props.isActive && !props.isInBuffer ? 1 : 0.7;
     return {
@@ -331,6 +333,9 @@ class Card extends Component {
     let countGap2 = 0;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     const opacity = isActive && this.props.isResizeing ? 0 : 1;
+    if (service.gapDuration !== '00:00:00') {
+      //debugger
+    }
     return (
       <Animated.View key={id} style={{ position: 'absolute', zIndex, opacity }}>
         <Animated.View

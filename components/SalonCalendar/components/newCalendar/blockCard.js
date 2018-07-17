@@ -58,9 +58,11 @@ class BlockCard extends Component {
     } = props.block;
     const { step } = props.apptGridSettings;
     const {
-      startTime, groupedProviders,
+      startTime, groupedProviders, selectedProvider, providerSchedule
     } = props;
-    const provider = groupedProviders[employeeId] ? groupedProviders[employeeId][0] : 0;
+    const apptDate = moment(date).format('YYYY-MM-DD');
+    const provider = selectedProvider === 'all' ? groupedProviders[employeeId] ? groupedProviders[employeeId][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
+debugger
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
@@ -95,15 +97,21 @@ class BlockCard extends Component {
 
   calculateLeftAndGap = (props) => {
     const {
-      block, providers, cellWidth,
+      block, providers, cellWidth, displayMode, selectedProvider
     } = props;
     const date = moment(block.date);
     const startTime = moment(block.fromTime, 'HH:mm');
     let cardWidth = cellWidth - 1;
     let zIndex = 1;
-    const firstCellWidth = 102;
-    const left = providers.findIndex(provider =>
-      provider.id === block.employeeId) * cellWidth + firstCellWidth;
+    let left = 0;
+    if (selectedProvider === 'all') {
+      const firstCellWidth = 102;
+      left = providers.findIndex(provider =>
+        provider.id === block.employeeId) * cellWidth + firstCellWidth;
+    } else if (selectedProvider !== 'all' && displayMode === 'week') {
+      const apptDate = moment(block.date).format('YYYY-DD-MM');
+      left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
+    }
     return { cardWidth, zIndex, left };
   }
 

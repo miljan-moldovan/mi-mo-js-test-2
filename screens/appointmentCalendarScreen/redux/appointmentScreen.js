@@ -140,7 +140,8 @@ const setGridAllViewSuccess =
     };
   };
 
-const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSettings, startDate, pickerMode) => {
+const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSettings, startDate, pickerMode, blockTimes) => {
+  debugger
   const {
     minStartTime, maxEndTime, weeklySchedule, step,
   } = apptGridSettings;
@@ -160,7 +161,7 @@ const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSetti
   };
   return {
     type: SET_GRID_DAY_WEEK_VIEW_SUCCESS,
-    data: { providerSchedule, appointments, apptGridSettings: newApptGridSettings },
+    data: { providerSchedule, appointments, apptGridSettings: newApptGridSettings, blockTimes },
   };
 };
 
@@ -241,8 +242,9 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                 endDate: dateTo,
               }),
               Employees.getEmployeeAppointments({ id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo }),
+              AppointmentBook.getBlockTimesBetweenDates({ fromDate: startDate.format('YYYY-MM-DD'), toDate: dateTo }),
             ])
-              .then(([providerSchedule, appointments]) => {
+              .then(([providerSchedule, appointments, blockTimes]) => {
                 const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
                 const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
                 dispatch(setGridDayWeekViewSuccess(
@@ -251,6 +253,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                   apptGridSettings,
                   startDate,
                   pickerMode,
+                  blockTimes
                 ));
               })
               .catch((ex) => {
@@ -570,6 +573,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
         appointments: data.appointments,
         providerSchedule: data.providerSchedule,
+        blockTimes: data.blockTimes,
       };
     case POST_APPOINTMENT_MOVE:
     case POST_APPOINTMENT_RESIZE:
@@ -594,7 +598,7 @@ export default function appointmentScreenReducer(state = initialState, action) {
       const undoType = type === POST_APPOINTMENT_MOVE_SUCCESS ? 'move' : 'resize';
       return {
         ...state,
-        appointments,
+        appointments: appointments.slice(),
         isLoading: false,
         showToast,
         oldAppointment: data.oldAppointment,

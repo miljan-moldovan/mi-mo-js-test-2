@@ -5,11 +5,13 @@ import getResourceAppointments from './getResourceAppointments';
 import getRoomAppointments from './getRoomAppointments';
 import postAppointmentBookRebook from './postAppointmentBookRebook';
 import postCheckConflicts from './postCheckConflicts';
+import getBlockTimesBetweenDates from './getBlockTimesBetweenDates';
 
 export {
   getAppointmentBookAvailability,
   getAppointmentBookEmployees,
   getBlockTimes,
+  getBlockTimesBetweenDates,
   getResourceAppointments,
   getRoomAppointments,
   postAppointmentBookRebook,
