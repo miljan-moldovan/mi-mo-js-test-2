@@ -141,7 +141,6 @@ const setGridAllViewSuccess =
   };
 
 const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSettings, startDate, pickerMode, blockTimes) => {
-  debugger
   const {
     minStartTime, maxEndTime, weeklySchedule, step,
   } = apptGridSettings;
