@@ -304,7 +304,6 @@ export default class ModifyAppointmentScreen extends React.Component {
     };
   }
 
-
   addMainService = () => {
     const { mainServices } = this.state;
     mainServices.push('service');
@@ -400,6 +399,14 @@ export default class ModifyAppointmentScreen extends React.Component {
     </SalonTouchableOpacity>,
   ];
 
+  cancelButton = () => ({
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      this.showPanel();
+      navigation.goBack();
+    },
+  })
+
   render() {
     const { appointment } = this.props.state;
     if (appointment === null) {
@@ -444,6 +451,7 @@ export default class ModifyAppointmentScreen extends React.Component {
             selectedClient={client}
             onChange={newClient => alert(`newClient selected ${newClient.name}`)}
             extraComponents={client !== null ? this.renderExtraClientButtons : []}
+            headerProps={{ ...this.cancelButton() }}
           />
           <InputDivider />
           <InputLabel

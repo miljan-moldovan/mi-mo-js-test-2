@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get, isNil, isFunction, isArray } from 'lodash';
+import { get, isNil, isFunction, isArray, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
 import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
@@ -191,10 +191,10 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
     client,
     guests,
     startTime,
+    serviceItems,
     bookedByEmployee,
   } = getState().newAppointmentReducer;
-  const newServiceItems = getState().newAppointmentReducer.serviceItems;
-  const [parentService] = newServiceItems.filter(item => item.itemId === parentId);
+  const [parentService] = serviceItems.filter(item => item.itemId === parentId);
   const { guestId } = parentService;
 
   const serializeServiceItem = (service) => {
@@ -227,23 +227,21 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
     return serviceItem;
   };
 
+  const newServiceItems = reject(
+    serviceItems,
+    item => item.type === type && item.parentId === parentId,
+  );
   if (isArray(services)) {
     services.forEach((service) => {
-      if (!service) {
-        return;
-      }
       newServiceItems.push(serializeServiceItem(service));
     });
   } else {
-    if (!services) {
-      return;
-    }
     newServiceItems.push(serializeServiceItem(services));
   }
 
   resetTimeForServices(newServiceItems, -1, startTime);
 
-  return dispatch({
+  dispatch({
     type: ADD_SERVICE_ITEM_EXTRAS,
     data: { serviceItems: newServiceItems },
   });
@@ -398,15 +396,6 @@ const setClient = client => ({
 const setQuickApptRequested = requested => ({
   type: SET_QUICK_APPT_REQUESTED,
   data: { requested },
-});
-
-const checkConflictsSuccess = conflicts => ({
-  type: CHECK_CONFLICTS_SUCCESS,
-  data: { conflicts },
-});
-
-const checkConflictsFailed = () => ({
-  type: CHECK_CONFLICTS_FAILED,
 });
 
 const quickBookAppt = (callback = false) => (dispatch, getState) => {

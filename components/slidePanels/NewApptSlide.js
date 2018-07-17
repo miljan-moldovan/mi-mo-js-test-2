@@ -356,12 +356,33 @@ export class NewApptSlide extends React.Component {
   }
 
   setAddons = (addons) => {
-    const parentService = this.getService();
+    const { itemId } = this.getService();
     this.props.newApptActions.addServiceItemExtras(
-      parentService.itemId,
+      itemId,
       'addon',
       addons,
     );
+    return this.showPanel().checkConflicts();
+  }
+
+  setRecommended = (recommended) => {
+    const { itemId } = this.getService();
+    this.props.newApptActions.addServiceItemExtras(
+      itemId,
+      'recommended',
+      recommended,
+    );
+    return this.showPanel().checkConflicts();
+  }
+
+  setRequired = (required) => {
+    const { itemId } = this.getService();
+    this.props.newApptActions.addServiceItemExtras(
+      itemId,
+      'required',
+      required,
+    );
+    return this.showPanel().checkConflicts();
   }
 
   setProvider = (provider) => {
@@ -407,7 +428,7 @@ export class NewApptSlide extends React.Component {
         required,
       };
     }
-    return service;
+    return { service, itemId: mainItemId };
   }
 
   getTotalLength = () => this.props.getLength;
@@ -458,7 +479,7 @@ export class NewApptSlide extends React.Component {
       isBooking,
       bookedByEmployee,
     } = this.props.newApptState;
-    const service = this.getService();
+    const { service } = this.getService();
     if (
       service === null ||
       client === null ||
@@ -721,22 +742,12 @@ export class NewApptSlide extends React.Component {
                   recommended={recommended}
                   height={this.state.addonsHeight}
                   onPressAddons={() => {
-                    // this.serviceInput.selectRecommended().selectAddons();
-                    // this.serviceInput.selectAddons();
-                    // this.showPanel().checkConflicts();
-                    // this.setState({
-                    //   addons: selectedAddons,
-                    //   recommended: selectedRecommended,
-                    // }, () => {
-                    //   this.showPanel().checkConflicts();
-                    // });
+                    this.serviceInput.selectRecommended().selectAddons();
                   }}
                   onPressRequired={() => {
-                    // this.serviceInput.selectRequired();
+                    this.serviceInput.selectRequired();
                   }}
-                  onRemoveRequired={() => {
-                    // this.setState({ required: null }, this.checkConflicts);
-                  }}
+                  onRemoveRequired={() => this.setRequired([])}
                 />
                 {conflicts.length > 0 && (
                   <ConflictBox

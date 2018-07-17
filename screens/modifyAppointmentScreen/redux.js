@@ -13,6 +13,7 @@ export default modifyApptActions;
 const initialState = {
   appointment: null,
 };
+
 export const modifyApptReducer = (state = initialState, action) => {
   const { type, data } = action;
   switch (type) {
