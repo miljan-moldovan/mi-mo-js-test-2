@@ -140,7 +140,7 @@ export default class Header extends Component {
     const {
       isDate, selectedFilter, showFirstAvailable, handleShowfirstAvailalble,
     } = this.props;
-    const width = selectedFilter === 'providers' && !isDate ? 138 : 36;
+    const width = selectedFilter === 'providers' && !isDate ? 166 : 36;
 
     return (
       <View style={styles.container} pointerEvents="box-none">

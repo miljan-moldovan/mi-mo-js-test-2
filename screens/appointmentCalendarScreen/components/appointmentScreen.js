@@ -226,6 +226,7 @@ export default class AppointmentScreen extends Component {
   }
 
   setSelectedProvider = (provider) => {
+    this.props.appointmentCalendarActions.setPickerMode('week');
     this.props.appointmentCalendarActions.setSelectedProvider(provider);
     this.props.appointmentCalendarActions.setGridView();
     this.props.navigation.setParams({
