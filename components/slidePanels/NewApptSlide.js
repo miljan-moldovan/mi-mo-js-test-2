@@ -324,6 +324,8 @@ export class NewApptSlide extends React.Component {
     isLoading: false,
     visible: false,
     isAnimating: false,
+    hasSelectedAddons: false,
+    hasSelectedRecommended: false,
     canBook: false,
     service: null,
     client: null,
@@ -362,7 +364,13 @@ export class NewApptSlide extends React.Component {
       'addon',
       addons,
     );
-    return this.showPanel().checkConflicts();
+    this.setState((state) => {
+      state.hasSelectedAddons = true;
+      if (state.hasSelectedAddons && state.hasSelectedRecommended) {
+        this.showPanel().checkConflicts();
+      }
+      return state;
+    });
   }
 
   setRecommended = (recommended) => {
@@ -372,7 +380,13 @@ export class NewApptSlide extends React.Component {
       'recommended',
       recommended,
     );
-    return this.showPanel().checkConflicts();
+    this.setState((state) => {
+      state.hasSelectedRecommended = true;
+      if (state.hasSelectedAddons && state.hasSelectedRecommended) {
+        this.showPanel().checkConflicts();
+      }
+      return state;
+    });
   }
 
   setRequired = (required) => {
@@ -742,7 +756,12 @@ export class NewApptSlide extends React.Component {
                   recommended={recommended}
                   height={this.state.addonsHeight}
                   onPressAddons={() => {
-                    this.serviceInput.selectRecommended().selectAddons();
+                    this.setState({
+                      hasSelectedAddons: false,
+                      hasSelectedRecommended: false,
+                    }, () => {
+                      this.serviceInput.selectRecommended().selectAddons();
+                    });
                   }}
                   onPressRequired={() => {
                     this.serviceInput.selectRequired();

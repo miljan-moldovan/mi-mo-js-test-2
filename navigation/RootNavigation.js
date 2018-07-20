@@ -13,6 +13,7 @@ import SettingsScreen from './../screens/SettingsScreen';
 import Icon from './../components/UI/Icon';
 // import SideMenu from './../components/SideMenu';
 
+import { isValidAppointment } from '../redux/selectors/newAppt';
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
 import appointmentNoteActions from '../actions/appointmentNotes';
@@ -29,11 +30,11 @@ const RootDrawerNavigator = TabNavigator(
     ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
     Clients: { screen: ClientsStackNavigator },
     Scorecard: { screen: ScorecardScreen },
-  //  Settings: { screen: SettingsScreen },
+    //  Settings: { screen: SettingsScreen },
   },
   {
 
-    navigationOptions: ({navigation, screenProps}) => ({
+    navigationOptions: ({ navigation, screenProps }) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
@@ -62,7 +63,7 @@ const RootDrawerNavigator = TabNavigator(
           screenProps.clientsActions.setClients([]);
         }
         jumpToIndex(scene.index);
-      }
+      },
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',
@@ -95,7 +96,7 @@ class RootNavigator extends React.Component {
 
     // if user is logged in AND fingerprint identification is NOT enabled
     if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
-      return <RootDrawerNavigator screenProps={{clientsActions: this.props.clientsActions}} />;
+      return <RootDrawerNavigator screenProps={{ isNewApptValid: this.props.isNewApptValid, clientsActions: this.props.clientsActions }} />;
     }
     // else redirect to login screen so the user can authenticate (user/pass or touchID)
     return <LoginStackNavigator />;
@@ -108,6 +109,7 @@ const mapStateToProps = state => ({
   clientsState: state.clientsReducer,
   appointmentNoteState: state.appointmentNoteReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
+  isNewApptValid: isValidAppointment(state),
 });
 const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),

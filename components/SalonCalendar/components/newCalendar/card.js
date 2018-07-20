@@ -246,7 +246,7 @@ class Card extends Component {
     const serviceTextColor = '#1D1E29';
     const clientTextColor = '#2F3142';
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const flexWrap = this.state.height._value > 30 ? { flexWrap: 'wrap' } : { ellipsizeMode: 'tail'} ;
+    const flexWrap = this.state.height._value > 30 ? { flexWrap: 'wrap' } : { ellipsizeMode: 'tail' };
     return (
       <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
         <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
@@ -319,7 +319,9 @@ class Card extends Component {
       mainServiceColor,
       isFirstAvailable,
     } = this.props.appointment;
-    const { showFirstAvailable, showAssistant, isActive, isInBuffer } = this.props;
+    const {
+      showFirstAvailable, showAssistant, isActive, isInBuffer,
+    } = this.props;
     const {
       zIndex, cardWidth, left, isActiveEmployeeInCellTime,
     } = this.state;
@@ -386,7 +388,7 @@ class Card extends Component {
           }
           <TouchableOpacity
             onPress={() => {
-              this.props.onPress(this.props.appointment)
+              this.props.onPress(this.props.appointment);
             }}
             onLongPress={this.handleOnLongPress}
             disabled={isActive || isInBuffer}

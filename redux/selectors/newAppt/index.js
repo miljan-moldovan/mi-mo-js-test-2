@@ -70,8 +70,8 @@ const isValidAppointment = createSelector(
     date &&
     bookedByEmployee !== null &&
     client !== null &&
-    serviceItems.length &&
-    !conflicts.length &&
+    serviceItems.length > 0 &&
+    !conflicts.length > 0 &&
     !isLoading &&
     !isBooking
   ),

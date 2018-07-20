@@ -187,6 +187,9 @@ const addServiceItem = serviceItem => (dispatch, getState) => {
 };
 
 const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) => {
+  if (!services || !services.length) {
+    return;
+  }
   const {
     client,
     guests,
@@ -196,7 +199,6 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
   } = getState().newAppointmentReducer;
   const [parentService] = serviceItems.filter(item => item.itemId === parentId);
   const { guestId } = parentService;
-
   const serializeServiceItem = (service) => {
     if (!service) {
       return;
@@ -231,6 +233,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
     serviceItems,
     item => item.type === type && item.parentId === parentId,
   );
+
   if (isArray(services)) {
     services.forEach((service) => {
       newServiceItems.push(serializeServiceItem(service));

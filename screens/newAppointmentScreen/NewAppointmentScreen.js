@@ -143,9 +143,9 @@ const LabeledTextarea = props => (
 );
 
 export default class NewAppointmentScreen extends React.Component {
-  static navigationOptions = ({ navigation, ...props }) => {
-    const { params } = navigation.state;
-    const canSave = params ? params.canSave : false;
+  static navigationOptions = ({ navigation, screenProps }) => {
+    const params = navigation.state.params || {};
+    const canSave = screenProps.isNewApptValid;
     return ({
       headerTitle: 'New Appointment',
       headerLeft: (
@@ -163,7 +163,7 @@ export default class NewAppointmentScreen extends React.Component {
       ),
       headerRight: (
         <SalonTouchableOpacity
-          onPress={() => (canSave ? navigation.state.params.handleSave() : null)}
+          onPress={() => (canSave ? params.handleSave() : null)}
         >
           <Text style={{
             fontSize: 14,
@@ -180,7 +180,8 @@ export default class NewAppointmentScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setParams({ canSave: false, handleSave: this.handleSave });
+    const canSave = this.props.isValidAppointment;
+    this.props.navigation.setParams({ canSave, handleSave: this.handleSave });
     const {
       client,
     } = this.props.newAppointmentState;
@@ -201,6 +202,14 @@ export default class NewAppointmentScreen extends React.Component {
 
   componentDidMount() {
     this.checkConflicts();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // const params = this.props.navigation.state.params || {};
+    // const canSave = params.canSave || false;
+    // if (nextProps.isValidAppointment !== canSave) {
+    //   this.props.navigation.setParams({ canSave });
+    // }
   }
 
   getClientInfo = (client) => {
@@ -426,7 +435,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleSave = () => {
-    if (this.state.canSave) {
+    if (this.props.isValidAppointment) {
       const {
         date,
         client,
@@ -448,9 +457,8 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   validate = () => {
-    const valid = this.props.isValidAppointment;
-    this.props.navigation.setParams({ canSave: valid });
-    this.setState({ canSave: valid });
+    const canSave = this.props.isValidAppointment;
+    this.props.navigation.setParams({ canSave });
   }
 
   totalPrice = () => this.props.totalPrice
@@ -523,27 +531,30 @@ export default class NewAppointmentScreen extends React.Component {
     } = this.state;
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
-
+    // this.val÷idate();
     // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
     return (
       <View style={styles.container}>
-        {(isLoading || isBooking) && (
+        {(isLoading || isBooking) ? (
           <View style={{
             position: 'absolute',
-            top: 60,
+            top: 0,
             paddingBottom: 60,
             width: '100%',
             height: '100%',
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#cccccc',
+            opacity: 0.3,
+            zIndex: 999,
+            elevation: 2,
           }}
           ><ActivityIndicator />
           </View>
-        )}
+        ) : null}
         <ScrollView style={styles.container}>
           <InputGroup style={{ marginTop: 15 }}>
             <InputLabel
@@ -699,16 +710,16 @@ export default class NewAppointmentScreen extends React.Component {
               }
             </View>
           )}
-          <InputGroup style={{ marginVertical: 20 }}>
-            <InputSwitch
-              text="Recurring appt."
-              value={this.state.isRecurring}
-              // onChange={this.onChangeRecurring}
-              onChange={() => alert('API not implemented')}
-            />
-          </InputGroup>
           {this.state.isRecurring && (
             <View>
+              <InputGroup style={{ marginVertical: 20 }}>
+                <InputSwitch
+                  text="Recurring appt."
+                  value={this.state.isRecurring}
+                // onChange={this.onChangeRecurring}
+                  onChange={() => alert('API not implemented')}
+                />
+              </InputGroup>
               <SectionTitle style={{ marginTop: 0, paddingBottom: 12, height: 26 }} value="Repeat Every" />
               <InputGroup>
                 <InputButton
