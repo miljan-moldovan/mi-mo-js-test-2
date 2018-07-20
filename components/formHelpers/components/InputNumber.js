@@ -17,20 +17,22 @@ export default class InputNumber extends React.Component {
 
     handleSubstractPress = () => {
       const min = this.props.min ? this.props.min : 0;
+      const step = this.props.step || 1;
       if (this.props.value > min) {
-        const value = this.props.value - 1;
+        const value = this.props.value - step;
         this.props.onChange('subtract', value);
       }
     }
 
     handleAddPress = () => {
+      const step = this.props.step || 1;
       if (this.props.max) {
         if (this.props.value < this.props.max) {
-          const value = this.props.value + 1;
+          const value = this.props.value + step;
           this.props.onChange('add', value);
         }
       } else {
-        const value = this.props.value + 1;
+        const value = this.props.value + step;
         this.props.onChange('add', value);
       }
     }

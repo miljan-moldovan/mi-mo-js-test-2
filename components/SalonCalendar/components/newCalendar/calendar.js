@@ -574,7 +574,8 @@ export default class Calendar extends Component {
     } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeBlock && activeBlock.blockTime.id === blockTime.id;
-    if (blockTime.employeeId) {
+    const shouldblockRender = (selectedProvider === 'all' && blockTime.employeeId) || (selectedProvider.id === blockTime.employeeId);
+    if (shouldblockRender) {
       return (
         <BlockTime
           onPress={this.props.onCardPressed}
@@ -592,6 +593,9 @@ export default class Calendar extends Component {
           startTime={startTime}
           groupedProviders={this.groupedProviders}
           isLoading={isLoading}
+          providerSchedule={providerSchedule}
+          selectedProvider={selectedProvider}
+          displayMode={displayMode}
         />
       );
     }
@@ -709,7 +713,7 @@ export default class Calendar extends Component {
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
       isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule
     } = this.props;
-    
+
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
     const {
@@ -760,7 +764,7 @@ export default class Calendar extends Component {
                 storeSchedule={storeSchedule}
               />
               { this.renderCards() }
-              { showAvailability ? this.renderBlockTimes() : null }
+              { this.renderBlockTimes() }
               {this.renderResizeCard()}
             </ScrollViewChild>
             <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>

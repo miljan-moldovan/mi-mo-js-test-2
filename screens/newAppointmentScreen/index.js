@@ -8,6 +8,7 @@ import {
   getEndTime,
   appointmentLength,
   totalPrice,
+  isValidAppointment,
 } from '../../redux/selectors/newAppt';
 
 const mapStateToProps = state => ({
@@ -18,6 +19,7 @@ const mapStateToProps = state => ({
   getEndTime: getEndTime(state),
   totalPrice: totalPrice(state),
   appointmentLength: appointmentLength(state),
+  isValidAppointment: isValidAppointment(state),
 });
 
 const mapActionsToProps = dispatch => ({
