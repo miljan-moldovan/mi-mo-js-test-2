@@ -28,6 +28,7 @@ import {
 import { AppointmentBook } from '../../utilities/apiWrapper';
 import { AppointmentTime } from './SalonNewAppointmentSlide';
 import {
+  InputButton,
   InputDivider,
   ClientInput,
   ServiceInput,
@@ -76,7 +77,35 @@ const styles = StyleSheet.create({
   middleSectionDivider: {
     width: '95%', height: 1, alignSelf: 'center', backgroundColor: '#DDE6F4',
   },
-
+  otherOptionsBtn: { height: 67, paddingRight: 0 },
+  subIcon: {
+    backgroundColor: '#E5E5E5',
+    width: 10,
+    height: 10,
+    borderRadius: 10 / 2,
+  },
+  clockIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  penIconContainer: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    paddingTop: 5,
+  },
+  banIconContainer: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    paddingTop: 10,
+    paddingRight: 15,
+  },
+  bookApptContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const Button = props => (
@@ -313,6 +342,9 @@ const ConflictBox = props => (
   </SalonTouchableOpacity>
 );
 
+const TAB_BOOKING = 0;
+const TAB_OTHER = 1;
+
 export class NewApptSlide extends React.Component {
   constructor(props) {
     super(props);
@@ -323,6 +355,7 @@ export class NewApptSlide extends React.Component {
   getInitialState = () => ({
     isLoading: false,
     visible: false,
+    activeTab: TAB_BOOKING,
     isAnimating: false,
     hasSelectedAddons: false,
     hasSelectedRecommended: false,
@@ -516,7 +549,7 @@ export class NewApptSlide extends React.Component {
     return this.props.handleBook();
   }
 
-  handleTabChange = () => ({})
+  handleTabChange = (ev, activeTab) => this.props.onChangeTab(activeTab)
 
   showPanel = () => {
     if (!this.state.isAnimating) {
@@ -590,7 +623,111 @@ export class NewApptSlide extends React.Component {
     return addons.length > 0 || recommended.length > 0 || required !== null;
   }
 
-  render() {
+  renderActiveTab = () => {
+    switch (this.props.activeTab) {
+      case TAB_OTHER:
+        return this.renderOthersTab();
+      case TAB_BOOKING:
+      default:
+        return this.renderBookingTab();
+    }
+  }
+
+  renderOthersTab = () => (
+    <React.Fragment>
+      <InputButton
+        noIcon
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={() => { alert('Not implemented'); }}
+        label="Block Time"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="clockO" size={18} color="#115ECD" type="solid" />
+          <View style={styles.banIconContainer}>
+            <Icon
+              style={styles.subIcon}
+              name="ban"
+              size={9}
+              color="#115ECD"
+              type="solid"
+            />
+          </View>
+        </View>
+      </InputButton>
+
+      <InputButton
+        noIcon
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={() => { alert('Not implemented'); }}
+        label="Edit Schedule"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
+
+          <View style={styles.penIconContainer}>
+            <Icon
+              style={styles.subIcon}
+              name="pen"
+              size={9}
+              color="#115ECD"
+              type="solid"
+            />
+          </View>
+        </View>
+      </InputButton>
+
+      <InputButton
+        noIcon
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={() => { alert('Not implemented'); }}
+        label="Room Assignment"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="streetView" size={18} color="#115ECD" type="solid" />
+        </View>
+      </InputButton>
+
+      <InputButton
+        noIcon
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={() => { alert('Not implemented'); }}
+        label="Turn Away"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="ban" size={18} color="#115ECD" type="solid" />
+        </View>
+      </InputButton>
+
+      <InputButton
+        noIcon
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={() => { alert('Not implemented'); }}
+        label="Message Provider's Clients"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="user" size={18} color="#115ECD" type="solid" />
+        </View>
+      </InputButton>
+      <InputButton
+        noIcon
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={() => { alert('Not implemented'); }}
+        label="Message All Clients"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="users" size={18} color="#115ECD" type="solid" />
+        </View>
+      </InputButton>
+    </React.Fragment>
+  )
+
+  renderBookingTab = () => {
     const {
       navigation,
       filterProviders,
@@ -603,6 +740,8 @@ export class NewApptSlide extends React.Component {
       bookedByEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
+    const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
+    const selectedStyle = { fontSize: 14, lineHeight: 22, color: conflicts.length > 0 ? 'red' : 'black' };
     const {
       service = null,
       addons = [],
@@ -610,8 +749,219 @@ export class NewApptSlide extends React.Component {
       required = null,
     } = this.getService(true);
 
-    const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
-    const selectedStyle = { fontSize: 14, lineHeight: 22, color: conflicts.length > 0 ? 'red' : 'black' };
+    return (
+      <ScrollView style={{ paddingVertical: 15 }}>
+        <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
+        <AppointmentTime
+          containerStyle={{
+            justifyContent: 'flex-start',
+          }}
+          startTime={startTime}
+          endTime={this.getEndTime()}
+        />
+        <View style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 4,
+          borderBottomColor: 'transparent',
+          borderTopColor: 'transparent',
+          borderColor: '#F4F7FC',
+          borderWidth: 1,
+          marginTop: 15,
+          shadowColor: '#000000',
+          shadowOpacity: 0.2,
+          shadowRadius: 2,
+          elevation: 1,
+          zIndex: 2,
+          shadowOffset: { width: 0, height: 2 },
+          backgroundColor: '#F3F7FC',
+        }}
+        >
+          <ClientInput
+            apptBook
+            label={false}
+            style={{ height: 39 }}
+            selectedClient={client}
+            placeholder={client === null ? 'Select Client' : 'Client'}
+            placeholderStyle={styles.placeholderText}
+            contentStyle={contentStyle}
+            selectedStyle={selectedStyle}
+            onPress={() => this.hidePanel()}
+            navigate={navigation.navigate}
+            headerProps={{ title: 'Clients', ...this.cancelButton() }}
+            iconStyle={{ color: '#115ECD' }}
+            onChange={this.setClient}
+          />
+          <InputDivider style={styles.middleSectionDivider} />
+          <ServiceInput
+            apptBook
+            noLabel
+            showLength
+            selectExtraServices
+            ref={(serviceInput) => { this.serviceInput = serviceInput; }}
+            selectedProvider={provider}
+            selectedService={service}
+            addons={addons}
+            required={required}
+            recommended={recommended}
+            rootStyle={{ height: 39 }}
+            selectedStyle={selectedStyle}
+            placeholder="Select a Service"
+            placeholderStyle={styles.placeholderText}
+            contentStyle={contentStyle}
+            onPress={() => this.hidePanel()}
+            navigate={navigation.navigate}
+            headerProps={{ title: 'Services', ...this.cancelButton() }}
+            iconStyle={{ color: '#115ECD' }}
+            onChange={this.setService}
+            onChangeAddons={this.setAddons}
+            onChangeRecommended={this.setRecommended}
+            onChangeRequired={this.setRequired}
+          />
+          <InputDivider style={styles.middleSectionDivider} />
+          <ProviderInput
+            noLabel
+            apptBook
+            filterByService
+            isRequested={isQuickApptRequested}
+            filterList={filterProviders}
+            rootStyle={{ height: 39 }}
+            selectedProvider={provider}
+            placeholder="Select a Provider"
+            placeholderStyle={styles.placeholderText}
+            selectedStyle={selectedStyle}
+            contentStyle={contentStyle}
+            iconStyle={{ color: '#115ECD' }}
+            avatarSize={20}
+            onPress={() => this.hidePanel()}
+            navigate={navigation.navigate}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            onChange={this.setProvider}
+          />
+        </View>
+        <AddonsContainer
+          visible={this.shouldShowExtras()}
+          addons={addons}
+          required={required}
+          recommended={recommended}
+          height={this.state.addonsHeight}
+          onPressAddons={() => {
+            this.setState({
+              hasSelectedAddons: false,
+              hasSelectedRecommended: false,
+            }, () => {
+              this.serviceInput.selectRecommended().selectAddons();
+            });
+          }}
+          onPressRequired={() => {
+            this.serviceInput.selectRequired();
+          }}
+          onRemoveRequired={() => this.setRequired([])}
+        />
+        {conflicts.length > 0 && (
+          <ConflictBox
+            onPress={() => {
+              const callback = () => {
+                this.props.navigation.navigate('Conflicts', {
+                  date,
+                  conflicts,
+                  startTime,
+                  endTime: moment(startTime).add(moment.duration(this.getTotalLength())),
+                  handleGoBack: () => this.showPanel(),
+                });
+              };
+              return this.hidePanel(callback);
+            }}
+          />
+        )}
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: 15,
+        }}
+        >
+          <Text style={{
+            fontSize: 14,
+            lineHeight: 22,
+            color: '#110A24',
+          }}
+          >Provider is Requested?
+          </Text>
+          <Switch
+            value={this.props.newApptState.isQuickApptRequested}
+            onValueChange={requested => this.props.newApptActions.setQuickApptRequested(requested)}
+          />
+        </View>
+        <View style={{
+          marginVertical: 14,
+          backgroundColor: '#F1F1F1',
+          height: 32,
+          borderRadius: 4,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          paddingHorizontal: 12,
+        }}
+        >
+          <Text style={{
+            fontSize: 13,
+            lineHeight: 22,
+            color: '#2F3142',
+            marginRight: 6,
+          }}
+          >Length
+                  </Text>
+          <Text style={{
+            fontSize: 13,
+            lineHeight: 22,
+            color: '#2F3142',
+            opacity: service === null ? 0.5 : 1,
+            fontStyle: service === null ? 'italic' : 'normal',
+          }}
+          >
+            {service === null ? 'select a service first' : `${this.getTotalLength().asMinutes()} min`}
+          </Text>
+        </View>
+        <View style={{
+          flexDirection: 'column',
+        }}
+        >
+          <Button
+            onPress={this.handleBook}
+            disabled={!this.canBook()}
+            text={this.getBookButtonText()}
+          />
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 16,
+          }}
+          >
+            <Button
+              style={{ flex: 8 / 17 }}
+              onPress={this.goToFullForm}
+              // disabled={this.state.canBook}
+              backgroundColor="white"
+              color="#115ECD"
+              text="MORE OPTIONS"
+            />
+            <Button
+              style={{ flex: 8 / 17 }}
+              onPress={() => alert('Not Implemented')}
+              disabled={this.state.canBook}
+              backgroundColor="white"
+              color="#115ECD"
+              text="BOOK ANOTHER"
+            />
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  render() {
     return (
       <Modal
         visible={this.props.visible}
@@ -655,219 +1005,12 @@ export class NewApptSlide extends React.Component {
                   unSelectedTextColor="#FFFFFF"
                   textFontSize={13}
                   onItemPress={this.handleTabChange}
-                  selectedIndex={this.state.selectedFilter}
+                  selectedIndex={this.props.activeTab}
                 />
               </View>
             </View>
             <View style={styles.body}>
-              <ScrollView style={{ paddingVertical: 15 }}>
-                <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
-                <AppointmentTime
-                  containerStyle={{
-                    justifyContent: 'flex-start',
-                  }}
-                  startTime={startTime}
-                  endTime={this.getEndTime()}
-                />
-                <View style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 4,
-                  borderBottomColor: 'transparent',
-                  borderTopColor: 'transparent',
-                  borderColor: '#F4F7FC',
-                  borderWidth: 1,
-                  marginTop: 15,
-                  shadowColor: '#000000',
-                  shadowOpacity: 0.2,
-                  shadowRadius: 2,
-                  elevation: 1,
-                  zIndex: 2,
-                  shadowOffset: { width: 0, height: 2 },
-                  backgroundColor: '#F3F7FC',
-                }}
-                >
-                  <ClientInput
-                    apptBook
-                    label={false}
-                    style={{ height: 39 }}
-                    selectedClient={client}
-                    placeholder={client === null ? 'Select Client' : 'Client'}
-                    placeholderStyle={styles.placeholderText}
-                    contentStyle={contentStyle}
-                    selectedStyle={selectedStyle}
-                    onPress={() => this.hidePanel()}
-                    navigate={navigation.navigate}
-                    headerProps={{ title: 'Clients', ...this.cancelButton() }}
-                    iconStyle={{ color: '#115ECD' }}
-                    onChange={this.setClient}
-                  />
-                  <InputDivider style={styles.middleSectionDivider} />
-                  <ServiceInput
-                    apptBook
-                    noLabel
-                    showLength
-                    selectExtraServices
-                    ref={(serviceInput) => { this.serviceInput = serviceInput; }}
-                    selectedProvider={provider}
-                    selectedService={service}
-                    addons={addons}
-                    required={required}
-                    recommended={recommended}
-                    rootStyle={{ height: 39 }}
-                    selectedStyle={selectedStyle}
-                    placeholder="Select a Service"
-                    placeholderStyle={styles.placeholderText}
-                    contentStyle={contentStyle}
-                    onPress={() => this.hidePanel()}
-                    navigate={navigation.navigate}
-                    headerProps={{ title: 'Services', ...this.cancelButton() }}
-                    iconStyle={{ color: '#115ECD' }}
-                    onChange={this.setService}
-                    onChangeAddons={this.setAddons}
-                    onChangeRecommended={this.setRecommended}
-                    onChangeRequired={this.setRequired}
-                  />
-                  <InputDivider style={styles.middleSectionDivider} />
-                  <ProviderInput
-                    noLabel
-                    apptBook
-                    filterByService
-                    isRequested={isQuickApptRequested}
-                    filterList={filterProviders}
-                    rootStyle={{ height: 39 }}
-                    selectedProvider={provider}
-                    placeholder="Select a Provider"
-                    placeholderStyle={styles.placeholderText}
-                    selectedStyle={selectedStyle}
-                    contentStyle={contentStyle}
-                    iconStyle={{ color: '#115ECD' }}
-                    avatarSize={20}
-                    onPress={() => this.hidePanel()}
-                    navigate={navigation.navigate}
-                    headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                    onChange={this.setProvider}
-                  />
-                </View>
-                <AddonsContainer
-                  visible={this.shouldShowExtras()}
-                  addons={addons}
-                  required={required}
-                  recommended={recommended}
-                  height={this.state.addonsHeight}
-                  onPressAddons={() => {
-                    this.setState({
-                      hasSelectedAddons: false,
-                      hasSelectedRecommended: false,
-                    }, () => {
-                      this.serviceInput.selectRecommended().selectAddons();
-                    });
-                  }}
-                  onPressRequired={() => {
-                    this.serviceInput.selectRequired();
-                  }}
-                  onRemoveRequired={() => this.setRequired([])}
-                />
-                {conflicts.length > 0 && (
-                  <ConflictBox
-                    onPress={() => {
-                      const callback = () => {
-                        this.props.navigation.navigate('Conflicts', {
-                          date,
-                          conflicts,
-                          startTime,
-                          endTime: moment(startTime).add(moment.duration(this.getTotalLength())),
-                          handleGoBack: () => this.showPanel(),
-                        });
-                      };
-                      return this.hidePanel(callback);
-                    }}
-                  />
-                )}
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: 15,
-                }}
-                >
-                  <Text style={{
-                    fontSize: 14,
-                    lineHeight: 22,
-                    color: '#110A24',
-                  }}
-                  >Provider is Requested?
-                  </Text>
-                  <Switch
-                    value={this.props.newApptState.isQuickApptRequested}
-                    onValueChange={requested => this.props.newApptActions.setQuickApptRequested(requested)}
-                  />
-                </View>
-                <View style={{
-                  marginVertical: 14,
-                  backgroundColor: '#F1F1F1',
-                  height: 32,
-                  borderRadius: 4,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  paddingHorizontal: 12,
-                }}
-                >
-                  <Text style={{
-                    fontSize: 13,
-                    lineHeight: 22,
-                    color: '#2F3142',
-                    marginRight: 6,
-                  }}
-                  >Length
-                  </Text>
-                  <Text style={{
-                    fontSize: 13,
-                    lineHeight: 22,
-                    color: '#2F3142',
-                    opacity: service === null ? 0.5 : 1,
-                    fontStyle: service === null ? 'italic' : 'normal',
-                  }}
-                  >
-                    {service === null ? 'select a service first' : `${this.getTotalLength().asMinutes()} min`}
-                  </Text>
-                </View>
-                <View style={{
-                  flexDirection: 'column',
-                }}
-                >
-                  <Button
-                    onPress={this.handleBook}
-                    disabled={!this.canBook()}
-                    text={this.getBookButtonText()}
-                  />
-                  <View style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 16,
-                  }}
-                  >
-                    <Button
-                      style={{ flex: 8 / 17 }}
-                      onPress={this.goToFullForm}
-                      // disabled={this.state.canBook}
-                      backgroundColor="white"
-                      color="#115ECD"
-                      text="MORE OPTIONS"
-                    />
-                    <Button
-                      style={{ flex: 8 / 17 }}
-                      onPress={() => alert('Not Implemented')}
-                      disabled={this.state.canBook}
-                      backgroundColor="white"
-                      color="#115ECD"
-                      text="BOOK ANOTHER"
-                    />
-                  </View>
-                </View>
-              </ScrollView>
+              {this.renderActiveTab()}
             </View>
           </Animated.View>
         </View>

@@ -86,7 +86,7 @@ export default class AppointmentScreen extends Component {
   state = {
     visible: false,
     isBookingNewAppt: false,
-    newAppointmentFilter: 0,
+    newApptActiveTab: 0,
     newApptProvider: null,
     newApptDate: moment(),
     newApptStartTime: moment().startOf('day').add('7', 'hours'),
@@ -146,7 +146,7 @@ export default class AppointmentScreen extends Component {
     this.props.newAppointmentActions.setStartTime(startTime);
 
     this.setState({
-      newAppointmentFilter: 0,
+      newApptActiveTab: 0,
       visibleNewAppointment: true,
     });
   }
@@ -186,7 +186,7 @@ export default class AppointmentScreen extends Component {
 
 
   //   this.setState({
-  //     newAppointmentFilter: 0,
+  //     newApptActiveTab: 0,
   //     visibleNewAppointment: true,
   //     ...newState,
   //   });
@@ -220,7 +220,7 @@ export default class AppointmentScreen extends Component {
     newAppointmentActions.setStartTime(startTime);
     newAppointmentActions.isBookingQuickAppt(true);
     this.setState({
-      newAppointmentFilter: 0,
+      newApptActiveTab: 0,
       visibleNewAppointment: true,
     });
   }
@@ -418,13 +418,14 @@ export default class AppointmentScreen extends Component {
             const callback = () => {
               this.setState({
                 visibleNewAppointment: false,
-                isBookingNewAppt: false,
               }, () => {
                 this.props.appointmentCalendarActions.setGridView();
               });
             };
             this.props.newAppointmentActions.quickBookAppt(callback);
           }}
+          activeTab={this.state.newApptActiveTab}
+          onChangeTab={newApptActiveTab => this.setState({ newApptActiveTab })}
         />
 
         <SalonDatePickerSlide
@@ -456,7 +457,7 @@ export default class AppointmentScreen extends Component {
 
         {/* <SalonNewAppointmentSlide
           navigation={this.props.navigation}
-          selectedFilter={this.state.newAppointmentFilter}
+          selectedFilter={this.state.newApptActiveTab}
           isLoading={this.props.newAppointmentState.isLoading}
           hasConflicts={this.props.newAppointmentState.conflicts.length > 0}
           date={this.props.newAppointmentState.date}
