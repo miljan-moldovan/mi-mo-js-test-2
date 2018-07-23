@@ -216,6 +216,14 @@ export default class ModifyApptServiceScreen extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
+  toggleStartTimePicker = () => this.setState(({ startTimePickerOpen }) => ({
+    startTimePickerOpen: !startTimePickerOpen,
+  }))
+
+  toggleEndTimePicker = () => this.setState(({ endTimePickerOpen }) => ({
+    endTimePickerOpen: !endTimePickerOpen,
+  }))
+
   validate = () => {
     const {
       selectedProvider,
@@ -286,7 +294,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             value={startTime}
             isOpen={this.state.startTimePickerOpen}
             onChange={this.handleChangeStartTime}
-            toggle={() => this.setState({ startTimePickerOpen: !this.state.startTimePickerOpen })}
+            toggle={this.toggleStartTimePicker}
           />
           <InputDivider />
           <SalonTimePicker
@@ -294,7 +302,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             value={endTime}
             isOpen={this.state.endTimePickerOpen}
             onChange={this.handleChangeEndTime}
-            toggle={() => this.setState({ endTimePickerOpen: !this.state.endTimePickerOpen })}
+            toggle={this.toggleEndTimePicker}
           />
           <InputDivider />
           <InputLabel
