@@ -19,6 +19,7 @@ import ServiceInput from './components/ServiceInput';
 import ProviderInput from './components/ProviderInput';
 import PromotionInput from './components/PromotionInput';
 import ProductInput from './components/ProductInput';
+import SalonTimePicker from './components/SalonTimePicker';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
@@ -357,5 +358,6 @@ export {
   ProviderInput,
   PromotionInput,
   ProductInput,
+  SalonTimePicker,
 };
 // export default formHelpers;
