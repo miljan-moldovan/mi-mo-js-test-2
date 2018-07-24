@@ -605,16 +605,16 @@ export default class Calendar extends Component {
   renderCard = (appointment) => {
     const {
       apptGridSettings, headerData, selectedProvider, selectedFilter,
-      displayMode, appointments, providerSchedule, isLoading, filterOptions,
+      displayMode, appointments, providerSchedule, isLoading, filterOptions, providers
     } = this.props;
     const {
       calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
     } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
+    const provider = isAllProviderView ?
+      providers.find(item => item.id === get(appointment.employee, 'id', false)) : selectedProvider;
     if (isAllProviderView) {
-      const doesProviderExsit =
-      headerData.findIndex(provider => provider.id === get(appointment.employee, 'id', false)) > -1;
-      if (!doesProviderExsit) {
+      if (!provider) {
         return null;
       }
     }
