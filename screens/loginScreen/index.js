@@ -25,20 +25,6 @@ class LoginScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
-  propTypes = {
-    disableFingerprintLogin: PropTypes.func.isRequired,
-    logout: PropTypes.func.isRequired,
-    enableFingerprintLogin: PropTypes.func.isRequired,
-    updateFingerprintValidationTime: PropTypes.func.isRequired,
-    login: PropTypes.func.isRequired,
-    auth: {
-      loggedIn: PropTypes.bool,
-      useFingerprintId: PropTypes.bool,
-    },
-    navigation: {
-      navigate: PropTypes.bool,
-    },
-  }
 
   state = {
     waitingLogin: false,
@@ -321,5 +307,20 @@ class LoginScreen extends React.Component {
 const mapStateToProps = state => ({
   auth: state.auth,
 });
+
+LoginScreen.propTypes = {
+  disableFingerprintLogin: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
+  enableFingerprintLogin: PropTypes.func.isRequired,
+  updateFingerprintValidationTime: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    loggedIn: PropTypes.bool.isRequired,
+    useFingerprintId: PropTypes.bool.isRequired,
+  }).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.bool,
+  }).isRequired,
+};
 
 export default connect(mapStateToProps, actions)(LoginScreen);
