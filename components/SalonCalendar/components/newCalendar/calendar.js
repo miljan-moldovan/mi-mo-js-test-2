@@ -626,6 +626,7 @@ export default class Calendar extends Component {
     if (appointment.employee) {
       return (
         <Card
+          provider={provider}
           panResponder={panResponder}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
