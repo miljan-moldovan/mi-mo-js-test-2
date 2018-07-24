@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -137,8 +137,10 @@ class Card extends Component {
     };
     const position = isActive ? activePosition : { position: 'relative', flex: 1 / 4, marginHorizontal: 2 };
     const wrap = height > 30 ? { flexWrap: 'wrap' } : { ellipsizeMode: 'tail' };
+    const panHandlers = this.props.panResponder ? this.props.panResponder.panHandlers : {};
     return (
       <Animated.View
+        { ...panHandlers }
         key={id}
         style={[
           styles.container,

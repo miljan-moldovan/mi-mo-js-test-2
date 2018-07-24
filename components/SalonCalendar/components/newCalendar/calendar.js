@@ -621,9 +621,12 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
+    const sendPanResponder = (activeCard &&
+      activeCard.appointment.id !== appointment.id) || isInBuffer;
     if (appointment.employee) {
       return (
         <Card
+          panResponder={sendPanResponder ? null : this.panResponder}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
           isMultiBlock={filterOptions.showMultiBlock}
@@ -664,6 +667,7 @@ export default class Calendar extends Component {
     const { activeCard, calendarMeasure, isResizeing } = this.state;
     return activeCard ? (
       <NewCard
+        panResponder={this.panResponder}
         appointment={activeCard.appointment}
         apptGridSettings={apptGridSettings}
         onScrollY={this.scrollToY}
@@ -689,6 +693,7 @@ export default class Calendar extends Component {
     return isResizeing && activeCard ? (
       <NewCard
         ref={(card) => { this.resizeCard = card; }}
+        panResponder={this.panResponder}
         appointment={activeCard.appointment}
         apptGridSettings={apptGridSettings}
         onScrollY={this.scrollToY}
@@ -726,8 +731,9 @@ export default class Calendar extends Component {
     };
     const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
+      // {...this.panResponder.panHandlers}
       return (
-        <View style={{ flex: 1, backgroundColor: '#fff' }} {...this.panResponder.panHandlers} ref={(view) => { this.calendar = view; }}>
+        <View style={{ flex: 1, backgroundColor: '#fff' }} ref={(view) => { this.calendar = view; }}>
           <ScrollView
             bounces={false}
             showsHorizontalScrollIndicator={false}
@@ -787,6 +793,7 @@ export default class Calendar extends Component {
             }
           </ScrollView>
           <Buffer
+            panResponder={this.panResponder}
             dataSource={this.state.buffer}
             visible={this.props.bufferVisible}
             manageBuffer={this.props.manageBuffer}
@@ -794,6 +801,7 @@ export default class Calendar extends Component {
             screenHeight={screenHeight}
             closeBuffer={this.closeBuffer}
             setBufferCollapsed={this.setBufferCollapsed}
+            activeCard={activeCard}
           />
           { this.renderActiveCard() }
           <SalonAlert

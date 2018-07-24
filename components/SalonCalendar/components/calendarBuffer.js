@@ -69,19 +69,6 @@ export default class calendarBuffer extends React.Component {
     this.state = { bufferPosition: props.screenHeight };
   }
 
-  renderCard = ({ item }) => (
-    <NewCard
-      key={item.id}
-      appointment={item}
-      cardWidth={85}
-      height={46}
-      left={0}
-      top={0}
-      onDrop={() => {}}
-      onLongPress={this.props.onCardLongPress}
-    />
-  )
-
   handleDragEnd = (position) => {
     const { screenHeight } = this.props;
     const boundLength = 20;
@@ -125,7 +112,22 @@ export default class calendarBuffer extends React.Component {
     }
   }
 
+  renderCard = ({ item, activeCard }) => (
+    <NewCard
+      panResponder={activeCard && activeCard.appointment.id !== item.id ? null : this.panResponder}
+      key={item.id}
+      appointment={item}
+      cardWidth={85}
+      height={46}
+      left={0}
+      top={0}
+      onDrop={() => {}}
+      onLongPress={this.props.onCardLongPress}
+    />
+  )
+
   render() {
+    const { activeCard } = this.props;
     return (
       <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel
@@ -158,7 +160,7 @@ export default class calendarBuffer extends React.Component {
             </View>
             <View style={[styles.listContainer]}>
               <View style={[{ flexDirection: 'row' }, styles.listView]}>
-                {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt }))}
+                {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt, activeCard }))}
               </View>
             </View>
           </View>

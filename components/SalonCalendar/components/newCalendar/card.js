@@ -333,8 +333,13 @@ class Card extends Component {
     let countGap2 = 0;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     const opacity = isActive && this.props.isResizeing ? 0 : 1;
+    const panHandlers = this.props.panResponder ? this.props.panResponder.panHandlers : {};
     return (
-      <Animated.View key={id} style={{ position: 'absolute', zIndex, opacity }}>
+      <Animated.View
+        key={id}
+        style={{ position: 'absolute', zIndex, opacity }}
+        { ...panHandlers }
+      >
         <Animated.View
           style={[styles.container,
             {
