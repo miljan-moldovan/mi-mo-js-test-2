@@ -112,22 +112,25 @@ export default class calendarBuffer extends React.Component {
     }
   }
 
-  renderCard = ({ item, activeCard }) => (
-    <NewCard
-      panResponder={activeCard && activeCard.appointment.id !== item.id ? null : this.panResponder}
-      key={item.id}
-      appointment={item}
-      cardWidth={85}
-      height={46}
-      left={0}
-      top={0}
-      onDrop={() => {}}
-      onLongPress={this.props.onCardLongPress}
-    />
-  )
+  renderCard = ({ item }) => {
+    const { panResponder, activeCard } = this.props;
+    const hasPanResponder = activeCard && activeCard.appointment.id !== item.id ? null : panResponder;
+    return (
+      <NewCard
+        panResponder={hasPanResponder}
+        key={item.id}
+        appointment={item}
+        cardWidth={85}
+        height={46}
+        left={0}
+        top={0}
+        onDrop={() => {}}
+        onLongPress={this.props.onCardLongPress}
+      />
+    );
+}
 
   render() {
-    const { activeCard } = this.props;
     return (
       <View style={styles.container} pointerEvents="box-none">
         <SlidingUpPanel
@@ -160,7 +163,7 @@ export default class calendarBuffer extends React.Component {
             </View>
             <View style={[styles.listContainer]}>
               <View style={[{ flexDirection: 'row' }, styles.listView]}>
-                {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt, activeCard }))}
+                {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt }))}
               </View>
             </View>
           </View>

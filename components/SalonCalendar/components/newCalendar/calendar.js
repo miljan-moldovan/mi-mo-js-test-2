@@ -621,12 +621,12 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.appointment.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
-    const sendPanResponder = (activeCard &&
-      activeCard.appointment.id !== appointment.id) || isInBuffer;
+    const panResponder = (activeCard &&
+      activeCard.appointment.id !== appointment.id) || isInBuffer ? null : this.panResponder;
     if (appointment.employee) {
       return (
         <Card
-          panResponder={sendPanResponder ? null : this.panResponder}
+          panResponder={panResponder}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
           isMultiBlock={filterOptions.showMultiBlock}
