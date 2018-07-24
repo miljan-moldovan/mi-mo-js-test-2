@@ -158,40 +158,6 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-  // onCalendarCellPressed = (cellId, colData) => {
-  //   const {
-  //     startDate,
-  //     selectedFilter,
-  //     selectedProvider,
-  //   } = this.props.appointmentScreenState;
-  //   const { newAppointmentActions } = this.props;
-  //   const startTime = moment(cellId, 'HH:mm A');
-
-  //   this.newApptSlide.resetForm();
-  //   const newState = {
-  //     newApptStartTime: startTime,
-  //   };
-  //   if (selectedFilter === 'providers') {
-  //     if (selectedProvider === 'all') {
-  //       newState.newApptProvider = colData;
-  //       newState.newApptDate = startDate;
-  //     } else {
-  //       newState.newApptProvider = selectedProvider;
-  //       newState.newApptDate = colData;
-  //     }
-  //   } else {
-  //     newState.newApptProvider = null;
-  //     newState.newApptDate = startDate;
-  //   }
-
-
-  //   this.setState({
-  //     newApptActiveTab: 0,
-  //     visibleNewAppointment: true,
-  //     ...newState,
-  //   });
-  // }
-
   onCalendarCellPressed = (cellId, colData) => {
     const {
       startDate,
@@ -403,10 +369,6 @@ export default class AppointmentScreen extends Component {
         )}
 
         <NewApptSlide
-          ref={(newApptSlide) => {
-            this.newApptSlide = newApptSlide;
-            return newApptSlide;
-          }}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           startTime={this.state.newApptStartTime}

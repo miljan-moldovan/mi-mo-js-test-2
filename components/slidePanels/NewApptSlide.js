@@ -610,6 +610,11 @@ export class NewApptSlide extends React.Component {
     return this.hidePanel(navigateCallback);
   }
 
+  goToRoomAssignment = () => {
+    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    return this.props.navigation.navigate('RoomAssignment', { date, employee });
+  }
+
   cancelButton = () => ({
     leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
@@ -682,7 +687,7 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={() => this.hidePanel(this.goToRoomAssignment)}
         label="Room Assignment"
       >
         <View style={styles.iconContainer}>
@@ -911,7 +916,7 @@ export class NewApptSlide extends React.Component {
             marginRight: 6,
           }}
           >Length
-                  </Text>
+          </Text>
           <Text style={{
             fontSize: 13,
             lineHeight: 22,
