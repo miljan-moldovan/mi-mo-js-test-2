@@ -6,9 +6,8 @@ import filterOptionsSelector from './filterOptionsSelector';
 const providersSelector = state => state.appointmentScreenReducer.providers;
 
 const groupedAvailableProvidersSelector = createSelector(
-  [providersSelector, filterOptionsSelector],
-  (providers, filterOptions) =>
-    (filterOptions.showOffEmployees ? groupBy(providers, 'id') : groupBy(filter(providers, provider => !provider.isOff), 'id')),
+  [providersSelector],
+  providers => groupBy(providers, 'id'),
 );
 
 export default groupedAvailableProvidersSelector;
