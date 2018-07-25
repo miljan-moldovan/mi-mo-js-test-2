@@ -16,6 +16,7 @@ import { Item, Input, Button, Label } from 'native-base';
 import TouchID from 'react-native-touch-id';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import TextInputMask from 'react-native-text-input-mask';
 
 import * as actions from '../../actions/login';
 import styles from './styles';
@@ -173,14 +174,21 @@ class LoginScreen extends React.Component {
     );
   }
 
+  renderUrlField = loggedIn => (
+    <View style={styles.inputContainer}>
+      <Image source={images.urlIcon} style={styles.inputIcon} />
+      <TextInputMask
+        refInput={(ref) => { this.input = ref; }}
+        onChangeText={this.handleURLChange}
+        mask={'[0-9a-z]{10}.salonultimate.com'}
+      />
+    </View>
+  );
+
   render() {
     const { loggedIn } = this.props.auth;
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.backgroundImage}
-          source={images.blue}
-        />
         {this.renderFingerprintModal()}
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -202,27 +210,12 @@ class LoginScreen extends React.Component {
               You are already logged in. To proceed, please confirm using your fingerprint.
             </Text>
             }
-            {!loggedIn &&
-              <View style={styles.inputContainer}>
-                <Image source={images.urlIcon} style={styles.inputIcon} />
-                <Item floatingLabel style={styles.item}>
-                  <Label style={{ color: 'white', fontFamily: 'OpenSans-Regular' }}>URL</Label>
-                  <Input
-                    style={styles.input}
-                    disabled={loggedIn}
-                    autoCorrect={false}
-                    blurOnSubmit
-                    autoCapitalize="none"
-                    onChangeText={this.handleURLChange}
-                  />
-                </Item>
-              </View>
-            }
+            {!loggedIn && this.renderUrlField(loggedIn)}
             {!loggedIn &&
             <View style={styles.inputContainer}>
               <Image source={images.iconProfile} style={styles.inputIcon} />
               <Item floatingLabel style={styles.item}>
-                <Label style={{ color: 'white', fontFamily: 'OpenSans-Regular' }}>Username</Label>
+                <Label style={styles.inputLabel}>Username</Label>
                 <Input
                   style={styles.input}
                   disabled={loggedIn}
@@ -238,7 +231,7 @@ class LoginScreen extends React.Component {
               <View style={styles.inputContainer}>
                 <Image source={images.iconLock} style={styles.inputIcon} />
                 <Item floatingLabel style={styles.item}>
-                  <Label style={{ color: 'white', fontFamily: 'OpenSans-Regular' }}>Password</Label>
+                  <Label style={styles.inputLabel}>Password</Label>
                   <Input
                     style={styles.input}
                     autoCorrect={false}
@@ -315,8 +308,8 @@ LoginScreen.propTypes = {
   updateFingerprintValidationTime: PropTypes.func.isRequired,
   login: PropTypes.func.isRequired,
   auth: PropTypes.shape({
-    loggedIn: PropTypes.bool.isRequired,
-    useFingerprintId: PropTypes.bool.isRequired,
+    loggedIn: PropTypes.bool,
+    useFingerprintId: PropTypes.bool,
   }).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.bool,

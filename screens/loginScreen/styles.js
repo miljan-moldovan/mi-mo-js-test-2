@@ -9,13 +9,7 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#333',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    backgroundColor: 'rgb(17.85, 94.35, 204)',
   },
   inputContainer: {
     // width: 292,
@@ -25,7 +19,6 @@ export default StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     marginBottom: 30,
-    // backgroundColor: '#333',
     justifyContent: 'center',
   },
   item: {
@@ -34,10 +27,10 @@ export default StyleSheet.create({
     marginLeft: 18,
     marginTop: 0,
     paddingTop: 0,
-    // backgroundColor: '#555'
   },
   inputLabel: {
     color: 'white',
+    fontFamily: 'OpenSans-Regular',
   },
   input: {
     color: 'white',
