@@ -99,11 +99,13 @@ export default class EditScheduleScreen extends React.Component {
   }
 
   state = {
-    startTimeScheduleOne: '00:00:00',
-    endTimeScheduleOne: '23:59:59',
+    startTimeScheduleOne: '',
+    endTimeScheduleOne: '',
     startTimeScheduleTwo: '',
     endTimeScheduleTwo: '',
     hoursWorking: false,
+    selectedScheduleExceptionReason: scheduleTypes[scheduleTypes.length - 1],
+    isEditableOtherReason: true,
   }
 
   handleDone = () => {
@@ -165,7 +167,7 @@ export default class EditScheduleScreen extends React.Component {
       }
     });
 
-    this.props.navigation.setParams({ canSave: true });
+    // this.props.navigation.setParams({ canSave: true });
   }
 
 
@@ -207,7 +209,7 @@ export default class EditScheduleScreen extends React.Component {
       endTimeScheduleOne,
       startTimeScheduleTwo,
       endTimeScheduleTwo,
-      isEditableOtherReason: false,
+      isEditableOtherReason: otherReason && otherReason.length > 0,
       otherReason,
       selectedScheduleExceptionReason,
     });
@@ -219,6 +221,15 @@ export default class EditScheduleScreen extends React.Component {
     if (startTimeScheduleOne.isAfter(endTimeScheduleOne)) {
       return alert("Start time can't be after end time");
     }
+    const params = this.props.navigation.state.params || {};
+    let canSave = params.canSave || false;
+
+    if (this.state.hoursWorking) {
+      canSave = (!!startTimeScheduleOne && !!endTimeScheduleOne);
+    }
+
+    this.props.navigation.setParams({ canSave });
+
     return this.setState({
       startTimeScheduleOne,
     });
@@ -230,6 +241,15 @@ export default class EditScheduleScreen extends React.Component {
     if (startTimeScheduleOne.isAfter(endTimeScheduleOne)) {
       return alert("Start time can't be after end time");
     }
+    const params = this.props.navigation.state.params || {};
+    let canSave = params.canSave || false;
+
+    if (this.state.hoursWorking) {
+      canSave = (!!startTimeScheduleOne && !!endTimeScheduleOne);
+    }
+
+    this.props.navigation.setParams({ canSave });
+
     return this.setState({
       endTimeScheduleOne,
     });
@@ -259,7 +279,8 @@ export default class EditScheduleScreen extends React.Component {
     }
 
     onChangeOtherReason = (text) => {
-      this.setState({ otherReason: text, canSave: text.length > 0 });
+      this.setState({ otherReason: text });
+      this.props.navigation.setParams({ canSave: text.length > 0 });
     }
 
     render() {
@@ -289,14 +310,19 @@ export default class EditScheduleScreen extends React.Component {
               style={{ height: 43 }}
               textStyle={{ color: '#727A8F' }}
               onChange={(state) => {
-                  let { canSave } = this.state;
+                  const params = this.props.navigation.state.params || {};
+                  let canSave = params.canSave || false;
+                  const hoursWorking = !this.state.hoursWorking;
 
-                  if (!this.state.hoursWorking) {
-                    canSave = (startTimeScheduleOne && endTimeScheduleOne) ||
-                    (startTimeScheduleTwo && endTimeScheduleTwo);
+                  if (hoursWorking) {
+                    canSave = (startTimeScheduleOne.length > 0 && endTimeScheduleOne.length > 0);
+                  } else {
+                    canSave = this.state.otherReason && this.state.otherReason.length > 0;
                   }
 
-                  this.setState({ hoursWorking: !this.state.hoursWorking, canSave });
+                  this.props.navigation.setParams({ canSave });
+
+                  this.setState({ hoursWorking });
                 }}
               value={this.state.hoursWorking}
               text="Hours Working"
@@ -356,6 +382,7 @@ export default class EditScheduleScreen extends React.Component {
               defaultOption={this.state.selectedScheduleExceptionReason}
               onPress={(option, index) => {
                   const isEditableOtherReason = option.id === 0;
+
                   if (!isEditableOtherReason) {
                     this.onChangeOtherReason('');
                     this.props.navigation.setParams({
