@@ -90,7 +90,12 @@ export default class Calendar extends Component {
           const size = this.moveY ? dy - this.moveY : dy;
           this.moveY = dy;
           if (this.resizeCard) {
-            this.state.activeCard.height = this.resizeCard.resizeCard(size);
+            const lastIndex = this.state.activeCard.verticalPositions.length - 1;
+            console.log('baconbefore', {h:this.state.activeCard.verticalPositions[lastIndex].height, offsetY: this.offset.y} )
+
+            this.state.activeCard.verticalPositions[lastIndex].height = this.resizeCard.resizeCard(size);
+            console.log('baconafter', {h:this.state.activeCard.verticalPositions[lastIndex].height, offsetY: this.offset.y} )
+
           }
         }
         return null;
@@ -203,8 +208,9 @@ export default class Calendar extends Component {
         if (!this.props.bufferVisible && this.moveY > 10) {
           this.props.manageBuffer(true);
         }
+        const { cardWidth } = activeCard;
         const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 130;
-        const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth;
+        const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cardWidth;
         const scrollHorizontalBoundLeft = boundLength + 36;
         const newMoveX = moveX + pan.x._offset;
         if (scrollHorizontalBoundRight < newMoveX) {
@@ -254,27 +260,32 @@ export default class Calendar extends Component {
   }
 
   scrollAnimationResize = () => {
-    const { cellWidth, moveY } = this;
     const {
-      selectedProvider, headerData, apptGridSettings, bufferVisible, displayMode,
+      selectedProvider, apptGridSettings, bufferVisible, displayMode,
+      isRoom, isResource
     } = this.props;
     const {
-      calendarMeasure, pan, activeCard, isResizeing,
+      calendarMeasure, activeCard, isResizeing,
     } = this.state;
     let dy = 0;
     const boundLength = 30;
     const maxScrollChange = 15;
     if (isResizeing) {
       if (this.moveY) {
-        const coordinatesY = activeCard.top;
+        const lastIndex = activeCard.verticalPositions.length - 1;
+        const headerSize = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource ? headerHeight : 0;
+
+        const coordinatesY = activeCard.verticalPositions[lastIndex].top - this.fixOffsetY;
         const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height;
-        const scrollVerticalBoundTop = this.offset.y + calendarMeasure.height - boundLength;
+        const scrollVerticalBoundTop = this.offset.y + calendarMeasure.height - boundLength;// - headerSize;
         const scrollVerticalBoundBottom = this.offset.y + boundLength;
-        const newMoveY = coordinatesY + activeCard.height;
+        const newMoveY = coordinatesY + activeCard.verticalPositions[lastIndex].height;
         if (scrollVerticalBoundTop < newMoveY) {
+          console.log('bacon', {scrollVerticalBoundTop,newMoveY,coordinatesY,height:activeCard.verticalPositions[lastIndex].height,offsetY: this.offset.y} )
           dy = this.offset.y < maxHeigth ? newMoveY - scrollVerticalBoundTop : 0;
         } else if (scrollVerticalBoundBottom > newMoveY) {
           dy = newMoveY - scrollVerticalBoundBottom;
+          console.log('BACONFLAG', newMoveY)
         }
         if (dy !== 0) {
           dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;
@@ -286,7 +297,7 @@ export default class Calendar extends Component {
           if (this.offset.y < 0) {
             this.offset.y = 0;
           }
-          activeCard.height = this.resizeCard.resizeCard(dy);
+          this.state.activeCard.verticalPositions[lastIndex].height = this.resizeCard.resizeCard(dy);
           this.scrollToY(this.offset.y);
         }
       }
@@ -302,6 +313,7 @@ export default class Calendar extends Component {
     if (!isScrollEnabled) {
       const offsetY = isBufferCard ? -this.calendarPosition.y : 40 - this.offset.y;
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
+      this.fixOffsetY = offsetY;
       const { pan, pan2 } = this.state;
       // const newTop = top + offsetY;
       const newVerticalPositions = [];
@@ -310,7 +322,7 @@ export default class Calendar extends Component {
         const newItem = { ...item, top: item.top + offsetY };
         newVerticalPositions.push(newItem);
       }
-      let newTop = newVerticalPositions[0].top;
+      const newTop = newVerticalPositions[0].top;
       const newLeft = left + offsetX;
       this.state.pan.setOffset({ x: newLeft, y: newTop });
       this.state.pan.setValue({ x: 0, y: 0 });
@@ -388,7 +400,9 @@ export default class Calendar extends Component {
     this.moveY = null;
     const { apptGridSettings } = this.props;
     const { activeCard } = this.state;
-    const newHeight = Math.round(activeCard.height / 30);
+    const lastIndex = activeCard.verticalPositions.length - 1;
+    const { verticalPositions } = activeCard;
+    const newHeight = Math.round(verticalPositions[lastIndex].height / 30);
     const params = { newLength: newHeight };
 
     const clientName = `${activeCard.appointment.client.name} ${activeCard.appointment.client.lastName}`;
@@ -694,7 +708,8 @@ export default class Calendar extends Component {
 
   renderActiveCard =() => {
     const {
-      apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
+      apptGridSettings, headerData, selectedProvider, displayMode, appointments,
+      filterOptions
     } = this.props;
     const { activeCard, calendarMeasure, isResizeing, pan, pan2 } = this.state;
     return activeCard ? (
@@ -712,39 +727,28 @@ export default class Calendar extends Component {
         cardWidth={activeCard.cardWidth}
         height={activeCard.height}
         onDrop={this.handleCardDrop}
-        pan={this.state.pan}
         isActive
         opacity={isResizeing ? 0 : 1}
         isResizeing={this.state.isResizeing}
-        isBufferCard={activeCard.isBufferCard}
+        isMultiBlock={filterOptions.showMultiBlock}
+        showAssistant={filterOptions.showAssistantAssignments}
       />) : null;
-    // return activeCard ? (
-    //   <NewCard
-    //     panResponder={this.panResponder}
-    //     appointment={activeCard.appointment}
-    //     apptGridSettings={apptGridSettings}
-    //     onScrollY={this.scrollToY}
-    //     calendarMeasure={calendarMeasure}
-    //     calendarOffset={this.offset}
-    //     onResize={this.handleOnResize}
-    //     cardWidth={activeCard.cardWidth}
-    //     height={activeCard.height}
-    //     onDrop={this.handleCardDrop}
-    //     pan={this.state.pan}
-    //     isActive
-    //     opacity={isResizeing ? 0 : 1}
-    //     isResizeing={this.state.isResizeing}
-    //     isBufferCard={activeCard.isBufferCard}
-    //   />) : null;
   }
 
   renderResizeCard =() => {
     const {
-      apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
+      apptGridSettings, headerData, selectedProvider, displayMode,
+      appointments, providerSchedule, filterOptions,
+      providers, selectedFilter
     } = this.props;
-    const { activeCard, calendarMeasure, isResizeing } = this.state;
-    return isResizeing && activeCard ? (
-      <NewCard
+    const { activeCard, calendarMeasure, isResizeing, showFirstAvailable } = this.state;
+    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
+    const provider = activeCard && isAllProviderView ?
+      providers.find(item => item.id === get(activeCard.appointment.employee, 'id', false)) : selectedProvider;
+    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
+
+    return provider && isResizeing && activeCard ? (
+      <Card
         ref={(card) => { this.resizeCard = card; }}
         panResponder={this.panResponder}
         appointment={activeCard.appointment}
@@ -762,6 +766,26 @@ export default class Calendar extends Component {
         isBufferCard={activeCard.isBufferCard}
         top={activeCard.top}
         left={activeCard.left}
+        pan={this.state.pan}
+        pan2={this.state.pan2}
+        isResizeCard
+        activeCard={activeCard}
+        provider={provider}
+        headerData={headerData}
+        onPress={this.props.onCardPressed}
+        isMultiBlock={filterOptions.showMultiBlock}
+        showAssistant={filterOptions.showAssistantAssignments}
+        providers={headerData}
+        onDrag={this.handleOnDrag}
+        cellWidth={this.cellWidth}
+        selectedFilter={selectedFilter}
+        displayMode={displayMode}
+        selectedProvider={selectedProvider}
+        startTime={startTime}
+        appointments={appointments}
+        showFirstAvailable={showFirstAvailable}
+        groupedProviders={this.groupedProviders}
+        providerSchedule={providerSchedule}
       />) : null;
   }
 

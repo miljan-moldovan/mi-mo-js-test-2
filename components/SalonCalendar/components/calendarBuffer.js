@@ -4,6 +4,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '../../UI/Icon';
 import NewCard from './newCalendar/newCard';
+import Card from './newCalendar/card';
 
 const styles = {
   cardContainer: {
@@ -114,9 +115,12 @@ export default class calendarBuffer extends React.Component {
 
   renderCard = ({ item }) => {
     const { panResponder, activeCard } = this.props;
-    const hasPanResponder = activeCard && activeCard.appointment.id !== item.id ? null : panResponder;
+    const isActive = activeCard && activeCard.appointment.id === item.id;
+    const hasPanResponder = !activeCard || isActive ? panResponder : null;
     return (
-      <NewCard
+      <Card
+        isBufferCard
+        isActive={isActive}
         panResponder={hasPanResponder}
         key={item.id}
         appointment={item}
@@ -125,9 +129,22 @@ export default class calendarBuffer extends React.Component {
         left={0}
         top={0}
         onDrop={() => {}}
-        onLongPress={this.props.onCardLongPress}
+        onDrag={this.props.onCardLongPress}
       />
     );
+    // return (
+    //   <NewCard
+    //     panResponder={hasPanResponder}
+    //     key={item.id}
+    //     appointment={item}
+    //     cardWidth={85}
+    //     height={46}
+    //     left={0}
+    //     top={0}
+    //     onDrop={() => {}}
+    //     onLongPress={this.props.onCardLongPress}
+    //   />
+    // );
 }
 
   render() {
