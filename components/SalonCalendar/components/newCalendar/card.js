@@ -817,7 +817,7 @@ class Card extends Component {
       //     }
       //   }
       // }
-      const neLeft = (left - calendarOffset.x) + 36;
+      const newLeft = left - calendarOffset.x;
       this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
     }
   // handleOnLongPress = ({ verticalPositions, left }) => {
@@ -1062,6 +1062,8 @@ class Card extends Component {
       panResponder,
       isActive,
       activeCard,
+      pan,
+      pan2
     } = this.props;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const borderColor = colors[color].dark;
@@ -1073,6 +1075,8 @@ class Card extends Component {
     const serviceTextColor = '#1D1E29';
     const activeServiceTextColor = isActive ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
+    const positions = activeCard ? [pan.getLayout(), pan2.getLayout] : [''];
+    //const layout2 = activeCard ? pan2.getLayout() : '';
     return (
       <React.Fragment>
         {
@@ -1090,7 +1094,8 @@ class Card extends Component {
                     borderStyle,
                     zIndex,
                     opacity
-                  }
+                  },
+                  positions[index]
                 ]}
               >
                 {!isActiveEmployeeInCellTime && !activeCard ?

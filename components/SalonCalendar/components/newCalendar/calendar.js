@@ -64,6 +64,7 @@ export default class Calendar extends Component {
       showFirstAvailable: false,
       buffer: [],
       pan: new Animated.ValueXY({ x: 0, y: 0 }),
+      pan2: new Animated.ValueXY({ x: 0, y: 0 }),
       isResizeing: false,
     };
     this.size = { width: 0, height: 0 };
@@ -80,7 +81,11 @@ export default class Calendar extends Component {
             return Animated.event([null, {
               dx: this.state.pan.x,
               dy: this.state.pan.y,
-            }])(e, gesture);
+            },
+            {
+              dx: this.state.pan2.x,
+              dy: this.state.pan2.y,
+            }])(e, gesture, gesture);
           }
           const size = this.moveY ? dy - this.moveY : dy;
           this.moveY = dy;
@@ -673,9 +678,11 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, headerData, selectedProvider, displayMode, appointments, providerSchedule, isLoading,
     } = this.props;
-    const { activeCard, calendarMeasure, isResizeing } = this.state;
+    const { activeCard, calendarMeasure, isResizeing, pan, pan2 } = this.state;
     return activeCard ? (
       <Card
+        pan={pan}
+        pan2={pan2}
         activeCard={activeCard}
         panResponder={this.panResponder}
         appointment={activeCard.appointment}
