@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Animated, PanResponder } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -7,11 +7,12 @@ import Svg, {
   Defs,
   Stop,
 } from 'react-native-svg';
-import { get, times } from 'lodash';
+import { get, times, reverse } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
 import Icon from '../../../UI/Icon';
 import Badge from '../../../SalonBadge';
+import ResizeButton from '../resizeButtons';
 
 const styles = StyleSheet.create({
   clientText: {
@@ -20,6 +21,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingHorizontal: 8,
     color: '#2F3142',
+    flex: 1,
+    flexWrap: 'wrap',
   },
   serviceText: {
     color: '#1D1E29',
@@ -44,136 +47,227 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 4,
   },
+  fullSize: {
+    width: '100%',
+    height: '100%',
+  },
+  cardContent: {
+    flexDirection: 'row',
+    paddingHorizontal: 2,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  textContainer: {
+    flex: 1,
+  },
+  resizePosition: {
+    left: -13,
+    bottom: -27,
+  },
 });
 
 class Card extends Component {
   constructor(props) {
     super(props);
-    this.scrollValue = 0;
-    this.state = this.calcualteStateValues(props);
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
-    || nextProps.cellWidth !== this.props.cellWidth ||
-      !nextProps.isLoading && this.props.isLoading ||
-      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
-  }
-
-  calcualteStateValues = (props) => {
-    const {
-      toTime, fromTime, employee, date,
-    } = props.appointment;
-    const { step } = props.apptGridSettings;
-    const {
-      startTime, cellWidth, displayMode, selectedProvider, groupedProviders, providerSchedule,
-    } = props;
-    const apptDate = moment(date).format('YYYY-MM-DD');
-    const provider = selectedProvider === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
-    const start = moment(fromTime, 'HH:mm');
-    const top = (start.diff(startTime, 'minutes') / step) * 30;
-    const end = moment(toTime, 'HH:mm');
-    const { left, cardWidth, zIndex } = this.calculateLeftAndGap(props);
-    const height = ((end.diff(start, 'minutes') / step) * 30) - 1;
-    const usedBlocks = (height + 1) / 30;
-    let isActiveEmployeeInCellTime = false;
-    if (provider &&
-      provider.scheduledIntervals && provider.scheduledIntervals[0]) {
-      const employeeTime = provider.scheduledIntervals[0];
-      const employeeStartTime = moment(employeeTime.start, 'HH:mm');
-      const employeeEndTime = moment(employeeTime.end, 'HH:mm');
-      isActiveEmployeeInCellTime = start.diff(employeeStartTime, 'm') >= 0 &&
-        end.diff(employeeEndTime, 'm') <= 0;
-    }
-    const opacity = !props.isActive && !props.isInBuffer ? 1 : 0.7;
-    return {
-      pan: new Animated.ValueXY({ x: left, y: top }),
-      left,
-      top: new Animated.Value(top),
-      height: new Animated.Value(height),
-      isResizeing: false,
-      opacity,
-      cardWidth,
-      cardHeight: height,
-      zIndex,
-      step,
-      usedBlocks,
-      isActiveEmployeeInCellTime,
+    this.cards = [];
+    this.state = {
+      height: 0,
     };
   }
 
-  calculateLeftAndGap = (props) => {
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.activeCard  || (nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
+    || nextProps.cellWidth !== this.props.cellWidth ||
+      !nextProps.isLoading && this.props.isLoading ||
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing));
+  }
+
+  getCardProperties = () => {
+    const { isBufferCard, activeCard, isActive, isResizeCard, isResizeing } = this.props;
+    if (!isResizeCard && activeCard) {
+      const { cardWidth, verticalPositions, left } = activeCard;
+      const opacity = isResizeing ? 0 : 1;
+      return {
+        left,
+        width: cardWidth,
+        zIndex: 999,
+        verticalPositions,
+        opacity,
+        isActiveEmployeeInCellTime: true,
+      };
+    }
+    if (!activeCard && isBufferCard) {
+      return {
+        left: 0,
+        width: 85,
+        zIndex: 1,
+        verticalPositions: [{ top: 0, height: 46 }],
+        opacity: isActive ? 0.7 : 1,
+        isActiveEmployeeInCellTime: true,
+      }
+    }
     const {
-      appointments, providers, rooms, selectedFilter, pickerMode, selectedProvider, displayMode, cellWidth, appointment,
-    } = props;
-    const date = moment(appointment.date);
-    const startTime = moment(appointment.fromTime, 'HH:mm');
-    let cardWidth = cellWidth - 1;
-    let zIndex = 1;
-    let left = 0;
+      appointment: {
+        toTime,
+        fromTime,
+        employee,
+        date,
+        resource,
+        room,
+        id,
+        gapTime,
+        afterTime
+      },
+      apptGridSettings: {
+        step,
+        minStartTime
+      },
+      appointments,
+      cellWidth,
+      displayMode,
+      provider,
+      selectedFilter,
+      headerData,
+      isInBuffer,
+      selectedProvider,
+    } = this.props;
+    const dateTime12 = moment('00:00:00', 'HH:mm');
+    const apptFromTimeMoment = moment(fromTime, 'HH:mm');
+    const apptToTimeMoment = moment(toTime, 'HH:mm');
+    const apptGapTimeMoment = moment(gapTime, 'HH:mm');
+    const apptAfterTimeMoment = moment(afterTime, 'HH:mm');
+    const startTimeMoment = moment(minStartTime, 'HH:mm');
+    const formatedDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
+    // calculate number of overlaps
+    let currentAppt = null;
+    let currentDate = null;
+    let numberOfOverlaps = 0;
+    for (let i = 0; i < appointments.length; i += 1) {
+      currentAppt = appointments[i];
+      if (currentAppt.id !== id) {
+        currentDate = moment(currentAppt.date).format('YYYY-MM-DD');
+        if (formatedDate === currentDate && get(currentAppt.employee, 'id', -1) === get(employee, 'id', -2)) {
+          const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
+          const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
+          if (apptFromTimeMoment.isSameOrAfter(currentStartTime)
+          && apptFromTimeMoment.isBefore(currentEndTime)) {
+            numberOfOverlaps += 1;
+          }
+        }
+      }
+    }
+    const gap = numberOfOverlaps * 8;
+    // calculate left position
+    const firstCellWidth = selectedFilter === 'providers' ? 130 : 0;
+    let index;
     switch (selectedFilter) {
       case 'rooms':
-        left = providers.findIndex(room => room.id === appointment.room.id) * cellWidth;
+        index = headerData.findIndex(item => item.id === room.id);
         break;
       case 'resources':
-        left = providers.findIndex(resource => resource.id === appointment.resource.id) * cellWidth;
+        index = headerData.findIndex(item => item.id === resource.id);
         break;
       case 'deskStaff':
       case 'providers':
         if (selectedProvider === 'all') {
-          const firstCellWidth = selectedFilter === 'providers' ? 130 : 0;
-          left = providers.findIndex(provider => provider.id === appointment.employee.id) * cellWidth + firstCellWidth;
-        } else if (selectedProvider !== 'all' && displayMode === 'week') {
-          const apptDate = moment(appointment.date).format('YYYY-DD-MM');
-          left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;
+          index = headerData.findIndex(provider => provider.id === employee.id);
+        } else if (displayMode === 'week') {
+          const apptDate = moment(date).format('YYYY-DD-MM');
+          index = headerData.findIndex(item => item.format('YYYY-DD-MM') === apptDate);
         }
         break;
       default:
-        left = 0;
+        index = 0;
         break;
     }
-    for (let i = 0; i < appointments.length; i += 1) {
-      const currentAppt = appointments[i];
-      const currentDate = moment(currentAppt.date);
-      if (date.format('YYYY-MM-DD') === currentDate.format('YYYY-MM-DD')
-    && get(currentAppt.employee, 'id', false) === get(appointment.employee, 'id', false)) {
-        if (currentAppt.id !== appointment.id) {
-          const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
-          const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
-          if (startTime.isSameOrAfter(currentStartTime)
-          && startTime.isBefore(currentEndTime)) {
-            cardWidth -= 8;
-            zIndex += 1;
-            left += 8;
-          }
-        } else {
-          return { cardWidth, zIndex, left };
-        }
-      }
+    const left = (index * cellWidth) + firstCellWidth + gap;
+    // calculate card width
+    const width = cellWidth - gap;
+    // calculate height and top
+    const verticalPositions = [];
+    let height = null;
+    let top = null;
+    if (gapTime !== '00:00:00') {
+      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm')
+      height = ((firstBlockDuration / step) * 30) - 1;
+      top = (apptFromTimeMoment.diff(startTimeMoment, 'm') / step) * 30;
+      verticalPositions.push({ height, top });
+      const gapMinutes = apptGapTimeMoment.diff(dateTime12, 'm');
+      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm')
+      top = (newFromtTime.diff(startTimeMoment, 'm') / step) * 30;
+      height = ((apptToTimeMoment.diff(newFromtTime, 'minutes') / step) * 30) - 1;
+      verticalPositions.push({ height, top });
+    } else {
+      height = ((apptToTimeMoment.diff(apptFromTimeMoment, 'minutes') / step) * 30) - 1;
+      top = (apptFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
+      verticalPositions.push({ height, top });
     }
-    return { cardWidth, zIndex, left };
+    // calculate zIndex
+    const zIndex = isResizeCard ? 999 : numberOfOverlaps + 1;
+    // opacity
+    const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
+    // is emplyee active in cell time
+    let isActiveEmployeeInCellTime = false;
+    const scheduledIntervals = provider.isOff ? [] : get(provider, 'scheduledIntervals', []);
+    let providerSchedule = null;
+    let providerStartTime = null;
+    let providerEndTime = null;
+    for (let i = 0; !isActiveEmployeeInCellTime && i < scheduledIntervals.length; i += 1) {
+      providerSchedule = scheduledIntervals[i];
+      providerStartTime = moment(providerSchedule.start, 'HH:mm');
+      providerEndTime = moment(providerSchedule.end, 'HH:mm');
+      isActiveEmployeeInCellTime = apptFromTimeMoment.diff(providerStartTime, 'm') >= 0 &&
+        apptToTimeMoment.diff(providerEndTime, 'm') <= 0;
+    }
+    return {
+      left,
+      width,
+      zIndex,
+      verticalPositions,
+      opacity,
+      isActiveEmployeeInCellTime,
+    };
   }
 
-  handleOnLongPress = () => {
-    this.props.onDrag(
-      false, this.props.appointment, this.state.left - this.props.calendarOffset.x,
-      this.state.top._value - this.props.calendarOffset.y, this.state.cardWidth, this.state.height._value,
-    );
+  resizeCard = (size) => {
+    let { height } = this.state;
+    if (height + size >= 30) {
+      height += size;
+      this.setState({ height });
+    }
+    return height;
   }
 
-  renderAssistant = () => {
-    const {
-      cardHeight,
-    } = this.state;
+  handleOnLongPress = ({ verticalPositions, left, width }) => {
+    const { calendarOffset, appointment, isBufferCard, onDrag } = this.props;
+    if (isBufferCard) {
+      this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
+        const { height } = this.props;
+        const newVerticalPositions = [{ top: y, height }]
+        onDrag(false, appointment, x, width, newVerticalPositions, true);
+      });
+    } else {
+      const newVerticalPositions = [];
+      for (let i = 0; i < verticalPositions.length; i += 1) {
+        const item = verticalPositions[i];
+        const newItem = { ...item, top: item.top - calendarOffset.y };
+        newVerticalPositions.push(newItem);
+      }
+      const newLeft = left - calendarOffset.x;
+      this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
+    }
+  }
+
+  renderAssistant = ({ height }) => {
     return (
       <View
-        key={Math.random()}
         style={{
           position: 'absolute',
           top: 6,
           right: 4,
           width: 15,
-          height: cardHeight - 10,
+          height: height - 10,
           backgroundColor: 'rgba(47, 49, 66, 0.3)',
           borderRadius: 2,
           zIndex: 99,
@@ -187,7 +281,7 @@ class Card extends Component {
             fontSize: 10,
             lineHeight: 10,
             minHeight: 10,
-            width: cardHeight,
+            width: height,
             textAlign: 'center',
             margin: 0,
             padding: 0,
@@ -234,170 +328,185 @@ class Card extends Component {
     );
   }
 
-  renderSingleBlock = () => {
-    const {
-      client,
-      service,
-      mainServiceColor,
-    } = this.props.appointment;
-    const { usedBlocks } = this.state;
-    const clientName = `${client.name} ${client.lastName}`;
-    const serviceName = service.description;
-    const serviceTextColor = '#1D1E29';
-    const clientTextColor = '#2F3142';
-    const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const flexWrap = this.state.height._value > 30 ? { flexWrap: 'wrap' } : { ellipsizeMode: 'tail' };
+  renderStripes = ({ height, width, backgroundColor }) => {
+    let gap = 0;
+    let countGap2 = 0;
+    let countOpacity2 = 0;
     return (
-      <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
-        <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-        <View style={{ flexDirection: 'row', paddingHorizontal: 2 }}>
-          {this.renderBadges()}
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text
-                numberOfLines={this.state.height._value > 30 ? 0 : 1}
-                style={[styles.clientText, { flex: 1, color: clientTextColor }, flexWrap]}
-              >
-                {clientName}
-              </Text>
-            </View>
-            { usedBlocks > 1 && (
-              <Text
-                numberOfLines={1}
-                style={[styles.serviceText, { color: serviceTextColor }]}
-              >
-                {serviceName}
-              </Text>
-            )}
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  renderMultiBlock = () => {
-    const {
-      client,
-      mainServiceColor,
-    } = this.props.appointment;
-    const {
-      step,
-      usedBlocks,
-    } = this.state;
-    const clientName = `${client.name} ${client.lastName}`;
-    const clientTextColor = '#2F3142';
-    const color = colors[mainServiceColor] ? mainServiceColor : 0;
-
-    return (
-      <View style={{ width: '100%', height: '100%' }}>
-        <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-        <View style={{ flexDirection: 'row', paddingHorizontal: 2 }}>
-          {this.renderBadges()}
-          <View>
-            {times(usedBlocks).map(index => (
-              <Text
-                numberOfLines={1}
-                style={[styles.clientText, { lineHeight: 30, color: clientTextColor }]}
-              >
-                {clientName}
-              </Text>
-            ))}
-          </View>
-        </View>
-      </View>
+      <Svg
+        height={height - 2}
+        width={width - 2}
+        style={styles.stripesContainer}
+      >
+        <Defs>
+          <LinearGradient
+            id="grad"
+            x1={0}
+            y1={width > height ? width : height}
+            x2={width > height ? width : height}
+            y2={0}
+          >
+            {
+             times(50).map((index) => {
+              gap = countGap2;
+              countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
+              if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
+                countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
+                return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={backgroundColor} stopOpacity="0.4" />);
+              }
+              countOpacity2 += 1;
+                return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={backgroundColor} />);
+            })
+            }
+          </LinearGradient>
+        </Defs>
+        <Rect
+          width={width}
+          height={height}
+          fill="url(#grad)"
+          strokeLinecap="round"
+        />
+      </Svg>
     );
   }
 
   render() {
-    this.state = this.calcualteStateValues(this.props);
     const {
-      client,
-      service,
-      fromTime,
-      toTime,
-      id,
-      mainServiceColor,
-      isFirstAvailable,
-    } = this.props.appointment;
+      left,
+      width,
+      zIndex,
+      verticalPositions,
+      opacity,
+      isActiveEmployeeInCellTime
+    } = this.getCardProperties();
     const {
-      showFirstAvailable, showAssistant, isActive, isInBuffer,
+        client,
+        service,
+        fromTime,
+        toTime,
+        id,
+        mainServiceColor,
+        isFirstAvailable,
+      } = this.props.appointment;
+    const {
+      showFirstAvailable,
+      showAssistant,
+      isInBuffer,
+      panResponder,
+      isActive,
+      activeCard,
+      pan,
+      pan2,
+      isBufferCard,
+      isResizeing,
+      isResizeCard,
+      isMultiBlock,
     } = this.props;
-    const {
-      zIndex, cardWidth, left, isActiveEmployeeInCellTime,
-    } = this.state;
+    const lastIndex = verticalPositions.length - 1;
+    if (isResizeCard && this.state.height === 0) {
+      this.state.height = verticalPositions[lastIndex].height;
+    }
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const { height } = this.state;
     const borderColor = colors[color].dark;
-    const contentColor = colors[color].light;
-    let countOpacity2 = 0;
-    let countGap2 = 0;
+    const backgroundColor = activeCard ? borderColor : colors[color].light;
+    const clientName = `${client.name} ${client.lastName}`;
+    const clientTextColor = '#2F3142';
+    const activeClientTextColor = activeCard ? '#fff' : clientTextColor;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
-    const opacity = isActive && this.props.isResizeing ? 0 : 1;
+    const serviceTextColor = '#1D1E29';
+    const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
+    const panHandlers = panResponder ? panResponder.panHandlers : {};
+    const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
+    const container = isBufferCard ? [styles.container, { position: 'relative' }] : styles.container;
+    const lineHeight = isMultiBlock ? { lineHeight: 30 } : '';
+    if (!activeCard && isResizeing) {
+      return null;
+    }
     return (
-      <Animated.View key={id} style={{ position: 'absolute', zIndex, opacity }}>
-        <Animated.View
-          style={[styles.container,
-            {
-          width: cardWidth,
-          height,
-          borderColor,
-          backgroundColor: colors[color].light,
-          left,
-          top: this.state.top,
-          opacity: this.state.opacity,
-          borderStyle,
-          }]}
+      <React.Fragment>
+        {
+            verticalPositions.map(({ height, top }, index) => {
+              const usedBlocks = isMultiBlock ? (height + 1) / 30 : 1;
+              if (usedBlocks > 1) {
+                debugger
+              }
+              return (
+                <Animated.View
+                  {...panHandlers}
+                  ref={(view) => { this.cards.push(view);}}
+                  style={[container,
+                    {
+                      width,
+                      height: isResizeCard && isResizeing ? this.state.height : height,
+                      borderColor,
+                      backgroundColor,
+                      left,
+                      top,
+                      borderStyle,
+                      zIndex,
+                      opacity
+                    },
+                    positions[index],
 
-        >
-          {!isActiveEmployeeInCellTime ?
-            <Svg
-              height={height._value - 2}
-              width={cardWidth - 2}
-              style={styles.stripesContainer}
-            >
-              <Defs>
-                <LinearGradient
-                  id="grad"
-                  x1={0}
-                  y1={cardWidth > height._value ? cardWidth : height._value}
-                  x2={cardWidth > height._value ? cardWidth : height._value}
-                  y2={0}
+                  ]}
                 >
-                  {
-                   times(50).map((index) => {
-                    const gap = countGap2;
-                    countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
-                    if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
-                      countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
-                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />);
-                    }
-                    countOpacity2 += 1;
-                      return (<Stop key={`${index}${cardWidth}`} offset={`${index + gap}%`} stopColor={contentColor} />);
-                  })
-                  }
-                </LinearGradient>
-              </Defs>
-              <Rect
-                width={cardWidth}
-                height={height._value}
-                fill="url(#grad)"
-                strokeLinecap="round"
-              />
-            </Svg>
-            : null
-          }
-          <TouchableOpacity
-            onPress={() => {
-              this.props.onPress(this.props.appointment);
-            }}
-            onLongPress={this.handleOnLongPress}
-            disabled={isActive || isInBuffer}
-          >
-            {this.props.isMultiBlock ? this.renderMultiBlock() : this.renderSingleBlock()}
-            { showAssistant ? this.renderAssistant() : null }
-          </TouchableOpacity>
-        </Animated.View>
-      </Animated.View>
+                  {!isActiveEmployeeInCellTime && !activeCard ?
+                    this.renderStripes({ height, width, backgroundColor }) : null}
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.props.onPress(this.props.appointment)
+                    }}
+                    onLongPress={() => this.handleOnLongPress({ left, verticalPositions, width })}
+                    disabled={activeCard || isActive || isInBuffer}
+                  >
+                    <View style={styles.fullSize}>
+                      <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
+                      <View style={styles.cardContent}>
+                        {this.renderBadges()}
+                        <View style={styles.textContainer}>
+                          {
+                            times(usedBlocks).map(index => (
+                              <View style={{ flexDirection: 'row' }}>
+                                <Text
+                                  numberOfLines={!isMultiBlock && height > 30 ? 0 : 1}
+                                  style={[styles.clientText,
+                                    { color: activeClientTextColor }, lineHeight]}
+                                >
+                                  {clientName}
+                                </Text>
+                              </View>
+                          ))}
+                          { !isMultiBlock && height > 30 && (
+                            <Text
+                              numberOfLines={1}
+                              style={[styles.serviceText, { color: activeServiceTextColor }]}
+                            >
+                              {service.description}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                      { showAssistant && service.useAssistant ?
+                        this.renderAssistant({ height }) : null }
+                    </View>
+                  </TouchableOpacity>
+                  {activeCard && !isBufferCard && index === lastIndex ?
+                    <ResizeButton
+                      onPress={this.props.onResize}
+                      color={colors[color].dark}
+                      position={styles.resizePosition}
+                      apptGridSettings={this.props.apptGridSettings}
+                      height={height}
+                      calendarMeasure={this.props.calendarMeasure}
+                      calendarOffset={this.props.calendarOffset}
+                      onScrollY={this.props.onScrollY}
+                      isDisabled={isResizeing}
+                    /> : null }
+                </Animated.View>
+            );
+          })
+        }
+      </React.Fragment>
     );
   }
 }

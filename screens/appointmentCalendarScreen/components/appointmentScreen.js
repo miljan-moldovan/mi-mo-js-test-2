@@ -354,6 +354,7 @@ export default class AppointmentScreen extends Component {
           selectedDate={moment(startDate)}
         />
         <SalonCalendar
+          providers={providers}
           onPressAvailability={this.onAvailabilityCellPressed}
           onCellPressed={this.onCalendarCellPressed}
           onCardPressed={this.onCardPressed}

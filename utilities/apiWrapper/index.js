@@ -25,5 +25,5 @@ export {
   Settings,
   Store,
   TurnAway,
-  getEmployeePhoto
+  getEmployeePhoto,
 };
