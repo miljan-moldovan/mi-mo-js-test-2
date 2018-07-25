@@ -1075,8 +1075,7 @@ class Card extends Component {
     const serviceTextColor = '#1D1E29';
     const activeServiceTextColor = isActive ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
-    const positions = activeCard ? [pan.getLayout(), pan2.getLayout] : [''];
-    //const layout2 = activeCard ? pan2.getLayout() : '';
+    const positions = activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
     return (
       <React.Fragment>
         {

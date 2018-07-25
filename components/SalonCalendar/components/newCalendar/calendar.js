@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, Animated, PanResponder, Alert, Modal, Text } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
-import { get, times, groupBy, filter } from 'lodash';
+import { get, times, groupBy, filter, reverse } from 'lodash';
 import moment from 'moment';
 
 import Board from './board';
@@ -132,7 +132,7 @@ export default class Calendar extends Component {
       this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
       if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
         if (selectedProvider === 'all') {
-          const firstColumnWidth = selectedFilter === 'providers' ? 138 : 36;
+          const firstColumnWidth = selectedFilter === 'providers' ? 166 : 36;
           this.size = {
             width: headerData.length * providerWidth + firstColumnWidth,
             height: apptGridSettings.numOfRow * 30 + headerHeight,
@@ -189,6 +189,7 @@ export default class Calendar extends Component {
     const { cellWidth, moveX, moveY } = this;
     const {
       selectedProvider, headerData, apptGridSettings, bufferVisible, displayMode,
+      isRoom, isResource
     } = this.props;
     const { calendarMeasure, pan, activeCard } = this.state;
     let dx = 0;
@@ -202,9 +203,9 @@ export default class Calendar extends Component {
         if (!this.props.bufferVisible && this.moveY > 10) {
           this.props.manageBuffer(true);
         }
-        const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 64;
-        const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth + 36;
-        const scrollHorizontalBoundLeft = boundLength;
+        const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 130;//64;
+        const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth;// + 36;
+        const scrollHorizontalBoundLeft = boundLength + 36;
         const newMoveX = moveX + pan.x._offset;
         if (scrollHorizontalBoundRight < newMoveX) {
           dx = newMoveX - scrollHorizontalBoundRight;
@@ -223,12 +224,12 @@ export default class Calendar extends Component {
           }
           this.scrollToX(this.offset.x);
         } else {
-          const headerHeight = 40;
+          const headerSize = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource ? headerHeight : 0;
           const maxHeigth = apptGridSettings.numOfRow * 30 - calendarMeasure.height + bufferHeight;
-          const scrollVerticalBoundTop = calendarMeasure.height - boundLength - activeCard.height - bufferHeight + headerHeight;
-          const scrollVerticalBoundBottom = boundLength;
+          const scrollVerticalBoundTop = calendarMeasure.height - boundLength - activeCard.height - bufferHeight + headerSize;
+          const scrollVerticalBoundBottom = headerHeight + boundLength;
           const newMoveY = moveY + pan.y._offset;
-          const isInBufferArea = bufferVisible && newMoveY > calendarMeasure.height - bufferHeight - activeCard.height + headerHeight;
+          const isInBufferArea = bufferVisible && newMoveY > calendarMeasure.height - bufferHeight - activeCard.height + headerSize;
           if (scrollVerticalBoundTop < newMoveY && !isInBufferArea) {
             dy = newMoveY - scrollVerticalBoundTop;
           } else if (scrollVerticalBoundBottom > newMoveY) {
@@ -301,7 +302,7 @@ export default class Calendar extends Component {
     if (!isScrollEnabled) {
       const offsetY = isBufferCard ? -this.calendarPosition.y : 40 - this.offset.y;
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
-      const { pan } = this.state;
+      const { pan, pan2 } = this.state;
       // const newTop = top + offsetY;
       const newVerticalPositions = [];
       for (let i = 0; i < verticalPositions.length; i += 1) {
@@ -309,12 +310,28 @@ export default class Calendar extends Component {
         const newItem = { ...item, top: item.top + offsetY };
         newVerticalPositions.push(newItem);
       }
-      const newTop = newVerticalPositions[0].top;
+      let newTop = newVerticalPositions[0].top;
       const newLeft = left + offsetX;
       this.state.pan.setOffset({ x: newLeft, y: newTop });
       this.state.pan.setValue({ x: 0, y: 0 });
-      pan.setOffset({ x: newLeft, y:  newTop });
-      pan.setValue({ x: 0, y: 0 });
+      if (verticalPositions.length > 1) {
+        let newTop = newVerticalPositions[1].top;
+        this.state.pan2.setOffset({ x: newLeft, y: newTop });
+        this.state.pan2.setValue({ x: 0, y: 0 });
+      }
+      let { height } = verticalPositions[0];
+      if (verticalPositions.length > 1) {
+        const reversePosition = reverse(verticalPositions);
+        height = 0;
+        for (let i = 0; i < reversePosition.length; i += 1) {
+          const item = reversePosition[i];
+          if (i === 0) {
+            height = item.top + item.height;
+          } else {
+            height -= item.top;
+          }
+        }
+      }
       newState = {
         activeCard: {
           appointment,
@@ -322,6 +339,7 @@ export default class Calendar extends Component {
           cardWidth,
           verticalPositions: newVerticalPositions,
           isBufferCard,
+          height
         },
       };
       this.setState(newState, this.scrollAnimation);
