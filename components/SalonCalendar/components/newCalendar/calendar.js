@@ -203,8 +203,8 @@ export default class Calendar extends Component {
         if (!this.props.bufferVisible && this.moveY > 10) {
           this.props.manageBuffer(true);
         }
-        const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 130;//64;
-        const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth;// + 36;
+        const maxWidth = headerData.length * cellWidth - calendarMeasure.width + 130;
+        const scrollHorizontalBoundRight = calendarMeasure.width - boundLength - cellWidth;
         const scrollHorizontalBoundLeft = boundLength + 36;
         const newMoveX = moveX + pan.x._offset;
         if (scrollHorizontalBoundRight < newMoveX) {
