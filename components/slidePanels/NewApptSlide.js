@@ -660,7 +660,14 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={() => {
+         this.hidePanel();
+         const { date, bookedByEmployee: employee } = this.props.newApptState;
+          this.props.navigation.navigate(
+            'EditSchedule',
+          { date, employee },
+        );
+      }}
         label="Edit Schedule"
       >
         <View style={styles.iconContainer}>
@@ -911,7 +918,7 @@ export class NewApptSlide extends React.Component {
             marginRight: 6,
           }}
           >Length
-                  </Text>
+          </Text>
           <Text style={{
             fontSize: 13,
             lineHeight: 22,

@@ -14,6 +14,7 @@ const SalonTimePicker = (props) => {
   return (
     <React.Fragment>
       <InputButton
+        noIcon={props.noIcon}
         label={props.label}
         value={value}
         valueStyle={props.isOpen ? { color: '#1B65CF' } : null}
@@ -32,7 +33,7 @@ const SalonTimePicker = (props) => {
           <DatePicker
             style={{ flex: 1 }}
             itemStyle={{ backgroundColor: 'white' }}
-            date={moment(props.value).isValid() ? props.value.toDate() : ''}
+            date={moment(props.value).isValid() ? props.value.toDate() : new Date()}
             mode="time"
             onDateChange={props.onChange}
           />

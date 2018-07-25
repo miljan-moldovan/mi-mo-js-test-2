@@ -4,6 +4,8 @@ import getEmployeePositions from './getEmployeePositions';
 import getEmployees from './getEmployees';
 import getEmployeeSchedule from './getEmployeeSchedule';
 import getEmployeeScheduleRange from './getEmployeeScheduleRange';
+import getEmployeeScheduleException from './getEmployeeScheduleException';
+import putEmployeeScheduleException from './putEmployeeScheduleException';
 
 export {
   getEmployeeAppointments,
@@ -12,4 +14,6 @@ export {
   getEmployees,
   getEmployeeSchedule,
   getEmployeeScheduleRange,
+  getEmployeeScheduleException,
+  putEmployeeScheduleException,
 };
