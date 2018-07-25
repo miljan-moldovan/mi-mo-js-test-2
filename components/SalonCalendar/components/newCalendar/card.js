@@ -1065,7 +1065,7 @@ class Card extends Component {
     } = this.props;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const borderColor = colors[color].dark;
-    const backgroundColor = colors[color].light;
+    const backgroundColor = activeCard ? borderColor : colors[color].light;
     const clientName = `${client.name} ${client.lastName}`;
     const clientTextColor = '#2F3142';
     const activeClientTextColor = isActive ? '#fff' : clientTextColor;
