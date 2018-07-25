@@ -288,7 +288,8 @@ export default class Calendar extends Component {
     }
   }
 
-  handleOnDrag = (isScrollEnabled, appointment, left, top, cardWidth, height, isBufferCard) => {
+  handleOnDrag = (isScrollEnabled, appointment, left, cardWidth, verticalPositions, isBufferCard) => {
+    //const { top } = verticalPositions[0];
     let newState;
     this.moveX = null;
     this.moveY = null;
@@ -296,19 +297,25 @@ export default class Calendar extends Component {
       const offsetY = isBufferCard ? -this.calendarPosition.y : 40 - this.offset.y;
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
       const { pan } = this.state;
-      const newTop = top + offsetY;
+      // const newTop = top + offsetY;
+      const newVerticalPositions = [];
+      for (let i = 0; i < verticalPositions.length; i += 1) {
+        const item = verticalPositions[i];
+        const newItem = { ...item, top: item.top + offsetY };
+        newVerticalPositions.push(newItem);
+      }
+      const newTop = newVerticalPositions[0].top;
       const newLeft = left + offsetX;
       this.state.pan.setOffset({ x: newLeft, y: newTop });
       this.state.pan.setValue({ x: 0, y: 0 });
-      pan.setOffset({ x: newLeft, y: newTop });
+      pan.setOffset({ x: newLeft, y:  newTop });
       pan.setValue({ x: 0, y: 0 });
       newState = {
         activeCard: {
           appointment,
           left,
-          top,
           cardWidth,
-          height,
+          verticalPositions: newVerticalPositions,
           isBufferCard,
         },
       };
@@ -627,6 +634,7 @@ export default class Calendar extends Component {
       return (
         <Card
           provider={provider}
+          headerData={headerData}
           panResponder={panResponder}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
@@ -667,7 +675,8 @@ export default class Calendar extends Component {
     } = this.props;
     const { activeCard, calendarMeasure, isResizeing } = this.state;
     return activeCard ? (
-      <NewCard
+      <Card
+        activeCard={activeCard}
         panResponder={this.panResponder}
         appointment={activeCard.appointment}
         apptGridSettings={apptGridSettings}
@@ -684,6 +693,24 @@ export default class Calendar extends Component {
         isResizeing={this.state.isResizeing}
         isBufferCard={activeCard.isBufferCard}
       />) : null;
+    // return activeCard ? (
+    //   <NewCard
+    //     panResponder={this.panResponder}
+    //     appointment={activeCard.appointment}
+    //     apptGridSettings={apptGridSettings}
+    //     onScrollY={this.scrollToY}
+    //     calendarMeasure={calendarMeasure}
+    //     calendarOffset={this.offset}
+    //     onResize={this.handleOnResize}
+    //     cardWidth={activeCard.cardWidth}
+    //     height={activeCard.height}
+    //     onDrop={this.handleCardDrop}
+    //     pan={this.state.pan}
+    //     isActive
+    //     opacity={isResizeing ? 0 : 1}
+    //     isResizeing={this.state.isResizeing}
+    //     isBufferCard={activeCard.isBufferCard}
+    //   />) : null;
   }
 
   renderResizeCard =() => {
@@ -732,7 +759,6 @@ export default class Calendar extends Component {
     };
     const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
-      // {...this.panResponder.panHandlers}
       return (
         <View style={{ flex: 1, backgroundColor: '#fff' }} ref={(view) => { this.calendar = view; }}>
           <ScrollView

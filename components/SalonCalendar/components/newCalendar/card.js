@@ -475,10 +475,10 @@ const styles = StyleSheet.create({
 class Card extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.isInBuffer !== this.props.isInBuffer || nextState.isActive !== this.state.isActive
+    return nextProps.isInBuffer !== this.props.isInBuffer || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
-      (!!this.state.isActive && nextProps.isResizeing !== this.props.isResizeing);
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
   }
 
   getCardProperties = () => {
@@ -507,8 +507,20 @@ class Card extends Component {
       isInBuffer,
       isResizeing,
       selectedProvider,
-      isActive
+      isActive,
+      activeCard
     } = this.props;
+    if (activeCard) {
+      const { cardWidth, verticalPositions, left } = this.props.activeCard;
+      return {
+        left,
+        width: cardWidth,
+        zIndex: 999,
+        verticalPositions,
+        opacity: 1,
+        isActiveEmployeeInCellTime: true,
+      }
+    }
     const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
     const apptToTimeMoment = moment(toTime, 'HH:mm');
@@ -599,7 +611,6 @@ class Card extends Component {
     }
     return {
       left,
-      top,
       width,
       zIndex,
       verticalPositions,
@@ -784,26 +795,30 @@ class Card extends Component {
   // }
 
     handleOnLongPress = ({ verticalPositions, left, width }) => {
-      const { top } = verticalPositions[0];
-      let { height } = verticalPositions[0];
-      if (verticalPositions.length > 1) {
-        height = 0;
-        const reversePosition = reverse(verticalPositions);
-        height = 0;
-        for (let i = 0; i < reversePosition.length; i += 1) {
-          const item = reversePosition[i];
-          if (i === 0) {
-            height = item.top + item.height;
-          } else {
-            height -= item.top;
-          }
-        }
+      const { calendarOffset, appointment } = this.props;
+      const newVerticalPositions = [];
+      for (let i = 0; i < verticalPositions.length; i += 1) {
+        const item = verticalPositions[i];
+        const newItem = { ...item, top: item.top - calendarOffset.y };
+        newVerticalPositions.push(newItem);
       }
-      this.props.onDrag(
-        false, this.props.appointment, left - this.props.calendarOffset.x,
-        top - this.props.calendarOffset.y, this.props.cardWidth,
-        height,
-      );
+      // const { top } = verticalPositions[0];
+      // let { height } = verticalPositions[0];
+      // if (verticalPositions.length > 1) {
+      //   height = 0;
+      //   const reversePosition = reverse(verticalPositions);
+      //   height = 0;
+      //   for (let i = 0; i < reversePosition.length; i += 1) {
+      //     const item = reversePosition[i];
+      //     if (i === 0) {
+      //       height = item.top + item.height;
+      //     } else {
+      //       height -= item.top;
+      //     }
+      //   }
+      // }
+      const neLeft = (left - calendarOffset.x) + 36;
+      this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
     }
   // handleOnLongPress = ({ verticalPositions, left }) => {
   //   if (!this.props.isActive) {
@@ -1044,8 +1059,9 @@ class Card extends Component {
       showFirstAvailable,
       showAssistant,
       isInBuffer,
-      pantResponder,
-      isActive
+      panResponder,
+      isActive,
+      activeCard,
     } = this.props;
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
     const borderColor = colors[color].dark;
@@ -1068,22 +1084,23 @@ class Card extends Component {
                     width,
                     height,
                     borderColor,
-                    backgroundColor: activeColor,
+                    backgroundColor,
                     left,
                     top,
                     borderStyle,
                     zIndex,
+                    opacity
                   }
                 ]}
               >
-                {!isActiveEmployeeInCellTime && !isActive ?
+                {!isActiveEmployeeInCellTime && !activeCard ?
                   this.renderStripes({ height, width, backgroundColor }) : null}
                 <TouchableOpacity
                   onPress={() => {
                     this.props.onPress(this.props.appointment)
                   }}
                   onLongPress={() => this.handleOnLongPress({ left, verticalPositions, width })}
-                  disabled={isActive || isInBuffer}
+                  disabled={activeCard || isActive || isInBuffer}
                 >
                   <View style={styles.fullSize}>
                     <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
@@ -1095,7 +1112,7 @@ class Card extends Component {
                             numberOfLines={height > 30 ? 0 : 1}
                             style={[styles.clientText, { color: activeClientTextColor }]}
                           >
-                            {clientName}dddd
+                            {clientName}
                           </Text>
                         </View>
                         { height > 30 && (
