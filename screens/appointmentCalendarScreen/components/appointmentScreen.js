@@ -346,7 +346,6 @@ export default class AppointmentScreen extends Component {
           setSelectedProvider={this.setSelectedProvider}
           setSelectedDay={this.setSelectedDay}
           storeSchedule={storeSchedule}
-          providers={providers}
         />
         {
           isLoading ?

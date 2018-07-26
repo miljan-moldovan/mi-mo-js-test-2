@@ -127,7 +127,7 @@ export default class Calendar extends Component {
       this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
       if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
         if (selectedProvider === 'all') {
-          const firstColumnWidth = selectedFilter === 'providers' ? 166 : 36;
+          const firstColumnWidth = selectedFilter === 'providers' ? 138 : 36;
           this.size = {
             width: headerData.length * providerWidth + firstColumnWidth,
             height: apptGridSettings.numOfRow * 30 + headerHeight,
@@ -605,16 +605,16 @@ export default class Calendar extends Component {
   renderCard = (appointment) => {
     const {
       apptGridSettings, headerData, selectedProvider, selectedFilter,
-      displayMode, appointments, providerSchedule, isLoading, filterOptions, providers
+      displayMode, appointments, providerSchedule, isLoading, filterOptions,
     } = this.props;
     const {
-      showFirstAvailable, activeCard, buffer,
+      calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
     } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
-    const provider = isAllProviderView ?
-      providers.find(item => item.id === get(appointment.employee, 'id', false)) : selectedProvider;
     if (isAllProviderView) {
-      if (!provider) {
+      const doesProviderExsit =
+      headerData.findIndex(provider => provider.id === get(appointment.employee, 'id', false)) > -1;
+      if (!doesProviderExsit) {
         return null;
       }
     }
@@ -624,7 +624,6 @@ export default class Calendar extends Component {
     if (appointment.employee) {
       return (
         <Card
-          isAllProviderView={isAllProviderView}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
           isMultiBlock={filterOptions.showMultiBlock}
@@ -632,12 +631,14 @@ export default class Calendar extends Component {
           isActive={isActive}
           isInBuffer={isInBuffer}
           key={appointment.id}
-          headerData={headerData}
+          providers={headerData}
           appointment={appointment}
           apptGridSettings={apptGridSettings}
           onDrag={this.handleOnDrag}
+          calendarMeasure={calendarMeasure}
           onScrollX={this.scrollToX}
           onScrollY={this.scrollToY}
+          calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleResize}
           cellWidth={this.cellWidth}
@@ -650,7 +651,6 @@ export default class Calendar extends Component {
           groupedProviders={this.groupedProviders}
           providerSchedule={providerSchedule}
           isLoading={isLoading}
-          provider={provider}
         />
       );
     }
@@ -727,14 +727,14 @@ export default class Calendar extends Component {
     const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
       return (
-        <View style={{ flex: 1, backgroundColor: '#fff' }} ref={(view) => { this.calendar = view; }}>
+        <View style={{ flex: 1, backgroundColor: '#fff' }} {...this.panResponder.panHandlers} ref={(view) => { this.calendar = view; }}>
           <ScrollView
             bounces={false}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={[styles.contentContainer, size, { borderTopWidth: !showHeader ? 1 : 0 }]}
             style={styles.container}
-            scrollEnabled={false && !activeCard && !isLoading}
+            scrollEnabled={!activeCard && !isLoading}
             onScroll={this.handleScroll}
             ref={(board) => { this.board = board; }}
             onLayout={this.measureScrollView}
@@ -795,7 +795,7 @@ export default class Calendar extends Component {
             closeBuffer={this.closeBuffer}
             setBufferCollapsed={this.setBufferCollapsed}
           />
-          {/* { this.renderActiveCard() } */}
+          { this.renderActiveCard() }
           <SalonAlert
             visible={!!alert}
             title={alert ? alert.title : ''}
