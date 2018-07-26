@@ -25,6 +25,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
+  headerTitle: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitleTitle: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  headerTitleSubTitle: {
+    fontFamily: 'Roboto',
+    fontSize: 10,
+    lineHeight: 12,
+    color: 'white',
+  },
+  headerLeftText: { fontSize: 14, color: 'white' },
+  headerRightText: { fontSize: 14, color: 'white' },
+  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  inputGroup: { marginTop: 16 },
+  inputSwitch: { height: 43 },
+  inputSwitchText: { color: '#727A8F' },
+  sectionTitle: { height: 38 },
 });
 
 
@@ -44,28 +68,11 @@ export default class EditScheduleScreen extends React.Component {
 
     return {
       headerTitle: (
-        <View style={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-        >
-          <Text style={{
-          fontFamily: 'Roboto-Medium',
-          fontSize: 17,
-          lineHeight: 22,
-          color: 'white',
-        }}
-          >
+        <View style={styles.headerTitle}>
+          <Text style={styles.headerTitleTitle}>
           Edit Schedule
           </Text>
-          <Text style={{
-          fontFamily: 'Roboto',
-          fontSize: 10,
-          lineHeight: 12,
-          color: 'white',
-        }}
-          >
+          <Text style={styles.headerTitleSubTitle}>
             {`${employee.name} ${employee.lastName[0]}`}
           </Text>
         </View>
@@ -73,7 +80,7 @@ export default class EditScheduleScreen extends React.Component {
 
       headerLeft: (
         <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+          <Text style={styles.headerLeftText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
@@ -85,7 +92,7 @@ export default class EditScheduleScreen extends React.Component {
           }
         }}
         >
-          <Text style={{ fontSize: 14, color: 'white' }}>
+          <Text style={styles.headerRightText}>
           Done
           </Text>
         </SalonTouchableOpacity>
@@ -283,6 +290,54 @@ export default class EditScheduleScreen extends React.Component {
       this.props.navigation.setParams({ canSave: text.length > 0 });
     }
 
+    onChangeInputSwitch = (state) => {
+      const params = this.props.navigation.state.params || {};
+      let canSave = params.canSave || false;
+      const hoursWorking = !this.state.hoursWorking;
+
+      if (hoursWorking) {
+        canSave = (startTimeScheduleOne.length > 0 && endTimeScheduleOne.length > 0);
+      } else {
+        canSave = this.state.otherReason && this.state.otherReason.length > 0;
+      }
+
+      this.props.navigation.setParams({ canSave });
+
+      this.setState({ hoursWorking });
+    }
+
+    pickerToogleStartTimeOne = () => {
+      this.setState({ startTimeScheduleOnePickerOpen: !this.state.startTimeScheduleOnePickerOpen });
+    };
+
+    pickerToogleEndTimeOne = () => {
+      this.setState({ endTimeScheduleOnePickerOpen: !this.state.endTimeScheduleOnePickerOpen });
+    };
+
+    pickerToogleStartTimeTwo = () => {
+      this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen });
+    };
+
+    pickerToogleEndTimeTwo = () => {
+      this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen });
+    };
+
+    onPressRadioGroup = (option, index) => {
+      const isEditableOtherReason = option.id === 0;
+
+      if (!isEditableOtherReason) {
+        this.onChangeOtherReason('');
+        this.props.navigation.setParams({
+          canSave: true,
+        });
+      } else {
+        this.props.navigation.setParams({
+          canSave: this.state.otherReason.length > 0,
+        });
+      }
+      this.setState({ selectedScheduleExceptionReason: option, isEditableOtherReason });
+    }
+
     render() {
       const {
         startTimeScheduleOne,
@@ -299,31 +354,17 @@ export default class EditScheduleScreen extends React.Component {
         <View style={styles.container}>
 
           {this.props.employeeScheduleState.isLoading ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={styles.activityIndicator}>
               <ActivityIndicator />
             </View>
       ) : (
 
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-          <InputGroup style={{ marginTop: 16 }}>
+          <InputGroup style={styles.inputGroup}>
             <InputSwitch
-              style={{ height: 43 }}
-              textStyle={{ color: '#727A8F' }}
-              onChange={(state) => {
-                  const params = this.props.navigation.state.params || {};
-                  let canSave = params.canSave || false;
-                  const hoursWorking = !this.state.hoursWorking;
-
-                  if (hoursWorking) {
-                    canSave = (startTimeScheduleOne.length > 0 && endTimeScheduleOne.length > 0);
-                  } else {
-                    canSave = this.state.otherReason && this.state.otherReason.length > 0;
-                  }
-
-                  this.props.navigation.setParams({ canSave });
-
-                  this.setState({ hoursWorking });
-                }}
+              style={styles.inputSwitch}
+              textStyle={styles.inputSwitchText}
+              onChange={this.onChangeInputSwitch}
               value={this.state.hoursWorking}
               text="Hours Working"
             />
@@ -331,7 +372,7 @@ export default class EditScheduleScreen extends React.Component {
 
           {this.state.hoursWorking ?
             <React.Fragment>
-              <SectionTitle value="SCHEDULE 1" style={{ height: 38 }} />
+              <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle} />
               <InputGroup>
                 <SalonTimePicker
                   label="Start"
@@ -339,7 +380,7 @@ export default class EditScheduleScreen extends React.Component {
                   value={startTimeScheduleOne}
                   isOpen={this.state.startTimeScheduleOnePickerOpen}
                   onChange={this.handleChangestartTimeScheduleOne}
-                  toggle={() => this.setState({ startTimeScheduleOnePickerOpen: !this.state.startTimeScheduleOnePickerOpen })}
+                  toggle={this.pickerToogleStartTimeOne}
                 />
                 <InputDivider />
                 <SalonTimePicker
@@ -348,10 +389,10 @@ export default class EditScheduleScreen extends React.Component {
                   value={endTimeScheduleOne}
                   isOpen={this.state.endTimeScheduleOnePickerOpen}
                   onChange={this.handleChangeendTimeScheduleOne}
-                  toggle={() => this.setState({ endTimeScheduleOnePickerOpen: !this.state.endTimeScheduleOnePickerOpen })}
+                  toggle={this.pickerToogleEndTimeOne}
                 />
               </InputGroup>
-              <SectionTitle value="SCHEDULE 2" style={{ height: 38 }} />
+              <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle} />
               <InputGroup>
                 <SalonTimePicker
                   label="Start"
@@ -359,7 +400,7 @@ export default class EditScheduleScreen extends React.Component {
                   value={startTimeScheduleTwo}
                   isOpen={this.state.startTimeScheduleTwoPickerOpen}
                   onChange={this.handleChangestartTimeScheduleTwo}
-                  toggle={() => this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen })}
+                  toggle={this.pickerToogleStartTimeTwo}
                 />
                 <InputDivider />
                 <SalonTimePicker
@@ -368,33 +409,19 @@ export default class EditScheduleScreen extends React.Component {
                   value={endTimeScheduleTwo}
                   isOpen={this.state.endTimeScheduleTwoPickerOpen}
                   onChange={this.handleChangeendTimeScheduleTwo}
-                  toggle={() => this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen })}
+                  toggle={this.pickerToogleEndTimeTwo}
                 />
               </InputGroup>
             </React.Fragment>
               : null
             }
 
-          <SectionTitle value="SCHEDULE EXCEPTION REASON" style={{ height: 38 }} />
+          <SectionTitle value="SCHEDULE EXCEPTION REASON" style={styles.sectionTitle} />
           <InputGroup>
             <InputRadioGroup
               options={scheduleTypes}
               defaultOption={this.state.selectedScheduleExceptionReason}
-              onPress={(option, index) => {
-                  const isEditableOtherReason = option.id === 0;
-
-                  if (!isEditableOtherReason) {
-                    this.onChangeOtherReason('');
-                    this.props.navigation.setParams({
-                      canSave: true,
-                    });
-                  } else {
-                    this.props.navigation.setParams({
-                      canSave: this.state.otherReason.length > 0,
-                    });
-                  }
-                  this.setState({ selectedScheduleExceptionReason: option, isEditableOtherReason });
-                }}
+              onPress={this.onPressRadioGroup}
             />
             <InputText
               value={this.state.otherReason}
