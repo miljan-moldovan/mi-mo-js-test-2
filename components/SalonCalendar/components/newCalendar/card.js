@@ -8,8 +8,10 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 import { get, times, reverse } from 'lodash';
+import SvgUri from 'react-native-svg-uri';
 
 import colors from '../../../../constants/appointmentColors';
+import multiProviderUri from '../../../../assets/svg/multi-provider-icon.svg';
 import Icon from '../../../UI/Icon';
 import Badge from '../../../SalonBadge';
 import ResizeButton from '../resizeButtons';
@@ -54,9 +56,12 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: 'row',
     paddingHorizontal: 2,
+    marginTop: 2
   },
-  row: {
+  clientContainer: {
     flexDirection: 'row',
+    paddingVertical: 2,
+    flexWrap: 'wrap'
   },
   textContainer: {
     flex: 1,
@@ -64,6 +69,39 @@ const styles = StyleSheet.create({
   resizePosition: {
     left: -13,
     bottom: -27,
+  },
+  multiProviderFix: {
+    marginTop: 4,
+  },
+  assistantContainer: {
+    position: 'absolute',
+    top: 6,
+    right: 4,
+    width: 15,
+    backgroundColor: 'rgba(47, 49, 66, 0.3)',
+    borderRadius: 2,
+    zIndex: 99,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  assistantText: {
+    fontSize: 10,
+    lineHeight: 10,
+    minHeight: 10,
+    textAlign: 'center',
+    margin: 0,
+    padding: 0,
+    color: 'white',
+    transform: [{ rotate: '-90deg' }],
+  },
+  requestedStyle: {
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  badgesContainer: {
+    flexDirection: 'row',
+    marginTop: 2,
   },
 });
 
@@ -262,32 +300,10 @@ class Card extends Component {
   renderAssistant = ({ height }) => {
     return (
       <View
-        style={{
-          position: 'absolute',
-          top: 6,
-          right: 4,
-          width: 15,
-          height: height - 10,
-          backgroundColor: 'rgba(47, 49, 66, 0.3)',
-          borderRadius: 2,
-          zIndex: 99,
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-        }}
+        style={[styles.assistantContainer, { height: height - 10 }]}
       >
         <Text
-          style={{
-            fontSize: 10,
-            lineHeight: 10,
-            minHeight: 10,
-            width: height,
-            textAlign: 'center',
-            margin: 0,
-            padding: 0,
-            color: 'white',
-            transform: [{ rotate: '-90deg' }],
-          }}
+          style={[styles.assistantText, { width: height }]}
           numberOfLines={1}
         >Assistant Assigned
         </Text>
@@ -298,7 +314,15 @@ class Card extends Component {
   renderBadges = () => {
     const { appointment } = this.props;
     const { badgeData } = appointment;
-    const users = appointment.isMultipleProviders ? <Icon color="#082E66" size={16} name="users" type="solid" /> : null;
+    const users = appointment.isMultipleProviders ? (
+      <View style={styles.multiProviderFix}>
+        <SvgUri
+          width="16"
+          height="8"
+          source={multiProviderUri}
+          fill="#082E66"
+        />
+      </View>) : null;
     const star = badgeData.clientHasMembership ? <Icon color="#082E66" size={16} name="star" type="solid" /> : null;
     const birthdayCake = badgeData.clientBirthday ? <Icon color="#082E66" size={16} name="birthdayCake" type="regular" /> : null;
     const checkCircle = appointment.confirmationStatus ? <Icon color="#082E66" size={16} name="checkCircle" type="solid" /> : null;
@@ -311,7 +335,7 @@ class Card extends Component {
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
     const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
     return (
-      <React.Fragment>
+      <View style={styles.badgesContainer}>
         { users }
         { star }
         { birthdayCake }
@@ -324,7 +348,7 @@ class Card extends Component {
         { badgeS }
         { badgeF }
         { badgeR }
-      </React.Fragment>
+      </View>
     );
   }
 
@@ -387,6 +411,7 @@ class Card extends Component {
         id,
         mainServiceColor,
         isFirstAvailable,
+        requested,
       } = this.props.appointment;
     const {
       showFirstAvailable,
@@ -411,14 +436,15 @@ class Card extends Component {
     const backgroundColor = activeCard ? borderColor : colors[color].light;
     const clientName = `${client.name} ${client.lastName}`;
     const clientTextColor = '#2F3142';
-    const activeClientTextColor = activeCard ? '#fff' : clientTextColor;
+    const activeClientTextColor = activeCard || requested ? '#fff' : clientTextColor;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
     const serviceTextColor = '#1D1E29';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
     const container = isBufferCard ? [styles.container, { position: 'relative' }] : styles.container;
-    const lineHeight = isMultiBlock ? { lineHeight: 30 } : '';
+    const marginTop = isMultiBlock ? { marginTop: 11 } : '';
+    const isRequested = requested ? [styles.requestedStyle, { backgroundColor: borderColor }] : '';
     if (!activeCard && isResizeing) {
       return null;
     }
@@ -465,12 +491,14 @@ class Card extends Component {
                         {this.renderBadges()}
                         <View style={styles.textContainer}>
                           {
-                            times(usedBlocks).map(index => (
-                              <View style={{ flexDirection: 'row' }}>
+                            times(usedBlocks).map(blockIndex => (
+                              <View style={[styles.clientContainer,
+                                isRequested, blockIndex !== 0 && marginTop]}
+                              >
                                 <Text
                                   numberOfLines={!isMultiBlock && height > 30 ? 0 : 1}
                                   style={[styles.clientText,
-                                    { color: activeClientTextColor }, lineHeight]}
+                                    { color: activeClientTextColor }]}
                                 >
                                   {clientName}
                                 </Text>
