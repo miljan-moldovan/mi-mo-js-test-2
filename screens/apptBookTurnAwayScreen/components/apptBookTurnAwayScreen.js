@@ -124,6 +124,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  inputDividerContainer: { width: '100%', backgroundColor: '#FFFFFF' },
+  inputDivider: { marginHorizontal: 16 },
+  sectionDivider: { height: 37 },
 });
 
 const reasonCodes = [
@@ -190,8 +194,6 @@ class ApptBookTurnAwayScreen extends Component {
   componentWillMount() {
   }
 
-  isTurnAwayValid = () => true
-
   handleDone() {
     const services = [];
     for (let i = 0; i < this.state.services.length; i++) {
@@ -212,12 +214,7 @@ class ApptBookTurnAwayScreen extends Component {
       services,
     };
 
-    this.props.turnAwayActions.postTurnAway(turnAway)
-      .then((response) => {
-        // this.getNotes();
-      }).catch((error) => {
-
-      });
+    this.props.turnAwayActions.postApptBookTurnAway(turnAway);
   }
 
   handleAddService= () => {
@@ -275,13 +272,29 @@ class ApptBookTurnAwayScreen extends Component {
     this.props.navigation.setParams({ canSave: text.length > 0 });
   }
 
+  onPressInputGroup = (option, index) => {
+    const isEditableOtherReason = option.id === 0;
+
+    if (!isEditableOtherReason) {
+      this.onChangeOtherReason('');
+      this.props.navigation.setParams({
+        canSave: true,
+      });
+    } else {
+      this.props.navigation.setParams({
+        canSave: this.state.otherReason.length > 0,
+      });
+    }
+    this.setState({ selectedReasonCode: option, isEditableOtherReason });
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     return (
       <ScrollView style={styles.container}>
 
         {this.props.apptBookTurnAwayState.isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.activityIndicator}>
             <ActivityIndicator />
           </View>
       ) : (<View>
@@ -292,7 +305,7 @@ class ApptBookTurnAwayScreen extends Component {
             <Text onPress={this.handleDateModal} style={styles.textData}>{this.state.date.format('DD MMMM YYYY')}</Text>
           </View>
         </View>
-        <View style={{ width: '100%', backgroundColor: '#FFFFFF' }} ><InputDivider style={{ marginHorizontal: 16 }} /></View>
+        <View style={styles.inputDividerContainer} ><InputDivider style={styles.inputDivider} /></View>
         <ClientRow
           client={this.state.selectedClient}
           onPress={this.handlePressClient}
@@ -308,26 +321,12 @@ class ApptBookTurnAwayScreen extends Component {
           onUpdate={this.handleUpdateService}
           navigate={navigate}
         />
-        <SectionDivider style={{ height: 37 }} />
+        <SectionDivider style={styles.sectionDivider} />
         <InputGroup>
           <InputRadioGroup
             options={reasonCodes}
             defaultOption={this.state.selectedReasonCode}
-            onPress={(option, index) => {
-                const isEditableOtherReason = option.id === 0;
-
-                if (!isEditableOtherReason) {
-                  this.onChangeOtherReason('');
-                  this.props.navigation.setParams({
-                    canSave: true,
-                  });
-                } else {
-                  this.props.navigation.setParams({
-                    canSave: this.state.otherReason.length > 0,
-                  });
-                }
-                this.setState({ selectedReasonCode: option, isEditableOtherReason });
-              }}
+            onPress={this.onPressInputGroup}
           />
           <InputText
             value={this.state.otherReason}
