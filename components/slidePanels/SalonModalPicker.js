@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: 37,
     paddingHorizontal: 16,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#C3C3C1',
@@ -68,6 +68,26 @@ export default class SalonModalPicker extends React.Component {
       duration: 300,
     },
   )
+
+  plusOne = () => {
+    const { selectedValue, pickerData, onValueChange } = this.props;
+    const currentIndex = pickerData.findIndex(item => item === selectedValue);
+    if (currentIndex + 1 > pickerData.length) {
+      onValueChange(pickerData[0]);
+    } else {
+      onValueChange(pickerData[currentIndex + 1]);
+    }
+  }
+
+  minusOne = () => {
+    const { selectedValue, pickerData, onValueChange } = this.props;
+    const currentIndex = pickerData.findIndex(item => item === selectedValue);
+    if (currentIndex - 1 < 0) {
+      onValueChange(pickerData[pickerData.length - 1]);
+    } else {
+      onValueChange(pickerData[currentIndex - 1]);
+    }
+  }
 
   showPanel = () => {
     if (!this.state.isAnimating) {
@@ -116,23 +136,28 @@ export default class SalonModalPicker extends React.Component {
               <View style={{ flexDirection: 'row' }}>
                 <SalonTouchableOpacity
                   onPress={() => this.minusOne()}
+                  style={{ marginLeft: 5 }}
                 >
                   <Icon
                     name="chevronLeft"
                     type="thin"
+                    color="#007AFF"
+                    size={20}
                   />
                 </SalonTouchableOpacity>
                 <SalonTouchableOpacity
-                  onPress={() => this.minusOne()}
+                  onPress={() => this.plusOne()}
+                  style={{ marginLeft: 25 }}
                 >
                   <Icon
-                    name="chevronLeft"
+                    name="chevronRight"
                     type="thin"
+                    color="#007AFF"
+                    size={20}
                   />
                 </SalonTouchableOpacity>
               </View>
               <SalonTouchableOpacity
-                style={{ alignSelf: 'flex-end' }}
                 onPress={() => this.hidePanel()}
               >
                 <Text style={{
