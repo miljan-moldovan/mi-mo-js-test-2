@@ -230,6 +230,7 @@ const InputButton = props => (
   <SalonTouchableOpacity
     style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
     onPress={props.onPress}
+    disabled={props.disabled || false}
   >
     { props.label && typeof props.label === 'string'
     ? (

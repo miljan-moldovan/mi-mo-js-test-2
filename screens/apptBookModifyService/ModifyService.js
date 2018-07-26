@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { get } from 'lodash';
-import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
 import {
   InputGroup,
@@ -23,7 +22,6 @@ import {
   RemoveButton,
   SalonTimePicker,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({

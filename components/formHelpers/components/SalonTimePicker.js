@@ -5,7 +5,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import moment, { isMoment } from 'moment';
-import { DatePicker } from 'react-native-wheel-datepicker';
+import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import { InputButton } from '../index';
 
 const styles = StyleSheet.create({

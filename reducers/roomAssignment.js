@@ -2,11 +2,18 @@ import {
   GET_ROOMS,
   GET_ROOMS_FAILED,
   GET_ROOMS_SUCCESS,
+  GET_ASSIGNMENTS,
+  GET_ASSIGNMENTS_SUCCESS,
+  GET_ASSIGNMENTS_FAILED,
+  PUT_ASSIGNMENTS,
+  PUT_ASSIGNMENTS_FAILED,
+  PUT_ASSIGNMENTS_SUCCESS,
 } from '../actions/roomAssignment';
 
 const initialState = {
   isLoading: false,
   rooms: [],
+  assignments: [],
 };
 
 const roomAssignmentReducer = (state = initialState, action) => {
@@ -23,6 +30,25 @@ const roomAssignmentReducer = (state = initialState, action) => {
     case GET_ROOMS_FAILED:
       newState.isLoading = false;
       newState.rooms = [];
+      break;
+    case GET_ASSIGNMENTS:
+      newState.isLoading = true;
+      newState.assignments = [];
+      break;
+    case GET_ASSIGNMENTS_SUCCESS:
+      newState.isLoading = false;
+      newState.assignments = data.assignments;
+      break;
+    case GET_ASSIGNMENTS_FAILED:
+      newState.isLoading = false;
+      newState.assignments = [];
+      break;
+    case PUT_ASSIGNMENTS:
+      newState.isLoading = true;
+      break;
+    case PUT_ASSIGNMENTS_SUCCESS:
+    case PUT_ASSIGNMENTS_FAILED:
+      newState.isLoading = false;
       break;
     default:
       break;

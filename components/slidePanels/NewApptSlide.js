@@ -612,7 +612,8 @@ export class NewApptSlide extends React.Component {
 
   goToRoomAssignment = () => {
     const { date, bookedByEmployee: employee } = this.props.newApptState;
-    return this.props.navigation.navigate('RoomAssignment', { date, employee });
+    const onSave = () => this.showPanel();
+    return this.props.navigation.navigate('RoomAssignment', { date, employee, onSave });
   }
 
   cancelButton = () => ({
