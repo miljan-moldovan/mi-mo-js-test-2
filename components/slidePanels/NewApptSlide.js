@@ -701,7 +701,14 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={() => {
+         this.hidePanel();
+         const { date, bookedByEmployee: employee } = this.props.newApptState;
+          this.props.navigation.navigate(
+            'ApptBookTurnAway',
+          { date, employee },
+        );
+      }}
         label="Turn Away"
       >
         <View style={styles.iconContainer}>
