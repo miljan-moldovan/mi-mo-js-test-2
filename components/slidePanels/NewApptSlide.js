@@ -27,6 +27,7 @@ import {
 
 import { AppointmentBook } from '../../utilities/apiWrapper';
 import { AppointmentTime } from './SalonNewAppointmentSlide';
+import SalonInputModal from '../SalonInputModal';
 import {
   InputButton,
   InputDivider,
@@ -37,6 +38,7 @@ import {
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
 import Icon from '../UI/Icon';
+import SalonToast from '../../screens/appointmentCalendarScreen/components/SalonToast';
 
 const styles = StyleSheet.create({
   container: {
@@ -370,6 +372,8 @@ export class NewApptSlide extends React.Component {
     serviceItems: [],
     addonsHeight: new Animated.Value(0),
     height: new Animated.Value(0),
+    isInputModalVisible: false,
+    postModalFunction: null,
   });
 
   componentWillReceiveProps(newProps) {
@@ -633,6 +637,32 @@ export class NewApptSlide extends React.Component {
     }
   }
 
+  showToast = () => {
+    alert('Message sent');
+  }
+
+  messageProvidersClients = (message) => {
+    this.hidePanel();
+    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    const formated_date = moment(date).format('YYYY-MM-DD');
+    this.props.newApptActions.messageProvidersClients(formated_date, employee.id, message, this.showToast);
+  }
+
+  messageAllClients = (message) => {
+    this.hidePanel();
+    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    const formated_date = moment(date).format('YYYY-MM-DD');
+    this.props.newApptActions.messageAllClients(formated_date, 'test', message, this.showToast);
+  }
+
+  openMessageProvidersClients = () => {
+    this.setState({ isInputModalVisible: true, postModalFunction: this.messageProvidersClients });
+  }
+
+  openMessageAllClients = () => {
+    this.setState({ isInputModalVisible: true, postModalFunction: this.messageAllClients });
+  }
+
   renderOthersTab = () => (
     <React.Fragment>
       <InputButton
@@ -661,13 +691,13 @@ export class NewApptSlide extends React.Component {
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
-         this.hidePanel();
-         const { date, bookedByEmployee: employee } = this.props.newApptState;
-          this.props.navigation.navigate(
-            'EditSchedule',
-          { date, employee },
-        );
-      }}
+           this.hidePanel();
+           const { date, bookedByEmployee: employee } = this.props.newApptState;
+            this.props.navigation.navigate(
+              'EditSchedule',
+            { date, employee },
+          );
+        }}
         label="Edit Schedule"
       >
         <View style={styles.iconContainer}>
@@ -720,7 +750,7 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={this.openMessageProvidersClients}
         label="Message Provider's Clients"
       >
         <View style={styles.iconContainer}>
@@ -731,7 +761,7 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={this.openMessageAllClients}
         label="Message All Clients"
       >
         <View style={styles.iconContainer}>
@@ -975,6 +1005,17 @@ export class NewApptSlide extends React.Component {
     );
   }
 
+  onPressCancelInputModal = () => {
+    this.setState({ isInputModalVisible: false });
+  }
+
+  onPressOkInputModal = (text) => {
+    this.setState({ isInputModalVisible: false });
+    if (isFunction(this.state.postModalFunction)) {
+      this.state.postModalFunction(text);
+    }
+  }
+
   render() {
     return (
       <Modal
@@ -986,6 +1027,12 @@ export class NewApptSlide extends React.Component {
           styles.container,
         ]}
         >
+          <SalonInputModal
+            visible={this.state.isInputModalVisible}
+            title="Enter a message"
+            onPressCancel={this.onPressCancelInputModal}
+            onPressOk={this.onPressOkInputModal}
+          />
           <TouchableWithoutFeedback onPress={() => this.hidePanel()}>
             <View style={{ flex: 1, backgroundColor: 'transparent' }} />
           </TouchableWithoutFeedback>

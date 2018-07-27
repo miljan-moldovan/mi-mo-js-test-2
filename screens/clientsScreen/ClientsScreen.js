@@ -127,7 +127,7 @@ class ClientsScreen extends React.Component {
     const { subTitle } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
     const clearSearch = navigation.state.params &&
-    navigation.state.params.clearSearch ? navigation.state.params.clearSearch :  null;
+    navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
     return {
       header: props => (<SalonSearchHeader
         title={title}
@@ -241,9 +241,9 @@ class ClientsScreen extends React.Component {
     if (searchText && searchText.length > 0) {
       const params = {
         fromAllStores: false,
-        'nameFilter.FilterRule': 'contains',
+        'nameFilter.FilterRule': '3', // StartsWith
         'nameFilter.FilterValue': searchText,
-        'nameFilter.SortOrder': 'asc',
+        'nameFilter.SortOrder': '1', // asc
       };
       this.props.clientsActions.getClients(params);
     }
@@ -291,12 +291,12 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.clientsList}>
           <ClientList
-              boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.clientListContainer}
-              clients={this.props.clientsSectionDataSource}
-              onChangeClient={onChangeClient}
-              refreshing={this.props.salonSearchHeaderState.isLoading}
-            />
+            boldWords={this.props.salonSearchHeaderState.searchText}
+            style={styles.clientListContainer}
+            clients={this.props.clientsSectionDataSource}
+            onChangeClient={onChangeClient}
+            refreshing={this.props.salonSearchHeaderState.isLoading}
+          />
         </View>
 
       </View>

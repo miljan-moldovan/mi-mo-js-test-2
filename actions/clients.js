@@ -1,4 +1,4 @@
-import { Client} from '../utilities/apiWrapper';
+import { Client } from '../utilities/apiWrapper';
 
 export const SET_CLIENTS = 'clients/SET_CLIENTS';
 export const SET_FILTERED_CLIENTS = 'clients/SET_FILTERED_CLIENTS';
@@ -28,15 +28,15 @@ const getClientsFailed = error => ({
 
 const getClients = (params = {
   fromAllStores: false,
-  'nameFilter.FilterRule': 'none',
-  'NameFilter.SortOrder': 1,
-  'NameFilter.SortField': 'name',
+  'nameFilter.FilterRule': '3', // StartsWith
+  'NameFilter.SortOrder': 1, // asc
+  // 'NameFilter.SortField': 'firstName',
 }) => (dispatch) => {
   dispatch({ type: GET_CLIENTS });
   const newParams = {
     ...params,
-    'NameFilter.SortOrder': 1,
-    'NameFilter.SortField': 'firstName',
+    'NameFilter.SortOrder': 1, // asc
+    // 'NameFilter.SortField': 'firstName',
   };
   return Client.getClients(newParams)
     .then(response => dispatch(getClientsSuccess(response)))
