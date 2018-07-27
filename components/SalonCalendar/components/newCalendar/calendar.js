@@ -90,11 +90,7 @@ export default class Calendar extends Component {
           this.moveY = dy;
           if (this.resizeCard) {
             const lastIndex = this.state.activeCard.verticalPositions.length - 1;
-            console.log('baconbefore', {h:this.state.activeCard.verticalPositions[lastIndex].height, offsetY: this.offset.y} )
-
             this.state.activeCard.verticalPositions[lastIndex].height = this.resizeCard.resizeCard(size);
-            console.log('baconafter', {h:this.state.activeCard.verticalPositions[lastIndex].height, offsetY: this.offset.y} )
-
           }
         }
         return null;
@@ -280,11 +276,9 @@ export default class Calendar extends Component {
         const scrollVerticalBoundBottom = this.offset.y + boundLength;
         const newMoveY = coordinatesY + activeCard.verticalPositions[lastIndex].height;
         if (scrollVerticalBoundTop < newMoveY) {
-          console.log('bacon', {scrollVerticalBoundTop,newMoveY,coordinatesY,height:activeCard.verticalPositions[lastIndex].height,offsetY: this.offset.y} )
           dy = this.offset.y < maxHeigth ? newMoveY - scrollVerticalBoundTop : 0;
         } else if (scrollVerticalBoundBottom > newMoveY) {
           dy = newMoveY - scrollVerticalBoundBottom;
-          console.log('BACONFLAG', newMoveY)
         }
         if (dy !== 0) {
           dy = Math.abs(dy) > boundLength ? boundLength * Math.sign(dy) : dy;

@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
 
-import Icon from '../../../components/UI/Icon';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
-import SalonNewAppointmentSlide from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper';
@@ -15,6 +13,7 @@ import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonToast from './SalonToast';
 import NewApptSlide from '../../../components/slidePanels/NewApptSlide';
+import BookAnother from './bookAnother';
 
 export default class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -96,6 +95,7 @@ export default class AppointmentScreen extends Component {
     bufferVisible: false,
     isAlertVisible: false,
     selectedAppointment: null,
+    bookAnotherEnabled: false,
   };
 
   componentDidMount() {
@@ -200,8 +200,11 @@ export default class AppointmentScreen extends Component {
     } = this.props.appointmentScreenState;
     const { newAppointmentActions } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
-
+    const { client } = this.props.newAppointmentState;
     newAppointmentActions.cleanForm();
+    if (this.state.bookAnotherEnabled) {
+      newAppointmentActions.setClient(client);
+    }
     // const newState = {
     //   newApptStartTime: startTime,
     // };
@@ -289,10 +292,11 @@ export default class AppointmentScreen extends Component {
     }
   }
 
-  handleBook = (bookAnother) => {
+  handleBook = (bookAnotherEnabled) => {
     const callback = () => {
       this.setState({
         visibleNewAppointment: false,
+        bookAnotherEnabled,
       }, () => {
         this.props.appointmentCalendarActions.setGridView();
       });
@@ -303,6 +307,8 @@ export default class AppointmentScreen extends Component {
   showNewApptSlide = () => this.setState({ visibleNewAppointment: true })
 
   hideNewApptSlide = () => this.setState({ visibleNewAppointment: false });
+
+  setBookAnother = () => this.setState({ bookAnotherEnabled: false });
 
   render() {
     const {
@@ -326,7 +332,7 @@ export default class AppointmentScreen extends Component {
       storeSchedule,
     } = this.props.appointmentScreenState;
     const { availability, appointments, blockTimes } = this.props;
-    const { bufferVisible } = this.state;
+    const { bufferVisible, bookAnotherEnabled } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
       || this.props.appointmentScreenState.isLoadingSchedule;
@@ -355,7 +361,6 @@ export default class AppointmentScreen extends Component {
       default:
         break;
     }
-
     return (
       <View style={{ flex: 1 }}>
         <SalonDatePickerBar
@@ -556,6 +561,10 @@ export default class AppointmentScreen extends Component {
         {
           showToast ?
             <SalonToast type="success" description={showToast} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText="OK" btnLeftText="UNDO" /> : null
+        }
+        {
+          bookAnotherEnabled ?
+            <BookAnother client={this.props.newAppointmentState.client} hide={this.setBookAnother} /> : null
         }
       </View>
     );
