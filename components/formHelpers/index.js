@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
 
 
 const DefaultAvatar = props => (
-  <View style={styles.avatarDefaultComponent}>
-    <Text style={styles.avatarDefaultComponentText}>
+  <View style={[styles.avatarDefaultComponent, props.size ? { width: props.size, height: props.size } : '']}>
+    <Text style={[styles.avatarDefaultComponentText, props.fontSize ? { fontSize: props.fontSize } : '']}>
       {
         props.provider && !props.provider.isFirstAvailable
         ? `${props.provider.name[0]}${props.provider.lastName[0]}`

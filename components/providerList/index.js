@@ -182,10 +182,6 @@ class ProviderList extends React.Component {
       }
       this.setState({ refresh: false });
     }
-    const image = Employees.getEmployeePhoto(provider.id)
-      .then((pic) => {
-
-      });
 
     return (
       <SalonTouchableHighlight
