@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   fullSize: {
     width: '100%',
     height: '100%',
+    overflow: 'hidden',
   },
   cardContent: {
     flexDirection: 'row',
@@ -197,7 +198,7 @@ class Card extends Component {
     }
     const gap = numberOfOverlaps * 8;
     // calculate left position
-    const firstCellWidth = selectedFilter === 'providers' ? 130 : 0;
+    const firstCellWidth = selectedFilter === 'providers' && selectedProvider === 'all' ? 130 : 0;
     let index;
     switch (selectedFilter) {
       case 'rooms':

@@ -8,11 +8,11 @@ import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonToast from './SalonToast';
 import NewApptSlide from '../../../components/slidePanels/NewApptSlide';
+import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 
 export default class AppointmentScreen extends Component {
@@ -57,7 +57,12 @@ export default class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: getEmployeePhoto(params.filterProvider.id) }}
+            image={{ uri: params.filterProvider.imagePath }}
+            defaultComponent={(<DefaultAvatar
+              size={20}
+              provider={params.filterProvider}
+              fontSize={8}
+            />)}
           />
           <Text style={{
             fontSize: 17, lineHeight: 22, fontFamily: 'Roboto-Medium', color: '#FFFFFF',
