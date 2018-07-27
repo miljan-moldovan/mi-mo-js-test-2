@@ -19,7 +19,7 @@ export default function apptBookTurnAwayReducer(state = initialState, action) {
     case POST_TURN_AWAY:
       return {
         ...state,
-        isLoading: false,
+        isLoading: true,
       };
     case POST_TURN_AWAY_SUCCESS:
       return {

@@ -3,7 +3,6 @@ import { ActivityIndicator, StyleSheet, View, Text, ScrollView } from 'react-nat
 import moment from 'moment';
 
 import DatePicker from '../../../components/modals/SalonDatePicker';
-import ClientRow from './clientRow';
 import ServiceSection from './serviceSection';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
@@ -13,6 +12,7 @@ import {
   InputGroup,
   InputRadioGroup,
   InputDivider,
+  ClientInput,
 } from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
@@ -25,8 +25,6 @@ const styles = StyleSheet.create({
     height: 44,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    //  borderBottomWidth: 1,
-    // borderColor: '#C0C1C6',
     alignItems: 'center',
     paddingLeft: 16,
     paddingRight: 16,
@@ -128,6 +126,22 @@ const styles = StyleSheet.create({
   inputDividerContainer: { width: '100%', backgroundColor: '#FFFFFF' },
   inputDivider: { marginHorizontal: 16 },
   sectionDivider: { height: 37 },
+  optionaLabel: {
+    fontFamily: 'Roboto',
+    color: '#727A8F',
+    fontSize: 14,
+  },
+  clientInput: {
+    height: 44,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#C0C1C6',
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingRight: 16,
+
+  },
 });
 
 const reasonCodes = [
@@ -177,11 +191,12 @@ class ApptBookTurnAwayScreen extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       date: moment(),
       isModalVisible: false,
       selectedClient: null,
-      services: [],
+      services: [{ provider: this.props.navigation.state.params.employee, toTime: moment(), fromTime: moment() }],
       selectedReasonCode: reasonCodes[reasonCodes.length - 1],
       isEditableOtherReason: true,
     };
@@ -194,14 +209,16 @@ class ApptBookTurnAwayScreen extends Component {
   componentWillMount() {
   }
 
-  handleDone() {
+  handleDone = () => {
     const services = [];
-    for (let i = 0; i < this.state.services.length; i++) {
-      const service = this.state.services[i];
+
+    const selectedServices = JSON.parse(JSON.stringify(this.state.services));
+    for (let i = 0; i < selectedServices.length; i++) {
+      const service = selectedServices[i];
       delete service.service;
       delete service.provider;
-      service.toTime = service.toTime.format();
-      service.fromTime = service.fromTime.format();
+      service.toTime = moment(service.toTime).format('HH:mm:ss');
+      service.fromTime = moment(service.fromTime).format('HH:mm:ss');
       services.push(service);
     }
 
@@ -209,12 +226,20 @@ class ApptBookTurnAwayScreen extends Component {
       date: this.state.date.format('YYYY-MM-DD'),
       reasonCode: this.state.selectedReasonCode.id,
       reason: this.state.otherReason.length > 0 ? this.state.otherReason : null,
-      myClientId: this.state.selectedClient.id,
+      myClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
       isAppointmentBookTurnAway: true,
       services,
     };
 
-    this.props.turnAwayActions.postApptBookTurnAway(turnAway);
+    this.props.apptBookTurnAwayActions.postApptBookTurnAway(turnAway, this.goBack);
+  }
+
+  goBack = (result) => {
+    if (result) {
+      this.props.navigation.goBack();
+    } else {
+      alert('An error ocurred');
+    }
   }
 
   handleAddService= () => {
@@ -252,6 +277,7 @@ class ApptBookTurnAwayScreen extends Component {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
+    this.setState({ isEditableOtherReason: false });
     navigate('Clients', {
       actionType: 'update',
       dismissOnSelect: true,
@@ -260,7 +286,7 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   handleClientSelection = (client) => {
-    this.setState({ selectedClient: client });
+    this.setState({ selectedClient: client, isEditableOtherReason: this.state.selectedReasonCode.id === 0 });
   }
 
   handleRemoveClient = () => {
@@ -271,6 +297,7 @@ class ApptBookTurnAwayScreen extends Component {
     this.setState({ otherReason: text });
     this.props.navigation.setParams({ canSave: text.length > 0 });
   }
+
 
   onPressInputGroup = (option, index) => {
     const isEditableOtherReason = option.id === 0;
@@ -287,6 +314,13 @@ class ApptBookTurnAwayScreen extends Component {
     }
     this.setState({ selectedReasonCode: option, isEditableOtherReason });
   }
+
+  cancelButton = () => ({
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      navigation.goBack();
+    },
+  })
 
   render() {
     const { navigate } = this.props.navigation;
@@ -305,11 +339,22 @@ class ApptBookTurnAwayScreen extends Component {
             <Text onPress={this.handleDateModal} style={styles.textData}>{this.state.date.format('DD MMMM YYYY')}</Text>
           </View>
         </View>
-        <View style={styles.inputDividerContainer} ><InputDivider style={styles.inputDivider} /></View>
-        <ClientRow
-          client={this.state.selectedClient}
+        <View style={styles.inputDividerContainer}>
+          <InputDivider style={styles.inputDivider} />
+        </View>
+        <ClientInput
+          apptBook
+          label={false}
+          selectedClient={this.state.selectedClient}
+          placeholder={this.state.selectedClient === null ? 'Select Client' : 'Client'}
+          placeholderStyle={styles.placeholderText}
+          style={styles.clientInput}
+          extraComponents={this.state.selectedClient === null ?
+            <Text style={styles.optionaLabel}>Optional</Text> : null}
           onPress={this.handlePressClient}
-          onCrossPress={this.handleRemoveClient}
+          navigate={navigate}
+          headerProps={{ title: 'Clients', ...this.cancelButton() }}
+          onChange={this.handleClientSelection}
         />
         <View style={styles.titleRow}>
           <Text style={styles.title}>SERVICES</Text>
@@ -319,6 +364,7 @@ class ApptBookTurnAwayScreen extends Component {
           onAdd={this.handleAddService}
           onRemove={this.handleRemoveService}
           onUpdate={this.handleUpdateService}
+          cancelButton={this.cancelButton}
           navigate={navigate}
         />
         <SectionDivider style={styles.sectionDivider} />

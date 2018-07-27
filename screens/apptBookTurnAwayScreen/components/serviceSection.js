@@ -8,6 +8,10 @@ import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
+import {
+  ProviderInput,
+  InputDivider,
+} from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -89,6 +93,10 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
   },
+  contentStyle: { alignItems: 'flex-start', paddingLeft: 16 },
+  middleSectionDivider: {
+    width: '95%', height: 1, alignSelf: 'center', backgroundColor: '#DDE6F4',
+  },
 });
 
 class ServiceSection extends Component {
@@ -133,8 +141,9 @@ class ServiceSection extends Component {
 
   handlePressProvider = (service, index) => {
     this.props.navigate('Providers', {
-      actionType: 'update',
       dismissOnSelect: true,
+      ignoreNav: false,
+      headerProps: { title: 'Providers', ...this.props.cancelButton() },
       onChangeProvider: provider => this.handleProviderSelection(provider, service, index),
     });
   }
@@ -197,14 +206,22 @@ class ServiceSection extends Component {
         </SalonTouchableOpacity>
       </View>
       <View style={styles.serviceDataContainer}>
-        <SalonTouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
-          <View style={styles.innerRow}>
-            {this.renderProvider(service.provider)}
-            <View style={styles.dataContainer}>
-              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
-            </View>
-          </View>
-        </SalonTouchableOpacity>
+        <ProviderInput
+          apptBook
+          noLabel
+          filterByService
+          style={styles.innerRow}
+          selectedProvider={service.provider}
+          placeholder="Provider"
+          placeholderStyle={styles.placeholderText}
+          contentStyle={styles.contentStyle}
+          iconStyle={styles.carretIcon}
+          avatarSize={20}
+          navigate={this.props.navigate}
+          headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
+          onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
+        />
+        <InputDivider style={styles.middleSectionDivider} />
         <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
             {this.renderServiceInfo(service.service)}

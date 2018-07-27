@@ -132,7 +132,7 @@ export default class FilterOptionsScreen extends React.Component {
     this.props.providersActions.getProviders({
       filterRule: 'none',
       maxCount: 100,
-      sortOrder: 'asc',
+      sortOrder: '1', // asc
       sortField: 'fullName',
     });
   }

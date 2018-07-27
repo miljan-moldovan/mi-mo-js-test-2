@@ -38,7 +38,6 @@ import {
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
 import Icon from '../UI/Icon';
-import SalonToast from '../../screens/appointmentCalendarScreen/components/SalonToast';
 
 const styles = StyleSheet.create({
   container: {

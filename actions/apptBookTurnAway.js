@@ -17,14 +17,12 @@ const postApptBookTurnAwayFailed = error => ({
   data: { error },
 });
 
-const postApptBookTurnAway = apptBookTurnAway => (dispatch) => {
+const postApptBookTurnAway = (apptBookTurnAway, callback) => (dispatch) => {
   dispatch({ type: POST_TURN_AWAY });
 
   return TurnAway.postTurnAway(apptBookTurnAway)
-    .then(response =>
-      dispatch(postApptBookTurnAwaySuccess(response)))
-    .catch(error =>
-      dispatch(postApptBookTurnAwayFailed(error)));
+    .then((response) => { dispatch(postApptBookTurnAwaySuccess(response)); callback(true); })
+    .catch((error) => { dispatch(postApptBookTurnAwayFailed(error)); callback(false); });
 };
 
 

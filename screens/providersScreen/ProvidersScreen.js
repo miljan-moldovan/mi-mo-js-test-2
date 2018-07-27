@@ -105,6 +105,7 @@ class ProviderScreen extends React.Component {
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+
     const { title } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
@@ -115,6 +116,8 @@ class ProviderScreen extends React.Component {
         customLeftButton = true;
       }
     }
+
+    
 
     return {
       headerTitle: (
@@ -188,6 +191,7 @@ class ProviderScreen extends React.Component {
   }
 
   componentWillMount() {
+    
     this.props.navigation.setParams({ defaultProps: this.state.headerProps });
 
     this.onRefresh();
@@ -265,8 +269,8 @@ class ProviderScreen extends React.Component {
       {
         filterRule: 'none',
         maxCount: 100,
-        sortOrder: 'asc',
-        sortField: 'fullName',
+        sortOrder: '1', // asc
+        // sortField: 'fullName',
       },
       filterByService,
       filterList,
