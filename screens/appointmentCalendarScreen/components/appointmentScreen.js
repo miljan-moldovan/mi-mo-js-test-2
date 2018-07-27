@@ -86,7 +86,7 @@ export default class AppointmentScreen extends Component {
   state = {
     visible: false,
     isBookingNewAppt: false,
-    newAppointmentFilter: 0,
+    newApptActiveTab: 0,
     newApptProvider: null,
     newApptDate: moment(),
     newApptStartTime: moment().startOf('day').add('7', 'hours'),
@@ -146,7 +146,7 @@ export default class AppointmentScreen extends Component {
     this.props.newAppointmentActions.setStartTime(startTime);
 
     this.setState({
-      newAppointmentFilter: 0,
+      newApptActiveTab: 0,
       visibleNewAppointment: true,
     });
   }
@@ -157,40 +157,6 @@ export default class AppointmentScreen extends Component {
       visibleAppointment: true,
     });
   }
-
-  // onCalendarCellPressed = (cellId, colData) => {
-  //   const {
-  //     startDate,
-  //     selectedFilter,
-  //     selectedProvider,
-  //   } = this.props.appointmentScreenState;
-  //   const { newAppointmentActions } = this.props;
-  //   const startTime = moment(cellId, 'HH:mm A');
-
-  //   this.newApptSlide.resetForm();
-  //   const newState = {
-  //     newApptStartTime: startTime,
-  //   };
-  //   if (selectedFilter === 'providers') {
-  //     if (selectedProvider === 'all') {
-  //       newState.newApptProvider = colData;
-  //       newState.newApptDate = startDate;
-  //     } else {
-  //       newState.newApptProvider = selectedProvider;
-  //       newState.newApptDate = colData;
-  //     }
-  //   } else {
-  //     newState.newApptProvider = null;
-  //     newState.newApptDate = startDate;
-  //   }
-
-
-  //   this.setState({
-  //     newAppointmentFilter: 0,
-  //     visibleNewAppointment: true,
-  //     ...newState,
-  //   });
-  // }
 
   onCalendarCellPressed = (cellId, colData) => {
     const {
@@ -220,7 +186,7 @@ export default class AppointmentScreen extends Component {
     newAppointmentActions.setStartTime(startTime);
     newAppointmentActions.isBookingQuickAppt(true);
     this.setState({
-      newAppointmentFilter: 0,
+      newApptActiveTab: 0,
       visibleNewAppointment: true,
     });
   }
@@ -404,10 +370,6 @@ export default class AppointmentScreen extends Component {
         )}
 
         <NewApptSlide
-          ref={(newApptSlide) => {
-            this.newApptSlide = newApptSlide;
-            return newApptSlide;
-          }}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           startTime={this.state.newApptStartTime}
@@ -419,13 +381,14 @@ export default class AppointmentScreen extends Component {
             const callback = () => {
               this.setState({
                 visibleNewAppointment: false,
-                isBookingNewAppt: false,
               }, () => {
                 this.props.appointmentCalendarActions.setGridView();
               });
             };
             this.props.newAppointmentActions.quickBookAppt(callback);
           }}
+          activeTab={this.state.newApptActiveTab}
+          onChangeTab={newApptActiveTab => this.setState({ newApptActiveTab })}
         />
 
         <SalonDatePickerSlide
@@ -457,7 +420,7 @@ export default class AppointmentScreen extends Component {
 
         {/* <SalonNewAppointmentSlide
           navigation={this.props.navigation}
-          selectedFilter={this.state.newAppointmentFilter}
+          selectedFilter={this.state.newApptActiveTab}
           isLoading={this.props.newAppointmentState.isLoading}
           hasConflicts={this.props.newAppointmentState.conflicts.length > 0}
           date={this.props.newAppointmentState.date}

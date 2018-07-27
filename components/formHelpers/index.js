@@ -19,6 +19,7 @@ import ServiceInput from './components/ServiceInput';
 import ProviderInput from './components/ProviderInput';
 import PromotionInput from './components/PromotionInput';
 import ProductInput from './components/ProductInput';
+import SalonTimePicker from './components/SalonTimePicker';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
@@ -229,6 +230,7 @@ const InputButton = props => (
   <SalonTouchableOpacity
     style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
     onPress={props.onPress}
+    disabled={props.disabled || false}
   >
     { props.label && typeof props.label === 'string'
     ? (
@@ -357,5 +359,6 @@ export {
   ProviderInput,
   PromotionInput,
   ProductInput,
+  SalonTimePicker,
 };
 // export default formHelpers;

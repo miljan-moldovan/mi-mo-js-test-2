@@ -617,8 +617,7 @@ export default class Calendar extends Component {
     } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeBlock && activeBlock.blockTime.id === blockTime.id;
-    const shouldblockRender = (selectedProvider === 'all' && blockTime.employeeId) || (selectedProvider.id === blockTime.employeeId);
-    if (shouldblockRender) {
+    if (blockTime) {
       return (
         <BlockTime
           onPress={this.props.onCardPressed}

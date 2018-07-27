@@ -453,9 +453,6 @@ class Card extends Component {
         {
             verticalPositions.map(({ height, top }, index) => {
               const usedBlocks = isMultiBlock ? (height + 1) / 30 : 1;
-              if (usedBlocks > 1) {
-                debugger
-              }
               return (
                 <Animated.View
                   {...panHandlers}
