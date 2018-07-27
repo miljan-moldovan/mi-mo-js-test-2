@@ -4,6 +4,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '../../UI/Icon';
 import NewCard from './newCalendar/newCard';
+import Card from './newCalendar/card';
 
 const styles = {
   cardContainer: {
@@ -69,19 +70,6 @@ export default class calendarBuffer extends React.Component {
     this.state = { bufferPosition: props.screenHeight };
   }
 
-  renderCard = ({ item }) => (
-    <NewCard
-      key={item.id}
-      appointment={item}
-      cardWidth={85}
-      height={46}
-      left={0}
-      top={0}
-      onDrop={() => {}}
-      onLongPress={this.props.onCardLongPress}
-    />
-  )
-
   handleDragEnd = (position) => {
     const { screenHeight } = this.props;
     const boundLength = 20;
@@ -124,6 +112,40 @@ export default class calendarBuffer extends React.Component {
       });
     }
   }
+
+  renderCard = ({ item }) => {
+    const { panResponder, activeCard } = this.props;
+    const isActive = activeCard && activeCard.appointment.id === item.id;
+    const hasPanResponder = !activeCard || isActive ? panResponder : null;
+    return (
+      <Card
+        isBufferCard
+        isActive={isActive}
+        panResponder={hasPanResponder}
+        key={item.id}
+        appointment={item}
+        cardWidth={85}
+        height={46}
+        left={0}
+        top={0}
+        onDrop={() => {}}
+        onDrag={this.props.onCardLongPress}
+      />
+    );
+    // return (
+    //   <NewCard
+    //     panResponder={hasPanResponder}
+    //     key={item.id}
+    //     appointment={item}
+    //     cardWidth={85}
+    //     height={46}
+    //     left={0}
+    //     top={0}
+    //     onDrop={() => {}}
+    //     onLongPress={this.props.onCardLongPress}
+    //   />
+    // );
+}
 
   render() {
     return (
