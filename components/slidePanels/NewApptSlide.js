@@ -803,6 +803,9 @@ export class NewApptSlide extends React.Component {
             apptBook
             noLabel
             showLength
+            hasViewedAddons
+            hasViewedRequired
+            hasViewedRecommended
             selectExtraServices
             ref={(serviceInput) => { this.serviceInput = serviceInput; }}
             selectedProvider={provider}
@@ -823,6 +826,7 @@ export class NewApptSlide extends React.Component {
             onChangeAddons={this.setAddons}
             onChangeRecommended={this.setRecommended}
             onChangeRequired={this.setRequired}
+            onCancelExtrasSelection={() => this.showPanel()}
           />
           <InputDivider style={styles.middleSectionDivider} />
           <ProviderInput

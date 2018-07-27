@@ -183,7 +183,7 @@ export default class RoomAssignmentScreen extends React.Component {
     switch (pickerType) {
       case 'startTime':
       case 'endTime':
-        return isMoment(time) ? time.format('hh:mm A') : pickerType === 'Off';
+        return isMoment(time) ? time.format('hh:mm A') : 'Off';
       case 'room':
         return get(assignments[currentOpenAssignment].room, 'name', 'None');
       default:
@@ -197,7 +197,6 @@ export default class RoomAssignmentScreen extends React.Component {
   }
 
   composeAssignments = assignments => this.setState((state) => {
-    debugger //eslint-disable-line
     const newState = state;
     assignments.forEach((item, index) => {
       newState.assignments[index].room = this.getRoomById(item.roomId);
