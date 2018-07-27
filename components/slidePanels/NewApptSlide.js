@@ -860,9 +860,9 @@ export class NewApptSlide extends React.Component {
                     <Button
                       style={{ flex: 8 / 17 }}
                       onPress={() => alert('Not Implemented')}
-                      disabled={this.state.canBook}
+                      disabled={!this.state.canBook}
                       backgroundColor="white"
-                      color="#115ECD"
+                      color={!this.state.canBook ? '#fff' : '#115ECD'}
                       text="BOOK ANOTHER"
                     />
                   </View>
