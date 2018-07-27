@@ -8,7 +8,6 @@ import Board from './board';
 import Header from './header';
 import TimeColumn from './timeColumn';
 import Card from './card';
-import NewCard from './newCard';
 import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
 import SalonAlert from './SalonAlert';
@@ -618,8 +617,7 @@ export default class Calendar extends Component {
     } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeBlock && activeBlock.blockTime.id === blockTime.id;
-    const shouldblockRender = (selectedProvider === 'all' && blockTime.employeeId) || (selectedProvider.id === blockTime.employeeId);
-    if (shouldblockRender) {
+    if (blockTime) {
       return (
         <BlockTime
           onPress={this.props.onCardPressed}

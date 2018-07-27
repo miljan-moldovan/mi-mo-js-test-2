@@ -289,6 +289,21 @@ export default class AppointmentScreen extends Component {
     }
   }
 
+  handleBook = (bookAnother) => {
+    const callback = () => {
+      this.setState({
+        visibleNewAppointment: false,
+      }, () => {
+        this.props.appointmentCalendarActions.setGridView();
+      });
+    };
+    this.props.newAppointmentActions.quickBookAppt(callback);
+  }
+
+  showNewApptSlide = () => this.setState({ visibleNewAppointment: true })
+
+  hideNewApptSlide = () => this.setState({ visibleNewAppointment: false });
+
   render() {
     const {
       dates,
@@ -404,28 +419,15 @@ export default class AppointmentScreen extends Component {
         )}
 
         <NewApptSlide
-          ref={(newApptSlide) => {
-            this.newApptSlide = newApptSlide;
-            return newApptSlide;
-          }}
+          ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           startTime={this.state.newApptStartTime}
           provider={this.state.newApptProvider}
           filterProviders={providers}
-          hide={() => this.setState({ visibleNewAppointment: false })}
-          show={() => this.setState({ visibleNewAppointment: true })}
-          handleBook={() => {
-            const callback = () => {
-              this.setState({
-                visibleNewAppointment: false,
-                isBookingNewAppt: false,
-              }, () => {
-                this.props.appointmentCalendarActions.setGridView();
-              });
-            };
-            this.props.newAppointmentActions.quickBookAppt(callback);
-          }}
+          hide={this.hideNewApptSlide}
+          show={this.showNewApptSlide}
+          handleBook={this.handleBook}
         />
 
         <SalonDatePickerSlide

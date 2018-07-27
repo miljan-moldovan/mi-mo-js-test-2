@@ -3,7 +3,6 @@ import { View, TouchableOpacity, FlatList, Text } from 'react-native';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '../../UI/Icon';
-import NewCard from './newCalendar/newCard';
 import Card from './newCalendar/card';
 
 const styles = {

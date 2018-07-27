@@ -3,7 +3,11 @@ import {
   get,
   isNil,
 } from 'lodash';
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
+import apptGridSettingsSelector from '../apptGridSettingsSelector';
+
+const moment = extendMoment(Moment);
 
 const serviceItemsSelector = state => state.newAppointmentReducer.serviceItems;
 
@@ -163,10 +167,31 @@ const serializeApptToRequestData = createSelector(
   }),
 );
 
+const employeeScheduledIntervalsSelector = createSelector(
+  bookedByEmployeeSelector,
+  employee => get(employee, 'scheduledIntervals', null),
+);
+
+const employeeScheduleChunkedSelector = createSelector(
+  [apptGridSettingsSelector, employeeScheduledIntervalsSelector],
+  (settings, intervals) => {
+    const reduced = intervals.reduce((agg, schedule) => {
+      const { step = 15 } = settings;
+      const start = moment(schedule.start, 'HH:mm:ss');
+      const end = moment(schedule.end, 'HH:mm:ss');
+      const range = moment.range(start, end);
+      const chunked = Array.from(range.by('minutes', { step }));
+      return [...agg, ...chunked];
+    }, []);
+    return reduced;
+  },
+);
+
 export {
   totalPrice,
   getEndTime,
   appointmentLength,
   isValidAppointment,
   serializeApptToRequestData,
+  employeeScheduleChunkedSelector,
 };

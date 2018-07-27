@@ -14,7 +14,7 @@ const getVisibleBlocksDataSource = createSelector(
   [blocksGroupedByProvider, groupedAvailableProvidersSelector],
   (groupedBlocks, groupedAvailableProviders) =>
     flatten(filter(groupedBlocks, blocks =>
-      (groupedAvailableProviders[blocks[0].employeeId] ? blocks : null))),
+      (groupedAvailableProviders[blocks[0].employee.id] ? blocks : null))),
 );
 
 export default getVisibleBlocksDataSource;
