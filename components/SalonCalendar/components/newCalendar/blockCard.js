@@ -54,14 +54,14 @@ class BlockCard extends Component {
 
   calcualteStateValues = (props) => {
     const {
-      toTime, fromTime, employeeId, date,
+      toTime, fromTime, employee, date,
     } = props.block;
     const { step } = props.apptGridSettings;
     const {
       startTime, groupedProviders, selectedProvider, providerSchedule
     } = props;
     const apptDate = moment(date).format('YYYY-MM-DD');
-    const provider = selectedProvider === 'all' ? groupedProviders[employeeId] ? groupedProviders[employeeId][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
+    const provider = selectedProvider === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
@@ -106,7 +106,7 @@ class BlockCard extends Component {
     if (selectedProvider === 'all') {
       const firstCellWidth = 130;
       left = providers.findIndex(provider =>
-        provider.id === block.employeeId) * cellWidth + firstCellWidth;
+        provider.id === block.employee.id) * cellWidth + firstCellWidth;
     } else if (selectedProvider !== 'all' && displayMode === 'week') {
       const apptDate = moment(block.date).format('YYYY-DD-MM');
       left = providers.findIndex(date => date.format('YYYY-DD-MM') === apptDate) * cellWidth;

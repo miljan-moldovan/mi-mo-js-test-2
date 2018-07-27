@@ -180,8 +180,6 @@ export default class NewAppointmentScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    const canSave = this.props.isValidAppointment;
-    this.props.navigation.setParams({ canSave, handleSave: this.handleSave });
     const {
       client,
     } = this.props.newAppointmentState;
@@ -203,36 +201,6 @@ export default class NewAppointmentScreen extends React.Component {
   componentDidMount() {
     this.checkConflicts();
   }
-
-  componentWillReceiveProps(nextProps) {
-    // const params = this.props.navigation.state.params || {};
-    // const canSave = params.canSave || false;
-    // if (nextProps.isValidAppointment !== canSave) {
-    //   this.props.navigation.setParams({ canSave });
-    // }
-  }
-
-  getClientInfo = (client) => {
-    const phones = get(client, 'phones', []);
-    const clientPhone = phones.reduce((phone, currentPhone) => (currentPhone.value ? currentPhone.value : phone), '');
-    return {
-      clientPhone,
-      clientEmail: get(client, 'email', ''),
-      clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => phone.value === clientPhone) : 0,
-    };
-  }
-
-  getRoomInfo = roomId => new Promise((resolve, reject) => {
-    Store.getRooms()
-      .then(rooms => resolve(rooms.find(room => room.id === roomId)))
-      .catch(err => reject(err));
-  })
-
-  getResourceInfo = resourceId => new Promise((resolve, reject) => {
-    Store.getResources()
-      .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
-      .catch(err => reject(err));
-  })
 
   addService = (selectedServices, guestId = false) => {
     const {
@@ -344,16 +312,6 @@ export default class NewAppointmentScreen extends React.Component {
     });
   }
 
-  updateService = (serviceId, updatedService, guestId = false) => {
-    this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
-    this.checkConflicts();
-  }
-
-  removeService = (serviceId) => {
-    this.props.newAppointmentActions.removeServiceItem(serviceId);
-    this.checkConflicts();
-  }
-
   setGuest = (client, guestId) => {
     this.props.newAppointmentActions.setGuestClient(guestId, client);
     this.checkConflicts();
@@ -364,6 +322,43 @@ export default class NewAppointmentScreen extends React.Component {
   getGuest = guestId => this.props.newAppointmentState.guests.find(item => item.guestId === guestId)
 
   getServiceItem = serviceId => this.props.newAppointmentState.serviceItems.find(item => item.itemId === serviceId)
+
+  getClientInfo = (client) => {
+    const phones = get(client, 'phones', []);
+    const clientPhone = phones.reduce((phone, currentPhone) => (currentPhone.value ? currentPhone.value : phone), '');
+    return {
+      clientPhone,
+      clientEmail: get(client, 'email', ''),
+      clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => phone.value === clientPhone) : 0,
+    };
+  }
+
+  getRoomInfo = roomId => new Promise((resolve, reject) => {
+    Store.getRooms()
+      .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+      .catch(err => reject(err));
+  })
+
+  getResourceInfo = resourceId => new Promise((resolve, reject) => {
+    Store.getResources()
+      .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
+      .catch(err => reject(err));
+  })
+
+  getMainServices = () => this.props.newAppointmentState.serviceItems.filter(item => !item.guestId && !item.parentId)
+
+  getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
+
+  updateService = (serviceId, updatedService, guestId = false) => {
+    this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
+    this.checkConflicts();
+  }
+
+  removeService = (serviceId) => {
+    this.props.newAppointmentActions.removeServiceItem(serviceId);
+    this.checkConflicts();
+  }
+
 
   onChangeRecurring = isRecurring => isRecurring // this.setState({ isRecurring: !isRecurring });
 
@@ -409,10 +404,6 @@ export default class NewAppointmentScreen extends React.Component {
     }
     return alert('Select a client first');
   }
-
-  getMainServices = () => this.props.newAppointmentState.serviceItems.filter(item => !item.guestId && !item.parentId)
-
-  getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
 
   checkConflicts = () => this.props.newAppointmentActions.getConflicts(() => this.validate())
 

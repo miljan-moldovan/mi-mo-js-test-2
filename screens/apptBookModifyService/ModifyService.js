@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { get } from 'lodash';
-import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
 import {
   InputGroup,
@@ -21,8 +20,8 @@ import {
   InputButton,
   InputDivider,
   RemoveButton,
+  SalonTimePicker,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
@@ -215,6 +214,14 @@ export default class ModifyApptServiceScreen extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
+  toggleStartTimePicker = () => this.setState(({ startTimePickerOpen }) => ({
+    startTimePickerOpen: !startTimePickerOpen,
+  }))
+
+  toggleEndTimePicker = () => this.setState(({ endTimePickerOpen }) => ({
+    endTimePickerOpen: !endTimePickerOpen,
+  }))
+
   validate = () => {
     const {
       selectedProvider,
@@ -280,57 +287,21 @@ export default class ModifyApptServiceScreen extends React.Component {
         </InputGroup>
         <SectionTitle value="Time" />
         <InputGroup>
-          <InputButton
-            label="Starts"
-            value={startTime.format('HH:mm A')}
-            valueStyle={this.state.startTimePickerOpen ? { color: '#1B65CF' } : null}
-            onPress={() => this.setState({ startTimePickerOpen: !this.state.startTimePickerOpen })}
-            style={{ paddingLeft: 0 }}
+          <SalonTimePicker
+            label="Start"
+            value={startTime}
+            isOpen={this.state.startTimePickerOpen}
+            onChange={this.handleChangeStartTime}
+            toggle={this.toggleStartTimePicker}
           />
-          {this.state.startTimePickerOpen && (
-          <View style={{
-                flexDirection: 'row',
-                alignSelf: 'stretch',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-              }}
-          >
-            <DatePicker
-              style={{ flex: 1 }}
-              itemStyle={{ backgroundColor: 'white' }}
-              date={startTime.toDate()}
-              mode="time"
-              onDateChange={this.handleChangeStartTime}
-            />
-          </View>
-          )}
           <InputDivider />
-          <InputButton
+          <SalonTimePicker
             label="Ends"
-            value={moment(endTime).isValid() ? endTime.format('HH:mm A') : '-'}
-            valueStyle={this.state.endTimePickerOpen ? { color: '#1B65CF' } : null}
-            onPress={() => this.setState({ endTimePickerOpen: !this.state.endTimePickerOpen })}
-            style={{ paddingLeft: 0 }}
+            value={endTime}
+            isOpen={this.state.endTimePickerOpen}
+            onChange={this.handleChangeEndTime}
+            toggle={this.toggleEndTimePicker}
           />
-          {this.state.endTimePickerOpen && (
-          <View style={{
-                flexDirection: 'row',
-                alignSelf: 'stretch',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-              }}
-          >
-            <DatePicker
-              style={{ flex: 1 }}
-              itemStyle={{ backgroundColor: 'white' }}
-              date={moment(endTime).isValid() ? endTime.toDate() : ''}
-              mode="time"
-              onDateChange={this.handleChangeEndTime}
-            />
-          </View>
-          )}
           <InputDivider />
           <InputLabel
             label="Length"

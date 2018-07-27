@@ -160,7 +160,9 @@ const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSetti
   };
   return {
     type: SET_GRID_DAY_WEEK_VIEW_SUCCESS,
-    data: { providerSchedule, appointments, apptGridSettings: newApptGridSettings, blockTimes },
+    data: {
+      providerSchedule, appointments, apptGridSettings: newApptGridSettings, blockTimes,
+    },
   };
 };
 
@@ -222,7 +224,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
             dispatch(setGridAllViewSuccess(
               employeesAppointment,
-              orderedAppointments, availabilityItem.timeSlots, blockTimes, schedule
+              orderedAppointments, availabilityItem.timeSlots, blockTimes, schedule,
             ));
           })
           .catch((ex) => {
@@ -252,7 +254,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                   apptGridSettings,
                   startDate,
                   pickerMode,
-                  blockTimes
+                  blockTimes,
                 ));
               })
               .catch((ex) => {
