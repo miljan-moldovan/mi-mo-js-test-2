@@ -92,14 +92,14 @@ export default class Header extends Component {
     const uri = getEmployeePhoto(data.id);
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
-    const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';
+    const borderColor = hasBorder ? colors[data.displayColor].dark : colors[4].dark;
     return (
       <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)} underlayColor="rgba(0, 0, 0, 0.5)">
         <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
           <SalonAvatar
             wrapperStyle={styles.avatarStyle}
             width={24}
-            borderWidth={hasBorder ? 3 : 0}
+            borderWidth={3}
             borderColor={borderColor}
             image={{ uri }}
             // hasBadge
