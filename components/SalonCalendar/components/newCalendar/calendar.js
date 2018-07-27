@@ -8,7 +8,6 @@ import Board from './board';
 import Header from './header';
 import TimeColumn from './timeColumn';
 import Card from './card';
-import NewCard from './newCard';
 import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
 import SalonAlert from './SalonAlert';
