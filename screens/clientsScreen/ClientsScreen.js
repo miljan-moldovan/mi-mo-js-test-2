@@ -184,7 +184,7 @@ class ClientsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    
+
     this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch(), ignoreNav: false });
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
@@ -232,7 +232,7 @@ class ClientsScreen extends React.Component {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    
+
     const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
     if (dismissOnSelect) {
@@ -245,9 +245,9 @@ class ClientsScreen extends React.Component {
     if (searchText && searchText.length > 0) {
       const params = {
         fromAllStores: false,
-        'nameFilter.FilterRule': '3', // StartsWith
+        'nameFilter.FilterRule': 'contains',
         'nameFilter.FilterValue': searchText,
-        'nameFilter.SortOrder': '1', // asc
+        'nameFilter.SortOrder': 'asc',
       };
       this.props.clientsActions.getClients(params);
     }
@@ -291,7 +291,7 @@ class ClientsScreen extends React.Component {
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeClient) { onChangeClient = this._handleOnChangeClient; }
 
-    
+
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
