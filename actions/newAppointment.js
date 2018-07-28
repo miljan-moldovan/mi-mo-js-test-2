@@ -54,8 +54,9 @@ const addGuest = () => ({
   },
 });
 
-const removeGuest = () => ({
+const removeGuest = (guestId = false) => ({
   type: REMOVE_GUEST,
+  data: { guestId },
 });
 
 const setGuestClient = (guestId, client) => (dispatch, getState) => {

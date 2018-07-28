@@ -219,6 +219,7 @@ export default class RoomAssignmentScreen extends React.Component {
 
   handleSave = () => {
     if (this.canSave()) {
+      this.props.navigation.setParams({ canSave: false });
       const params = this.props.navigation.state.params || {};
       const employee = params.employee || null;
       const onSave = params.onSave ? params.onSave : () => null;

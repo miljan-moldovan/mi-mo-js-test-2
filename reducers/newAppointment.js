@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { get, reject } from 'lodash';
 import {
   CLEAN_FORM,
   IS_BOOKING_QUICK_APPT,
@@ -148,7 +149,17 @@ export default function newAppointmentReducer(state = defaultState, action) {
         guests: [...state.guests, data.guest],
       };
     case REMOVE_GUEST:
-      newGuests.pop();
+      if (data.guestId) {
+        const guestIndex = state.guests.findIndex(guest => guest.guestId === data.guestId);
+        state.serviceItems = reject(state.serviceItems, item => item.guestId === data.guestId);
+        newGuests.splice(guestIndex, 1);
+      } else {
+        const removedGuest = newGuests.pop();
+        const removedGuestId = get(removedGuest, 'guestId', null);
+        if (removedGuestId) {
+          state.serviceItems = reject(state.serviceItems, item => item.guestId === removedGuestId);
+        }
+      }
       return {
         ...state,
         guests: newGuests,

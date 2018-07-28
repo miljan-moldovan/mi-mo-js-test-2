@@ -86,28 +86,56 @@ export const styles = StyleSheet.create({
   },
 });
 
-const Guest = props => (
-  <SalonCard
-    bodyStyles={{ paddingVertical: 0 }}
-    bodyChildren={(
-      <ClientInput
-        style={{ flex: 1, height: 40, paddingRight: 0 }}
-        label={false}
-        apptBook
-        placeholder="Select a Client"
-        selectedClient={props.selectedClient}
-        onChange={client => props.onChange(client)}
-        iconStyle={{ color: '#115ECD' }}
-        headerProps={{
-          title: 'Clients',
-          leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
-          leftButtonOnPress: navigation => navigation.goBack(),
-        }}
-        {...props}
+const RemoveGuest = ({ onPress }) => (
+  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginHorizontal: 10 }}>
+    <SalonTouchableOpacity
+      style={{ flexDirection: 'row' }}
+      onPress={onPress}
+    >
+      <Icon
+        name="timesCircle"
+        type="solid"
+        color="red"
+        size={10}
       />
-    )}
-    backgroundColor="white"
-  />
+      <Text style={{
+        color: '#D1242A',
+        marginLeft: 4,
+        fontSize: 10,
+        lineHeight: 12,
+        fontFamily: 'Roboto-Bold',
+      }}
+      >REMOVE
+      </Text>
+    </SalonTouchableOpacity>
+  </View>
+);
+
+const Guest = props => (
+  <View style={{ flexDirecton: 'column' }}>
+    <RemoveGuest onPress={() => props.onRemove()} />
+    <SalonCard
+      bodyStyles={{ paddingVertical: 0 }}
+      bodyChildren={(
+        <ClientInput
+          style={{ flex: 1, height: 40, paddingRight: 0 }}
+          label={false}
+          apptBook
+          placeholder="Select a Client"
+          selectedClient={props.selectedClient}
+          onChange={client => props.onChange(client)}
+          iconStyle={{ color: '#115ECD' }}
+          headerProps={{
+            title: 'Clients',
+            leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+            leftButtonOnPress: navigation => navigation.goBack(),
+          }}
+          {...props}
+        />
+      )}
+      backgroundColor="white"
+    />
+  </View>
 );
 
 
@@ -390,6 +418,8 @@ export default class NewAppointmentScreen extends React.Component {
     this.checkConflicts();
   }
 
+  removeGuest = guestId => this.props.newAppointmentActions.removeGuest(guestId);
+
   handleAddMainService = () => {
     const { client, bookedByEmployee } = this.props.newAppointmentState;
     if (client !== null) {
@@ -660,9 +690,10 @@ export default class NewAppointmentScreen extends React.Component {
                 guests.map((guest, guestIndex) => (
                   <View>
                     <Guest
-                      index={guestIndex}
+                      index={guest.guestId}
                       navigate={this.props.navigation.navigate}
                       selectedClient={guest.client || null}
+                      onRemove={() => this.removeGuest(guest.guestId)}
                       onChange={selectedClient => this.setGuest(selectedClient, guest.guestId)}
                     />
                     {
@@ -707,7 +738,7 @@ export default class NewAppointmentScreen extends React.Component {
                 <InputSwitch
                   text="Recurring appt."
                   value={this.state.isRecurring}
-                // onChange={this.onChangeRecurring}
+                  // onChange={this.onChangeRecurring}
                   onChange={() => alert('API not implemented')}
                 />
               </InputGroup>
