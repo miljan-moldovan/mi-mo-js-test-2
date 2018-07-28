@@ -440,6 +440,7 @@ export default class AppointmentScreen extends Component {
           hide={this.hideNewApptSlide}
           show={this.showNewApptSlide}
           handleBook={this.handleBook}
+          activeTab={this.state.newApptActiveTab}
           onChangeTab={this.changeNewApptSlideTab}
         />
 
