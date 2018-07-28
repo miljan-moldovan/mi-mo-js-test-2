@@ -35,6 +35,7 @@ import FilterByCompanyScreen from './../screens/filterByCompanyScreen';
 import ServiceCheckScreen from './../screens/serviceCheckScreen';
 import ServiceCheckResultScreen from './../screens/serviceCheckResultScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
+import EditScheduleScreen from './../screens/editScheduleScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
 import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 import ConflictsScreen from '../screens/conflictsScreen';
@@ -63,6 +64,10 @@ const AppointmentStackNavigator = StackNavigator(
     },
     EndsOn: {
       screen: EndsOnScreen,
+    },
+    EditSchedule: {
+      screen: EditScheduleScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,

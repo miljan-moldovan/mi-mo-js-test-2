@@ -25,6 +25,7 @@ import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
 import turnAway from './turnAway';
 import formulasAndNotesReducer from './formulasAndNotes';
 import roomAssignmentReducer from './roomAssignment';
+import employeeScheduleReducer from './employeeSchedule';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -53,4 +54,5 @@ export default combineReducers({
   modifyApptReducer,
   formulasAndNotesReducer,
   roomAssignmentReducer,
+  employeeScheduleReducer,
 });
