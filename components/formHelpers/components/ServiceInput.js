@@ -7,6 +7,8 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
+
+import { Services } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles } from '../index';
 
@@ -15,6 +17,9 @@ export default class ServiceInput extends React.Component {
     super(props);
 
     this.state = {
+      hasViewedAddons: props.hasViewedAddons || false,
+      hasViewedRequired: props.hasViewedRequired || false,
+      hasViewedRecommended: props.hasViewedRecommended || false,
       labelText: props.labelText || 'Service',
       selectedService: props.selectedService || null,
       addons: props.addons || [],
@@ -59,17 +64,20 @@ export default class ServiceInput extends React.Component {
   }
 
   selectAddons = () => {
-    const { selectedService } = this.state;
-    const { onPress = false } = this.props;
+    const { selectedService, hasViewedAddons: showCancelButton } = this.state;
+    const { onPress = false, onCancelExtrasSelection = (() => null) } = this.props;
     if (onPress) { onPress(); }
     if (selectedService && selectedService.addons.length > 0) {
       this.props.navigate('AddonServices', {
+        showCancelButton,
+        onNavigateBack: onCancelExtrasSelection,
         serviceTitle: selectedService.name,
         services: selectedService.addons,
         onSave: (addons) => {
           this.props.onChangeAddons(addons);
           this.setState({
             addons,
+            hasViewedAddons: true,
           });
         },
       });
@@ -78,17 +86,20 @@ export default class ServiceInput extends React.Component {
   }
 
   selectRecommended = () => {
-    const { selectedService } = this.state;
-    const { onPress = false } = this.props;
+    const { selectedService, hasViewedRecommended: showCancelButton } = this.state;
+    const { onPress = false, onCancelExtrasSelection = (() => null) } = this.props;
     if (onPress) { onPress(); }
     if (selectedService && selectedService.recommendedServices.length > 0) {
       this.props.navigate('RecommendedServices', {
+        showCancelButton,
+        onNavigateBack: onCancelExtrasSelection,
         serviceTitle: selectedService.name,
         services: selectedService.recommendedServices,
         onSave: (recommended) => {
           this.props.onChangeRecommended(recommended);
           this.setState({
             recommended,
+            hasViewedRecommended: true,
           });
         },
       });
@@ -97,17 +108,20 @@ export default class ServiceInput extends React.Component {
   }
 
   selectRequired = () => {
-    const { selectedService } = this.state;
-    const { onPress = false } = this.props;
+    const { selectedService, hasViewedRequired: showCancelButton } = this.state;
+    const { onPress = false, onCancelExtrasSelection = (() => null) } = this.props;
     if (onPress) { onPress(); }
     if (selectedService && selectedService.requiredServices.length > 0) {
       this.props.navigate('RequiredServices', {
+        showCancelButton,
+        onNavigateBack: onCancelExtrasSelection,
         serviceTitle: selectedService.name,
         services: selectedService.requiredServices,
         onSave: (required) => {
           this.props.onChangeRequired(required);
           this.setState({
             required,
+            hasViewedRequired: true,
           });
         },
       });

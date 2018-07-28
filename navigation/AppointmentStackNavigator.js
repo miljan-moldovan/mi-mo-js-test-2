@@ -46,6 +46,8 @@ import RequiredServicesScreen from '../screens/requiredServicesScreen';
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
 
+import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
+
 const AppointmentStackNavigator = StackNavigator(
   {
     Main: {
@@ -115,9 +117,9 @@ const AppointmentStackNavigator = StackNavigator(
     Conflicts: {
       screen: ConflictsScreen,
     },
-    // ModifyService2: {
-    //   screen: ModifyServiceScreen,
-    // },
+    RoomAssignment: {
+      screen: RoomAssignmentScreen,
+    },
     ApptBookClient: {
       screen: ClientsScreen,
     },

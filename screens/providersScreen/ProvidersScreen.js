@@ -263,10 +263,10 @@ class ProviderScreen extends React.Component {
     const { filterByService, filterList } = this.state;
     this.props.providersActions.getProviders(
       {
-        filterRule: 'none',
+        filterRule: 3,
         maxCount: 100,
-        sortOrder: 'asc',
-        sortField: 'fullName',
+        sortOrder: 1,
+        sortField: 'FirstName,LastName',
       },
       filterByService,
       filterList,

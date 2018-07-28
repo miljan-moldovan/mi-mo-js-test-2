@@ -19,45 +19,56 @@ const styles = StyleSheet.create({
 });
 
 export default class RecommendedServicesScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      >
-        <Text style={{
-          fontFamily: 'Roboto-Medium',
-          fontSize: 17,
-          lineHeight: 22,
-          color: 'white',
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+    const serviceTitle = params.serviceTitle || '';
+    const showCancelButton = params.showCancelButton || false;
+    const handleSave = params.handleSave || (() => null);
+    const onNavigateBack = params.onNavigateBack || (() => null);
+    const handleGoBack = () => {
+      onNavigateBack();
+      navigation.goBack();
+    };
+    return ({
+      headerTitle: (
+        <View style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         >
-          Recommended Services
-        </Text>
-        <Text style={{
-          fontFamily: 'Roboto',
-          fontSize: 10,
-          lineHeight: 12,
-          color: 'white',
-        }}
-        >
-          {navigation.state.params.serviceTitle}
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity onPress={() => navigation.state.params.handleSave()}>
-        <Text style={{ fontSize: 14, fontFamily: 'Roboto-Medium', color: 'white' }}>Done</Text>
-      </SalonTouchableOpacity>
-    ),
-  });
+          <Text style={{
+            fontFamily: 'Roboto-Medium',
+            fontSize: 17,
+            lineHeight: 22,
+            color: 'white',
+          }}
+          >
+            Recommended Services
+          </Text>
+          <Text style={{
+            fontFamily: 'Roboto',
+            fontSize: 10,
+            lineHeight: 12,
+            color: 'white',
+          }}
+          >
+            {serviceTitle}
+          </Text>
+        </View>
+      ),
+      headerLeft: showCancelButton ? (
+        <SalonTouchableOpacity onPress={() => handleGoBack()}>
+          <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ) : null,
+      headerRight: (
+        <SalonTouchableOpacity onPress={() => handleSave()}>
+          <Text style={{ fontSize: 14, fontFamily: 'Roboto-Medium', color: 'white' }}>Done</Text>
+        </SalonTouchableOpacity>
+      ),
+    });
+  };
 
   constructor(props) {
     super(props);
@@ -67,42 +78,22 @@ export default class RecommendedServicesScreen extends React.Component {
     const serviceIds = params.services || [];
 
     this.state = {
-      serviceIds,
       isLoading: false,
       selected: [],
-      services: [],
+      services: this.getServices(serviceIds),
     };
   }
 
-  async componentWillMount() {
-    const { serviceIds } = this.state;
-    this.apiInstance = await getApiInstance();
-
-    if (serviceIds.length) {
-      this.setState({ isLoading: true }, () => {
-        const servicePromises = serviceIds.map(item => this.getService(item.id));
-        return Promise.all(servicePromises)
-          .then((services) => {
-            this.setState({
-              isLoading: false,
-              services: services.map(({ data: { response: item } }) => ({
-                id: item.id,
-                name: item.description,
-                maxDuration: item.duration,
-                minDuration: item.duration,
-                price: item.price,
-              })),
-            });
-          })
-          .catch(() => {
-            this.setState({ isLoading: false });
-          });
-      });
+  getServices = (ids) => {
+    const { services } = this.props;
+    const results = [];
+    const check = (service, index) => service.id === ids[index].id;
+    for (let i = 0; i < ids.length; i += 1) {
+      const service = services.find(ser => check(ser, i));
+      if (service) { results.push(service); }
     }
+    return results;
   }
-
-  // getService = id => Services.getService(id)
-  getService = id => this.apiInstance.get(`Services/${id}`, {})
 
   handlePressRow = (index) => {
     const { services } = this.state;
@@ -132,15 +123,15 @@ export default class RecommendedServicesScreen extends React.Component {
       onPress={() => this.handlePressRow(index)}
     >
       <View style={{
-          flex: 9 / 10,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
+        flex: 9 / 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      }}
       >
         <Text style={{
-            fontSize: 14,
-            color: '#2F3142',
-          }}
+          fontSize: 14,
+          color: '#2F3142',
+        }}
         >{item.name}
         </Text>
         {!!item.price && (
@@ -164,9 +155,9 @@ export default class RecommendedServicesScreen extends React.Component {
 
   renderSeparator = () => (
     <View style={{
-        height: StyleSheet.hairlineWidth,
-        backgroundColor: '#C0C1C6',
-      }}
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: '#C0C1C6',
+    }}
     />
   )
 
@@ -184,7 +175,7 @@ export default class RecommendedServicesScreen extends React.Component {
             renderItem={this.renderItem}
             ItemSeparatorComponent={this.renderSeparator}
           />
-        )}
+          )}
       </View>
     );
   }
