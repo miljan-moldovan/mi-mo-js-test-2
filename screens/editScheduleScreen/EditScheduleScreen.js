@@ -296,7 +296,7 @@ export default class EditScheduleScreen extends React.Component {
       const hoursWorking = !this.state.hoursWorking;
 
       if (hoursWorking) {
-        canSave = (startTimeScheduleOne.length > 0 && endTimeScheduleOne.length > 0);
+        canSave = (this.state.startTimeScheduleOne.length > 0 && this.state.endTimeScheduleOne.length > 0);
       } else {
         canSave = this.state.otherReason && this.state.otherReason.length > 0;
       }
