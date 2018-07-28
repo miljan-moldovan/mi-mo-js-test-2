@@ -28,15 +28,15 @@ const getClientsFailed = error => ({
 
 const getClients = (params = {
   fromAllStores: false,
-  'nameFilter.FilterRule': 'none',
+  'nameFilter.FilterRule': 3,
   'NameFilter.SortOrder': 1,
-  'NameFilter.SortField': 'name',
+  'NameFilter.SortField': 'FirstName,LastName',
 }) => (dispatch) => {
   dispatch({ type: GET_CLIENTS });
   const newParams = {
     ...params,
     'NameFilter.SortOrder': 1,
-    'NameFilter.SortField': 'firstName',
+    'NameFilter.SortField': 'FirstName,LastName',
   };
   return Client.getClients(newParams)
     .then(response => dispatch(getClientsSuccess(response)))

@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { get } from 'lodash';
-import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 
 import {
   InputGroup,
@@ -23,7 +22,6 @@ import {
   RemoveButton,
   SalonTimePicker,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
@@ -216,6 +214,14 @@ export default class ModifyApptServiceScreen extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
+  toggleStartTimePicker = () => this.setState(({ startTimePickerOpen }) => ({
+    startTimePickerOpen: !startTimePickerOpen,
+  }))
+
+  toggleEndTimePicker = () => this.setState(({ endTimePickerOpen }) => ({
+    endTimePickerOpen: !endTimePickerOpen,
+  }))
+
   validate = () => {
     const {
       selectedProvider,
@@ -286,7 +292,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             value={startTime}
             isOpen={this.state.startTimePickerOpen}
             onChange={this.handleChangeStartTime}
-            toggle={() => this.setState({ startTimePickerOpen: !this.state.startTimePickerOpen })}
+            toggle={this.toggleStartTimePicker}
           />
           <InputDivider />
           <SalonTimePicker
@@ -294,7 +300,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             value={endTime}
             isOpen={this.state.endTimePickerOpen}
             onChange={this.handleChangeEndTime}
-            toggle={() => this.setState({ endTimePickerOpen: !this.state.endTimePickerOpen })}
+            toggle={this.toggleEndTimePicker}
           />
           <InputDivider />
           <InputLabel

@@ -19,84 +19,78 @@ const styles = StyleSheet.create({
 });
 
 export default class RequiredServicesScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      >
-        <Text style={{
-          fontFamily: 'Roboto-Medium',
-          fontSize: 17,
-          lineHeight: 22,
-          color: 'white',
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+    const serviceTitle = params.serviceTitle || '';
+    const showCancelButton = params.showCancelButton || false;
+    const onNavigateBack = params.onNavigateBack || (() => null);
+    const handleGoBack = () => {
+      onNavigateBack();
+      navigation.goBack();
+    };
+    return ({
+      headerTitle: (
+        <View style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         >
-          Required Services
-        </Text>
-        <Text style={{
-          fontFamily: 'Roboto',
-          fontSize: 10,
-          lineHeight: 12,
-          color: 'white',
-        }}
-        >
-          {navigation.state.params.serviceTitle}
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: null,
-  });
+          <Text style={{
+            fontFamily: 'Roboto-Medium',
+            fontSize: 17,
+            lineHeight: 22,
+            color: 'white',
+          }}
+          >
+            Required Services
+          </Text>
+          <Text style={{
+            fontFamily: 'Roboto',
+            fontSize: 10,
+            lineHeight: 12,
+            color: 'white',
+          }}
+          >
+            {serviceTitle}
+          </Text>
+        </View>
+      ),
+      headerLeft: showCancelButton ? (
+        <SalonTouchableOpacity onPress={() => handleGoBack()}>
+          <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ) : null,
+      headerRight: null,
+    });
+  };
 
   constructor(props) {
     super(props);
 
     const params = this.props.navigation.state.params || {};
     const serviceIds = params.services || [];
-
+    const services = this.getServices(serviceIds);
+    if (services.length === 1) {
+      this.handlePressRow(services[0]);
+    }
     this.state = {
-      serviceIds,
       isLoading: false,
+      services,
       selected: [],
-      services: [],
     };
   }
 
-  async componentWillMount() {
-    const { serviceIds } = this.state;
-    this.apiInstance = await getApiInstance();
-
-    if (serviceIds.length) {
-      this.setState({ isLoading: true }, () => {
-        const servicePromises = serviceIds.map(item => this.getService(item.id));
-        return Promise.all(servicePromises)
-          .then((services) => {
-            this.setState({
-              isLoading: false,
-              services: services.map(({ data: { response: item } }) => ({
-                id: item.id,
-                name: item.description,
-                maxDuration: item.duration,
-                minDuration: item.duration,
-                price: item.price,
-              })),
-            });
-          })
-          .catch(() => {
-            this.setState({ isLoading: false });
-          });
-      });
+  getServices = (ids) => {
+    const { services } = this.props;
+    const results = [];
+    const check = (service, index) => service.id === ids[index].id;
+    for (let i = 0; i < ids.length; i += 1) {
+      const service = services.find(ser => check(ser, i));
+      if (service) { results.push(service); }
     }
+    return results;
   }
-
-  getService = id => this.apiInstance.get(`Services/${id}`, {})
 
   handlePressRow = (item) => {
     const params = this.props.navigation.state.params || {};
@@ -119,15 +113,15 @@ export default class RequiredServicesScreen extends React.Component {
       onPress={() => this.handlePressRow(item)}
     >
       <View style={{
-          flex: 9 / 10,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
+        flex: 9 / 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      }}
       >
         <Text style={{
-            fontSize: 14,
-            color: '#2F3142',
-          }}
+          fontSize: 14,
+          color: '#2F3142',
+        }}
         >{item.name}
         </Text>
         {!!item.price && (
@@ -151,9 +145,9 @@ export default class RequiredServicesScreen extends React.Component {
 
   renderSeparator = () => (
     <View style={{
-        height: StyleSheet.hairlineWidth,
-        backgroundColor: '#C0C1C6',
-      }}
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: '#C0C1C6',
+    }}
     />
   )
 
@@ -171,7 +165,7 @@ export default class RequiredServicesScreen extends React.Component {
             renderItem={this.renderItem}
             ItemSeparatorComponent={this.renderSeparator}
           />
-        )}
+          )}
       </View>
     );
   }

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get, isNil, isFunction, isArray, reject } from 'lodash';
+import { get, isNil, isFunction, isArray, isNull, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
 import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
@@ -194,7 +194,7 @@ const addServiceItem = serviceItem => (dispatch, getState) => {
 };
 
 const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) => {
-  if (!services || !services.length) {
+  if (isNull(services)) {
     return;
   }
   const {

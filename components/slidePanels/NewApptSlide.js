@@ -544,12 +544,20 @@ export class NewApptSlide extends React.Component {
     return true;
   }
 
-  handleBook = () => {
+  handleBookAnother = () => {
     if (!this.canBook()) {
       return false;
     }
 
-    return this.props.handleBook();
+    return this.props.handleBook(true);
+  }
+
+  handleBook = (bookAnother) => {
+    if (!this.canBook()) {
+      return false;
+    }
+
+    return this.props.handleBook(bookAnother);
   }
 
   handleTabChange = (ev, activeTab) => this.props.onChangeTab(activeTab)
@@ -613,6 +621,12 @@ export class NewApptSlide extends React.Component {
     return this.hidePanel(navigateCallback);
   }
 
+  goToRoomAssignment = () => {
+    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    const onSave = () => this.showPanel();
+    return this.props.navigation.navigate('RoomAssignment', { date, employee, onSave });
+  }
+
   cancelButton = () => ({
     leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
@@ -636,8 +650,12 @@ export class NewApptSlide extends React.Component {
     }
   }
 
-  showToast = () => {
-    alert('Message sent');
+  showToast = (result) => {
+    if (result) {
+      alert('Messages has been successfully sent.');
+    } else {
+      alert('An error occurred while sending the message.');
+    }
   }
 
   messageProvidersClients = (message) => {
@@ -718,7 +736,7 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={() => this.hidePanel(this.goToRoomAssignment)}
         label="Room Assignment"
       >
         <View style={styles.iconContainer}>
@@ -840,6 +858,9 @@ export class NewApptSlide extends React.Component {
             apptBook
             noLabel
             showLength
+            hasViewedAddons
+            hasViewedRequired
+            hasViewedRecommended
             selectExtraServices
             ref={(serviceInput) => { this.serviceInput = serviceInput; }}
             selectedProvider={provider}
@@ -852,7 +873,7 @@ export class NewApptSlide extends React.Component {
             placeholder="Select a Service"
             placeholderStyle={styles.placeholderText}
             contentStyle={contentStyle}
-            onPress={() => this.hidePanel()}
+            onPress={this.hidePanel}
             navigate={navigation.navigate}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
             iconStyle={{ color: '#115ECD' }}
@@ -860,6 +881,7 @@ export class NewApptSlide extends React.Component {
             onChangeAddons={this.setAddons}
             onChangeRecommended={this.setRecommended}
             onChangeRequired={this.setRequired}
+            onCancelExtrasSelection={() => this.showPanel()}
           />
           <InputDivider style={styles.middleSectionDivider} />
           <ProviderInput
@@ -876,7 +898,7 @@ export class NewApptSlide extends React.Component {
             contentStyle={contentStyle}
             iconStyle={{ color: '#115ECD' }}
             avatarSize={20}
-            onPress={() => this.hidePanel()}
+            onPress={this.hidePanel}
             navigate={navigation.navigate}
             headerProps={{ title: 'Providers', ...this.cancelButton() }}
             onChange={this.setProvider}
@@ -992,10 +1014,10 @@ export class NewApptSlide extends React.Component {
             />
             <Button
               style={{ flex: 8 / 17 }}
-              onPress={() => alert('Not Implemented')}
-              disabled={this.state.canBook}
+              onPress={this.handleBookAnother}
+              disabled={!this.canBook()}
               backgroundColor="white"
-              color="#115ECD"
+              color={!this.canBook() ? '#fff' : '#115ECD'}
               text="BOOK ANOTHER"
             />
           </View>
@@ -1032,7 +1054,7 @@ export class NewApptSlide extends React.Component {
             onPressCancel={this.onPressCancelInputModal}
             onPressOk={this.onPressOkInputModal}
           />
-          <TouchableWithoutFeedback onPress={() => this.hidePanel()}>
+          <TouchableWithoutFeedback onPress={this.hidePanel}>
             <View style={{ flex: 1, backgroundColor: 'transparent' }} />
           </TouchableWithoutFeedback>
           <Animated.View style={{
@@ -1043,7 +1065,7 @@ export class NewApptSlide extends React.Component {
             <View style={styles.header}>
               <SalonTouchableOpacity
                 style={{ flex: 4 / 17, justifyContent: 'flex-start' }}
-                onPress={() => this.hidePanel()}
+                onPress={this.hidePanel}
               >
                 <Text style={{
                   color: 'white',

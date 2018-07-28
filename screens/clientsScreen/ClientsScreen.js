@@ -245,9 +245,9 @@ class ClientsScreen extends React.Component {
     if (searchText && searchText.length > 0) {
       const params = {
         fromAllStores: false,
-        'nameFilter.FilterRule': 'contains',
+        'nameFilter.FilterRule': 3,
         'nameFilter.FilterValue': searchText,
-        'nameFilter.SortOrder': 'asc',
+        'nameFilter.SortOrder': 1,
       };
       this.props.clientsActions.getClients(params);
     }

@@ -117,7 +117,6 @@ class ProviderScreen extends React.Component {
       }
     }
 
-    
 
     return {
       headerTitle: (
@@ -191,7 +190,6 @@ class ProviderScreen extends React.Component {
   }
 
   componentWillMount() {
-    
     this.props.navigation.setParams({ defaultProps: this.state.headerProps });
 
     this.onRefresh();
@@ -267,10 +265,10 @@ class ProviderScreen extends React.Component {
     const { filterByService, filterList } = this.state;
     this.props.providersActions.getProviders(
       {
-        filterRule: 'none',
+        filterRule: 3,
         maxCount: 100,
-        sortOrder: '1', // asc
-        // sortField: 'fullName',
+        sortOrder: 1,
+        sortField: 'FirstName,LastName',
       },
       filterByService,
       filterList,

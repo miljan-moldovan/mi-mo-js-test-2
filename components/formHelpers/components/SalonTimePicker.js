@@ -5,35 +5,45 @@ import {
   StyleSheet,
 } from 'react-native';
 import moment, { isMoment } from 'moment';
-import { DatePicker } from 'react-native-wheel-datepicker';
+import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import { InputButton } from '../index';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  noPadding: { paddingLeft: 0 },
+  pickerContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  whiteBg: { backgroundColor: 'white' },
+});
 
 const SalonTimePicker = (props) => {
   const format = props.format || 'HH:mm A';
   const value = moment(props.value).isValid() ? moment(props.value).format(format) : props.placeholder || '-';
+  const dateObject = moment(props.value).isValid() ? props.value.toDate() : new Date();
+  const valueStyle = props.isOpen ? { color: '#1B65CF' } : null;
   return (
     <React.Fragment>
       <InputButton
         noIcon={props.noIcon}
         label={props.label}
         value={value}
-        valueStyle={props.isOpen ? { color: '#1B65CF' } : null}
+        valueStyle={valueStyle}
         onPress={props.toggle}
-        style={{ paddingLeft: 0 }}
+        style={styles.noPadding}
       />
       {props.isOpen && (
-        <View style={{
-          flexDirection: 'row',
-          alignSelf: 'stretch',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-        }}
-        >
+        <View style={styles.pickerContainer}>
           <DatePicker
-            style={{ flex: 1 }}
-            itemStyle={{ backgroundColor: 'white' }}
-            date={moment(props.value).isValid() ? props.value.toDate() : new Date()}
+            style={styles.container}
+            itemStyle={styles.whiteBg}
+            date={dateObject}
             mode="time"
             onDateChange={props.onChange}
           />
