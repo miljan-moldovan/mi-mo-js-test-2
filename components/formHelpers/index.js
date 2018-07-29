@@ -154,6 +154,24 @@ const DefaultAvatar = props => (
   </View>
 );
 
+const LabeledTextarea = props => (
+  <View style={{
+    flex: 1,
+    flexDirection: 'column',
+  }}
+  >
+    <Text style={{
+      fontSize: 14,
+      lineHeight: 22,
+      color: '#110A24',
+      fontFamily: 'Roboto',
+    }}
+    >{props.label}
+    </Text>
+    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
+  </View>
+);
+
 const RemoveButton = ({ title, onPress }) => (
   <SalonTouchableOpacity
     style={{
@@ -364,5 +382,5 @@ export {
   SalonTimePicker,
   InputRadioGroup,
   ValidatableInput,
+  LabeledTextarea,
 };
-// export default formHelpers;

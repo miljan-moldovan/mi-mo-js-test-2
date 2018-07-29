@@ -319,7 +319,7 @@ export const AppointmentTime = props => (
       color="#AAB3BA"
       type="light"
     />
-    <Text style={styles.timeText}>{moment(props.startTime, 'HH:mm').format('HH:mm A')}</Text>
+    <Text style={styles.timeText}>{moment(props.startTime, 'hh:mm').format('hh:mm A')}</Text>
     <Icon
       name="angleRight"
       size={15}
@@ -327,7 +327,7 @@ export const AppointmentTime = props => (
       color="#000000"
       type="light"
     />
-    <Text style={styles.timeText}>{moment(props.endTime, 'HH:mm').format('HH:mm A')}</Text>
+    <Text style={styles.timeText}>{moment(props.endTime, 'hh:mm').format('hh:mm A')}</Text>
   </View>
 );
 

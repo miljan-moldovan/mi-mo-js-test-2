@@ -16,6 +16,7 @@ import { last, get, flatten, isNil, sortBy, chain } from 'lodash';
 import {
   DefaultAvatar,
   LabeledTextInput,
+  LabeledTextarea,
   InputGroup,
   InputText,
   InputLabel,
@@ -151,24 +152,6 @@ const SubTitle = props => (
     justifyContent: 'flex-start',
   }}
   ><Text style={styles.subTitle}>{props.title.toUpperCase()}</Text>
-  </View>
-);
-
-const LabeledTextarea = props => (
-  <View style={{
-    flex: 1,
-    flexDirection: 'column',
-  }}
-  >
-    <Text style={{
-      fontSize: 14,
-      lineHeight: 22,
-      color: '#110A24',
-      fontFamily: 'Roboto',
-    }}
-    >{props.label}
-    </Text>
-    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
   </View>
 );
 
@@ -440,7 +423,6 @@ export default class NewAppointmentScreen extends React.Component {
     this.props.newAppointmentActions.removeServiceItem(serviceId);
     this.checkConflicts();
   }
-
 
   onChangeRecurring = isRecurring => isRecurring // this.setState({ isRecurring: !isRecurring });
 
