@@ -8,6 +8,7 @@ import postCheckConflicts from './postCheckConflicts';
 import getBlockTimesBetweenDates from './getBlockTimesBetweenDates';
 import postMessageAllClients from './postMessageAllClients';
 import postMessageProvidersClients from './postMessageProvidersClients';
+import postAppointmentBookBlockTime from './postAppointmentBookBlockTime';
 
 export {
   getAppointmentBookAvailability,
@@ -20,4 +21,5 @@ export {
   postCheckConflicts,
   postMessageAllClients,
   postMessageProvidersClients,
+  postAppointmentBookBlockTime,
 };

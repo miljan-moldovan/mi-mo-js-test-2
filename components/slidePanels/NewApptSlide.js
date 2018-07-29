@@ -686,7 +686,14 @@ export class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => { alert('Not implemented'); }}
+        onPress={() => {
+           this.hidePanel();
+           const { date, bookedByEmployee: employee, startTime } = this.props.newApptState;
+            this.props.navigation.navigate(
+              'BlockTime',
+            { date, employee, fromTime: startTime },
+          );
+        }}
         label="Block Time"
       >
         <View style={styles.iconContainer}>

@@ -23,6 +23,7 @@ import ProductInput from './components/ProductInput';
 import SalonTimePicker from './components/SalonTimePicker';
 import InputRadioGroup from './components/InputRadioGroup';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import BlockTimesReasonInput from './components/BlockTimesReasonInput';
 
 const styles = StyleSheet.create({
   container: {
@@ -362,5 +363,6 @@ export {
   ProductInput,
   SalonTimePicker,
   InputRadioGroup,
+  BlockTimesReasonInput,
 };
 // export default formHelpers;

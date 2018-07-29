@@ -25,7 +25,7 @@ export default class InputText extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (nextProps.isEditable) {
+    if (this.state.editable || nextProps.isEditable) {
       if (this.input && !this.input.isFocused()) {
         this.input.focus();
       }
