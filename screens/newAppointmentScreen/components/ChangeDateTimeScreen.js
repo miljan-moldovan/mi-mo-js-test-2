@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 
 class ChangeDateTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Change Date/Time',
+    headerTitle: 'Change Date/Time',
     headerLeft: (
       <SalonTouchableOpacity onPress={() => navigation.goBack()}>
         <Text style={styles.headerButton}>Cancel</Text>
