@@ -557,7 +557,6 @@ export default class NewAppointmentScreen extends React.Component {
     } = this.state;
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
-    // this.val÷idate();
     // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;

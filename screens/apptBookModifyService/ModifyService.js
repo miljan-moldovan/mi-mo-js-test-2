@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from 'react-native';
 import moment from 'moment';
-import { get } from 'lodash';
+import { get, isNumber, toNumber } from 'lodash';
 
 import {
   InputGroup,
@@ -21,8 +21,10 @@ import {
   InputDivider,
   RemoveButton,
   SalonTimePicker,
+  LabeledTextInput,
 } from '../../components/formHelpers';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import { Label } from '../../node_modules/native-base';
 
 const styles = StyleSheet.create({
   container: {
@@ -85,9 +87,10 @@ export default class ModifyApptServiceScreen extends React.Component {
     const serviceItem = params.serviceItem || false;
     const client = params.client || null;
     const date = params.date || moment();
-
+    const price = get(serviceItem.service.service || {}, 'price', '0');
     const state = {
       date,
+      price,
       canSave: false,
       canRemove: !!params.onRemoveService,
       selectedClient: serviceItem.guestId ? get(serviceItem.service, 'client', null) : client,
@@ -121,10 +124,12 @@ export default class ModifyApptServiceScreen extends React.Component {
       endTime = moment(startTime).add(moment.duration(selectedService.maxDuration));
     }
     const length = moment.duration(endTime.diff(startTime));
+    const price = get(selectedService, 'price', '0');
     this.setState({
       selectedService,
       endTime,
       length,
+      price,
     }, this.validate);
   }
 
@@ -141,16 +146,18 @@ export default class ModifyApptServiceScreen extends React.Component {
       gapTime,
       afterTime,
       room,
+      price: priceString,
       resource,
       length,
     } = this.state;
 
     if (canSave) {
+      const price = isNumber(priceString) ? priceString : toNumber(priceString.replace(/\D/g, ''));
       const { params } = this.props.navigation.state;
       const serviceItem = {
         client: selectedClient,
         employee: selectedProvider,
-        service: selectedService,
+        service: { ...selectedService, price },
         fromTime: startTime,
         toTime: endTime,
         requested,
@@ -174,7 +181,7 @@ export default class ModifyApptServiceScreen extends React.Component {
   }
 
   handleRequested = (requested) => {
-    this.setState({ requested: !requested });
+    this.setState({ requested: !requested }, this.validate);
   }
 
   handleChangeEndTime = (endTimeDateObj) => {
@@ -186,7 +193,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     return this.setState({
       endTime,
       length: moment.duration(endTime.diff(startTime)),
-    });
+    }, this.validate);
   }
 
   handleChangeStartTime = (startTimeDateObj) => {
@@ -198,7 +205,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     return this.setState({
       startTime,
       length: moment.duration(endTime.diff(startTime)),
-    });
+    }, this.validate);
   }
 
   onPressRemove = () => {
@@ -235,6 +242,10 @@ export default class ModifyApptServiceScreen extends React.Component {
     this.props.navigation.setParams({ canSave: valid });
   }
 
+  setPrice = (price) => {
+    this.setState({ price: price.replace(/\D/g, '') });
+  }
+
   render() {
     const {
       canRemove,
@@ -248,6 +259,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       afterTime,
       length,
       room,
+      price,
       resource,
     } = this.state;
     return (
@@ -280,9 +292,11 @@ export default class ModifyApptServiceScreen extends React.Component {
             onChange={this.handleRequested}
           />
           <InputDivider />
-          <InputLabel
+          <LabeledTextInput
             label="Price"
-            value={selectedService === null ? '' : `$${selectedService.price}`}
+            value={`$ ${price}`}
+            keyboardType="numeric"
+            onChangeText={this.setPrice}
           />
         </InputGroup>
         <SectionTitle value="Time" />
@@ -305,7 +319,15 @@ export default class ModifyApptServiceScreen extends React.Component {
           <InputDivider />
           <InputLabel
             label="Length"
-            value={`${moment.duration(length).asMinutes()} min`}
+            value={(
+              <Text style={{
+                fontSize: 14,
+                lineHeight: 18,
+                color: '#727A8F',
+              }}
+              >{`${moment.duration(length).asMinutes()} min`}
+              </Text>
+            )}
           />
           <InputDivider />
           <InputSwitch
