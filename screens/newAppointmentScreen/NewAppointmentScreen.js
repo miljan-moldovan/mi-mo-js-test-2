@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Text,
   View,
+  Alert,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
@@ -179,7 +180,7 @@ export default class NewAppointmentScreen extends React.Component {
       headerTitle: 'New Appointment',
       headerLeft: (
         <SalonTouchableOpacity
-          onPress={() => { navigation.goBack(); }}
+          onPress={() => { params.handleCancel(); }}
         >
           <Text style={{
             fontSize: 14,
@@ -192,7 +193,7 @@ export default class NewAppointmentScreen extends React.Component {
       ),
       headerRight: (
         <SalonTouchableOpacity
-          onPress={() => (canSave ? params.handleSave() : null)}
+          onPress={() => params.handleSave()}
         >
           <Text style={{
             fontSize: 14,
@@ -227,7 +228,7 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhone,
       clientPhoneType,
     } = this.getClientInfo(client);
-
+    this.props.navigation.setParams({ handleSave: this.handleSave, handleCancel: this.handleCancel });
     this.state = {
       isRecurring: false,
       canSave: false,
@@ -374,7 +375,7 @@ export default class NewAppointmentScreen extends React.Component {
       client,
       serviceItem: this.getServiceItem(serviceId),
       onSaveService: service => this.updateService(serviceId, service, guestId),
-      onRemoveService: () => this.removeService(serviceId),
+      onRemoveService: () => this.removeServiceAlert(serviceId),
     });
   }
 
@@ -418,6 +419,21 @@ export default class NewAppointmentScreen extends React.Component {
   updateService = (serviceId, updatedService, guestId = false) => {
     this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
     this.checkConflicts();
+  }
+
+  removeServiceAlert = (serviceId) => {
+    const { bookedByEmployee } = this.props.newAppointmentState;
+    const serviceItem = this.getServiceItem(serviceId);
+    const serviceTitle = get(get(serviceItem.service, 'service', null), 'name', '');
+    const employeeName = `${get(bookedByEmployee, 'name', bookedByEmployee.firstName || '')} ${get(bookedByEmployee, 'lastName', '')[0]}.`;
+    Alert.alert(
+      'Remove Service',
+      `Are you sure you want to remove service ${serviceTitle} w/ ${employeeName}?`,
+      [
+        { text: 'No, Thank You', onPress: () => null },
+        { text: 'Yes, Discard', onPress: () => this.removeService(serviceId) },
+      ],
+    );
   }
 
   removeService = (serviceId) => {
@@ -518,6 +534,25 @@ export default class NewAppointmentScreen extends React.Component {
       this.updateContactInformation();
       this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
     }
+  }
+
+  handleCancel = () => {
+    const { serviceItems, bookedByEmployee } = this.props.newAppointmentState;
+    const firstService = serviceItems[0] ? get(serviceItems[0].service, 'service', null) : null;
+    const serviceTitle = get(firstService, 'name', null);
+    const employeeName = `${get(bookedByEmployee, 'name', bookedByEmployee.firstName || '')} ${get(bookedByEmployee, 'lastName', '')[0]}.`;
+    const alertBody = serviceTitle ?
+      `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?` :
+      `Are you sure you want to discard this new appointment with ${employeeName}?`;
+
+    Alert.alert(
+      'Discard New Appointment?',
+      alertBody,
+      [
+        { text: 'No, Thank You', onPress: () => null },
+        { text: 'Yes, Discard', onPress: () => this.props.navigation.goBack() },
+      ],
+    );
   }
 
   onValidateEmail = () => this.shouldUpdateClientInfo()
@@ -705,7 +740,7 @@ export default class NewAppointmentScreen extends React.Component {
               (
                 <ServiceCard
                   onPress={() => this.onPressService(item.itemId)}
-                  onPressDelete={() => this.removeService(item.itemId)}
+                  onPressDelete={() => this.removeServiceAlert(item.itemId)}
                   key={item.itemId}
                   addons={this.getAddonsForService(item.itemId)}
                   data={item.service}
@@ -719,7 +754,7 @@ export default class NewAppointmentScreen extends React.Component {
                   isRequired={addon.isRequired}
                   hasConflicts={conflicts.length > 0}
                   onPress={() => this.onPressService(addon.itemId)}
-                  onPressDelete={() => this.removeService(addon.itemId)}
+                  onPressDelete={() => this.removeServiceAlert(addon.itemId)}
                 />
               )),
             ])}
@@ -752,7 +787,7 @@ export default class NewAppointmentScreen extends React.Component {
                           <ServiceCard
                             hasConflicts={conflicts.length > 0}
                             onPress={() => this.onPressService(item.itemId, guest.guestId)}
-                            onPressDelete={() => this.removeService(item.itemId)}
+                            onPressDelete={() => this.removeServiceAlert(item.itemId)}
                             key={item.itemId}
                             addons={this.getAddonsForService(item.itemId)}
                             data={item.service}
@@ -766,7 +801,7 @@ export default class NewAppointmentScreen extends React.Component {
                             isRequired={addon.isRequired}
                             hasConflicts={conflicts.length > 0}
                             onPress={() => this.onPressService(addon.itemId, guest.guestId)}
-                            onPressDelete={() => this.removeService(addon.itemId)}
+                            onPressDelete={() => this.removeServiceAlert(addon.itemId)}
                           />
                         )),
                       ]))

@@ -258,7 +258,7 @@ export default class ModifyAppointmentScreen extends React.Component {
       headerTitle: 'Modify Appointment',
       headerLeft: (
         <SalonTouchableOpacity
-          onPress={() => { navigation.goBack(); }}
+          onPress={() => { navigation.state.params.handleCancel(); }}
         >
           <Text style={{
             fontSize: 14,
@@ -288,7 +288,7 @@ export default class ModifyAppointmentScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setParams({ handleSave: this.handleSave });
+    this.props.navigation.setParams({ handleSave: this.handleSave, handleCancel: this.handleCancel });
     const { appointment } = this.props.state;
     this.state = {
       remarks: appointment.remarks ? appointment.remarks : '',
@@ -366,6 +366,17 @@ export default class ModifyAppointmentScreen extends React.Component {
     );
   }
 
+  handleCancel = () => {
+    Alert.alert(
+      'Discard Changes?',
+      'Are you sure you want to discard your changes?',
+      [
+        { text: 'No, Thank You', onPress: () => null },
+        { text: 'Yes, Discard', onPress: () => this.props.navigation.goBack() },
+      ],
+    );
+  }
+  
   renderExtraClientButtons = () => [
     <SalonTouchableOpacity
       onPress={() => {
