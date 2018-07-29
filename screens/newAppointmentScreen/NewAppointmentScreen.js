@@ -531,7 +531,7 @@ export default class NewAppointmentScreen extends React.Component {
       const errorCallback = () => {
         this.checkConflicts();
       };
-      this.updateContactInformation();
+      this.shouldUpdateClientInfo();
       this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
     }
   }
