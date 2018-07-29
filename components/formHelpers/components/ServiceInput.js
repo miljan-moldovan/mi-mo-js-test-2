@@ -7,7 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
-
+import { get } from 'lodash';
 import { Services } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles } from '../index';
@@ -58,7 +58,7 @@ export default class ServiceInput extends React.Component {
       selectExtraServices,
       dismissOnSelect: true,
       filterByProvider: !!selectedProvider,
-      employeeId: selectedProvider.id || false,
+      employeeId: get(selectedProvider, 'id', false),
       onChangeService: service => this.handleServiceSelection(service),
     });
   }

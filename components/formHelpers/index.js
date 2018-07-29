@@ -11,6 +11,7 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import ValidatableInput from './components/ValidatableInput';
 import ClientInput from './components/ClientInput';
 import InputDate from './components/InputDate';
 import InputNumber from './components/InputNumber';
@@ -151,6 +152,24 @@ const DefaultAvatar = props => (
         : 'FA'
       }
     </Text>
+  </View>
+);
+
+const LabeledTextarea = props => (
+  <View style={{
+    flex: 1,
+    flexDirection: 'column',
+  }}
+  >
+    <Text style={{
+      fontSize: 14,
+      lineHeight: 22,
+      color: '#110A24',
+      fontFamily: 'Roboto',
+    }}
+    >{props.label}
+    </Text>
+    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
   </View>
 );
 
@@ -364,5 +383,6 @@ export {
   SalonTimePicker,
   InputRadioGroup,
   BlockTimesReasonInput,
+  ValidatableInput,
+  LabeledTextarea,
 };
-// export default formHelpers;

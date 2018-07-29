@@ -138,7 +138,7 @@ export default class AppointmentScreen extends Component {
       selectedProvider,
     } = this.props.appointmentScreenState;
 
-    const startTime = moment(time, 'HH:mm A');
+    const startTime = moment(time, 'hh:mm A');
     if (selectedProvider === 'all') {
       const newApptProvider = {
         isFirstAvailable: true,

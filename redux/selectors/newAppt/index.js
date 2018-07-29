@@ -71,14 +71,14 @@ const isValidAppointment = createSelector(
       date, bookedByEmployee, client, serviceItems, conflicts,
     },
   ) => (
-    date &&
-    bookedByEmployee !== null &&
-    client !== null &&
-    serviceItems.length > 0 &&
-    !conflicts.length > 0 &&
-    !isLoading &&
-    !isBooking
-  ),
+      date &&
+      bookedByEmployee !== null &&
+      client !== null &&
+      serviceItems.length > 0 &&
+      !conflicts.length > 0 &&
+      !isLoading &&
+      !isBooking
+    ),
 );
 
 const appointmentLength = createSelector(
@@ -97,16 +97,19 @@ const appointmentLength = createSelector(
 
 const totalPrice = createSelector(
   serviceItemsSelector,
-  (serviceItems) => {
-    const price = serviceItems.reduce((currentPrice, serviceItem) => {
-      const service = serviceItem.service || { service: null };
-      if (service.service && service.service.price) {
-        return currentPrice + service.service.price;
-      }
-      return currentPrice;
-    }, 0);
-    return price;
-  },
+  createSelector(
+    state => state,
+    (serviceItems) => {
+      const price = serviceItems.reduce((currentPrice, serviceItem) => {
+        const service = serviceItem.service || { service: null };
+        if (service.service && service.service.price) {
+          return currentPrice + service.service.price;
+        }
+        return currentPrice;
+      }, 0);
+      return price;
+    },
+  ),
 );
 
 const getEndTime = createSelector(
