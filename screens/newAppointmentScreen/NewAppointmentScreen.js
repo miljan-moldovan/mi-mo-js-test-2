@@ -418,7 +418,10 @@ export default class NewAppointmentScreen extends React.Component {
     this.checkConflicts();
   }
 
-  removeGuest = guestId => this.props.newAppointmentActions.removeGuest(guestId);
+  removeGuest = (guestId) => {
+    this.props.newAppointmentActions.removeGuest(guestId);
+    this.checkConflicts();
+  }
 
   handleAddMainService = () => {
     const { client, bookedByEmployee } = this.props.newAppointmentState;
@@ -434,6 +437,8 @@ export default class NewAppointmentScreen extends React.Component {
     }
     return alert('Select a client first');
   }
+
+  changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime')
 
   checkConflicts = () => this.props.newAppointmentActions.getConflicts(() => this.validate())
 
@@ -591,9 +596,10 @@ export default class NewAppointmentScreen extends React.Component {
               )}
             />
             <InputDivider />
-            <InputLabel
+            <InputButton
               label="Date"
-              value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('HH:mm A')}`}
+              value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('hh:mm A')}`}
+              onPress={this.changeDateTime}
             />
           </InputGroup>
           <SectionTitle style={{ height: 46 }} value="Client" />
@@ -653,7 +659,6 @@ export default class NewAppointmentScreen extends React.Component {
             {this.getMainServices().map((item, itemIndex) => [
               (
                 <ServiceCard
-                  hasConflicts={conflicts.length > 0}
                   onPress={() => this.onPressService(item.itemId)}
                   onPressDelete={() => this.removeService(item.itemId)}
                   key={item.itemId}

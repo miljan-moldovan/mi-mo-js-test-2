@@ -46,6 +46,7 @@ import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
 
 import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
+import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -111,6 +112,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     Conflicts: {
       screen: ConflictsScreen,
+    },
+    ChangeNewApptDateTime: {
+      screen: ChangeDateTimeScreen,
     },
     RoomAssignment: {
       screen: RoomAssignmentScreen,
