@@ -31,6 +31,7 @@ const SalonTimePicker = (props) => {
   return (
     <React.Fragment>
       <InputButton
+        noIcon={props.noIcon}
         label={props.label}
         value={value}
         valueStyle={valueStyle}

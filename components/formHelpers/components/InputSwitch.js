@@ -17,6 +17,10 @@ export default class InputSwitch extends React.Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ value: nextProps.value });
+  }
+
   render() {
     return (
       <View style={[styles.inputRow, { justifyContent: 'space-between' }, this.props.style]}>

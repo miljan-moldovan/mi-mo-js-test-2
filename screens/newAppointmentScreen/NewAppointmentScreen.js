@@ -24,6 +24,7 @@ import {
   ClientInput,
   InputNumber,
   InputButton,
+  ValidatableInput,
 } from '../../components/formHelpers';
 import {
   AddButton,
@@ -205,6 +206,16 @@ export default class NewAppointmentScreen extends React.Component {
     });
   }
 
+  isValidEmailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  isValidPhoneNumberRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
+  clientPhoneTypes = {
+    cell: 2,
+    home: 1,
+    work: 0,
+  };
+
   constructor(props) {
     super(props);
 
@@ -297,32 +308,59 @@ export default class NewAppointmentScreen extends React.Component {
     return this.checkConflicts();
   }
 
-  updateContactInformation = () => {
+  createPhonesArr = (phones) => {
+    const createPhone = (type) => {
+      const cell = phones.find(itm => get(itm, 'type', null) === this.clientPhoneTypes[type]);
+      if (
+        !cell ||
+        !cell.value ||
+        !cell.value.trim() ||
+        !this.isValidPhoneNumberRegExp.test(cell.value)
+      ) {
+        return { type: this.clientPhoneTypes[type], value: '' };
+      }
+      return cell;
+    };
+    return [
+      createPhone('cell'),
+      createPhone('home'),
+      createPhone('work'),
+    ];
+  }
+
+  shouldUpdateClientInfo = async () => {
     const {
       clientEmail,
       clientPhone,
       clientPhoneType,
     } = this.state;
     const { client } = this.props.newAppointmentState;
-    Client.putContactInformation(
+    const currentPhone = client.phones.find(phone => phone.type === this.clientPhoneTypes.cell);
+    const hasEmailChanged = clientEmail !== client.email;
+    const hasPhoneChanged = clientPhone !== currentPhone.value;
+    const isValidEmail = this.isValidEmailRegExp.test(clientEmail) && clientEmail !== '' && hasEmailChanged;
+    const isValidPhone = this.isValidPhoneNumberRegExp.test(clientPhone) && clientPhone !== '' && hasPhoneChanged;
+    if (!isValidEmail && !isValidPhone) {
+      return false;
+    }
+    const phones = isValidPhone && hasPhoneChanged ? [
+      {
+        type: this.clientPhoneTypes.cell,
+        value: clientPhone,
+      },
+      ...client.phones.filter(phone => phone.type !== this.clientPhoneTypes.cell),
+    ] : client.phones;
+    const email = isValidEmail ? clientEmail : client.email;
+    const updated = await Client.putContactInformation(
       client.id,
       {
         id: client.id,
-        email: clientEmail || null,
-        phones: [
-          {
-            type: clientPhoneType,
-            value: clientPhone,
-          },
-          ...client.phones.filter(phone => phone.value && phone.type !== clientPhoneType),
-        ],
+        email,
+        phones: this.createPhonesArr(phones),
         confirmationType: 1,
       },
-    )
-      .then((res) => {
-
-      })
-      .catch(err => console.warn(err));
+    );
+    return updated;
   }
 
   onPressService = (serviceId, guestId = false) => {
@@ -352,12 +390,12 @@ export default class NewAppointmentScreen extends React.Component {
   getServiceItem = serviceId => this.props.newAppointmentState.serviceItems.find(item => item.itemId === serviceId)
 
   getClientInfo = (client) => {
-    const phones = get(client, 'phones', []);
-    const clientPhone = phones.reduce((phone, currentPhone) => (currentPhone.value ? currentPhone.value : phone), '');
+    const phones = this.createPhonesArr(get(client, 'phones', []));
+    const [clientPhone] = phones.filter(item => get(item, 'type', null) === this.clientPhoneTypes.cell);
     return {
       clientPhone,
       clientEmail: get(client, 'email', ''),
-      clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => phone.value === clientPhone) : 0,
+      clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => get(phone, 'value', null) === clientPhone) : 0,
     };
   }
 
@@ -481,6 +519,10 @@ export default class NewAppointmentScreen extends React.Component {
       this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
     }
   }
+
+  onValidateEmail = () => this.shouldUpdateClientInfo()
+
+  onValidatePhone = () => this.shouldUpdateClientInfo()
 
   validate = () => {
     const canSave = this.props.isValidAppointment;
@@ -619,16 +661,20 @@ export default class NewAppointmentScreen extends React.Component {
               extraComponents={client !== null && this.renderExtraClientButtons(isDisabled)}
             />
             <InputDivider />
-            <LabeledTextInput
+            <ValidatableInput
               label="Email"
               value={clientEmail}
-              onChangeText={clientEmail => this.setState({ clientEmail })}
+              regex={this.isValidEmailRegExp}
+              onValidated={this.onValidateEmail}
+              onChangeText={clientEmail => this.setState({ clientEmail }, this.shouldUpdateClientInfo)}
             />
             <InputDivider />
-            <LabeledTextInput
+            <ValidatableInput
               label="Phone"
+              regex={this.isValidPhoneNumberRegExp}
               value={clientPhone}
-              onChangeText={clientPhone => this.setState({ clientPhone })}
+              onValidated={this.onValidatePhone}
+              onChangeText={clientPhone => this.setState({ clientPhone }, this.shouldUpdateClientInfo)}
             />
             <InputDivider />
             <InputNumber

@@ -11,16 +11,18 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import ValidatableInput from './components/ValidatableInput';
 import ClientInput from './components/ClientInput';
 import InputDate from './components/InputDate';
 import InputNumber from './components/InputNumber';
+import InputText from './components/InputText';
 import InputSwitch from './components/InputSwitch';
 import ServiceInput from './components/ServiceInput';
 import ProviderInput from './components/ProviderInput';
 import PromotionInput from './components/PromotionInput';
 import ProductInput from './components/ProductInput';
 import SalonTimePicker from './components/SalonTimePicker';
-
+import InputRadioGroup from './components/InputRadioGroup';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
@@ -323,19 +325,19 @@ const LabeledTextInput = props => (
   </View>
 );
 
-const InputText = props => (
-  <View style={{}}>
-    <TextInput
-      {...props}
-      style={styles.textArea}
-      multiline
-      autoGrow
-      numberOfLines={2}
-      placeholderTextColor="#727A8F"
-      placeholder={props.placeholder}
-    />
-  </View>
-);
+// const InputText = props => (
+//   <View style={{}}>
+//     <TextInput
+//       {...props}
+//       style={styles.textArea}
+//       multiline
+//       autoGrow
+//       numberOfLines={2}
+//       placeholderTextColor="#727A8F"
+//       placeholder={props.placeholder}
+//     />
+//   </View>
+// );
 
 
 export {
@@ -360,5 +362,7 @@ export {
   PromotionInput,
   ProductInput,
   SalonTimePicker,
+  InputRadioGroup,
+  ValidatableInput,
 };
 // export default formHelpers;

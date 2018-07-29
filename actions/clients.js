@@ -1,4 +1,4 @@
-import { Client} from '../utilities/apiWrapper';
+import { Client } from '../utilities/apiWrapper';
 
 export const SET_CLIENTS = 'clients/SET_CLIENTS';
 export const SET_FILTERED_CLIENTS = 'clients/SET_FILTERED_CLIENTS';

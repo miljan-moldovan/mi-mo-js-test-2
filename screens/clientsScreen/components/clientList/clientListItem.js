@@ -3,7 +3,7 @@ import React from 'react';
 import {
   View,
   StyleSheet,
-  TouchableHighlight
+  TouchableHighlight,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
@@ -85,7 +85,10 @@ class ClientListItem extends React.PureComponent {
       <TouchableHighlight
         style={styles.container}
         underlayColor="black"
-        onPress={() => { this.props.onPress(this.props.client); }}
+        onPress={() => {
+            
+           this.props.onPress(this.props.client);
+}}
       >
         <View style={styles.container}>
           <View style={styles.dataContainer}>

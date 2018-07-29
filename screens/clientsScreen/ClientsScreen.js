@@ -127,7 +127,9 @@ class ClientsScreen extends React.Component {
     const { subTitle } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
     const clearSearch = navigation.state.params &&
-    navigation.state.params.clearSearch ? navigation.state.params.clearSearch :  null;
+    navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
+    const onChangeClient = navigation.state.params &&
+    navigation.state.params.onChangeClient ? navigation.state.params.onChangeClient : null;
     return {
       header: props => (<SalonSearchHeader
         title={title}
@@ -182,6 +184,7 @@ class ClientsScreen extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch(), ignoreNav: false });
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
@@ -229,6 +232,7 @@ class ClientsScreen extends React.Component {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
+
     const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
     if (dismissOnSelect) {
@@ -287,16 +291,17 @@ class ClientsScreen extends React.Component {
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeClient) { onChangeClient = this._handleOnChangeClient; }
 
+
     return (
       <View style={styles.container}>
         <View style={styles.clientsList}>
           <ClientList
-              boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.clientListContainer}
-              clients={this.props.clientsSectionDataSource}
-              onChangeClient={onChangeClient}
-              refreshing={this.props.salonSearchHeaderState.isLoading}
-            />
+            boldWords={this.props.salonSearchHeaderState.searchText}
+            style={styles.clientListContainer}
+            clients={this.props.clientsSectionDataSource}
+            onChangeClient={onChangeClient}
+            refreshing={this.props.salonSearchHeaderState.isLoading}
+          />
         </View>
 
       </View>
