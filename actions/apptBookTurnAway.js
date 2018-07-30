@@ -1,4 +1,4 @@
-import { TurnAway } from '../utilities/apiWrapper';
+import { Store, TurnAway } from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
 
 export const SET_ON_EDITION_TURN_AWAY = 'apptBookTurnAway/SET_ON_EDITION_TURN_AWAY';

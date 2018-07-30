@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   rightButtonText: {
-    color: '#19428A',
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
@@ -144,15 +143,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const reasonCodes = [
-  { id: 1, name: 'Provider is not available' },
-  { id: 2, name: 'Provider is not working' },
-  { id: 3, name: 'Salon is closed' },
-  { id: 4, name: 'Resource is unavailable' },
-  { id: 5, name: 'Room is unavailable' },
-  { id: 0, name: 'Other' },
-];
-
 class ApptBookTurnAwayScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
@@ -182,7 +172,7 @@ class ApptBookTurnAwayScreen extends Component {
           }}
             style={styles.rightButton}
           >
-            <Text style={styles.rightButtonText}>Done</Text>
+            <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
           </SalonTouchableOpacity>
         </View>
       ),
@@ -192,19 +182,32 @@ class ApptBookTurnAwayScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    props.navigation.setParams({ handleDone: this.handleDone });
+    props.turnAwayReasonsActions.getTurnAwayReasons(this.finishedGetTurnAwayReasons);
+  }
+
+  state = {
+    date: moment(),
+    isModalVisible: false,
+    selectedClient: null,
+    services: [],
+    selectedReasonCode: null,
+    isEditableOtherReason: true,
+    otherReason: '',
+  }
+
+  finishedGetTurnAwayReasons = (result) => {
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
+    this.setState({
       date: moment(),
       isModalVisible: false,
       selectedClient: null,
       services: [{ provider: this.props.navigation.state.params.employee, toTime: moment(), fromTime: moment() }],
-      selectedReasonCode: reasonCodes[reasonCodes.length - 1],
+      selectedReasonCode,
       isEditableOtherReason: true,
-    };
-
-
-    this.props.navigation.setParams({ handleDone: this.handleDone });
+      otherReason: '',
+    });
   }
-
 
   componentWillMount() {
   }
@@ -221,6 +224,7 @@ class ApptBookTurnAwayScreen extends Component {
       service.fromTime = moment(service.fromTime).format('HH:mm:ss');
       services.push(service);
     }
+
 
     const turnAway = {
       date: this.state.date.format('YYYY-MM-DD'),
@@ -277,7 +281,6 @@ class ApptBookTurnAwayScreen extends Component {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
-    this.setState({ isEditableOtherReason: false });
     navigate('Clients', {
       actionType: 'update',
       dismissOnSelect: true,
@@ -286,7 +289,8 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   handleClientSelection = (client) => {
-    this.setState({ selectedClient: client, isEditableOtherReason: this.state.selectedReasonCode.id === 0 });
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
+    this.setState({ selectedClient: client, isEditableOtherReason: this.state.selectedReasonCode.id === selectedReasonCode.id });
   }
 
   handleRemoveClient = () => {
@@ -300,10 +304,12 @@ class ApptBookTurnAwayScreen extends Component {
 
 
   onPressInputGroup = (option, index) => {
-    const isEditableOtherReason = option.id === 0;
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
+
+    const isEditableOtherReason = option.id === selectedReasonCode.id;
 
     if (!isEditableOtherReason) {
-      this.onChangeOtherReason('');
+      this.setState({ otherReason: '' });
       this.props.navigation.setParams({
         canSave: true,
       });
@@ -312,6 +318,8 @@ class ApptBookTurnAwayScreen extends Component {
         canSave: this.state.otherReason.length > 0,
       });
     }
+
+
     this.setState({ selectedReasonCode: option, isEditableOtherReason });
   }
 
@@ -324,6 +332,8 @@ class ApptBookTurnAwayScreen extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
+    const { selectedReasonCode } = this.state;
+
     return (
       <ScrollView style={styles.container}>
 
@@ -370,8 +380,8 @@ class ApptBookTurnAwayScreen extends Component {
         <SectionDivider style={styles.sectionDivider} />
         <InputGroup>
           <InputRadioGroup
-            options={reasonCodes}
-            defaultOption={this.state.selectedReasonCode}
+            options={this.props.turnAwayReasonsState.turnAwayReasons}
+            defaultOption={selectedReasonCode}
             onPress={this.onPressInputGroup}
           />
           <InputText
