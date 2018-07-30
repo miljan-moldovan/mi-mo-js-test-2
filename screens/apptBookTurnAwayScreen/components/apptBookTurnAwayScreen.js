@@ -281,6 +281,8 @@ class ApptBookTurnAwayScreen extends Component {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
+    this.setState({ isEditableOtherReason: false });
+
     navigate('Clients', {
       actionType: 'update',
       dismissOnSelect: true,
@@ -385,6 +387,7 @@ class ApptBookTurnAwayScreen extends Component {
             onPress={this.onPressInputGroup}
           />
           <InputText
+            autoFocus
             value={this.state.otherReason}
             isEditable={this.state.isEditableOtherReason}
             onChangeText={this.onChangeOtherReason}
