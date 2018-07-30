@@ -48,6 +48,12 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginTop: 7,
   },
+  rightButtonText: {
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+  },
 });
 
 
@@ -62,7 +68,7 @@ const scheduleTypes = [
 export default class BlockTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    const canSave = params.canSave || false;
+    const canSave = false; // params.canSave || false;
     const employee = params.employee || { name: 'First', lastName: 'Available' };
 
     return {
@@ -99,9 +105,7 @@ export default class BlockTimeScreen extends React.Component {
           }
         }}
         >
-          <Text style={{ fontSize: 14, color: 'white' }}>
-          Done
-          </Text>
+          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
         </SalonTouchableOpacity>
       ),
     };
@@ -138,27 +142,26 @@ export default class BlockTimeScreen extends React.Component {
   }
 
   handleDone = () => {
-    //
-    // const schedule = {
-    //   date: this.state.date.format('YYYY-MM-DD'),
-    //   fromTime: this.state.fromTime.format('HH:mm:ss'),
-    //   toTime: this.state.toTime.format('HH:mm:ss'),
-    //   notes: this.state.comments.length > 0 ? this.state.comments : null,
-    //   reasonId: this.state.blockTimesReason.id,
-    //   employeeId: this.state.provider.id,
-    //   bookedByEmployeeId: this.state.blockedBy.id,
-    // //  id: 0,
-    //   // updateStamp: 0,
-    // //  isDeleted: true,
-    // };
-    //
-    //
-    // this.props.blockTimeActions.postBlockTime(schedule, (result) => {
-    //   if (result) {
-    //     this.props.appointmentCalendarActions.setGridView();
-    //     this.props.navigation.goBack();
-    //   }
-    // });
+    const schedule = {
+      date: this.state.date.toISOString(),
+      fromTime: this.state.fromTime.format('HH:mm:ss'),
+      toTime: this.state.toTime.format('HH:mm:ss'),
+      notes: this.state.comments.length > 0 ? this.state.comments : null,
+      reasonId: this.state.blockTimesReason.id,
+      employeeId: this.state.provider.id,
+      bookedByEmployeeId: this.state.blockedBy.id,
+      //   id: 0,
+      updateStamp: moment().unix(),
+      isDeleted: false,
+    };
+
+
+    this.props.blockTimeActions.postBlockTime(schedule, (result) => {
+      if (result) {
+        this.props.appointmentCalendarActions.setGridView();
+        this.props.navigation.goBack();
+      }
+    });
   }
 
   componentWillMount() {

@@ -25,12 +25,14 @@ export default class InputText extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (this.state.editable || nextProps.isEditable) {
-      if (this.input && !this.input.isFocused()) {
-        this.input.focus();
+    if (nextProps.autoFocus) {
+      if (nextProps.isEditable) {
+        if (this.input && !this.input.isFocused()) {
+          this.input.focus();
+        }
+      } else {
+        this.input.blur();
       }
-    } else {
-      this.input.blur();
     }
   }
 

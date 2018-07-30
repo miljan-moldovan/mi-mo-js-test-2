@@ -95,11 +95,22 @@ export default class BlockTimesReasonsScreen extends React.Component {
     const { selectedBlockTimesReason } = this.props.navigation.state.params;
 
     this.state.type = selectedBlockTimesReason || types[types.length - 1];
+
+    props.blockTimesReasonsActions.getBlockTimesReasons(this.finishedBlockTimesReasons);
   }
 
   state = {
-    type: types[types.length - 1],
+    type: null,
   }
+
+
+  finishedBlockTimesReasons = (result) => {
+    const selectedBlockTimesReason = this.props.blockTimesReasonsState.blockTimesReasons[this.props.blockTimesReasonsState.blockTimesReasons.length - 1];
+    this.setState({
+      type: selectedBlockTimesReason,
+    });
+  }
+
 
   handleDone = () => {
 
@@ -120,8 +131,7 @@ export default class BlockTimesReasonsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {false
-          // this.props.blockTimesReasonsState.isLoading
+        {this.props.blockTimesReasonsState.isLoading
           ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <ActivityIndicator />
@@ -131,7 +141,7 @@ export default class BlockTimesReasonsScreen extends React.Component {
               <SectionDivider style={{ height: 20 }} />
               <InputGroup>
                 <InputRadioGroup
-                  options={types}
+                  options={this.props.blockTimesReasonsState.blockTimesReasons}
                   defaultOption={this.state.type}
                   onPress={this._handleOnChangeBlockTimesReason}
                 />
