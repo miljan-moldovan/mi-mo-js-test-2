@@ -101,6 +101,7 @@ export default class AppointmentScreen extends Component {
     isAlertVisible: false,
     selectedAppointment: null,
     bookAnotherEnabled: false,
+    screenHeight: 0,
   };
 
   componentDidMount() {
@@ -317,6 +318,13 @@ export default class AppointmentScreen extends Component {
 
   setBookAnother = () => this.setState({ bookAnotherEnabled: false });
 
+  handleLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    if (this.state.screenHeight === 0) {
+      this.setState({ screenHeight: height + 48 });
+    }
+  }
+
   render() {
     const {
       dates,
@@ -339,7 +347,7 @@ export default class AppointmentScreen extends Component {
       storeSchedule,
     } = this.props.appointmentScreenState;
     const { availability, appointments, blockTimes } = this.props;
-    const { bufferVisible, bookAnotherEnabled } = this.state;
+    const { bufferVisible, bookAnotherEnabled, screenHeight } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
       || this.props.appointmentScreenState.isLoadingSchedule;
@@ -369,7 +377,10 @@ export default class AppointmentScreen extends Component {
         break;
     }
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        style={{ flex: 1 }}
+        onLayout={this.handleLayout}
+      >
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={pickerMode}
@@ -432,6 +443,7 @@ export default class AppointmentScreen extends Component {
 
         <NewApptSlide
           ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
+          maxHeight={screenHeight}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           startTime={this.state.newApptStartTime}
