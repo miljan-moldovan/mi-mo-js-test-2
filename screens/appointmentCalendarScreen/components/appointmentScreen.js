@@ -329,7 +329,7 @@ export default class AppointmentScreen extends Component {
       apptGridSettings,
       providerAppointments,
       providers,
-      showToast,
+      toast,
       filterOptions,
       rooms,
       roomAppointments,
@@ -568,8 +568,8 @@ export default class AppointmentScreen extends Component {
           }}
         />
         {
-          showToast ?
-            <SalonToast type="success" description={showToast} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText="OK" btnLeftText="UNDO" /> : null
+          toast ?
+            <SalonToast type={toast.type} description={toast.description} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText={toast.btnRightText} btnLeftText={toast.btnLeftText} /> : null
         }
         {
           bookAnotherEnabled ?
