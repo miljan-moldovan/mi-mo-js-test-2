@@ -100,12 +100,18 @@ class SalonToast extends Component {
         <Animated.View style={[styles.toast, { backgroundColor: colors[type], top }]}>
           <Text style={styles.description}>{description}</Text>
           <View style={styles.btnContainer}>
-            <TouchableOpacity onPress={this.undo}>
-              <Text style={styles.btn}>{btnLeftText}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.hide}>
-              <Text style={styles.btn}>{btnRightText}</Text>
-            </TouchableOpacity>
+            {
+              btnLeftText &&
+              <TouchableOpacity onPress={this.undo}>
+                <Text style={styles.btn}>{btnLeftText}</Text>
+              </TouchableOpacity>
+            }
+            {
+              btnRightText &&
+              <TouchableOpacity onPress={this.hide}>
+                <Text style={styles.btn}>{btnRightText}</Text>
+              </TouchableOpacity>
+            }
           </View>
         </Animated.View>
       </View>
