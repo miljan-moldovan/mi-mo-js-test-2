@@ -10,7 +10,9 @@ import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper/api';
-
+import {
+  ConflictBox,
+} from '../../../components/slidePanels/SalonNewAppointmentSlide';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonCard from '../../../components/SalonCard';
 import SalonAvatar from '../../../components/SalonAvatar';
@@ -49,25 +51,25 @@ const SalonAppointmentTime = props => (
   </View>
 );
 
-export class ServiceCard extends React.Component {
-  render() {
-    const { data } = this.props;
-    const employee = data.employee || null;
-    const isFirstAvailable = data.isFirstAvailable || false;
-    const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
-    return ([
+const ServiceCard = (props) => {
+  const { data } = props;
+  const employee = data.employee || null;
+  const isFirstAvailable = data.isFirstAvailable || false;
+  const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  return (
+    <React.Fragment>
       <SalonTouchableOpacity
-        onPress={this.props.onPress}
+        onPress={props.onPress}
       >
         <SalonCard
-          key={this.props.id}
+          key={props.id}
           containerStyles={{ marginVertical: 0, marginBottom: 10 }}
           bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
           backgroundColor="white"
           bodyChildren={
             <View style={{ flex: 1, flexDirection: 'column' }}>
               <View style={{ flexDirection: 'row' }}>
-                {this.props.isAddon && (
+                {props.isAddon && (
                   <Icon
                     style={{
                       marginRight: 10,
@@ -87,10 +89,10 @@ export class ServiceCard extends React.Component {
                     justifyContent: 'flex-start',
                   }}
                 >
-                  <Text style={[styles.serviceTitle, this.props.hasConflicts ? { color: 'red' } : {}]}>
+                  <Text style={[styles.serviceTitle, props.conflicts.length > 0 ? { color: 'red' } : {}]}>
                     {data.service.name}
                   </Text>
-                  {this.props.isRequired && (
+                  {props.isRequired && (
                     <Text style={{
                       fontSize: 10,
                       marginLeft: 6,
@@ -146,7 +148,7 @@ export class ServiceCard extends React.Component {
                   style={{
                     fontSize: 14,
                     lineHeight: 22,
-                    color: this.props.hasConflicts ? 'red' : '#2F3142',
+                    color: props.conflicts.length > 0 ? 'red' : '#2F3142',
                   }}
                 >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
                 </Text>
@@ -160,7 +162,7 @@ export class ServiceCard extends React.Component {
                   from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
                   to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
                 />
-                <SalonTouchableOpacity onPress={this.props.onPressDelete}>
+                <SalonTouchableOpacity onPress={props.onPressDelete}>
                   <Icon
                     name="trashAlt"
                     size={12}
@@ -172,10 +174,20 @@ export class ServiceCard extends React.Component {
             </View>
           }
         />
-      </SalonTouchableOpacity>,
-    ]);
-  }
-}
+      </SalonTouchableOpacity>
+      {props.conflicts.length > 0 && (
+        <ConflictBox
+          style={{
+            marginHorizontal: 10,
+            marginTop: 0,
+            marginBottom: 10,
+          }}
+          onPress={() => props.onPressConflicts()}
+        />
+      )}
+    </React.Fragment>
+  );
+};
 
 const mapStateToProps = (state, props) => ({
 
