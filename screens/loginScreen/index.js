@@ -2,21 +2,21 @@
 import React from 'react';
 import {
   Image,
-  ScrollView,
   Text,
   View,
   Alert,
   Modal,
   Linking,
   ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
 } from 'react-native';
-import { Item, Input, Button, Label } from 'native-base';
-// import { Fingerprint } from 'expo';
+import AnimatedHideView from 'react-native-animated-hide-view';
+import { Input, Button, Label } from 'native-base';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TouchID from 'react-native-touch-id';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import TextInputMask from 'react-native-text-input-mask';
 
 import * as actions from '../../actions/login';
 import styles from './styles';
@@ -31,9 +31,21 @@ class LoginScreen extends React.Component {
     waitingLogin: false,
     hasFingerprint: false,
     fingerprintModalVisible: false,
+    showLogo: true,
+    loginPressed: false,
+    urlError: false,
+    loginError: false,
+    errors: [],
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+
+    if (this.props.auth.loggedIn && this.props.auth.useFingerprintId) {
+      this.handleFingerprintPress();
+    }
+
     TouchID.isSupported()
       .then((biometryType) => {
         // Success code
@@ -47,12 +59,6 @@ class LoginScreen extends React.Component {
         // Failure code
         this.setState({ hasFingerprint: false });
       });
-  }
-
-  componentDidMount() {
-    if (this.props.auth.loggedIn && this.props.auth.useFingerprintId) {
-      this.handleFingerprintPress();
-    }
   }
 
   handleFingerprintPress = () => {
@@ -95,6 +101,24 @@ class LoginScreen extends React.Component {
         Alert.alert('Error authenticating fingerprint');
       });
   }
+
+  keyboardDidShow = () => {
+    this.setState({ showLogo: false });
+  }
+
+  keyboardDidHide = () => {
+    this.setState({ showLogo: true });
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  hideKeyboard = () => {
+    Keyboard.dismiss();
+  }
+
   handleUsernameChange = (username: string) => this.setState({ username });
   handlePasswordChange = (password: string) => this.setState({ password });
   handleURLChange = (url: string) => this.setState({ url });
@@ -106,17 +130,32 @@ class LoginScreen extends React.Component {
     if (this.state.hasFingerprint && (this.props.auth.useFingerprintId === undefined)) {
       this.setState({ fingerprintModalVisible: true });
     } else {
+      this.setState({ loginPressed: true });
       this.login();
     }
   }
   login = () => {
     this.setState(
       { waitingLogin: true, error: null },
-      () => this.props.login(this.state.username, this.state.password, (success, message) => {
-        if (!success) { this.setState({ waitingLogin: false, error: message }); }
-        // in case of success, action/reducer sets auth.loggedIn to true,
-        // which triggers a re-render that now routes the app to RootStackNavigator
-      }),
+      () => this.props.login(
+        this.state.url,
+        this.state.username,
+        this.state.password,
+        (success, err) => {
+          console.log(123);
+          if (!success) {
+            this.setState({
+              waitingLogin: false,
+              error: err.message,
+              urlError: err.error.response.data.urlError,
+              loginError: err.error.response.data.loginError,
+              errors: err.error.response.data.errors
+            });
+          }
+          // in case of success, action/reducer sets auth.loggedIn to true,
+          // which triggers a re-render that now routes the app to RootStackNavigator
+        },
+      ),
     );
   }
   handleModalConfirmFingerprint = () => {
@@ -174,77 +213,155 @@ class LoginScreen extends React.Component {
     );
   }
 
-  renderUrlField = loggedIn => (
+  renderUrlInput = loggedIn => (
     <View style={styles.inputContainer}>
-      <Image source={images.urlIcon} style={styles.inputIcon} />
-      <TextInputMask
-        refInput={(ref) => { this.input = ref; }}
+      <FontAwesome style={styles.inputIcon}>{Icons.link}</FontAwesome>
+      <Input
+        style={[styles.input, this.state.url ?
+          styles.inputFontFamily : styles.inputPlaceholderFontFamily]}
+        disabled={loggedIn}
+        autoCorrect={false}
+        blurOnSubmit
+        autoCapitalize="none"
         onChangeText={this.handleURLChange}
-        mask={'[0-9a-z]{10}.salonultimate.com'}
+        placeholder="URL"
+        placeholderTextColor="rgb(76.15, 135.15, 216.75)"
+      />
+      <Label
+        style={[styles.inputLabel, styles.inputLabelUrl]}
+      >
+        .salonultimate.com
+      </Label>
+      {this.state.loginPressed && !this.state.urlError && !this.state.waitingLogin && (
+        <FontAwesome
+          style={[styles.urlValidationIcon, styles.iconCheck]}
+        >{Icons.check}
+        </FontAwesome>)
+      }
+      {this.state.loginPressed && this.state.urlError && !this.state.waitingLogin && (
+        <FontAwesome
+          style={[styles.urlValidationIcon, styles.iconTimes]}
+        >{Icons.times}
+        </FontAwesome>)
+      }
+    </View>
+  )
+
+  renderUserNameInput = loggedIn => (
+    <View style={[styles.inputContainer, this.state.loginError ? styles.inputInvalid : null]}>
+      <FontAwesome style={styles.inputIcon}>{Icons.user}</FontAwesome>
+      <Input
+        style={[styles.input, this.state.username ?
+          styles.inputFontFamily : styles.inputPlaceholderFontFamily]}
+        underline={false}
+        disabled={loggedIn}
+        autoCorrect={false}
+        blurOnSubmit
+        autoCapitalize="none"
+        onChangeText={this.handleUsernameChange}
+        placeholder="Username"
+        placeholderTextColor="rgb(76.15, 135.15, 216.75)"
       />
     </View>
-  );
+  )
+
+  renderPasswordInput = () => (
+    <View style={[styles.inputContainer, this.state.loginError ? styles.inputInvalid : null]}>
+      <FontAwesome style={styles.inputIcon}>{Icons.unlockAlt}</FontAwesome>
+      <Input
+        style={[styles.input, this.state.password ?
+          styles.inputFontFamily : styles.inputPlaceholderFontFamily]}
+        autoCorrect={false}
+        blurOnSubmit
+        autoCapitalize="none"
+        secureTextEntry
+        onChangeText={this.handlePasswordChange}
+        placeholder="Password"
+        placeholderTextColor="rgb(76.15, 135.15, 216.75)"
+      />
+    </View>
+  )
+
+  renderTouchIdButton = () => (
+    <Button
+      rounded
+      bordered
+      style={styles.touchIdButton}
+      onPress={this.handleFingerprintPress}
+    >
+      <Text style={styles.touchIdButtonText}>Touch ID access</Text>
+    </Button>
+  )
+
+  renderError = () => (
+    <View style={styles.errorContainer}>
+      <FontAwesome style={styles.errorIcon}>{Icons.exclamationTriangle}</FontAwesome>
+      {this.state.errors.length > 0 && (
+        <View style={styles.errorItemsContainer}>
+          {this.state.errors.map((err, index) => (
+            <View style={styles.errorListItem}>
+              <Text style={ styles.bullet }>{'\u2022 '}</Text>
+              <Text key={`err__${index}`} style={styles.errorListMessage}>{err}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+      {this.state.errors.length === 0 && (
+        <Text style={styles.errorMessage}>{this.state.error}</Text>
+      )}
+    </View>
+  )
 
   render() {
     const { loggedIn } = this.props.auth;
+    const { showLogo } = this.state;
+
     return (
       <View style={styles.container}>
         {this.renderFingerprintModal()}
+        <AnimatedHideView
+          visible={showLogo}
+          unmountOnHide={true}
+        >
+          <Image
+            source={images.logoWithText}
+            style={styles.logo}
+          />
+        </AnimatedHideView>
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
+          style={[{ flex: 1, height: '100%' }]}
           behavior="padding"
         >
-          <ScrollView
-            style={styles.scrollContainer}
-            contentContainerStyle={styles.scrollContentContainer}
-          >
-            <Image
-              source={images.logoSimple}
-              style={styles.logo}
-            />
-
-            {loggedIn &&
+          {loggedIn &&
             <Text
               style={styles.bodyText}
             >
               You are already logged in. To proceed, please confirm using your fingerprint.
             </Text>
-            }
-            {!loggedIn && this.renderUrlField(loggedIn)}
-            {!loggedIn &&
-            <View style={styles.inputContainer}>
-              <Image source={images.iconProfile} style={styles.inputIcon} />
-              <Item floatingLabel style={styles.item}>
-                <Label style={styles.inputLabel}>Username</Label>
-                <Input
-                  style={styles.input}
-                  disabled={loggedIn}
-                  autoCorrect={false}
-                  blurOnSubmit
-                  autoCapitalize="none"
-                  onChangeText={this.handleUsernameChange}
-                />
-              </Item>
-            </View>
-            }
-            { !loggedIn &&
-              <View style={styles.inputContainer}>
-                <Image source={images.iconLock} style={styles.inputIcon} />
-                <Item floatingLabel style={styles.item}>
-                  <Label style={styles.inputLabel}>Password</Label>
-                  <Input
-                    style={styles.input}
-                    autoCorrect={false}
-                    blurOnSubmit
-                    autoCapitalize="none"
-                    secureTextEntry
-                    onChangeText={this.handlePasswordChange}
-                  />
-                </Item>
-              </View>
-            }
+          }
+          <View
+            style={showLogo ? styles.mainContent : [
+              styles.mainContent,
+              styles.mainContentWithLogo]}
+          >
+            <AnimatedHideView
+              visible={!showLogo && !loggedIn}
+              unmountOnHide={true}
+            >
+              <Text
+                onPress={this.hideKeyboard}
+                style={styles.backButtonLogo}
+              >
+                <FontAwesome style={styles.backButtonLogo}>
+                  {Icons.angleLeft}
+                </FontAwesome>
+              </Text>
+            </AnimatedHideView>
+            {!loggedIn && this.renderUrlInput(loggedIn)}
+            {!loggedIn && this.renderUserNameInput(loggedIn)}
+            {!loggedIn && this.renderPasswordInput()}
+            {this.state.loginError && this.renderError()}
             <Button
-              rounded
               bordered
               disabled={this.state.waitingLogin}
               style={styles.loginButton}
@@ -253,46 +370,30 @@ class LoginScreen extends React.Component {
               { !this.state.waitingLogin && <Text style={styles.loginButtonText}>{ loggedIn ? 'LOGOUT' : 'LOGIN' } </Text> }
               { this.state.waitingLogin && <ActivityIndicator style={{ marginLeft: 'auto', marginRight: 'auto' }} /> }
             </Button>
-            {this.state.error &&
-              <Text style={styles.errorMessage}>{this.state.error}</Text>
-            }
 
-            <View>
-              <Text style={styles.bodyText}>Forgot your Password?...&nbsp;
-                <Text
-                  style={styles.bodyLink}
-                  onPress={this.handleForgotPasswordPress}
-                >We&#39;ll Help
-                </Text>
-              </Text>
-            </View>
-
-            <Button
-              rounded
-              bordered
-              style={styles.touchIdButton}
-              onPress={this.handleFingerprintPress}
+            <Text
+              style={[styles.bodyText, styles.bodyLink, styles.forgotPasswordLink]}
+              onPress={this.handleForgotPasswordPress}
             >
-              <Text style={styles.touchIdButtonText}>Touch ID access</Text>
-            </Button>
-
-            <View style={styles.footer}>
-              <Text
-                style={styles.footerText}
-              >Don&#39t have an account? Contact our Support at
-              </Text>
-              <Text style={styles.footerText}>
-                <Text style={styles.bodyLink} onPress={this.handlePhonePress}>(855) 466-9332</Text>
-                or&nbsp;
-                <Text
-                  style={styles.bodyLink}
-                  onPress={this.handleMailPress}
-                >support@salonultimate.com
-                </Text>
-              </Text>
-            </View>
-          </ScrollView>
+              Forgot your Password?
+            </Text>
+          </View>
         </KeyboardAvoidingView>
+        <View style={styles.footer}>
+          <Text
+            style={styles.footerText}
+          >Don&#39;t have an account? Contact our Support at
+          </Text>
+          <Text style={styles.footerText}>
+            <Text style={styles.bodyLink} onPress={this.handlePhonePress}>(855) 466-9332</Text>
+            &nbsp;or&nbsp;
+            <Text
+              style={styles.bodyLink}
+              onPress={this.handleMailPress}
+            >support@salonultimate.com
+            </Text>
+          </Text>
+        </View>
       </View>
     );
   }
@@ -308,8 +409,8 @@ LoginScreen.propTypes = {
   updateFingerprintValidationTime: PropTypes.func.isRequired,
   login: PropTypes.func.isRequired,
   auth: PropTypes.shape({
-    loggedIn: PropTypes.bool,
-    useFingerprintId: PropTypes.bool,
+    loggedIn: PropTypes.bool.isRequired,
+    useFingerprintId: PropTypes.bool.isRequired,
   }).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.bool,
