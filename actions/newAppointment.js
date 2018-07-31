@@ -265,7 +265,7 @@ const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, get
   const serviceItem = {
     guestId,
     itemId: newServiceItems[serviceIndex].itemId,
-    service: updatedService,
+    service: { ...updatedService },
   };
   newServiceItems.splice(serviceIndex, 1, serviceItem);
   resetTimeForServices(
