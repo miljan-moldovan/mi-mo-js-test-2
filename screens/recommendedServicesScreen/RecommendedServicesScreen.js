@@ -5,11 +5,14 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  Dimensions
 } from 'react-native';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 import { getApiInstance } from '../../utilities/apiWrapper/api';
+
+const PHONE_WIDTH = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +32,7 @@ export default class RecommendedServicesScreen extends React.Component {
       onNavigateBack();
       navigation.goBack();
     };
+    const recommendedTitle = PHONE_WIDTH < 375 ? 'Rec. Services' : 'Recommended Services';
     return ({
       headerTitle: (
         <View style={{
@@ -44,7 +48,7 @@ export default class RecommendedServicesScreen extends React.Component {
             color: 'white',
           }}
           >
-            Recommended Services
+            {recommendedTitle}
           </Text>
           <Text style={{
             fontFamily: 'Roboto',
