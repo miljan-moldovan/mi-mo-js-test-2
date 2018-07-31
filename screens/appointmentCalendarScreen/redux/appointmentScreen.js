@@ -7,6 +7,7 @@ import { POST_APPOINTMENT_RESIZE,
   POST_APPOINTMENT_MOVE_SUCCESS,
   POST_APPOINTMENT_MOVE,
   POST_APPOINTMENT_MOVE_FAILED,
+  POST_APPOINTMENT_RESIZE_FAILED,
   UNDO_MOVE,
 } from '../../../actions/appointment';
 
@@ -160,7 +161,9 @@ const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSetti
   };
   return {
     type: SET_GRID_DAY_WEEK_VIEW_SUCCESS,
-    data: { providerSchedule, appointments, apptGridSettings: newApptGridSettings, blockTimes },
+    data: {
+      providerSchedule, appointments, apptGridSettings: newApptGridSettings, blockTimes,
+    },
   };
 };
 
@@ -222,7 +225,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
             dispatch(setGridAllViewSuccess(
               employeesAppointment,
-              orderedAppointments, availabilityItem.timeSlots, blockTimes, schedule
+              orderedAppointments, availabilityItem.timeSlots, blockTimes, schedule,
             ));
           })
           .catch((ex) => {
@@ -252,7 +255,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                   apptGridSettings,
                   startDate,
                   pickerMode,
-                  blockTimes
+                  blockTimes,
                 ));
               })
               .catch((ex) => {
@@ -416,7 +419,7 @@ const initialState = {
   deskStaff: [],
   storeSchedule: [],
   providerSchedule: [],
-  showToast: false,
+  toast: null,
   blockTimes: [],
   appointments: [],
 };
@@ -593,29 +596,42 @@ export default function appointmentScreenReducer(state = initialState, action) {
       const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
       const toastText = type === POST_APPOINTMENT_MOVE_SUCCESS ?
         `Moved to - ${newTime} ${newDate}` : `Moved to - ${newTime} to ${newToTime}`;
-      const showToast = data.oldAppointment ? toastText : null;
+      const description = data.oldAppointment ? toastText : null;
       const undoType = type === POST_APPOINTMENT_MOVE_SUCCESS ? 'move' : 'resize';
+      const toast = description ? {
+        description,
+        type: 'success',
+        btnRightText: 'OK',
+        btnLeftText: 'UNDO',
+      } : null;
       return {
         ...state,
         appointments: appointments.slice(),
         isLoading: false,
-        showToast,
+        toast,
         oldAppointment: data.oldAppointment,
         undoType,
       };
     }
     case POST_APPOINTMENT_MOVE_FAILED:
+    case POST_APPOINTMENT_RESIZE_FAILED:
       return {
         ...state,
         isLoading: false,
+        toast: {
+          description: data.error.response.data.userMessage,
+          type: 'error',
+          btnRightText: 'OK',
+        },
       };
     case HIDE_TOAST:
     case UNDO_MOVE:
       return {
         ...state,
-        showToast: false,
+        toast: null,
         oldAppointment: null,
         undoType: null,
+        error: null,
       };
     default:
       return state;

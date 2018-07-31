@@ -8,7 +8,9 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { get } from 'lodash';
 
+import { Services } from '../../utilities/apiWrapper';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ServiceList from './components/serviceList';
 import CategoryServicesList from './components/categoryServicesList';
@@ -282,9 +284,6 @@ class ServicesScreen extends React.Component {
       selectExtraServices = false,
     } = params;
     const {
-      hasViewedAddons,
-      hasViewedRecommended,
-      hasViewedRequired,
       selectedAddons,
       selectedRequired,
       selectedRecommendeds,
@@ -305,6 +304,17 @@ class ServicesScreen extends React.Component {
     }
 
     return this;
+  }
+
+  getServicesById = (ids) => {
+    const { flatServices } = this.props;
+    const results = [];
+    const check = (service, index) => service.id === ids[index].id;
+    for (let i = 0; i < ids.length; i += 1) {
+      const service = flatServices.find(ser => check(ser, i));
+      if (service) { results.push(service); }
+    }
+    return results;
   }
 
   shouldSelectExtras = () => {
@@ -336,14 +346,22 @@ class ServicesScreen extends React.Component {
   selectRequiredService = () => {
     const { selectedService } = this.props.servicesState;
     if (selectedService && selectedService.requiredServices.length > 0) {
-      this.props.navigation.navigate('RequiredServices', {
-        serviceTitle: selectedService.name,
-        services: selectedService.requiredServices,
-        onSave: selectedRequired => this.setState({
-          selectedRequired,
-          hasViewedRequired: true,
-        }, this.shouldPerformOnChange),
-      });
+      const saveSelection = selectedRequired => this.setState({
+        selectedRequired,
+        hasViewedRequired: true,
+      }, this.shouldPerformOnChange);
+
+      if (selectedService.requiredServices.length === 1) {
+        const [fullServiceObject] = this.getServicesById(selectedService.requiredServices);
+        saveSelection(fullServiceObject);
+      } else {
+        this.props.navigation.navigate('RequiredServices', {
+          serviceTitle: selectedService.name,
+          services: selectedService.requiredServices,
+          showCancelButton: this.state.hasViewedRequired,
+          onSave: service => saveSelection(service),
+        });
+      }
     }
 
     return this;
@@ -355,6 +373,7 @@ class ServicesScreen extends React.Component {
       this.props.navigation.navigate('AddonServices', {
         serviceTitle: selectedService.name,
         services: selectedService.addons,
+        showCancelButton: this.state.hasViewedAddons,
         onSave: selectedAddons => this.setState({
           selectedAddons,
           hasViewedAddons: true,
@@ -370,6 +389,7 @@ class ServicesScreen extends React.Component {
       this.props.navigation.navigate('RecommendedServices', {
         serviceTitle: selectedService.name,
         services: selectedService.recommendedServices,
+        showCancelButton: this.state.hasViewedRecommended,
         onSave: selectedRecommendeds => this.setState({
           selectedRecommendeds,
           hasViewedRecommended: true,
@@ -453,37 +473,37 @@ class ServicesScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.servicesList}>
           {(!this.props.servicesState.showCategoryServices
-            && !this.props.salonSearchHeaderState.showFilter
-            && this.props.servicesState.filtered.length > 0) &&
-            <ServiceCategoryList
-              onRefresh={this.getServices}
-              handlePressServiceCategory={this.handlePressServiceCategory}
-              serviceCategories={this.props.servicesState.filtered}
-            />
-          }
+              && !this.props.salonSearchHeaderState.showFilter
+              && this.props.servicesState.filtered.length > 0) &&
+              <ServiceCategoryList
+                onRefresh={this.getServices}
+                handlePressServiceCategory={this.handlePressServiceCategory}
+                serviceCategories={this.props.servicesState.filtered}
+              />
+            }
 
           {(!this.props.servicesState.showCategoryServices
-            && this.props.salonSearchHeaderState.showFilter
-            && this.props.servicesState.filtered.length > 0) &&
-            <ServiceList
-              {...this.props}
-              onRefresh={this.getServices}
-              boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.serviceListContainer}
-              services={this.props.servicesState.filtered}
-              onChangeService={this.handleOnChangeService}
-            />
-          }
+              && this.props.salonSearchHeaderState.showFilter
+              && this.props.servicesState.filtered.length > 0) &&
+              <ServiceList
+                {...this.props}
+                onRefresh={this.getServices}
+                boldWords={this.props.salonSearchHeaderState.searchText}
+                style={styles.serviceListContainer}
+                services={this.props.servicesState.filtered}
+                onChangeService={this.handleOnChangeService}
+              />
+            }
 
           {(this.props.servicesState.showCategoryServices
-            && this.props.servicesState.filtered.length > 0) &&
-            <CategoryServicesList
-              {...this.props}
-              onRefresh={this.getServices}
-              onChangeService={this.handleOnChangeService}
-              categoryServices={this.props.servicesState.categoryServices}
-            />
-          }
+              && this.props.servicesState.filtered.length > 0) &&
+              <CategoryServicesList
+                {...this.props}
+                onRefresh={this.getServices}
+                onChangeService={this.handleOnChangeService}
+                categoryServices={this.props.servicesState.categoryServices}
+              />
+            }
         </View>
       </View>
     );

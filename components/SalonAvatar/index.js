@@ -24,7 +24,7 @@ export default class SalonAvatar extends React.Component {
   constructor(props) {
     super(props);
     let image = 'image' in this.props ? this.props.image : this.state.image;
-    if (typeof image === 'string' && image.startsWith('https:')) {
+    if (image && typeof image === 'string' && image.startsWith('https:')) {
       image = { uri: image };
     }
     this.state.image = image;
@@ -103,30 +103,27 @@ export default class SalonAvatar extends React.Component {
 
 
           {
-            this.props.defaultComponent && this.state.isLoading &&
-            <View style={{
-              position: 'absolute',
-              zIndex: 999,
-              width: this.state.width,
-              height: this.state.width,
-              borderRadius: this.state.width / 2,
-            }}
-            >{this.props.defaultComponent}
-            </View>
+            this.props.defaultComponent && this.state.image ?
+              <View style={{
+                  position: 'absolute',
+                  zIndex: 999,
+                  width: this.state.width,
+                  height: this.state.width,
+                  borderRadius: this.state.width / 2,
+                }}
+              >{this.props.defaultComponent}
+              </View> :
+              <CachedImage
+                style={{
+                    zIndex: 9999,
+                    width: this.state.width,
+                    height: this.state.width,
+                    borderRadius: this.state.width / 2,
+                  }}
+                source={this.state.image}
+                onLoadEnd={() => this.setState({ isLoading: false })}
+              />
           }
-
-
-          <CachedImage
-            style={{
-                zIndex: 9999,
-                width: this.state.width,
-                height: this.state.width,
-                borderRadius: this.state.width / 2,
-              }}
-            source={this.state.image}
-            onLoadEnd={() => this.setState({ isLoading: false })}
-          />
-
 
           {this.props.hasBadge && (
             <View style={{

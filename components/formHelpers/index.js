@@ -11,16 +11,20 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import ValidatableInput from './components/ValidatableInput';
 import ClientInput from './components/ClientInput';
 import InputDate from './components/InputDate';
 import InputNumber from './components/InputNumber';
+import InputText from './components/InputText';
 import InputSwitch from './components/InputSwitch';
 import ServiceInput from './components/ServiceInput';
 import ProviderInput from './components/ProviderInput';
 import PromotionInput from './components/PromotionInput';
 import ProductInput from './components/ProductInput';
-
+import SalonTimePicker from './components/SalonTimePicker';
+import InputRadioGroup from './components/InputRadioGroup';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import BlockTimesReasonInput from './components/BlockTimesReasonInput';
 
 const styles = StyleSheet.create({
   container: {
@@ -140,14 +144,32 @@ const styles = StyleSheet.create({
 
 
 const DefaultAvatar = props => (
-  <View style={styles.avatarDefaultComponent}>
-    <Text style={styles.avatarDefaultComponentText}>
+  <View style={[styles.avatarDefaultComponent, props.size ? { width: props.size, height: props.size } : '']}>
+    <Text style={[styles.avatarDefaultComponentText, props.fontSize ? { fontSize: props.fontSize } : '']}>
       {
         props.provider && !props.provider.isFirstAvailable
         ? `${props.provider.name[0]}${props.provider.lastName[0]}`
         : 'FA'
       }
     </Text>
+  </View>
+);
+
+const LabeledTextarea = props => (
+  <View style={{
+    flex: 1,
+    flexDirection: 'column',
+  }}
+  >
+    <Text style={{
+      fontSize: 14,
+      lineHeight: 22,
+      color: '#110A24',
+      fontFamily: 'Roboto',
+    }}
+    >{props.label}
+    </Text>
+    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
   </View>
 );
 
@@ -229,6 +251,7 @@ const InputButton = props => (
   <SalonTouchableOpacity
     style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
     onPress={props.onPress}
+    disabled={props.disabled || false}
   >
     { props.label && typeof props.label === 'string'
     ? (
@@ -321,19 +344,19 @@ const LabeledTextInput = props => (
   </View>
 );
 
-const InputText = props => (
-  <View style={{}}>
-    <TextInput
-      {...props}
-      style={styles.textArea}
-      multiline
-      autoGrow
-      numberOfLines={2}
-      placeholderTextColor="#727A8F"
-      placeholder={props.placeholder}
-    />
-  </View>
-);
+// const InputText = props => (
+//   <View style={{}}>
+//     <TextInput
+//       {...props}
+//       style={styles.textArea}
+//       multiline
+//       autoGrow
+//       numberOfLines={2}
+//       placeholderTextColor="#727A8F"
+//       placeholder={props.placeholder}
+//     />
+//   </View>
+// );
 
 
 export {
@@ -357,5 +380,9 @@ export {
   ProviderInput,
   PromotionInput,
   ProductInput,
+  SalonTimePicker,
+  InputRadioGroup,
+  BlockTimesReasonInput,
+  ValidatableInput,
+  LabeledTextarea,
 };
-// export default formHelpers;

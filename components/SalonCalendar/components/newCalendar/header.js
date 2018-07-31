@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
 
 import SalonAvatar from '../../../SalonAvatar';
-import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
 import FirstAvailableBtn from '../firstAvailableBtn';
 import colors from '../../../../constants/appointmentColors';
+import { DefaultAvatar } from '../../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -89,19 +89,23 @@ export default class Header extends Component {
 
   renderProvider = (data, index) => {
     const { cellWidth, setSelectedProvider } = this.props;
-    const uri = getEmployeePhoto(data.id);
+    const uri = data.imagePath;
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
-    const borderColor = hasBorder ? colors[data.displayColor].dark : 'transparent';
+    const borderColor = hasBorder ? colors[data.displayColor].dark : colors[4].dark;
     return (
       <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)} underlayColor="rgba(0, 0, 0, 0.5)">
         <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
           <SalonAvatar
             wrapperStyle={styles.avatarStyle}
             width={24}
-            borderWidth={hasBorder ? 3 : 0}
+            borderWidth={3}
             borderColor={borderColor}
             image={{ uri }}
+            defaultComponent={(<DefaultAvatar
+              size={24}
+              provider={data}
+            />)}
             // hasBadge
             // badgeComponent={
             //   <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />

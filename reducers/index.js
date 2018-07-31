@@ -24,6 +24,12 @@ import apptBookViewOptionsReducer from './apptBookViewOptions';
 import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
 import turnAway from './turnAway';
 import formulasAndNotesReducer from './formulasAndNotes';
+import roomAssignmentReducer from './roomAssignment';
+import employeeScheduleReducer from './employeeSchedule';
+import apptBookTurnAwayReducer from './apptBookTurnAway';
+import blockTimeReducer from './blockTime';
+import blockTimesReasonsReducer from './blockTimesReasons';
+import turnAwayReasonsReducer from './turnAwayReasons';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -51,4 +57,10 @@ export default combineReducers({
   newAppointmentReducer,
   modifyApptReducer,
   formulasAndNotesReducer,
+  roomAssignmentReducer,
+  employeeScheduleReducer,
+  apptBookTurnAwayReducer,
+  blockTimeReducer,
+  blockTimesReasonsReducer,
+  turnAwayReasonsReducer,
 });

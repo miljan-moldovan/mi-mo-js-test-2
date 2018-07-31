@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get, isNil, isFunction, isArray, reject } from 'lodash';
+import { get, isNil, isFunction, isArray, isNull, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
 import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
@@ -40,6 +40,13 @@ export const BOOK_NEW_APPT_FAILED = 'newAppointment/BOOK_NEW_APPT_FAILED';
 
 export const SET_REMARKS = 'newAppointment/SET_REMARKS';
 
+export const MESSAGE_ALL_CLIENTS = 'newAppointment/MESSAGE_ALL_CLIENTS';
+export const MESSAGE_ALL_CLIENTS_SUCCESS = 'newAppointment/MESSAGE_ALL_CLIENTS_SUCCESS';
+export const MESSAGE_ALL_CLIENTS_FAILED = 'newAppointment/MESSAGE_ALL_CLIENTS_FAILED';
+export const MESSAGE_PROVIDERS_CLIENTS = 'newAppointment/MESSAGE_PROVIDERS_CLIENTS';
+export const MESSAGE_PROVIDERS_CLIENTS_SUCCESS = 'newAppointment/MESSAGE_PROVIDERS_CLIENTS_SUCCESS';
+export const MESSAGE_PROVIDERS_CLIENTS_FAILED = 'newAppointment/MESSAGE_PROVIDERS_CLIENTS_FAILED';
+
 const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
@@ -54,8 +61,9 @@ const addGuest = () => ({
   },
 });
 
-const removeGuest = () => ({
+const removeGuest = (guestId = false) => ({
   type: REMOVE_GUEST,
+  data: { guestId },
 });
 
 const setGuestClient = (guestId, client) => (dispatch, getState) => {
@@ -187,7 +195,7 @@ const addServiceItem = serviceItem => (dispatch, getState) => {
 };
 
 const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) => {
-  if (!services || !services.length) {
+  if (isNull(services)) {
     return;
   }
   const {
@@ -469,6 +477,43 @@ const setRemarks = remarks => ({
   data: { remarks },
 });
 
+
+const messageAllClientsSuccess = employeeSchedule => ({
+  type: MESSAGE_ALL_CLIENTS_SUCCESS,
+  data: { employeeSchedule },
+});
+
+const messageAllClientsFailed = error => ({
+  type: MESSAGE_ALL_CLIENTS_FAILED,
+  data: { error },
+});
+
+const messageAllClients = (date, messageText, callback) => (dispatch) => {
+  dispatch({ type: MESSAGE_ALL_CLIENTS });
+  return AppointmentBook.postMessageAllClients(date, messageText)
+    .then((response) => { dispatch(messageAllClientsSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(messageAllClientsFailed(error)); callback(false); });
+};
+
+
+const messageProvidersClientsSuccess = employeeSchedule => ({
+  type: MESSAGE_PROVIDERS_CLIENTS_SUCCESS,
+  data: { employeeSchedule },
+});
+
+const messageProvidersClientsFailed = error => ({
+  type: MESSAGE_PROVIDERS_CLIENTS_FAILED,
+  data: { error },
+});
+
+const messageProvidersClients = (date, employeeId, messageText, callback) => (dispatch) => {
+  dispatch({ type: MESSAGE_PROVIDERS_CLIENTS });
+  return AppointmentBook.postMessageProvidersClients(date, employeeId, messageText)
+    .then((response) => { dispatch(messageProvidersClientsSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
+};
+
+
 const newAppointmentActions = {
   cleanForm,
   setBookedBy,
@@ -490,5 +535,7 @@ const newAppointmentActions = {
   updateServiceItem,
   removeServiceItem,
   setRemarks,
+  messageAllClients,
+  messageProvidersClients,
 };
 export default newAppointmentActions;

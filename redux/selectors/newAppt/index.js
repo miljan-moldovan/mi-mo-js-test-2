@@ -3,7 +3,11 @@ import {
   get,
   isNil,
 } from 'lodash';
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
+import apptGridSettingsSelector from '../apptGridSettingsSelector';
+
+const moment = extendMoment(Moment);
 
 const serviceItemsSelector = state => state.newAppointmentReducer.serviceItems;
 
@@ -67,14 +71,14 @@ const isValidAppointment = createSelector(
       date, bookedByEmployee, client, serviceItems, conflicts,
     },
   ) => (
-    date &&
-    bookedByEmployee !== null &&
-    client !== null &&
-    serviceItems.length > 0 &&
-    !conflicts.length > 0 &&
-    !isLoading &&
-    !isBooking
-  ),
+      date &&
+      bookedByEmployee !== null &&
+      client !== null &&
+      serviceItems.length > 0 &&
+      !conflicts.length > 0 &&
+      !isLoading &&
+      !isBooking
+    ),
 );
 
 const appointmentLength = createSelector(
@@ -93,16 +97,19 @@ const appointmentLength = createSelector(
 
 const totalPrice = createSelector(
   serviceItemsSelector,
-  (serviceItems) => {
-    const price = serviceItems.reduce((currentPrice, serviceItem) => {
-      const service = serviceItem.service || { service: null };
-      if (service.service && service.service.price) {
-        return currentPrice + service.service.price;
-      }
-      return currentPrice;
-    }, 0);
-    return price;
-  },
+  createSelector(
+    state => state,
+    (serviceItems) => {
+      const price = serviceItems.reduce((currentPrice, serviceItem) => {
+        const service = serviceItem.service || { service: null };
+        if (service.service && service.service.price) {
+          return currentPrice + service.service.price;
+        }
+        return currentPrice;
+      }, 0);
+      return price;
+    },
+  ),
 );
 
 const getEndTime = createSelector(
@@ -163,10 +170,31 @@ const serializeApptToRequestData = createSelector(
   }),
 );
 
+const employeeScheduledIntervalsSelector = createSelector(
+  bookedByEmployeeSelector,
+  employee => get(employee, 'scheduledIntervals', null),
+);
+
+const employeeScheduleChunkedSelector = createSelector(
+  [apptGridSettingsSelector, employeeScheduledIntervalsSelector],
+  (settings, intervals) => {
+    const reduced = intervals.reduce((agg, schedule) => {
+      const { step = 15 } = settings;
+      const start = moment(schedule.start, 'HH:mm:ss');
+      const end = moment(schedule.end, 'HH:mm:ss');
+      const range = moment.range(start, end);
+      const chunked = Array.from(range.by('minutes', { step }));
+      return [...agg, ...chunked];
+    }, []);
+    return reduced;
+  },
+);
+
 export {
   totalPrice,
   getEndTime,
   appointmentLength,
   isValidAppointment,
   serializeApptToRequestData,
+  employeeScheduleChunkedSelector,
 };

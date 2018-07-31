@@ -35,6 +35,10 @@ import FilterByCompanyScreen from './../screens/filterByCompanyScreen';
 import ServiceCheckScreen from './../screens/serviceCheckScreen';
 import ServiceCheckResultScreen from './../screens/serviceCheckResultScreen';
 import EndsOnScreen from './../screens/endsOnScreen';
+import EditScheduleScreen from './../screens/editScheduleScreen';
+import BlockTimeScreen from './../screens/blockTimeScreen';
+import BlockTimesReasonsScreen from './../screens/blockTimesReasons';
+import ApptBookTurnAwayScreen from './../screens/apptBookTurnAwayScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
 import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 import ConflictsScreen from '../screens/conflictsScreen';
@@ -44,6 +48,9 @@ import RequiredServicesScreen from '../screens/requiredServicesScreen';
 
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
+
+import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
+import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -61,6 +68,22 @@ const AppointmentStackNavigator = StackNavigator(
     },
     EndsOn: {
       screen: EndsOnScreen,
+    },
+    EditSchedule: {
+      screen: EditScheduleScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    BlockTime: {
+      screen: BlockTimeScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    BlockTimesReasons: {
+      screen: BlockTimesReasonsScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ApptBookTurnAway: {
+      screen: ApptBookTurnAwayScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,
@@ -110,9 +133,12 @@ const AppointmentStackNavigator = StackNavigator(
     Conflicts: {
       screen: ConflictsScreen,
     },
-    // ModifyService2: {
-    //   screen: ModifyServiceScreen,
-    // },
+    ChangeNewApptDateTime: {
+      screen: ChangeDateTimeScreen,
+    },
+    RoomAssignment: {
+      screen: RoomAssignmentScreen,
+    },
     ApptBookClient: {
       screen: ClientsScreen,
     },
