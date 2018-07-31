@@ -353,6 +353,7 @@ const getConflicts = callback => (dispatch, getState) => {
   const conflictData = {
     date: date.format('YYYY-MM-DD'),
     clientId: client.id,
+    bookedByEmployeeId: get(provider, 'id', null),
     items: [],
   };
   serviceItems.forEach((serviceItem) => {
@@ -367,6 +368,7 @@ const getConflicts = callback => (dispatch, getState) => {
       roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
       resourceId: get(get(serviceItem.service, 'resource', null), 'id', null),
       resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
+      associativeKey: get(serviceItem, 'itemId', null),
     });
   });
 

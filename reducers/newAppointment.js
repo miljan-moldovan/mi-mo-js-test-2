@@ -46,7 +46,12 @@ export default function newAppointmentReducer(state = defaultState, action) {
   const newGuests = state.guests.slice();
   switch (type) {
     case CLEAN_FORM:
-      return defaultState;
+      return {
+        ...defaultState,
+        guests: [],
+        conflicts: [],
+        serviceItems: [],
+      };
     case IS_BOOKING_QUICK_APPT:
       return {
         ...state,

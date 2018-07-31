@@ -31,9 +31,7 @@ import {
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
-import {
-  ConflictBox,
-} from '../../components/slidePanels/SalonNewAppointmentSlide';
+
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
@@ -362,6 +360,22 @@ export default class NewAppointmentScreen extends React.Component {
     });
   }
 
+  onPressConflicts = (serviceId) => {
+    const {
+      date,
+      startTime,
+    } = this.props.newAppointmentState;
+    const totalDuration = this.totalLength();
+    const endTime = moment(startTime).add(moment.duration(totalDuration));
+    const conflicts = this.getConflictsForService(serviceId);
+    this.props.navigation.navigate('Conflicts', {
+      date,
+      conflicts,
+      startTime,
+      endTime,
+    });
+  }
+
   setGuest = (client, guestId) => {
     this.props.newAppointmentActions.setGuestClient(guestId, client);
     this.checkConflicts();
@@ -398,6 +412,8 @@ export default class NewAppointmentScreen extends React.Component {
   getMainServices = () => this.props.newAppointmentState.serviceItems.filter(item => !item.guestId && !item.parentId)
 
   getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
+
+  getConflictsForService = serviceId => this.props.newAppointmentState.conflicts.filter(conf => conf.associativeKey === serviceId)
 
   updateService = (serviceId, updatedService, guestId = false) => {
     this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
@@ -509,6 +525,11 @@ export default class NewAppointmentScreen extends React.Component {
         this.props.navigation.navigate('SalonCalendar');
         // this.props.newAppointmentActions.cleanForm();
         this.props.apptBookActions.setGridView();
+        this.props.apptBookActions.setToast({
+          description: 'Appointment Booked',
+          type: 'green',
+          btnRightText: 'DISMISS',
+        });
       };
       const errorCallback = () => {
         this.checkConflicts();
@@ -704,28 +725,16 @@ export default class NewAppointmentScreen extends React.Component {
           </InputGroup>
           <View>
             <SubTitle title={guests.length > 0 ? 'Main Client' : 'Services'} />
-            {conflicts.length > 0 && (
-              <ConflictBox
-                style={{
-                  marginHorizontal: 10,
-                  marginVertical: 10,
-                }}
-                onPress={() => this.props.navigation.navigate('Conflicts', {
-                  date,
-                  conflicts,
-                  startTime,
-                  endTime: moment(startTime).add(moment.duration(totalDuration)),
-                })}
-              />
-            )}
             {this.getMainServices().map((item, itemIndex) => [
               (
                 <ServiceCard
-                  onPress={() => this.onPressService(item.itemId)}
-                  onPressDelete={() => this.removeServiceAlert(item.itemId)}
                   key={item.itemId}
+                  conflicts={this.getConflictsForService(item.itemId)}
                   addons={this.getAddonsForService(item.itemId)}
                   data={item.service}
+                  onPress={() => this.onPressService(item.itemId)}
+                  onPressConflicts={() => this.onPressConflicts(item.itemId)}
+                  onPressDelete={() => this.removeServiceAlert(item.itemId)}
                 />
               ),
               this.getAddonsForService(item.itemId).map(addon => (
@@ -734,9 +743,10 @@ export default class NewAppointmentScreen extends React.Component {
                   data={addon.service}
                   isAddon
                   isRequired={addon.isRequired}
-                  hasConflicts={conflicts.length > 0}
+                  conflicts={this.getConflictsForService(addon.itemId)}
                   onPress={() => this.onPressService(addon.itemId)}
                   onPressDelete={() => this.removeServiceAlert(addon.itemId)}
+                  onPressConflicts={() => this.onPressConflicts(addon.itemId)}
                 />
               )),
             ])}
@@ -767,12 +777,13 @@ export default class NewAppointmentScreen extends React.Component {
                       this.getGuestServices(guest.guestId).map(item => ([
                         (
                           <ServiceCard
-                            hasConflicts={conflicts.length > 0}
-                            onPress={() => this.onPressService(item.itemId, guest.guestId)}
-                            onPressDelete={() => this.removeServiceAlert(item.itemId)}
                             key={item.itemId}
                             addons={this.getAddonsForService(item.itemId)}
                             data={item.service}
+                            conflicts={this.getConflictsForService(item.itemId)}
+                            onPress={() => this.onPressService(item.itemId, guest.guestId)}
+                            onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                            onPressConflicts={() => this.onPressConflicts(item.itemId)}
                           />
                         ),
                         this.getAddonsForService(item.itemId).map(addon => (
@@ -781,9 +792,10 @@ export default class NewAppointmentScreen extends React.Component {
                             data={addon.service}
                             isAddon
                             isRequired={addon.isRequired}
-                            hasConflicts={conflicts.length > 0}
+                            conflicts={this.getConflictsForService(addon.itemId)}
                             onPress={() => this.onPressService(addon.itemId, guest.guestId)}
                             onPressDelete={() => this.removeServiceAlert(addon.itemId)}
+                            onPressConflicts={() => this.onPressConflicts(addon.itemId)}
                           />
                         )),
                       ]))

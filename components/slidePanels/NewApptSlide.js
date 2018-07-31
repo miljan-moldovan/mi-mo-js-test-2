@@ -147,7 +147,7 @@ const AddonsContainer = (props) => {
     }
     return aggregator;
   }, moment.duration());
-  return (
+  return props.visible ? (
     <Animated.View style={{
       maxHeight: props.height,
       overflow: 'hidden',
@@ -210,7 +210,7 @@ const AddonsContainer = (props) => {
         </View>
       </View>
     </Animated.View>
-  );
+  ) : null;
 };
 
 const Addon = props => (
@@ -1049,7 +1049,7 @@ export class NewApptSlide extends React.Component {
       >
         <View style={[
           styles.container,
-          { height: this.props.maxHeight }
+          { height: this.props.maxHeight },
         ]}
         >
           <SalonInputModal
@@ -1059,10 +1059,13 @@ export class NewApptSlide extends React.Component {
             onPressOk={this.onPressOkInputModal}
           />
           <TouchableWithoutFeedback onPress={this.hidePanel}>
-            <View style={{ backgroundColor: 'transparent', position: 'absolute', height: this.props.maxHeight, bottom: 0, right: 0, left: 0 }} />
+            <View style={{
+ backgroundColor: 'transparent', position: 'absolute', height: this.props.maxHeight, bottom: 0, right: 0, left: 0,
+}}
+            />
           </TouchableWithoutFeedback>
-          <View style={[ styles.slideContainer, {
-            maxHeight: this.props.maxHeight
+          <View style={[styles.slideContainer, {
+            maxHeight: this.props.maxHeight,
           }]}
           >
             <View style={styles.header}>
