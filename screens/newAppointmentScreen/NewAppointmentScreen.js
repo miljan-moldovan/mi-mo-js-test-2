@@ -525,6 +525,11 @@ export default class NewAppointmentScreen extends React.Component {
         this.props.navigation.navigate('SalonCalendar');
         // this.props.newAppointmentActions.cleanForm();
         this.props.apptBookActions.setGridView();
+        this.props.apptBookActions.setToast({
+          description: 'Appointment Booked',
+          type: 'green',
+          btnRightText: 'DISMISS',
+        });
       };
       const errorCallback = () => {
         this.checkConflicts();
