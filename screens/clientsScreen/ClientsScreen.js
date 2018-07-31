@@ -184,8 +184,8 @@ class ClientsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch(), ignoreNav: false });
+    this.clearSearch();
+    this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch, ignoreNav: false });
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
