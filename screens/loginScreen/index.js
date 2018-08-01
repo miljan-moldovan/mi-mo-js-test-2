@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import AnimatedHideView from 'react-native-animated-hide-view';
-import { Input, Button, Label } from 'native-base';
+import { Input, Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TouchID from 'react-native-touch-id';
 import { connect } from 'react-redux';
@@ -21,6 +21,9 @@ import PropTypes from 'prop-types';
 import * as actions from '../../actions/login';
 import styles from './styles';
 import images from './imagesMap';
+import UserNameInput from '../../components/login/UserNameInput';
+import UrlInput from '../../components/login/UrlInput';
+import ErrorsView from '../../components/login/ErrorsView';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -213,58 +216,6 @@ class LoginScreen extends React.Component {
     );
   }
 
-  renderUrlInput = loggedIn => (
-    <View style={styles.inputContainer}>
-      <FontAwesome style={styles.inputIcon}>{Icons.link}</FontAwesome>
-      <Input
-        style={[styles.input, this.state.url ?
-          styles.inputFontFamily : styles.inputPlaceholderFontFamily]}
-        disabled={loggedIn}
-        autoCorrect={false}
-        blurOnSubmit
-        autoCapitalize="none"
-        onChangeText={this.handleURLChange}
-        placeholder="URL"
-        placeholderTextColor="rgb(76.15, 135.15, 216.75)"
-      />
-      <Label
-        style={[styles.inputLabel, styles.inputLabelUrl]}
-      >
-        .salonultimate.com
-      </Label>
-      {this.state.loginPressed && !this.state.urlError && !this.state.waitingLogin && (
-        <FontAwesome
-          style={[styles.urlValidationIcon, styles.iconCheck]}
-        >{Icons.check}
-        </FontAwesome>)
-      }
-      {this.state.loginPressed && this.state.urlError && !this.state.waitingLogin && (
-        <FontAwesome
-          style={[styles.urlValidationIcon, styles.iconTimes]}
-        >{Icons.times}
-        </FontAwesome>)
-      }
-    </View>
-  )
-
-  renderUserNameInput = loggedIn => (
-    <View style={[styles.inputContainer, this.state.loginError ? styles.inputInvalid : null]}>
-      <FontAwesome style={styles.inputIcon}>{Icons.user}</FontAwesome>
-      <Input
-        style={[styles.input, this.state.username ?
-          styles.inputFontFamily : styles.inputPlaceholderFontFamily]}
-        underline={false}
-        disabled={loggedIn}
-        autoCorrect={false}
-        blurOnSubmit
-        autoCapitalize="none"
-        onChangeText={this.handleUsernameChange}
-        placeholder="Username"
-        placeholderTextColor="rgb(76.15, 135.15, 216.75)"
-      />
-    </View>
-  )
-
   renderPasswordInput = () => (
     <View style={[styles.inputContainer, this.state.loginError ? styles.inputInvalid : null]}>
       <FontAwesome style={styles.inputIcon}>{Icons.unlockAlt}</FontAwesome>
@@ -291,25 +242,6 @@ class LoginScreen extends React.Component {
     >
       <Text style={styles.touchIdButtonText}>Touch ID access</Text>
     </Button>
-  )
-
-  renderError = () => (
-    <View style={styles.errorContainer}>
-      <FontAwesome style={styles.errorIcon}>{Icons.exclamationTriangle}</FontAwesome>
-      {this.state.errors.length > 0 && (
-        <View style={styles.errorItemsContainer}>
-          {this.state.errors.map((err, index) => (
-            <View style={styles.errorListItem}>
-              <Text style={ styles.bullet }>{'\u2022 '}</Text>
-              <Text key={`err__${index}`} style={styles.errorListMessage}>{err}</Text>
-            </View>
-          ))}
-        </View>
-      )}
-      {this.state.errors.length === 0 && (
-        <Text style={styles.errorMessage}>{this.state.error}</Text>
-      )}
-    </View>
   )
 
   render() {
@@ -357,10 +289,30 @@ class LoginScreen extends React.Component {
                 </FontAwesome>
               </Text>
             </AnimatedHideView>
-            {!loggedIn && this.renderUrlInput(loggedIn)}
-            {!loggedIn && this.renderUserNameInput(loggedIn)}
+            {!loggedIn && (
+              <UrlInput
+                loggedIn={loggedIn}
+                handleURLChange={this.handleURLChange}
+                url={this.state.url}
+                showSuccess={this.state.loginPressed &&
+                !this.state.urlError && !this.state.waitingLogin}
+                showFail={this.state.loginPressed &&
+                this.state.urlError && !this.state.waitingLogin}
+              />
+            )}
+            {!loggedIn && (
+              <UserNameInput
+                handleUsernameChange={this.handleUsernameChange}
+                loggedIn={loggedIn}
+                userNameError={this.state.loginError}
+                username={this.state.username}
+              />
+            )}
             {!loggedIn && this.renderPasswordInput()}
-            {this.state.loginError && this.renderError()}
+            {this.state.loginError && <ErrorsView
+              errors={this.state.errors}
+              error={this.state.error}
+            />}
             <Button
               bordered
               disabled={this.state.waitingLogin}
@@ -410,10 +362,10 @@ LoginScreen.propTypes = {
   login: PropTypes.func.isRequired,
   auth: PropTypes.shape({
     loggedIn: PropTypes.bool.isRequired,
-    useFingerprintId: PropTypes.bool.isRequired,
+    useFingerprintId: PropTypes.bool,
   }).isRequired,
   navigation: PropTypes.shape({
-    navigate: PropTypes.bool,
+    navigate: PropTypes.func.isRequired,
   }).isRequired,
 };
 
