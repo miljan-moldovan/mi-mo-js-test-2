@@ -3,33 +3,41 @@
  * https://github.com/facebook/react-native
  * @flow
  */
-console.disableYellowBox = true;
 import React, { Component } from 'react';
+import { Provider } from 'react-redux';
+import { persistStore } from 'redux-persist';
 import {
   Platform,
   StyleSheet,
-  Text,
   View,
   AsyncStorage,
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
+
 import OfflineNotice from './components/OfflineNotice';
-
-
-import { Provider } from 'react-redux';
-import { persistStore } from 'redux-persist';
-
 import RootNavigation from './navigation/RootNavigation';
 import store from './store';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
+console.disableYellowBox = true;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
 });
-// console.disableYellowBox = true;
+
+
 export default class App extends Component<{}> {
   state = {
     isLoadingComplete: true,
@@ -79,19 +87,3 @@ export default class App extends Component<{}> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
