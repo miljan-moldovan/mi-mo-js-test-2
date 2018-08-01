@@ -19,6 +19,7 @@
     "qs": "6.5.2",
     "react": "16.2.0",
     "react-native": "0.52.1",
+    "react-native-animated-hide-view": "1.0.0",
     "react-native-calendars": "^1.19.3",
     "react-native-directed-scrollview": "git+https://github.com/MichaelDanielTom/react-native-directed-scrollview.git#contentSizeBugfix",
     "react-native-fetch-blob": "^0.10.8",
