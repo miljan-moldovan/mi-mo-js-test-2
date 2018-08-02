@@ -49,7 +49,7 @@ export default StyleSheet.create({
     right: 10,
   },
   iconCheck: {
-    color: 'rgb(46, 49, 66)',
+    color: 'rgb(0, 207, 71.4)',
   },
   iconTimes: {
     color: 'red',
