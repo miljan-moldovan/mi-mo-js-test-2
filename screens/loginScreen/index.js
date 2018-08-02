@@ -145,7 +145,6 @@ class LoginScreen extends React.Component {
         this.state.username,
         this.state.password,
         (success, err) => {
-          console.log(123);
           if (!success) {
             this.setState({
               waitingLogin: false,

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Animated } from 'react-native';
 
 const colors = {
+  green: '#00CF48',
   success: '#4D5067',
   error: '#F50035',
   warning: '#D9C101',
@@ -94,7 +95,9 @@ class SalonToast extends Component {
 
   render() {
     const { top, visible } = this.state;
-    const { type, description, btnRightText, btnLeftText } = this.props;
+    const {
+ type, description, btnRightText, btnLeftText 
+} = this.props;
     return (
       <View style={styles.container}>
         <Animated.View style={[styles.toast, { backgroundColor: colors[type], top }]}>

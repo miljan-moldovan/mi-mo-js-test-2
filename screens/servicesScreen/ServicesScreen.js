@@ -100,7 +100,6 @@ class ServicesScreen extends React.Component {
       leftButtonOnPress: () => { navigation.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
     };
-
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
       navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
@@ -157,6 +156,7 @@ class ServicesScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.clearSearch();
     const params = this.props.navigation.state.params || {};
     const action = params.action || 'services';
     const selectedService = params.selectedService || null;
@@ -208,6 +208,11 @@ class ServicesScreen extends React.Component {
       ignoreNav: false,
       defaultProps: this.state.defaultHeaderProps,
     });
+  }
+
+  clearSearch = () => {
+    this.props.salonSearchHeaderActions.setShowFilter(false);
+    this.props.servicesActions.setShowCategoryServices(false);
   }
 
   getServices = () => {

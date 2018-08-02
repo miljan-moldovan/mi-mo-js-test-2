@@ -31,6 +31,7 @@ export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
 export const HIDE_TOAST = 'appointmentCalendar/HIDE_TOAST';
+export const SET_TOAST = 'appointmentCalendar/SET_TOAST';
 
 const serializeFilterOptions = (filters) => {
   const serialized = {};
@@ -44,6 +45,11 @@ const serializeFilterOptions = (filters) => {
 
   return serialized;
 };
+
+const setToast = toast => ({
+  type: SET_TOAST,
+  data: { toast },
+});
 
 const setFilterOptionCompany = company => ({
   type: SET_FILTER_OPTION_COMPANY,
@@ -384,6 +390,7 @@ export const appointmentCalendarActions = {
   setFilterOptionAssistantAssignments,
   setFilterOptionShowOffEmployees,
   hideToast,
+  setToast,
 };
 
 const initialState = {
@@ -632,6 +639,11 @@ export default function appointmentScreenReducer(state = initialState, action) {
         oldAppointment: null,
         undoType: null,
         error: null,
+      };
+    case SET_TOAST:
+      return {
+        ...state,
+        toast: data.toast,
       };
     default:
       return state;

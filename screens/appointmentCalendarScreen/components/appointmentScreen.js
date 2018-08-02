@@ -126,7 +126,13 @@ export default class AppointmentScreen extends Component {
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
-  onPressCalendar = () => alert('Not Implemented');
+  onPressCalendar = () => {
+    this.props.appointmentCalendarActions.setToast({
+      description: 'Not Implemented',
+      type: 'success',
+      btnRightText: 'DISMISS',
+    });
+  };
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
     dismissOnSelect: true,
@@ -305,6 +311,11 @@ export default class AppointmentScreen extends Component {
         bookAnotherEnabled,
       }, () => {
         this.props.appointmentCalendarActions.setGridView();
+        this.props.appointmentCalendarActions.setToast({
+          description: 'Appointment Booked',
+          type: 'green',
+          btnRightText: 'DISMISS',
+        });
       });
     };
     this.props.newAppointmentActions.quickBookAppt(callback);
