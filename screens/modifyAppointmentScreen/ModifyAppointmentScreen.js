@@ -358,7 +358,7 @@ export default class ModifyAppointmentScreen extends React.Component {
 
   renderExtraClientButtons = isDisabled => ([
     <SalonTouchableOpacity
-      disabled={isDisabled}
+
       key={Math.random().toString()}
       onPress={() => {
         // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';

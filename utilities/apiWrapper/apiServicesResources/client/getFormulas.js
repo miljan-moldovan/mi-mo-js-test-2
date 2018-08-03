@@ -4,10 +4,10 @@ import { getApiInstance } from '../../api';
 
 let cancellationToken = null;
 
-export default async ({ clientId, noteId }) => {
+export default async (id) => {
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
-  return apiInstance.get(`Clients/${clientId}/Notes/${noteId}`, {
+  return apiInstance.get(`Clients/${id}/Formulas`, {
     cancelToken: new axios.CancelToken((c) => {
       cancellationToken = c;
     }),

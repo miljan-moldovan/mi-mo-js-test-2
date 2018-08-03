@@ -25,6 +25,7 @@ import SalonTimePicker from './components/SalonTimePicker';
 import InputRadioGroup from './components/InputRadioGroup';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import BlockTimesReasonInput from './components/BlockTimesReasonInput';
+import InputPicker from './components/InputPicker';
 
 const styles = StyleSheet.create({
   container: {
@@ -257,7 +258,7 @@ const InputButton = props => (
     ? (
       <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
     ) : props.label }
-    <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
+    <View style={[{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }, props.childrenContainerStyle]}>
       {
         typeof props.value === 'string'
         ? (
@@ -385,4 +386,5 @@ export {
   BlockTimesReasonInput,
   ValidatableInput,
   LabeledTextarea,
+  InputPicker,
 };

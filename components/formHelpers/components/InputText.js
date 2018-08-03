@@ -25,6 +25,7 @@ export default class InputText extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
+    debugger //eslint-disable-line
     if (nextProps.autoFocus) {
       if (nextProps.isEditable) {
         if (this.input && !this.input.isFocused()) {
@@ -38,7 +39,7 @@ export default class InputText extends React.Component {
 
   render() {
     return (
-      <View pointerEvents={this.props.isEditable ? 'auto' : 'none'}>
+      <View pointerEvents={this.state.editable ? 'auto' : 'none'}>
         <TextInput
           ref={(input) => { this.input = input; }}
           {...this.props}

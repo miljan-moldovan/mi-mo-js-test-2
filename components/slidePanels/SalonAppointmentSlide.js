@@ -329,6 +329,10 @@ export default class SalonAppointmentSlide extends React.Component {
 
   keyExtractor = (item, index) => item.id;
 
+  goToClientInfo = (client) => {
+    this.props.navigation.navigate('ClientInfo', { client });
+    this.hidePanel();
+  }
 
   render() {
     const {
@@ -384,7 +388,14 @@ export default class SalonAppointmentSlide extends React.Component {
               <View style={[styles.panelTopLine]}>
                 <View style={styles.panelTopLineLeft}>
                   <Text style={styles.panelTopName}>{`${client.name} ${client.lastName}`}</Text>
-                  <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
+
+                  <SalonTouchableOpacity
+                    style={{}}
+                    onPress={() => this.goToClientInfo(client)}
+                  >
+                    <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
+                  </SalonTouchableOpacity>
+
                 </View>
                 <View style={styles.panelTopLineRight}>
                   <SalonTouchableOpacity onPress={() => this.hidePanel()}>
