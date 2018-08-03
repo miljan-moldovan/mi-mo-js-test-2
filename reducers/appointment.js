@@ -72,12 +72,11 @@ export default function appoinmentReducer(state = initialState, action) {
         ...state,
         isCancelling: false,
       };
-    case POST_APPOINTMENT_CANCEL_FAILED:{
-      debugger
+    case POST_APPOINTMENT_CANCEL_FAILED:
       return {
         ...state,
         isCancelling: false,
-      };}
+      };
     default:
       return state;
   }

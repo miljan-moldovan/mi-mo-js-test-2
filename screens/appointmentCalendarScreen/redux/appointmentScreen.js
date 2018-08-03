@@ -8,6 +8,7 @@ import { POST_APPOINTMENT_RESIZE,
   POST_APPOINTMENT_MOVE,
   POST_APPOINTMENT_MOVE_FAILED,
   POST_APPOINTMENT_RESIZE_FAILED,
+  POST_APPOINTMENT_CANCEL_SUCCESS,
   UNDO_MOVE,
 } from '../../../actions/appointment';
 
@@ -645,6 +646,18 @@ export default function appointmentScreenReducer(state = initialState, action) {
         ...state,
         toast: data.toast,
       };
+    case POST_APPOINTMENT_CANCEL_SUCCESS: {
+      const indexToRemove = appointments.findIndex(item => item.id === data.appointmentId);
+      if (indexToRemove > -1) {
+        const newAppointments = appointments.slice();
+        newAppointments.splice(indexToRemove, 1);
+        return {
+          ...state,
+          appointments: newAppointments,
+        };
+      }
+      return state;
+    }
     default:
       return state;
   }

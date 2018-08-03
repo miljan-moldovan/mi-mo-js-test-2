@@ -1,126 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import Icon from '../../../components/UI/Icon';
 import { ProviderInput, InputGroup, InputDivider, InputText } from '../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    height: 86.5,
-    backgroundColor: 'rgb(227, 233, 241)',
-    flexDirection: 'row',
-    paddingHorizontal: 17,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: '#C0C1C6',
-    marginBottom: 23,
-  },
-  clientName: {
-    fontFamily: 'Roboto',
-    fontSize: 16,
-    color: '#111415',
-    fontWeight: '500',
-    lineHeight: 20,
-    marginBottom: 4,
-  },
-  serviceInfo: {
-    fontFamily: 'Roboto',
-    fontSize: 11,
-    color: '#4D5067',
-    lineHeight: 13,
-    marginBottom: 7,
-  },
-  timeInfo: {
-    fontFamily: 'Roboto',
-    fontSize: 11,
-    color: '#000000',
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  chevronRightIcon: {
-    marginHorizontal: 6.5,
-  },
-  clockIcon: {
-    marginRight: 5,
-  },
-  apptInfo: {
-    flex: 1,
-  },
-  dateContainer: {
-    paddingTop: 4,
-    backgroundColor: '#fff',
-    height: 48,
-    width: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dayText: {
-    fontFamily: 'Roboto',
-    fontSize: 18,
-    color: '#4D5067',
-    lineHeight: 18,
-  },
-  monthText: {
-    fontFamily: 'Roboto',
-    fontSize: 10,
-    color: '#115ECD',
-    lineHeight: 10,
-  },
-  footer: {
-    fontFamily: 'Roboto',
-    fontSize: 12,
-    color: '#727A8F',
-    lineHeight: 18,
-    marginHorizontal: 17,
-    marginTop: 6,
-  },
-  label: {
-    fontSize: 14,
-    lineHeight: 22,
-    color: '#110A24',
-    fontFamily: 'Roboto',
-    marginTop: 12,
-  },
-  cancelText: {
-    fontSize: 14,
-    color: 'white',
-  },
-  title: {
-    fontFamily: 'Roboto',
-    fontSize: 17,
-    color: '#fff',
-    fontWeight: '500',
-  },
-  headerTitle: {
-    flexDirection: 'column',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnText: {
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    color: '#fff',
-  },
-  btnTextDisabled: {
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.3)',
-  },
-  btn: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+import styles from './cancelApptStyles';
 
 export default class CancelAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -159,11 +45,11 @@ export default class CancelAppointmentScreen extends React.Component {
       selectedProvider: employee,
       reason: '',
     };
-    props.navigation.setParams({ handleCancel: this.handleCancel, isBtnEnabled: false })
+    props.navigation.setParams({ handleCancel: this.handleCancel, isBtnEnabled: false });
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.isCanceling && !nextProps.isCanceling) {
+    if (this.props.isCancelling && !nextProps.isCancelling) {
       this.props.navigation.goBack();
     }
   }
@@ -196,7 +82,7 @@ export default class CancelAppointmentScreen extends React.Component {
     const { navigation } = this.props;
     const { selectedProvider, reason } = this.state;
     const isBtnEnabled = selectedProvider && reason;
-    navigation.setParams({ isBtnEnabled })
+    navigation.setParams({ isBtnEnabled });
   }
 
   render() {
@@ -253,3 +139,36 @@ export default class CancelAppointmentScreen extends React.Component {
     );
   }
 }
+
+CancelAppointmentScreen.propTypes = {
+  cancelAppointment: PropTypes.func.isRequired,
+  isCancelling: PropTypes.bool.isRequired,
+  navigation: PropTypes.shape({
+    setParams: PropTypes.func,
+    goBack: PropTypes.func,
+    navigate: PropTypes.func,
+    state: PropTypes.shape({
+      params: PropTypes.shape({
+        isBtnEnabled: PropTypes.bool,
+        handleCancel: PropTypes.func,
+        appointment: PropTypes.shape({
+          id: PropTypes.number,
+          fromTime: PropTypes.string,
+          toTime: PropTypes.string,
+          date: PropTypes.string,
+          client: PropTypes.shape({
+            name: PropTypes.string,
+            lastName: PropTypes.string,
+          }),
+          employee: PropTypes.shape({
+            name: PropTypes.string,
+            lastName: PropTypes.string,
+          }),
+          service: PropTypes.shape({
+            description: PropTypes.string,
+          }),
+        }),
+      }),
+    }),
+  }).isRequired,
+};

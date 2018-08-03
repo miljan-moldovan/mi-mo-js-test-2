@@ -52,8 +52,8 @@ const postAppointmentResizeFailed = error => ({
   data: { error },
 });
 
-const postAppointmentCancelSuccess = (appointmentId) => ({
-  type: POST_APPOINTMENT_RESIZE_SUCCESS,
+const postAppointmentCancelSuccess = appointmentId => ({
+  type: POST_APPOINTMENT_CANCEL_SUCCESS,
   data: { appointmentId },
 });
 
