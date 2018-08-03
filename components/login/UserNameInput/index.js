@@ -28,6 +28,7 @@ function UserNameInput(props) {
         onChangeText={handleUsernameChange}
         placeholder="Username"
         placeholderTextColor="rgb(76.15, 135.15, 216.75)"
+        value={username}
       />
     </View>
   );

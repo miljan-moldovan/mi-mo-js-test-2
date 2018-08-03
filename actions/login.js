@@ -1,12 +1,30 @@
 // @flow
-import axios from 'axios';
-
-import AT from './types';
-
-// import config from '../config';
-// const { endpoints } = config;
-
 import processError from '../utilities/processError';
+
+export const AT = {
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGIN_FAILURE: 'LOGIN_FAILURE',
+  LOGOUT: 'LOGOUT',
+  FINGERPRINT_ENABLE: 'FINGERPRINT_ENABLE',
+  FINGERPRINT_DISABLE: 'FINGERPRINT_DISABLE',
+  FINGERPRINT_AUTHENTICATE: 'FINGERPRINT_AUTHENTICATE',
+  CHANGE_USERNAME: 'CHANGE_USERNAME',
+  CHANGE_URL: 'CHANGE_URL',
+};
+
+export const changeUsername = (username: string) => (dispatch: Object => void) => {
+  dispatch({
+    type: AT.CHANGE_USERNAME,
+    data: username,
+  });
+};
+
+export const changeURL = (url: string) => (dispatch: Object => void) => {
+  dispatch({
+    type: AT.CHANGE_URL,
+    data: url,
+  });
+};
 
 export const login = (
   url: string,
