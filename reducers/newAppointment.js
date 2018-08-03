@@ -43,11 +43,15 @@ const defaultState = {
 
 export default function newAppointmentReducer(state = defaultState, action) {
   const { type, data } = action;
-  const newServiceItems = state.serviceItems;
-  const newGuests = state.guests;
+  const newGuests = state.guests.slice();
   switch (type) {
     case CLEAN_FORM:
-      return defaultState;
+      return {
+        ...defaultState,
+        guests: [],
+        conflicts: [],
+        serviceItems: [],
+      };
     case IS_BOOKING_QUICK_APPT:
       return {
         ...state,
@@ -91,7 +95,7 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case ADD_SERVICE_ITEM:
       return {
         ...state,
-        serviceItems: data.serviceItems,
+        serviceItems: data.serviceItems.slice(),
       };
     case ADD_QUICK_SERVICE_ITEM:
       return {
@@ -101,17 +105,17 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case UPDATE_SERVICE_ITEM:
       return {
         ...state,
-        serviceItems: data.serviceItems,
+        serviceItems: data.serviceItems.slice(),
       };
     case REMOVE_SERVICE_ITEM:
       return {
         ...state,
-        serviceItems: data.serviceItems,
+        serviceItems: data.serviceItems.slice(),
       };
     case ADD_SERVICE_ITEM_EXTRAS:
       return {
         ...state,
-        serviceItems: data.serviceItems,
+        serviceItems: data.serviceItems.slice(),
       };
     case CHECK_CONFLICTS:
       return {

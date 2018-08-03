@@ -1,9 +1,7 @@
 // @flow
-import React from 'react';
-import { Image, View, Text } from 'react-native';
-import { StackNavigator, DrawerNavigator } from 'react-navigation';
+import { StackNavigator } from 'react-navigation';
 
-import LoginScreen from './../screens/LoginScreen';
+import LoginScreen from '../screens/loginScreen/index';
 import ForgotPasswordScreen from './../screens/ForgotPasswordScreen';
 
 const LoginStackNavigator = StackNavigator(

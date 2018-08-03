@@ -42,7 +42,7 @@ import Icon from '../UI/Icon';
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 0,
+    // top: 0,
     left: 0,
     right: 0,
     bottom: 0,
@@ -61,8 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   body: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 17,
+    padding: 15,
   },
   dateText: {
     fontFamily: 'Roboto-Medium',
@@ -107,6 +106,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  slideContainer: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
 });
 
 const Button = props => (
@@ -143,7 +147,7 @@ const AddonsContainer = (props) => {
     }
     return aggregator;
   }, moment.duration());
-  return (
+  return props.visible ? (
     <Animated.View style={{
       maxHeight: props.height,
       overflow: 'hidden',
@@ -206,7 +210,7 @@ const AddonsContainer = (props) => {
         </View>
       </View>
     </Animated.View>
-  );
+  ) : null;
 };
 
 const Addon = props => (
@@ -370,7 +374,6 @@ export class NewApptSlide extends React.Component {
     isRequested: true,
     serviceItems: [],
     addonsHeight: new Animated.Value(0),
-    height: new Animated.Value(0),
     isInputModalVisible: false,
     postModalFunction: null,
   });
@@ -511,14 +514,6 @@ export class NewApptSlide extends React.Component {
     }
   }
 
-  animateHeight = value => Animated.timing(
-    this.state.height,
-    {
-      toValue: value,
-      duration: 300,
-    },
-  )
-
   checkConflicts = () => this.props.newApptActions.getConflicts()
 
   canBook = () => {
@@ -565,7 +560,7 @@ export class NewApptSlide extends React.Component {
   showPanel = () => {
     if (!this.state.isAnimating) {
       this.setState({ isAnimating: true }, () => {
-        this.animateHeight(580).start(() => {
+        setTimeout(() => {
           this.props.show();
           this.setState({ isAnimating: false }, () => {
             if (this.shouldShowExtras()) {
@@ -578,7 +573,7 @@ export class NewApptSlide extends React.Component {
               ).start();
             }
           });
-        });
+        }, 300);
       });
     }
     return this;
@@ -588,7 +583,7 @@ export class NewApptSlide extends React.Component {
     if (!this.state.isAnimating) {
       this.setState({ isAnimating: true }, () => {
         const animateClose = () => {
-          this.animateHeight(0).start(() => {
+          setTimeout(() => {
             this.props.hide();
             this.setState({ isAnimating: false }, () => {
               if (isFunction(callback)) {
@@ -596,7 +591,7 @@ export class NewApptSlide extends React.Component {
               }
               return false;
             });
-          });
+          }, 300);
         };
         if (this.shouldShowExtras()) {
           Animated.timing(
@@ -681,7 +676,7 @@ export class NewApptSlide extends React.Component {
   }
 
   renderOthersTab = () => (
-    <React.Fragment>
+    <View style={styles.body}>
       <InputButton
         noIcon
         style={styles.otherOptionsBtn}
@@ -792,7 +787,7 @@ export class NewApptSlide extends React.Component {
           <Icon name="users" size={18} color="#115ECD" type="solid" />
         </View>
       </InputButton>
-    </React.Fragment>
+    </View>
   )
 
   renderBookingTab = () => {
@@ -818,7 +813,7 @@ export class NewApptSlide extends React.Component {
     } = this.getService(true);
 
     return (
-      <ScrollView style={{ paddingVertical: 15 }}>
+      <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
         <AppointmentTime
           containerStyle={{
@@ -1049,10 +1044,12 @@ export class NewApptSlide extends React.Component {
       <Modal
         visible={this.props.visible}
         transparent
-        style={{ marginBottom: 60 }}
+        animationType="slide"
+        // style={{ marginBottom: 60 }}
       >
         <View style={[
           styles.container,
+          { height: this.props.maxHeight },
         ]}
         >
           <SalonInputModal
@@ -1062,12 +1059,14 @@ export class NewApptSlide extends React.Component {
             onPressOk={this.onPressOkInputModal}
           />
           <TouchableWithoutFeedback onPress={this.hidePanel}>
-            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+            <View style={{
+ backgroundColor: 'transparent', position: 'absolute', height: this.props.maxHeight, bottom: 0, right: 0, left: 0,
+}}
+            />
           </TouchableWithoutFeedback>
-          <Animated.View style={{
-            // transform: [{ translateY: this.state.height }],
-            maxHeight: this.state.height,
-          }}
+          <View style={[styles.slideContainer, {
+            maxHeight: this.props.maxHeight,
+          }]}
           >
             <View style={styles.header}>
               <SalonTouchableOpacity
@@ -1098,10 +1097,8 @@ export class NewApptSlide extends React.Component {
                 />
               </View>
             </View>
-            <View style={styles.body}>
-              {this.renderActiveTab()}
-            </View>
-          </Animated.View>
+            {this.renderActiveTab()}
+          </View>
         </View>
       </Modal>
     );

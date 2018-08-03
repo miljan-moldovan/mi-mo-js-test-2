@@ -86,12 +86,12 @@ const appointmentLength = createSelector(
   (serviceItems) => {
     const duration = serviceItems.reduce((agg, serviceItem) => {
       const service = serviceItem.service || { service: null };
-      if (service.service && service.service.maxDuration) {
-        return agg.add(service.service.maxDuration);
+      if (service && service.length) {
+        return agg + service.length.asMinutes();
       }
       return agg;
-    }, moment.duration());
-    return duration;
+    }, 0);
+    return moment.duration(duration, 'minutes');
   },
 );
 
