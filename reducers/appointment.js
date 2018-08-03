@@ -6,6 +6,9 @@ import {
   POST_APPOINTMENT_MOVE,
   POST_APPOINTMENT_MOVE_SUCCESS,
   POST_APPOINTMENT_MOVE_FAILED,
+  POST_APPOINTMENT_CANCEL,
+  POST_APPOINTMENT_CANCEL_SUCCESS,
+  POST_APPOINTMENT_CANCEL_FAILED,
 } from '../actions/appointment';
 
 const initialState = {
@@ -13,6 +16,7 @@ const initialState = {
   isLoading: false,
   error: null,
   appointments: [],
+  isCanceling: false,
 };
 
 export default function appoinmentReducer(state = initialState, action) {
@@ -58,6 +62,22 @@ export default function appoinmentReducer(state = initialState, action) {
         ...state,
         isMoving: false,
       };
+    case POST_APPOINTMENT_CANCEL:
+      return {
+        ...state,
+        isCancelling: true,
+      };
+    case POST_APPOINTMENT_CANCEL_SUCCESS:
+      return {
+        ...state,
+        isCancelling: false,
+      };
+    case POST_APPOINTMENT_CANCEL_FAILED:{
+      debugger
+      return {
+        ...state,
+        isCancelling: false,
+      };}
     default:
       return state;
   }
