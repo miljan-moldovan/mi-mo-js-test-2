@@ -13,7 +13,6 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    // justifyContent: 'space-between',
     backgroundColor: 'rgb(17.85, 94.35, 204)',
     height: '100%',
   },
@@ -25,7 +24,6 @@ export default StyleSheet.create({
     marginTop: '40%',
   },
   inputContainer: {
-    // width: 292,
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 'auto',
@@ -50,10 +48,6 @@ export default StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     fontSize: 12,
   },
-  inputLabelUrl: {
-    paddingRight: 10,
-    fontFamily: 'Roboto-Medium',
-  },
   input: {
     color: 'white',
     fontSize: 12,
@@ -77,32 +71,6 @@ export default StyleSheet.create({
     resizeMode: 'contain',
     color: 'rgba(255, 255, 255, 0.25)',
   },
-
-  errorIcon: {
-    position: 'absolute',
-    zIndex: 300,
-    top: 15,
-    left: 15,
-    width: 16,
-    height: 16,
-    fontSize: 16,
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    color: 'rgba(209, 36, 41, 1)',
-  },
-
-  urlValidationIcon: {
-    position: 'absolute',
-    top: 18,
-    right: 10,
-  },
-  iconCheck: {
-    color: 'green',
-  },
-  iconTimes: {
-    color: 'red',
-  },
-
   inputInvalid: {
     borderStyle: 'solid',
     borderLeftWidth: 1,
@@ -248,48 +216,5 @@ export default StyleSheet.create({
     textAlign: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-  },
-  errorMessage: {
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    color: 'black',
-    fontSize: 14,
-    fontFamily: 'Roboto-Regular',
-  },
-  errorContainer: {
-    // width: 292,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    paddingLeft: 30,
-    paddingRight: 20,
-    marginTop: 2,
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    width: 311,
-    borderRadius: 4,
-  },
-  errorItemsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    marginLeft: 15,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  errorListItem: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  errorListMessage: {
-    fontSize: 11,
-    fontFamily: 'Roboto-Regular',
-    color: 'rgb(46, 49, 66)',
-  },
-  bullet: {
-    width: 10,
   },
 });
