@@ -682,10 +682,10 @@ export class NewApptSlide extends React.Component {
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
-           this.hidePanel();
-           const { date, bookedByEmployee: employee, startTime } = this.props.newApptState;
-            this.props.navigation.navigate(
-              'BlockTime',
+          this.hidePanel();
+          const { date, bookedByEmployee: employee, startTime } = this.props.newApptState;
+          this.props.navigation.navigate(
+            'BlockTime',
             { date, employee, fromTime: startTime },
           );
         }}
@@ -710,10 +710,10 @@ export class NewApptSlide extends React.Component {
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
-           this.hidePanel();
-           const { date, bookedByEmployee: employee } = this.props.newApptState;
-            this.props.navigation.navigate(
-              'EditSchedule',
+          this.hidePanel();
+          const { date, bookedByEmployee: employee } = this.props.newApptState;
+          this.props.navigation.navigate(
+            'EditSchedule',
             { date, employee },
           );
         }}
@@ -751,13 +751,13 @@ export class NewApptSlide extends React.Component {
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
-         this.hidePanel();
-         const { date, bookedByEmployee: employee } = this.props.newApptState;
+          this.hidePanel();
+          const { date, bookedByEmployee: employee } = this.props.newApptState;
           this.props.navigation.navigate(
             'ApptBookTurnAway',
-          { date, employee },
-        );
-      }}
+            { date, employee },
+          );
+        }}
         label="Turn Away"
       >
         <View style={styles.iconContainer}>
@@ -1032,12 +1032,11 @@ export class NewApptSlide extends React.Component {
     this.setState({ isInputModalVisible: false });
   }
 
-  onPressOkInputModal = (text) => {
-    this.setState({ isInputModalVisible: false });
+  onPressOkInputModal = text => this.setState({ isInputModalVisible: false }, () => {
     if (isFunction(this.state.postModalFunction)) {
       this.state.postModalFunction(text);
     }
-  }
+  });
 
   render() {
     return (
@@ -1045,7 +1044,7 @@ export class NewApptSlide extends React.Component {
         visible={this.props.visible}
         transparent
         animationType="slide"
-        // style={{ marginBottom: 60 }}
+      // style={{ marginBottom: 60 }}
       >
         <View style={[
           styles.container,
@@ -1060,8 +1059,8 @@ export class NewApptSlide extends React.Component {
           />
           <TouchableWithoutFeedback onPress={this.hidePanel}>
             <View style={{
- backgroundColor: 'transparent', position: 'absolute', height: this.props.maxHeight, bottom: 0, right: 0, left: 0,
-}}
+              backgroundColor: 'transparent', position: 'absolute', height: this.props.maxHeight, bottom: 0, right: 0, left: 0,
+            }}
             />
           </TouchableWithoutFeedback>
           <View style={[styles.slideContainer, {

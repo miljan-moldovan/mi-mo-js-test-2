@@ -12,6 +12,7 @@ import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
 import { last, get, flatten, isNil, sortBy, chain } from 'lodash';
+import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 
 import {
   DefaultAvatar,
@@ -31,7 +32,7 @@ import {
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
-
+import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
@@ -208,13 +209,18 @@ export default class NewAppointmentScreen extends React.Component {
       clientEmail,
       clientPhone,
       clientPhoneType,
+      isValidEmail,
+      isValidPhone,
     } = this.getClientInfo(client);
     this.props.navigation.setParams({ handleSave: this.handleSave, handleCancel: this.handleCancel });
     this.state = {
+      toast: null,
       isRecurring: false,
       canSave: false,
       clientEmail,
       clientPhone,
+      isValidEmail,
+      isValidPhone,
       clientPhoneType,
     };
   }
@@ -314,14 +320,16 @@ export default class NewAppointmentScreen extends React.Component {
     const {
       clientEmail,
       clientPhone,
+      isValidEmail: emailValid,
+      isValidPhone: phoneValid,
       clientPhoneType,
     } = this.state;
     const { client } = this.props.newAppointmentState;
     const currentPhone = client.phones.find(phone => phone.type === this.clientPhoneTypes.cell);
     const hasEmailChanged = clientEmail !== client.email;
     const hasPhoneChanged = clientPhone !== currentPhone.value;
-    const isValidEmail = this.isValidEmailRegExp.test(clientEmail) && clientEmail !== '' && hasEmailChanged;
-    const isValidPhone = this.isValidPhoneNumberRegExp.test(clientPhone) && clientPhone !== '' && hasPhoneChanged;
+    const isValidEmail = emailValid && clientEmail !== '' && hasEmailChanged;
+    const isValidPhone = phoneValid && clientPhone !== '' && hasPhoneChanged;
     if (!isValidEmail && !isValidPhone) {
       return false;
     }
@@ -330,17 +338,27 @@ export default class NewAppointmentScreen extends React.Component {
         type: this.clientPhoneTypes.cell,
         value: clientPhone,
       },
-      ...client.phones.filter(phone => phone.type !== this.clientPhoneTypes.cell),
-    ] : client.phones;
+      ...client.phones.filter(phone => (
+        phone.value &&
+        phone.type !== this.clientPhoneTypes.cell &&
+        this.isValidPhoneNumberRegExp.test(phone.value)
+      )),
+    ] : client.phones.filter(phone => (
+      phone.value &&
+      this.isValidPhoneNumberRegExp.test(phone.value)
+    ));
     const email = isValidEmail ? clientEmail : client.email;
+    const updateObject = {
+      id: client.id,
+      phones,
+      confirmationType: 1,
+    };
+    if (email) {
+      updateObject.email = email;
+    }
     const updated = await Client.putContactInformation(
       client.id,
-      {
-        id: client.id,
-        email,
-        phones: this.createPhonesArr(phones),
-        confirmationType: 1,
-      },
+      updateObject,
     );
     return updated;
   }
@@ -390,9 +408,12 @@ export default class NewAppointmentScreen extends React.Component {
   getClientInfo = (client) => {
     const phones = this.createPhonesArr(get(client, 'phones', []));
     const [clientPhone] = phones.filter(item => get(item, 'type', null) === this.clientPhoneTypes.cell);
+    const clientEmail = get(client, 'email', '');
     return {
       clientPhone,
-      clientEmail: get(client, 'email', ''),
+      clientEmail,
+      isValidEmail: this.isValidEmailRegExp.test(clientEmail),
+      isValidPhone: this.isValidPhoneNumberRegExp.test(clientPhone),
       clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => get(phone, 'value', null) === clientPhone) : 0,
     };
   }
@@ -414,6 +435,8 @@ export default class NewAppointmentScreen extends React.Component {
   getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
 
   getConflictsForService = serviceId => this.props.newAppointmentState.conflicts.filter(conf => conf.associativeKey === serviceId)
+
+  hideToast = () => this.setState({ toast: null })
 
   updateService = (serviceId, updatedService, guestId = false) => {
     this.props.newAppointmentActions.updateServiceItem(serviceId, updatedService, guestId);
@@ -450,12 +473,18 @@ export default class NewAppointmentScreen extends React.Component {
     const {
       clientEmail,
       clientPhone,
+      isValidEmail,
+      isValidPhone,
       clientPhoneType,
     } = this.getClientInfo(client);
     this.props.formulaActions.getFormulasAndNotes(client.id);
     this.props.newAppointmentActions.setClient(client);
     this.setState({
-      clientEmail, clientPhone, clientPhoneType,
+      clientEmail,
+      clientPhone,
+      isValidEmail,
+      isValidPhone,
+      clientPhoneType,
     }, this.checkConflicts);
   }
 
@@ -558,14 +587,44 @@ export default class NewAppointmentScreen extends React.Component {
     );
   }
 
-  onValidateEmail = () => this.shouldUpdateClientInfo()
+  onChangeEmail = clientEmail => this.setState({ clientEmail })
 
-  onValidatePhone = () => this.shouldUpdateClientInfo()
+  onChangePhone = clientPhone => this.setState({ clientPhone })
+
+  onValidateEmail = isValid => this.setState((state) => {
+    const newState = state;
+    const { client } = this.props.newAppointmentState;
+    newState.isValidEmail = isValid;
+    if (!isValid && state.clientEmail !== '' && !!client) {
+      newState.toast = {
+        text: 'The email you provided is invalid!',
+        type: 'error',
+        btnRightText: 'DISMISS',
+      };
+    }
+    return newState;
+  }, this.shouldUpdateClientInfo)
+
+  onValidatePhone = isValid => this.setState((state) => {
+    const newState = state;
+    const { client } = this.props.newAppointmentState;
+    newState.isValidPhone = isValid;
+    if (!isValid && state.clientPhone !== '' && !!client) {
+      newState.toast = {
+        text: 'The phone you provided is invalid!',
+        type: 'error',
+        btnRightText: 'DISMISS',
+      };
+    }
+    return newState;
+  }, this.shouldUpdateClientInfo)
 
   validate = () => {
     const canSave = this.props.isValidAppointment;
     this.props.navigation.setParams({ canSave });
   }
+
+  toggleRecurringPicker = () => this.setState(({ recurringPickerOpen }) => ({ recurringPickerOpen: !recurringPickerOpen }))
 
   totalPrice = () => this.props.totalPrice
 
@@ -634,32 +693,21 @@ export default class NewAppointmentScreen extends React.Component {
     const {
       clientEmail,
       clientPhone,
+      isValidEmail,
+      isValidPhone,
+      toast,
     } = this.state;
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
+    const dividerWithErrorStyle = { backgroundColor: '#D1242A' };
+
     // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
     return (
       <View style={styles.container}>
-        {(isLoading || isBooking) ? (
-          <View style={{
-            position: 'absolute',
-            top: 0,
-            paddingBottom: 60,
-            width: '100%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#cccccc',
-            opacity: 0.3,
-            zIndex: 999,
-            elevation: 2,
-          }}
-          ><ActivityIndicator />
-          </View>
-        ) : null}
+        {(isLoading || isBooking) ? <LoadingOverlay /> : null}
         <ScrollView style={styles.container}>
           <InputGroup style={{ marginTop: 15 }}>
             <InputLabel
@@ -702,19 +750,21 @@ export default class NewAppointmentScreen extends React.Component {
             <ValidatableInput
               label="Email"
               value={clientEmail}
-              regex={this.isValidEmailRegExp}
+              isValid={isValidEmail || !client}
+              validation={this.isValidEmailRegExp}
               onValidated={this.onValidateEmail}
-              onChangeText={clientEmail => this.setState({ clientEmail }, this.shouldUpdateClientInfo)}
+              onChangeText={this.onChangeEmail}
             />
-            <InputDivider />
+            <InputDivider style={isValidEmail || !client ? {} : dividerWithErrorStyle} />
             <ValidatableInput
               label="Phone"
-              regex={this.isValidPhoneNumberRegExp}
+              isValid={isValidPhone || !client}
               value={clientPhone}
+              validation={this.isValidPhoneNumberRegExp}
               onValidated={this.onValidatePhone}
-              onChangeText={clientPhone => this.setState({ clientPhone }, this.shouldUpdateClientInfo)}
+              onChangeText={this.onChangePhone}
             />
-            <InputDivider />
+            <InputDivider style={isValidPhone || !client ? {} : dividerWithErrorStyle} />
             <InputNumber
               value={guests.length}
               onChange={this.onChangeGuestNumber}
@@ -818,7 +868,12 @@ export default class NewAppointmentScreen extends React.Component {
                   text="Recurring appt."
                   value={this.state.isRecurring}
                   // onChange={this.onChangeRecurring}
-                  onChange={() => alert('API not implemented')}
+                  onChange={() => this.setState({
+                    toast: {
+                      type: 'info',
+                      text: 'API Not implemented',
+                    },
+                  })}
                 />
               </InputGroup>
               <SectionTitle style={{ marginTop: 0, paddingBottom: 12, height: 26 }} value="Repeat Every" />
@@ -826,7 +881,7 @@ export default class NewAppointmentScreen extends React.Component {
                 <InputButton
                   label="Repeats every"
                   value={`${this.state.recurringNumber} ${this.state.recurringType}`}
-                  onPress={() => this.setState({ recurringPickerOpen: !this.state.recurringPickerOpen })}
+                  onPress={this.toggleRecurringPicker}
                   style={{ paddingLeft: 0 }}
                 />
                 {this.state.recurringPickerOpen && (
@@ -916,6 +971,17 @@ export default class NewAppointmentScreen extends React.Component {
             />
           </InputGroup>
         </ScrollView>
+        {
+          toast ? (
+            <SalonToast
+              timeout={5000}
+              type={toast.type}
+              description={toast.text}
+              hide={this.hideToast}
+              btnRightText={toast.btnRightText}
+            />
+          ) : null
+        }
       </View>
     );
   }
