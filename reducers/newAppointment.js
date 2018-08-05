@@ -66,7 +66,6 @@ export default function newAppointmentReducer(state = defaultState, action) {
           const employee = (
             item.service.employee.id === state.bookedByEmployee.id
           ) ? data.employee : item.service.employee;
-          debugger//eslint-disable-line
           return ({
             ...item,
             service: {
