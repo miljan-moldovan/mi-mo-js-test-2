@@ -230,7 +230,7 @@ class ServiceSection extends Component {
             </View>
           </View>
         </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'start')}>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'fromTime')}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
             <View style={styles.dataContainer}>
@@ -238,7 +238,7 @@ class ServiceSection extends Component {
             </View>
           </View>
         </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'end')}>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'toTime')}>
           <View style={styles.lastInnerRow}>
             <Text style={styles.label}>End</Text>
             <View style={styles.dataContainer}>
@@ -265,6 +265,7 @@ class ServiceSection extends Component {
           onConfirm={this.handleDateSelection}
           onCancel={this.hideDateTimePicker}
           mode="time"
+          minuteInterval={15}
           date={this.state.date}
         />
       </View>
