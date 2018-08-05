@@ -123,9 +123,9 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   if (!service) {
     return;
   }
-  const isFirstAvailable = get(service.employee, 'isFirstAvailable', false);
+  const isFirstAvailable = get(service.employee, 'id', 0) === 0;
   const itemData = {
-    clientId: serviceItem.guestId ? get(service.client, 'id') : get(appointment.client, 'id'),
+    clientId: serviceItem.guestId ? get(service.client, 'id', null) : get(appointment.client, 'id', null),
     serviceId: get(service.service, 'id'),
     employeeId: isFirstAvailable ? null : get(service.employee, 'id', null),
     fromTime: moment(service.fromTime, 'HH:mm').format('HH:mm:ss'),
@@ -140,10 +140,15 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
     resourceOrdinal: get(service, 'resourceOrdinal', null),
   };
 
-  if (!isNil(service.gapTime)) {
+  const gapTimeDuration = moment.duration(get(service, 'gapTime', 0));
+  const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
+  if (
+    moment.isDuration(gapTimeDuration) && gapTimeDuration.asMilliseconds() > 0 &&
+    moment.isDuration(afterTimeDuration) && afterTimeDuration.asMilliseconds() > 0
+  ) {
     itemData.bookBetween = true;
-    itemData.gapTime = moment().startOf('day').add(service.gapTime, 'minutes').format('HH:mm:ss');
-    itemData.afterTime = moment().startOf('day').add(service.afterTime, 'minutes').format('HH:mm:ss');
+    itemData.gapTime = moment().startOf('day').add(gapTimeDuration).format('HH:mm:ss');
+    itemData.afterTime = moment().startOf('day').add(afterTimeDuration).format('HH:mm:ss');
   }
 
   return itemData;
@@ -155,13 +160,14 @@ const serializeApptToRequestData = createSelector(
   ],
   appt => ({
     dateRequired: true,
+    clientId: get(appt.client, 'id', null),
     date: moment(appt.date).format('YYYY-MM-DD'),
     bookedByEmployeeId: get(appt.bookedByEmployee, 'id'),
     rebooked: get(appt, 'rebooked', false),
     remarks: get(appt, 'remarks', ''),
     // displayColor: appt.displayColor,
     clientInfo: {
-      id: get(appt.client, 'id'),
+      id: get(appt.client, 'id', null),
       email: get(appt.client, 'email', ''),
       phones: get(appt.client, 'phones', []),
       // confirmationType: appt.client.confirmationType

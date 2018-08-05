@@ -79,6 +79,13 @@ export default function newAppointmentReducer(state = defaultState, action) {
       return {
         ...state,
         client: data.client,
+        serviceItems: newServiceItems.map(item => ({
+          ...item,
+          service: {
+            ...item.service,
+            client: item.guestId ? item.service.clients : data.client,
+          },
+        })),
       };
     case SET_DATE:
       return {
@@ -184,7 +191,24 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case SET_GUEST_CLIENT:
       return {
         ...state,
-        guests: data.guests,
+        guests: state.guests.map((guest) => {
+          if (guest.guestId === data.guest.guestId) {
+            return data.guest;
+          }
+          return guest;
+        }),
+        serviceItems: state.serviceItems.map((item) => {
+          if (item.guestId === data.guest.guestId) {
+            return ({
+              ...item,
+              service: {
+                ...item.service,
+                client: data.guest.client,
+              },
+            });
+          }
+          return item;
+        }),
       };
     default:
       return state;

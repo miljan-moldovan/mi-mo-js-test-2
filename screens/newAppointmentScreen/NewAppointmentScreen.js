@@ -517,7 +517,13 @@ export default class NewAppointmentScreen extends React.Component {
         onChangeService: this.addService,
       });
     }
-    return alert('Select a client first');
+    return this.setState({
+      toast: {
+        text: 'Select a client first',
+        type: 'warning',
+        btnRightText: 'DISMISS',
+      },
+    });
   }
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime')
@@ -528,6 +534,7 @@ export default class NewAppointmentScreen extends React.Component {
     const { bookedByEmployee } = this.props.newAppointmentState;
     const guest = this.getGuest(guestId);
     const { client = null } = guest;
+
     if (client !== null) {
       return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
@@ -538,8 +545,13 @@ export default class NewAppointmentScreen extends React.Component {
         onChangeService: service => this.addService(service, guestId),
       });
     }
-
-    return alert('Select a guest first');
+    return this.setState({
+      toast: {
+        text: 'Select a guest first',
+        type: 'warning',
+        btnRightText: 'DISMISS',
+      },
+    });
   }
 
   handleSave = () => {

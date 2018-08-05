@@ -67,13 +67,13 @@ const removeGuest = (guestId = false) => ({
 });
 
 const setGuestClient = (guestId, client) => (dispatch, getState) => {
-  const newGuests = getState().newAppointmentReducer.guests;
-  const guestIndex = newGuests.findIndex(item => item.guestId === guestId);
-  newGuests[guestIndex].client = client;
-
+  const { guests } = getState().newAppointmentReducer;
+  const guestIndex = guests.findIndex(item => item.guestId === guestId);
+  const guest = guests[guestIndex];
+  guest.client = client;
   return dispatch({
     type: SET_GUEST_CLIENT,
-    data: { guests: newGuests },
+    data: { guest },
   });
 };
 
@@ -215,7 +215,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
     const serviceLength = moment.duration(service.maxDuration);
     const fromTime = moment(startTime).add(moment.duration(length));
     const toTime = moment(fromTime).add(serviceLength);
-    const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId), 'client', null) : client;
+    const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId)[0], 'client', null) : client;
     const newService = {
       service,
       length: serviceLength,
@@ -357,10 +357,12 @@ const getConflicts = callback => (dispatch, getState) => {
     items: [],
   };
   serviceItems.forEach((serviceItem) => {
+    const isFirstAvailable = get(serviceItem.service.employee, 'id', 0) === 0;
     conflictData.items.push({
+      isFirstAvailable,
       clientId: serviceItem.guestId ? client.id : get(serviceItem.service.client, 'id', client.id),
       serviceId: serviceItem.service.service.id,
-      employeeId: serviceItem.service.employee.id,
+      employeeId: isFirstAvailable ? null : get(serviceItem.service.employee, 'id', null),
       fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
       toTime: serviceItem.service.toTime.format('HH:mm:ss', { trim: false }),
       bookBetween: false,
@@ -518,6 +520,10 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
     .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
 };
 
+const sanitizeClientForServiceItems = () => (dispatch, getState) => {
+  const newServiceItems = getState().newAppointmentReducer.serviceItems;
+
+};
 
 const newAppointmentActions = {
   cleanForm,
