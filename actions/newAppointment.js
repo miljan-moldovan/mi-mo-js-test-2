@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get, isNil, isFunction, isArray, isNull, reject } from 'lodash';
+import { get, isNil, isFunction, isArray, isNull, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
 import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
@@ -10,6 +10,8 @@ import {
   appointmentLength,
   serializeApptToRequestData,
 } from '../redux/selectors/newAppt';
+
+export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
 
 export const ADD_GUEST = 'newAppointment/ADD_GUEST';
 export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
@@ -454,8 +456,62 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
     });
 };
 
-const getStateFromGroup = appointments => (dispatch) => {
+const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
+  const { badgeData: { isParty, primaryClient } } = appt;
+  const clients = groupData.reduce((agg, currentAppt) => [...agg, currentAppt.client], []);
+  const mainClient = isParty ? clients.find(client => client.id === primaryClient.id) : appt.client;
+  const guests = reject(clients, item => item.id === mainClient.id)
+    .map(client => ({
+      client,
+      guestId: uuid(),
+    })).reduce((agg, guest) => {
+      if (agg.find(item => item.client && item.client.id === guest.client.id)) {
+        return agg;
+      }
+      return [...agg, guest];
+    }, []);
+  const serviceItems = groupData.reduce((services, appointment) => {
+    const isGuest = isParty && appointment.client.id !== mainClient.id;
+    let guest = false;
+    if (isGuest) {
+      guest = guests.find(itm => itm.client.id === appointment.client.id);
+    }
+    const fromTime = moment(appointment.fromTime, 'HH:mm:ss');
+    const toTime = moment(appointment.toTime, 'HH:mm:ss');
+    const length = moment.duration(toTime.diff(fromTime, true));
+    const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+    const newService = {
+      length,
+      service: get(appointment, 'service', null),
+      requested: get(appointment, 'requested', true),
+      client: serviceClient,
+      employee: get(appointment, 'employee', null),
+      fromTime,
+      toTime,
+    };
+    const newServiceItem = {
+      itemId: uuid(),
+      guestId: guest ? get(guest, 'guestId', false) : false,
+      service: newService,
+    };
+    return [...services, newServiceItem];
+  }, []);
 
+  serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
+  const newState = {
+    date: moment(get(appt, 'date', moment())),
+    startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
+    client: mainClient,
+    bookedByEmployee: get(appt, 'bookedByEmployee', null),
+    guests,
+    conflicts: [],
+    serviceItems,
+    remarks: get(appt, 'remarks', ''),
+  };
+  return dispatch({
+    type: SET_SELECTED_APPT,
+    data: { newState },
+  });
 };
 
 const bookNewAppt = appt => (dispatch) => {
@@ -520,11 +576,6 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
     .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
 };
 
-const sanitizeClientForServiceItems = () => (dispatch, getState) => {
-  const newServiceItems = getState().newAppointmentReducer.serviceItems;
-
-};
-
 const newAppointmentActions = {
   cleanForm,
   setBookedBy,
@@ -548,6 +599,6 @@ const newAppointmentActions = {
   setRemarks,
   messageAllClients,
   messageProvidersClients,
-  getStateFromGroup,
+  setSelectedAppt,
 };
 export default newAppointmentActions;

@@ -56,6 +56,7 @@ const ServiceCard = (props) => {
   const employee = data.employee || null;
   const isFirstAvailable = data.isFirstAvailable || false;
   const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  const serviceName = data.service.name || data.service.description;
   return (
     <React.Fragment>
       <SalonTouchableOpacity
@@ -90,7 +91,7 @@ const ServiceCard = (props) => {
                   }}
                 >
                   <Text style={[styles.serviceTitle, props.conflicts.length > 0 ? { color: 'red' } : {}]}>
-                    {data.service.name}
+                    {serviceName}
                   </Text>
                   {props.isRequired && (
                     <Text style={{

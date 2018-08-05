@@ -24,6 +24,7 @@ import {
   REMOVE_GUEST,
   SET_GUEST_CLIENT,
   SET_REMARKS,
+  SET_SELECTED_APPT,
 } from '../actions/newAppointment';
 
 const defaultState = {
@@ -52,6 +53,11 @@ export default function newAppointmentReducer(state = defaultState, action) {
         guests: [],
         conflicts: [],
         serviceItems: [],
+      };
+    case SET_SELECTED_APPT:
+      return {
+        ...state,
+        ...data.newState,
       };
     case IS_BOOKING_QUICK_APPT:
       return {

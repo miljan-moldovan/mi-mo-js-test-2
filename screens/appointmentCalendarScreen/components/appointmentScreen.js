@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-
+import { groupBy } from 'lodash';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -164,6 +164,9 @@ export default class AppointmentScreen extends Component {
   }
 
   onCardPressed = (appointment) => {
+    // const groupData = this.props.appointments.filter(appt => appt.appointmentGroupId === appointment.appointmentGroupId);
+    // this.props.newAppointmentActions.setSelectedAppt(appointment, groupData);
+    // this.props.navigation.navigate('NewAppointment');
     this.props.modifyApptActions.setSelectedAppt(appointment);
     this.setState({
       visibleAppointment: true,
@@ -318,7 +321,15 @@ export default class AppointmentScreen extends Component {
         });
       });
     };
-    this.props.newAppointmentActions.quickBookAppt(callback);
+    const errorCallback = () => {
+      this.props.appointmentCalendarActions.setToast({
+        description: 'There was an error, please try again',
+        type: 'error',
+        btnRightText: 'DISMISS',
+      });
+      this.props.newAppointmentActions.getConflicts();
+    };
+    this.props.newAppointmentActions.quickBookAppt(callback, errorCallback);
   }
 
   changeNewApptSlideTab = newApptActiveTab => this.setState({ newApptActiveTab });
@@ -586,13 +597,15 @@ export default class AppointmentScreen extends Component {
           }}
           handleModify={() => {
             const { selectedAppointment } = this.state;
+            const groupData = this.props.appointments.filter(appt => appt.appointmentGroupId === selectedAppointment.appointmentGroupId);
             this.setState({ visibleAppointment: false });
-            this.props.navigation.navigate('ModifyAppointment');
+            this.props.newAppointmentActions.setSelectedAppt(selectedAppointment, groupData);
+            this.props.navigation.navigate('NewAppointment');
           }}
         />
         {
           toast ?
-            <SalonToast type={toast.type} description={toast.description} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText={toast.btnRightText} btnLeftText={toast.btnLeftText} /> : null
+            <SalonToast timeout={2500} type={toast.type} description={toast.description} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText={toast.btnRightText} btnLeftText={toast.btnLeftText} /> : null
         }
         {
           bookAnotherEnabled ?
