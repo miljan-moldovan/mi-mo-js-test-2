@@ -44,49 +44,8 @@ const styles = StyleSheet.create({
   tabIcon: {
     marginRight: 5,
   },
-  textWalkInBtn: {
-    color: '#fff',
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    textAlign: 'center',
-    fontWeight: '600',
-    marginTop: 5,
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
+  headerLeftText: { fontSize: 14, color: 'white' },
+  headerRightText: { fontSize: 14 },
   titleText: {
     fontFamily: 'Roboto',
     color: '#fff',
@@ -114,6 +73,12 @@ export default class ClientInfoScreen extends React.Component {
     if (params && params.client) {
       title = `${params.client.name} ${params.client.lastName}`;
     }
+
+    const props = this.props;
+
+    const canSave = params.canSave || false;
+    const showDoneButton = params.showDoneButton;
+
     return ({
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -121,13 +86,25 @@ export default class ClientInfoScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity style={styles.leftButton} onPress={() => { navigation.goBack(); }}>
-          <View style={styles.leftButtonContainer}>
-            <Text style={styles.leftButtonText}>
-              <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-            </Text>
-          </View>
+        <SalonTouchableOpacity onPress={() => { navigation.goBack(); }}>
+          <Text style={styles.leftButtonText}>
+            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+          </Text>
         </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        showDoneButton ? <SalonTouchableOpacity
+          disabled={!canSave}
+          onPress={() => {
+          if (navigation.state.params.handleDone) {
+            navigation.state.params.handleDone();
+          }
+        }}
+        >
+          <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+          Done
+          </Text>
+        </SalonTouchableOpacity> : null
       ),
     });
   };
@@ -135,6 +112,8 @@ export default class ClientInfoScreen extends React.Component {
   constructor(props) {
     super(props);
     const { params } = this.props.navigation.state;
+
+    this.props.navigation.setParams({ handleDone: this.handleDone, canSave: false, showDoneButton: true });
 
     this.state = {
       index: 0,
@@ -155,7 +134,21 @@ export default class ClientInfoScreen extends React.Component {
     }, 2000);
   }
 
-  handleIndexChange = index => this.setState({ index });
+  handleIndexChange = (index) => {
+    const showDoneButton = index === 0;
+
+    this.props.navigation.setParams({ showDoneButton });
+
+    this.setState({ index });
+  };
+
+  setCanSave = (canSave) => {
+    this.props.navigation.setParams({ canSave });
+  }
+
+  setHandleDone = (handleDone) => {
+    this.props.navigation.setParams({ handleDone });
+  }
 
   renderLabel = ({ position, navigationState }) => ({ route, index }) => (
 
@@ -182,32 +175,26 @@ export default class ClientInfoScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <ClientDetails editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
+    0: () => <ClientDetails setHandleDone={this.setHandleDone} setCanSave={this.setCanSave} editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     2: () => <ClientFormulas editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
-  });
+  })
 
 
   render() {
-    return this.props.clientInfoState.isLoading ?
-      (
-        <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
-          <ActivityIndicator size="large" color="#0000FF" />
-        </View>
-      )
-      : (
-        <View style={styles.container}>
-          <TabViewAnimated
-            style={{ flex: 1 }}
-            navigationState={this.state}
-            renderScene={this.renderScene}
-            renderHeader={this.renderHeader}
-            onIndexChange={this.handleIndexChange}
-            initialLayout={initialLayout}
-            swipeEnabled={false}
-            useNativeDriver
-          />
-        </View>
-      );
+    return (
+      <View style={styles.container}>
+        <TabViewAnimated
+          style={{ flex: 1 }}
+          navigationState={this.state}
+          renderScene={this.renderScene}
+          renderHeader={this.renderHeader}
+          onIndexChange={this.handleIndexChange}
+          initialLayout={initialLayout}
+          swipeEnabled={false}
+          useNativeDriver
+        />
+      </View>
+    );
   }
 }

@@ -6,6 +6,8 @@ import postMergeClients from './postMergeClients';
 import putContactInformation from './putContactInformation';
 import getFormulas from './getFormulas';
 import getClient from './getClient';
+import putClient from './putClient';
+import deleteClient from './deleteClient';
 
 export {
   getClientFormulas,
@@ -16,4 +18,6 @@ export {
   putContactInformation,
   getFormulas,
   getClient,
+  putClient,
+  deleteClient,
 };
