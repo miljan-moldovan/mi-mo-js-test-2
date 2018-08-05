@@ -87,6 +87,35 @@ const styles = StyleSheet.create({
   },
 });
 
+const FirstAvailableRow = props => (
+  <SalonTouchableOpacity
+    onPress={() => props.onPress({
+      id: 0,
+      isFirstAvailable: true,
+      name: 'First',
+      lastName: 'Available',
+
+    })}
+    style={styles.itemRow}
+    key={Math.random()}
+  >
+    <View style={styles.inputRow}>
+      <SalonAvatar
+        wrapperStyle={styles.providerRound}
+        width={30}
+        borderWidth={1}
+        borderColor="transparent"
+        image={{ uri: getEmployeePhoto(0) }}
+      />
+      <Text style={styles.providerName}>First Available</Text>
+    </View>
+    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+      <Text style={[styles.timeLeftText]}>21m</Text>
+    </View>
+    <View style={{ flex: 1, alignItems: 'center' }} />
+  </SalonTouchableOpacity>
+);
+
 class ProviderScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
@@ -98,18 +127,18 @@ class ProviderScreen extends React.Component {
 
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
 
     const { title } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
     let customLeftButton = false;
     if (navigation.state.params) {
       if (navigation.state.params.headerProps && navigation.state.params.headerProps.leftButtonOnPress) {
@@ -128,12 +157,12 @@ class ProviderScreen extends React.Component {
         }}
         >
           <Text style={styles.headerTitle}>{title}</Text>
-          { subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null }
+          {subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null}
         </View>
       ),
       headerLeft: (
         <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={customLeftButton ? () => leftButtonOnPress(navigation) : leftButtonOnPress}>
-          { leftButton }
+          {leftButton}
         </SalonTouchableOpacity>
       ),
       headerRight: (null),
@@ -175,7 +204,9 @@ class ProviderScreen extends React.Component {
   constructor(props) {
     super(props);
     const params = this.props.navigation.state.params || {};
+    const { showFirstAvailable = true } = params;
     this.state = {
+      showFirstAvailable,
       selectedProvider: get(params, 'selectedProvider', null),
       filterByService: get(params, 'filterByService', false),
       filterList: get(params, 'filterList', false),
@@ -219,7 +250,7 @@ class ProviderScreen extends React.Component {
     this.flatListRef.scrollToIndex({ animated: true, index });
   }
 
-  _handleOnChangeProvider = (provider) => {
+  handleOnChangeProvider = (provider) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
@@ -278,7 +309,7 @@ class ProviderScreen extends React.Component {
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
       style={styles.itemRow}
-      onPress={() => this._handleOnChangeProvider(item)}
+      onPress={() => this.handleOnChangeProvider(item)}
       key={index}
     >
       <View style={styles.inputRow}>
@@ -302,7 +333,7 @@ class ProviderScreen extends React.Component {
       </View>
       <View style={{ flex: 1, alignItems: 'center' }}>
         {this.state.selectedProvider === item.id && (
-        <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
+          <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
         )}
       </View>
     </SalonTouchableOpacity>
@@ -324,7 +355,7 @@ class ProviderScreen extends React.Component {
     let onChangeProvider = null;
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeProvider) {
-      onChangeProvider = this._handleOnChangeProvider;
+      onChangeProvider = this.handleOnChangeProvider;
     }
 
     return (
@@ -348,34 +379,13 @@ class ProviderScreen extends React.Component {
 
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
-            <SalonTouchableOpacity
-              onPress={() => this._handleOnChangeProvider({
-                id: 0,
-                isFirstAvailable: true,
-                name: 'First',
-                lastName: 'Available',
-
-               })}
-              style={styles.itemRow}
-              key={Math.random()}
-            >
-              <View style={styles.inputRow}>
-                <SalonAvatar
-                  wrapperStyle={styles.providerRound}
-                  width={30}
-                  borderWidth={1}
-                  borderColor="transparent"
-                  image={{ uri: getEmployeePhoto(0) }}
-                />
-                <Text style={styles.providerName}>First Available</Text>
-              </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                <Text style={[styles.timeLeftText]}>21m</Text>
-              </View>
-              <View style={{ flex: 1, alignItems: 'center' }} />
-            </SalonTouchableOpacity>
-            {this.renderSeparator()}
-            { this.props.providersState.isLoading ?
+            {this.state.showFirstAvailable && (
+              <React.Fragment>
+                <FirstAvailableRow onPress={this.handleOnChangeProvider} />
+                {this.renderSeparator()}
+              </React.Fragment>
+            )}
+            {this.props.providersState.isLoading ?
               (
                 <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
                   <ActivityIndicator />
@@ -411,7 +421,7 @@ class ProviderScreen extends React.Component {
               >
                 <Text style={styles.letterListText}>{item}</Text>
               </SalonTouchableOpacity>
-              ))}
+            ))}
           </View>
         </View>
       </View>

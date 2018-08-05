@@ -44,6 +44,7 @@ const defaultState = {
 export default function newAppointmentReducer(state = defaultState, action) {
   const { type, data } = action;
   const newGuests = state.guests.slice();
+  const newServiceItems = state.serviceItems.slice();
   switch (type) {
     case CLEAN_FORM:
       return {
@@ -61,6 +62,19 @@ export default function newAppointmentReducer(state = defaultState, action) {
       return {
         ...state,
         bookedByEmployee: data.employee,
+        serviceItems: newServiceItems.map((item) => {
+          const employee = (
+            item.service.employee.id === state.bookedByEmployee.id
+          ) ? data.employee : item.service.employee;
+          debugger//eslint-disable-line
+          return ({
+            ...item,
+            service: {
+              ...item.service,
+              employee,
+            },
+          });
+        }),
       };
     case SET_CLIENT:
       return {

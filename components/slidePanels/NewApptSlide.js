@@ -890,6 +890,7 @@ export class NewApptSlide extends React.Component {
             noLabel
             apptBook
             filterByService
+            showFirstAvailable={false}
             isRequested={isQuickApptRequested}
             filterList={filterProviders}
             rootStyle={{ height: 39 }}

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import { isFunction } from 'lodash';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../SalonAvatar';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
@@ -29,16 +29,22 @@ export default class ProviderInput extends React.Component {
     }
 
     handlePress = () => {
-      if (this.props.onPress) { this.props.onPress(); }
-
-      this.props.navigate(this.props.apptBook ? 'ApptBookProvider' : 'Providers', {
-        selectedProvider: this.state.selectedProvider,
+      const {
+        onPress = false,
+        apptBook = false,
+        headerProps = {},
+        showFirstAvailable = true,
+      } = this.props;
+      if (isFunction(onPress)) { onPress(); }
+      this.props.navigate(apptBook ? 'ApptBookProvider' : 'Providers', {
+        headerProps,
+        showFirstAvailable,
         actionType: 'update',
         dismissOnSelect: true,
+        selectedProvider: this.state.selectedProvider,
         filterByService: !!this.props.filterByService,
         filterList: this.props.filterList ? this.props.filterList : false,
         onChangeProvider: provider => this.handleProviderSelection(provider),
-        headerProps: this.props.headerProps ? this.props.headerProps : {},
       });
     }
 
