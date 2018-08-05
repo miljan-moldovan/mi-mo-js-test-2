@@ -136,7 +136,7 @@ export default class ClientFormula extends React.Component {
               });
             }}
               label="Entered by"
-              value="Your Cousin"
+              value="--"
             />
             <InputDivider />
 
