@@ -439,18 +439,21 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
         type: ADD_APPOINTMENT,
         data: { appointment: res },
       });
-      dispatch(bookNewApptSuccess(successCallback));
+      return dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
-      alert('There was an error posting the appointment, please try again');
-      dispatch({
+      if (isFunction(errorCallback)) {
+        errorCallback(err);
+      }
+      return dispatch({
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },
       });
-      if (isFunction(errorCallback)) {
-        errorCallback();
-      }
     });
+};
+
+const getStateFromGroup = appointments => (dispatch) => {
+
 };
 
 const bookNewAppt = appt => (dispatch) => {
@@ -539,5 +542,6 @@ const newAppointmentActions = {
   setRemarks,
   messageAllClients,
   messageProvidersClients,
+  getStateFromGroup,
 };
 export default newAppointmentActions;

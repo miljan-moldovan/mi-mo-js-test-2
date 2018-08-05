@@ -175,6 +175,7 @@ export default class NewAppointmentScreen extends React.Component {
       ),
       headerRight: (
         <SalonTouchableOpacity
+          disabled={!canSave}
           onPress={() => params.handleSave()}
         >
           <Text style={{
@@ -560,8 +561,14 @@ export default class NewAppointmentScreen extends React.Component {
           btnRightText: 'DISMISS',
         });
       };
-      const errorCallback = () => {
-        this.checkConflicts();
+      const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment creation error' } } }) => {
+        this.setState({
+          toast: {
+            text,
+            type: 'error',
+            btnRightText: 'DISMISS',
+          },
+        }, this.checkConflicts);
       };
       this.shouldUpdateClientInfo();
       this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
@@ -591,11 +598,11 @@ export default class NewAppointmentScreen extends React.Component {
 
   onChangePhone = clientPhone => this.setState({ clientPhone })
 
-  onValidateEmail = isValid => this.setState((state) => {
+  onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
     const { client } = this.props.newAppointmentState;
     newState.isValidEmail = isValid;
-    if (!isValid && state.clientEmail !== '' && !!client) {
+    if (!isValid && state.clientEmail !== '' && !!client && !isFirstValidation) {
       newState.toast = {
         text: 'The email you provided is invalid!',
         type: 'error',
@@ -605,11 +612,11 @@ export default class NewAppointmentScreen extends React.Component {
     return newState;
   }, this.shouldUpdateClientInfo)
 
-  onValidatePhone = isValid => this.setState((state) => {
+  onValidatePhone = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
     const { client } = this.props.newAppointmentState;
     newState.isValidPhone = isValid;
-    if (!isValid && state.clientPhone !== '' && !!client) {
+    if (!isValid && state.clientPhone !== '' && !!client && !isFirstValidation) {
       newState.toast = {
         text: 'The phone you provided is invalid!',
         type: 'error',

@@ -5,7 +5,7 @@ import { LabeledTextInput } from '../index';
 
 class ValidatableInput extends React.Component {
   componentDidMount() {
-    this.validate(this.props.value);
+    this.validate(this.props.value, true);
   }
 
   onChangeText = (text) => {
@@ -15,14 +15,14 @@ class ValidatableInput extends React.Component {
     return this.props.onChangeText(text);
   };
 
-  validate = (text) => {
+  validate = (text, isFirstValidation = false) => {
     let isValid = false;
     if (isRegExp(this.props.validation)) {
       isValid = this.props.validation.test(text);
     } else if (isFunction(this.props.validation)) {
       isValid = this.props.validation(text);
     }
-    this.props.onValidated(isValid);
+    this.props.onValidated(isValid, isFirstValidation);
   };
 
   render() {
