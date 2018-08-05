@@ -71,6 +71,24 @@ const styles = StyleSheet.create({
     width: 20,
     marginRight: 20,
   },
+  addRow: {
+    flexDirection: 'row',
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingRight: 16,
+  },
+  plusIcon: {
+    color: '#115ECD',
+    fontSize: 22,
+    marginRight: 5,
+  },
+  textData: {
+    fontFamily: 'Roboto',
+    color: '#110A24',
+    fontSize: 14,
+    marginLeft: 5,
+  },
 });
 
 const genders = [
@@ -137,6 +155,7 @@ class ClientDetails extends Component {
       client: {},
       selectedClient: null,
       selectedReferredClient: true,
+      phoneTypes: ['cell', 'home', 'work'],
     };
 
     this.handleClientSelection.bind(this);
@@ -319,6 +338,20 @@ class ClientDetails extends Component {
     }
   }
 
+  renderPhone = (phone, index) => {
+    const phoneType = phone.type === 0 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
+
+    return (<React.Fragment>
+      <LabeledTextInput
+        label={phoneType}
+        value={phone.value}
+        onChangeText={(text) => { this.onChangeClientField(phoneType, text); }}
+        placeholder="Enter"
+      />
+      <InputDivider />
+    </React.Fragment>);
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -401,36 +434,15 @@ class ClientDetails extends Component {
                     placeholder="Enter"
                   />
 
-                  {find(this.state.client.phones, { type: 0 }) ?
-                    <LabeledTextInput
-                      label="Cell"
-                      value={find(this.state.client.phones, { type: 0 }).value}
-                      onChangeText={(text) => { this.onChangeClientField('cell', text); }}
-                      placeholder="Enter"
-                    />
-                    : null
-                  }
 
-                  {find(this.state.client.phones, { type: 1 }) ?
-                    <LabeledTextInput
-                      label="Home"
-                      value={find(this.state.client.phones, { type: 1 }).value}
-                      onChangeText={(text) => { this.onChangeClientField('home', text); }}
-                      placeholder="Enter"
-                    />
-                    : null
-                  }
+                  {this.state.client.phones && this.state.client.phones.map((phone, index) => this.renderPhone(phone, index))}
 
-
-                  {find(this.state.client.phones, { type: 2 }) ?
-                    <LabeledTextInput
-                      label="Work"
-                      value={find(this.state.client.phones, { type: 2 }).value}
-                      onChangeText={(text) => { this.onChangeClientField('work', text); }}
-                      placeholder="Enter"
-                    />
-                    : null
-                  }
+                  <SalonTouchableOpacity onPress={this.props.onAddContact}>
+                    <View style={styles.addRow}>
+                      <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
+                      <Text style={styles.textData}>add contact</Text>
+                    </View>
+                  </SalonTouchableOpacity>
 
                 </InputGroup>
                 <SectionTitle value="ADDRESS" style={styles.sectionTitle} />
