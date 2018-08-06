@@ -323,12 +323,15 @@ export default class SalonAppointmentSlide extends React.Component {
     }
   }
 
+  handleCancel = () => {
+    this.props.goToCancelAppt(this.props.appointment);
+  }
+
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => this.props.onHide();
 
   keyExtractor = (item, index) => item.id;
-
 
   render() {
     const {
@@ -438,7 +441,7 @@ export default class SalonAppointmentSlide extends React.Component {
                       </View>
 
                       <View style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={this.handleCancel}>
                           <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
                           <View style={[
                             styles.plusIconContainer,
@@ -458,7 +461,7 @@ export default class SalonAppointmentSlide extends React.Component {
                       </View>
 
                       <View style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => this.props.handleModify()}>
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={this.props.handleModify}>
                           <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Modifiy</Text>
