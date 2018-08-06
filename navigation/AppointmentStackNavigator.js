@@ -54,6 +54,7 @@ import SelectResourceScreen from '../screens/apptBookSelectResource';
 
 import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
 import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
+import CancelAppointmentScreen from '../screens/cancelAppointment';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -256,6 +257,9 @@ const AppointmentStackNavigator = StackNavigator(
               />)}
           />),
       }),
+    },
+    CancelAppointmentScreen: {
+      screen: CancelAppointmentScreen,
     },
   },
   {

@@ -1,5 +1,6 @@
 import * as Appointment from './apiServicesResources/appointment';
 import * as AppointmentBook from './apiServicesResources/appointmentBook';
+import * as Auth from './apiServicesResources/auth';
 import * as Client from './apiServicesResources/client';
 import * as Employees from './apiServicesResources/employees';
 import * as Note from './apiServicesResources/note';
@@ -15,6 +16,7 @@ import { getEmployeePhoto } from './api';
 export {
   Appointment,
   AppointmentBook,
+  Auth,
   Client,
   Employees,
   Note,
