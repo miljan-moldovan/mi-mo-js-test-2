@@ -54,38 +54,34 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     textAlign: 'center',
   },
+  sectionDivider: { height: 37 },
+  inputGroup: { marginTop: 16 },
+  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  cancelButton: { fontSize: 14, color: 'white' },
+  leftButtonText: { fontSize: 14, color: 'white' },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
 });
 
-
-const scheduleTypes = [
-  { id: 1, name: 'Regular' },
-  { id: 2, name: 'Personal' },
-  { id: 3, name: 'Vacation' },
-  { id: 4, name: 'OutSick' },
-  { id: 0, name: 'Other' },
-];
 
 export default class BlockTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
-    const employee = params.employee || { name: 'First', lastName: 'Available' };
 
     return {
       headerTitle: (
-        <View style={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-        >
-          <Text style={{
-          fontFamily: 'Roboto-Medium',
-          fontSize: 17,
-          lineHeight: 22,
-          color: 'white',
-        }}
-          >
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>
           Block Time
           </Text>
         </View>
@@ -93,7 +89,7 @@ export default class BlockTimeScreen extends React.Component {
 
       headerLeft: (
         <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+          <Text style={styles.leftButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
@@ -198,7 +194,7 @@ export default class BlockTimeScreen extends React.Component {
     }
 
     cancelButton = () => ({
-      leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+      leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
       leftButtonOnPress: (navigation) => {
         navigation.goBack();
       },
@@ -234,6 +230,21 @@ export default class BlockTimeScreen extends React.Component {
       this.setState({ toTimePickerOpen: !this.state.toTimePickerOpen });
     }
 
+    onChangeTextComments =(txtNote) => {
+      this.setState({ comments: txtNote });
+    }
+
+    onChangeBlockTimeReason = (blockTimesReason) => {
+      this.handleBlockTimesReasonSelection(blockTimesReason);
+    }
+
+    onChangeEmployee = (provider) => { this.handleProviderSelection(provider); };;
+
+    onPressDate = (selectedDate) => {
+      this.setState({ selectedDate });
+    }
+    onChangeBlockBy = (provider) => { this.handleBlockedBySelection(provider); }
+
     render() {
       const {
         blockTimeState,
@@ -251,15 +262,14 @@ export default class BlockTimeScreen extends React.Component {
       return (
         <View style={styles.container}>
 
-          {
-            this.props.blockTimeState.isLoading ? (
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator />
-              </View>
+          {this.props.blockTimeState.isLoading ? (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
       ) : (
 
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-          <InputGroup style={{ marginTop: 16 }}>
+          <InputGroup style={styles.inputGroup}>
             <ProviderInput
               apptBook
               noPlaceholder
@@ -271,21 +281,19 @@ export default class BlockTimeScreen extends React.Component {
               avatarSize={20}
               navigate={this.props.navigation.navigate}
               headerProps={{ title: 'Providers', ...this.cancelButton() }}
-              onChange={(provider) => { this.handleBlockedBySelection(provider); }}
+              onChange={this.onChangeBlockBy}
             />
             <InputDivider />
             <InputDate
               noIcon
               style={{ flex: 1 }}
               placeholder="Date"
-              onPress={(selectedDate) => {
-              this.setState({ selectedDate });
-            }}
+              onPress={this.onPressDate}
               selectedDate={this.state.selectedDate ? this.state.selectedDate : false}
             />
           </InputGroup>
 
-          <SectionDivider style={{ height: 37 }} />
+          <SectionDivider style={styles.sectionDivider} />
           <InputGroup>
             <ProviderInput
               apptBook
@@ -298,12 +306,12 @@ export default class BlockTimeScreen extends React.Component {
               avatarSize={20}
               navigate={this.props.navigation.navigate}
               headerProps={{ title: 'Providers', ...this.cancelButton() }}
-              onChange={(provider) => { this.handleProviderSelection(provider); }}
+              onChange={this.onChangeEmployee}
             />
           </InputGroup>
 
 
-          <SectionDivider style={{ height: 37 }} />
+          <SectionDivider style={styles.sectionDivider} />
           <InputGroup>
             <BlockTimesReasonInput
               apptBook
@@ -315,11 +323,11 @@ export default class BlockTimeScreen extends React.Component {
               avatarSize={20}
               navigate={this.props.navigation.navigate}
               headerProps={{ title: 'Providers', ...this.cancelButton() }}
-              onChange={(blockTimesReason) => { this.handleBlockTimesReasonSelection(blockTimesReason); }}
+              onChange={this.onChangeBlockTimeReason}
             />
           </InputGroup>
 
-          <SectionDivider style={{ height: 37 }} />
+          <SectionDivider style={styles.sectionDivider} />
           <InputGroup>
             <SalonTimePicker
               label="Start"
@@ -339,14 +347,12 @@ export default class BlockTimeScreen extends React.Component {
               toggle={this.toogletoTime}
             />
           </InputGroup>
-          <SectionDivider style={{ height: 37 }} />
+          <SectionDivider style={styles.sectionDivider} />
           <InputGroup>
             <Text style={[styles.sectionTitle]}>Comments</Text>
             <InputText
               placeholder="Please insert here your comments"
-              onChangeText={(txtNote) => {
-                this.setState({ comments: txtNote });
-              }}
+              onChangeText={this.onChangeTextComments}
               value={this.state.comments}
             />
           </InputGroup>
