@@ -97,6 +97,8 @@ const styles = StyleSheet.create({
   middleSectionDivider: {
     width: '95%', height: 1, alignSelf: 'center', backgroundColor: '#DDE6F4',
   },
+  providerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  providerWrapper: { marginRight: 5 },
 });
 
 class ServiceSection extends Component {
@@ -168,9 +170,9 @@ class ServiceSection extends Component {
     const providerPhoto = provider ? (getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 
     if (provider) {
-      return (<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+      return (<View style={styles.providerContainer}>
         <SalonAvatar
-          wrapperStyle={{ marginRight: 5 }}
+          wrapperStyle={styles.providerWrapper}
           width={26}
           image={{ uri: providerPhoto }}
         />
@@ -193,6 +195,14 @@ class ServiceSection extends Component {
     return (
       <Text style={styles.label}>Service</Text>
     );
+  }
+
+  showDateTimePickerToTime = (service, index) => {
+    this.showDateTimePicker(service.toTime, service, index, 'toTime');
+  }
+
+  showDateTimePickerFromTime = (service, index) => {
+    this.showDateTimePicker(service.fromTime, service, index, 'fromTime');
   }
 
   renderService = (service, index) => (
@@ -230,7 +240,7 @@ class ServiceSection extends Component {
             </View>
           </View>
         </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'fromTime')}>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePickerFromTime(service, index)}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
             <View style={styles.dataContainer}>
@@ -238,7 +248,7 @@ class ServiceSection extends Component {
             </View>
           </View>
         </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'toTime')}>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePickerToTime(service, index)}>
           <View style={styles.lastInnerRow}>
             <Text style={styles.label}>End</Text>
             <View style={styles.dataContainer}>

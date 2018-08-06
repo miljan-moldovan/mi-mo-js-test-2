@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
 
   },
+  cancelButton: { fontSize: 14, color: 'white' },
 });
 
 class ApptBookTurnAwayScreen extends Component {
@@ -326,7 +327,7 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   cancelButton = () => ({
-    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
       navigation.goBack();
     },
