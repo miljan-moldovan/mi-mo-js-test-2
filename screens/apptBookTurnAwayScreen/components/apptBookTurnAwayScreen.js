@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
 
   },
+  cancelButton: { fontSize: 14, color: 'white' },
 });
 
 class ApptBookTurnAwayScreen extends Component {
@@ -253,6 +254,9 @@ class ApptBookTurnAwayScreen extends Component {
       fromTime: moment(),
       toTime: moment().add(1, 'hours'),
     };
+
+    this.props.navigation.setParams({ canSave: false });
+
     const { services } = this.state;
     services.push(service);
     this.setState({ services });
@@ -268,6 +272,7 @@ class ApptBookTurnAwayScreen extends Component {
     const { services } = this.state;
     services[index] = service;
     this.setState({ services });
+    this.props.navigation.setParams({ canSave: true });
   }
 
   handleDateModal = () => {
@@ -326,7 +331,7 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   cancelButton = () => ({
-    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
       navigation.goBack();
     },
