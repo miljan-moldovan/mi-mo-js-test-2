@@ -68,7 +68,7 @@ const scheduleTypes = [
 export default class BlockTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    const canSave = false; // params.canSave || false;
+    const canSave = params.canSave || false;
     const employee = params.employee || { name: 'First', lastName: 'Available' };
 
     return {
@@ -156,10 +156,12 @@ export default class BlockTimeScreen extends React.Component {
     };
 
 
-    this.props.blockTimeActions.postBlockTime(schedule, (result) => {
+    this.props.blockTimeActions.postBlockTime(schedule, (result, error) => {
       if (result) {
         this.props.appointmentCalendarActions.setGridView();
         this.props.navigation.goBack();
+      } else {
+        alert(error.message);
       }
     });
   }
@@ -249,10 +251,11 @@ export default class BlockTimeScreen extends React.Component {
       return (
         <View style={styles.container}>
 
-          {this.props.blockTimeState.isLoading ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator />
-            </View>
+          {
+            this.props.blockTimeState.isLoading ? (
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator />
+              </View>
       ) : (
 
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
