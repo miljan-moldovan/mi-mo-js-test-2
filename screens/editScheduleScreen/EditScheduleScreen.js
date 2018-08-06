@@ -111,7 +111,7 @@ export default class EditScheduleScreen extends React.Component {
     startTimeScheduleTwo: '',
     endTimeScheduleTwo: '',
     hoursWorking: false,
-    selectedScheduleExceptionReason: scheduleTypes[0],
+    selectedScheduleExceptionReason: scheduleTypes[scheduleTypes.length - 1],
     isEditableOtherReason: true,
   }
 
@@ -300,7 +300,7 @@ export default class EditScheduleScreen extends React.Component {
       this.props.navigation.setParams({ canSave });
 
       if (hoursWorking) {
-        this.onPressRadioGroup(scheduleTypes[0]);
+        this.onPressRadioGroup(scheduleTypes[scheduleTypes.length - 1]);
       }
 
       this.setState({
