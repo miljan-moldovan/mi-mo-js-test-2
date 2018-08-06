@@ -254,6 +254,9 @@ class ApptBookTurnAwayScreen extends Component {
       fromTime: moment(),
       toTime: moment().add(1, 'hours'),
     };
+
+    this.props.navigation.setParams({ canSave: false });
+
     const { services } = this.state;
     services.push(service);
     this.setState({ services });
@@ -269,6 +272,7 @@ class ApptBookTurnAwayScreen extends Component {
     const { services } = this.state;
     services[index] = service;
     this.setState({ services });
+    this.props.navigation.setParams({ canSave: true });
   }
 
   handleDateModal = () => {

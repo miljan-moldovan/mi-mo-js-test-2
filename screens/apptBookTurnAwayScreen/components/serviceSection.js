@@ -110,6 +110,7 @@ class ServiceSection extends Component {
       index: 0,
       type: '',
       isDateTimePickerVisible: false,
+      minuteInterval: 15,
     };
   }
 
@@ -275,7 +276,7 @@ class ServiceSection extends Component {
           onConfirm={this.handleDateSelection}
           onCancel={this.hideDateTimePicker}
           mode="time"
-          minuteInterval={15}
+          minuteInterval={this.state.minuteInterval}
           date={this.state.date}
         />
       </View>
