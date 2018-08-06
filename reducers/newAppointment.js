@@ -30,6 +30,7 @@ import {
 const defaultState = {
   isLoading: false,
   isBooking: false,
+  editType: 'new',
   isBookingQuickAppt: false,
   isQuickApptRequested: true,
   date: moment(),
@@ -53,11 +54,13 @@ export default function newAppointmentReducer(state = defaultState, action) {
         guests: [],
         conflicts: [],
         serviceItems: [],
+        editType: 'new',
       };
     case SET_SELECTED_APPT:
       return {
         ...state,
         ...data.newState,
+        editType: 'edit',
       };
     case IS_BOOKING_QUICK_APPT:
       return {

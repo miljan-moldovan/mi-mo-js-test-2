@@ -101,6 +101,7 @@ export default class AppointmentScreen extends Component {
     isAlertVisible: false,
     selectedAppointment: null,
     bookAnotherEnabled: false,
+    selectedAppointment: null,
     screenHeight: 0,
   };
 
@@ -169,6 +170,7 @@ export default class AppointmentScreen extends Component {
     // this.props.navigation.navigate('NewAppointment');
     this.props.modifyApptActions.setSelectedAppt(appointment);
     this.setState({
+      selectedAppointment: appointment,
       visibleAppointment: true,
     });
   }
@@ -305,6 +307,15 @@ export default class AppointmentScreen extends Component {
       this.setState({ bufferVisible });
       requestAnimationFrame(() => this.props.navigation.setParams({ tabBarVisible: !bufferVisible }));
     }
+  }
+
+  handleModifyAppt = () => {
+    const { selectedAppointment: { appointmentGroupId, ...selectedAppointment } } = this.state;
+    const { appointments, newAppointmentActions, navigation: { navigate } } = this.props;
+    const groupData = appointments.filter(appt => appt.appointmentGroupId === appointmentGroupId);
+    this.setState({ visibleAppointment: false });
+    newAppointmentActions.setSelectedAppt(selectedAppointment, groupData);
+    navigate('NewAppointment');
   }
 
   handleBook = (bookAnotherEnabled) => {
@@ -595,13 +606,7 @@ export default class AppointmentScreen extends Component {
           onHide={() => {
             this.setState({ visibleAppointment: false });
           }}
-          handleModify={() => {
-            const { selectedAppointment } = this.state;
-            const groupData = this.props.appointments.filter(appt => appt.appointmentGroupId === selectedAppointment.appointmentGroupId);
-            this.setState({ visibleAppointment: false });
-            this.props.newAppointmentActions.setSelectedAppt(selectedAppointment, groupData);
-            this.props.navigation.navigate('NewAppointment');
-          }}
+          handleModify={this.handleModifyAppt}
         />
         {
           toast ?

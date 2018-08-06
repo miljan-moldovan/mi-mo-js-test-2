@@ -157,9 +157,10 @@ const SubTitle = props => (
 export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
-    const canSave = screenProps.isNewApptValid;
+    const editType = params.editType || 'new';
+    const canSave = screenProps.isNewApptValid || editType === 'edit';
     return ({
-      headerTitle: 'New Appointment',
+      headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
         <SalonTouchableOpacity
           onPress={() => { params.handleCancel(); }}
@@ -205,6 +206,7 @@ export default class NewAppointmentScreen extends React.Component {
 
     const {
       client,
+      editType,
     } = this.props.newAppointmentState;
     const {
       clientEmail,
@@ -213,7 +215,11 @@ export default class NewAppointmentScreen extends React.Component {
       isValidEmail,
       isValidPhone,
     } = this.getClientInfo(client);
-    this.props.navigation.setParams({ handleSave: this.handleSave, handleCancel: this.handleCancel });
+    this.props.navigation.setParams({
+      editType,
+      handleSave: this.handleSave,
+      handleCancel: this.handleCancel,
+    });
     this.state = {
       toast: null,
       isRecurring: false,
@@ -528,8 +534,11 @@ export default class NewAppointmentScreen extends React.Component {
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime')
 
-  checkConflicts = () => this.props.newAppointmentActions.getConflicts(() => this.validate())
-
+  checkConflicts = () => {
+    return this.props.newAppointmentState.editType === 'new' ?
+      this.props.newAppointmentActions.getConflicts(() => this.validate()) :
+      null;
+  }
   handleAddGuestService = (guestId) => {
     const { bookedByEmployee } = this.props.newAppointmentState;
     const guest = this.getGuest(guestId);
@@ -555,35 +564,46 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleSave = () => {
-    if (this.props.isValidAppointment) {
-      const {
-        date,
-        client,
-        bookedByEmployee,
-        remarks,
-        serviceItems,
-      } = this.props.newAppointmentState;
-      const successCallback = () => {
-        this.props.navigation.navigate('SalonCalendar');
-        // this.props.newAppointmentActions.cleanForm();
-        this.props.apptBookActions.setGridView();
-        this.props.apptBookActions.setToast({
-          description: 'Appointment Booked',
-          type: 'green',
-          btnRightText: 'DISMISS',
-        });
-      };
-      const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment creation error' } } }) => {
-        this.setState({
-          toast: {
-            text,
-            type: 'error',
+    const { editType } = this.props.newAppointmentState;
+    if (editType === 'new') {
+      if (this.props.isValidAppointment) {
+        const {
+          date,
+          client,
+          bookedByEmployee,
+          remarks,
+          serviceItems,
+        } = this.props.newAppointmentState;
+        const successCallback = () => {
+          this.props.navigation.navigate('SalonCalendar');
+          // this.props.newAppointmentActions.cleanForm();
+          this.props.apptBookActions.setGridView();
+          this.props.apptBookActions.setToast({
+            description: 'Appointment Booked',
+            type: 'green',
             btnRightText: 'DISMISS',
-          },
-        }, this.checkConflicts);
-      };
-      this.shouldUpdateClientInfo();
-      this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
+          });
+        };
+        const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment creation error' } } }) => {
+          this.setState({
+            toast: {
+              text,
+              type: 'error',
+              btnRightText: 'DISMISS',
+            },
+          }, this.checkConflicts);
+        };
+        this.shouldUpdateClientInfo();
+        this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
+      }
+    } else if (editType === 'edit') {
+      this.setState({
+        toast: {
+          text: 'Modify API Call not implemented',
+          type: 'warning',
+          btnRightText: 'DISMISS',
+        },
+      });
     }
   }
 
