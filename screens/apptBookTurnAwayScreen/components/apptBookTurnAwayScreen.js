@@ -202,7 +202,7 @@ class ApptBookTurnAwayScreen extends Component {
       date: moment(),
       isModalVisible: false,
       selectedClient: null,
-      services: [{ provider: this.props.navigation.state.params.employee, toTime: moment(), fromTime: moment() }],
+      services: [],
       selectedReasonCode,
       isEditableOtherReason: true,
       otherReason: '',
@@ -248,7 +248,7 @@ class ApptBookTurnAwayScreen extends Component {
 
   handleAddService= () => {
     const service = {
-      provider: null,
+      provider: this.props.navigation.state.params.employee,
       service: null,
       fromTime: moment(),
       toTime: moment().add(1, 'hours'),

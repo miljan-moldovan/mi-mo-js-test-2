@@ -176,7 +176,7 @@ export default class SalonDatePickerSlide extends React.Component {
 
 
   jumpToWeeks = (weekNumber) => {
-    const day = moment().add(weekNumber, 'week').format('YYYY-MM-DD');
+    const day = moment(this.state.selected).add(weekNumber, 'week').format('YYYY-MM-DD');
     this.setState({
       selected: day,
     });
@@ -193,11 +193,9 @@ export default class SalonDatePickerSlide extends React.Component {
     }, 10);
   }
 
-  renderArrow = (direction) => {
-    return direction === 'left' ?
-      (<Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />) :
-      (<Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />)
-  }
+  renderArrow = direction => (direction === 'left' ?
+    (<Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />) :
+    (<Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />))
 
   render() {
     return (
@@ -214,7 +212,7 @@ export default class SalonDatePickerSlide extends React.Component {
             <View style={styles.panelTopArrow}>
               <SalonTouchableOpacity onPress={this.hidePanel}>
                 <View>
-                  <Image source={require('../../assets/images/icons/Chevron.png')}  />
+                  <Image source={require('../../assets/images/icons/Chevron.png')} />
                 </View>
               </SalonTouchableOpacity>
             </View>
