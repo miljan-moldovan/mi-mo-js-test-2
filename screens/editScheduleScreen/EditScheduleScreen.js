@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
 
 
 const scheduleTypes = [
-  { id: 1, name: 'Regular' },
   { id: 2, name: 'Personal' },
   { id: 3, name: 'Vacation' },
   { id: 4, name: 'OutSick' },
-  { id: 0, name: 'Other' },
+  { id: 1, name: 'Other' }, // Regular -> this is done to match webend
+  // { id: 0, name: 'Other' }, // this is done to match webend
 ];
 
 export default class EditScheduleScreen extends React.Component {
@@ -111,7 +111,7 @@ export default class EditScheduleScreen extends React.Component {
     startTimeScheduleTwo: '',
     endTimeScheduleTwo: '',
     hoursWorking: false,
-    selectedScheduleExceptionReason: scheduleTypes[scheduleTypes.length - 1],
+    selectedScheduleExceptionReason: scheduleTypes[0],
     isEditableOtherReason: true,
   }
 
@@ -300,7 +300,7 @@ export default class EditScheduleScreen extends React.Component {
       this.props.navigation.setParams({ canSave });
 
       if (hoursWorking) {
-        this.onPressRadioGroup(scheduleTypes[scheduleTypes.length - 1]);
+        this.onPressRadioGroup(scheduleTypes[0]);
       }
 
       this.setState({
