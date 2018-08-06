@@ -109,13 +109,7 @@ const getProviders = (params, filterByService = false, filterList = false) => (d
       });
   }
 
-  return Employees.getEmployees(params)
-    .then((providers) => {
-      dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
-    })
-    .catch((err) => {
-      dispatch(getProvidersError(err));
-    });
+  return dispatch(getProvidersSuccess(filterList.slice().sort(alphabeticFilter), filterList));
 };
 
 const setFilteredProviders = (filtered) => {
