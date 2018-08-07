@@ -7,6 +7,7 @@ import { POST_APPOINTMENT_RESIZE,
   POST_APPOINTMENT_RESIZE_FAILED,
   POST_APPOINTMENT_CANCEL_SUCCESS,
   POST_APPOINTMENT_CHECKIN_FAILED,
+  POST_APPOINTMENT_CHECKOUT_FAILED,
   UNDO_MOVE,
 } from '../actions/appointment';
 import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
@@ -251,6 +252,7 @@ export default function appointmentBookReducer(state = initialState, action) {
     case POST_APPOINTMENT_MOVE_FAILED:
     case POST_APPOINTMENT_RESIZE_FAILED:
     case POST_APPOINTMENT_CHECKIN_FAILED:
+    case POST_APPOINTMENT_CHECKOUT_FAILED:
       return {
         ...state,
         isLoading: false,

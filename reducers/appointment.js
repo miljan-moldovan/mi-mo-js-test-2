@@ -11,12 +11,17 @@ import {
   POST_APPOINTMENT_CANCEL_FAILED,
   POST_APPOINTMENT_CHECKIN,
   POST_APPOINTMENT_CHECKIN_SUCCESS,
+  POST_APPOINTMENT_CHECKIN_FAILED,
+  POST_APPOINTMENT_CHECKOUT,
+  POST_APPOINTMENT_CHECKOUT_SUCCESS,
+  POST_APPOINTMENT_CHECKOUT_FAILED,
 } from '../actions/appointment';
 
 const initialState = {
   isMoving: false,
   isLoading: false,
   isCheckingIn: false,
+  isCheckingOut: false,
   error: null,
   appointments: [],
   isCanceling: false,
@@ -86,9 +91,21 @@ export default function appoinmentReducer(state = initialState, action) {
         isCheckingIn: true,
       };
     case POST_APPOINTMENT_CHECKIN_SUCCESS:
+    case POST_APPOINTMENT_CHECKIN_FAILED:
       return {
         ...state,
         isCheckingIn: false,
+      };
+    case POST_APPOINTMENT_CHECKOUT:
+      return {
+        ...state,
+        isCheckingOut: true,
+      };
+    case POST_APPOINTMENT_CHECKOUT_FAILED:
+    case POST_APPOINTMENT_CHECKOUT_SUCCESS:
+      return {
+        ...state,
+        isCheckingOut: false,
       };
     default:
       return state;

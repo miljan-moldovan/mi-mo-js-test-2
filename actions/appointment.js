@@ -18,6 +18,9 @@ export const POST_APPOINTMENT_CANCEL_FAILED = 'appointment/POST_APPOINTMENT_CANC
 export const POST_APPOINTMENT_CHECKIN = 'appointment/POST_APPOINTMENT_CHECKIN';
 export const POST_APPOINTMENT_CHECKIN_SUCCESS = 'appointment/POST_APPOINTMENT_CHECKIN_SUCCESS';
 export const POST_APPOINTMENT_CHECKIN_FAILED = 'appointment/POST_APPOINTMENT_CHECKIN_FAILED';
+export const POST_APPOINTMENT_CHECKOUT = 'appointment/POST_APPOINTMENT_CHECKOUT';
+export const POST_APPOINTMENT_CHECKOUT_SUCCESS = 'appointment/POST_APPOINTMENT_CHECKOUT_SUCCESS';
+export const POST_APPOINTMENT_CHECKOUT_FAILED = 'appointment/POST_APPOINTMENT_CHECKOUT_FAILED';
 export const UNDO_MOVE = 'appointment/UNDO_MOVE';
 export const UNDO_MOVE_SUCCESS = 'appointment/UNDO_MOVE_SUCCESS';
 
@@ -143,6 +146,25 @@ const postAppointmentCheckin = appointmentId => (dispatch) => {
     .catch(error => dispatch(postAppointmentCheckinFailed(error)));
 };
 
+const postAppointmentCheckoutFailed = error => ({
+  type: POST_APPOINTMENT_CHECKOUT_FAILED,
+  data: { error },
+});
+
+const postAppointmentCheckoutSuccess = () => ({
+  type: POST_APPOINTMENT_CHECKOUT_SUCCESS,
+});
+
+const postAppointmentCheckout = appointmentId => (dispatch) => {
+  dispatch({ type: POST_APPOINTMENT_CHECKOUT });
+  return Appointment.postAppointmentCheckout(appointmentId)
+    .then(() => {
+      dispatch(appointmentCalendarActions.setGridView());
+      return dispatch(postAppointmentCheckoutSuccess());
+    })
+    .catch(error => dispatch(postAppointmentCheckoutFailed(error)));
+};
+
 
 const appointmentActions = {
   addAppointment,
@@ -151,6 +173,7 @@ const appointmentActions = {
   postAppointmentMove,
   postAppointmentResize,
   postAppointmentCheckin,
+  postAppointmentCheckout,
   undoMove,
 };
 

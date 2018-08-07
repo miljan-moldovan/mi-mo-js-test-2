@@ -520,6 +520,7 @@ export default class AppointmentScreen extends Component {
           handleModify={this.handleModify}
           goToCancelAppt={this.goToCancelAppt}
           handleCheckin={appointmentActions.postAppointmentCheckin}
+          handleCheckout={appointmentActions.postAppointmentCheckout}
         />
         {
           toast ?
