@@ -38,7 +38,7 @@ export default class InputText extends React.Component {
 
   render() {
     return (
-      <View pointerEvents={this.props.isEditable ? 'auto' : 'none'}>
+      <View pointerEvents={this.state.editable ? 'auto' : 'none'}>
         <TextInput
           ref={(input) => { this.input = input; }}
           {...this.props}

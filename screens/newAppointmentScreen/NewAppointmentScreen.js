@@ -89,7 +89,7 @@ export const styles = StyleSheet.create({
 });
 
 const RemoveGuest = ({ onPress }) => (
-  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginHorizontal: 10 }}>
+  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginHorizontal: 12 }}>
     <SalonTouchableOpacity
       style={{ flexDirection: 'row' }}
       onPress={onPress}
@@ -989,6 +989,7 @@ export default class NewAppointmentScreen extends React.Component {
           >
             <LabeledTextarea
               label="Remarks"
+              isEditable
               placeholder="Please specify"
               onChangeText={this.onChangeRemarks}
             />

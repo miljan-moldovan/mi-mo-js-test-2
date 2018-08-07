@@ -8,3 +8,5 @@ const AppointmentEmployeeModel = {
   serviceId: PropTypes.number,
   storeId: PropTypes.number,
 };
+
+export default AppointmentEmployeeModel;
