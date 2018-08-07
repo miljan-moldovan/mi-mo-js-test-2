@@ -102,6 +102,7 @@ export default class AppointmentScreen extends Component {
     selectedAppointment: null,
     bookAnotherEnabled: false,
     screenHeight: 0,
+    selectedApptId: -1,
   };
 
   componentDidMount() {
@@ -163,10 +164,11 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-  onCardPressed = (appointment) => {
-    this.props.modifyApptActions.setSelectedAppt(appointment);
+  onCardPressed = (selectedAppt) => {
+    //this.props.appointmentCalendarActions.setSelectedAppt(appointment);
     this.setState({
       visibleAppointment: true,
+      selectedApptId: selectedAppt.id,
     });
   }
 
@@ -343,6 +345,16 @@ export default class AppointmentScreen extends Component {
     }
   }
 
+  hideApptSlide = () => {
+    this.setState({ visibleAppointment: false });
+  }
+
+  handleModify = () => {
+    const { selectedAppointment } = this.state;
+    this.setState({ visibleAppointment: false });
+    this.props.navigation.navigate('ModifyAppointment');
+  }
+
   render() {
     const {
       dates,
@@ -500,103 +512,14 @@ export default class AppointmentScreen extends Component {
             this.props.appointmentCalendarActions.setGridView();
           }}
         />
-
-        {/* <SalonNewAppointmentSlide
-          navigation={this.props.navigation}
-          selectedFilter={this.state.newApptActiveTab}
-          isLoading={this.props.newAppointmentState.isLoading}
-          hasConflicts={this.props.newAppointmentState.conflicts.length > 0}
-          date={this.props.newAppointmentState.date}
-          startTime={this.props.newAppointmentState.startTime}
-          endTime={this.props.newAppointmentState.endTime}
-          isProviderRequested={this.props.newAppointmentState.mainRequested}
-          client={this.props.newAppointmentState.client}
-          provider={this.props.newAppointmentState.bookedByEmployee}
-          service={this.props.newAppointmentState.service}
-          visible={false}
-          onHide={() => {
-            this.setState({ visibleNewAppointment: false });
-          }}
-          show={() => this.setState({ visibleNewAppointment: true })}
-          handlePressBook={() => {
-            const callback = () => {
-              this.setState({ visibleNewAppointment: false });
-              this.props.appointmentCalendarActions.setGridView();
-            };
-            this.props.newAppointmentActions.quickBookAppt(callback);
-          }}
-          handlePressMore={() => {
-            const {
-              date,
-              service,
-              client,
-              startTime,
-              bookedByEmployee,
-              mainRequested,
-            } = this.props.newAppointmentState;
-
-            if (!bookedByEmployee) {
-              return alert('Please select a provider first');
-            }
-            const fromTime = moment(startTime, 'HH:mm');
-            const timeToAdd = service !== null ? moment.duration(service.maxDuration) : moment.duration(apptGridSettings.step, 'min');
-            const toTime = moment(fromTime).add(timeToAdd);
-            const newAppt = {
-              date,
-              bookedByEmployee,
-              service,
-              client,
-              fromTime,
-              toTime,
-              requested: mainRequested,
-            };
-            this.setState({ visibleNewAppointment: false });
-            this.props.navigation.navigate('NewAppointment', { newAppt });
-          }}
-          handlePressProvider={(provider) => {
-            this.props.newAppointmentActions.setBookedBy(provider);
-            this.setState({ visibleNewAppointment: true }, this.props.newAppointmentActions.checkConflicts());
-          }}
-          handlePressService={(service) => {
-            this.props.newAppointmentActions.setNewApptService(service);
-            this.setState({ visibleNewAppointment: true }, this.props.newAppointmentActions.checkConflicts());
-          }}
-          handlePressClient={(client) => {
-            this.props.newAppointmentActions.setNewApptClient(client);
-            this.setState({ visibleNewAppointment: true }, this.props.newAppointmentActions.checkConflicts());
-          }}
-          handlePressConflicts={() => {
-            const { newAppointmentState: state } = this.props;
-            this.setState({ visibleNewAppointment: false });
-            this.props.navigation.navigate('Conflicts', {
-              startTime: state.startTime,
-              endTime: state.endTime,
-              date: state.body.date,
-              conflicts: state.conflicts,
-              handleGoBack: () => {
-                this.setState({ visibleNewAppointment: true });
-              },
-            });
-          }}
-          handleChangeRequested={(requested) => {
-            this.props.newAppointmentActions.setNewApptRequested(!requested);
-          }}
-          filterProviders={providers}
-        /> */}
-
         <SalonAppointmentSlide
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
-          appointment={this.props.modifyApptState.appointment}
-          onHide={() => {
-            this.setState({ visibleAppointment: false });
-          }}
-          handleModify={() => {
-            const { selectedAppointment } = this.state;
-            this.setState({ visibleAppointment: false });
-            this.props.navigation.navigate('ModifyAppointment');
-          }}
+          appointmentId={this.state.selectedApptId}
+          onHide={this.hideApptSlide}
+          handleModify={this.handleModify}
           goToCancelAppt={this.goToCancelAppt}
+          handleCheckin={appointmentActions.postAppointmentCheckin}
         />
         {
           toast ?

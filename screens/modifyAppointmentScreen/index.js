@@ -5,7 +5,7 @@ import ModifyAppointmentScreen from './ModifyAppointmentScreen';
 
 const mapStateToProps = state => ({
   state: state.modifyApptReducer,
-  apptBookState: state.appointmentScreenReducer,
+  apptBookState: state.appointmentBookReducer,
   formulasAndNotesState: state.formulasAndNotesReducer,
 });
 

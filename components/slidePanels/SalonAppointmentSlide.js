@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, Text, Animated, View, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import { ScrollView, Text, Animated, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { get } from 'lodash';
 
 import Icon from './../UI/Icon';
@@ -13,6 +14,8 @@ import {
 import AuditInformation from '../AuditInformation';
 
 import { Appointment } from '../../utilities/apiWrapper';
+import ApptQueueStatus from '../../constants/apptQueueStatus';
+import { getSelectedAppt } from '../../redux/selectors/appointmentSelector';
 
 const styles = StyleSheet.create({
   modal: {
@@ -167,6 +170,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
+  panelIconBtnDisabled: {
+    width: 45,
+    height: 45,
+    borderRadius: 45 / 2,
+    backgroundColor: 'rgb(229, 229, 229)',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 4,
+  },
   panelIconText: {
     marginTop: 7,
     color: '#727A8F',
@@ -290,7 +303,7 @@ const AdaptableView = ({ isOpen, children }) => (
   isOpen ? <ScrollView>{children}</ScrollView> : <View>{children}</View>
 );
 
-export default class SalonAppointmentSlide extends React.Component {
+class SalonAppointmentSlide extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -327,6 +340,10 @@ export default class SalonAppointmentSlide extends React.Component {
     this.props.goToCancelAppt(this.props.appointment);
   }
 
+  handleCheckin = () => {
+    this.props.handleCheckin(this.props.appointment.id);
+  }
+
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => this.props.onHide();
@@ -336,17 +353,22 @@ export default class SalonAppointmentSlide extends React.Component {
   render() {
     const {
       appointment,
+      isCheckingIn,
+      isGridLoading
     } = this.props;
-    if (appointment === null) {
+    if (!appointment) {
       return null;
     }
     const {
       client,
       service,
       employee,
+      isNoShow,
+      queueStatus
     } = appointment;
     const { isOpen, auditAppt } = this.state;
-
+    const isCheckInDisabled = (isGridLoading || isCheckingIn
+      || queueStatus !== ApptQueueStatus.NotInQueue || isNoShow);
     return this.props.appointment && (
       <ModalBox
         isOpen={this.props.visible}
@@ -427,8 +449,17 @@ export default class SalonAppointmentSlide extends React.Component {
                   <View style={styles.panelMiddle}>
                     <View style={styles.panelIcons}>
                       <View style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                          <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                        <SalonTouchableOpacity
+                          style={isCheckInDisabled ?
+                            styles.panelIconBtnDisabled : styles.panelIconBtn}
+                          onPress={this.handleCheckin}
+                          disabled={isCheckInDisabled}
+                        >
+                          { isCheckingIn ?
+                            <ActivityIndicator />
+                            :
+                            <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                          }
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Check-In</Text>
                       </View>
@@ -614,3 +645,11 @@ export default class SalonAppointmentSlide extends React.Component {
       </ModalBox>);
   }
 }
+
+const mapStateToProps = (state, props) => ({
+  appointment: getSelectedAppt(state, props),
+  isCheckingIn: state.appointmentReducer.isCheckingIn,
+  isGridLoading: state.appointmentBookReducer.isLoading,
+});
+
+export default connect(mapStateToProps)(SalonAppointmentSlide);
