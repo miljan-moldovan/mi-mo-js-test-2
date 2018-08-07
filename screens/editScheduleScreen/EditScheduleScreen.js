@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
 
 
 const scheduleTypes = [
-  { id: 1, name: 'Regular' },
   { id: 2, name: 'Personal' },
   { id: 3, name: 'Vacation' },
   { id: 4, name: 'OutSick' },
-  { id: 0, name: 'Other' },
+  { id: 1, name: 'Other' }, // Regular -> this is done to match webend
+  // { id: 0, name: 'Other' }, // this is done to match webend
 ];
 
 export default class EditScheduleScreen extends React.Component {

@@ -18,8 +18,8 @@ const postBlockTime = (data, callback) => (dispatch) => {
   dispatch({ type: POST_BLOCKTIME });
 
   return AppointmentBook.postAppointmentBookBlockTime(data)
-    .then(resp => dispatch(postBlockTimeSuccess(resp)))
-    .catch((error) => { dispatch(postBlockTimeFailed(error)); callback(false); });
+    .then((resp) => { dispatch(postBlockTimeSuccess(resp)); callback(true); })
+    .catch((error) => { dispatch(postBlockTimeFailed(error)); callback(false, error); });
 };
 
 const blockTimeActions = {
