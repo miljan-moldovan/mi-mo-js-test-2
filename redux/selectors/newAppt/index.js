@@ -32,6 +32,10 @@ const loadingStateSelector = state => ({
 
 const conflictsSelector = state => state.newAppointmentReducer.conflicts;
 
+const editTypeSelector = state => state.newAppointmentReducer.editType;
+
+const deletedIdsSelector = state => state.newAppointmentReducer.deletedIds;
+
 const newAppointmentInfoSelector = createSelector(
   [
     dateSelector,
@@ -43,10 +47,12 @@ const newAppointmentInfoSelector = createSelector(
     isBookingQuickApptSelector,
     isQuickRequestedSelector,
     conflictsSelector,
+    editTypeSelector,
+    deletedIdsSelector,
   ],
   (
     date, startTime, client, guests, bookedByEmployee,
-    serviceItems, isQuickBooking, isQuickApptRequested, conflicts,
+    serviceItems, isQuickBooking, isQuickApptRequested, conflicts, editType, deletedIds,
   ) => ({
     date,
     startTime,
@@ -57,6 +63,8 @@ const newAppointmentInfoSelector = createSelector(
     isQuickBooking,
     isQuickApptRequested,
     conflicts,
+    editType,
+    deletedIds,
   }),
 );
 
@@ -68,17 +76,17 @@ const isValidAppointment = createSelector(
   (
     { isLoading, isBooking },
     {
-      date, bookedByEmployee, client, serviceItems, conflicts,
+      date, bookedByEmployee, client, serviceItems, conflicts, editType,
     },
   ) => (
-      date &&
-      bookedByEmployee !== null &&
-      client !== null &&
-      serviceItems.length > 0 &&
-      !conflicts.length > 0 &&
-      !isLoading &&
-      !isBooking
-    ),
+    date &&
+    bookedByEmployee !== null &&
+    client !== null &&
+    serviceItems.length > 0 &&
+    (!conflicts.length > 0 || editType === 'edit') &&
+    !isLoading &&
+    !isBooking
+  ),
 );
 
 const appointmentLength = createSelector(
@@ -139,7 +147,9 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
     resourceId: get(service.resource, 'id', null),
     resourceOrdinal: get(service, 'resourceOrdinal', null),
   };
-
+  if (appointment.editType === 'edit') {
+    itemData.id = get(serviceItem.service, 'id', null);
+  }
   const gapTimeDuration = moment.duration(get(service, 'gapTime', 0));
   const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
   if (
@@ -165,7 +175,7 @@ const serializeApptToRequestData = createSelector(
     bookedByEmployeeId: get(appt.bookedByEmployee, 'id'),
     rebooked: get(appt, 'rebooked', false),
     remarks: get(appt, 'remarks', ''),
-    // displayColor: appt.displayColor,
+    deletedIds: appt.editType === 'edit' ? appt.deletedIds : null,
     clientInfo: {
       id: get(appt.client, 'id', null),
       email: get(appt.client, 'email', ''),

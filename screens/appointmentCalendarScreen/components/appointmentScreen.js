@@ -130,7 +130,7 @@ export default class AppointmentScreen extends Component {
   onPressCalendar = () => {
     this.props.appointmentCalendarActions.setToast({
       description: 'Not Implemented',
-      type: 'success',
+      type: 'warning',
       btnRightText: 'DISMISS',
     });
   };

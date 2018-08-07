@@ -158,7 +158,7 @@ export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
-    const canSave = screenProps.isNewApptValid || editType === 'edit';
+    const canSave = screenProps.isNewApptValid;
     return ({
       headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
@@ -534,11 +534,8 @@ export default class NewAppointmentScreen extends React.Component {
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime')
 
-  checkConflicts = () => {
-    return this.props.newAppointmentState.editType === 'new' ?
-      this.props.newAppointmentActions.getConflicts(() => this.validate()) :
-      null;
-  }
+  checkConflicts = () => this.props.newAppointmentActions.getConflicts(() => this.validate());
+
   handleAddGuestService = (guestId) => {
     const { bookedByEmployee } = this.props.newAppointmentState;
     const guest = this.getGuest(guestId);
@@ -565,45 +562,32 @@ export default class NewAppointmentScreen extends React.Component {
 
   handleSave = () => {
     const { editType } = this.props.newAppointmentState;
+    const successCallback = () => {
+      this.props.navigation.navigate('SalonCalendar');
+      this.props.apptBookActions.setGridView();
+      this.props.apptBookActions.setToast({
+        description: editType === 'edit' ? 'Appointment Modified' : 'Appointment Booked',
+        type: 'green',
+        btnRightText: 'DISMISS',
+      });
+    };
+    const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment api error' } } }) => {
+      this.setState({
+        toast: {
+          text,
+          type: 'error',
+          btnRightText: 'DISMISS',
+        },
+      }, this.checkConflicts);
+    };
     if (editType === 'new') {
       if (this.props.isValidAppointment) {
-        const {
-          date,
-          client,
-          bookedByEmployee,
-          remarks,
-          serviceItems,
-        } = this.props.newAppointmentState;
-        const successCallback = () => {
-          this.props.navigation.navigate('SalonCalendar');
-          // this.props.newAppointmentActions.cleanForm();
-          this.props.apptBookActions.setGridView();
-          this.props.apptBookActions.setToast({
-            description: 'Appointment Booked',
-            type: 'green',
-            btnRightText: 'DISMISS',
-          });
-        };
-        const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment creation error' } } }) => {
-          this.setState({
-            toast: {
-              text,
-              type: 'error',
-              btnRightText: 'DISMISS',
-            },
-          }, this.checkConflicts);
-        };
         this.shouldUpdateClientInfo();
         this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
       }
     } else if (editType === 'edit') {
-      this.setState({
-        toast: {
-          text: 'Modify API Call not implemented',
-          type: 'warning',
-          btnRightText: 'DISMISS',
-        },
-      });
+      const { selectedAppt: { id } } = this.props.newAppointmentState;
+      this.props.newAppointmentActions.modifyAppt(id, successCallback, errorCallback);
     }
   }
 

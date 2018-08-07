@@ -290,6 +290,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
     const extraIndex = newServiceItems.findIndex(item => item.itemId === extra.itemId);
     newServiceItems.splice(extraIndex, 1);
   });
+  const deletedId = get(removedAppt.service, 'id', null);
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
@@ -297,7 +298,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
   );
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems },
+    data: { serviceItems: newServiceItems, deletedId },
   });
 };
 
@@ -481,6 +482,7 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
     const length = moment.duration(toTime.diff(fromTime, true));
     const serviceClient = guest ? get(guest, 'client', null) : mainClient;
     const newService = {
+      id: get(appointment, 'id', null),
       length,
       service: get(appointment, 'service', null),
       requested: get(appointment, 'requested', true),
@@ -499,6 +501,7 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
 
   serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
   const newState = {
+    selectedAppt: appt,
     date: moment(get(appt, 'date', moment())),
     startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
     client: mainClient,
@@ -507,6 +510,7 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
     conflicts: [],
     serviceItems,
     remarks: get(appt, 'remarks', ''),
+    existingApptIds: groupData.map(item => get(item, 'id', null)),
   };
   return dispatch({
     type: SET_SELECTED_APPT,
@@ -576,6 +580,41 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
     .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
 };
 
+const modifyAppt = (apptId, successCallback = false, errorCallback = false) => (dispatch, getState) => {
+  const {
+    startTime,
+    serviceItems,
+    existingApptIds,
+  } = getState().newAppointmentReducer;
+
+  dispatch({
+    type: BOOK_NEW_APPT,
+  });
+  resetTimeForServices(serviceItems, -1, startTime);
+  const requestBody = serializeApptToRequestData(getState(), true);
+  const existingServices = reject(serviceItems, itm => !itm.service.id)
+    .map(itm => itm.service.id);
+  const deletedIds = reject(existingApptIds, id => existingServices.includes(id));
+  requestBody.deletedIds = deletedIds;
+  return Appointment.putAppointment(apptId, requestBody)
+    .then((res) => {
+      dispatch({
+        type: ADD_APPOINTMENT,
+        data: { appointment: res },
+      });
+      return dispatch(bookNewApptSuccess(successCallback));
+    })
+    .catch((err) => {
+      if (isFunction(errorCallback)) {
+        errorCallback(err);
+      }
+      return dispatch({
+        type: BOOK_NEW_APPT_FAILED,
+        data: { error: err },
+      });
+    });
+};
+
 const newAppointmentActions = {
   cleanForm,
   setBookedBy,
@@ -600,5 +639,6 @@ const newAppointmentActions = {
   messageAllClients,
   messageProvidersClients,
   setSelectedAppt,
+  modifyAppt,
 };
 export default newAppointmentActions;
