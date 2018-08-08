@@ -19,7 +19,10 @@ import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientNotes from './../screens/clientNotes';
-import ClientFormulas from './../screens/clientFormulas';
+import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
+import ClientNote from './../screens/clientInfoScreen/components/clientNotes/clientNote';
+import ClientFormula from './../screens/clientInfoScreen/components/clientFormulas/clientFormula';
+import ClientInfoScreen from '../screens/clientInfoScreen';
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -157,9 +160,23 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ClientNotes: {
       screen: ClientNotes,
+      navigationOptions: { tabBarVisible: false },
     },
     ClientFormulas: {
       screen: ClientFormulas,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientNote: {
+      screen: ClientNote,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormula: {
+      screen: ClientFormula,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientInfo: {
+      screen: ClientInfoScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Services: {
       screen: ServicesScreen,

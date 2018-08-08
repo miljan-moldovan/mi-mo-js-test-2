@@ -30,6 +30,9 @@ import apptBookTurnAwayReducer from './apptBookTurnAway';
 import blockTimeReducer from './blockTime';
 import blockTimesReasonsReducer from './blockTimesReasons';
 import turnAwayReasonsReducer from './turnAwayReasons';
+import clientNotesReducer from './clientNotes';
+import clientFormulasReducer from './clientFormulas';
+import clientInfoReducer from './clientInfo';
 
 export default combineReducers({
   auth,
@@ -61,4 +64,7 @@ export default combineReducers({
   blockTimeReducer,
   blockTimesReasonsReducer,
   turnAwayReasonsReducer,
+  clientNotesReducer,
+  clientFormulasReducer,
+  clientInfoReducer,
 });
