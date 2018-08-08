@@ -12,6 +12,7 @@
     "axios": "^0.18.0",
     "lodash": "4.17.5",
     "lodash.debounce": "^4.0.8",
+    "mkp-react-native-picker": "git+https://github.com/aprados/react-native-picker.git#master",
     "moment": "^2.20.1",
     "moment-range": "^4.0.1",
     "native-base": "2.3.7",

@@ -1,21 +1,40 @@
 import React from 'react';
-import { isRegExp } from 'lodash';
+import PropTypes from 'prop-types';
+import { isRegExp, isFunction } from 'lodash';
 import { LabeledTextInput } from '../index';
 
-const ValidatableInput = (props) => {
-  const onChangeText = (text) => {
-    if (isRegExp(props.regex)) {
-      if (props.regex.test(text)) {
-        props.onValidated();
-      }
+class ValidatableInput extends React.Component {
+  componentDidMount() {
+    this.validate(this.props.value, true);
+  }
+
+  onChangeText = (text) => {
+    if (this.props.validateOnChange) {
+      this.validate(text);
     }
-    return props.onChangeText(text);
+    return this.props.onChangeText(text);
   };
-  return (
-    <LabeledTextInput
-      {...props}
-      onChangeText={onChangeText}
-    />
-  );
-};
+
+  validate = (text, isFirstValidation = false) => {
+    let isValid = false;
+    if (isRegExp(this.props.validation)) {
+      isValid = this.props.validation.test(text);
+    } else if (isFunction(this.props.validation)) {
+      isValid = this.props.validation(text);
+    }
+    this.props.onValidated(isValid, isFirstValidation);
+  };
+
+  render() {
+    const labelStyle = this.props.isValid ? {} : { color: '#D1242A' };
+    return (
+      <LabeledTextInput
+        {...this.props}
+        labelStyle={labelStyle}
+        onBlur={() => this.validate(this.props.value)}
+        onChangeText={this.onChangeText}
+      />
+    );
+  }
+}
 export default ValidatableInput;
