@@ -16,7 +16,6 @@ import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
 import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 
 import ClientsScreen from './../screens/clientsScreen';
-import ClientDetailsScreen from '../screens/clientDetailsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
@@ -120,12 +119,6 @@ const MainNavigator = StackNavigator(
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
-    },
-    ClientDetails: {
-      screen: ClientDetailsScreen,
-      navigationOptions: {
-        headerTitle: 'Details',
-      },
     },
     QueueDetail: {
       screen: QueueDetailScreen,

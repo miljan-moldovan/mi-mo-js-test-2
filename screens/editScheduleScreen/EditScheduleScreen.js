@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   headerLeftText: { fontSize: 14, color: 'white' },
-  headerRightText: { fontSize: 14, color: 'white' },
+  headerRightText: { fontSize: 14 },
   activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   inputGroup: { marginTop: 16 },
   inputSwitch: { height: 43 },
@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
 
 
 const scheduleTypes = [
-  { id: 1, name: 'Regular' },
   { id: 2, name: 'Personal' },
   { id: 3, name: 'Vacation' },
   { id: 4, name: 'OutSick' },
-  { id: 0, name: 'Other' },
+  { id: 1, name: 'Other' }, // Regular -> this is done to match webend
+  // { id: 0, name: 'Other' }, // this is done to match webend
 ];
 
 export default class EditScheduleScreen extends React.Component {
@@ -92,7 +92,7 @@ export default class EditScheduleScreen extends React.Component {
           }
         }}
         >
-          <Text style={styles.headerRightText}>
+          <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
           Done
           </Text>
         </SalonTouchableOpacity>
@@ -173,14 +173,10 @@ export default class EditScheduleScreen extends React.Component {
         this.getState();
       }
     });
-
-    // this.props.navigation.setParams({ canSave: true });
   }
 
 
   getState = () => {
-    console.log('employeeSchedule: ');
-    console.log(this.props.employeeScheduleState.employeeSchedule);
     let employeeSchedule = this.props.employeeScheduleState.employeeSchedule || false;
     employeeSchedule = employeeSchedule[employeeSchedule.length - 1];
 
@@ -303,7 +299,17 @@ export default class EditScheduleScreen extends React.Component {
 
       this.props.navigation.setParams({ canSave });
 
-      this.setState({ hoursWorking });
+      if (hoursWorking) {
+        this.onPressRadioGroup(scheduleTypes[scheduleTypes.length - 1]);
+      }
+
+      this.setState({
+        hoursWorking,
+        startTimeScheduleOne: '',
+        endTimeScheduleOne: '',
+        startTimeScheduleTwo: '',
+        endTimeScheduleTwo: '',
+      });
     }
 
     pickerToogleStartTimeOne = () => {
@@ -330,9 +336,12 @@ export default class EditScheduleScreen extends React.Component {
         this.props.navigation.setParams({
           canSave: true,
         });
+
+        this.setState({ hoursWorking: false });
       } else {
         this.props.navigation.setParams({
-          canSave: this.state.otherReason.length > 0,
+          canSave: this.state.otherReason && this.state.otherReason.length > 0
+          && (this.state.startTimeScheduleOne.length > 0 && this.state.endTimeScheduleOne.length > 0),
         });
       }
       this.setState({ selectedScheduleExceptionReason: option, isEditableOtherReason });
@@ -424,6 +433,7 @@ export default class EditScheduleScreen extends React.Component {
               onPress={this.onPressRadioGroup}
             />
             <InputText
+              autoFocus
               value={this.state.otherReason}
               isEditable={this.state.isEditableOtherReason}
               onChangeText={this.onChangeOtherReason}

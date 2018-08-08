@@ -329,6 +329,13 @@ export default class AppointmentScreen extends Component {
 
   setBookAnother = () => this.setState({ bookAnotherEnabled: false });
 
+  goToCancelAppt = (appointment) => {
+    this.setState(
+      { visibleAppointment: false },
+      () => { this.props.navigation.navigate('CancelAppointmentScreen', { appointment }); },
+    );
+  }
+
   handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     if (this.state.screenHeight === 0) {
@@ -589,6 +596,7 @@ export default class AppointmentScreen extends Component {
             this.setState({ visibleAppointment: false });
             this.props.navigation.navigate('ModifyAppointment');
           }}
+          goToCancelAppt={this.goToCancelAppt}
         />
         {
           toast ?

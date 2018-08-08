@@ -116,8 +116,7 @@ class ProviderScreen extends React.Component {
         customLeftButton = true;
       }
     }
-
-
+    
     return {
       headerTitle: (
         <View style={{
