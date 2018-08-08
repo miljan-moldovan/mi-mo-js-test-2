@@ -30,6 +30,9 @@ import apptBookTurnAwayReducer from './apptBookTurnAway';
 import blockTimeReducer from './blockTime';
 import blockTimesReasonsReducer from './blockTimesReasons';
 import turnAwayReasonsReducer from './turnAwayReasons';
+import clientNotesReducer from './clientNotes';
+import clientFormulasReducer from './clientFormulas';
+import clientInfoReducer from './clientInfo';
 
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -63,4 +66,7 @@ export default combineReducers({
   blockTimeReducer,
   blockTimesReasonsReducer,
   turnAwayReasonsReducer,
+  clientNotesReducer,
+  clientFormulasReducer,
+  clientInfoReducer,
 });

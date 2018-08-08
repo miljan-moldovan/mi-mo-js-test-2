@@ -300,6 +300,10 @@ export default class ModifyAppointmentScreen extends React.Component {
     ];
   }
 
+  goToClientInfo = (client) => {
+    this.props.navigation.navigate('ClientInfo', { client });
+  }
+
   shouldUpdateClientInfo = async () => {
     const {
       clientEmail,
@@ -358,7 +362,7 @@ export default class ModifyAppointmentScreen extends React.Component {
 
   renderExtraClientButtons = isDisabled => ([
     <SalonTouchableOpacity
-      disabled={isDisabled}
+
       key={Math.random().toString()}
       onPress={() => {
         // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
@@ -379,7 +383,7 @@ export default class ModifyAppointmentScreen extends React.Component {
     <SalonTouchableOpacity
       key={Math.random().toString()}
       onPress={() => {
-        // TODO
+        this.goToClientInfo(this.state.selectedClient);
       }}
       style={{
         marginHorizontal: 5,
