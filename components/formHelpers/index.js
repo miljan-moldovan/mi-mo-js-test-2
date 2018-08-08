@@ -170,7 +170,7 @@ const LabeledTextarea = props => (
     }}
     >{props.label}
     </Text>
-    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} />
+    <InputText onChangeText={props.onChangeText} placeholder={props.placeholder} {...props} />
   </View>
 );
 
@@ -333,7 +333,7 @@ LabeledButton.defaultProps = {
 
 const LabeledTextInput = props => (
   <View style={[styles.inputRow, { justifyContent: 'space-between' }, props.style]}>
-    <Text style={[styles.labelText]}>{props.label}</Text>
+    <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
     <TextInput
       {...props}
       style={[styles.inputText, { textAlign: 'right', flex: 1 }]}

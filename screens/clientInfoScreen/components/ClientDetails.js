@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import moment from 'moment';
-import { find } from 'lodash';
+import { isEmpty, find, reject } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
@@ -22,11 +22,16 @@ import {
   ClientInput,
   SectionDivider,
   InputButton,
+  InputSwitch,
+  LabeledTextarea,
+  ValidatableInput,
 } from '../../../components/formHelpers';
 import clientInfoActions from '../../../actions/clientInfo';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import { appointmentCalendarActions } from '../../appointmentCalendarScreen/redux/appointmentScreen';
-
+import states from '../../../constants/UsStates';
+import genders from '../../../constants/Genders';
+import confirmByTypes from '../../../constants/ClientConfirmByTypes';
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +62,13 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     paddingRight: 16,
     flex: 1,
+  },
+  clientReferralTypeInput: {
+    height: 44,
+    backgroundColor: '#fff',
+    paddingLeft: 0,
+    paddingRight: 24,
+    width: '96%',
   },
   unselectedCheck: {
     fontSize: 20,
@@ -91,63 +103,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const genders = [
-  { key: 1, value: 'unspecified' },
-  { key: 2, value: 'male' },
-  { key: 3, value: 'female' },
-];
-
-const states = [{ key: 1, value: 'AK' },
-  { key: 2, value: 'AL' },
-  { key: 3, value: 'AR' },
-  { key: 4, value: 'AZ' },
-  { key: 5, value: 'CA' },
-  { key: 6, value: 'CO' },
-  { key: 7, value: 'CT' },
-  { key: 8, value: 'DE' },
-  { key: 9, value: 'FL' },
-  { key: 10, value: 'GA' },
-  { key: 11, value: 'HI' },
-  { key: 12, value: 'IA' },
-  { key: 13, value: 'ID' },
-  { key: 14, value: 'IL' },
-  { key: 15, value: 'IN' },
-  { key: 16, value: 'KS' },
-  { key: 17, value: 'KY' },
-  { key: 18, value: 'LA' },
-  { key: 19, value: 'MA' },
-  { key: 20, value: 'MD' },
-  { key: 21, value: 'ME' },
-  { key: 22, value: 'MI' },
-  { key: 23, value: 'MN' },
-  { key: 24, value: 'MO' },
-  { key: 25, value: 'MS' },
-  { key: 26, value: 'MT' },
-  { key: 27, value: 'NC' },
-  { key: 28, value: 'ND' },
-  { key: 29, value: 'NE' },
-  { key: 30, value: 'NH' },
-  { key: 31, value: 'NJ' },
-  { key: 32, value: 'NM' },
-  { key: 33, value: 'NV' },
-  { key: 34, value: 'NY' },
-  { key: 35, value: 'OH' },
-  { key: 36, value: 'OK' },
-  { key: 37, value: 'OR' },
-  { key: 38, value: 'PA' },
-  { key: 39, value: 'RI' },
-  { key: 40, value: 'SC' },
-  { key: 41, value: 'SD' },
-  { key: 42, value: 'TN' },
-  { key: 43, value: 'TX' },
-  { key: 44, value: 'UT' },
-  { key: 45, value: 'VA' },
-  { key: 46, value: 'VT' },
-  { key: 47, value: 'WA' },
-  { key: 48, value: 'WI' },
-  { key: 49, value: 'WV' },
-  { key: 50, value: 'WY' }];
-
 class ClientDetails extends Component {
   constructor(props) {
     super(props);
@@ -155,35 +110,58 @@ class ClientDetails extends Component {
       client: {},
       selectedClient: null,
       selectedReferredClient: true,
-      phoneTypes: ['cell', 'home', 'work'],
+      requireCard: true,
+      hasChanged: false,
+      isValidEmail: false,
+      isValidZipCode: false,
+      isValidPhone: false,
+      isValidName: false,
+      isValidLastName: false,
     };
 
     this.handleClientSelection.bind(this);
   }
 
+  isValidEmailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  isValidZipCodeRegExp = /(^\d{5}$)|(^\d{5}-\d{4}$)/
+  isValidPhoneRegExp = /^(\([0-9]{3}\)|[0-9]{3}-)[0-9]{3}-[0-9]{4}$/
+  isValidText = /^(?!\s*$).+/
+  isValidAddress=/^(.+?),\s?(\w+),?\s?(\w{2})\s+(\d{5}?)/;
+
   componentWillMount() {
-    this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+    this.props.clientInfoActions.getClientReferralTypes(() => {
+      this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+    });
   }
 
   loadClientData = (response) => {
     const client = this.props.clientInfoState.client;
 
-    const address = client.address.split(',');
+    const matches = client.address.match(this.isValidAddress);
 
+    if (matches && matches.length > 4) {
+      const street = matches[1];
+      const city = matches[2];
 
-    if (address.length > 1) {
-      client.address = address[0].trim();
-      client.city = address[1].trim();
-      const address_second = address[2].trim();
-      const state_name = address_second.split(' ')[0];
+      const zip = matches[4];
 
-      const state = find(states, { value: state_name.toUpperCase() });
+      client.address = street.trim();
+      client.city = city.trim();
+      const state = find(states, { value: matches[3].trim().toUpperCase() });
       client.state = state;
 
-      client.zip = address_second.split(' ')[1];
+      client.zip = zip.trim();
+    }
 
-      this.props.setCanSave(false);
-      this.props.setHandleDone(this.handleDone);
+    this.props.setCanSave(false);
+    this.props.setHandleDone(this.handleDone);
+
+    const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
+    client.clientReferralType = clientReferralType;
+
+
+    if (client.clientReferralType) {
+      this.selectReferredOption(false);
     }
 
     this.setState({
@@ -198,31 +176,30 @@ class ClientDetails extends Component {
       firstName: this.state.client.name,
       lastName: this.state.client.lastName,
       middleName: this.state.client.middleName,
-      birthday: moment(this.state.client.birthday).format('YYYY-MM-DD'),
+      birthday: moment.isMoment(this.state.client.birthday) ? moment(this.state.client.birthday).format('YYYY-MM-DD') : '2018-08-07T19:13:30.459Z',
       age: moment().diff(moment(this.state.client.birthday).format('YYYY-MM-DD'), 'years'),
       email: this.state.client.email,
-      phones: this.state.client.phones,
+      phones: reject(this.state.client.phones, ['value', null]),
       address: {
         street1: this.state.client.address,
-        //  street2: 'string',
-        city: this.state.client.city,
-        state: this.state.client.state.value,
-        zipCode: this.state.client.zip,
+        city: this.state.client.city ? this.state.client.city : null,
+        state: this.state.client.state ? this.state.client.state.value : null,
+        ZipCode: this.state.client.zip ? this.state.client.zip : null,
       },
-      gender: this.state.client.gender.key,
+      gender: this.state.client.gender ? this.state.client.gender.key : null,
       loyaltyNumber: this.state.client.loyaltyNumber,
-      // confirmBy: 1,
-      // clientPreferenceProviderType: 1,
-      // preferredProviderId: 0,
+      confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy : null,
       referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
-      // clientReferralTypeId: 0,
-      // clientCode: 'string',
-      // anniversary: '2018-08-05T18:04:08.330Z',
-      // receivesEmail: true,
-    //  requireCard: true,
-      // occupationId: 0,
-      // confirmationNote: 'string',
-      // profilePhotoUuid: 'string',
+      clientReferralTypeId: this.state.client.clientReferralType ? this.state.client.clientReferralType.key : null,
+      anniversary: moment.isMoment(this.state.client.anniversary) ? moment(this.state.client.anniversary).format('YYYY-MM-DD') : null,
+      requireCard: this.state.requireCard,
+      confirmationNote: this.state.client.confirmationNote ? this.state.client.confirmationNote : null,
+      clientPreferenceProviderType: 1,
+      preferredProviderId: null,
+      clientCode: null,
+      receivesEmail: true,
+      occupationId: null,
+      profilePhotoUuid: null,
     };
 
 
@@ -236,11 +213,7 @@ class ClientDetails extends Component {
     });
   }
 
-  onChangeClientField = (field, value) => {
-    this.props.setCanSave(true);
-
-    debugger //eslint-disable-line
-
+  onChangeClientField = (field, value, type) => {
     const newClient = this.state.client;
     switch (field) {
       case 'name':
@@ -251,9 +224,11 @@ class ClientDetails extends Component {
         break;
       case 'middleName':
         newClient.middleName = value;
+        this.props.setCanSave(true);
         break;
       case 'loyalty':
         newClient.loyalty = value;
+        this.props.setCanSave(true);
         break;
       case 'address':
         newClient.address = value;
@@ -273,11 +248,34 @@ class ClientDetails extends Component {
       case 'state':
         newClient.state = value;
         break;
+      case 'birthday':
+        newClient.birthday = value;
+        break;
+      case 'anniversary':
+        newClient.anniversary = value;
+        break;
+      case 'confirmBy':
+        newClient.confirmBy = value;
+        break;
+      case 'clientReferralType':
+        newClient.clientReferralType = value;
+        break;
+      case 'confirmationNote':
+        newClient.confirmationNote = value;
+        break;
+      case 'email':
+        newClient.email = value;
+        break;
+      case 'phone':
+
+        const phone = find(newClient.phones, { type });
+        phone.value = value;
+        break;
       default:
             /* nothing */
     }
 
-    this.setState({ client: newClient });
+    this.setState({ client: newClient, hasChanged: true });
   }
 
   cancelButton = () => ({
@@ -305,7 +303,9 @@ class ClientDetails extends Component {
 
   selectReferredOption = (selectedReferredClient) => {
     if (selectedReferredClient) {
-      this.setState({ selectedReferredClient });
+      const newClient = this.state.client;
+      newClient.clientReferralType = null;
+      this.setState({ selectedReferredClient, client: newClient });
       this.handlePressClient();
     } else {
       this.setState({ selectedClient: null, selectedReferredClient });
@@ -338,19 +338,85 @@ class ClientDetails extends Component {
     }
   }
 
+  onChangeClientReferralTypes = (option) => {
+    this.selectReferredOption(false);
+    this.onChangeClientField('clientReferralType', option);
+  }
+
   renderPhone = (phone, index) => {
     const phoneType = phone.type === 0 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
-
-    return (<React.Fragment>
-      <LabeledTextInput
+    const element = phone.value !== null ? (<React.Fragment>
+      <ValidatableInput
+        validateOnChange
+        validation={this.isValidPhoneRegExp}
+        isValid={this.state.isValidPhone}
+        onValidated={this.onValidatePhone}
         label={phoneType}
         value={phone.value}
-        onChangeText={(text) => { this.onChangeClientField(phoneType, text); }}
+        mask="([000]) [000]-[00][00]"
+        onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
         placeholder="Enter"
       />
       <InputDivider />
-    </React.Fragment>);
+                                            </React.Fragment>) : null;
+    return (element);
   }
+
+  onChangeInputSwitch = (requireCard) => {
+    this.setState({ requireCard });
+  }
+
+  onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidEmail = state.client.email !== undefined ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  })
+
+  onValidateZipCode = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidZipCode = state.client.zip !== undefined ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+
+  onValidatePhone = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidPhone = state.client.phones !== undefined ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+
+  onValidateName = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidName = state.client.name !== undefined ? isValid : true;
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateLastName = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidLastName = state.client.lastName !== undefined ? isValid : true;
+    this.checkValidation();
+
+    return newState;
+  });
+
+  checkValidation = () => {
+    this.props.setCanSave(this.state.hasChanged && this.state.isValidLastName && this.state.isValidName
+      && this.state.isValidEmail && this.state.isValidZipCode
+      && this.state.isValidPhone);
+  }
+
 
   render() {
     return (
@@ -367,7 +433,11 @@ class ClientDetails extends Component {
               <View pointerEvents={this.state.pointerEvents}>
                 <SectionTitle value="NAME" style={styles.sectionTitle} />
                 <InputGroup>
-                  <LabeledTextInput
+                  <ValidatableInput
+                    validateOnChange
+                    validation={this.isValidText}
+                    isValid={this.state.isValidName}
+                    onValidated={this.onValidateName}
                     label="First Name"
                     value={this.state.client.name}
                     onChangeText={(text) => { this.onChangeClientField('name', text); }}
@@ -381,7 +451,11 @@ class ClientDetails extends Component {
                     placeholder="Enter"
                   />
                   <InputDivider />
-                  <LabeledTextInput
+                  <ValidatableInput
+                    validateOnChange
+                    validation={this.isValidText}
+                    isValid={this.state.isValidLastName}
+                    onValidated={this.onValidateLastName}
                     label="Last Name"
                     value={this.state.client.lastName}
                     onChangeText={(text) => { this.onChangeClientField('lastName', text); }}
@@ -400,19 +474,19 @@ class ClientDetails extends Component {
                   <InputDivider />
                   <InputDate
                     placeholder="Birthday"
-                    onPress={(selectedDate) => { this.onChangeClientField('loyalty', selectedDate); }}
+                    onPress={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
                     selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : false}
                   />
                   <InputDivider />
-                  {/*  <InputDate
+                  <InputDate
                     placeholder="Anniversary"
                     onPress={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
                     selectedDate={this.state.client.anniversary ? this.state.client.anniversary : false}
                   />
-                  <InputDivider /> */}
+                  <InputDivider />
                   <LabeledTextInput
                     label="Client ID"
-                    value={this.state.client.id}
+                    value={this.state.client.clientId}
                     onChangeText={(text) => { this.onChangeClientField('clientId', text); }}
                     placeholder="Enter"
                   />
@@ -427,16 +501,18 @@ class ClientDetails extends Component {
                 </InputGroup>
                 <SectionTitle value="CONTACTS" style={styles.sectionTitle} />
                 <InputGroup>
-                  <LabeledTextInput
+                  <ValidatableInput
+                    validateOnChange
+                    validation={this.isValidEmailRegExp}
                     label="Email"
+                    isValid={this.state.isValidEmail}
+                    onValidated={this.onValidateEmail}
                     value={this.state.client.email}
                     onChangeText={(text) => { this.onChangeClientField('email', text); }}
                     placeholder="Enter"
                   />
-
-
+                  <InputDivider />
                   {this.state.client.phones && this.state.client.phones.map((phone, index) => this.renderPhone(phone, index))}
-
                   <SalonTouchableOpacity onPress={this.props.onAddContact}>
                     <View style={styles.addRow}>
                       <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
@@ -444,6 +520,31 @@ class ClientDetails extends Component {
                     </View>
                   </SalonTouchableOpacity>
 
+                </InputGroup>
+                <SectionDivider />
+                <InputGroup>
+                  <InputPicker
+                    label="Confirmation"
+                    value={this.state.client.confirmBy ? this.state.client.confirmBy : null}
+                    onChange={(option) => { this.onChangeClientField('confirmBy', option); }}
+                    defaultOption={this.state.client.confirmBy}
+                    options={confirmByTypes}
+                  />
+                  <InputDivider />
+                  <InputSwitch
+                    style={styles.inputSwitch}
+                    textStyle={styles.inputSwitchText}
+                    onChange={this.onChangeInputSwitch}
+                    value={this.state.requireCard}
+                    text="Req. card on file to book"
+                  />
+                  <InputDivider style={{ marginBottom: 10 }} />
+                  <LabeledTextarea
+                    label="Notes"
+                    placeholder="Please insert here your comments"
+                    onChangeText={(text) => { this.onChangeClientField('confirmationNote', text); }}
+                    value={this.state.client.confirmationNote}
+                  />
                 </InputGroup>
                 <SectionTitle value="ADDRESS" style={styles.sectionTitle} />
                 <InputGroup>
@@ -469,8 +570,12 @@ class ClientDetails extends Component {
                     options={states}
                   />
                   <InputDivider />
-                  <LabeledTextInput
-                    label="ZIP"
+                  <ValidatableInput
+                    validateOnChange
+                    validation={this.isValidZipCodeRegExp}
+                    isValid={this.state.isValidZipCode}
+                    onValidated={this.onValidateZipCode}
+                    label="Zip"
                     value={this.state.client.zip}
                     onChangeText={(text) => { this.onChangeClientField('zip', text); }}
                     placeholder="Enter"
@@ -504,9 +609,8 @@ class ClientDetails extends Component {
                       onChange={this.handleClientSelection}
                     />
                   </View>
-
+                  <InputDivider />
                   <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-
                     <SalonTouchableOpacity onPress={() => {
                       this.selectReferredOption(false);
                       }}
@@ -516,13 +620,16 @@ class ClientDetails extends Component {
                       </FontAwesome>
                     </SalonTouchableOpacity>
 
-                    <InputButton
-                      noIcon
-                      onPress={() => {
-                        this.selectReferredOption(false);
-                        }}
-                      label="Other"
-                    />
+                    <View style={styles.clientReferralTypeInput}>
+                      <InputPicker
+                        label="Other"
+                        value={this.state.client.clientReferralType ?
+                          this.state.client.clientReferralType : null}
+                        onChange={this.onChangeClientReferralTypes}
+                        defaultOption={this.state.client.clientReferralType}
+                        options={this.props.clientInfoState.clientReferralTypes}
+                      />
+                    </View>
                   </View>
                 </InputGroup>
                 <SectionDivider />
@@ -552,6 +659,7 @@ const mapStateToProps = state => ({
 
 const mapActionsToProps = dispatch => ({
   clientInfoActions: bindActionCreators({ ...clientInfoActions }, dispatch),
+  appointmentCalendarActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(ClientDetails);

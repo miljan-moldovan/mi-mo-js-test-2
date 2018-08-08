@@ -25,7 +25,6 @@ export default class InputText extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
-    debugger //eslint-disable-line
     if (nextProps.autoFocus) {
       if (nextProps.isEditable) {
         if (this.input && !this.input.isFocused()) {

@@ -124,7 +124,7 @@ class ClientNote extends Component {
     const note = this.state.note;
 
     const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
-    debugger //eslint-disable-line
+
     note.updatedBy = providerName;
     this.setState({ note, isVisible: true });
   }
@@ -163,7 +163,7 @@ class ClientNote extends Component {
       if (this.props.navigation.state.params.actionType === 'new') {
         const note = this.state.note;
         note.notes = note.text;
-        note.enteredBy = note.updatedBy;
+        note.EnteredBy = note.updatedBy;
         this.props.clientNotesActions.postClientNotes(client.id, note)
           .then((response) => {
             this.props.clientNotesActions.selectProvider(null);

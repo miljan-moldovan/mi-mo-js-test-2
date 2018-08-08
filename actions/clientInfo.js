@@ -1,8 +1,12 @@
-import { Client } from '../utilities/apiWrapper';
+import { Client, Store } from '../utilities/apiWrapper';
 
 export const GET_CLIENT = 'clientInfo/GET_CLIENT';
 export const GET_CLIENT_SUCCESS = 'clientInfo/GET_CLIENT_SUCCESS';
 export const GET_CLIENT_FAILED = 'clientInfo/GET_CLIENT_FAILED';
+
+export const GET_CLIENT_REFERRAL_TYPES = 'clientInfo/GET_CLIENT_REFERRAL_TYPES';
+export const GET_CLIENT_REFERRAL_TYPES_SUCCESS = 'clientInfo/GET_CLIENT_REFERRAL_TYPES_SUCCESS';
+export const GET_CLIENT_REFERRAL_TYPES_FAILED = 'clientInfo/GET_CLIENT_REFERRAL_TYPES_FAILED';
 
 export const PUT_CLIENT_NOTE = 'clientInfo/PUT_CLIENT_NOTE';
 export const PUT_CLIENT_NOTE_SUCCESS = 'clientInfo/PUT_CLIENT_NOTE_SUCCESS';
@@ -65,10 +69,32 @@ const getClientInfo = (clientId, callback) => (dispatch) => {
     .catch((error) => { dispatch(getClientInfoFailed(error)); callback(false, error.message); });
 };
 
+
+function getClientReferralTypesSuccess(clientReferralTypes) {
+  return {
+    type: GET_CLIENT_REFERRAL_TYPES_SUCCESS,
+    data: { clientReferralTypes },
+  };
+}
+
+const getClientReferralTypesFailed = error => ({
+  type: GET_CLIENT_REFERRAL_TYPES_FAILED,
+  data: { error },
+});
+
+const getClientReferralTypes = callback => (dispatch) => {
+  dispatch({ type: GET_CLIENT_REFERRAL_TYPES });
+  return Store.getClientReferralTypes()
+    .then((response) => { dispatch(getClientReferralTypesSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(getClientReferralTypesFailed(error)); callback(false, error.message); });
+};
+
+
 const clientInfoActions = {
   getClientInfo,
   deleteClientInfo,
   putClientInfo,
+  getClientReferralTypes,
 };
 
 export default clientInfoActions;

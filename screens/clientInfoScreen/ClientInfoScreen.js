@@ -78,6 +78,9 @@ export default class ClientInfoScreen extends React.Component {
 
     const canSave = params.canSave || false;
     const showDoneButton = params.showDoneButton;
+    const handleDone = navigation.state.params.handleDone ?
+      navigation.state.params.handleDone :
+      () => { alert('Not Implemented'); };
 
     return ({
       headerTitle: (
@@ -95,11 +98,7 @@ export default class ClientInfoScreen extends React.Component {
       headerRight: (
         showDoneButton ? <SalonTouchableOpacity
           disabled={!canSave}
-          onPress={() => {
-          if (navigation.state.params.handleDone) {
-            navigation.state.params.handleDone();
-          }
-        }}
+          onPress={handleDone}
         >
           <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
           Done
@@ -147,6 +146,7 @@ export default class ClientInfoScreen extends React.Component {
   }
 
   setHandleDone = (handleDone) => {
+
     this.props.navigation.setParams({ handleDone });
   }
 
