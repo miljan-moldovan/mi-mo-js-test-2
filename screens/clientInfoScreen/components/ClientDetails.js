@@ -101,6 +101,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 5,
   },
+  deleteText: { color: '#D1242A', fontFamily: 'Roboto-Medium' },
+  deleteButton: {
+    justifyContent: 'center', alignItems: 'center',
+  },
+  referredClientView: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
+  inputDivider: { marginBottom: 10 },
 });
 
 class ClientDetails extends Component {
@@ -353,7 +359,6 @@ class ClientDetails extends Component {
         onValidated={this.onValidatePhone}
         label={phoneType}
         value={phone.value}
-        mask="([000]) [000]-[00][00]"
         onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
         placeholder="Enter"
       />
@@ -538,7 +543,7 @@ class ClientDetails extends Component {
                     value={this.state.requireCard}
                     text="Req. card on file to book"
                   />
-                  <InputDivider style={{ marginBottom: 10 }} />
+                  <InputDivider style={styles.inputDivider} />
                   <LabeledTextarea
                     label="Notes"
                     placeholder="Please insert here your comments"
@@ -584,7 +589,7 @@ class ClientDetails extends Component {
 
                 <SectionTitle value="REFERRED BY" style={styles.sectionTitle} />
                 <InputGroup>
-                  <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                  <View style={styles.referredClientView}>
                     <SalonTouchableOpacity onPress={() => {
                       this.selectReferredOption(true);
                       }}
@@ -636,12 +641,10 @@ class ClientDetails extends Component {
                 <InputGroup>
                   <InputButton
                     noIcon
-                    childrenContainerStyle={{
-                      justifyContent: 'center', alignItems: 'center',
-                    }}
+                    childrenContainerStyle={styles.deleteButton}
                     onPress={this.deleteClient}
                   >
-                    <Text style={{ color: '#D1242A', fontFamily: 'Roboto-Medium' }}>Delete Client</Text>
+                    <Text style={styles.deleteText}>Delete Client</Text>
                   </InputButton>
                 </InputGroup>
                 <SectionDivider />
