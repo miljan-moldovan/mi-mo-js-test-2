@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Appointment } from '../utilities/apiWrapper';
+import { appointmentCalendarActions } from './appointmentBook';
 
 export const ADD_APPOINTMENT = 'appointment/ADD_APPOINTMENT';
 export const GET_APPOINTMENTS = 'appointment/GET_APPOINTMENTS';
@@ -14,6 +15,12 @@ export const POST_APPOINTMENT_RESIZE_FAILED = 'appointment/POST_APPOINTMENT_RESI
 export const POST_APPOINTMENT_CANCEL = 'appointment/POST_APPOINTMENT_CANCEL';
 export const POST_APPOINTMENT_CANCEL_SUCCESS = 'appointment/POST_APPOINTMENT_CANCEL_SUCCESS';
 export const POST_APPOINTMENT_CANCEL_FAILED = 'appointment/POST_APPOINTMENT_CANCEL_FAILED';
+export const POST_APPOINTMENT_CHECKIN = 'appointment/POST_APPOINTMENT_CHECKIN';
+export const POST_APPOINTMENT_CHECKIN_SUCCESS = 'appointment/POST_APPOINTMENT_CHECKIN_SUCCESS';
+export const POST_APPOINTMENT_CHECKIN_FAILED = 'appointment/POST_APPOINTMENT_CHECKIN_FAILED';
+export const POST_APPOINTMENT_CHECKOUT = 'appointment/POST_APPOINTMENT_CHECKOUT';
+export const POST_APPOINTMENT_CHECKOUT_SUCCESS = 'appointment/POST_APPOINTMENT_CHECKOUT_SUCCESS';
+export const POST_APPOINTMENT_CHECKOUT_FAILED = 'appointment/POST_APPOINTMENT_CHECKOUT_FAILED';
 export const UNDO_MOVE = 'appointment/UNDO_MOVE';
 export const UNDO_MOVE_SUCCESS = 'appointment/UNDO_MOVE_SUCCESS';
 
@@ -72,7 +79,7 @@ const getAppoinments = date => (dispatch) => {
 const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_MOVE });
   return Appointment.postAppointmentMove(appointmentId, params)
-    .then(response => Appointment.getAppointment(appointmentId)
+    .then(() => Appointment.getAppointment(appointmentId)
       .then(resp => dispatch(postAppointmentMoveSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentMoveFailed(error)));
 };
@@ -80,7 +87,7 @@ const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch
 const postAppointmentResize = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_RESIZE });
   return Appointment.postAppointmentResize(appointmentId, params)
-    .then(response => Appointment.getAppointment(appointmentId)
+    .then(() => Appointment.getAppointment(appointmentId)
       .then(resp => dispatch(postAppointmentResizeSuccess(resp, oldAppointment))))
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };
@@ -88,12 +95,12 @@ const postAppointmentResize = (appointmentId, params, oldAppointment) => (dispat
 const postAppointmentCancel = (appointmentId, { reason, employeeId }) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_CANCEL });
   return Appointment.postAppointmentCancel(appointmentId, { employeeId, reason })
-    .then(resp => dispatch(postAppointmentCancelSuccess(appointmentId)))
+    .then(() => dispatch(postAppointmentCancelSuccess(appointmentId)))
     .catch(error => dispatch(postAppointmentCancelFailed(error)));
 };
 
 const undoMove = () => (dispatch, getState) => {
-  const { oldAppointment, undoType, apptGridSettings } = getState().appointmentScreenReducer;
+  const { oldAppointment, undoType, apptGridSettings } = getState().appointmentBookReducer;
   let params;
   switch (undoType) {
     case 'move': {
@@ -116,8 +123,46 @@ const undoMove = () => (dispatch, getState) => {
       return dispatch(postAppointmentResize(oldAppointment.id, params, null));
     }
     default:
-      break;
+      return null;
   }
+};
+
+const postAppointmentCheckinFailed = error => ({
+  type: POST_APPOINTMENT_CHECKIN_FAILED,
+  data: { error },
+});
+
+const postAppointmentCheckinSuccess = () => ({
+  type: POST_APPOINTMENT_CHECKIN_SUCCESS,
+});
+
+const postAppointmentCheckin = appointmentId => (dispatch) => {
+  dispatch({ type: POST_APPOINTMENT_CHECKIN });
+  return Appointment.postCheckin(appointmentId)
+    .then(() => {
+      dispatch(appointmentCalendarActions.setGridView());
+      return dispatch(postAppointmentCheckinSuccess());
+    })
+    .catch(error => dispatch(postAppointmentCheckinFailed(error)));
+};
+
+const postAppointmentCheckoutFailed = error => ({
+  type: POST_APPOINTMENT_CHECKOUT_FAILED,
+  data: { error },
+});
+
+const postAppointmentCheckoutSuccess = () => ({
+  type: POST_APPOINTMENT_CHECKOUT_SUCCESS,
+});
+
+const postAppointmentCheckout = appointmentId => (dispatch) => {
+  dispatch({ type: POST_APPOINTMENT_CHECKOUT });
+  return Appointment.postAppointmentCheckout(appointmentId)
+    .then(() => {
+      dispatch(appointmentCalendarActions.setGridView());
+      return dispatch(postAppointmentCheckoutSuccess());
+    })
+    .catch(error => dispatch(postAppointmentCheckoutFailed(error)));
 };
 
 
@@ -127,6 +172,8 @@ const appointmentActions = {
   postAppointmentCancel,
   postAppointmentMove,
   postAppointmentResize,
+  postAppointmentCheckin,
+  postAppointmentCheckout,
   undoMove,
 };
 

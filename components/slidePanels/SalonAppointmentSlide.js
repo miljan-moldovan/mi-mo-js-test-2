@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, Text, Animated, View, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import { ScrollView, Text, Animated, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { get } from 'lodash';
 
 import Icon from './../UI/Icon';
@@ -13,6 +14,8 @@ import {
 import AuditInformation from '../AuditInformation';
 
 import { Appointment } from '../../utilities/apiWrapper';
+import ApptQueueStatus from '../../constants/apptQueueStatus';
+import { getSelectedAppt } from '../../redux/selectors/appointmentSelector';
 
 const styles = StyleSheet.create({
   modal: {
@@ -167,6 +170,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
+  panelIconBtnDisabled: {
+    width: 45,
+    height: 45,
+    borderRadius: 45 / 2,
+    backgroundColor: 'rgb(229, 229, 229)',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 4,
+  },
   panelIconText: {
     marginTop: 7,
     color: '#727A8F',
@@ -290,7 +303,7 @@ const AdaptableView = ({ isOpen, children }) => (
   isOpen ? <ScrollView>{children}</ScrollView> : <View>{children}</View>
 );
 
-export default class SalonAppointmentSlide extends React.Component {
+class SalonAppointmentSlide extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -306,9 +319,9 @@ export default class SalonAppointmentSlide extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      visible: nextProps.visible,
-    }, this.getAuditInformation);
+    if (this.props.visible !== nextProps.visible && nextProps.visible) {
+      this.getAuditInformation();
+    }
   }
 
   getAuditInformation = () => {
@@ -327,6 +340,14 @@ export default class SalonAppointmentSlide extends React.Component {
     this.props.goToCancelAppt(this.props.appointment);
   }
 
+  handleCheckin = () => {
+    this.props.handleCheckin(this.props.appointment.id);
+  }
+
+  handleCheckout = () => {
+    this.props.handleCheckout(this.props.appointment.id);
+  }
+
   _draggedValue = new Animated.Value(-120);
 
   hidePanel = () => this.props.onHide();
@@ -341,17 +362,26 @@ export default class SalonAppointmentSlide extends React.Component {
   render() {
     const {
       appointment,
+      isCheckingIn,
+      isCheckingOut,
+      isGridLoading
     } = this.props;
-    if (appointment === null) {
+    if (!appointment) {
       return null;
     }
     const {
       client,
       service,
       employee,
+      isNoShow,
+      queueStatus
     } = appointment;
     const { isOpen, auditAppt } = this.state;
-
+    const isCheckInDisabled = (isGridLoading || isCheckingIn
+      || queueStatus !== ApptQueueStatus.NotInQueue || isNoShow);
+    const isCheckOutDisabled = (isGridLoading || isCheckingOut
+      || queueStatus === ApptQueueStatus.CheckedOut || isNoShow);
+      console.log({queueStatus}, 'bacon')
     return this.props.appointment && (
       <ModalBox
         isOpen={this.props.visible}
@@ -419,18 +449,20 @@ export default class SalonAppointmentSlide extends React.Component {
                 </View>
               </View>
 
-              {appointment.remarks !== '' && [
-                <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-                  <View style={styles.panelTopLineLeft}>
-                    <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+              {appointment.remarks !== '' &&
+                <React.Fragment>
+                  <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+                    <View style={styles.panelTopLineLeft}>
+                      <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+                    </View>
                   </View>
-                </View>,
-                <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
-                  <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
-                    <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+                  <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
+                    <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+                      <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+                    </View>
                   </View>
-                </View>,
-              ]}
+                </React.Fragment>
+              }
             </View>
 
             <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -439,19 +471,36 @@ export default class SalonAppointmentSlide extends React.Component {
                   <View style={styles.panelMiddle}>
                     <View style={styles.panelIcons}>
                       <View style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                          <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                        <SalonTouchableOpacity
+                          style={isCheckInDisabled ?
+                            styles.panelIconBtnDisabled : styles.panelIconBtn}
+                          onPress={this.handleCheckin}
+                          disabled={isCheckInDisabled}
+                        >
+                          { isCheckingIn ?
+                            <ActivityIndicator />
+                            :
+                            <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                          }
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Check-In</Text>
                       </View>
 
                       <View style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                          <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+                        <SalonTouchableOpacity
+                          disabled={isCheckOutDisabled}
+                          style={isCheckOutDisabled ?
+                            styles.panelIconBtnDisabled : styles.panelIconBtn}
+                          onPress={this.handleCheckout}
+                        >
+                          { isCheckingOut ?
+                            <ActivityIndicator />
+                            :
+                            <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+                          }
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Check-out</Text>
                       </View>
-
                       <View style={styles.panelIcon}>
                         <SalonTouchableOpacity style={styles.panelIconBtn} onPress={this.handleCancel}>
                           <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
@@ -471,7 +520,6 @@ export default class SalonAppointmentSlide extends React.Component {
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Cancel Appt.</Text>
                       </View>
-
                       <View style={styles.panelIcon}>
                         <SalonTouchableOpacity style={styles.panelIconBtn} onPress={this.props.handleModify}>
                           <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
@@ -497,123 +545,113 @@ export default class SalonAppointmentSlide extends React.Component {
                     <InputGroup
                       style={styles.otherOptionsGroup}
                     >
-                      {[
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="New Appointment"
-                        >
-                          {[<View style={styles.iconContainer}>
-                            <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-                            <View style={styles.plusIconContainer}>
-                              <Icon
-                                style={styles.subIcon}
-                                name="plus"
-                                size={9}
-                                color="#115ECD"
-                                type="solid"
-                              />
-                            </View>
-                            </View>]}
-                        </InputButton>,
-
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="Rebook Appointment"
-                        >
-                          {[<View style={styles.iconContainer}><Icon name="undo" size={18} color="#115ECD" type="solid" />
-                          </View>]}
-                        </InputButton>,
-                        ]}
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="New Appointment"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
+                          <View style={styles.plusIconContainer}>
+                            <Icon
+                              style={styles.subIcon}
+                              name="plus"
+                              size={9}
+                              color="#115ECD"
+                              type="solid"
+                            />
+                          </View>
+                        </View>
+                      </InputButton>
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Rebook Appointment"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="undo" size={18} color="#115ECD" type="solid" />
+                        </View>
+                      </InputButton>
                     </InputGroup>
                   </View>
-
                   <View style={styles.panelBottom}>
                     <InputGroup
                       style={styles.otherOptionsGroup}
                     >
-                      {[
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="Edit Remarks"
-                        >
-                          {[<View style={styles.iconContainer}><Icon name="edit" size={18} color="#115ECD" type="solid" />
-                            </View>]}
-                        </InputButton>,
-
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="Show Apps. (today.future)"
-                        >
-                          {[<View style={styles.iconContainer}>
-                            <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-                            <View style={styles.plusIconContainer}>
-                              <Icon
-                                style={styles.subIcon}
-                                name="search"
-                                size={9}
-                                color="#115ECD"
-                                type="solid"
-                              />
-                            </View>
-                            </View>]}
-                        </InputButton>,
-                        ]}
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Edit Remarks"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="edit" size={18} color="#115ECD" type="solid" />
+                        </View>
+                      </InputButton>
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Show Apps. (today.future)"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
+                          <View style={styles.plusIconContainer}>
+                            <Icon
+                              style={styles.subIcon}
+                              name="search"
+                              size={9}
+                              color="#115ECD"
+                              type="solid"
+                            />
+                          </View>
+                        </View>
+                      </InputButton>
                     </InputGroup>
                   </View>
-
-
                   <View style={[styles.panelBottom, { height: 201 }]}>
                     <InputGroup
                       style={styles.otherOptionsGroup}
                     >
-                      {[
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="Email Client"
-                        >
-                          {[
-                            <View style={styles.iconContainer}>
-                              <Icon name="envelope" size={18} color="#115ECD" type="solid" />
-                            </View>,
-                          ]}
-                        </InputButton>,
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="SMS Client"
-                        >
-                          {[<View style={styles.iconContainer}><Icon name="comments" size={18} color="#115ECD" type="solid" />
-                          </View>]}
-                        </InputButton>,
-                        <InputButton
-                          noIcon
-                          style={styles.otherOptionsBtn}
-                          labelStyle={styles.otherOptionsLabels}
-                          onPress={() => { alert('Not implemented'); }}
-                          label="Recommended Products"
-                        >
-                          {[<View style={styles.iconContainer}><Icon name="star" size={18} color="#115ECD" type="solid" />
-                          </View>]}
-                        </InputButton>,
-
-                        ]}
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Email Client"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="envelope" size={18} color="#115ECD" type="solid" />
+                        </View>
+                      </InputButton>
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="SMS Client"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="comments" size={18} color="#115ECD" type="solid" />
+                        </View>
+                      </InputButton>
+                      <InputButton
+                        noIcon
+                        style={styles.otherOptionsBtn}
+                        labelStyle={styles.otherOptionsLabels}
+                        onPress={() => { alert('Not implemented'); }}
+                        label="Recommended Products"
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="star" size={18} color="#115ECD" type="solid" />
+                        </View>
+                      </InputButton>
                     </InputGroup>
                   </View>
                   <View style={styles.panelDiff} />
@@ -622,7 +660,16 @@ export default class SalonAppointmentSlide extends React.Component {
             </View>
           </View>
         </View>
-
-      </ModalBox>);
+      </ModalBox>
+    );
   }
 }
+
+const mapStateToProps = (state, props) => ({
+  appointment: getSelectedAppt(state, props),
+  isCheckingIn: state.appointmentReducer.isCheckingIn,
+  isCheckingOut: state.appointmentReducer.isCheckingOut,
+  isGridLoading: state.appointmentBookReducer.isLoading,
+});
+
+export default connect(mapStateToProps)(SalonAppointmentSlide);

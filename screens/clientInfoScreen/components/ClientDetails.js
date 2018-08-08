@@ -28,7 +28,7 @@ import {
 } from '../../../components/formHelpers';
 import clientInfoActions from '../../../actions/clientInfo';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-import { appointmentCalendarActions } from '../../appointmentCalendarScreen/redux/appointmentScreen';
+import { appointmentCalendarActions } from '../../../actions/appointmentBook';
 import states from '../../../constants/UsStates';
 import genders from '../../../constants/Genders';
 import confirmByTypes from '../../../constants/ClientConfirmByTypes';

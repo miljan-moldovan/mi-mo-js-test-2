@@ -9,7 +9,7 @@ import {
   QUEUE_ITEM_NOT_ARRIVED,
   QUEUE_ITEM_CHECKEDIN,
   QUEUE_ITEM_INSERVICE,
-} from '../constants/QueueStatus.js';
+} from '../constants/QueueStatus';
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
