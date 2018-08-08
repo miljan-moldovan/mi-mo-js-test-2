@@ -9,8 +9,8 @@ import {
   Linking,
   ActivityIndicator,
   Keyboard,
-  KeyboardAvoidingView,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AnimatedHideView from 'react-native-animated-hide-view';
 import { Input, Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -249,20 +249,33 @@ class LoginScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        {this.renderFingerprintModal()}
-        <AnimatedHideView
-          visible={showLogo}
-          unmountOnHide={true}
+        <KeyboardAwareScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContentContainer}
         >
-          <Image
-            source={images.logoWithText}
-            style={styles.logo}
-          />
-        </AnimatedHideView>
-        <KeyboardAvoidingView
-          style={[{ flex: 1, height: '100%' }]}
-          behavior="padding"
-        >
+          {this.renderFingerprintModal()}
+          <AnimatedHideView
+            visible={showLogo}
+            unmountOnHide={true}
+          >
+            <Image
+              source={images.logoWithText}
+              style={styles.logo}
+            />
+          </AnimatedHideView>
+          <AnimatedHideView
+            visible={!showLogo && !loggedIn}
+            unmountOnHide={true}
+          >
+            <Text
+              onPress={this.hideKeyboard}
+              style={styles.backButtonLogo}
+            >
+              <FontAwesome style={styles.backButtonLogo}>
+                {Icons.angleLeft}
+              </FontAwesome>
+            </Text>
+          </AnimatedHideView>
           {loggedIn &&
             <Text
               style={styles.bodyText}
@@ -275,19 +288,6 @@ class LoginScreen extends React.Component {
               styles.mainContent,
               styles.mainContentWithLogo]}
           >
-            <AnimatedHideView
-              visible={!showLogo && !loggedIn}
-              unmountOnHide={true}
-            >
-              <Text
-                onPress={this.hideKeyboard}
-                style={styles.backButtonLogo}
-              >
-                <FontAwesome style={styles.backButtonLogo}>
-                  {Icons.angleLeft}
-                </FontAwesome>
-              </Text>
-            </AnimatedHideView>
             {!loggedIn && (
               <UrlInput
                 loggedIn={loggedIn}
@@ -329,22 +329,22 @@ class LoginScreen extends React.Component {
               Forgot your Password?
             </Text>
           </View>
-        </KeyboardAvoidingView>
-        <View style={styles.footer}>
-          <Text
-            style={styles.footerText}
-          >Don&#39;t have an account? Contact our Support at
-          </Text>
-          <Text style={styles.footerText}>
-            <Text style={styles.bodyLink} onPress={this.handlePhonePress}>(855) 466-9332</Text>
-            &nbsp;or&nbsp;
+          <View style={styles.footer}>
             <Text
-              style={styles.bodyLink}
-              onPress={this.handleMailPress}
-            >support@salonultimate.com
+              style={styles.footerText}
+            >Don&#39;t have an account? Contact our Support at
             </Text>
-          </Text>
-        </View>
+            <Text style={styles.footerText}>
+              <Text style={styles.bodyLink} onPress={this.handlePhonePress}>(855) 466-9332</Text>
+              &nbsp;or&nbsp;
+              <Text
+                style={styles.bodyLink}
+                onPress={this.handleMailPress}
+              >support@salonultimate.com
+              </Text>
+            </Text>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
     );
   }
