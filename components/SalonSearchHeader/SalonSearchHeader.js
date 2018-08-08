@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewPropTypes, Text } from 'react-native';
+import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
 class SalonSearchHeader extends React.Component {
   constructor(props) {
     super(props);
+    this.debouncedOnChange = debounce(this.onChangeText, 500);
   }
 
   componentWillMount() {
@@ -121,6 +123,18 @@ class SalonSearchHeader extends React.Component {
 
   handleTypeChange=(ev, selectedIndex) => {
     this.props.salonSearchHeaderActions.setSelectedFilter(selectedIndex);
+  }
+
+  onChangeText = (searchText) => {
+    if (searchText.length > 2) {
+      this.props.salonSearchHeaderActions.setSearchText(searchText);
+      this.props.salonSearchHeaderState.filterList(searchText);
+    }
+    if (searchText && searchText.length > 0) {
+      this.props.salonSearchHeaderActions.setShowFilter(true);
+    } else {
+      this.props.salonSearchHeaderActions.setShowFilter(false);
+    }
   }
 
   render() {
@@ -177,18 +191,7 @@ class SalonSearchHeader extends React.Component {
             fontColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
             borderColor="transparent"
             backgroundColor={!this.props.salonSearchHeaderState.showFilter ? 'rgba(142,142,147,0.24)' : '#0C4699'}
-            onChangeText={(searchText) => {
-                if (searchText.length > 2) {
-                  this.props.salonSearchHeaderActions.setSearchText(searchText);
-                  this.props.salonSearchHeaderState.filterList(searchText);
-                }
-                if (searchText && searchText.length > 0) {
-                  this.props.salonSearchHeaderActions.setShowFilter(true);
-                } else {
-                  this.props.salonSearchHeaderActions.setShowFilter(false);
-                }
-              }
-            }
+            onChangeText={searchText => this.debouncedOnChange(searchText)}
             onFocus={() => { this.showSuggestions(); }}
             handleCancel={this.props.leftButtonOnPress}
           />

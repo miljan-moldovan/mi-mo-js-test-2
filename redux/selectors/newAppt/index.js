@@ -51,8 +51,10 @@ const newAppointmentInfoSelector = createSelector(
     deletedIdsSelector,
   ],
   (
-    date, startTime, client, guests, bookedByEmployee,
-    serviceItems, isQuickBooking, isQuickApptRequested, conflicts, editType, deletedIds,
+    date, startTime, client, guests,
+    bookedByEmployee, serviceItems,
+    isQuickBooking, isQuickApptRequested,
+    conflicts, editType, deletedIds,
   ) => ({
     date,
     startTime,

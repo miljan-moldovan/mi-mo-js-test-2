@@ -123,7 +123,14 @@ export default class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setGridView();
   }
 
-  onPressMenu = () => alert('Not Implemented');
+  onPressMenu = () => {
+    // this.props.appointmentCalendarActions.setToast({
+    //   description: 'Not Implemented',
+    //   type: 'warning',
+    //   btnRightText: 'DISMISS',
+    // });
+    this.props.navigation.navigate('ApptBookProducts');
+  };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
@@ -610,19 +617,30 @@ export default class AppointmentScreen extends Component {
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
           appointment={this.props.modifyApptState.appointment}
-          onHide={() => {
-            this.setState({ visibleAppointment: false });
-          }}
+          onHide={() => this.setState({ visibleAppointment: false })}
           handleModify={this.handleModifyAppt}
           goToCancelAppt={this.goToCancelAppt}
         />
         {
-          toast ?
-            <SalonToast timeout={2500} type={toast.type} description={toast.description} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText={toast.btnRightText} btnLeftText={toast.btnLeftText} /> : null
+          toast ? (
+            <SalonToast
+              timeout={2500}
+              type={toast.type}
+              description={toast.description}
+              hide={appointmentCalendarActions.hideToast}
+              undo={appointmentActions.undoMove}
+              btnRightText={toast.btnRightText}
+              btnLeftText={toast.btnLeftText}
+            />
+          ) : null
         }
         {
-          bookAnotherEnabled ?
-            <BookAnother client={this.props.newAppointmentState.client} hide={this.setBookAnother} /> : null
+          bookAnotherEnabled ? (
+            <BookAnother
+              hide={this.setBookAnother}
+              client={this.props.newAppointmentState.client}
+            />
+          ) : null
         }
       </View>
     );
