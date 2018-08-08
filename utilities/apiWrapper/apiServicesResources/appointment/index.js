@@ -7,6 +7,7 @@ import postAppointmentResize from './postAppointmentResize';
 import postEmployeesAppointmentOrder from './postEmployeesAppointmentOrder';
 import postNewAppointment from './postNewAppointment';
 import getApptAudit from './getApptAudit';
+import putAppointmentRemarks from './putAppointmentRemarks';
 
 export {
   getAppointment,
@@ -18,4 +19,5 @@ export {
   postAppointmentResize,
   postEmployeesAppointmentOrder,
   postNewAppointment,
+  putAppointmentRemarks,
 };

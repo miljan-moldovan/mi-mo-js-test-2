@@ -6,10 +6,9 @@ import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
-import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide';
+import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide/index';
 import SalonAvatar from '../../../components/SalonAvatar';
 import ApptCalendarHeader from './ApptCalendarHeader';
-import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonToast from './SalonToast';
 import NewApptSlide from '../../../components/slidePanels/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
@@ -597,6 +596,7 @@ export default class AppointmentScreen extends Component {
             this.props.navigation.navigate('ModifyAppointment');
           }}
           goToCancelAppt={this.goToCancelAppt}
+          updateAppointments={this.props.appointmentCalendarActions.setGridView}
         />
         {
           toast ?
