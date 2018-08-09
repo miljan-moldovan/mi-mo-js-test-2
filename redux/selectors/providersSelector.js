@@ -3,7 +3,7 @@ import { groupBy, filter } from 'lodash';
 
 import filterOptionsSelector from './filterOptionsSelector';
 
-const providersSelector = state => state.appointmentScreenReducer.providers;
+const providersSelector = state => state.appointmentBookReducer.providers;
 
 const groupedAvailableProvidersSelector = createSelector(
   [providersSelector],

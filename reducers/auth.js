@@ -1,11 +1,15 @@
 // @flow
-import { REHYDRATE } from 'redux-persist/constants';
-import AT from '../actions/types.js';
+import { AT } from '../actions/login.js';
 
-function auth(state: Object = {}, action: Object) {
+const initialState = {
+  url: '',
+  username: '',
+  loggedIn: false,
+};
+
+function auth(state: Object = initialState, action: Object) {
   switch (action.type) {
     case AT.LOGIN_SUCCESS:
-
       return {
         ...state,
         loggedIn: true,
@@ -33,6 +37,10 @@ function auth(state: Object = {}, action: Object) {
         ...state,
         fingerprintAuthenticationTime: action.data.fingerprintAuthenticationTime,
       };
+    case AT.CHANGE_USERNAME:
+      return { ...state, username: action.data };
+    case AT.CHANGE_URL:
+      return { ...state, url: action.data };
     default:
       return state;
   }

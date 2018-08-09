@@ -5,7 +5,7 @@ import ModifyApptServiceScreen from './ModifyService';
 
 const mapStateToProps = state => ({
   newAppointmentState: state.newAppointmentReducer,
-  apptBookState: state.appointmentScreenReducer,
+  apptBookState: state.appointmentBookReducer,
 });
 
 const mapActionsToProps = dispatch => ({

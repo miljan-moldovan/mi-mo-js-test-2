@@ -1,16 +1,6 @@
 import moment from 'moment';
 import { groupBy, orderBy, maxBy, minBy, times } from 'lodash';
-import { Store, AppointmentBook, Appointment, Employees } from '../../../utilities/apiWrapper';
-
-import { POST_APPOINTMENT_RESIZE,
-  POST_APPOINTMENT_RESIZE_SUCCESS,
-  POST_APPOINTMENT_MOVE_SUCCESS,
-  POST_APPOINTMENT_MOVE,
-  POST_APPOINTMENT_MOVE_FAILED,
-  POST_APPOINTMENT_RESIZE_FAILED,
-  POST_APPOINTMENT_CANCEL_SUCCESS,
-  UNDO_MOVE,
-} from '../../../actions/appointment';
+import { Store, AppointmentBook, Appointment, Employees } from '../utilities/apiWrapper';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_COMPANY';
@@ -33,19 +23,6 @@ export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
 export const HIDE_TOAST = 'appointmentCalendar/HIDE_TOAST';
 export const SET_TOAST = 'appointmentCalendar/SET_TOAST';
-
-const serializeFilterOptions = (filters) => {
-  const serialized = {};
-  if (filters.company !== null) {
-    serialized.companyId = filters.company.id;
-  }
-  if (filters.position !== null) {
-    serialized.positionId = filters.position.id;
-  }
-  serialized.showOffEmployees = filters.showOffEmployees;
-
-  return serialized;
-};
 
 const setToast = toast => ({
   type: SET_TOAST,
@@ -104,7 +81,7 @@ const setStoreWeeklySchedule = () => (dispatch) => {
   });
   Store.getStoreWeeklySchedule().then((weeklySchedule) => {
     dispatch(setStoreWeeklyScheduleSuccess(weeklySchedule));
-  }).catch((ex) => {
+  }).catch(() => {
     // TODO
 
   });
@@ -148,7 +125,10 @@ const setGridAllViewSuccess =
     };
   };
 
-const setGridDayWeekViewSuccess = (appointments, providerSchedule, apptGridSettings, startDate, pickerMode, blockTimes) => {
+const setGridDayWeekViewSuccess = (
+  appointments, providerSchedule, apptGridSettings,
+  startDate, pickerMode, blockTimes,
+) => {
   const {
     minStartTime, maxEndTime, weeklySchedule, step,
   } = apptGridSettings;
@@ -187,7 +167,10 @@ const setGridRoomViewSuccess = (rooms, schedule, roomAppointments, appointments,
   };
 };
 
-const setGridResourceViewSuccess = (resources, schedule, resourceAppointments, appointments, availability) => {
+const setGridResourceViewSuccess = (
+  resources, schedule, resourceAppointments,
+  appointments, availability,
+) => {
   const apptGridSettings = {
     numOfRow: availability.length,
     step: 15,
@@ -208,7 +191,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     pickerMode,
     apptGridSettings,
     filterOptions,
-  } = getState().appointmentScreenReducer;
+  } = getState().appointmentBookReducer;
   const date = startDate.format('YYYY-MM-DD');
 
   switch (selectedFilter) {
@@ -265,7 +248,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                   blockTimes,
                 ));
               })
-              .catch((ex) => {
+              .catch(() => {
                 // TODO
               });
             break;
@@ -285,7 +268,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         AppointmentBook.getAppointmentBookAvailability(date),
       ])
         .then(([rooms, schedule, roomAppointments, appointments, availability]) => {
-          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+          orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
           dispatch(setGridRoomViewSuccess(
             rooms,
             schedule,
@@ -294,7 +277,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             availability.timeSlots,
           ));
         })
-        .catch((ex) => {
+        .catch(() => {
           // TODO
         });
       break;
@@ -308,7 +291,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         AppointmentBook.getAppointmentBookAvailability(date),
       ])
         .then(([resources, schedule, resourceAppointments, appointments, availability]) => {
-          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+          orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
           dispatch(setGridResourceViewSuccess(
             resources,
             schedule,
@@ -317,7 +300,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             availability.timeSlots,
           ));
         })
-        .catch((ex) => {
+        .catch(() => {
           // TODO
         });
       break;
@@ -331,12 +314,11 @@ const setGridView = () => (dispatch) => {
   dispatch({
     type: SET_GRID_VIEW,
   });
-
   dispatch(reloadGridRelatedStuff());
 };
 
 const setScheduleDateRange = () => (dispatch, getState) => {
-  const { startDate, endDate, pickerMode } = getState().appointmentScreenReducer;
+  const { startDate, pickerMode } = getState().appointmentBookReducer;
   const dates = [];
   let diff = 0;
 
@@ -393,272 +375,3 @@ export const appointmentCalendarActions = {
   hideToast,
   setToast,
 };
-
-const initialState = {
-  isLoading: false,
-  isLoadingSchedule: false,
-  error: null,
-  selectedFilter: 'providers',
-  selectedProvider: 'all',
-  pickerMode: 'day',
-  startDate: moment(),
-  endDate: moment(),
-  dates: [moment()],
-  roomAppointments: [],
-  resourceAppointments: [],
-  apptGridSettings: {
-    minStartTime: moment('07:00', 'HH:mm'),
-    maxEndTime: moment('21:00', 'HH:mm'),
-    numOfRow: 0,
-    step: 15,
-    weeklySchedule: [],
-  },
-  filterOptions: {
-    company: null,
-    position: null,
-    serviceProxy: null,
-    showOffEmployees: false,
-    showRoomAssignments: false,
-    showAssistantAssignments: false,
-  },
-  providers: [],
-  rooms: [],
-  resources: [],
-  deskStaff: [],
-  storeSchedule: [],
-  providerSchedule: [],
-  toast: null,
-  blockTimes: [],
-  appointments: [],
-};
-
-export default function appointmentScreenReducer(state = initialState, action) {
-  const { type, data } = action;
-  const { appointments, filterOptions } = state;
-  switch (type) {
-    case SET_FILTER_OPTION_COMPANY:
-      filterOptions.company = data.company;
-      return {
-        ...state,
-        filterOptions,
-      };
-    case SET_FILTER_OPTION_POSITION:
-      filterOptions.position = data.position;
-      return {
-        ...state,
-        filterOptions,
-      };
-    case SET_FILTER_OPTION_OFF_EMPLOYEES:
-      filterOptions.showOffEmployees = data.showOffEmployees;
-      return {
-        ...state,
-        filterOptions,
-      };
-    case SET_FILTER_OPTION_ROOM_ASSIGNMENTS:
-      filterOptions.showRoomAssignments = data.showRoomAssignments;
-      return {
-        ...state,
-        filterOptions,
-      };
-    case SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS:
-      filterOptions.showAssistantAssignments = data.showAssistantAssignments;
-      return {
-        ...state,
-        filterOptions,
-      };
-    case SET_FILTER_OPTION_MULTIBLOCK:
-      filterOptions.showMultiBlock = data.showMultiBlock;
-      return {
-        ...state,
-        filterOptions,
-      };
-    case ADD_APPOINTMENT:
-      if (Array.isArray(data.appointment)) {
-        for (let i = 0; i < data.appointment.length; i += 1) {
-          appointments.push(data.appointment[i]);
-        }
-      } else {
-        appointments.push(data.appointment);
-      }
-      return {
-        ...state,
-        appointments,
-      };
-    case SET_WEEKLY_SCHEDULE_SUCCESS:
-      return {
-        ...state,
-        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
-        isLoadingSchedule: false,
-      };
-    case SET_WEEKLY_SCHEDULE:
-      return {
-        ...state,
-        isLoadingSchedule: true,
-      };
-    case SET_SELECTED_PROVIDER:
-      return {
-        ...state,
-        selectedProvider: data.selectedProvider,
-        // isLoading: true,
-      };
-    case SET_SELECTED_FILTER:
-      return {
-        ...state,
-        selectedFilter: data.selectedFilter,
-      };
-    case SET_PROVIDER_DATES:
-      return {
-        ...state,
-        startDate: moment(data.startDate),
-        endDate: moment(data.endDate),
-      };
-    case SET_DATE_RANGE:
-      return {
-        ...state,
-        dates: data.dates,
-      };
-    case SET_PICKER_MODE:
-      return {
-        ...state,
-        pickerMode: data.pickerMode,
-      };
-    case SET_GRID_VIEW:
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case SET_GRID_ROOM_VIEW_SUCCESS: {
-      const { scheduledIntervals } = data.schedule;
-      const minStartTime = scheduledIntervals[0].start;
-      const maxEndTime = scheduledIntervals[scheduledIntervals.length - 1].end;
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
-        },
-        rooms: data.rooms,
-        providerSchedule: data.schedule,
-        appointments: data.appointments,
-        roomAppointments: data.roomAppointments,
-      };
-    }
-    case SET_GRID_RESOURCE_VIEW_SUCCESS: {
-      const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
-      const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
-        },
-        resources: data.resources,
-        providerSchedule: data.schedule,
-        appointments: data.appointments,
-        resourceAppointments: data.resourceAppointments,
-      };
-    }
-    case SET_GRID_ALL_VIEW_SUCCESS: {
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings,
-        },
-        providers: data.employees,
-        appointments: data.appointments,
-        availability: data.availability,
-        blockTimes: data.blockTimes,
-        storeSchedule: data.schedule,
-      };
-    }
-    case SET_GRID_DAY_WEEK_VIEW_SUCCESS:
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
-        appointments: data.appointments,
-        providerSchedule: data.providerSchedule,
-        blockTimes: data.blockTimes,
-      };
-    case POST_APPOINTMENT_MOVE:
-    case POST_APPOINTMENT_RESIZE:
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case POST_APPOINTMENT_MOVE_SUCCESS:
-    case POST_APPOINTMENT_RESIZE_SUCCESS: {
-      const index = appointments.findIndex(appt => appt.id === data.appointment.id);
-      if (index > -1) {
-        appointments[index] = data.appointment;
-      } else {
-        appointments.push(data.appointment);
-      }
-      const newTime = moment(data.appointment.fromTime, 'HH:mm').format('h:mm a');
-      const newToTime = moment(data.appointment.toTime, 'HH:mm').format('h:mm a');
-      const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
-      const toastText = type === POST_APPOINTMENT_MOVE_SUCCESS ?
-        `Moved to - ${newTime} ${newDate}` : `Moved to - ${newTime} to ${newToTime}`;
-      const description = data.oldAppointment ? toastText : null;
-      const undoType = type === POST_APPOINTMENT_MOVE_SUCCESS ? 'move' : 'resize';
-      const toast = description ? {
-        description,
-        type: 'success',
-        btnRightText: 'OK',
-        btnLeftText: 'UNDO',
-      } : null;
-      return {
-        ...state,
-        appointments: appointments.slice(),
-        isLoading: false,
-        toast,
-        oldAppointment: data.oldAppointment,
-        undoType,
-      };
-    }
-    case POST_APPOINTMENT_MOVE_FAILED:
-    case POST_APPOINTMENT_RESIZE_FAILED:
-      return {
-        ...state,
-        isLoading: false,
-        toast: {
-          description: data.error.response.data.userMessage,
-          type: 'error',
-          btnRightText: 'OK',
-        },
-      };
-    case HIDE_TOAST:
-    case UNDO_MOVE:
-      return {
-        ...state,
-        toast: null,
-        oldAppointment: null,
-        undoType: null,
-        error: null,
-      };
-    case SET_TOAST:
-      return {
-        ...state,
-        toast: data.toast,
-      };
-    case POST_APPOINTMENT_CANCEL_SUCCESS: {
-      const indexToRemove = appointments.findIndex(item => item.id === data.appointmentId);
-      if (indexToRemove > -1) {
-        const newAppointments = appointments.slice();
-        newAppointments.splice(indexToRemove, 1);
-        return {
-          ...state,
-          appointments: newAppointments,
-        };
-      }
-      return state;
-    }
-    default:
-      return state;
-  }
-}

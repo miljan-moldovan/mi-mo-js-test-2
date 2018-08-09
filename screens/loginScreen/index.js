@@ -122,9 +122,9 @@ class LoginScreen extends React.Component {
     Keyboard.dismiss();
   }
 
-  handleUsernameChange = (username: string) => this.setState({ username });
+  handleUsernameChange = (username: string) => this.props.changeUsername(username);
   handlePasswordChange = (password: string) => this.setState({ password });
-  handleURLChange = (url: string) => this.setState({ url });
+  handleURLChange = (url: string) => this.props.changeURL(url);
   handleForgotPasswordPress = () => this.props.navigation.navigate('ForgotPassword');
 
   handleLoginPress = () => {
@@ -141,8 +141,8 @@ class LoginScreen extends React.Component {
     this.setState(
       { waitingLogin: true, error: null },
       () => this.props.login(
-        this.state.url,
-        this.state.username,
+        this.props.auth.url,
+        this.props.auth.username,
         this.state.password,
         (success, err) => {
           if (!success) {
@@ -244,7 +244,7 @@ class LoginScreen extends React.Component {
   )
 
   render() {
-    const { loggedIn } = this.props.auth;
+    const { loggedIn, url, username } = this.props.auth;
     const { showLogo } = this.state;
 
     return (
@@ -292,7 +292,7 @@ class LoginScreen extends React.Component {
               <UrlInput
                 loggedIn={loggedIn}
                 handleURLChange={this.handleURLChange}
-                url={this.state.url}
+                url={url}
                 showSuccess={this.state.loginPressed &&
                 !this.state.urlError && !this.state.waitingLogin}
                 showFail={this.state.loginPressed &&
@@ -304,7 +304,7 @@ class LoginScreen extends React.Component {
                 handleUsernameChange={this.handleUsernameChange}
                 loggedIn={loggedIn}
                 userNameError={this.state.loginError}
-                username={this.state.username}
+                username={username}
               />
             )}
             {!loggedIn && this.renderPasswordInput()}
@@ -362,10 +362,14 @@ LoginScreen.propTypes = {
   auth: PropTypes.shape({
     loggedIn: PropTypes.bool.isRequired,
     useFingerprintId: PropTypes.bool,
+    username: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
   }).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
+  changeUsername: PropTypes.func.isRequired,
+  changeURL: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, actions)(LoginScreen);

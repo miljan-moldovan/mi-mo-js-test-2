@@ -1,3 +1,3 @@
-const filterOptionsSelector = state => state.appointmentScreenReducer.filterOptions;
+const filterOptionsSelector = state => state.appointmentBookReducer.filterOptions;
 
 export default filterOptionsSelector;

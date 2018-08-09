@@ -1,22 +1,22 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { appointmentCalendarActions } from './redux/appointmentScreen';
+import { appointmentCalendarActions } from '../../actions/appointmentBook';
 import appointmentActions from '../../actions/appointment';
 import newAppointmentActions from '../../actions/newAppointment';
 import modifyApptActions from '../modifyAppointmentScreen/redux';
 import AppointmentScreen from './components/appointmentScreen';
 import visbleBlocksSelector from '../../redux/selectors/blocksSelector';
-import visibleApptsSelector from '../../redux/selectors/appointmentSelector';
+import { getVisibleAppointmentsDataSource } from '../../redux/selectors/appointmentSelector';
 import getAvailabilityWithGaps from '../../redux/selectors/availabilitySelector';
 
 const mapStateToProps = state => ({
-  appointmentScreenState: state.appointmentScreenReducer,
+  appointmentScreenState: state.appointmentBookReducer,
   appointmentState: state.appointmentReducer,
   providersState: state.providersReducer,
   newAppointmentState: state.newAppointmentReducer,
   modifyApptState: state.modifyApptReducer,
   blockTimes: visbleBlocksSelector(state),
-  appointments: visibleApptsSelector(state),
+  appointments: getVisibleAppointmentsDataSource(state),
   availability: getAvailabilityWithGaps(state),
 });
 
