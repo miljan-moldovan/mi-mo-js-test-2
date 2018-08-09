@@ -10,32 +10,8 @@ import {
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 import { getApiInstance } from '../../utilities/apiWrapper/api';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  headerTitleContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitleText: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 17,
-    lineHeight: 22,
-    color: 'white',
-  },
-  headerSubtitleText: {
-    fontFamily: 'Roboto',
-    fontSize: 10,
-    lineHeight: 12,
-    color: 'white',
-  },
-  headerButtonText: { fontSize: 14, color: 'white' },
-  robotoMedium: { fontFamily: 'Roboto-Medium' },
-});
+import LoadingOverlay from '../../components/LoadingOverlay';
+import styles from './styles';
 
 export default class AddonServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -94,90 +70,80 @@ export default class AddonServicesScreen extends React.Component {
       const service = services.find(ser => check(ser, i));
       if (service) { results.push(service); }
     }
-    return results;
+    return [{ id: 'none', name: 'No Add-on' }, ...results];
   }
 
   handlePressRow = (index) => {
     const { services } = this.state;
-    services[index].selected = !services[index].selected;
-    this.setState({ services });
+    const newServices = services.slice();
+    if (newServices[index].id === 'none') {
+      return this.handleSave(true);
+    }
+    newServices[index].selected = !newServices[index].selected;
+    return this.setState({ services: newServices });
   }
 
-  handleSave = () => {
+  handleSave = (empty = false) => {
     const { services } = this.state;
     const params = this.props.navigation.state.params || {};
     const onSave = params.onSave || false;
     if (onSave) {
-      onSave(services.filter(item => item.selected));
+      const selectedServices = services.filter(item => item.selected);
+      onSave( empty ? [] : selectedServices);
       this.props.navigation.goBack();
     }
   }
 
+  selectEmpty = () => {
+    this.setState(({ services }) => ({
+      services: services.map(srv => ({ selected: false, ...srv })),
+    }), this.handleSave);
+  }
+
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
-      style={{
-        backgroundColor: 'white',
-        flexDirection: 'row',
-        height: 44,
-        paddingHorizontal: 16,
-        alignItems: 'center',
-      }}
+      style={styles.listItem}
       onPress={() => this.handlePressRow(index)}
     >
-      <View style={{
-        flex: 9 / 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      }}
-      >
-        <Text style={{
-          fontSize: 14,
-          color: '#2F3142',
-        }}
-        >{item.name}
-        </Text>
+      <View style={styles.listItemContainer}>
+        <Text style={styles.listItemText}>{item.name}</Text>
         {!!item.price && (
-          <Text style={{ fontSize: 12, color: '#115ECD' }}>{`$${item.price.toFixed(2)}`}</Text>
+          <Text style={styles.priceText}>{`$${item.price.toFixed(2)}`}</Text>
         )}
       </View>
-      <View style={{ flexDirection: 'row', flex: 1 / 10 }}>
-        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-          {item.selected && (
-            <Icon
-              name="checkCircle"
-              color="#1DBF12"
-              size={14}
-              type="solid"
-            />
-          )}
-        </View>
+      <View style={styles.iconContainer}>
+        {item.selected && (
+          <Icon
+            name="checkCircle"
+            color="#1DBF12"
+            size={14}
+            type="solid"
+          />
+        )}
       </View>
     </SalonTouchableOpacity>
   )
 
   renderSeparator = () => (
-    <View style={{
-      height: StyleSheet.hairlineWidth,
-      backgroundColor: '#C0C1C6',
-    }}
-    />
+    <View style={styles.listItemSeparator} />
   )
 
   render() {
     return (
       <View style={styles.container}>
-        {this.state.isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <FlatList
-            style={{ marginTop: 14 }}
-            data={this.state.services}
-            renderItem={this.renderItem}
-            ItemSeparatorComponent={this.renderSeparator}
-          />
-          )}
+        {
+          this.state.isLoading ?
+            (
+              <LoadingOverlay />
+            ) : (
+              <FlatList
+                style={styles.marginTop}
+                data={this.state.services}
+                renderItem={this.renderItem}
+                ItemSeparatorComponent={this.renderSeparator}
+              />
+            )
+        }
       </View>
     );
   }
