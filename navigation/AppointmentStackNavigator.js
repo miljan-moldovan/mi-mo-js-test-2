@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
-import { Image, View, Text } from 'react-native';
-import { StackNavigator, DrawerNavigator } from 'react-navigation';
+import { View } from 'react-native';
+import { StackNavigator } from 'react-navigation';
 
 import Icon from '../components/UI/Icon';
 

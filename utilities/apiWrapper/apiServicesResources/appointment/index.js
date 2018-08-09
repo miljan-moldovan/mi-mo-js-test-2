@@ -9,6 +9,7 @@ import postNewAppointment from './postNewAppointment';
 import getApptAudit from './getApptAudit';
 import postCheckin from './postCheckin';
 import postAppointmentCheckout from './postAppointmentCheckout';
+import putAppointmentRemarks from './putAppointmentRemarks';
 
 export {
   getAppointment,
@@ -22,4 +23,5 @@ export {
   postCheckin,
   postEmployeesAppointmentOrder,
   postNewAppointment,
+  putAppointmentRemarks,
 };
