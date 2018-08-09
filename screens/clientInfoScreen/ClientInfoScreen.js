@@ -9,7 +9,7 @@ import {
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import ClientDetails from './components/ClientDetails';
+import ClientDetails from './components/clientDetails';
 import ClientFormulas from './components/clientFormulas';
 import ClientNotes from './components/clientNotes';
 
@@ -114,11 +114,16 @@ export default class ClientInfoScreen extends React.Component {
 
     this.props.navigation.setParams({ handleDone: this.handleDone, canSave: false, showDoneButton: true });
 
+    const client = params && params.client ? params.client : null;
+    const isWalkIn = client && client.id === 1;
+    let editionMode = params && params.editionMode ? params.editionMode : true;
+    editionMode = editionMode && !isWalkIn;
+
     this.state = {
       index: 0,
       loading: true,
-      editionMode: params && params.editionMode ? params.editionMode : true,
-      client: params && params.client ? params.client : null,
+      editionMode,
+      client,
       routes: [
         { key: '0', title: 'Details' },
         { key: '1', title: 'Notes' },
@@ -128,9 +133,7 @@ export default class ClientInfoScreen extends React.Component {
   }
 
   componentWillMount() {
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 2000);
+
   }
 
   handleIndexChange = (index) => {
@@ -146,7 +149,6 @@ export default class ClientInfoScreen extends React.Component {
   }
 
   setHandleDone = (handleDone) => {
-
     this.props.navigation.setParams({ handleDone });
   }
 
@@ -179,7 +181,6 @@ export default class ClientInfoScreen extends React.Component {
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     2: () => <ClientFormulas editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
   })
-
 
   render() {
     return (

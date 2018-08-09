@@ -16,7 +16,7 @@ import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue.js';
-import * as settingsActions from '../actions/settings.js';
+import settingsActions from '../actions/settings';
 import checkinActions from '../actions/checkin';
 import serviceActions from '../actions/service';
 import walkInActions from '../actions/walkIn';
@@ -86,7 +86,6 @@ class QueueScreen extends React.Component {
   componentWillMount() {
     this.props.actions.receiveQueue();
     setInterval(this.props.actions.receiveQueue, 15000);
-
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
     // this._refreshData();
@@ -292,8 +291,8 @@ class QueueScreen extends React.Component {
     </Text>
   </View>,
         leftButtonOnPress: (navigation) => {
-          navigation.goBack(); 
-},
+          navigation.goBack();
+        },
       },
     });
   }
@@ -446,7 +445,7 @@ const mapStateToProps = (state, ownProps) => ({
   queueLength: state.queue.queueLength,
   loading: state.queue.loading,
   walkInState: state.walkInReducer.walkInState,
-  settings: state.settings,
+  settings: state.settingsReducer,
 });
 const mapActionsToProps = dispatch => ({
   actions: bindActionCreators({ ...actions }, dispatch),

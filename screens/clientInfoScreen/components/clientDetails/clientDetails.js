@@ -1,15 +1,12 @@
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import React, { Component } from 'react';
 import {
   View,
-  StyleSheet,
   ActivityIndicator,
   Text,
   Alert,
 } from 'react-native';
 import moment from 'moment';
-import { isEmpty, find, reject } from 'lodash';
+import { find, reject } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
@@ -25,91 +22,35 @@ import {
   InputSwitch,
   LabeledTextarea,
   ValidatableInput,
-} from '../../../components/formHelpers';
-import clientInfoActions from '../../../actions/clientInfo';
-import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-import { appointmentCalendarActions } from '../../appointmentCalendarScreen/redux/appointmentScreen';
-import states from '../../../constants/UsStates';
-import genders from '../../../constants/Genders';
-import confirmByTypes from '../../../constants/ClientConfirmByTypes';
+} from '../../../../components/formHelpers';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+import states from '../../../../constants/UsStates';
+import gendersEnum from '../../../../constants/Genders';
+import agesEnum from '../../../../constants/Ages';
+import confirmByTypesEnum from '../../../../constants/ClientConfirmByTypes';
+import regexs from '../../../../constants/Regexs';
+import styles from './styles';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  inputGroup: { marginTop: 16 },
-  inputSwitch: { height: 43 },
-  inputSwitchText: { color: '#727A8F' },
-  sectionTitle: { height: 38 },
-  labelText: {
-    fontSize: 14,
-    lineHeight: 22,
-    color: '#727A8F',
-    fontFamily: 'Roboto-Regular',
-  },
-  optionaLabel: {
-    fontFamily: 'Roboto',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  clientInput: {
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingLeft: 0,
-    paddingRight: 16,
-    flex: 1,
-  },
-  clientReferralTypeInput: {
-    height: 44,
-    backgroundColor: '#fff',
-    paddingLeft: 0,
-    paddingRight: 24,
-    width: '96%',
-  },
-  unselectedCheck: {
-    fontSize: 20,
-    color: '#727A8F',
-    fontWeight: 'normal',
-    width: 20,
-    marginRight: 20,
-  },
-  selectedCheck: {
-    fontSize: 20,
-    color: '#1ABF12',
-    width: 20,
-    marginRight: 20,
-  },
-  addRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingRight: 16,
-  },
-  plusIcon: {
-    color: '#115ECD',
-    fontSize: 22,
-    marginRight: 5,
-  },
-  textData: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-    marginLeft: 5,
-  },
-  deleteText: { color: '#D1242A', fontFamily: 'Roboto-Medium' },
-  deleteButton: {
-    justifyContent: 'center', alignItems: 'center',
-  },
-  referredClientView: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
-  inputDivider: { marginBottom: 10 },
-});
+const genders = [
+  { key: gendersEnum.Unspecified, value: 'unspecified' },
+  { key: gendersEnum.Male, value: 'male' },
+  { key: gendersEnum.Female, value: 'female' },
+];
 
-class ClientDetails extends Component {
+const ages = [
+  { key: agesEnum.Child, value: 'Child' },
+  { key: agesEnum.Adult, value: 'Adult' },
+  { key: agesEnum.Senior, value: 'Senior' },
+];
+
+const confirmByTypes = [
+  { key: confirmByTypesEnum.Email, value: 'Email' },
+  { key: confirmByTypesEnum.Sms, value: 'Sms' },
+  { key: confirmByTypesEnum.EmailandSms, value: 'Email and Sms' },
+  { key: confirmByTypesEnum.None, value: 'None' },
+];
+
+export default class ClientDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -118,109 +59,86 @@ class ClientDetails extends Component {
       selectedReferredClient: true,
       requireCard: true,
       hasChanged: false,
-      isValidEmail: false,
-      isValidZipCode: false,
-      isValidPhone: false,
-      isValidName: false,
-      isValidLastName: false,
+      isValidEmail: true,
+      isValidZipCode: true,
+      isValidPhone: true,
+      isValidName: true,
+      isValidLastName: true,
+      isValidStreet1: true,
+      isValidCity: true,
+      isValidAge: true,
+      isValidGender: true,
+      isValidBirth: true,
+      requiredFields: {},
     };
+
+    this.props.settingsActions.getSettings(this.calculateRequiredFields);
 
     this.handleClientSelection.bind(this);
   }
 
-  isValidEmailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  isValidZipCodeRegExp = /(^\d{5}$)|(^\d{5}-\d{4}$)/
-  isValidPhoneRegExp = /^(\([0-9]{3}\)|[0-9]{3}-)[0-9]{3}-[0-9]{4}$/
-  isValidText = /^(?!\s*$).+/
-  isValidAddress=/^(.+?),\s?(\w+),?\s?(\w{2})\s+(\d{5}?)/;
+  isValidEmailRegExp = regexs.email;
+  isValidZipCodeRegExp = regexs.zipcode;
+  isValidPhoneRegExp = regexs.phone;
+  isValidText = regexs.notemptytext;
+  isValidAddress= regexs.address;
 
   componentWillMount() {
-    this.props.clientInfoActions.getClientReferralTypes(() => {
-      this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
-    });
-  }
-
-  loadClientData = (response) => {
-    const client = this.props.clientInfoState.client;
-
-    const matches = client.address.match(this.isValidAddress);
-
-    if (matches && matches.length > 4) {
-      const street = matches[1];
-      const city = matches[2];
-
-      const zip = matches[4];
-
-      client.address = street.trim();
-      client.city = city.trim();
-      const state = find(states, { value: matches[3].trim().toUpperCase() });
-      client.state = state;
-
-      client.zip = zip.trim();
-    }
-
-    this.props.setCanSave(false);
-    this.props.setHandleDone(this.handleDone);
-
-    const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
-    client.clientReferralType = clientReferralType;
-
-
-    if (client.clientReferralType) {
-      this.selectReferredOption(false);
-    }
-
-    this.setState({
-      client,
-      editionMode: this.props.editionMode,
-      pointerEvents: this.props.editionMode ? 'auto' : 'none',
-    });
-  }
-
-  handleDone = () => {
-    const client = {
-      firstName: this.state.client.name,
-      lastName: this.state.client.lastName,
-      middleName: this.state.client.middleName,
-      birthday: moment.isMoment(this.state.client.birthday) ? moment(this.state.client.birthday).format('YYYY-MM-DD') : '2018-08-07T19:13:30.459Z',
-      age: moment().diff(moment(this.state.client.birthday).format('YYYY-MM-DD'), 'years'),
-      email: this.state.client.email,
-      phones: reject(this.state.client.phones, ['value', null]),
-      address: {
-        street1: this.state.client.address,
-        city: this.state.client.city ? this.state.client.city : null,
-        state: this.state.client.state ? this.state.client.state.value : null,
-        ZipCode: this.state.client.zip ? this.state.client.zip : null,
-      },
-      gender: this.state.client.gender ? this.state.client.gender.key : null,
-      loyaltyNumber: this.state.client.loyaltyNumber,
-      confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy : null,
-      referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
-      clientReferralTypeId: this.state.client.clientReferralType ? this.state.client.clientReferralType.key : null,
-      anniversary: moment.isMoment(this.state.client.anniversary) ? moment(this.state.client.anniversary).format('YYYY-MM-DD') : null,
-      requireCard: this.state.requireCard,
-      confirmationNote: this.state.client.confirmationNote ? this.state.client.confirmationNote : null,
-      clientPreferenceProviderType: 1,
-      preferredProviderId: null,
-      clientCode: null,
-      receivesEmail: true,
-      occupationId: null,
-      profilePhotoUuid: null,
-    };
-
-
-    this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, message) => {
+    this.props.clientInfoActions.getClientReferralTypes((result) => {
       if (result) {
-        this.props.appointmentCalendarActions.setGridView();
-        this.props.navigation.goBack();
-      } else {
-        alert(message);
+        this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       }
     });
   }
 
+  loadClientData = (result) => {
+    if (result) {
+      const client = this.props.clientInfoState.client;
+      if (client.address) {
+        if (typeof client.address === 'string' || client.address instanceof String) {
+          const matches = client.address.match(this.isValidAddress);
+
+          if (matches && matches.length > 4) {
+            const street = matches[1];
+            const city = matches[2];
+
+            const zipCode = matches[4];
+
+            client.street1 = street.trim();
+            client.city = city.trim();
+            const state = find(states, { value: matches[3].trim().toUpperCase() });
+            client.state = state;
+
+            client.zipCode = zipCode.trim();
+          }
+        } else {
+          const state = find(states, { value: client.address.state.toUpperCase() });
+          client.state = state;
+        }
+      }
+
+
+      this.props.setCanSave(false);
+      this.props.setHandleDone(this.handleDone);
+
+      const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
+      client.clientReferralType = clientReferralType;
+
+      if (client.clientReferralType) {
+        this.selectReferredOption(false);
+      }
+
+      this.setState({
+        client,
+        editionMode: this.props.editionMode,
+        pointerEvents: this.props.editionMode ? 'auto' : 'none',
+      });
+    }
+  }
+
   onChangeClientField = (field, value, type) => {
     const newClient = this.state.client;
+
     switch (field) {
       case 'name':
         newClient.name = value;
@@ -236,20 +154,23 @@ class ClientDetails extends Component {
         newClient.loyalty = value;
         this.props.setCanSave(true);
         break;
-      case 'address':
-        newClient.address = value;
+      case 'street1':
+        newClient.street1 = value;
         break;
       case 'city':
         newClient.city = value;
         break;
-      case 'zip':
-        newClient.zip = value;
+      case 'zipCode':
+        newClient.zipCode = value;
         break;
       case 'clientId':
         newClient.clientId = value;
         break;
       case 'gender':
         newClient.gender = value;
+        break;
+      case 'age':
+        newClient.age = value;
         break;
       case 'state':
         newClient.state = value;
@@ -273,7 +194,6 @@ class ClientDetails extends Component {
         newClient.email = value;
         break;
       case 'phone':
-
         const phone = find(newClient.phones, { type });
         phone.value = value;
         break;
@@ -281,11 +201,53 @@ class ClientDetails extends Component {
             /* nothing */
     }
 
-    this.setState({ client: newClient, hasChanged: true });
+    this.setState({ client: newClient, hasChanged: true }, this.checkValidation);
+  }
+
+  handleDone = () => {
+    const client = {
+      firstName: this.state.client.name,
+      lastName: this.state.client.lastName,
+      middleName: this.state.client.middleName,
+      birthday: moment(this.state.client.birthday).isValid() ? moment(this.state.client.birthday).format('YYYY-MM-DD') : null,
+      age: this.state.client.age ? this.state.client.age.key : null,
+      email: this.state.client.email,
+      phones: reject(this.state.client.phones, ['value', null]),
+      address: {
+        street1: this.state.client.street1,
+        city: this.state.client.city ? this.state.client.city : null,
+        state: this.state.client.state ? this.state.client.state.value : null,
+        zipCode: this.state.client.zipCode ? this.state.client.zipCode : null,
+      },
+      gender: this.state.client.gender ? this.state.client.gender.key : null,
+      loyaltyNumber: this.state.client.loyaltyNumber,
+      confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy.key : null,
+      referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
+      clientReferralTypeId: this.state.client.clientReferralType ? this.state.client.clientReferralType.key : null,
+      anniversary: moment(this.state.client.anniversary).isValid() ? moment(this.state.client.anniversary).format('YYYY-MM-DD') : null,
+      requireCard: this.state.requireCard,
+      confirmationNote: this.state.client.confirmationNote ? this.state.client.confirmationNote : null,
+      clientPreferenceProviderType: 1,
+      preferredProviderId: null,
+      clientCode: null,
+      receivesEmail: true,
+      occupationId: null,
+      profilePhotoUuid: null,
+    };
+
+
+    this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, message) => {
+      if (result) {
+        this.props.appointmentCalendarActions.setGridView();
+        this.props.navigation.goBack();
+      } else {
+        alert(message);
+      }
+    });
   }
 
   cancelButton = () => ({
-    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
       navigation.goBack();
     },
@@ -363,7 +325,7 @@ class ClientDetails extends Component {
         placeholder="Enter"
       />
       <InputDivider />
-                                            </React.Fragment>) : null;
+    </React.Fragment>) : null;
     return (element);
   }
 
@@ -374,6 +336,7 @@ class ClientDetails extends Component {
   onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
     newState.isValidEmail = state.client.email !== undefined ? isValid : true;
+    newState.isValidEmail = this.state.requiredFields.email ? newState.isValidEmail : true;
 
     this.checkValidation();
 
@@ -382,7 +345,8 @@ class ClientDetails extends Component {
 
   onValidateZipCode = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
-    newState.isValidZipCode = state.client.zip !== undefined ? isValid : true;
+    newState.isValidZipCode = state.client.zipCode !== undefined ? isValid : true;
+    newState.isValidZipCode = this.state.requiredFields.zip ? newState.isValidZipCode : true;
 
     this.checkValidation();
 
@@ -416,12 +380,98 @@ class ClientDetails extends Component {
     return newState;
   });
 
+  onValidateStreet1 = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidStreet1 = this.state.requiredFields.address ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateCity = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidCity = this.state.requiredFields.city ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateGender = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidGender = this.state.requiredFields.gender ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateBirth = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidBirth = this.state.requiredFields.birth ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateAge = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidAge = this.state.requiredFields.age ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
   checkValidation = () => {
-    this.props.setCanSave(this.state.hasChanged && this.state.isValidLastName && this.state.isValidName
-      && this.state.isValidEmail && this.state.isValidZipCode
+    this.props.setCanSave(this.state.hasChanged
+      && this.state.isValidLastName
+      && this.state.isValidName
+      && this.state.isValidStreet1
+      && this.state.isValidCity
+      && this.state.isValidEmail
+      && this.state.isValidZipCode
+      && this.state.isValidAge
+      && this.state.isValidGender
+      && this.state.isValidBirth
       && this.state.isValidPhone);
   }
 
+  calculateRequiredFields = (result) => {
+    if (result) {
+      const { settings } = this.props.settingsState;
+
+      const required: { [key: string]: boolean } = { };
+
+      const trackClientAge = find(settings, { settingName: 'TrackClientAge' }).settingValue;
+      const forceAgeInput = find(settings, { settingName: 'ForceAgeInput' }).settingValue;
+      const isLargeForm = find(settings, { settingName: 'UseFullClientFormApptQueue' }).settingValue;
+      const forceChildBirthday = find(settings, { settingName: 'ForceChildBirthday' }).settingValue;
+      const forceAdultBirthday = find(settings, { settingName: 'ForceAdultBirthday' }).settingValue;
+      const requireClientGender = find(settings, { settingName: 'RequireClientGender' }).settingValue;
+
+      required.age = trackClientAge && forceAgeInput;
+      required.address = isLargeForm;// && address !== 'Decline';
+      required.city = isLargeForm;
+      required.email = isLargeForm;// && email !== 'Will-not-provide';
+      required.birth = trackClientAge && (forceChildBirthday || forceAdultBirthday);
+      required.gender = requireClientGender;
+      required.zip = isLargeForm;
+
+      this.setState({ requiredFields: required });
+    }
+  }
+
+
+  setReferredOptionTrue =() => {
+    this.selectReferredOption(true);
+  }
+
+  setReferredOptionFalse =() => {
+    this.selectReferredOption(false);
+  }
 
   render() {
     return (
@@ -479,8 +529,22 @@ class ClientDetails extends Component {
                   <InputDivider />
                   <InputDate
                     placeholder="Birthday"
+                    required={this.state.requiredFields.birth}
+                    isValid={this.state.isValidBirth}
+                    onValidated={this.onValidateBirth}
                     onPress={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
                     selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : false}
+                  />
+                  <InputDivider />
+                  <InputPicker
+                    label="Age"
+                    required={this.state.requiredFields.age}
+                    isValid={this.state.isValidAge}
+                    onValidated={this.onValidateAge}
+                    value={this.state.client.age ? this.state.client.age : null}
+                    onChange={(option) => { this.onChangeClientField('age', option); }}
+                    defaultOption={this.state.client.age}
+                    options={ages}
                   />
                   <InputDivider />
                   <InputDate
@@ -498,6 +562,9 @@ class ClientDetails extends Component {
                   <InputDivider />
                   <InputPicker
                     label="Gender"
+                    required={this.state.requiredFields.gender}
+                    isValid={this.state.isValidGender}
+                    onValidated={this.onValidateGender}
                     value={this.state.client.gender ? this.state.client.gender : null}
                     onChange={(option) => { this.onChangeClientField('gender', option); }}
                     defaultOption={this.state.client.gender}
@@ -553,14 +620,22 @@ class ClientDetails extends Component {
                 </InputGroup>
                 <SectionTitle value="ADDRESS" style={styles.sectionTitle} />
                 <InputGroup>
-                  <LabeledTextInput
+                  <ValidatableInput
+                    validateOnChange
+                    validation={this.isValidText}
+                    isValid={this.state.isValidStreet1}
+                    onValidated={this.onValidateStreet1}
                     label="Address Line 1"
-                    value={this.state.client.address}
-                    onChangeText={(text) => { this.onChangeClientField('address', text); }}
+                    value={this.state.client.street1}
+                    onChangeText={(text) => { this.onChangeClientField('street1', text); }}
                     placeholder="Enter"
                   />
                   <InputDivider />
-                  <LabeledTextInput
+                  <ValidatableInput
+                    validateOnChange
+                    validation={this.isValidText}
+                    isValid={this.state.isValidCity}
+                    onValidated={this.onValidateCity}
                     label="City"
                     value={this.state.client.city}
                     onChangeText={(text) => { this.onChangeClientField('city', text); }}
@@ -580,9 +655,9 @@ class ClientDetails extends Component {
                     validation={this.isValidZipCodeRegExp}
                     isValid={this.state.isValidZipCode}
                     onValidated={this.onValidateZipCode}
-                    label="Zip"
-                    value={this.state.client.zip}
-                    onChangeText={(text) => { this.onChangeClientField('zip', text); }}
+                    label="ZipCode"
+                    value={this.state.client.zipCode}
+                    onChangeText={(text) => { this.onChangeClientField('zipCode', text); }}
                     placeholder="Enter"
                   />
                 </InputGroup>
@@ -590,10 +665,7 @@ class ClientDetails extends Component {
                 <SectionTitle value="REFERRED BY" style={styles.sectionTitle} />
                 <InputGroup>
                   <View style={styles.referredClientView}>
-                    <SalonTouchableOpacity onPress={() => {
-                      this.selectReferredOption(true);
-                      }}
-                    >
+                    <SalonTouchableOpacity onPress={this.setReferredOptionTrue}>
                       <FontAwesome style={this.state.selectedReferredClient ? styles.selectedCheck : styles.unselectedCheck}>
                         {this.state.selectedReferredClient ? Icons.checkCircle : Icons.circle}
                       </FontAwesome>
@@ -606,20 +678,15 @@ class ClientDetails extends Component {
                       style={styles.clientInput}
                       extraComponents={this.state.selectedClient === null ?
                         <Text style={styles.optionaLabel}>Optional</Text> : null}
-                      onPress={() => {
-                        this.selectReferredOption(true);
-                        }}
+                      onPress={this.setReferredOptionTrue}
                       navigate={this.props.navigation.navigate}
                       headerProps={{ title: 'Clients', ...this.cancelButton() }}
                       onChange={this.handleClientSelection}
                     />
                   </View>
                   <InputDivider />
-                  <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-                    <SalonTouchableOpacity onPress={() => {
-                      this.selectReferredOption(false);
-                      }}
-                    >
+                  <View style={styles.clientReferralTypeContainer}>
+                    <SalonTouchableOpacity onPress={this.setReferredOptionFalse}>
                       <FontAwesome style={this.state.selectedReferredClient ? styles.unselectedCheck : styles.selectedCheck}>
                         {this.state.selectedReferredClient ? Icons.circle : Icons.checkCircle}
                       </FontAwesome>
@@ -654,15 +721,3 @@ class ClientDetails extends Component {
     );
   }
 }
-
-
-const mapStateToProps = state => ({
-  clientInfoState: state.clientInfoReducer,
-});
-
-const mapActionsToProps = dispatch => ({
-  clientInfoActions: bindActionCreators({ ...clientInfoActions }, dispatch),
-  appointmentCalendarActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
-});
-
-export default connect(mapStateToProps, mapActionsToProps)(ClientDetails);

@@ -2,7 +2,7 @@
 import { combineReducers } from 'redux';
 import { auth } from './auth';
 import queue from './queue';
-import settings from './settings';
+import settingsReducer from './settings';
 import walkInReducer from './walkIn';
 import clientsReducer from './clients';
 import formCache from './formCache';
@@ -38,7 +38,7 @@ import { REHYDRATE } from 'redux-persist/constants';
 
 export default combineReducers({
   auth,
-  settings,
+  settingsReducer,
   queue,
   walkInReducer,
   clientsReducer,
