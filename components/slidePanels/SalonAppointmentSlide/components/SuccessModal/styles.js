@@ -12,6 +12,9 @@ export default StyleSheet.create({
     position: 'absolute',
     zIndex: 99999,
   },
+  mainContainerHide: {
+    display: 'none',
+  },
   content: {
     display: 'flex',
     justifyContent: 'space-between',

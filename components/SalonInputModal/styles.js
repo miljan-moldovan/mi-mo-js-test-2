@@ -13,6 +13,10 @@ export default StyleSheet.create({
     flex: 1,
     zIndex: 99999,
   },
+  keyboardContainer: {
+    flex: 1,
+    height: '100%',
+  },
   bodyContainer: {
     borderRadius: 10,
     minHeight: 243,

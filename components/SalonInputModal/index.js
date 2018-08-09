@@ -41,6 +41,8 @@ class SalonInputModal extends React.Component {
     }
   }
 
+  handleChangeInput = value => this.setState({ value })
+
   render() {
     return (
       <Modal
@@ -54,7 +56,7 @@ class SalonInputModal extends React.Component {
         ]}
         >
           <KeyboardAvoidingView
-            style={[{ flex: 1, height: '100%' }, styles.container]}
+            style={[styles.keyboardContainer, styles.container]}
             behavior="padding"
           >
             <View style={styles.bodyContainer}>
@@ -78,7 +80,7 @@ class SalonInputModal extends React.Component {
                     numberOfLines={20}
                     placeholderTextColor="#727A8F"
                     placeholder={this.props.placeholder}
-                    onChangeText={value => this.setState({ value })}
+                    onChangeText={this.handleChangeInput}
                     value={this.state.value}
                   />
                 </View>

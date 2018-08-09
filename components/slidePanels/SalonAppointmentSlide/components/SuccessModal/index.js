@@ -22,13 +22,13 @@ class SuccessModal extends React.Component {
 
   render() {
     return (
-      <View style={[styles.mainContainer, !this.props.show && { display: 'none' }]}>
+      <View style={[styles.mainContainer, !this.props.show && styles.mainContainerHide]}>
         <View style={styles.content}>
           <Text style={styles.text}>
             {this.props.text}
           </Text>
           <InputButton
-            onPress={() => this.handleHideModal()}
+            onPress={this.handleHideModal}
             noIcon
             style={styles.button}
           ><Text style={styles.buttonText}>DISMISS</Text>
