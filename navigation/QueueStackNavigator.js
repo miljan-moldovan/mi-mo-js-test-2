@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
-import { Image, View, Text } from 'react-native';
-import { StackNavigator, DrawerNavigator } from 'react-navigation';
+import { View, Text } from 'react-native';
+import { StackNavigator } from 'react-navigation';
 
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
@@ -24,9 +24,7 @@ import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';
 
-import HeaderLateral from '../components/HeaderLateral';
 import HeaderLeftText from '../components/HeaderLeftText';
-import SalonSearchHeader from '../components/SalonSearchHeader';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
@@ -40,23 +38,29 @@ import AppointmentNoteScreen from './../screens/appointmentNote';
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
-import SalonCalendar from './../components/SalonCalendar';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 
-import AppointmentScreen from '../screens/AppointmentsScreen.js';
+import AppointmentScreen from '../screens/AppointmentsScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 import SettingsScreen from './../screens/SettingsScreen';
+import ShowApptScreen from '../screens/showAppointmentsScreen/components/showApptScreen';
 
 const MainNavigator = StackNavigator(
   {
     Main: {
-      screen: QueueScreen,
+      screen: ShowApptScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
     },
+    // Main: {
+    //   screen: QueueScreen,
+    //   navigationOptions: {
+    //     headerTitle: 'Queue',
+    //   },
+    // },
     SalonCalendar: {
       screen: AppointmentCalendarScreen,
     },
