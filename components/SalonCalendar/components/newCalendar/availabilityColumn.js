@@ -38,7 +38,7 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
   let timeSplit;
   let minutesSplit;
   let style;
-  if (item && item.availableSlots > 0) {
+  if (item) {
     startTime = moment(item.startTime, 'HH:mm').add(15, 'm').format('HH:mm');
     timeSplit = startTime.split(':');
     minutesSplit = timeSplit[1];
