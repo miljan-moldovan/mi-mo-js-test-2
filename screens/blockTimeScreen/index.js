@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 
 import BlockTimeScreen from './BlockTimeScreen';
 import blockTimeActions from '../../actions/blockTime';
-import { appointmentCalendarActions } from '../appointmentCalendarScreen/redux/appointmentScreen';
+import { appointmentCalendarActions } from '../../actions/appointmentBook';
 
 const mapStateToProps = state => ({
   blockTimeState: state.blockTimeReducer,

@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, Text, Animated, View } from 'react-native';
+import { connect } from 'react-redux';
+import { ScrollView, Text, Animated, View, ActivityIndicator } from 'react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -11,8 +12,12 @@ import { AppointmentTime } from '../SalonNewAppointmentSlide';
 import {
   InputGroup,
   InputButton,
-} from '../../formHelpers/index';
-import AuditInformation from '../../AuditInformation';
+} from '../../components/formHelpers';
+import AuditInformation from '../AuditInformation';
+
+import { Appointment } from '../../utilities/apiWrapper';
+import ApptQueueStatus from '../../constants/apptQueueStatus';
+import { getSelectedAppt } from '../../redux/selectors/appointmentSelector';
 
 import { Appointment } from '../../../utilities/apiWrapper/index';
 import styles from './styles';
@@ -49,10 +54,11 @@ class SalonAppointmentSlide extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      visible: nextProps.visible,
-      appointment: nextProps.appointment,
-    }, this.getAuditInformation);
+    if (this.props.visible !== nextProps.visible && nextProps.visible) {
+      this.getAuditInformation();
+    }
+
+    this.setState({ appointment: nextProps.appointment })
   }
 
   get remarksMessage() {
@@ -82,6 +88,14 @@ class SalonAppointmentSlide extends React.Component {
 
   handleCancel = () => {
     this.props.goToCancelAppt(this.props.appointment);
+  }
+
+  handleCheckin = () => {
+    this.props.handleCheckin(this.props.appointment.id);
+  }
+
+  handleCheckout = () => {
+    this.props.handleCheckout(this.props.appointment.id);
   }
 
   _draggedValue = new Animated.Value(-120);
@@ -136,16 +150,28 @@ class SalonAppointmentSlide extends React.Component {
       appointment,
     } = this.state;
 
-    if (appointment === null) {
+    const {
+      isCheckingIn,
+      isCheckingOut,
+      isGridLoading,
+    } = this.props;
+
+    if (!appointment) {
       return null;
     }
     const {
       client,
       service,
       employee,
+      isNoShow,
+      queueStatus
     } = appointment;
     const { isOpen, auditAppt } = this.state;
-
+    const isCheckInDisabled = (isGridLoading || isCheckingIn
+      || queueStatus !== ApptQueueStatus.NotInQueue || isNoShow);
+    const isCheckOutDisabled = (isGridLoading || isCheckingOut
+      || queueStatus === ApptQueueStatus.CheckedOut || isNoShow);
+      console.log({queueStatus}, 'bacon')
     return this.props.appointment && (
       <ModalBox
         isOpen={this.props.visible}
@@ -233,18 +259,20 @@ class SalonAppointmentSlide extends React.Component {
                 </View>
               </View>
 
-              {appointment.remarks !== '' && [
-                <View key={Math.random()} style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-                  <View style={styles.panelTopLineLeft}>
-                    <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+              {appointment.remarks !== '' &&
+                <React.Fragment>
+                  <View key={Math.random()} style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+                    <View style={styles.panelTopLineLeft}>
+                      <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+                    </View>
                   </View>
-                </View>,
-                <View key={Math.random()} style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
-                  <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
-                    <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+                  <View key={Math.random()} style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
+                    <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+                      <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+                    </View>
                   </View>
-                </View>,
-              ]}
+                </React.Fragment>
+              }
             </View>
 
             <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -253,24 +281,38 @@ class SalonAppointmentSlide extends React.Component {
                   <View key={Math.random()} style={styles.panelMiddle}>
                     <View key={Math.random()} style={styles.panelIcons}>
                       <View key={Math.random()} style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                          <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                        <SalonTouchableOpacity
+                          style={isCheckInDisabled ?
+                            styles.panelIconBtnDisabled : styles.panelIconBtn}
+                          onPress={this.handleCheckin}
+                          disabled={isCheckInDisabled}
+                        >
+                          { isCheckingIn ?
+                            <ActivityIndicator />
+                            :
+                            <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                          }
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Check-In</Text>
                       </View>
 
                       <View key={Math.random()} style={styles.panelIcon}>
-                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={() => { alert('Not implemented'); }}>
-                          <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+                        <SalonTouchableOpacity
+                          disabled={isCheckOutDisabled}
+                          style={isCheckOutDisabled ?
+                            styles.panelIconBtnDisabled : styles.panelIconBtn}
+                          onPress={this.handleCheckout}
+                        >
+                          { isCheckingOut ?
+                            <ActivityIndicator />
+                            :
+                            <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+                          }
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Check-out</Text>
                       </View>
-
                       <View key={Math.random()} style={styles.panelIcon}>
-                        <SalonTouchableOpacity
-                          style={styles.panelIconBtn}
-                          onPress={this.handleCancel}
-                        >
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={this.handleCancel}>
                           <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
                           <View style={[
                             styles.plusIconContainer,
@@ -288,12 +330,8 @@ class SalonAppointmentSlide extends React.Component {
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Cancel Appt.</Text>
                       </View>
-
                       <View key={Math.random()} style={styles.panelIcon}>
-                        <SalonTouchableOpacity
-                          style={styles.panelIconBtn}
-                          onPress={this.props.handleModify}
-                        >
+                        <SalonTouchableOpacity style={styles.panelIconBtn} onPress={this.props.handleModify}>
                           <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
                         </SalonTouchableOpacity>
                         <Text style={styles.panelIconText}>Modifiy</Text>
@@ -319,8 +357,8 @@ class SalonAppointmentSlide extends React.Component {
                       style={styles.otherOptionsGroup}
                     >
                       <InputButton
-                        key={Math.random()}
                         noIcon
+                        key={Math.random()}
                         style={styles.otherOptionsBtn}
                         labelStyle={styles.otherOptionsLabels}
                         onPress={() => { alert('Not implemented'); }}
@@ -339,10 +377,9 @@ class SalonAppointmentSlide extends React.Component {
                           </View>
                         </View>
                       </InputButton>
-
                       <InputButton
-                        key={Math.random()}
                         noIcon
+                        key={Math.random()}
                         style={styles.otherOptionsBtn}
                         labelStyle={styles.otherOptionsLabels}
                         onPress={() => { alert('Not implemented'); }}
@@ -354,7 +391,6 @@ class SalonAppointmentSlide extends React.Component {
                       </InputButton>
                     </InputGroup>
                   </View>
-
                   <View key={Math.random()} style={styles.panelBottom}>
                     <InputGroup
                       key={Math.random()}
@@ -372,7 +408,6 @@ class SalonAppointmentSlide extends React.Component {
                           <Icon name="edit" size={18} color="#115ECD" type="solid" />
                         </View>
                       </InputButton>
-
                       <InputButton
                         noIcon
                         key={Math.random()}
@@ -381,7 +416,7 @@ class SalonAppointmentSlide extends React.Component {
                         onPress={() => { alert('Not implemented'); }}
                         label="Show Apps. (today.future)"
                       >
-                        <View key={Math.random()} style={styles.iconContainer}>
+                        <View style={styles.iconContainer}>
                           <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
                           <View style={styles.plusIconContainer}>
                             <Icon
@@ -396,8 +431,6 @@ class SalonAppointmentSlide extends React.Component {
                       </InputButton>
                     </InputGroup>
                   </View>
-
-
                   <View key={Math.random()} style={[styles.panelBottom, { height: 201 }]}>
                     <InputGroup
                       key={Math.random()}
@@ -447,10 +480,17 @@ class SalonAppointmentSlide extends React.Component {
             </View>
           </View>
         </View>
-
-      </ModalBox>);
+      </ModalBox>
+    );
   }
 }
+
+const mapStateToProps = (state, props) => ({
+  appointment: getSelectedAppt(state, props),
+  isCheckingIn: state.appointmentReducer.isCheckingIn,
+  isCheckingOut: state.appointmentReducer.isCheckingOut,
+  isGridLoading: state.appointmentBookReducer.isLoading,
+});
 
 SalonAppointmentSlide.defaultProps = {
   appointment: null,
@@ -470,4 +510,4 @@ SalonAppointmentSlide.propTypes = {
   }).isRequired,
 };
 
-export default SalonAppointmentSlide;
+export default connect(mapStateToProps)(SalonAppointmentSlide);

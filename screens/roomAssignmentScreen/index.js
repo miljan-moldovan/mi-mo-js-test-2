@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import roomAssignmentActions from '../../actions/roomAssignment';
-import { appointmentCalendarActions } from '../appointmentCalendarScreen/redux/appointmentScreen';
+import { appointmentCalendarActions } from '../../actions/appointmentBook';
 import RoomAssignmentScreen from './RoomAssignmentScreen';
 import { employeeScheduleChunkedSelector } from '../../redux/selectors/newAppt';
 

@@ -20,6 +20,7 @@ function UrlInput(props) {
         onChangeText={props.handleURLChange}
         placeholder="URL"
         placeholderTextColor="rgb(76.15, 135.15, 216.75)"
+        value={props.url}
       />
       <Label
         style={styles.inputLabel}

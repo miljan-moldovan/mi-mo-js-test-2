@@ -1,17 +1,12 @@
 // @flow
 import React from 'react';
-// import { Image, View, Text } from 'react-native';
-// import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import { TabNavigator, TabBarBottom } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import SalesScreen from './../screens/SalesScreen';
+import PropTypes from 'prop-types';
 
 import ScorecardScreen from './../screens/ScorecardScreen';
-import SettingsScreen from './../screens/SettingsScreen';
 import Icon from './../components/UI/Icon';
-// import SideMenu from './../components/SideMenu';
 
 import { isValidAppointment } from '../redux/selectors/newAppt';
 import walkInActions from '../actions/walkIn';
@@ -56,7 +51,13 @@ const RootDrawerNavigator = TabNavigator(
 
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
-        return <Icon name={iconName} size={23} color={tintColor} type={type} fontWeight={fontWeight} />;
+        return (<Icon
+          name={iconName}
+          size={23}
+          color={tintColor}
+          type={type}
+          fontWeight={fontWeight}
+        />);
       },
       tabBarOnPress: ({ previousScene, scene, jumpToIndex }) => {
         if (previousScene.routeName === 'Clients' && previousScene.route !== scene.route) {
@@ -87,21 +88,38 @@ const RootDrawerNavigator = TabNavigator(
   },
 );
 
-class RootNavigator extends React.Component {
-  render() {
-    const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
+function RootNavigator(props) {
+  const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = props.auth;
 
-    const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
-    const fingerprintExpireTime = fingerprintAuthenticationTime + fingerprintTimeout * 1000;
+  const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
+  const fingerprintExpireTime = fingerprintAuthenticationTime + (fingerprintTimeout * 1000);
 
-    // if user is logged in AND fingerprint identification is NOT enabled
-    if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
-      return <RootDrawerNavigator screenProps={{ isNewApptValid: this.props.isNewApptValid, clientsActions: this.props.clientsActions }} />;
-    }
-    // else redirect to login screen so the user can authenticate (user/pass or touchID)
-    return <LoginStackNavigator />;
+  // if user is logged in AND fingerprint identification is NOT enabled
+  if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
+    return (<RootDrawerNavigator screenProps={{
+      isNewApptValid: props.isNewApptValid,
+      clientsActions: props.clientsActions,
+    }}
+    />);
   }
+  // else redirect to login screen so the user can authenticate (user/pass or touchID)
+  return <LoginStackNavigator />;
 }
+
+RootNavigator.propTypes = {
+  isNewApptValid: PropTypes.bool.isRequired,
+  clientsActions: PropTypes.shape({
+    setClients: PropTypes.func.isRequired,
+    setFilteredClients: PropTypes.func.isRequired,
+  }).isRequired,
+  auth: PropTypes.shape({
+    loggedIn: PropTypes.bool.isRequired,
+    useFingerprintId: PropTypes.bool.isRequired,
+    fingerprintAuthenticationTime: PropTypes.number.isRequired,
+    username: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 const mapStateToProps = state => ({
   auth: state.auth,
