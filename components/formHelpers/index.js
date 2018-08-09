@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import TextInputMask from 'react-native-text-input-mask';
 import ValidatableInput from './components/ValidatableInput';
 import ClientInput from './components/ClientInput';
 import InputDate from './components/InputDate';
@@ -334,14 +334,24 @@ LabeledButton.defaultProps = {
 const LabeledTextInput = props => (
   <View style={[styles.inputRow, { justifyContent: 'space-between' }, props.style]}>
     <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
-    <TextInput
-      {...props}
-      style={[styles.inputText, { textAlign: 'right', flex: 1 }]}
-      numberOfLines={1}
-      value={props.value}
-      placeholder={props.placeholder}
-      placeholderTextColor="#727A8F"
-    />
+    {props.mask ?
+      <TextInputMask
+        {...props}
+        style={[styles.inputText, { textAlign: 'right', flex: 1 }]}
+        numberOfLines={1}
+        value={props.value}
+        placeholder={props.placeholder}
+        placeholderTextColor="#727A8F"
+      />
+      :
+      <TextInput
+        {...props}
+        style={[styles.inputText, { textAlign: 'right', flex: 1 }]}
+        numberOfLines={1}
+        value={props.value}
+        placeholder={props.placeholder}
+        placeholderTextColor="#727A8F"
+      />}
   </View>
 );
 

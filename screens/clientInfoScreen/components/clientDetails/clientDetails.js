@@ -335,6 +335,7 @@ export default class ClientDetails extends Component {
     const phoneType = phone.type === 0 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
     const element = phone.value !== null ? (<React.Fragment>
       <ValidatableInput
+        mask="[000]-[000]-[0000]"
         validateOnChange
         validation={this.isValidPhoneRegExp}
         isValid={this.state.isValidPhone}
@@ -684,6 +685,7 @@ export default class ClientDetails extends Component {
                   <InputDivider />
                   <ValidatableInput
                     validateOnChange
+                    mask="[00000]"
                     validation={this.isValidZipCodeRegExp}
                     isValid={this.state.isValidZipCode}
                     onValidated={this.onValidateZipCode}
