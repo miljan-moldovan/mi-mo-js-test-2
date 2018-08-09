@@ -9,8 +9,8 @@ import {
   Linking,
   ActivityIndicator,
   Keyboard,
-  KeyboardAvoidingView,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AnimatedHideView from 'react-native-animated-hide-view';
 import { Input, Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -122,9 +122,9 @@ class LoginScreen extends React.Component {
     Keyboard.dismiss();
   }
 
-  handleUsernameChange = (username: string) => this.setState({ username });
+  handleUsernameChange = (username: string) => this.props.changeUsername(username);
   handlePasswordChange = (password: string) => this.setState({ password });
-  handleURLChange = (url: string) => this.setState({ url });
+  handleURLChange = (url: string) => this.props.changeURL(url);
   handleForgotPasswordPress = () => this.props.navigation.navigate('ForgotPassword');
 
   handleLoginPress = () => {
@@ -141,8 +141,8 @@ class LoginScreen extends React.Component {
     this.setState(
       { waitingLogin: true, error: null },
       () => this.props.login(
-        this.state.url,
-        this.state.username,
+        this.props.auth.url,
+        this.props.auth.username,
         this.state.password,
         (success, err) => {
           if (!success) {
@@ -244,25 +244,38 @@ class LoginScreen extends React.Component {
   )
 
   render() {
-    const { loggedIn } = this.props.auth;
+    const { loggedIn, url, username } = this.props.auth;
     const { showLogo } = this.state;
 
     return (
       <View style={styles.container}>
-        {this.renderFingerprintModal()}
-        <AnimatedHideView
-          visible={showLogo}
-          unmountOnHide={true}
+        <KeyboardAwareScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContentContainer}
         >
-          <Image
-            source={images.logoWithText}
-            style={styles.logo}
-          />
-        </AnimatedHideView>
-        <KeyboardAvoidingView
-          style={[{ flex: 1, height: '100%' }]}
-          behavior="padding"
-        >
+          {this.renderFingerprintModal()}
+          <AnimatedHideView
+            visible={showLogo}
+            unmountOnHide={true}
+          >
+            <Image
+              source={images.logoWithText}
+              style={styles.logo}
+            />
+          </AnimatedHideView>
+          <AnimatedHideView
+            visible={!showLogo && !loggedIn}
+            unmountOnHide={true}
+          >
+            <Text
+              onPress={this.hideKeyboard}
+              style={styles.backButtonLogo}
+            >
+              <FontAwesome style={styles.backButtonLogo}>
+                {Icons.angleLeft}
+              </FontAwesome>
+            </Text>
+          </AnimatedHideView>
           {loggedIn &&
             <Text
               style={styles.bodyText}
@@ -275,24 +288,11 @@ class LoginScreen extends React.Component {
               styles.mainContent,
               styles.mainContentWithLogo]}
           >
-            <AnimatedHideView
-              visible={!showLogo && !loggedIn}
-              unmountOnHide={true}
-            >
-              <Text
-                onPress={this.hideKeyboard}
-                style={styles.backButtonLogo}
-              >
-                <FontAwesome style={styles.backButtonLogo}>
-                  {Icons.angleLeft}
-                </FontAwesome>
-              </Text>
-            </AnimatedHideView>
             {!loggedIn && (
               <UrlInput
                 loggedIn={loggedIn}
                 handleURLChange={this.handleURLChange}
-                url={this.state.url}
+                url={url}
                 showSuccess={this.state.loginPressed &&
                 !this.state.urlError && !this.state.waitingLogin}
                 showFail={this.state.loginPressed &&
@@ -304,7 +304,7 @@ class LoginScreen extends React.Component {
                 handleUsernameChange={this.handleUsernameChange}
                 loggedIn={loggedIn}
                 userNameError={this.state.loginError}
-                username={this.state.username}
+                username={username}
               />
             )}
             {!loggedIn && this.renderPasswordInput()}
@@ -329,22 +329,22 @@ class LoginScreen extends React.Component {
               Forgot your Password?
             </Text>
           </View>
-        </KeyboardAvoidingView>
-        <View style={styles.footer}>
-          <Text
-            style={styles.footerText}
-          >Don&#39;t have an account? Contact our Support at
-          </Text>
-          <Text style={styles.footerText}>
-            <Text style={styles.bodyLink} onPress={this.handlePhonePress}>(855) 466-9332</Text>
-            &nbsp;or&nbsp;
+          <View style={styles.footer}>
             <Text
-              style={styles.bodyLink}
-              onPress={this.handleMailPress}
-            >support@salonultimate.com
+              style={styles.footerText}
+            >Don&#39;t have an account? Contact our Support at
             </Text>
-          </Text>
-        </View>
+            <Text style={styles.footerText}>
+              <Text style={styles.bodyLink} onPress={this.handlePhonePress}>(855) 466-9332</Text>
+              &nbsp;or&nbsp;
+              <Text
+                style={styles.bodyLink}
+                onPress={this.handleMailPress}
+              >support@salonultimate.com
+              </Text>
+            </Text>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
     );
   }
@@ -362,10 +362,14 @@ LoginScreen.propTypes = {
   auth: PropTypes.shape({
     loggedIn: PropTypes.bool.isRequired,
     useFingerprintId: PropTypes.bool,
+    username: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
   }).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
+  changeUsername: PropTypes.func.isRequired,
+  changeURL: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, actions)(LoginScreen);

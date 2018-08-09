@@ -1,3 +1,3 @@
-const apptGridSettingsSelector = state => state.appointmentScreenReducer.apptGridSettings;
+const apptGridSettingsSelector = state => state.appointmentBookReducer.apptGridSettings;
 
 export default apptGridSettingsSelector;

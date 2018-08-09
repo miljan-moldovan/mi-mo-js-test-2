@@ -5,7 +5,7 @@ import uuid from 'uuid/v4';
 import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
-} from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
+} from './appointmentBook';
 import {
   appointmentLength,
   serializeApptToRequestData,

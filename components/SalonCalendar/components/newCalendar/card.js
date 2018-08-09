@@ -335,7 +335,7 @@ class Card extends Component {
     const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
     const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
-    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null
     return (
       <View style={styles.badgesContainer}>
         { users }

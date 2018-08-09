@@ -12,8 +12,8 @@ import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/r
 import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
 import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/components/appointmentFormulas/redux';
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
-import appointmentScreenReducer from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
 
+import appointmentBookReducer from './appointmentBook';
 import checkinReducer from './checkin';
 import serviceReducer from './service';
 import { providersReducer } from '../screens/providersScreen/redux';
@@ -30,8 +30,9 @@ import apptBookTurnAwayReducer from './apptBookTurnAway';
 import blockTimeReducer from './blockTime';
 import blockTimesReasonsReducer from './blockTimesReasons';
 import turnAwayReasonsReducer from './turnAwayReasons';
-
-import { REHYDRATE } from 'redux-persist/constants';
+import clientNotesReducer from './clientNotes';
+import clientFormulasReducer from './clientFormulas';
+import clientInfoReducer from './clientInfo';
 
 export default combineReducers({
   auth,
@@ -50,7 +51,7 @@ export default combineReducers({
   providersReducer,
   productsReducer,
   appointmentReducer,
-  appointmentScreenReducer,
+  appointmentBookReducer,
   apptBookViewOptionsReducer,
   apptBookSetEmployeeOrderReducer,
   turnAway,
@@ -63,4 +64,7 @@ export default combineReducers({
   blockTimeReducer,
   blockTimesReasonsReducer,
   turnAwayReasonsReducer,
+  clientNotesReducer,
+  clientFormulasReducer,
+  clientInfoReducer,
 });

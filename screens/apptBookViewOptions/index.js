@@ -1,12 +1,12 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { appointmentCalendarActions } from '../appointmentCalendarScreen/redux/appointmentScreen';
+import { appointmentCalendarActions } from '../../actions/appointmentBook';
 import apptBookSetEmployeeOrderActions from '../../actions/apptBookSetEmployeeOrder';
 import ApptBookViewOptionScreen from './apptBookViewOptionsScreen';
 
 const mapStateToProps = state => ({
   apptBookViewOptionsState: state.apptBookViewOptionsReducer,
-  apptBookState: state.appointmentScreenReducer,
+  apptBookState: state.appointmentBookReducer,
   employeeOrderState: state.apptBookSetEmployeeOrderReducer,
 });
 

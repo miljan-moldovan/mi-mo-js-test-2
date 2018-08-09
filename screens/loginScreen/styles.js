@@ -4,12 +4,7 @@ export default StyleSheet.create({
   scrollContainer: {
     flex: 1,
   },
-  scrollContentContainer: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%',
-  },
+  scrollContentContainer: {},
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -21,7 +16,7 @@ export default StyleSheet.create({
     marginBottom: '20%',
   },
   mainContentWithLogo: {
-    marginTop: '40%',
+    marginTop: '10%',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -92,7 +87,8 @@ export default StyleSheet.create({
     height: 20,
     width: 20,
     fontSize: 20,
-    marginLeft: '10%',
+    marginLeft: '5%',
+    marginTop: '10%',
     marginBottom: '10%',
   },
   loginButton: {
