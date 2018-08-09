@@ -10,6 +10,7 @@ import {
 import { Button } from 'native-base';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import styles from './styles';
 import UserNameInput from '../../components/login/UserNameInput';
@@ -17,14 +18,13 @@ import UrlInput from '../../components/login/UrlInput';
 import ErrorsView from '../../components/login/ErrorsView';
 
 import { Auth } from '../../utilities/apiWrapper';
+import * as actions from '../../actions/login';
 
 class ForgotPassword extends React.Component {
   static navigationOptions = {
     header: null,
   };
   state = {
-    url: null,
-    username: null,
     usernameError: false,
     resetPressed: false,
     waitingReset: false,
@@ -34,7 +34,7 @@ class ForgotPassword extends React.Component {
   }
 
   handleUsernameChange = (username: string) => {
-    this.setState({ username });
+    this.props.changeUsername(username);
   }
 
   handleResetPasswordPress = async () => {
@@ -42,7 +42,7 @@ class ForgotPassword extends React.Component {
       resetPressed: true,
       waitingReset: true,
     }, async () => {
-      const { username, url } = this.state;
+      const { username, url } = this.props.auth;
       const response = await Auth.resetPassword({ url, username });
       this.setState({
         waitingReset: false,
@@ -54,7 +54,7 @@ class ForgotPassword extends React.Component {
     });
   }
 
-  handleURLChange = (url: string) => this.setState({ url });
+  handleURLChange = (url: string) => this.props.changeURL(url);
   handleBackToLoginButtonPress = () => this.props.navigation.goBack();
 
   renderHeader = () => (
@@ -130,11 +130,10 @@ class ForgotPassword extends React.Component {
     </View>
   );
 
-  render() {
-    const {
-      username,
-      usernameError,
-    } = this.state;
+  render = () => {
+    const { usernameError } = this.state;
+    const { username, url } = this.props.auth;
+    console.log(username, url);
 
     return (
       <View style={styles.container}>
@@ -151,7 +150,7 @@ class ForgotPassword extends React.Component {
               {!this.state.resetSuccess && (<UrlInput
                 loggedIn={false}
                 handleURLChange={this.handleURLChange}
-                url={this.state.url}
+                url={url}
                 showSuccess={this.state.resetPressed &&
                 !this.state.urlError && !this.state.waitingReset}
                 showFail={this.state.resetPressed &&
@@ -179,10 +178,20 @@ class ForgotPassword extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
 ForgotPassword.propTypes = {
   navigation: PropTypes.shape({
     goBack: PropTypes.func.isRequired,
   }).isRequired,
+  auth: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+  }).isRequired,
+  changeUsername: PropTypes.func.isRequired,
+  changeURL: PropTypes.func.isRequired,
 };
 
-export default ForgotPassword;
+export default connect(mapStateToProps, actions)(ForgotPassword);

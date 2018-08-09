@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import apptGridSettingsSelector from './apptGridSettingsSelector';
 
-const availabiltiySelector = state => state.appointmentScreenReducer.availability;
+const availabiltiySelector = state => state.appointmentBookReducer.availability;
 
 const getAvailabilityWithGaps = createSelector(
   [availabiltiySelector, apptGridSettingsSelector],

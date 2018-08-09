@@ -24,7 +24,7 @@ import {
   ValidatableInput,
 } from '../../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import states from '../../../../constants/UsStates';
+import usStates from '../../../../constants/UsStates';
 import gendersEnum from '../../../../constants/Genders';
 import agesEnum from '../../../../constants/Ages';
 import confirmByTypesEnum from '../../../../constants/ClientConfirmByTypes';
@@ -54,19 +54,21 @@ export default class ClientDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      client: {},
+      client: null,
+      loadingClient: true,
       selectedClient: null,
       selectedReferredClient: true,
       requireCard: true,
       hasChanged: false,
-      isValidEmail: true,
-      isValidZipCode: true,
-      isValidPhone: true,
-      isValidName: true,
-      isValidLastName: true,
-      isValidStreet1: true,
-      isValidCity: true,
+      isValidEmail: false,
+      isValidZipCode: false,
+      isValidPhone: false,
+      isValidName: false,
+      isValidLastName: false,
+      isValidStreet1: false,
+      isValidCity: false,
       isValidAge: true,
+      isValidState: true,
       isValidGender: true,
       isValidBirth: true,
       requiredFields: {},
@@ -75,6 +77,12 @@ export default class ClientDetails extends Component {
     this.props.settingsActions.getSettings(this.calculateRequiredFields);
 
     this.handleClientSelection.bind(this);
+
+    this.props.clientInfoActions.getClientReferralTypes((result) => {
+      if (result) {
+        this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+      }
+    });
   }
 
   isValidEmailRegExp = regexs.email;
@@ -83,21 +91,22 @@ export default class ClientDetails extends Component {
   isValidText = regexs.notemptytext;
   isValidAddress= regexs.address;
 
-  componentWillMount() {
-    this.props.clientInfoActions.getClientReferralTypes((result) => {
-      if (result) {
-        this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
-      }
-    });
-  }
+  // componentWillMount() {
+  //   this.props.clientInfoActions.getClientReferralTypes((result) => {
+  //     if (result) {
+  //       this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+  //     }
+  //   });
+  // }
 
   loadClientData = (result) => {
     if (result) {
       const client = this.props.clientInfoState.client;
+      const states = usStates;
       if (client.address) {
         if (typeof client.address === 'string' || client.address instanceof String) {
           const matches = client.address.match(this.isValidAddress);
-
+          client.address = {};
           if (matches && matches.length > 4) {
             const street = matches[1];
             const city = matches[2];
@@ -113,8 +122,18 @@ export default class ClientDetails extends Component {
           }
         } else {
           const state = find(states, { value: client.address.state.toUpperCase() });
+
           client.state = state;
+
+          client.street1 = client.address.street1 ? client.address.street1 : '';
+          client.city = client.address.city ? client.address.city : '';
+          client.zipCode = client.address.zipCode ? client.address.zipCode : '';
         }
+      } else {
+        client.state = null;
+        client.street1 = '';
+        client.city = '';
+        client.zipCode = '';
       }
 
 
@@ -130,6 +149,7 @@ export default class ClientDetails extends Component {
 
       this.setState({
         client,
+        loadingClient: false,
         editionMode: this.props.editionMode,
         pointerEvents: this.props.editionMode ? 'auto' : 'none',
       });
@@ -335,8 +355,7 @@ export default class ClientDetails extends Component {
 
   onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
-    newState.isValidEmail = state.client.email !== undefined ? isValid : true;
-    newState.isValidEmail = this.state.requiredFields.email ? newState.isValidEmail : true;
+    newState.isValidEmail = this.state.requiredFields.email ? isValid : true;
 
     this.checkValidation();
 
@@ -345,8 +364,7 @@ export default class ClientDetails extends Component {
 
   onValidateZipCode = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
-    newState.isValidZipCode = state.client.zipCode !== undefined ? isValid : true;
-    newState.isValidZipCode = this.state.requiredFields.zip ? newState.isValidZipCode : true;
+    newState.isValidZipCode = this.state.requiredFields.zip ? isValid : true;
 
     this.checkValidation();
 
@@ -425,6 +443,15 @@ export default class ClientDetails extends Component {
     return newState;
   });
 
+  onValidateState = (isValid, isFirstValidation) => this.setState((state) => {
+    const newState = state;
+    newState.isValidState = this.state.requiredFields.state ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
   checkValidation = () => {
     this.props.setCanSave(this.state.hasChanged
       && this.state.isValidLastName
@@ -434,6 +461,7 @@ export default class ClientDetails extends Component {
       && this.state.isValidEmail
       && this.state.isValidZipCode
       && this.state.isValidAge
+      && this.state.isValidState
       && this.state.isValidGender
       && this.state.isValidBirth
       && this.state.isValidPhone);
@@ -459,6 +487,7 @@ export default class ClientDetails extends Component {
       required.birth = trackClientAge && (forceChildBirthday || forceAdultBirthday);
       required.gender = requireClientGender;
       required.zip = isLargeForm;
+      required.state = isLargeForm;
 
       this.setState({ requiredFields: required });
     }
@@ -477,7 +506,7 @@ export default class ClientDetails extends Component {
     return (
       <View style={styles.container}>
 
-        {this.props.clientInfoState.isLoading
+        {this.props.clientInfoState.isLoading || this.state.loadingClient
           ? (
             <View style={styles.activityIndicator}>
               <ActivityIndicator />
@@ -644,10 +673,13 @@ export default class ClientDetails extends Component {
                   <InputDivider />
                   <InputPicker
                     label="State"
+                    required={this.state.requiredFields.state}
+                    isValid={this.state.isValidState}
+                    onValidated={this.onValidateState}
                     value={this.state.client.state ? this.state.client.state : null}
                     onChange={(option) => { this.onChangeClientField('state', option); }}
                     defaultOption={this.state.client.state}
-                    options={states}
+                    options={usStates}
                   />
                   <InputDivider />
                   <ValidatableInput

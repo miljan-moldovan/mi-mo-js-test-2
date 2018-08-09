@@ -23,13 +23,13 @@ export default class InputPicker extends React.Component {
   }
 
   state = {
-    options: [{ key: -1, value: 'NULL' }],
-    selectedOption: { key: -1, value: 'NULL' },
+    options: null,
+    selectedOption: null,
   }
 
   componentDidMount() {
     if (this.props.required) {
-      this.validate(this.selectedOption, true);
+      this.validate(this.state.selectedOption, true);
     }
   }
 
