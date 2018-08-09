@@ -4,67 +4,49 @@ import {
   View,
   FlatList,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
+import { get, includes, remove, isNumber } from 'lodash';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import Icon from '../UI/Icon';
-import LoadingOverlay from '../LoadingOverlay';
 import styles from './styles';
 
 class SelectableServiceList extends React.Component {
-  constructor(props) {
-    super(props);
-    const { services = [] } = props;
-    this.state = {
-      isLoading: false,
-      services: this.getServices(services),
-    };
+  onPressItem = (item) => {
+    if (item.isNone) {
+      return item.onPress();
+    }
+    const { onChangeSelected, selected } = this.props;
+    if (this.isSelected(item.id)) {
+      remove(selected, id => id === item.id);
+    } else {
+      selected.push(item.id);
+    }
+    return onChangeSelected(selected);
   }
 
-  getServices = (ids) => {
-    const { services, noneButton } = this.props;
-    const results = [];
-    const check = (service, index) => service.id === ids[index].id;
-    for (let i = 0; i < ids.length; i += 1) {
-      const service = services.find(ser => check(ser, i));
-      if (service) { results.push(service); }
+  get services() {
+    const { services = false, allServices = [], noneButton = false } = this.props;
+    if (!services) {
+      return allServices;
     }
+    const ids = services.map(srv => (isNumber(srv) ? srv : get(srv, 'id', null)));
+    const list = allServices.filter(srv => includes(ids, srv.id));
     if (noneButton) {
-      results.unshift({ id: 'none', name: noneButton });
+      list.unshift(noneButton);
     }
-    return results;
+    return list;
   }
 
-  handlePressRow = (index) => {
-    const { services } = this.state;
-    const newServices = services.slice();
-    if (newServices[index].id === 'none') {
-      return this.handleSave(true);
-    }
-    newServices[index].selected = !newServices[index].selected;
-    return this.setState({ services: newServices });
+  get selectedServices() {
+    return this.props.allServices.filter(srv => this.isSelected(srv.id));
   }
 
-  handleSave = (empty = false) => {
-    const { services } = this.state;
-    const params = this.props.navigation.state.params || {};
-    const onSave = params.onSave || false;
-    if (onSave) {
-      const selectedServices = services.filter(item => item.selected);
-      onSave(empty ? [] : selectedServices);
-      this.props.navigation.goBack();
-    }
-  }
+  isSelected = id => includes(this.props.selected, id)
 
-  selectEmpty = () => {
-    this.setState(({ services }) => ({
-      services: services.map(srv => ({ selected: false, ...srv })),
-    }), this.handleSave);
-  }
-
-  renderItem = ({ item, index }) => (
+  renderItem = ({ item }) => (
     <SalonTouchableOpacity
       style={styles.listItem}
-      onPress={() => this.handlePressRow(index)}
+      onPress={() => this.onPressItem(item)}
     >
       <View style={styles.listItemContainer}>
         <Text style={styles.listItemText}>{item.name}</Text>
@@ -73,7 +55,7 @@ class SelectableServiceList extends React.Component {
         )}
       </View>
       <View style={styles.iconContainer}>
-        {item.selected && (
+        {this.isSelected(item.id) && (
           <Icon
             name="checkCircle"
             color="#1DBF12"
@@ -92,16 +74,12 @@ class SelectableServiceList extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {this.state.isLoading ? (
-          <LoadingOverlay />
-        ) : (
-          <FlatList
-            style={styles.marginTop}
-            data={this.state.services}
-            renderItem={this.renderItem}
-            ItemSeparatorComponent={this.renderSeparator}
-          />
-          )}
+        <FlatList
+          style={styles.marginTop}
+          data={this.services}
+          renderItem={this.renderItem}
+          ItemSeparatorComponent={this.renderSeparator}
+        />
       </View>
     );
   }

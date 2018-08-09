@@ -25,7 +25,7 @@ import {
   appointmentLength,
 } from '../../redux/selectors/newAppt';
 
-import { AppointmentBook } from '../../utilities/apiWrapper';
+import { AppointmentBook, Product } from '../../utilities/apiWrapper';
 import { AppointmentTime } from './SalonNewAppointmentSlide';
 import SalonInputModal from '../SalonInputModal';
 import {
@@ -386,6 +386,24 @@ export class NewApptSlide extends React.Component {
     }
   }
 
+  get shouldShowExtras() {
+    const {
+      addons = [],
+      requiredServices = [],
+      recommendedServices = [],
+    } = this.getService(true);
+    if (addons.length > 0) {
+      return true;
+    }
+    if (recommendedServices.length > 0) {
+      return true;
+    }
+    if (requiredServices.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   setClient = (client) => {
     this.props.newApptActions.setClient(client);
     this.showPanel().checkConflicts();
@@ -393,7 +411,6 @@ export class NewApptSlide extends React.Component {
 
   setService = (service) => {
     this.props.newApptActions.addQuickServiceItem(service);
-    this.showPanel().checkConflicts();
   }
 
   setAddons = (addons) => {
@@ -502,8 +519,9 @@ export class NewApptSlide extends React.Component {
     return 'BOOK NOW';
   }
 
+
   openAddons = () => {
-    if (this.shouldShowExtras()) {
+    if (this.shouldShowExtras) {
       Animated.timing(
         this.state.addonsHeight,
         {
@@ -563,7 +581,7 @@ export class NewApptSlide extends React.Component {
         setTimeout(() => {
           this.props.show();
           this.setState({ isAnimating: false }, () => {
-            if (this.shouldShowExtras()) {
+            if (this.shouldShowExtras) {
               Animated.timing(
                 this.state.addonsHeight,
                 {
@@ -593,7 +611,7 @@ export class NewApptSlide extends React.Component {
             });
           }, 300);
         };
-        if (this.shouldShowExtras()) {
+        if (this.shouldShowExtras) {
           Animated.timing(
             this.state.addonsHeight,
             {
@@ -629,11 +647,6 @@ export class NewApptSlide extends React.Component {
       navigation.goBack();
     },
   })
-
-  shouldShowExtras = () => {
-    const { addons, required, recommended } = this.getService(true);
-    return addons.length > 0 || recommended.length > 0 || required !== null;
-  }
 
   renderActiveTab = () => {
     switch (this.props.activeTab) {
@@ -858,18 +871,16 @@ export class NewApptSlide extends React.Component {
           <InputDivider style={styles.middleSectionDivider} />
           <ServiceInput
             apptBook
-            noLabel
+            label={false}
             showLength
             hasViewedAddons
             hasViewedRequired
             hasViewedRecommended
             selectExtraServices
-            ref={(serviceInput) => { this.serviceInput = serviceInput; }}
+            ref={(ref) => { this.serviceInput = ref; }}
+            selectedClient={client}
             selectedProvider={provider}
             selectedService={service}
-            addons={addons}
-            required={required}
-            recommended={recommended}
             rootStyle={{ height: 39 }}
             selectedStyle={selectedStyle}
             placeholder="Select a Service"
@@ -879,6 +890,7 @@ export class NewApptSlide extends React.Component {
             navigate={navigation.navigate}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
             iconStyle={{ color: '#115ECD' }}
+            afterDone={() => { this.showPanel().checkConflicts(); }}
             onChange={this.setService}
             onChangeAddons={this.setAddons}
             onChangeRecommended={this.setRecommended}
@@ -887,14 +899,14 @@ export class NewApptSlide extends React.Component {
           />
           <InputDivider style={styles.middleSectionDivider} />
           <ProviderInput
-            noLabel
             apptBook
-            filterByService
+            label={false}
             showFirstAvailable={false}
             isRequested={isQuickApptRequested}
             filterList={filterProviders}
             rootStyle={{ height: 39 }}
             selectedProvider={provider}
+            selectedService={service}
             placeholder="Select a Provider"
             placeholderStyle={styles.placeholderText}
             selectedStyle={selectedStyle}
@@ -908,7 +920,7 @@ export class NewApptSlide extends React.Component {
           />
         </View>
         <AddonsContainer
-          visible={this.shouldShowExtras()}
+          visible={this.shouldShowExtras}
           addons={addons}
           required={required}
           recommended={recommended}

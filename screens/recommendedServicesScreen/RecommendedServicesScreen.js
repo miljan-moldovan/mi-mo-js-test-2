@@ -2,14 +2,13 @@ import React from 'react';
 import {
   Text,
   View,
-  FlatList,
   Dimensions,
 } from 'react-native';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import LoadingOverlay from '../../components/LoadingOverlay';
+import SelectableServiceList from '../../components/SelectableServiceList';
+
 import styles from './styles';
-import SelectableServiceList from '../../components/SelectableServiceList/SelectableServiceList';
 
 const PHONE_WIDTH = Dimensions.get('window').width;
 
@@ -52,27 +51,38 @@ export default class RecommendedServicesScreen extends React.Component {
   constructor(props) {
     super(props);
     props.navigation.setParams({ handleSave: this.handleSave });
-    const services = props.navigation.getParam('services', []);
-    this.state = { services };
+    this.state = {
+      selected: [],
+    };
   }
 
-  handleSave = (selected = []) => {
-    const services = this.serviceList.handleSave();
-    debugger //eslint-disable-line
-    // const { services } = this.state;
-    const params = this.props.navigation.state.params || {};
-    const onSave = params.onSave || false;
-    if (onSave) {
-      onSave(selected);
-      this.props.navigation.goBack();
+  onChangeSelected = selected => this.setState({ selected })
+
+  handleSave = (empty = false) => {
+    const onSave = this.props.navigation.getParam('onSave', null);
+    if (empty) {
+      return onSave([]);
     }
+    const selected = this.serviceList.selectedServices;
+
+    onSave(selected);
+    return this.props.navigation.goBack();
   }
+
+  handlePressNone = () => this.handleSave(true)
 
   render() {
+    const {
+      selected,
+    } = this.state;
+    const services = this.props.navigation.getParam('services', []);
     return (
       <SelectableServiceList
-        noneButton="No Recommended"
+        selected={selected}
+        services={services}
+        onChangeSelected={this.onChangeSelected}
         ref={(ref) => { this.serviceList = ref; }}
+        noneButton={{ name: 'No Recommended', onPress: this.handlePressNone }}
       />
     );
   }

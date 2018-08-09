@@ -2,15 +2,10 @@ import React from 'react';
 import {
   Text,
   View,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import Icon from '../../components/UI/Icon';
-import { getApiInstance } from '../../utilities/apiWrapper/api';
-import LoadingOverlay from '../../components/LoadingOverlay';
+import SelectableServiceList from '../../components/SelectableServiceList';
 import styles from './styles';
 
 export default class AddonServicesScreen extends React.Component {
@@ -50,55 +45,26 @@ export default class AddonServicesScreen extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.props.navigation.setParams({ handleSave: this.handleSave });
-    const params = this.props.navigation.state.params || {};
-    const serviceIds = params.services || [];
-
+    props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
-      isLoading: false,
       selected: [],
-      services: this.getServices(serviceIds),
     };
   }
 
-  getServices = (ids) => {
-    const { services } = this.props;
-    const results = [];
-    const check = (service, index) => service.id === ids[index].id;
-    for (let i = 0; i < ids.length; i += 1) {
-      const service = services.find(ser => check(ser, i));
-      if (service) { results.push(service); }
-    }
-    return [{ id: 'none', name: 'No Add-on' }, ...results];
-  }
-
-  handlePressRow = (index) => {
-    const { services } = this.state;
-    const newServices = services.slice();
-    if (newServices[index].id === 'none') {
-      return this.handleSave(true);
-    }
-    newServices[index].selected = !newServices[index].selected;
-    return this.setState({ services: newServices });
-  }
+  onChangeSelected = selected => this.setState({ selected })
 
   handleSave = (empty = false) => {
-    const { services } = this.state;
-    const params = this.props.navigation.state.params || {};
-    const onSave = params.onSave || false;
-    if (onSave) {
-      const selectedServices = services.filter(item => item.selected);
-      onSave( empty ? [] : selectedServices);
-      this.props.navigation.goBack();
+    const onSave = this.props.navigation.getParam('onSave', null);
+    if (empty) {
+      return onSave([]);
     }
+    const selected = this.serviceList.selectedServices;
+
+    onSave(selected);
+    return this.props.navigation.goBack();
   }
 
-  selectEmpty = () => {
-    this.setState(({ services }) => ({
-      services: services.map(srv => ({ selected: false, ...srv })),
-    }), this.handleSave);
-  }
+  handlePressNone = () => this.handleSave(true)
 
   renderItem = ({ item, index }) => (
     <SalonTouchableOpacity
@@ -129,22 +95,18 @@ export default class AddonServicesScreen extends React.Component {
   )
 
   render() {
+    const {
+      selected,
+    } = this.state;
+    const services = this.props.navigation.getParam('services', []);
     return (
-      <View style={styles.container}>
-        {
-          this.state.isLoading ?
-            (
-              <LoadingOverlay />
-            ) : (
-              <FlatList
-                style={styles.marginTop}
-                data={this.state.services}
-                renderItem={this.renderItem}
-                ItemSeparatorComponent={this.renderSeparator}
-              />
-            )
-        }
-      </View>
+      <SelectableServiceList
+        selected={selected}
+        services={services}
+        onChangeSelected={this.onChangeSelected}
+        ref={(ref) => { this.serviceList = ref; }}
+        noneButton={{ name: 'No Add-on', onPress: this.handlePressNone }}
+      />
     );
   }
 }

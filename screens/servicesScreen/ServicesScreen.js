@@ -8,9 +8,8 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get } from 'lodash';
+import { get, isFunction } from 'lodash';
 
-import { Services } from '../../utilities/apiWrapper';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ServiceList from './components/serviceList';
 import CategoryServicesList from './components/categoryServicesList';
@@ -220,19 +219,16 @@ class ServicesScreen extends React.Component {
     const params = this.props.navigation.state.params || {};
     const clientId = params.clientId || false;
     const employeeId = params.employeeId || false;
-    const filterByProvider = params.filterByProvider || false;
 
-    const opts = {
-      query: {},
-    };
+    const opts = {};
     if (clientId) {
-      opts.query.clientId = clientId;
+      opts.clientId = clientId;
     }
     if (employeeId) {
-      opts.query.employeeId = employeeId;
+      opts.employeeId = employeeId;
     }
 
-    this.props.servicesActions.getServices(opts, filterByProvider);
+    this.props.servicesActions.getServices(opts);
   }
 
   setHeaderData(props, ignoreNav = false) {
@@ -254,61 +250,25 @@ class ServicesScreen extends React.Component {
   }
 
   handleOnChangeService = (service) => {
-    // const params = this.props.navigation.state.params || {};
-    // const {
-    //   onChangeService = false,
-    //   dismissOnSelect = false,
-    //   selectExtraServices = false,
-    // } = params;
-
-    // if (selectExtraServices && !this.shouldSelectExtras()) {
-    //   if (onChangeService) {
-    //     onChangeService(service);
-    //   }
-    //   if (dismissOnSelect) {
-    //     this.props.navigation.goBack();
-    //   }
-    // }
-    this.props.servicesActions.setSelectedService(service);
-    this.setState({
-      isLoading: true,
-      selectedService: service,
-    }, () => {
-      this.selectRequiredService()
-        .selectRecommendedServices()
-        .selectAddonServices()
-        .shouldPerformOnChange();
-    });
-  }
-
-  shouldPerformOnChange = () => {
-    const params = this.props.navigation.state.params || {};
     const {
-      onChangeService = false,
-      dismissOnSelect = false,
-      selectExtraServices = false,
-    } = params;
-    const {
-      selectedAddons,
-      selectedRequired,
-      selectedRecommendeds,
-    } = this.state;
-    const { selectedService } = this.props.servicesState;
-
-    if (onChangeService && !this.shouldSelectExtras()) {
-      onChangeService(selectExtraServices ? {
-        service: selectedService,
-        addons: selectedAddons,
-        recommended: selectedRecommendeds,
-        required: selectedRequired,
-      } : selectedService);
-
-      if (dismissOnSelect) {
-        this.props.navigation.goBack();
+      navigation,
+      servicesActions: { setSelectedService },
+    } = this.props;
+    const onChangeService = navigation.getParam('onChangeService', false);
+    const dismissOnSelect = navigation.getParam('dismissOnSelect', false);
+    this.setState(() => {
+      if (isFunction(onChangeService)) {
+        onChangeService(service);
+        if (dismissOnSelect) {
+          navigation.goBack();
+        }
       }
-    }
-
-    return this;
+      setSelectedService(service);
+      return {
+        isLoading: true,
+        selectedService: service,
+      };
+    });
   }
 
   getServicesById = (ids) => {
@@ -320,88 +280,6 @@ class ServicesScreen extends React.Component {
       if (service) { results.push(service); }
     }
     return results;
-  }
-
-  shouldSelectExtras = () => {
-    const { selectedService } = this.props.servicesState;
-    const {
-      addons = [],
-      requiredServices = [],
-      recommendedServices = [],
-    } = selectedService || {};
-    const {
-      hasViewedAddons,
-      hasViewedRequired,
-      hasViewedRecommended,
-    } = this.state;
-
-    if (!hasViewedAddons && addons.length > 0) {
-      return true;// this.selectAddonServices().shouldSelectExtras();
-    }
-    if (!hasViewedRecommended && recommendedServices.length > 0) {
-      return true;// this.selectRecommendedServices().shouldSelectExtras();
-    }
-    if (!hasViewedRequired && requiredServices.length > 0) {
-      return true;// this.selectRequiredService().shouldSelectExtras();
-    }
-
-    return false;
-  }
-
-  selectRequiredService = () => {
-    const { selectedService } = this.props.servicesState;
-    if (selectedService && selectedService.requiredServices.length > 0) {
-      const saveSelection = selectedRequired => this.setState({
-        selectedRequired,
-        hasViewedRequired: true,
-      }, this.shouldPerformOnChange);
-
-      if (selectedService.requiredServices.length === 1) {
-        const [fullServiceObject] = this.getServicesById(selectedService.requiredServices);
-        saveSelection(fullServiceObject);
-      } else {
-        this.props.navigation.navigate('RequiredServices', {
-          serviceTitle: selectedService.name,
-          services: selectedService.requiredServices,
-          showCancelButton: this.state.hasViewedRequired,
-          onSave: service => saveSelection(service),
-        });
-      }
-    }
-
-    return this;
-  }
-
-  selectAddonServices = () => {
-    const { selectedService } = this.props.servicesState;
-    if (selectedService && selectedService.addons.length > 0) {
-      this.props.navigation.navigate('AddonServices', {
-        serviceTitle: selectedService.name,
-        services: selectedService.addons,
-        showCancelButton: this.state.hasViewedAddons,
-        onSave: selectedAddons => this.setState({
-          selectedAddons,
-          hasViewedAddons: true,
-        }, this.shouldPerformOnChange),
-      });
-    }
-    return this;
-  }
-
-  selectRecommendedServices = () => {
-    const { selectedService } = this.props.servicesState;
-    if (selectedService && selectedService.recommendedServices.length > 0) {
-      this.props.navigation.navigate('RecommendedServices', {
-        serviceTitle: selectedService.name,
-        services: selectedService.recommendedServices,
-        showCancelButton: this.state.hasViewedRecommended,
-        onSave: selectedRecommendeds => this.setState({
-          selectedRecommendeds,
-          hasViewedRecommended: true,
-        }, this.shouldPerformOnChange),
-      });
-    }
-    return this;
   }
 
   filterServices = (searchText) => {
@@ -475,9 +353,9 @@ class ServicesScreen extends React.Component {
         <ActivityIndicator />
       </View>
     ) : (
-      <View style={styles.container}>
-        <View style={styles.servicesList}>
-          {(!this.props.servicesState.showCategoryServices
+        <View style={styles.container}>
+          <View style={styles.servicesList}>
+            {(!this.props.servicesState.showCategoryServices
               && !this.props.salonSearchHeaderState.showFilter
               && this.props.servicesState.filtered.length > 0) &&
               <ServiceCategoryList
@@ -487,7 +365,7 @@ class ServicesScreen extends React.Component {
               />
             }
 
-          {(!this.props.servicesState.showCategoryServices
+            {(!this.props.servicesState.showCategoryServices
               && this.props.salonSearchHeaderState.showFilter
               && this.props.servicesState.filtered.length > 0) &&
               <ServiceList
@@ -500,7 +378,7 @@ class ServicesScreen extends React.Component {
               />
             }
 
-          {(this.props.servicesState.showCategoryServices
+            {(this.props.servicesState.showCategoryServices
               && this.props.servicesState.filtered.length > 0) &&
               <CategoryServicesList
                 {...this.props}
@@ -509,9 +387,9 @@ class ServicesScreen extends React.Component {
                 categoryServices={this.props.servicesState.categoryServices}
               />
             }
+          </View>
         </View>
-      </View>
-    );
+      );
   }
 }
 

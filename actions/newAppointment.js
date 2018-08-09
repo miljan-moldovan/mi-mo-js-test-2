@@ -100,19 +100,19 @@ const isBookingQuickAppt = isBookingQuickAppt => ({
   data: { isBookingQuickAppt },
 });
 
-const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, getState) => {
+const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) => {
   const {
     client,
     guests,
     startTime,
     bookedByEmployee,
   } = getState().newAppointmentReducer;
-  const {
-    service,
-    addons = [],
-    recommended = [],
-    required = null,
-  } = selectedServices;
+  // const {
+  //   service,
+  //   addons = [],
+  //   recommended = [],
+  //   required = null,
+  // } = selectedServices;
 
   const length = appointmentLength(getState());
   const serviceLength = moment.duration(service.maxDuration);
@@ -137,21 +137,21 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
     type: ADD_QUICK_SERVICE_ITEM,
     data: { serviceItem },
   });
-  dispatch(addServiceItemExtras(
-    serviceItem.itemId, // parentId
-    'addon', // extraService type
-    addons,
-  ));
-  dispatch(addServiceItemExtras(
-    serviceItem.itemId, // parentId
-    'recommended', // extraService type
-    recommended,
-  ));
-  dispatch(addServiceItemExtras(
-    serviceItem.itemId, // parentId
-    'required', // extraService type
-    required,
-  ));
+  // dispatch(addServiceItemExtras(
+  //   serviceItem.itemId, // parentId
+  //   'addon', // extraService type
+  //   addons,
+  // ));
+  // dispatch(addServiceItemExtras(
+  //   serviceItem.itemId, // parentId
+  //   'recommended', // extraService type
+  //   recommended,
+  // ));
+  // dispatch(addServiceItemExtras(
+  //   serviceItem.itemId, // parentId
+  //   'required', // extraService type
+  //   required,
+  // ));
 };
 
 // const addServiceItem = (service, guestId = false) => (dispatch, getState) => {
@@ -211,7 +211,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
   const { guestId } = parentService;
   const serializeServiceItem = (service) => {
     if (!service) {
-      return;
+      return null;
     }
     const length = appointmentLength(getState());
     const serviceLength = moment.duration(service.maxDuration);
@@ -241,7 +241,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
 
   const newServiceItems = reject(
     serviceItems,
-    item => item.type === type && item.parentId === parentId,
+    item => (get(item, 'type', null) === type && item.parentId === parentId),
   );
 
   if (isArray(services)) {
@@ -363,6 +363,7 @@ const getConflicts = callback => (dispatch, getState) => {
     const isFirstAvailable = get(serviceItem.service.employee, 'id', 0) === 0;
     conflictData.items.push({
       isFirstAvailable,
+      appointmentId: get(serviceItem.service, 'id', null),
       clientId: serviceItem.guestId ? client.id : get(serviceItem.service.client, 'id', client.id),
       serviceId: serviceItem.service.service.id,
       employeeId: isFirstAvailable ? null : get(serviceItem.service.employee, 'id', null),

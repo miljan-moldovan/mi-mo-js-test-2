@@ -16,7 +16,7 @@ import appointmentScreenReducer from '../screens/appointmentCalendarScreen/redux
 
 import checkinReducer from './checkin';
 import serviceReducer from './service';
-import { providersReducer } from '../screens/providersScreen/redux';
+import providersReducer from './providers';
 import productsReducer from './products';
 import appointmentReducer from './appointment';
 import newAppointmentReducer from './newAppointment';
