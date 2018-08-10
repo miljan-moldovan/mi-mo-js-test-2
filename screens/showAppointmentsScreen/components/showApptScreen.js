@@ -1,131 +1,110 @@
 import React from 'react';
-import { View, SectionList, Text } from 'react-native';
+import { View, SectionList, Text, ActivityIndicator } from 'react-native';
 
 import Card from './card';
 import styles from './styles';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import Icon from '../../../components/UI/Icon';
 
-const sections = [
-  {
-    title: '2018-08-08',
-    data: [
-      {
-        date: '2018-08-08T00:00:00',
-        start: '13:45:00',
-        end: '14:30:00',
-        storeId: 1,
-        storeName: 'Zona Norwell',
-        employeeId: 491,
-        employeeName: 'Amanda E Hamaty',
-        serviceId: 93,
-        serviceDescription: 'Bridal Makeup',
-        clientId: 24,
-        clientName: 'Beth Allard',
-        requested: true,
-        id: 774144,
-        updateStamp: 1533748172084314,
-        isDeleted: false,
-      },
-      {
-        date: '2018-08-08T00:00:00',
-        start: '18:30:00',
-        end: '19:15:00',
-        storeId: 1,
-        storeName: 'Zona Norwell',
-        employeeId: 1791,
-        employeeName: 'David Ginebra',
-        serviceId: 93,
-        serviceDescription: 'Bridal Makeup',
-        clientId: 24,
-        clientName: 'Beth Allard',
-        requested: false,
-        id: 774149,
-        updateStamp: 1533748138816091,
-        isDeleted: false,
-      },
-    ],
-  },
-  {
-    title: '2018-08-18',
-    data: [
-      {
-        date: '2018-08-18T00:00:00',
-        start: '08:00:00',
-        end: '09:45:00',
-        storeId: 1,
-        storeName: 'Zona Norwell',
-        employeeId: 0,
-        employeeName: '',
-        serviceId: 30,
-        serviceDescription: '1 Formula Foil',
-        clientId: 24,
-        clientName: 'Beth Allard',
-        requested: false,
-        id: 773998,
-        updateStamp: 1533047424592687,
-        isDeleted: false,
-      },
-    ],
-  },
-  {
-    title: '2018-08-20',
-    data: [
-      {
-        date: '2018-08-20T00:00:00',
-        start: '09:00:00',
-        end: '09:45:00',
-        storeId: 1,
-        storeName: 'Zona Norwell',
-        employeeId: 1791,
-        employeeName: 'David Ginebra',
-        serviceId: 17,
-        serviceDescription: 'Color Adjustment',
-        clientId: 24,
-        clientName: 'Beth Allard',
-        requested: true,
-        id: 774002,
-        updateStamp: 1533048480370272,
-        isDeleted: false,
-      },
-      {
-        date: '2018-08-20T00:00:00',
-        start: '09:00:00',
-        end: '09:45:00',
-        storeId: 1,
-        storeName: 'Zona Norwell',
-        employeeId: 2,
-        employeeName: 'Beth Beaulieu',
-        serviceId: 17,
-        serviceDescription: 'Color Adjustment',
-        clientId: 24,
-        clientName: 'Beth Allard',
-        requested: true,
-        id: 774003,
-        updateStamp: 1533048520620377,
-        isDeleted: false,
-      },
-    ],
-  },
-];
+const query = {
+  SortOrder: 1,
+  SortField: 'Start,Date',
+};
+
 class ShowApptScreen extends React.Component {
-  componentWillMount() {
-    console.log("BACON");
+  static navigationOptions = ({ navigation }) => {
+    const client = navigation.state.params && navigation.state.params.client ?
+      navigation.state.params.client : null;
+    const title = client ? `${client.name} ${client.lastName}` : '';
+    return {
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>{title}</Text>
+          <Text style={styles.subTitleText}>Appointment List</Text>
+        </View>),
+      headerLeft: (
+        <View style={styles.leftBtnContainer}>
+          <SalonTouchableOpacity
+            onPress={navigation.goBack}
+            style={styles.leftButton}
+          >
+            <Icon name="chevronLeft" style={styles.goBackIcon} type="solid" />
+          </SalonTouchableOpacity>
+        </View>),
+      headerRight: (
+        <View style={styles.rightBtnContainer}>
+          <SalonTouchableOpacity
+            onPress={navigation.goBack}
+            style={styles.leftButton}
+          >
+            <Icon name="chevronLeft" style={styles.goBackIcon} type="solid" />
+          </SalonTouchableOpacity>
+          <SalonTouchableOpacity
+            onPress={navigation.goBack}
+            style={styles.leftButton}
+          >
+            <Icon name="chevronLeft" style={styles.goBackIcon} type="solid" />
+          </SalonTouchableOpacity>
+        </View>),
+    };
+  };
+
+  componentDidMount() {
+    const { navigation: { state: { params: { client, date } } },
+      clientApptActions } = this.props;
+    clientApptActions.getClientAppt({
+      clientId: client.id,
+      fromDate: date,
+      query,
+    });
   }
 
-  keyExtractor = section => section.title;
+  fetchMore = () => {
+    const { navigation: { state: { params: { client, date } } },
+      clientApptActions, appointments, total, showing } = this.props;
+    if (total > showing) {
+      const newQuery = {
+        ...query,
+        skip: showing,
+      };
+      console.log('BACONFLAG')
+      clientApptActions.getMoreClientAppt({
+        clientId: client.id,
+        fromDate: date,
+        query: newQuery,
+      });
+    }
+  }
 
-  renderItem = ({ item }) => <Card item={item} />
+  //keyExtractor = (section, index) => section.title + index;
 
-  renderSectionHeader = ({ section: { title }}) => (
-    <Text style={styles.sectionText}>{title}</Text>
-  )
+  renderItem = ({ item }) => <Card key={item.id} item={item} />
+
+  renderSectionHeader = ({ section: { title } }) => {
+    const isToday = title.startsWith('Today');
+    return (
+      <Text key={title} style={[styles.sectionText, isToday && styles.activeSection]}>
+        {title}
+      </Text>
+    );
+  }
+
+  renderMoreLoading = () => this.props.isLoadingMore && (
+    <View style={{ flex: 1 }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
 
   render() {
+    const { appointments, isLoading, isLoadingMore, total, showing } = this.props;
     return (
       <SectionList
+        stickySectionHeadersEnabled={false}
         renderItem={this.renderItem}
         renderSectionHeader={this.renderSectionHeader}
-        keyExtractor={this.keyExtractor}
-        sections={sections}
+        sections={appointments}
+        onEndReached={this.fetchMore}
+        renderFooter={this.renderMoreLoading}
       />
     );
   }

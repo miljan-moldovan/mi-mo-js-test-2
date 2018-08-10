@@ -33,6 +33,7 @@ import turnAwayReasonsReducer from './turnAwayReasons';
 import clientNotesReducer from './clientNotes';
 import clientFormulasReducer from './clientFormulas';
 import clientInfoReducer from './clientInfo';
+import clientAppointmentsReducer from './clientAppointments';
 
 export default combineReducers({
   auth,
@@ -67,4 +68,5 @@ export default combineReducers({
   clientNotesReducer,
   clientFormulasReducer,
   clientInfoReducer,
+  clientAppointmentsReducer,
 });

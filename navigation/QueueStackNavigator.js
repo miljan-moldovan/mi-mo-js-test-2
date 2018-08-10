@@ -45,22 +45,15 @@ import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 import SettingsScreen from './../screens/SettingsScreen';
-import ShowApptScreen from '../screens/showAppointmentsScreen/components/showApptScreen';
 
 const MainNavigator = StackNavigator(
   {
     Main: {
-      screen: ShowApptScreen,
+      screen: QueueScreen,
       navigationOptions: {
         headerTitle: 'Queue',
       },
     },
-    // Main: {
-    //   screen: QueueScreen,
-    //   navigationOptions: {
-    //     headerTitle: 'Queue',
-    //   },
-    // },
     SalonCalendar: {
       screen: AppointmentCalendarScreen,
     },

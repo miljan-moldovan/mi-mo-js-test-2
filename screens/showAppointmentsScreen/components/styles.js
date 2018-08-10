@@ -90,6 +90,39 @@ const styles = StyleSheet.create({
     color: '#115ECD',
     fontSize: 12,
   },
+  titleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  titleText: {
+    textAlign: 'center',
+    fontFamily: 'Roboto',
+    color: '#FFFFFF',
+    fontWeight: '500',
+    fontSize: 17,
+    lineHeight: 22,
+  },
+  subTitleText: {
+    textAlign: 'center',
+    fontFamily: 'Roboto',
+    color: '#FFFFFF',
+    fontSize: 10,
+    lineHeight: 12,
+  },
+  goBackIcon: {
+    fontSize: 15,
+    color: '#fff',
+    paddingRight: 30,
+  },
+  leftBtnContainer: {
+    justifyContent: 'center',
+    flex: 1,
+  },
+  rightBtnContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
 });
 
 export default styles;

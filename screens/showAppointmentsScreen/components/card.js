@@ -21,7 +21,6 @@ class Card extends React.PureComponent {
     const borderColor = colors[4].dark;
     const startMoment = moment(start, 'HH:mm');
     const endMoment = moment(end, 'HH:mm');
-    console.log({provider}, 'bacon')
     return (
       <View style={styles.card}>
         <View style={styles.timeContainer}>

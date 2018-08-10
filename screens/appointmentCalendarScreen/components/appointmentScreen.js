@@ -337,6 +337,14 @@ export default class AppointmentScreen extends Component {
     );
   }
 
+  goToShowAppt = (client) => {
+    const { startDate } = this.props.appointmentScreenState
+    this.setState(
+      { visibleAppointment: false },
+      () => { this.props.navigation.navigate('ShowApptScreen', { client, date: startDate.format('YYYY-MM-DD') }); },
+    );
+  }
+
   handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     if (this.state.screenHeight === 0) {
@@ -518,6 +526,7 @@ export default class AppointmentScreen extends Component {
           onHide={this.hideApptSlide}
           handleModify={this.handleModify}
           goToCancelAppt={this.goToCancelAppt}
+          goToShowAppt={this.goToShowAppt}
           handleCheckin={appointmentActions.postAppointmentCheckin}
           handleCheckout={appointmentActions.postAppointmentCheckout}
           updateAppointments={this.props.appointmentCalendarActions.setGridView}

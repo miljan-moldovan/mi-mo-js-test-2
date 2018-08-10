@@ -8,10 +8,12 @@ import getFormulas from './getFormulas';
 import getClient from './getClient';
 import putClient from './putClient';
 import deleteClient from './deleteClient';
+import getClientAppointmetns from './getClientAppointments';
 
 export {
   getClientFormulas,
   getClients,
+  getClientAppointmetns,
   getFormulasAndNotes,
   getMergeableClients,
   postMergeClients,
