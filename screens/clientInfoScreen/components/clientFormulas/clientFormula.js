@@ -2,10 +2,9 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import {
   InputDate,
   InputText,
@@ -17,36 +16,20 @@ import {
   ProviderInput,
 } from '../../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+import styles from './stylesClientFormula';
+import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 
 const formulaTypes = [
-  { key: 0, value: 'Color' },
-  { key: 1, value: 'Perm' },
-  { key: 2, value: 'Skin' },
-  { key: 3, value: 'Nail' },
-  { key: 4, value: 'Massage' },
-  { key: 5, value: 'Hair' },
-  { key: -1, value: 'NULL' },
+  { key: formulaTypesEnum.Color, value: 'Color' },
+  { key: formulaTypesEnum.Perm, value: 'Perm' },
+  { key: formulaTypesEnum.Skin, value: 'Skin' },
+  { key: formulaTypesEnum.Nail, value: 'Nail' },
+  { key: formulaTypesEnum.Massage, value: 'Massage' },
+  { key: formulaTypesEnum.Hair, value: 'Hair' },
+  { key: formulaTypesEnum.NULL, value: 'NULL' },
 ];
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  navButton: {
-    color: 'white',
-    fontSize: 20,
-    marginLeft: 10,
-  },
-});
-
-const NavButton = ({ icon, onPress }) => (
-  <SalonTouchableOpacity onPress={onPress}>
-    <FontAwesome style={styles.navButton}>{icon}</FontAwesome>
-  </SalonTouchableOpacity>
-);
-
-export default class ClientFormula extends React.Component {
+class ClientFormula extends React.Component {
   static navigationOptions = rootProps => ({
     headerTitle: (
       <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -74,6 +57,7 @@ export default class ClientFormula extends React.Component {
         date: '',
         type: null,
         provider: {},
+        enteredBy: {},
         text: '',
       },
     };
@@ -107,108 +91,139 @@ export default class ClientFormula extends React.Component {
     handlePressProvider = () => {
       const { navigate } = this.props.navigation;
 
-      this.shouldSave = true;
-
       navigate('Providers', {
-        actionType: 'new',
+        actionType: 'update',
+        dismissOnSelect: true,
         ...this.props,
       });
     }
 
+    onChangeEnteredBy = (enteredBy) => {
+      const { formula } = this.state;
+      formula.enteredBy = enteredBy;
+      this.setState({ formula });
+    }
 
     onChangeProvider = (provider) => {
-      const formula = this.state.formula;
+      const { formula } = this.state;
       formula.provider = provider;
       this.setState({ formula });
     }
 
     render() {
       return (
-        <View style={styles.container}>
-          <InputGroup style={{ flex: 1, flexDirection: 'column', marginTop: 16 }}>
-            <InputButton
-              style={{ flex: 1 }}
-              onPress={() => {
-              this.props.navigation.navigate('Clients', {
-                actionType: 'update',
-                dismissOnSelect: true,
-                onChangeClient: this.handleClientSelection,
-              });
-            }}
-              label="Entered by"
-              value="--"
-            />
-            <InputDivider />
+        <Modal
+          isVisible={this.state.isVisible}
+          style={styles.modal}
+        >
+          <View style={styles.container}>
+            <InputGroup style={{ flex: 1, flexDirection: 'column', marginTop: 16 }}>
 
-            <InputPicker
-              label="Type"
-              value={this.state.formula ? this.state.formula.type : null}
-              onChange={(option) => { this.onChangeFormulaField('type', option); }}
-              defaultOption={formulaTypes[0]}
-              options={formulaTypes}
-            />
+              <ProviderInput
+                apptBook
+                noPlaceholder
+                filterByService
+                style={styles.innerRow}
+                selectedProvider={this.state.formula.enteredBy}
+                labelText="Entered by"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+                onChange={(provider) => { this.onChangeEnteredBy(provider); }}
+                onPress={this.handlePressProvider}
+              />
 
-            <InputDivider />
-            <InputText
-              placeholder="Write formula"
-              onChangeText={(txtNote) => {
+              <InputDivider />
+
+              <InputPicker
+                label="Type"
+                value={this.state.formula ? this.state.formula.type : null}
+                onChange={(option) => { this.onChangeFormulaField('type', option); }}
+                defaultOption={formulaTypes[0]}
+                options={formulaTypes}
+              />
+
+              <InputDivider />
+              <InputText
+                placeholder="Write formula"
+                onChangeText={(txtNote) => {
                       const { formula } = this.state;
                       formula.text = txtNote;
                       this.setState({ formula });
                   }}
-              value={this.state.formula.text}
-            />
-          </InputGroup>
-          <SectionDivider />
-          <InputGroup style={{ flex: 1, flexDirection: 'column' }}>
-            <InputButton
-              style={{ flex: 1 }}
-              onPress={() => {}}
-              label="Associated appt."
-            />
-            <InputDivider />
-            <InputDate
-              placeholder="Date"
-              noIcon={this.state.formula.date == null}
-              onPress={(selectedDate) => {
+                value={this.state.formula.text}
+              />
+            </InputGroup>
+            <SectionDivider />
+            <InputGroup style={{ flex: 1, flexDirection: 'column' }}>
+              <InputButton
+                style={{ flex: 1 }}
+                onPress={() => {}}
+                label="Associated appt."
+              />
+              <InputDivider />
+              <InputDate
+                placeholder="Date"
+                noIcon={this.state.formula.date == null}
+                onPress={(selectedDate) => {
                 const { formula } = this.state;
                 formula.date = selectedDate;
                 this.setState({ formula });
               }}
-              valueStyle={this.state.formula.date == null ? {
+                valueStyle={this.state.formula.date == null ? {
                   fontSize: 14,
                   lineHeight: 22,
                   color: '#727A8F',
                   fontFamily: 'Roboto-Regular',
                 } : {}}
-              selectedDate={this.state.formula.date == null ? 'Optional' : moment(this.state.formula.date).format('DD MMMM YYYY')}
-            />
-            <InputDivider />
-            <ProviderInput
-              apptBook
-              noPlaceholder
-              filterByService
-              style={styles.innerRow}
-              selectedProvider={this.state.formula.provider}
-              labelText="Provider"
-              iconStyle={styles.carretIcon}
-              avatarSize={20}
-              navigate={this.props.navigation.navigate}
-              headerProps={{ title: 'Providers', ...this.cancelButton() }}
-              onChange={(provider) => { this.onChangeProvider(provider); }}
-              onPress={this.handlePressProvider}
-            />
-          </InputGroup>
-          <SectionDivider />
-          <InputGroup style={{ flex: 1, height: 44, flexDirection: 'column' }}>
-            <InputButton
-              style={{ flex: 1 }}
-              onPress={() => {}}
-              label="Copy formula to"
-            />
-          </InputGroup>
-          <SectionDivider />
-        </View>
+                selectedDate={this.state.formula.date == null ? 'Optional' : moment(this.state.formula.date).format('DD MMMM YYYY')}
+              />
+              <InputDivider />
+              <ProviderInput
+                apptBook
+                noPlaceholder
+                filterByService
+                style={styles.innerRow}
+                selectedProvider={this.state.formula.provider}
+                labelText="Provider"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+                onChange={(provider) => { this.onChangeProvider(provider); }}
+                onPress={this.handlePressProvider}
+              />
+            </InputGroup>
+            <SectionDivider />
+            <InputGroup style={{ flex: 1, height: 44, flexDirection: 'column' }}>
+              <InputButton
+                style={{ flex: 1 }}
+                onPress={() => {}}
+                label="Copy formula to"
+              />
+            </InputGroup>
+            <SectionDivider />
+          </View>
+        </Modal>
       );
     }
 }
+
+
+ClientFormula.defaultProps = {
+  // editionMode: true,
+};
+
+ClientFormula.propTypes = {
+  clientFormulasActions: PropTypes.shape({
+    getClientFormulas: PropTypes.func.isRequired,
+    setFilteredFormulas: PropTypes.func.isRequired,
+    setFormulas: PropTypes.func.isRequired,
+  }).isRequired,
+  clientFormulasState: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
+
+export default ClientFormula;

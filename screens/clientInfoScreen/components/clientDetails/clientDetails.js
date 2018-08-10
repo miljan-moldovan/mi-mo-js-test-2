@@ -5,6 +5,7 @@ import {
   Text,
   Alert,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 import { find, reject } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -50,7 +51,7 @@ const confirmByTypes = [
   { key: confirmByTypesEnum.None, value: 'None' },
 ];
 
-export default class ClientDetails extends Component {
+class ClientDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,77 +84,6 @@ export default class ClientDetails extends Component {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       }
     });
-  }
-
-  isValidEmailRegExp = regexs.email;
-  isValidZipCodeRegExp = regexs.zipcode;
-  isValidPhoneRegExp = regexs.phone;
-  isValidText = regexs.notemptytext;
-  isValidAddress= regexs.address;
-
-  // componentWillMount() {
-  //   this.props.clientInfoActions.getClientReferralTypes((result) => {
-  //     if (result) {
-  //       this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
-  //     }
-  //   });
-  // }
-
-  loadClientData = (result) => {
-    if (result) {
-      const client = this.props.clientInfoState.client;
-      const states = usStates;
-      if (client.address) {
-        if (typeof client.address === 'string' || client.address instanceof String) {
-          const matches = client.address.match(this.isValidAddress);
-          client.address = {};
-          if (matches && matches.length > 4) {
-            const street = matches[1];
-            const city = matches[2];
-
-            const zipCode = matches[4];
-
-            client.street1 = street.trim();
-            client.city = city.trim();
-            const state = find(states, { value: matches[3].trim().toUpperCase() });
-            client.state = state;
-
-            client.zipCode = zipCode.trim();
-          }
-        } else {
-          const state = find(states, { value: client.address.state.toUpperCase() });
-
-          client.state = state;
-
-          client.street1 = client.address.street1 ? client.address.street1 : '';
-          client.city = client.address.city ? client.address.city : '';
-          client.zipCode = client.address.zipCode ? client.address.zipCode : '';
-        }
-      } else {
-        client.state = null;
-        client.street1 = '';
-        client.city = '';
-        client.zipCode = '';
-      }
-
-
-      this.props.setCanSave(false);
-      this.props.setHandleDone(this.handleDone);
-
-      const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
-      client.clientReferralType = clientReferralType;
-
-      if (client.clientReferralType) {
-        this.selectReferredOption(false);
-      }
-
-      this.setState({
-        client,
-        loadingClient: false,
-        editionMode: this.props.editionMode,
-        pointerEvents: this.props.editionMode ? 'auto' : 'none',
-      });
-    }
   }
 
   onChangeClientField = (field, value, type) => {
@@ -213,15 +143,226 @@ export default class ClientDetails extends Component {
       case 'email':
         newClient.email = value;
         break;
-      case 'phone':
+      case 'phone': {
         const phone = find(newClient.phones, { type });
         phone.value = value;
         break;
+      }
       default:
             /* nothing */
     }
 
     this.setState({ client: newClient, hasChanged: true }, this.checkValidation);
+  }
+
+  onChangeClientReferralTypes = (option) => {
+    this.selectReferredOption(false);
+    this.onChangeClientField('clientReferralType', option);
+  }
+
+
+  onChangeInputSwitch = (requireCard) => {
+    this.setState({ requireCard });
+  }
+
+  onValidateEmail = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidEmail = this.state.requiredFields.email ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  })
+
+  onValidateZipCode = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidZipCode = this.state.requiredFields.zip ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+
+  onValidatePhone = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidPhone = state.client.phones !== undefined ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+
+  onValidateName = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidName = state.client.name !== undefined ? isValid : true;
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateLastName = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidLastName = state.client.lastName !== undefined ? isValid : true;
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateStreet1 = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidStreet1 = this.state.requiredFields.address ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateCity = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidCity = this.state.requiredFields.city ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateGender = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidGender = this.state.requiredFields.gender ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateBirth = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidBirth = this.state.requiredFields.birth ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateAge = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidAge = this.state.requiredFields.age ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidateState = isValid => this.setState((state) => {
+    const newState = state;
+    newState.isValidState = this.state.requiredFields.state ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onPressOkDelete = () => {
+    this.props.clientInfoActions.deleteClientInfo(this.state.client.id, this.handleDeleteClient);
+  }
+
+  setReferredOptionTrue =() => {
+    this.selectReferredOption(true);
+  }
+
+  setReferredOptionFalse =() => {
+    this.selectReferredOption(false);
+  }
+
+  calculateRequiredFields = (result) => {
+    if (result) {
+      const { settings } = this.props.settingsState;
+
+      const required: { [key: string]: boolean } = { };
+
+      const trackClientAge = find(settings, { settingName: 'TrackClientAge' }).settingValue;
+      const forceAgeInput = find(settings, { settingName: 'ForceAgeInput' }).settingValue;
+      const isLargeForm = find(settings, { settingName: 'UseFullClientFormApptQueue' }).settingValue;
+      const forceChildBirthday = find(settings, { settingName: 'ForceChildBirthday' }).settingValue;
+      const forceAdultBirthday = find(settings, { settingName: 'ForceAdultBirthday' }).settingValue;
+      const requireClientGender = find(settings, { settingName: 'RequireClientGender' }).settingValue;
+
+      required.age = trackClientAge && forceAgeInput;
+      required.address = isLargeForm;// && address !== 'Decline';
+      required.city = isLargeForm;
+      required.email = isLargeForm;// && email !== 'Will-not-provide';
+      required.birth = trackClientAge && (forceChildBirthday || forceAdultBirthday);
+      required.gender = requireClientGender;
+      required.zip = isLargeForm;
+      required.state = isLargeForm;
+
+      this.setState({ requiredFields: required });
+    }
+  }
+
+  checkValidation = () => {
+    this.props.setCanSave(this.state.hasChanged
+      && this.state.isValidLastName
+      && this.state.isValidName
+      && this.state.isValidStreet1
+      && this.state.isValidCity
+      && this.state.isValidEmail
+      && this.state.isValidZipCode
+      && this.state.isValidAge
+      && this.state.isValidState
+      && this.state.isValidGender
+      && this.state.isValidBirth
+      && this.state.isValidPhone);
+  }
+
+  deleteClient = () => {
+    const message = `Are you sure you want to delete user ${this.state.client.name} ${this.state.client.lastName}?`;
+    Alert.alert(
+      'Delete client',
+      message,
+      [
+        { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+        {
+          text: 'OK',
+          onPress: this.onPressOkDelete,
+        },
+      ],
+      { cancelable: false },
+    );
+  }
+
+  handleDeleteClient = (result, message) => {
+    if (result) {
+      this.props.navigation.goBack();
+    } else {
+      alert(message);
+    }
+  }
+
+
+  selectReferredOption = (selectedReferredClient) => {
+    if (selectedReferredClient) {
+      const newClient = this.state.client;
+      newClient.clientReferralType = null;
+      this.setState({ selectedReferredClient, client: newClient });
+      this.handlePressClient();
+    } else {
+      this.setState({ selectedClient: null, selectedReferredClient });
+    }
+  }
+
+  handlePressClient = () => {
+    const { navigate } = this.props.navigation;
+
+    navigate('ApptBookClient', {
+      selectedClient: this.state.selectedClient,
+      actionType: 'update',
+      dismissOnSelect: true,
+      headerProps: { title: 'Clients', ...this.cancelButton() },
+      onChangeClient: client => this.handleClientSelection(client),
+    });
   }
 
   handleDone = () => {
@@ -277,231 +418,90 @@ export default class ClientDetails extends Component {
     this.setState({ selectedClient });
   }
 
-  handlePressClient = () => {
-    const { navigate } = this.props.navigation;
+  isValidEmailRegExp = regexs.email;
+  isValidZipCodeRegExp = regexs.zipcode;
+  isValidPhoneRegExp = regexs.phone;
+  isValidText = regexs.notemptytext;
+  isValidAddress= regexs.address;
 
-    navigate('ApptBookClient', {
-      selectedClient: this.state.selectedClient,
-      actionType: 'update',
-      dismissOnSelect: true,
-      headerProps: { title: 'Clients', ...this.cancelButton() },
-      onChangeClient: client => this.handleClientSelection(client),
-    });
-  }
 
-  selectReferredOption = (selectedReferredClient) => {
-    if (selectedReferredClient) {
-      const newClient = this.state.client;
-      newClient.clientReferralType = null;
-      this.setState({ selectedReferredClient, client: newClient });
-      this.handlePressClient();
-    } else {
-      this.setState({ selectedClient: null, selectedReferredClient });
-    }
-  }
-
-  deleteClient = () => {
-    const message = `Are you sure you want to delete user ${this.state.client.name} ${this.state.client.lastName}?`;
-    Alert.alert(
-      'Delete client',
-      message,
-      [
-        { text: 'Cancel', onPress: () => {}, style: 'cancel' },
-        {
-          text: 'OK',
-          onPress: () => {
-            this.props.clientInfoActions.deleteClientInfo(this.state.client.id, this.handleDeleteClient);
-          },
-        },
-      ],
-      { cancelable: false },
-    );
-  }
-
-  handleDeleteClient = (result, message) => {
+  loadClientData = (result) => {
     if (result) {
-      this.props.navigation.goBack();
-    } else {
-      alert(message);
+      const { client } = this.props.clientInfoState;
+      const states = usStates;
+      if (client.address) {
+        if (typeof client.address === 'string' || client.address instanceof String) {
+          const matches = client.address.match(this.isValidAddress);
+          client.address = {};
+          if (matches && matches.length > 4) {
+            const street = matches[1];
+            const city = matches[2];
+
+            const zipCode = matches[4];
+
+            client.street1 = street.trim();
+            client.city = city.trim();
+            const state = find(states, { value: matches[3].trim().toUpperCase() });
+            client.state = state;
+
+            client.zipCode = zipCode.trim();
+          }
+        } else {
+          const state = find(states, { value: client.address.state.toUpperCase() });
+
+          client.state = state;
+
+          client.street1 = client.address.street1 ? client.address.street1 : '';
+          client.city = client.address.city ? client.address.city : '';
+          client.zipCode = client.address.zipCode ? client.address.zipCode : '';
+        }
+      } else {
+        client.state = null;
+        client.street1 = '';
+        client.city = '';
+        client.zipCode = '';
+      }
+
+
+      this.props.setCanSave(false);
+      this.props.setHandleDone(this.handleDone);
+
+      const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
+      client.clientReferralType = clientReferralType;
+
+      if (client.clientReferralType) {
+        this.selectReferredOption(false);
+      }
+
+      this.setState({
+        client,
+        loadingClient: false,
+        pointerEvents: this.props.editionMode ? 'auto' : 'none',
+      });
     }
   }
 
-  onChangeClientReferralTypes = (option) => {
-    this.selectReferredOption(false);
-    this.onChangeClientField('clientReferralType', option);
-  }
 
   renderPhone = (phone, index) => {
     const phoneType = phone.type === 0 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
-    const element = phone.value !== null ? (<React.Fragment>
-      <ValidatableInput
-        mask="[000]-[000]-[0000]"
-        validateOnChange
-        validation={this.isValidPhoneRegExp}
-        isValid={this.state.isValidPhone}
-        onValidated={this.onValidatePhone}
-        label={phoneType}
-        value={phone.value}
-        onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
-        placeholder="Enter"
-      />
-      <InputDivider />
-    </React.Fragment>) : null;
+    const element = phone.value !== null ? (
+      <React.Fragment>
+        <ValidatableInput
+          mask="[000]-[000]-[0000]"
+          validateOnChange
+          validation={this.isValidPhoneRegExp}
+          isValid={this.state.isValidPhone}
+          onValidated={this.onValidatePhone}
+          label={phoneType}
+          value={phone.value}
+          onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
+          placeholder="Enter"
+        />
+        <InputDivider />
+      </React.Fragment>) : null;
     return (element);
   }
 
-  onChangeInputSwitch = (requireCard) => {
-    this.setState({ requireCard });
-  }
-
-  onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidEmail = this.state.requiredFields.email ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  })
-
-  onValidateZipCode = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidZipCode = this.state.requiredFields.zip ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-
-  onValidatePhone = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidPhone = state.client.phones !== undefined ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-
-  onValidateName = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidName = state.client.name !== undefined ? isValid : true;
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateLastName = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidLastName = state.client.lastName !== undefined ? isValid : true;
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateStreet1 = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidStreet1 = this.state.requiredFields.address ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateCity = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidCity = this.state.requiredFields.city ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateGender = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidGender = this.state.requiredFields.gender ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateBirth = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidBirth = this.state.requiredFields.birth ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateAge = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidAge = this.state.requiredFields.age ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-  onValidateState = (isValid, isFirstValidation) => this.setState((state) => {
-    const newState = state;
-    newState.isValidState = this.state.requiredFields.state ? isValid : true;
-
-    this.checkValidation();
-
-    return newState;
-  });
-
-  checkValidation = () => {
-    this.props.setCanSave(this.state.hasChanged
-      && this.state.isValidLastName
-      && this.state.isValidName
-      && this.state.isValidStreet1
-      && this.state.isValidCity
-      && this.state.isValidEmail
-      && this.state.isValidZipCode
-      && this.state.isValidAge
-      && this.state.isValidState
-      && this.state.isValidGender
-      && this.state.isValidBirth
-      && this.state.isValidPhone);
-  }
-
-  calculateRequiredFields = (result) => {
-    if (result) {
-      const { settings } = this.props.settingsState;
-
-      const required: { [key: string]: boolean } = { };
-
-      const trackClientAge = find(settings, { settingName: 'TrackClientAge' }).settingValue;
-      const forceAgeInput = find(settings, { settingName: 'ForceAgeInput' }).settingValue;
-      const isLargeForm = find(settings, { settingName: 'UseFullClientFormApptQueue' }).settingValue;
-      const forceChildBirthday = find(settings, { settingName: 'ForceChildBirthday' }).settingValue;
-      const forceAdultBirthday = find(settings, { settingName: 'ForceAdultBirthday' }).settingValue;
-      const requireClientGender = find(settings, { settingName: 'RequireClientGender' }).settingValue;
-
-      required.age = trackClientAge && forceAgeInput;
-      required.address = isLargeForm;// && address !== 'Decline';
-      required.city = isLargeForm;
-      required.email = isLargeForm;// && email !== 'Will-not-provide';
-      required.birth = trackClientAge && (forceChildBirthday || forceAdultBirthday);
-      required.gender = requireClientGender;
-      required.zip = isLargeForm;
-      required.state = isLargeForm;
-
-      this.setState({ requiredFields: required });
-    }
-  }
-
-
-  setReferredOptionTrue =() => {
-    this.selectReferredOption(true);
-  }
-
-  setReferredOptionFalse =() => {
-    this.selectReferredOption(false);
-  }
 
   render() {
     return (
@@ -755,3 +755,29 @@ export default class ClientDetails extends Component {
     );
   }
 }
+
+ClientDetails.defaultProps = {
+  editionMode: true,
+};
+
+ClientDetails.propTypes = {
+  appointmentCalendarActions: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+  setCanSave: PropTypes.func.isRequired,
+  setHandleDone: PropTypes.func.isRequired,
+  editionMode: PropTypes.bool,
+  settingsState: PropTypes.any.isRequired,
+  clientInfoState: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  settingsActions: PropTypes.shape({
+    getSettings: PropTypes.func.isRequired,
+  }).isRequired,
+  clientInfoActions: PropTypes.shape({
+    getClientReferralTypes: PropTypes.func.isRequired,
+    getClientInfo: PropTypes.func.isRequired,
+    putClientInfo: PropTypes.func.isRequired,
+    deleteClientInfo: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default ClientDetails;

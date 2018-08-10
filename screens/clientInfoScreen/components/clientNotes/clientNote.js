@@ -4,9 +4,9 @@ import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import {
   View,
-  StyleSheet,
   Text,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ClientNoteHeader from './clientNoteHeader';
@@ -25,29 +25,8 @@ import {
 } from '../../../../components/formHelpers';
 
 import fetchFormCache from '../../../../utilities/fetchFormCache';
+import styles from './stylesClientNote';
 
-const styles = StyleSheet.create({
-  modal: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginHorizontal: 0,
-    marginVertical: 0,
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-    width: '100%',
-    height: '100%',
-  },
-});
 
 class ClientNote extends Component {
   static compareByDate(a, b) {
@@ -343,6 +322,24 @@ class ClientNote extends Component {
     );
   }
 }
+
+ClientNote.defaultProps = {
+
+};
+
+ClientNote.propTypes = {
+  clientNotesActions: PropTypes.shape({
+    setClientNoteNewForm: PropTypes.func.isRequired,
+    setClientNoteUpdateForm: PropTypes.func.isRequired,
+    selectProvider: PropTypes.func.isRequired,
+    purgeClientNoteNewForm: PropTypes.func.isRequired,
+    purgeClientNoteUpdateForm: PropTypes.func.isRequired,
+    postClientNotes: PropTypes.func.isRequired,
+  }).isRequired,
+  clientNotesState: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
 
 const mapStateToProps = state => ({
   clientNotesState: state.clientNotesReducer,

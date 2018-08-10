@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   Alert,
   RefreshControl,
   ScrollView,
 } from 'react-native';
+import PropTypes from 'prop-types';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SalonActionSheet from '../../../../components/SalonActionSheet';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
 import SalonIcon from '../../../../components/SalonIcon';
@@ -17,8 +18,8 @@ import SalonBtnTag from '../../../../components/SalonBtnTag';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+import styles from './stylesClientNotes';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -28,143 +29,7 @@ const options = [
   'Cancel',
 ];
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-    flexDirection: 'column',
-  },
-  header: {
-    flex: 2,
-    alignSelf: 'stretch',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    backgroundColor: '#F1F1F1',
-    flexDirection: 'column',
-    marginBottom: 11,
-  },
-  notesScroller: {
-    flex: 9,
-    backgroundColor: '#F1F1F1',
-    paddingBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-  },
-  noteHeaderLeft: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    flex: 1,
-  },
-  noteHeaderRight: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    flex: 1,
-  },
-  topSearchBar: {
-    // marginTop: 8,
-    backgroundColor: 'transparent',
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  tagsBar: {
-    paddingHorizontal: 15,
-    backgroundColor: 'transparent',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
-  },
-  notesContainer: {
-    paddingTop: 0,
-    backgroundColor: 'transparent',
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noteTags: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  topSearchBarText: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 30,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-  },
-  showDeletedButton: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  showDeletedText: {
-    color: '#115ECD',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  showDeletedButtonContainer: {
-    minHeight: 40,
-    marginBottom: 40,
-  },
-  noteText: {
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  moreText: {
-    color: '#3343CA',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  noteAuthor: {
-    color: '#2F3142',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-    paddingBottom: 1,
-  },
-  noteBy: {
-    paddingHorizontal: 5,
-    color: '#4D5067',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-    fontStyle: 'italic',
-    paddingBottom: 1,
-  },
-  checkIcon: {
-    width: 10,
-    height: 13,
-    marginLeft: 5,
-    paddingTop: 1,
-    resizeMode: 'contain',
-    tintColor: '#FFFFFF',
-  },
-  dotsIcon: {
-    width: 13,
-    height: 16,
-    marginLeft: 5,
-    paddingTop: 1,
-    resizeMode: 'contain',
-    tintColor: '#115ECD',
-  },
-  plusIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-    tintColor: '#FFFFFF',
-  },
-});
-
-export default class ClientNotesScreen extends Component {
+class ClientNotesScreen extends Component {
   static flexFilter(list, info) {
     let matchesFilter = [];
     const matches = [];
@@ -196,7 +61,6 @@ export default class ClientNotesScreen extends Component {
 
   constructor(props) {
     super(props);
-    const { params } = this.props.navigation.state;
     const { client } = this.props;
 
     this.state = {
@@ -223,6 +87,111 @@ export default class ClientNotesScreen extends Component {
     this.getNotes();
   }
 
+  setNoteTags = (note) => {
+    const tags = [];
+
+    if (note.forQueue) {
+      tags.push(<SalonTag
+        key={Math.random().toString()}
+        tagHeight={17}
+        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="QUEUE"
+        valueSize={10}
+        valueColor="#FFFFFF"
+      />);
+    }
+
+    if (note.forSales) {
+      tags.push(<SalonTag
+        key={Math.random().toString()}
+        tagHeight={17}
+        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="SALES"
+        valueSize={10}
+        valueColor="#FFFFFF"
+      />);
+    }
+
+    if (note.forClient) {
+      tags.push(<SalonTag
+        key={Math.random().toString()}
+        tagHeight={17}
+        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        value="APPOINTMENT"
+        valueSize={10}
+        valueColor="#FFFFFF"
+      />);
+    }
+
+    return tags;
+  }
+
+  setTagsBar = () => {
+    const activeStyle = {
+      icon: 'check',
+      iconColor: '#FFFFFF',
+      backgroundColor: '#1DBF12',
+      valueColor: '#FFFFFF',
+    };
+
+    const inactiveStyle = {
+      icon: 'unchecked',
+      iconColor: '#727A8F',
+      backgroundColor: '#FFFFFF',
+      valueColor: '#727A8F',
+    };
+
+    const tags = [
+      <View key={Math.random().toString()} style={styles.tag}>
+        <SalonBtnTag
+          iconSize={13}
+          onPress={() => {
+            this.setState({ forClient: !this.state.forClient });
+            this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forClient, this.state.forQueue);
+          }}
+          tagHeight={24}
+          value="Client"
+          valueSize={10}
+          isVisible={this.state.forClient}
+          activeStyle={activeStyle}
+          inactiveStyle={inactiveStyle}
+        />
+      </View>,
+      <View key={Math.random().toString()} style={styles.tag}>
+        <SalonBtnTag
+          iconSize={13}
+          onPress={() => {
+            this.setState({ forSales: !this.state.forSales });
+            this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forClient, this.state.forQueue);
+          }}
+          tagHeight={24}
+          value="Sales"
+          valueSize={10}
+          isVisible={this.state.forSales}
+          activeStyle={activeStyle}
+          inactiveStyle={inactiveStyle}
+        />
+      </View>,
+      <View key={Math.random().toString()} style={styles.tag}>
+        <SalonBtnTag
+          iconSize={13}
+          onPress={() => {
+            this.setState({ forQueue: !this.state.forQueue });
+            this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forClient, !this.state.forQueue);
+          }}
+          tagHeight={24}
+          value="Queue"
+          valueSize={10}
+          isVisible={this.state.forQueue}
+          activeStyle={activeStyle}
+          inactiveStyle={inactiveStyle}
+        />
+      </View>];
+
+
+    return tags;
+  }
+
   getNotes = () => {
     this.setState({ refreshing: true });
 
@@ -234,10 +203,6 @@ export default class ClientNotesScreen extends Component {
         const notes = response.data.notes.sort(ClientNotesScreen.compareByDate);
         this.props.clientNotesActions.setFilteredNotes(notes);
         this.props.clientNotesActions.setNotes(notes);
-
-        const forClient = response.data.notes.filter(el => el.forClient).length > 0;
-        const forSales = response.data.notes.filter(el => el.forSales).length > 0;
-        const forQueue = response.data.notes.filter(el => el.forQueue).length > 0;
 
         this.filterNotes(null, false, this.state.forSales, this.state.forClient, this.state.forQueue);
 
@@ -385,120 +350,20 @@ export default class ClientNotesScreen extends Component {
     }
   }
 
-  setNoteTags = (note) => {
-    const tags = [];
 
-    if (note.forQueue) {
-      tags.push(<SalonTag
-        key={Math.random().toString()}
-        tagHeight={17}
-        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
-        value="QUEUE"
-        valueSize={10}
-        valueColor="#FFFFFF"
-      />);
-    }
+  renderViewMore = onPress => (
+    <Text style={styles.moreText} onPress={onPress}>... more</Text>
+  )
 
-    if (note.forSales) {
-      tags.push(<SalonTag
-        key={Math.random().toString()}
-        tagHeight={17}
-        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
-        value="SALES"
-        valueSize={10}
-        valueColor="#FFFFFF"
-      />);
-    }
+  // renderViewLess(onPress) {
+  //   // return (
+  //   //   <Text style={styles.moreText} onPress={onPress}> less</Text>
+  //   // );
+  // }
 
-    if (note.forClient) {
-      tags.push(<SalonTag
-        key={Math.random().toString()}
-        tagHeight={17}
-        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
-        value="APPOINTMENT"
-        valueSize={10}
-        valueColor="#FFFFFF"
-      />);
-    }
-
-    return tags;
-  }
-
-  setTagsBar = () => {
-    const activeStyle = {
-      icon: 'check',
-      iconColor: '#FFFFFF',
-      backgroundColor: '#1DBF12',
-      valueColor: '#FFFFFF',
-    };
-
-    const inactiveStyle = {
-      icon: 'unchecked',
-      iconColor: '#727A8F',
-      backgroundColor: '#FFFFFF',
-      valueColor: '#727A8F',
-    };
-
-    const tags = [
-      <View key={Math.random().toString()} style={styles.tag}>
-        <SalonBtnTag
-          iconSize={13}
-          onPress={() => {
-            this.setState({ forClient: !this.state.forClient });
-            this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forClient, this.state.forQueue);
-          }}
-          tagHeight={24}
-          value="Client"
-          valueSize={10}
-          isVisible={this.state.forClient}
-          activeStyle={activeStyle}
-          inactiveStyle={inactiveStyle}
-        />
-      </View>,
-      <View key={Math.random().toString()} style={styles.tag}>
-        <SalonBtnTag
-          iconSize={13}
-          onPress={() => {
-            this.setState({ forSales: !this.state.forSales });
-            this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forClient, this.state.forQueue);
-          }}
-          tagHeight={24}
-          value="Sales"
-          valueSize={10}
-          isVisible={this.state.forSales}
-          activeStyle={activeStyle}
-          inactiveStyle={inactiveStyle}
-        />
-      </View>,
-      <View key={Math.random().toString()} style={styles.tag}>
-        <SalonBtnTag
-          iconSize={13}
-          onPress={() => {
-            this.setState({ forQueue: !this.state.forQueue });
-            this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forClient, !this.state.forQueue);
-          }}
-          tagHeight={24}
-          value="Queue"
-          valueSize={10}
-          isVisible={this.state.forQueue}
-          activeStyle={activeStyle}
-          inactiveStyle={inactiveStyle}
-        />
-      </View>];
-
-
-    return tags;
-  }
-
-  renderViewMore(onPress) {
-    return (
-      <Text style={styles.moreText} onPress={onPress}>... more</Text>
-    );
-  }
-  renderViewLess(onPress) {
-    // return (
-    //   <Text style={styles.moreText} onPress={onPress}> less</Text>
-    // );
+  onPressDelete = () => {
+    this.setState({ showDeleted: !this.state.showDeleted });
+    this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forClient, this.state.forQueue);
   }
 
   render() {
@@ -509,7 +374,7 @@ export default class ClientNotesScreen extends Component {
           options={options}
           cancelButtonIndex={CANCEL_INDEX}
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
-          onPress={(i) => { this.handlePress(i); }}
+          onPress={this.handlePress}
         />
 
         <ScrollView
@@ -529,7 +394,7 @@ export default class ClientNotesScreen extends Component {
                 searchIconPosition="left"
                 iconsColor="#727A8F"
                 fontColor="#727A8F"
-                containerStyle={{ paddingTop: 4, paddingBottom: 10 }}
+                containerStyle={styles.salonSearchBarContainer}
                 borderColor="transparent"
                 backgroundColor="rgba(142, 142, 147, 0.24)"
                 onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forClient, this.state.forQueue)}
@@ -540,15 +405,15 @@ export default class ClientNotesScreen extends Component {
             </View>
           </View>
           <View style={styles.notesScroller}>
-            <View style={{ alignSelf: 'stretch' }}>
+            <View style={styles.notesView}>
               <FlatList
                 extraData={this.props}
                 keyExtractor={(item, index) => index}
                 data={this.props.clientNotesState.filtered}
                 renderItem={({ item, index }) => (
                   <SalonCard
-                    containerStyles={{ marginVertical: 2 }}
-                    bodyStyles={{ minHeight: 57 }}
+                    containerStyles={styles.salonCardContainer}
+                    bodyStyles={styles.salonCardBody}
                     key={index}
                     backgroundColor={!item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
                     headerChildren={[
@@ -580,7 +445,7 @@ export default class ClientNotesScreen extends Component {
                         <View style={styles.noteHeaderRight}>
                           <SalonTouchableOpacity
                             style={styles.dotsButton}
-                            onPress={() => { this.showActionSheet(item); }}
+                            onPress={this.showActionSheet}
                           >
                             <SalonIcon
                               size={16}
@@ -595,8 +460,7 @@ export default class ClientNotesScreen extends Component {
                       <SalonViewMoreText
                         numberOfLines={3}
                         renderViewMore={this.renderViewMore}
-                        renderViewLess={this.renderViewLess}
-                        textStyle={{ }}
+                      //  renderViewLess={this.renderViewLess}
                       >
                         <Text
                           key={Math.random().toString()}
@@ -616,10 +480,7 @@ export default class ClientNotesScreen extends Component {
 
                 <SalonTouchableOpacity
                   style={styles.showDeletedButton}
-                  onPress={() => {
-                  this.setState({ showDeleted: !this.state.showDeleted });
-                  this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forClient, this.state.forQueue);
-                }}
+                  onPress={this.onPressDelete}
                 >
                   <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
                 </SalonTouchableOpacity>
@@ -630,7 +491,7 @@ export default class ClientNotesScreen extends Component {
         </ScrollView>
         <KeyboardSpacer />
         <FloatingButton
-          rootStyle={{ right: 16, bottom: 16, backgroundColor: '#115ECD' }}
+          rootStyle={styles.floatingButtonRoot}
           handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('ClientNote', {
@@ -652,3 +513,23 @@ export default class ClientNotesScreen extends Component {
     );
   }
 }
+
+ClientNotesScreen.defaultProps = {
+
+};
+
+ClientNotesScreen.propTypes = {
+  clientNotesActions: PropTypes.shape({
+    getClientNotes: PropTypes.func.isRequired,
+    setFilteredNotes: PropTypes.func.isRequired,
+    setNotes: PropTypes.func.isRequired,
+    deleteClientNotes: PropTypes.func.isRequired,
+    undeleteClientNotes: PropTypes.func.isRequired,
+    setOnEditionNote: PropTypes.func.isRequired,
+  }).isRequired,
+  clientNotesState: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
+
+export default ClientNotesScreen;
