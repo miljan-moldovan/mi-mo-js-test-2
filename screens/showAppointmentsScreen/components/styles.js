@@ -110,9 +110,19 @@ const styles = StyleSheet.create({
     lineHeight: 12,
   },
   goBackIcon: {
-    fontSize: 15,
+    fontSize: 20,
     color: '#fff',
     paddingRight: 30,
+  },
+  infoIcon: {
+    fontSize: 17,
+    color: '#fff',
+    paddingHorizontal: 10,
+  },
+  envelopeIcon: {
+    fontSize: 17,
+    color: '#fff',
+    paddingHorizontal: 10,
   },
   leftBtnContainer: {
     justifyContent: 'center',

@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import clientApptActions from '../../actions/clientAppointments';
 import ShowApptScreen from './components/showApptScreen';
 import clientApptSelectors from '../../redux/selectors/clientAppt';
+import { appointmentCalendarActions } from '../../actions/appointmentBook';
 
 const mapStateToProps = state => ({
   isLoading: state.clientAppointmentsReducer.isLoading,
@@ -15,6 +16,8 @@ const mapStateToProps = state => ({
 
 const mapActionsToProps = dispatch => ({
   clientApptActions: bindActionCreators({ ...clientApptActions }, dispatch),
+  appointmentCalendarActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
+
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(ShowApptScreen);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
@@ -10,8 +11,10 @@ import styles from './styles';
 
 class Card extends React.PureComponent {
   render() {
-    const { start, end, storeName, clientName,
-      employeeName, serviceDescription } = this.props.item;
+    const {
+      start, end, storeName,
+      employeeName, serviceDescription,
+    } = this.props.item;
     const providerName = employeeName ? employeeName.split(' ') : ['L', 'A'];
     const provider = {
       name: providerName[0],
@@ -53,5 +56,15 @@ class Card extends React.PureComponent {
     );
   }
 }
+
+Card.propTypes = {
+  item: PropTypes.arrayOf(PropTypes.shape({
+    start: PropTypes.string,
+    end: PropTypes.string,
+    serviceDescription: PropTypes.string,
+    storeName: PropTypes.string,
+    employeeName: PropTypes.string,
+  })).isRequired,
+};
 
 export default Card;
