@@ -16,7 +16,7 @@ import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-
+import { DefaultAvatar } from '../../components/formHelpers';
 
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -94,18 +94,15 @@ const FirstAvailableRow = props => (
       isFirstAvailable: true,
       name: 'First',
       lastName: 'Available',
-
     })}
     style={styles.itemRow}
     key={Math.random()}
   >
     <View style={styles.inputRow}>
-      <SalonAvatar
-        wrapperStyle={styles.providerRound}
-        width={30}
-        borderWidth={1}
-        borderColor="transparent"
-        image={{ uri: getEmployeePhoto(0) }}
+      <DefaultAvatar
+        size={22}
+        fontSize={9}
+        provider={{ isFirstAvailable: true }}
       />
       <Text style={styles.providerName}>First Available</Text>
     </View>
@@ -145,7 +142,7 @@ class ProviderScreen extends React.Component {
         customLeftButton = true;
       }
     }
-    
+
     return {
       headerTitle: (
         <View style={{
@@ -202,37 +199,30 @@ class ProviderScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const params = this.props.navigation.state.params || {};
-    const { showFirstAvailable = true } = params;
+    const { navigation: { getParam, goBack } } = props;
+    const showFirstAvailable = getParam('showFirstAvailable', true);
+    const filterList = getParam('filterList', false);
+    const filterByService = getParam('filterByService', false);
+    const selectedProvider = getParam('selectedProvider', null);
     this.state = {
+      filterList,
+      filterByService,
+      selectedProvider,
       showFirstAvailable,
-      selectedProvider: get(params, 'selectedProvider', null),
-      filterByService: get(params, 'filterByService', false),
-      filterList: get(params, 'filterList', false),
       refreshing: false,
       headerProps: {
         title: 'Providers',
         subTitle: null,
-        leftButtonOnPress: () => { this.props.navigation.goBack(); },
         leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        leftButtonOnPress: () => goBack(),
       },
     };
   }
 
   componentWillMount() {
     this.props.navigation.setParams({ defaultProps: this.state.headerProps });
-
     this.onRefresh();
   }
-
-  // state = {
-  // headerProps: {
-  //   title: 'Providers',
-  //   subTitle: null,
-  //   leftButtonOnPress: () => { this.props.navigation.goBack(); },
-  //   leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-  // },
-  // }
 
   getFirstItemForLetter = (letter) => {
     const { currentData } = this.props.providersState;
@@ -317,7 +307,14 @@ class ProviderScreen extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: getEmployeePhoto(item.id) }}
+          image={{ uri: item.imagePath }}
+          defaultComponent={(
+            <DefaultAvatar
+              size={22}
+              fontSize={9}
+              provider={item}
+            />
+          )}
         />
         <WordHighlighter
           highlight={this.state.searchText}
@@ -414,9 +411,7 @@ class ProviderScreen extends React.Component {
             {letters.map(item => (
               <SalonTouchableOpacity
                 key={item}
-                onPress={() => {
-                  this.scrollToIndex(this.getFirstItemForLetter(item));
-                }}
+                onPress={() => this.scrollToIndex(this.getFirstItemForLetter(item))}
               >
                 <Text style={styles.letterListText}>{item}</Text>
               </SalonTouchableOpacity>

@@ -7,13 +7,14 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
 import { last, get, flatten, isNil, sortBy, chain } from 'lodash';
-import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 
+import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import {
   DefaultAvatar,
   LabeledTextInput,
@@ -32,160 +33,41 @@ import {
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
-import LoadingOverlay from '../../components/LoadingOverlay';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import SalonCard from '../../components/SalonCard';
-import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
-import { Store, Client, AppointmentBook } from '../../utilities/apiWrapper';
-import { getEmployeePhoto } from '../../utilities/apiWrapper/api';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import { Store, Client } from '../../utilities/apiWrapper';
 
 import ServiceCard from './components/ServiceCard';
-
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  subTitle: {
-    fontSize: 14,
-    lineHeight: 18,
-    fontFamily: 'Roboto-Bold',
-    color: '#727A8F',
-  },
-  timeCaretIcon: {
-    fontSize: 12,
-    marginHorizontal: 3,
-  },
-  serviceTitle: {
-
-    fontSize: 14,
-    lineHeight: 24,
-    color: '#110A24',
-    fontFamily: 'Roboto-Medium',
-  },
-  serviceInfo: {
-    fontSize: 12,
-    lineHeight: 24,
-    fontFamily: 'Roboto-Light',
-    color: '#727A8F',
-  },
-  serviceTimeContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignSelf: 'stretch',
-    alignItems: 'flex-start',
-  },
-  serviceTime: {
-    color: '#72838F',
-    fontSize: 11,
-    lineHeight: 14,
-    fontFamily: 'Roboto',
-  },
-  guestContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-});
-
-const RemoveGuest = ({ onPress }) => (
-  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginHorizontal: 12 }}>
-    <SalonTouchableOpacity
-      style={{ flexDirection: 'row' }}
-      onPress={onPress}
-    >
-      <Icon
-        name="timesCircle"
-        type="solid"
-        color="red"
-        size={10}
-      />
-      <Text style={{
-        color: '#D1242A',
-        marginLeft: 4,
-        fontSize: 10,
-        lineHeight: 12,
-        fontFamily: 'Roboto-Bold',
-      }}
-      >REMOVE
-      </Text>
-    </SalonTouchableOpacity>
-  </View>
-);
-
-const Guest = props => (
-  <View style={{ flexDirecton: 'column' }}>
-    <RemoveGuest onPress={() => props.onRemove()} />
-    <SalonCard
-      bodyStyles={{ paddingVertical: 0 }}
-      bodyChildren={(
-        <ClientInput
-          style={{ flex: 1, height: 40, paddingRight: 0 }}
-          label={false}
-          apptBook
-          placeholder="Select a Client"
-          selectedClient={props.selectedClient}
-          onChange={client => props.onChange(client)}
-          iconStyle={{ color: '#115ECD' }}
-          headerProps={{
-            title: 'Clients',
-            leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
-            leftButtonOnPress: navigation => navigation.goBack(),
-          }}
-          {...props}
-        />
-      )}
-      backgroundColor="white"
-    />
-  </View>
-);
-
+import Guest from './components/Guest';
+import styles from './styles';
 
 const SubTitle = props => (
-  <View style={{
-    height: 54,
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    alignItems: 'flex-end',
-    justifyContent: 'flex-start',
-  }}
-  ><Text style={styles.subTitle}>{props.title.toUpperCase()}</Text>
+  <View style={styles.subTitleContainer}>
+    <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
   </View>
 );
+SubTitle.propTypes = {
+  title: PropTypes.string.isRequired,
+};
 
 export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
     const canSave = screenProps.isNewApptValid;
+    const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return ({
       headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
-        <SalonTouchableOpacity
-          onPress={() => { params.handleCancel(); }}
-        >
-          <Text style={{
-            fontSize: 14,
-            lineHeight: 22,
-            color: 'white',
-          }}
-          >Cancel
-          </Text>
+        <SalonTouchableOpacity onPress={() => { params.handleCancel(); }}>
+          <Text style={styles.headerButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity
-          disabled={!canSave}
-          onPress={() => params.handleSave()}
-        >
-          <Text style={{
-            fontSize: 14,
-            lineHeight: 22,
-            color: canSave ? 'white' : 'rgba(0,0,0,0.3)',
-          }}
-          >Done
-          </Text>
+        <SalonTouchableOpacity disabled={!canSave} onPress={() => params.handleSave()}>
+          <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
         </SalonTouchableOpacity>
       ),
     });
@@ -194,12 +76,6 @@ export default class NewAppointmentScreen extends React.Component {
   isValidEmailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   isValidPhoneNumberRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-
-  clientPhoneTypes = {
-    cell: 2,
-    home: 1,
-    work: 0,
-  };
 
   constructor(props) {
     super(props);
@@ -223,7 +99,6 @@ export default class NewAppointmentScreen extends React.Component {
     this.state = {
       toast: null,
       isRecurring: false,
-      canSave: false,
       clientEmail,
       clientPhone,
       isValidEmail,
@@ -236,18 +111,18 @@ export default class NewAppointmentScreen extends React.Component {
     this.checkConflicts();
   }
 
-  addService = (selectedServices, guestId = false) => {
+  addService = (service, guestId = false) => {
     const {
       client,
       startTime,
       bookedByEmployee,
     } = this.props.newAppointmentState;
-    const {
-      service,
-      addons = [],
-      recommended = [],
-      required = null,
-    } = selectedServices;
+    // const {
+    //   service,
+    //   addons = [],
+    //   recommended = [],
+    //   required = null,
+    // } = selectedServices;
     const length = this.totalLength();
     const serviceLength = moment.duration(service.maxDuration);
     const fromTime = moment(startTime).add(length);
@@ -284,35 +159,35 @@ export default class NewAppointmentScreen extends React.Component {
     };
 
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
-    this.props.newAppointmentActions.addServiceItemExtras(
-      newServiceItem.itemId, // parentId
-      'addon', // extraService type
-      addons,
-    );
-    this.props.newAppointmentActions.addServiceItemExtras(
-      newServiceItem.itemId, // parentId
-      'recommended', // extraService type
-      recommended,
-    );
-    this.props.newAppointmentActions.addServiceItemExtras(
-      newServiceItem.itemId, // parentId
-      'required', // extraService type
-      required,
-    );
+    // this.props.newAppointmentActions.addServiceItemExtras(
+    //   newServiceItem.itemId, // parentId
+    //   'addon', // extraService type
+    //   addons,
+    // );
+    // this.props.newAppointmentActions.addServiceItemExtras(
+    //   newServiceItem.itemId, // parentId
+    //   'recommended', // extraService type
+    //   recommended,
+    // );
+    // this.props.newAppointmentActions.addServiceItemExtras(
+    //   newServiceItem.itemId, // parentId
+    //   'required', // extraService type
+    //   required,
+    // );
 
     return this.checkConflicts();
   }
 
   createPhonesArr = (phones) => {
     const createPhone = (type) => {
-      const cell = phones.find(itm => get(itm, 'type', null) === this.clientPhoneTypes[type]);
+      const cell = phones.find(itm => get(itm, 'type', null) === ClientPhoneTypes[type]);
       if (
         !cell ||
         !cell.value ||
         !cell.value.trim() ||
         !this.isValidPhoneNumberRegExp.test(cell.value)
       ) {
-        return { type: this.clientPhoneTypes[type], value: '' };
+        return { type: ClientPhoneTypes[type], value: '' };
       }
       return cell;
     };
@@ -332,7 +207,7 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType,
     } = this.state;
     const { client } = this.props.newAppointmentState;
-    const currentPhone = client.phones.find(phone => phone.type === this.clientPhoneTypes.cell);
+    const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
     const hasEmailChanged = clientEmail !== client.email;
     const hasPhoneChanged = clientPhone !== currentPhone.value;
     const isValidEmail = emailValid && clientEmail !== '' && hasEmailChanged;
@@ -342,12 +217,12 @@ export default class NewAppointmentScreen extends React.Component {
     }
     const phones = isValidPhone && hasPhoneChanged ? [
       {
-        type: this.clientPhoneTypes.cell,
+        type: ClientPhoneTypes.cell,
         value: clientPhone,
       },
       ...client.phones.filter(phone => (
         phone.value &&
-        phone.type !== this.clientPhoneTypes.cell &&
+        phone.type !== ClientPhoneTypes.cell &&
         this.isValidPhoneNumberRegExp.test(phone.value)
       )),
     ] : client.phones.filter(phone => (
@@ -413,15 +288,17 @@ export default class NewAppointmentScreen extends React.Component {
   getServiceItem = serviceId => this.props.newAppointmentState.serviceItems.find(item => item.itemId === serviceId)
 
   getClientInfo = (client) => {
-    const phones = this.createPhonesArr(get(client, 'phones', []));
-    const [clientPhone] = phones.filter(item => get(item, 'type', null) === this.clientPhoneTypes.cell);
+    const phones = get(client, 'phones', []);
+    const phone = phones.find(item => (get(item, 'type', null) === ClientPhoneTypes.cell));
     const clientEmail = get(client, 'email', '');
+    const clientPhone = get(phone, 'value', '');
+    const clientPhoneType = get(phone, 'type', ClientPhoneTypes.cell);
     return {
       clientPhone,
       clientEmail,
+      clientPhoneType,
       isValidEmail: this.isValidEmailRegExp.test(clientEmail),
       isValidPhone: this.isValidPhoneNumberRegExp.test(clientPhone),
-      clientPhoneType: clientPhone !== '' ? phones.findIndex(phone => get(phone, 'value', null) === clientPhone) : 0,
     };
   }
 
@@ -708,10 +585,11 @@ export default class NewAppointmentScreen extends React.Component {
       isBooking,
       date,
       client,
-      bookedByEmployee: employee,
+      bookedByEmployee,
       startTime,
       conflicts,
       guests,
+      remarks,
     } = this.props.newAppointmentState;
     const {
       clientEmail,
@@ -741,7 +619,7 @@ export default class NewAppointmentScreen extends React.Component {
                   lineHeight: 18,
                   color: '#727A8F',
                 }}
-                >{`${employee.name} ${employee.lastName}`}
+                >{`${bookedByEmployee.name} ${bookedByEmployee.lastName}`}
                 </Text>
               )}
             />
@@ -991,6 +869,7 @@ export default class NewAppointmentScreen extends React.Component {
               label="Remarks"
               isEditable
               placeholder="Please specify"
+              value={remarks}
               onChangeText={this.onChangeRemarks}
             />
           </InputGroup>

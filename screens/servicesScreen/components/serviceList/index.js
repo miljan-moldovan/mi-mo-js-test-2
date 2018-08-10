@@ -1,5 +1,6 @@
 import React from 'react';
-import { View,
+import {
+  View,
   SectionList,
   StyleSheet,
   RefreshControl,
@@ -84,18 +85,20 @@ class ServiceList extends React.Component {
   static renderSeparator() {
     return (<View
       style={{
-            height: 1,
-            width: '100%',
-            backgroundColor: '#C0C1C6',
-          }}
+        height: 1,
+        width: '100%',
+        backgroundColor: '#C0C1C6',
+      }}
     />);
   }
 
 
   static renderSection(item) {
-    return (<View key={Math.random().toString()} style={styles.topBar}>
-      <ServiceListHeader header={item.section.title} />
-    </View>);
+    return (
+      <View key={Math.random().toString()} style={styles.topBar}>
+        <ServiceListHeader header={item.section.title} />
+      </View>
+    );
   }
 
 
@@ -108,12 +111,9 @@ class ServiceList extends React.Component {
       dataSource: ServiceList.services(services),
       boldWords: props.boldWords,
       refreshing: false,
+      services: [],
     };
   }
-
-  state:{
-    services:[]
-  };
 
   componentDidMount() {
     const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
@@ -130,92 +130,92 @@ class ServiceList extends React.Component {
     });
   }
 
-      scrollToIndex = (letter) => {
-        let total = 0;
-        let found = false;
+  scrollToIndex = (letter) => {
+    let total = 0;
+    let found = false;
 
-        for (let i = 0; i < abecedary.length; i += 1) {
-          const letterServices = ServiceList.getByValue(
-            this.state.dataSource,
-            abecedary[i], 'firstLetter',
-          );
+    for (let i = 0; i < abecedary.length; i += 1) {
+      const letterServices = ServiceList.getByValue(
+        this.state.dataSource,
+        abecedary[i], 'firstLetter',
+      );
 
-          if (letter.toUpperCase() === abecedary[i]) {
-            total += HEADER_HEIGHT;
-            found = letterServices;
-          }
-
-          if (letterServices && !found) {
-            for (let x = 0; x < letterServices.length; x += 1) {
-              total += HEADER_HEIGHT;
-              total += letterServices[x].data.length * ITEM_HEIGHT;
-            }
-          }
-        }
-
-        if (found) {
-          this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
-        }
+      if (letter.toUpperCase() === abecedary[i]) {
+        total += HEADER_HEIGHT;
+        found = letterServices;
       }
 
-      keyExtractor = (item, index) => item.id;
-
-      renderItem = obj => (
-        <ServiceListItem
-          key={Math.random().toString()}
-          service={obj.item}
-          height={ITEM_HEIGHT}
-          {...this.props}
-          boldWords={this.state.boldWords}
-          onPress={this.props.onChangeService ?
-            () => {
-              this.props.servicesActions.setSelectedService(obj.item);
-              this.props.onChangeService(obj.item);
-            } : () => {}
-          }
-        />)
-
-        onRefreshFinish = () => {
-          this.setState({ refreshing: false });
+      if (letterServices && !found) {
+        for (let x = 0; x < letterServices.length; x += 1) {
+          total += HEADER_HEIGHT;
+          total += letterServices[x].data.length * ITEM_HEIGHT;
         }
+      }
+    }
 
-        render() {
-          return (
-            <View style={styles.container}>
+    if (found) {
+      this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
+    }
+  }
 
-              <SectionList
-                refreshControl={
-                  <RefreshControl
-                    refreshing={this.state.refreshing}
-                    onRefresh={() => {
-                      this.setState({ refreshing: true });
-                      this.props.onRefresh(this.onRefreshFinish);
-                    }
-                  }
-                  />
+  keyExtractor = (item, index) => item.id;
+
+  renderItem = obj => (
+    <ServiceListItem
+      key={Math.random().toString()}
+      service={obj.item}
+      height={ITEM_HEIGHT}
+      {...this.props}
+      boldWords={this.state.boldWords}
+      onPress={this.props.onChangeService ?
+        () => {
+          this.props.servicesActions.setSelectedService(obj.item);
+          this.props.onChangeService(obj.item);
+        } : () => { }
+      }
+    />)
+
+  onRefreshFinish = () => {
+    this.setState({ refreshing: false });
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+
+        <SectionList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                this.setState({ refreshing: true });
+                this.props.onRefresh(this.onRefreshFinish);
               }
-                keyExtractor={this.keyExtractor}
-                key={Math.random().toString()}
-                enableEmptySections
-                keyboardShouldPersistTaps="always"
-                initialNumToRender={this.state.dataSource.length}
-                ref={(ref) => { this.sectionListRef = ref; }}
-                sections={this.state.dataSource}
-                renderItem={this.renderItem}
-                stickySectionHeadersEnabled
-                getItemLayout={(data, index) => (
-                    { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
-                  )}
-                extraData={this.props}
-                renderSectionHeader={item => ServiceList.renderSection(item)}
-                ItemSeparatorComponent={() => ServiceList.renderSeparator()}
-              />
-              <ListLetterFilter
-                onPress={(letter) => { this.scrollToIndex(letter); }}
-              />
-            </View>
-          );
-        }
+              }
+            />
+          }
+          keyExtractor={this.keyExtractor}
+          key={Math.random().toString()}
+          enableEmptySections
+          keyboardShouldPersistTaps="always"
+          initialNumToRender={this.state.dataSource.length}
+          ref={(ref) => { this.sectionListRef = ref; }}
+          sections={this.state.dataSource}
+          renderItem={this.renderItem}
+          stickySectionHeadersEnabled
+          getItemLayout={(data, index) => (
+            { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
+          )}
+          extraData={this.props}
+          renderSectionHeader={item => ServiceList.renderSection(item)}
+          ItemSeparatorComponent={() => ServiceList.renderSeparator()}
+        />
+        <ListLetterFilter
+          onPress={(letter) => { this.scrollToIndex(letter); }}
+        />
+      </View>
+    );
+  }
 }
 
 const mapStateToProps = state => ({

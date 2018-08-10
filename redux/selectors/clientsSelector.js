@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const clientsSelector = state => state.clientsReducer.clients;
+export const clientsSelector = state => state.clientsReducer.clients;
 
 const getClientSectionListDataSource = createSelector(
   clientsSelector,

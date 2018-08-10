@@ -1,17 +1,19 @@
 import moment from 'moment';
-import { get, isNil, isFunction, isArray, isNull, chain, groupBy, reject } from 'lodash';
+import { get, isNil, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
-import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
+import { Client, AppointmentBook, Appointment } from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
 } from '../screens/appointmentCalendarScreen/redux/appointmentScreen';
 import {
   appointmentLength,
   serializeApptToRequestData,
+  primaryClientForSelectedAppt,
 } from '../redux/selectors/newAppt';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
+export const POPULATE_STATE_FROM_APPT = 'newAppointment/POPULATE_STATE_FROM_APPT';
 
 export const ADD_GUEST = 'newAppointment/ADD_GUEST';
 export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
@@ -458,11 +460,15 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
     });
 };
 
-const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
-  const { badgeData: { isParty, primaryClient } } = appt;
+const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
+  dispatch({
+    type: SET_SELECTED_APPT,
+    data: { appt },
+  });
+  const { badgeData: { isParty, primaryClient: { id: primaryClientId } } } = appt;
   const clients = groupData.reduce((agg, currentAppt) => [...agg, currentAppt.client], []);
-  const mainClient = isParty ? clients.find(client => client.id === primaryClient.id) : appt.client;
-  const guests = reject(clients, item => item.id === mainClient.id)
+  const primaryClient = !isParty ? appt.client : primaryClientId;
+  const guests = reject(clients, item => item.id === primaryClientId)
     .map(client => ({
       client,
       guestId: uuid(),
@@ -473,7 +479,7 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
       return [...agg, guest];
     }, []);
   const serviceItems = groupData.reduce((services, appointment) => {
-    const isGuest = isParty && appointment.client.id !== mainClient.id;
+    const isGuest = isParty && appointment.client.id !== primaryClientId;
     let guest = false;
     if (isGuest) {
       guest = guests.find(itm => itm.client.id === appointment.client.id);
@@ -481,7 +487,7 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
     const fromTime = moment(appointment.fromTime, 'HH:mm:ss');
     const toTime = moment(appointment.toTime, 'HH:mm:ss');
     const length = moment.duration(toTime.diff(fromTime, true));
-    const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+    const serviceClient = guest ? get(guest, 'client', null) : primaryClient;
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -505,7 +511,7 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
     selectedAppt: appt,
     date: moment(get(appt, 'date', moment())),
     startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
-    client: mainClient,
+    client: primaryClient,
     bookedByEmployee: get(appt, 'bookedByEmployee', null),
     guests,
     conflicts: [],
@@ -513,8 +519,19 @@ const setSelectedAppt = (appt, groupData) => (dispatch, getState) => {
     remarks: get(appt, 'remarks', ''),
     existingApptIds: groupData.map(item => get(item, 'id', null)),
   };
+  debugger //eslint-disable-line
+  if (isNumber(newState.client)) {
+    return Client.getClient(newState.client)
+      .then((client) => {
+        newState.client = client;
+        return dispatch({
+          type: POPULATE_STATE_FROM_APPT,
+          data: { newState },
+        });
+      });
+  }
   return dispatch({
-    type: SET_SELECTED_APPT,
+    type: POPULATE_STATE_FROM_APPT,
     data: { newState },
   });
 };
@@ -639,7 +656,7 @@ const newAppointmentActions = {
   setRemarks,
   messageAllClients,
   messageProvidersClients,
-  setSelectedAppt,
+  populateStateFromAppt,
   modifyAppt,
 };
 export default newAppointmentActions;

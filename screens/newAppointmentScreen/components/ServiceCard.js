@@ -2,23 +2,20 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper/api';
+
 import {
   ConflictBox,
 } from '../../../components/slidePanels/SalonNewAppointmentSlide';
+import { DefaultAvatar } from '../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonCard from '../../../components/SalonCard';
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
 
-import { styles } from '../NewAppointmentScreen';
+import styles from '../styles';
 
 const ServiceInfo = props => (
   <Text style={styles.serviceInfo}>
@@ -55,7 +52,8 @@ const ServiceCard = (props) => {
   const { data } = props;
   const employee = data.employee || null;
   const isFirstAvailable = data.isFirstAvailable || false;
-  const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  // const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  const employeePhoto = employee.imagePath || null;
   const serviceName = data.service.name || data.service.description;
   return (
     <React.Fragment>
@@ -143,7 +141,12 @@ const ServiceCard = (props) => {
                     </FontAwesome>
                   }
                   image={{ uri: employeePhoto }}
-                  defaultComponent={<ActivityIndicator />}
+                  defaultComponent={(
+                    <DefaultAvatar
+                      size={24}
+                      provider={employee}
+                    />
+                  )}
                 />
                 <Text
                   style={{
@@ -190,13 +193,4 @@ const ServiceCard = (props) => {
   );
 };
 
-const mapStateToProps = (state, props) => ({
-
-});
-const mapActionsToProps = () => dispatch => ({
-
-});
-export default connect(
-  mapStateToProps,
-  mapActionsToProps,
-)(ServiceCard);
+export default ServiceCard;

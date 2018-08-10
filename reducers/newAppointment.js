@@ -25,6 +25,7 @@ import {
   SET_GUEST_CLIENT,
   SET_REMARKS,
   SET_SELECTED_APPT,
+  POPULATE_STATE_FROM_APPT,
 } from '../actions/newAppointment';
 
 const defaultState = {
@@ -60,8 +61,28 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case SET_SELECTED_APPT:
       return {
         ...state,
-        ...data.newState,
+        isLoading: true,
+        bookedByEmployee: data.appt.bookedByEmployee,
+        remarks: data.appt.remarks,
+        selectedAppt: data.appt,
+      };
+    case POPULATE_STATE_FROM_APPT:
+      return {
+        ...state,
+        isLoading: false,
+        isBooking: false,
         editType: 'edit',
+        isBookingQuickAppt: false,
+        isQuickApptRequested: true,
+        date: data.newState.date,
+        startTime: data.newState.startTime,
+        client: data.newState.client,
+        bookedByEmployee: data.newState.bookedByEmployee,
+        deletedIds: data.newState.deletedIds,
+        guests: data.newState.guests,
+        conflicts: data.newState.conflicts,
+        serviceItems: data.newState.serviceItems,
+        remarks: data.newState.remarks,
       };
     case IS_BOOKING_QUICK_APPT:
       return {

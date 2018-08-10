@@ -15,16 +15,18 @@ import { styles } from '../index';
 export default class ServiceInput extends React.Component {
   get shouldShowExtras() {
     const {
-      selectedService,
-      hasViewedAddons,
-      hasViewedRequired,
-      hasViewedRecommended,
+      selectedService = null,
+      hasViewedAddons = false,
+      hasViewedRequired = false,
+      hasViewedRecommended = false,
+      selectExtraServices = false,
     } = this.props;
-    const {
-      addons = [],
-      requiredServices = [],
-      recommendedServices = [],
-    } = selectedService || {};
+    if (!selectExtraServices) {
+      return false;
+    }
+    const addons = get(selectedService, 'addons', []);
+    const requiredServices = get(selectedService, 'requiredServices', []);
+    const recommendedServices = get(selectedService, 'recommendedServices', []);
 
     if (!hasViewedAddons && addons.length > 0) {
       return true;
@@ -45,6 +47,7 @@ export default class ServiceInput extends React.Component {
       afterDone = () => null,
     } = this.props;
     onChange(service);
+    debugger //eslint-disable-line
     if (this.shouldShowExtras) {
       this.selectExtraServices();
     }

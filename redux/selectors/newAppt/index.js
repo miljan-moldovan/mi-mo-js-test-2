@@ -6,6 +6,7 @@ import {
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import apptGridSettingsSelector from '../apptGridSettingsSelector';
+import { clientsSelector } from '../clientsSelector';
 
 const moment = extendMoment(Moment);
 
@@ -24,6 +25,8 @@ const guestsSelector = state => state.newAppointmentReducer.guests;
 const isBookingQuickApptSelector = state => state.newAppointmentReducer.isBookingQuickAppt;
 
 const isQuickRequestedSelector = state => state.newAppointmentReducer.isQuickApptRequested;
+
+const remarksSelector = state => state.newAppointmentReducer.remarks;
 
 const loadingStateSelector = state => ({
   isLoading: state.newAppointmentReducer.isLoading,
@@ -49,12 +52,13 @@ const newAppointmentInfoSelector = createSelector(
     conflictsSelector,
     editTypeSelector,
     deletedIdsSelector,
+    remarksSelector,
   ],
   (
     date, startTime, client, guests,
     bookedByEmployee, serviceItems,
     isQuickBooking, isQuickApptRequested,
-    conflicts, editType, deletedIds,
+    conflicts, editType, deletedIds, remarks,
   ) => ({
     date,
     startTime,
@@ -67,6 +71,7 @@ const newAppointmentInfoSelector = createSelector(
     conflicts,
     editType,
     deletedIds,
+    remarks,
   }),
 );
 
@@ -85,7 +90,7 @@ const isValidAppointment = createSelector(
     bookedByEmployee !== null &&
     client !== null &&
     serviceItems.length > 0 &&
-    (!conflicts.length > 0 || editType === 'edit') &&
+    !conflicts.length > 0 &&
     !isLoading &&
     !isBooking
   ),
@@ -131,7 +136,7 @@ const getEndTime = createSelector(
 const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   const service = get(serviceItem, 'service', null);
   if (!service) {
-    return;
+    return null;
   }
   const isFirstAvailable = get(service.employee, 'id', 0) === 0;
   const itemData = {
@@ -207,6 +212,8 @@ const employeeScheduleChunkedSelector = createSelector(
     return reduced;
   },
 );
+
+// const selectedApptSelector = state => state.newAppointmentReducer.selectedAppt;
 
 export {
   totalPrice,

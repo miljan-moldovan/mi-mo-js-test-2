@@ -85,7 +85,7 @@ export default class ProviderInput extends React.Component {
                     >{Icons.lock}
                     </FontAwesome>
                   )}
-                  image={{ employeePhoto }}
+                  image={{ uri: employeePhoto }}
                   defaultComponent={(
                     <DefaultAvatar
                       size={22}

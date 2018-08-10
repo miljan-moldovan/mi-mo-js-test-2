@@ -156,37 +156,10 @@ class ServicesScreen extends React.Component {
   constructor(props) {
     super(props);
     this.clearSearch();
-    const params = this.props.navigation.state.params || {};
-    const action = params.action || 'services';
-    const selectedService = params.selectedService || null;
-    const selectedAddons = params.selectedAddons || [];
-    const selectedRecommendeds = params.selectedRecommendeds || [];
-    const selectedRequired = params.selectedRequired || null;
-
-    switch (action) {
-      case 'addons':
-        this.selectAddonServices();
-        break;
-      case 'recommended':
-        this.selectRecommendedServices();
-        break;
-      case 'required':
-        this.selectRequiredService();
-        break;
-      default:
-        break;
-    }
-
     this.getServices();
-    this.props.servicesActions.setSelectedService(selectedService);
-
+    const selectedService = props.navigation.getParam('selectedService', null);
+    props.servicesActions.setSelectedService(selectedService);
     this.state = {
-      hasViewedAddons: false,
-      hasViewedRecommended: false,
-      hasViewedRequired: false,
-      selectedAddons,
-      selectedRecommendeds,
-      selectedRequired,
       prevHeaderProps: {
       },
       headerProps: {
@@ -337,12 +310,7 @@ class ServicesScreen extends React.Component {
   }
 
   render() {
-    let onChangeService = null;
-    const { state } = this.props.navigation;
     const { servicesState } = this.props;
-    // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeService) { onChangeService = this.handleOnChangeService; }
-
     return servicesState.isLoading ? (
       <View style={{
         flex: 1,
@@ -353,9 +321,9 @@ class ServicesScreen extends React.Component {
         <ActivityIndicator />
       </View>
     ) : (
-        <View style={styles.container}>
-          <View style={styles.servicesList}>
-            {(!this.props.servicesState.showCategoryServices
+      <View style={styles.container}>
+        <View style={styles.servicesList}>
+          {(!this.props.servicesState.showCategoryServices
               && !this.props.salonSearchHeaderState.showFilter
               && this.props.servicesState.filtered.length > 0) &&
               <ServiceCategoryList
@@ -365,7 +333,7 @@ class ServicesScreen extends React.Component {
               />
             }
 
-            {(!this.props.servicesState.showCategoryServices
+          {(!this.props.servicesState.showCategoryServices
               && this.props.salonSearchHeaderState.showFilter
               && this.props.servicesState.filtered.length > 0) &&
               <ServiceList
@@ -378,7 +346,7 @@ class ServicesScreen extends React.Component {
               />
             }
 
-            {(this.props.servicesState.showCategoryServices
+          {(this.props.servicesState.showCategoryServices
               && this.props.servicesState.filtered.length > 0) &&
               <CategoryServicesList
                 {...this.props}
@@ -387,9 +355,9 @@ class ServicesScreen extends React.Component {
                 categoryServices={this.props.servicesState.categoryServices}
               />
             }
-          </View>
         </View>
-      );
+      </View>
+    );
   }
 }
 

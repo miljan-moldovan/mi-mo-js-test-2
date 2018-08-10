@@ -321,7 +321,7 @@ export default class AppointmentScreen extends Component {
     const { appointments, newAppointmentActions, navigation: { navigate } } = this.props;
     const groupData = appointments.filter(appt => appt.appointmentGroupId === appointmentGroupId);
     this.setState({ visibleAppointment: false });
-    newAppointmentActions.setSelectedAppt(selectedAppointment, groupData);
+    newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
     navigate('NewAppointment');
   }
 

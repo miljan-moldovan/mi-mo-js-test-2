@@ -452,7 +452,6 @@ export class NewApptSlide extends React.Component {
       'required',
       required,
     );
-    return this.showPanel().checkConflicts();
   }
 
   setProvider = (provider) => {
@@ -873,10 +872,10 @@ export class NewApptSlide extends React.Component {
             apptBook
             label={false}
             showLength
-            hasViewedAddons
-            hasViewedRequired
-            hasViewedRecommended
             selectExtraServices
+            hasViewedAddons={this.state.hasViewedAddons}
+            hasViewedRequired={this.state.hasViewedRequired}
+            hasViewedRecommended={this.state.hasViewedRecommended}
             ref={(ref) => { this.serviceInput = ref; }}
             selectedClient={client}
             selectedProvider={provider}
