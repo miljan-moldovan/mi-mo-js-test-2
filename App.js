@@ -56,6 +56,7 @@ export default class App extends Component<{}> {
           'appointmentFormulasReducer', 'appointmentNotesReducer', 'queue',
           'providersReducer',
           'clientsReducer',
+          'clientAppointmentsReducer',
           'appointmentBookReducer',
           'newAppointmentReducer',
           'apptBookSetEmployeeOrderReducer',

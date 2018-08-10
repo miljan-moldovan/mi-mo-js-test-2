@@ -144,6 +144,10 @@ class SalonAppointmentSlide extends React.Component {
     this.setState({ showEditRemarks: false });
   }
 
+  handleShowAppt = () => {
+    this.props.goToShowAppt(this.props.appointment.client);
+  }
+
   render() {
     const {
       appointment,
@@ -170,7 +174,6 @@ class SalonAppointmentSlide extends React.Component {
       || queueStatus !== ApptQueueStatus.NotInQueue || isNoShow);
     const isCheckOutDisabled = (isGridLoading || isCheckingOut
       || queueStatus === ApptQueueStatus.CheckedOut || isNoShow);
-    console.log({queueStatus}, 'bacon')
     return this.props.appointment && (
       <ModalBox
         isOpen={this.props.visible}
@@ -412,7 +415,7 @@ class SalonAppointmentSlide extends React.Component {
                         key={Math.random()}
                         style={styles.otherOptionsBtn}
                         labelStyle={styles.otherOptionsLabels}
-                        onPress={() => { alert('Not implemented'); }}
+                        onPress={this.handleShowAppt}
                         label="Show Apps. (today.future)"
                       >
                         <View style={styles.iconContainer}>
@@ -500,10 +503,14 @@ SalonAppointmentSlide.propTypes = {
   handleModify: PropTypes.func.isRequired,
   appointment: PropTypes.shape({
     id: PropTypes.number.isRequired,
+    client: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+    }),
   }),
   onHide: PropTypes.func.isRequired,
   visible: PropTypes.bool.isRequired,
   goToCancelAppt: PropTypes.func.isRequired,
+  goToShowAppt: PropTypes.func.isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,

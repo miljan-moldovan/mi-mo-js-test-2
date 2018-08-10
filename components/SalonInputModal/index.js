@@ -19,12 +19,12 @@ class SalonInputModal extends React.Component {
 
   componentWillReceiveProps(newProps) {
     if (!this.state.visible && newProps.visible) {
-      this.setState({ visible: true });
+      this.state = { ...this.state, visible: true };
     } else if (this.state.visible && !newProps.visible) {
-      this.setState({ visible: false });
+      this.state = { ...this.state, visible: false };
     }
     if (newProps.value) {
-      this.setState({ value: newProps.value });
+      this.state = { ...this.state, value: newProps.value };
     }
   }
 
@@ -44,6 +44,7 @@ class SalonInputModal extends React.Component {
   handleChangeInput = value => this.setState({ value })
 
   render() {
+    const { isTextArea } = this.props;
     return (
       <Modal
         visible={this.state.visible}
@@ -74,10 +75,10 @@ class SalonInputModal extends React.Component {
                 <View style={styles.textAreaContainer}>
                   <TextInput
                     ref={(input) => { this.input = input; }}
-                    style={styles.textArea}
-                    multiline
-                    autoGrow
-                    numberOfLines={20}
+                    style={isTextArea ? styles.textArea : styles.textInput}
+                    multiline={isTextArea}
+                    autoGrow={isTextArea}
+                    numberOfLines={isTextArea ? 20 : 1}
                     placeholderTextColor="#727A8F"
                     placeholder={this.props.placeholder}
                     onChangeText={this.handleChangeInput}
@@ -113,6 +114,8 @@ SalonInputModal.defaultProps = {
   description: null,
   value: '',
   placeholder: '',
+  isTextArea: true,
+  onChangeText: null,
 };
 
 SalonInputModal.propTypes = {
@@ -123,6 +126,8 @@ SalonInputModal.propTypes = {
   onPressOk: PropTypes.func.isRequired,
   onPressCancel: PropTypes.func.isRequired,
   value: PropTypes.string,
+  isTextArea: PropTypes.bool,
+  onChangeText: PropTypes.func,
 };
 
 export default SalonInputModal;

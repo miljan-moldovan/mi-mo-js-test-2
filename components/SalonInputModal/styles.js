@@ -19,7 +19,6 @@ export default StyleSheet.create({
   },
   bodyContainer: {
     borderRadius: 10,
-    minHeight: 243,
     width: 270,
     backgroundColor: '#FFFFFF',
   },
@@ -50,10 +49,14 @@ export default StyleSheet.create({
   body: {
     backgroundColor: '#fff',
     paddingHorizontal: 17,
-    height: 133,
   },
   textArea: {
     height: 123,
+    paddingVertical: 5,
+    paddingRight: 5,
+  },
+  textInput: {
+    height: 30,
     paddingVertical: 5,
     paddingRight: 5,
   },
