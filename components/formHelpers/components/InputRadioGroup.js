@@ -38,7 +38,10 @@ export default class InputRadioGroup extends React.Component {
           style={[styles.inputRow, { justifyContent: 'space-between' }]}
           onPress={() => { this.onPress(option, index); }}
         >
+          { option.name && typeof option.name === 'string'
+        ? (
           <Text style={[styles.labelText, { color: '#110A24' }]}>{option.name}</Text>
+        ) : this.props.renderOption(option) }
           {selected ?
             <Icon
               name="checkCircle"

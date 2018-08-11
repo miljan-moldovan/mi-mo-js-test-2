@@ -85,19 +85,7 @@ class ClientFormulas extends Component {
   }
 
   componentWillMount() {
-    this.props.clientFormulasActions.getClientFormulas(this.state.client.id).then((response) => {
-      if (response.data.error) {
-        this.props.clientFormulasActions.setFilteredFormulas([]);
-        this.props.clientFormulasActions.setFormulas([]);
-      } else {
-        const formulas = this.props.clientFormulasState.formulas.sort(ClientFormulas.compareByDate);
-        this.props.clientFormulasActions.setFilteredFormulas(formulas);
-        this.setState({
-          activeTypes: this.existingTypes(),
-          existingTypes: this.existingTypes(),
-        });
-      }
-    });
+    this.getFormulas();
   }
 
   onPressTagFilter = (value) => {
@@ -112,6 +100,21 @@ class ClientFormulas extends Component {
     this.filterFormulas(null, this.state.showDeleted);
   }
 
+  getFormulas = () => {
+    this.props.clientFormulasActions.getClientFormulas(this.state.client.id).then((response) => {
+      if (response.data.error) {
+        this.props.clientFormulasActions.setFilteredFormulas([]);
+        this.props.clientFormulasActions.setFormulas([]);
+      } else {
+        const formulas = this.props.clientFormulasState.formulas.sort(ClientFormulas.compareByDate);
+        this.props.clientFormulasActions.setFilteredFormulas(formulas);
+        this.setState({
+          activeTypes: this.existingTypes(),
+          existingTypes: this.existingTypes(),
+        });
+      }
+    });
+  }
 
   getFormulaTypeName = (id) => {
     const type = find(formulaTypes, { id });
@@ -309,9 +312,15 @@ class ClientFormulas extends Component {
           }}
           handlePress={() => {
             const { navigate } = this.props.navigation;
-            navigate('ClientFormula');
-          //  alert('Screen Not Implemented');
+            navigate('ClientFormula', {
+              mode: 'modal',
+              actionType: 'new',
+              ...this.props,
+              client: this.props.client,
+              onNavigateBack: this.getFormulas,
+            });
           }}
+
         >
           <SalonIcon tintColor="#FFFFFF" icon="plus" size={21} />
         </FloatingButton>

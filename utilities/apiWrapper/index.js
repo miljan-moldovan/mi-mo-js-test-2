@@ -11,6 +11,7 @@ import * as Services from './apiServicesResources/services';
 import * as Settings from './apiServicesResources/settings';
 import * as Store from './apiServicesResources/store';
 import * as TurnAway from './apiServicesResources/turnAway';
+import * as Formula from './apiServicesResources/formula';
 import { getEmployeePhoto } from './api';
 
 export {
@@ -28,4 +29,5 @@ export {
   Store,
   TurnAway,
   getEmployeePhoto,
+  Formula,
 };

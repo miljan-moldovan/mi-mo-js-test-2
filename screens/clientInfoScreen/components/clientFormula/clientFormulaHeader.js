@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   rightButtonText: {
-    color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
@@ -106,8 +105,11 @@ const styles = StyleSheet.create({
 });
 
 
-export default class ClientNoteHeader extends React.Component {
+export default class ClientFormulaHeader extends React.Component {
   render() {
+    const { params } = this.props.rootProps.navigation.state;
+    const canSave = params.canSave || false;
+
     return (<View style={styles.header}>
 
       <SalonTouchableOpacity
@@ -121,15 +123,16 @@ export default class ClientNoteHeader extends React.Component {
         </View>
       </SalonTouchableOpacity>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>New Note</Text>
+        <Text style={styles.titleText}>New Formula</Text>
       </View>
       <SalonTouchableOpacity
         wait={3000}
+        disabled={!canSave}
         style={styles.rightButton}
         onPress={() => { this.props.rootProps.navigation.state.params.handlePress(); }}
       >
         <View style={styles.rightButtonContainer}>
-          <Text style={styles.rightButtonText}>
+          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
             Save
           </Text>
         </View>

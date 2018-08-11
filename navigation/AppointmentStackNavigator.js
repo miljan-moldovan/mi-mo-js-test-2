@@ -20,8 +20,9 @@ import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientNotes from './../screens/clientNotes';
 import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
-import ClientNote from './../screens/clientInfoScreen/components/clientNotes/clientNote';
-import ClientFormula from './../screens/clientInfoScreen/components/clientFormulas/clientFormula';
+import ClientNote from './../screens/clientInfoScreen/components/clientNote';
+import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
@@ -172,6 +173,10 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ClientFormula: {
       screen: ClientFormula,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientCopyFormula: {
+      screen: ClientCopyFormulaScreen,
       navigationOptions: { tabBarVisible: false },
     },
     ClientInfo: {

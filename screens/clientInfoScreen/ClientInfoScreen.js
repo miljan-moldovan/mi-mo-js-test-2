@@ -64,6 +64,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  leftButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+  },
+  backIcon: {
+    fontSize: 24,
+    color: '#fff',
+    marginRight: 8,
+  },
+  backContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 });
 
 export default class ClientInfoScreen extends React.Component {
@@ -90,9 +104,14 @@ export default class ClientInfoScreen extends React.Component {
       ),
       headerLeft: (
         <SalonTouchableOpacity onPress={() => { navigation.goBack(); }}>
-          <Text style={styles.leftButtonText}>
-            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-          </Text>
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
+            <Text style={styles.leftButtonText}>
+                    Back
+            </Text>
+          </View>
         </SalonTouchableOpacity>
       ),
       headerRight: (

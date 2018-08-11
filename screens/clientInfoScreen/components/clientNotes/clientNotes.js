@@ -250,6 +250,7 @@ class ClientNotesScreen extends Component {
   }
 
   editNote(note) {
+
     this.props.clientNotesActions.setOnEditionNote(note);
     const { navigate } = this.props.navigation;
     const { item } = this.props.navigation.state.params;
@@ -268,8 +269,8 @@ class ClientNotesScreen extends Component {
   }
 
   showActionSheet = (note) => {
-    this.setState({ note });
-    this.SalonActionSheet.show();
+
+    this.setState({ note }, () => { this.SalonActionSheet.show(); });
   };
 
   handlePress = (i) => {
@@ -280,6 +281,7 @@ class ClientNotesScreen extends Component {
   }
 
   handlePressAction(i) {
+
     switch (i) {
       case 0:
         this.editNote(this.state.note);
@@ -445,7 +447,7 @@ class ClientNotesScreen extends Component {
                         <View style={styles.noteHeaderRight}>
                           <SalonTouchableOpacity
                             style={styles.dotsButton}
-                            onPress={this.showActionSheet}
+                            onPress={() => { this.showActionSheet(item); }}
                           >
                             <SalonIcon
                               size={16}

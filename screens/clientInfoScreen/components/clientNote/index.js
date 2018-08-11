@@ -57,8 +57,7 @@ class ClientNote extends Component {
     const { client } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params.actionType === 'update') {
-      note = JSON.parse(JSON.stringify(this.props.clientNotesState.onEditionNote));
-
+      note = Object.assign({}, this.props.clientNotesState.onEditionNote);
       const cachedForm = fetchFormCache('ClientNoteUpdate', this.props.clientNotesState.onEditionNote.id, this.props.formCache);
 
       if (this.props.clientNotesState.onEditionNote.id === cachedForm.id) {
@@ -124,45 +123,67 @@ class ClientNote extends Component {
     this.props.navigation.goBack();
   }
 
-  isNoteValid() {
-    if (this.state.note.text.length === 0) {
-      return false;
-    } else if (this.state.note.enteredBy === '') {
-      return false;
-    }
-
-    return true;
-  }
+  // isNoteValid() {
+  //   if (this.state.note.text.length === 0) {
+  //     return false;
+  //   } else if (this.state.note.enteredBy === '') {
+  //     return false;
+  //   }
+  //
+  //   return true;
+  // }
 
   saveNote() {
-    if (this.isNoteValid()) {
-      const notes = this.props.clientNotesState.notes;
-      const { client } = this.props.navigation.state.params;
+    // if (this.isNoteValid()) {
+    const notes = this.props.clientNotesState.notes;
+    const { client } = this.props.navigation.state.params;
 
-      if (this.props.navigation.state.params.actionType === 'new') {
-        const note = this.state.note;
-        note.notes = note.text;
-        note.EnteredBy = note.updatedBy;
-        this.props.clientNotesActions.postClientNotes(client.id, note)
-          .then((response) => {
-            this.props.clientNotesActions.selectProvider(null);
-            this.props.navigation.goBack();
-            this.props.navigation.state.params.onNavigateBack();
-          }).catch((error) => {
-          });
-      } else if (this.props.navigation.state.params.actionType === 'update') {
-        const note = this.state.note;
-        note.notes = note.text;
-        this.props.clientNotesActions.putClientNotes(client.id, note)
-          .then((response) => {
-            this.props.clientNotesActions.selectProvider(null);
-            this.props.navigation.goBack();
-            this.props.navigation.state.params.onNavigateBack();
-          }).catch((error) => {
-          });
-      }
+    if (this.props.navigation.state.params.actionType === 'new') {
+      const note = this.state.note;
+      note.notes = note.text;
+      note.EnteredBy = note.updatedBy;
+      this.props.clientNotesActions.postClientNotes(client.id, note)
+        .then((response) => {
+          this.props.clientNotesActions.selectProvider(null);
+          this.props.navigation.goBack();
+          this.props.navigation.state.params.onNavigateBack();
+        }).catch((error) => {
+        });
+    } else if (this.props.navigation.state.params.actionType === 'update') {
+      const note = this.state.note;
+      note.notes = note.text;
+      this.props.clientNotesActions.putClientNotes(client.id, note)
+        .then((response) => {
+          this.props.clientNotesActions.selectProvider(null);
+          this.props.navigation.goBack();
+          this.props.navigation.state.params.onNavigateBack();
+        }).catch((error) => {
+        });
+    }
+    // } else {
+    //   alert('Please fill all the fields');
+    // }
+  }
+
+  checkCanSave = () => {
+    
+
+
+    let isNoteValid = false;
+    if (this.props.navigation.state.params.actionType === 'update') {
+      const { text } = this.state.note;
+      isNoteValid = text && text.length;
     } else {
-      alert('Please fill all the fields');
+      const { note } = this.state;
+      isNoteValid = note.text &&
+        note.text.length > 0 &&
+        note.date;
+    }
+
+    if (isNoteValid) {
+      this.props.navigation.setParams({ canSave: true });
+    } else {
+      this.props.navigation.setParams({ canSave: false });
     }
   }
 
@@ -205,7 +226,7 @@ class ClientNote extends Component {
   dismissOnSelect() {
     const { navigate } = this.props.navigation;
     this.setState({ isVisible: true });
-    navigate('ClientNote');
+    navigate('ClientNote', { ...this.props });
   }
 
   render() {
@@ -236,67 +257,62 @@ class ClientNote extends Component {
             </InputGroup>
             <SectionTitle value="NOTE" style={{ height: 38 }} />
             <InputGroup>
-              {[<InputText
+              <InputText
                 placeholder="Write Note"
                 onChangeText={(txtNote) => {
                         const note = this.state.note;
                         note.text = txtNote;
                         this.shouldSave = true;
-                        this.setState({ note });
+                        this.setState({ note }, this.checkCanSave);
                     }}
                 value={this.state.note.text}
-              />]}
-
+              />
             </InputGroup>
             <SectionTitle value="TYPES" style={{ height: 37 }} />
             <InputGroup >
-              {[<InputSwitch
+              <InputSwitch
                 style={{ height: 43, flex: 1 }}
                 textStyle={{ color: '#000000' }}
                 onChange={(state) => {
                   const note = this.state.note;
                   note.forSales = !this.state.forSales;
                   this.shouldSave = true;
-                  this.setState({ note, forSales: !this.state.forSales });
+                  this.setState({ note, forSales: !this.state.forSales }, this.checkCanSave);
                 }}
                 value={this.state.forSales}
                 text="Sales"
-              />,
-                <InputDivider />,
-                <InputSwitch
-                  style={{ height: 43 }}
-                  textStyle={{ color: '#000000' }}
-                  onChange={(state) => {
+              />
+              <InputDivider />
+              <InputSwitch
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
                     const note = this.state.note;
                     note.forClient = !this.state.forClient;
                     this.shouldSave = true;
-                    this.setState({ note, forClient: !this.state.forClient });
+                    this.setState({ note, forClient: !this.state.forClient }, this.checkCanSave);
                   }}
-                  value={this.state.forClient}
-                  text="Client"
-                />,
-
-
-                <InputDivider />,
-                <InputSwitch
-                  style={{ height: 43 }}
-                  textStyle={{ color: '#000000' }}
-                  onChange={(state) => {
+                value={this.state.forClient}
+                text="Client"
+              />
+              <InputDivider />
+              <InputSwitch
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
                   const note = this.state.note;
                   note.forQueue = !this.state.forQueue;
                   this.shouldSave = true;
-                  this.setState({ note, forQueue: state });
+                  this.setState({ note, forQueue: state }, this.checkCanSave);
                  }}
-                  value={this.state.forQueue}
-                  text="Queue"
-                />]}
-
-
+                value={this.state.forQueue}
+                text="Queue"
+              />
             </InputGroup>
             <SectionDivider style={{ height: 37 }} />
 
             <InputGroup style={{ flex: 1, flexDirection: 'row' }}>
-              {[<InputDate
+              <InputDate
                 style={{ flex: 1 }}
                 placeholder="Expire Date"
                 noIcon={this.state.note.expiration == null}
@@ -304,7 +320,7 @@ class ClientNote extends Component {
                 const { note } = this.state;
                 note.expiration = selectedDate;
                 this.shouldSave = true;
-                this.setState({ note });
+                this.setState({ note }, this.checkCanSave);
               }}
                 valueStyle={this.state.note.expiration == null ? {
                   fontSize: 14,
@@ -313,8 +329,7 @@ class ClientNote extends Component {
                   fontFamily: 'Roboto-Regular',
                 } : {}}
                 selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
-              />]}
-
+              />
             </InputGroup>
           </KeyboardAwareScrollView>
         </View>
