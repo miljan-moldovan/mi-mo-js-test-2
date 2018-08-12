@@ -9,7 +9,7 @@ import {
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import ClientDetails from './components/ClientDetails';
+import ClientDetails from './components/clientDetails';
 import ClientFormulas from './components/clientFormulas';
 import ClientNotes from './components/clientNotes';
 
@@ -64,6 +64,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  leftButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+  },
+  backIcon: {
+    fontSize: 24,
+    color: '#fff',
+    marginRight: 8,
+  },
+  backContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 });
 
 export default class ClientInfoScreen extends React.Component {
@@ -90,9 +104,14 @@ export default class ClientInfoScreen extends React.Component {
       ),
       headerLeft: (
         <SalonTouchableOpacity onPress={() => { navigation.goBack(); }}>
-          <Text style={styles.leftButtonText}>
-            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-          </Text>
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
+            <Text style={styles.leftButtonText}>
+                    Back
+            </Text>
+          </View>
         </SalonTouchableOpacity>
       ),
       headerRight: (
@@ -114,11 +133,16 @@ export default class ClientInfoScreen extends React.Component {
 
     this.props.navigation.setParams({ handleDone: this.handleDone, canSave: false, showDoneButton: true });
 
+    const client = params && params.client ? params.client : null;
+    const isWalkIn = client && client.id === 1;
+    let editionMode = params && params.editionMode ? params.editionMode : true;
+    editionMode = editionMode && !isWalkIn;
+
     this.state = {
       index: 0,
       loading: true,
-      editionMode: params && params.editionMode ? params.editionMode : true,
-      client: params && params.client ? params.client : null,
+      editionMode,
+      client,
       routes: [
         { key: '0', title: 'Details' },
         { key: '1', title: 'Notes' },
@@ -128,9 +152,7 @@ export default class ClientInfoScreen extends React.Component {
   }
 
   componentWillMount() {
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 2000);
+
   }
 
   handleIndexChange = (index) => {
@@ -146,7 +168,6 @@ export default class ClientInfoScreen extends React.Component {
   }
 
   setHandleDone = (handleDone) => {
-
     this.props.navigation.setParams({ handleDone });
   }
 
@@ -179,7 +200,6 @@ export default class ClientInfoScreen extends React.Component {
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     2: () => <ClientFormulas editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
   })
-
 
   render() {
     return (

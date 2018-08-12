@@ -3,9 +3,9 @@ import {
   View,
   ScrollView,
   Text,
-  StyleSheet,
   FlatList,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { find } from 'lodash';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
@@ -15,190 +15,20 @@ import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import FloatingButton from '../../../../components/FloatingButton';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-    flexDirection: 'column',
-  },
-  header: {
-    // flex: 2,
-    // paddingVertical: 10,
-    alignSelf: 'stretch',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    backgroundColor: '#F1F1F1',
-    flexDirection: 'column',
-  },
-  formulasScroller: {
-    flex: 9,
-    backgroundColor: '#F1F1F1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-  },
-  formulaHeaderLeft: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    flex: 1,
-  },
-  formulaHeaderRight: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    flex: 1,
-  },
-  topSearchBar: {
-    padding: 0,
-    paddingHorizontal: 0,
-    margin: 0,
-    backgroundColor: 'transparent',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: 53,
-  },
-  tagsBar: {
-    paddingHorizontal: 8,
-    paddingVertical: 0,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
-    height: 38,
-  },
-  formulasContainer: {
-    paddingTop: 0,
-    backgroundColor: 'transparent',
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  formulaTags: {
-    height: 17,
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  topSearchBarText: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 30,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-  },
-  showDeletedButton: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  showDeletedText: {
-    color: '#115ECD',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-  },
-  showDeletedButtonContainer: {
-    minHeight: 40,
-    marginBottom: 40,
-  },
-  formulaText: {
-    color: '#5E5F61',
-    fontSize: 10,
-    fontFamily: 'Roboto-Light',
-    fontWeight: 'normal',
-    marginVertical: 5,
-  },
-  formulaTextTitle: {
-    color: '#2E3032',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-    fontWeight: 'normal',
-  },
-  formulaAuthor: {
-    color: '#2F3142',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  formulaBy: {
-    paddingHorizontal: 5,
-    color: '#4D5067',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  checkIcon: {
-    width: 10,
-    height: 13,
-    marginLeft: 5,
-    paddingTop: 1,
-    //  resizeMode: 'contain',
-    tintColor: '#FFFFFF',
-  },
-  dotsIcon: {
-    width: 13,
-    height: 16,
-    marginLeft: 5,
-    paddingTop: 1,
-    // resizeMode: 'contain',
-    tintColor: '#115ECD',
-  },
-  formulaTypeTag: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    backgroundColor: '#082e66',
-  },
-  formulaType: {
-    fontSize: 10,
-    lineHeight: 12,
-    fontFamily: 'Roboto',
-    color: '#FFFFFF',
-  },
-  boldText: {
-    fontWeight: 'bold',
-  },
-  italicText: {
-    fontStyle: 'italic',
-  },
-  fixedBtnContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  fixedBtnText: {
-    fontSize: 12,
-    lineHeight: 12,
-    color: '#FFFFFF',
-  },
-  fixedBtnIconContainer: {
-    height: 24,
-    width: 24,
-    borderRadius: 24 / 2,
-    backgroundColor: '#4D5067',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
+import styles from './stylesClientFormulas';
+import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 
 const formulaTypes = [
-  { id: 0, name: 'Color' },
-  { id: 1, name: 'Perm' },
-  { id: 2, name: 'Skin' },
-  { id: 3, name: 'Nail' },
-  { id: 4, name: 'Massage' },
-  { id: 5, name: 'Hair' },
-  { id: -1, name: 'NULL' },
+  { id: formulaTypesEnum.Color, name: 'Color' },
+  { id: formulaTypesEnum.Perm, name: 'Perm' },
+  { id: formulaTypesEnum.Skin, name: 'Skin' },
+  { id: formulaTypesEnum.Nail, name: 'Nail' },
+  { id: formulaTypesEnum.Massage, name: 'Massage' },
+  { id: formulaTypesEnum.Hair, name: 'Hair' },
+  { id: formulaTypesEnum.NULL, name: 'NULL' },
 ];
 
-
-export default class ClientFormulas extends Component {
+class ClientFormulas extends Component {
   static flexFilter(list, info) {
     let matchesFilter = [];
     const matches = [];
@@ -255,13 +85,28 @@ export default class ClientFormulas extends Component {
   }
 
   componentWillMount() {
+    this.getFormulas();
+  }
+
+  onPressTagFilter = (value) => {
+    const filterTypes = this.state.activeTypes;
+
+    if (filterTypes.indexOf(value) > -1) {
+      filterTypes.splice(filterTypes.indexOf(value), 1);
+    } else {
+      filterTypes.push(value);
+    }
+    this.setState({ activeTypes: filterTypes });
+    this.filterFormulas(null, this.state.showDeleted);
+  }
+
+  getFormulas = () => {
     this.props.clientFormulasActions.getClientFormulas(this.state.client.id).then((response) => {
       if (response.data.error) {
         this.props.clientFormulasActions.setFilteredFormulas([]);
         this.props.clientFormulasActions.setFormulas([]);
       } else {
         const formulas = this.props.clientFormulasState.formulas.sort(ClientFormulas.compareByDate);
-        console.log(this.props.clientFormulasState.formulas);
         this.props.clientFormulasActions.setFilteredFormulas(formulas);
         this.setState({
           activeTypes: this.existingTypes(),
@@ -269,6 +114,11 @@ export default class ClientFormulas extends Component {
         });
       }
     });
+  }
+
+  getFormulaTypeName = (id) => {
+    const type = find(formulaTypes, { id });
+    return type.name;
   }
 
   existingTypes = () => {
@@ -285,25 +135,6 @@ export default class ClientFormulas extends Component {
     }
 
     return existing;
-  }
-
-
-  onPressTagFilter = (value) => {
-    const filterTypes = this.state.activeTypes;
-
-    if (filterTypes.indexOf(value) > -1) {
-      filterTypes.splice(filterTypes.indexOf(value), 1);
-    } else {
-      filterTypes.push(value);
-    }
-    this.setState({ activeTypes: filterTypes });
-    this.filterFormulas(null, this.state.showDeleted);
-  }
-
-
-  getFormulaTypeName = (id) => {
-    const type = find(formulaTypes, { id });
-    return type.name;
   }
 
   filterFormulas(searchText, showDeleted) {
@@ -481,31 +312,37 @@ export default class ClientFormulas extends Component {
           }}
           handlePress={() => {
             const { navigate } = this.props.navigation;
-            navigate('ClientFormula');
-          //  alert('Screen Not Implemented');
+            navigate('ClientFormula', {
+              mode: 'modal',
+              actionType: 'new',
+              ...this.props,
+              client: this.props.client,
+              onNavigateBack: this.getFormulas,
+            });
           }}
+
         >
           <SalonIcon tintColor="#FFFFFF" icon="plus" size={21} />
         </FloatingButton>
-        {
-        //   <SalonBtnFixedBottom
-        //   backgroundColor="#727A8F"
-        //   onPress={() => {
-        //     const { navigate } = this.props.navigation;
-        //     navigate('ClientFormula');
-        //   }}
-        //   valueSize={13}
-        //   valueColor="#FFFFFF"
-        // >
-        //   <View style={styles.fixedBtnContainer}>
-        //     <Text style={styles.fixedBtnText}>Add Formula</Text>
-        //     <View style={styles.fixedBtnIconContainer}>
-        //       <SalonIcon tintColor="#FFFFFF" icon="plus" size={12} />
-        //     </View>
-        //   </View>
-        // </SalonBtnFixedBottom>
-      }
       </View>
     );
   }
 }
+
+
+ClientFormulas.defaultProps = {
+
+};
+
+ClientFormulas.propTypes = {
+  clientFormulasActions: PropTypes.shape({
+    getClientFormulas: PropTypes.func.isRequired,
+    setFilteredFormulas: PropTypes.func.isRequired,
+    setFormulas: PropTypes.func.isRequired,
+  }).isRequired,
+  clientFormulasState: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
+
+export default ClientFormulas;

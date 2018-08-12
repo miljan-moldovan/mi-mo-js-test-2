@@ -1,33 +1,67 @@
 // @flow
 import {
-  SETTINGS_BY_NAME_RECEIVED,
+  SETTINGS_BY_NAME,
+  SETTINGS_BY_NAME_SUCCESS,
   SETTINGS_BY_NAME_FAILED,
-} from '../actions/constants';
+  SETTINGS,
+  SETTINGS_SUCCESS,
+  SETTINGS_FAILED,
+} from '../actions/settings';
 
 const initialState = {
   loading: false,
-  data: {}
+  data: {},
+  settings: [],
 };
 
-export default (state = initialState, action) => {
-  const {type, data, error} = action;
+export default function settingsReducer(state = initialState, action) {
+  const { type, data, error } = action;
 
-  switch(type) {
-    case SETTINGS_BY_NAME_RECEIVED:
+  switch (type) {
+    case SETTINGS:
       return {
         ...state,
-        loading: false,
+        isLoading: true,
+      };
+    case SETTINGS_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        settings: data.settings,
+        isLoading: false,
+      };
+    case SETTINGS_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: data.error,
+        settings: [],
+      };
+
+
+    case SETTINGS_BY_NAME:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case SETTINGS_BY_NAME_SUCCESS:
+      return {
+        ...state,
+        error: null,
         data: {
           ...state.data,
-          [data.settingName]: data.settingValue
-        }
+          [data.settingName]: data.settingValue,
+        },
+        isLoading: false,
       };
-    case SETTINGS_BY_NAME_RECEIVED:
+    case SETTINGS_BY_NAME_FAILED:
       return {
         ...state,
-        loading: false,
-        error: data.error
+        isLoading: false,
+        error: data.error,
+        settings: [],
       };
+
     default:
       return state;
   }

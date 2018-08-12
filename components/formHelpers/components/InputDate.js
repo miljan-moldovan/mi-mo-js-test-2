@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Text,
   View,
   ViewPropTypes,
 } from 'react-native';
@@ -21,38 +20,62 @@ export default class InputDate extends React.Component {
     };
   }
 
+  componentDidMount() {
+    if (this.props.required) {
+      this.validate(this.props.selectedDate, true);
+    }
+  }
+
+  onPressDatePicker = (selectedDate) => {
+    this.setState({ showModal: false });
+
+    if (this.props.required) {
+      this.validate(selectedDate, false);
+    }
+    this.props.onPress(selectedDate);
+  }
+
+  onPressButton = () => {
+    this.setState({ showModal: !this.state.showModal });
+  }
+
+  onPressCancel = () => {
+    this.onPressDatePicker(null);
+  }
+
+  validate = (selectedDate, isFirstValidation = false) => {
+    const isValid = moment(selectedDate).isValid();
+    this.props.onValidated(isValid, isFirstValidation);
+  };
+
   render() {
+    const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
+
     return (
       <View style={{ flexDirection: 'row', flex: 1 }}>
         <SalonDatePicker
           isVisible={this.state.showModal}
-          onPress={(selectedDate) => {
-              this.setState({ showModal: false });
-              this.props.onPress(selectedDate);
-            }}
+          onPress={this.onPressDatePicker}
           selectedDate={this.props.selectedDate}
         />
         <InputButton
+          labelStyle={labelStyle}
           style={{ flex: 1 }}
           valueStyle={this.props.valueStyle}
-          onPress={() => {
-              this.setState({ showModal: !this.state.showModal });
-            }}
+          onPress={this.onPressButton}
           noIcon
           label={this.props.placeholder}
           value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format('YYYY-MM-DD') : this.props.selectedDate}
         />
         {!this.props.noIcon && (
-        <SalonTouchableOpacity
-          onPress={() => {
-                this.props.onPress(null);
-              }}
-          style={styles.dateCancelButtonStyle}
-        >
-          <View style={styles.dateCancelStyle}>
-            <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
-          </View>
-        </SalonTouchableOpacity>
+          <SalonTouchableOpacity
+            onPress={this.onPressCancel}
+            style={styles.dateCancelButtonStyle}
+          >
+            <View style={styles.dateCancelStyle}>
+              <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
+            </View>
+          </SalonTouchableOpacity>
           )}
       </View>
     );

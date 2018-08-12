@@ -1,5 +1,7 @@
-export default [
-  { key: 1, value: 'unspecified' },
-  { key: 2, value: 'male' },
-  { key: 3, value: 'female' },
-];
+const Genders = {
+  Unspecified: 1,
+  Male: 2,
+  Female: 3,
+};
+
+export default Genders;
