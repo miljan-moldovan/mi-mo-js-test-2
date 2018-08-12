@@ -133,6 +133,9 @@ export default class NewAppointmentScreen extends React.Component {
       employee: bookedByEmployee,
       fromTime,
       toTime,
+      bookBetween: get(service, 'bookBetween', false),
+      gapTime: moment.duration(get(service, 'gapDuration', 0)),
+      afterTime: moment.duration(get(service, 'afterDuration', 0)),
     };
 
     // if (service.requireRoom) {

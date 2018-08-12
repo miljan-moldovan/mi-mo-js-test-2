@@ -23,6 +23,7 @@ import {
   SalonTimePicker,
   LabeledTextInput,
 } from '../../components/formHelpers';
+import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { Label } from '../../node_modules/native-base';
 
@@ -82,6 +83,24 @@ export default class ModifyApptServiceScreen extends React.Component {
     this.props.navigation.setParams({ handleSave: this.handleSave });
   }
 
+
+  componentDidMount() {
+    this.validate();
+  }
+
+  onPressRemove = () => {
+    const params = this.props.navigation.state.params || {};
+    if (params.onRemoveService) {
+      params.onRemoveService();
+    }
+    return this.props.navigation.goBack();
+  }
+
+
+  setPrice = (price) => {
+    this.setState({ price: price.replace(/\D/g, '') });
+  }
+
   getStateFromParams = () => {
     const params = this.props.navigation.state.params || {};
     const serviceItem = params.serviceItem || false;
@@ -91,7 +110,10 @@ export default class ModifyApptServiceScreen extends React.Component {
     const state = {
       date,
       price,
+      toast: null,
       canSave: false,
+      endTimePickerOpen: false,
+      startTimePickerOpen: false,
       canRemove: !!params.onRemoveService,
       id: get(serviceItem.service, 'id', null),
       selectedClient: serviceItem.guestId ? get(serviceItem.service, 'client', null) : client,
@@ -101,12 +123,10 @@ export default class ModifyApptServiceScreen extends React.Component {
       endTime: get(serviceItem.service, 'toTime', moment().add(15, 'm')),
       requested: get(serviceItem.service, 'requested', true),
       bookBetween: get(serviceItem.service, 'bookBetween', false),
-      gapTime: get(serviceItem.service, 'gapTime', 0),
-      afterTime: get(serviceItem.service, 'afterTime', 0),
+      gapTime: moment.duration(get(serviceItem.service, 'gapTime', 0)),
+      afterTime: moment.duration(get(serviceItem.service, 'afterTime', 0)),
       room: get(serviceItem.service, 'room', null),
       resource: get(serviceItem.service, 'resource', null),
-      startTimePickerOpen: false,
-      endTimePickerOpen: false,
     };
 
     state.length = moment.duration(state.endTime.diff(state.startTime));
@@ -114,9 +134,31 @@ export default class ModifyApptServiceScreen extends React.Component {
     return state;
   }
 
-  componentDidMount() {
-    this.validate();
+  validate = () => {
+    const {
+      selectedProvider,
+      selectedService,
+    } = this.state;
+    let valid = false;
+    if (selectedProvider !== null || selectedService !== null) {
+      valid = true;
+    }
+    this.setState({ canSave: valid });
+    this.props.navigation.setParams({ canSave: valid });
   }
+
+  toggleStartTimePicker = () => this.setState(({ startTimePickerOpen }) => ({
+    startTimePickerOpen: !startTimePickerOpen,
+  }))
+
+  toggleEndTimePicker = () => this.setState(({ endTimePickerOpen }) => ({
+    endTimePickerOpen: !endTimePickerOpen,
+  }))
+
+  cancelButton = () => ({
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: navigation => navigation.goBack(),
+  })
 
   handleSelectService = (selectedService) => {
     const { startTime } = this.state;
@@ -131,6 +173,9 @@ export default class ModifyApptServiceScreen extends React.Component {
       endTime,
       length,
       price,
+      bookBetween: get(selectedService, 'bookBetween', false),
+      gapTime: moment.duration(get(selectedService, 'gapDuration', 0)),
+      afterTime: moment.duration(get(selectedService, 'afterDuration', 0)),
     }, this.validate);
   }
 
@@ -165,8 +210,8 @@ export default class ModifyApptServiceScreen extends React.Component {
         toTime: endTime,
         requested,
         bookBetween,
-        gapTime: moment().startOf('day').add(gapTime, 'minutes').format('HH:mm:ss'),
-        afterTime: moment().startOf('day').add(afterTime, 'minutes').format('HH:mm:ss'),
+        gapTime,
+        afterTime,
         room,
         resource,
         length,
@@ -191,7 +236,13 @@ export default class ModifyApptServiceScreen extends React.Component {
     const { startTime } = this.state;
     const endTime = moment(endTimeDateObj);
     if (startTime.isAfter(endTime)) {
-      return alert("Start time can't be after end time");
+      return this.setState({
+        toast: {
+          description: 'Start time can\'t be after end time!',
+          type: 'error',
+          btnRight: 'OK',
+        },
+      });
     }
     return this.setState({
       endTime,
@@ -203,7 +254,13 @@ export default class ModifyApptServiceScreen extends React.Component {
     const { endTime } = this.state;
     const startTime = moment(startTimeDateObj);
     if (startTime.isAfter(endTime)) {
-      return alert("Start time can't be after end time");
+      return this.setState({
+        toast: {
+          description: 'Start time can\'t be after end time!',
+          type: 'error',
+          btnRight: 'OK',
+        },
+      });
     }
     return this.setState({
       startTime,
@@ -211,43 +268,37 @@ export default class ModifyApptServiceScreen extends React.Component {
     }, this.validate);
   }
 
-  onPressRemove = () => {
-    const params = this.props.navigation.state.params || {};
-    if (params.onRemoveService) {
-      params.onRemoveService();
+  handleChangeGapTime = (action, time) => {
+    const { afterTime, length } = this.state;
+    const gapTime = moment.duration(time, 'minute');
+    if (moment.duration(gapTime).add(afterTime).asMilliseconds() > length.asMilliseconds()) {
+      return this.setState({
+        toast: {
+          description: 'Sum of after and gap durations\ncan\'t be more than service length',
+          type: 'error',
+          btnRight: 'OK',
+        },
+      });
     }
-    return this.props.navigation.goBack();
+    return this.setState({ gapTime });
   }
 
-  cancelButton = () => ({
-    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
-    leftButtonOnPress: navigation => navigation.goBack(),
-  })
-
-  toggleStartTimePicker = () => this.setState(({ startTimePickerOpen }) => ({
-    startTimePickerOpen: !startTimePickerOpen,
-  }))
-
-  toggleEndTimePicker = () => this.setState(({ endTimePickerOpen }) => ({
-    endTimePickerOpen: !endTimePickerOpen,
-  }))
-
-  validate = () => {
-    const {
-      selectedProvider,
-      selectedService,
-    } = this.state;
-    let valid = false;
-    if (selectedProvider !== null || selectedService !== null) {
-      valid = true;
+  handleChangeAfterTime = (action, time) => {
+    const { gapTime, length } = this.state;
+    const afterTime = moment.duration(time, 'minute');
+    if (moment.duration(gapTime).add(afterTime).asMilliseconds() > length.asMilliseconds()) {
+      return this.setState({
+        toast: {
+          description: 'Sum of after and gap durations\ncan\'t be more than service length',
+          type: 'error',
+          btnRight: 'OK',
+        },
+      });
     }
-    this.setState({ canSave: valid });
-    this.props.navigation.setParams({ canSave: valid });
+    return this.setState({ afterTime });
   }
 
-  setPrice = (price) => {
-    this.setState({ price: price.replace(/\D/g, '') });
-  }
+  hideToast = () => this.setState({ toast: null })
 
   render() {
     const {
@@ -264,6 +315,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       room,
       price,
       resource,
+      toast,
     } = this.state;
     return (
       <ScrollView style={styles.container}>
@@ -299,8 +351,8 @@ export default class ModifyApptServiceScreen extends React.Component {
           <InputLabel
             label="Price"
             value={`$ ${price}`}
-            // keyboardType="numeric"
-            // onChangeText={this.setPrice}
+          // keyboardType="numeric"
+          // onChangeText={this.setPrice}
           />
         </InputGroup>
         <SectionTitle value="Time" />
@@ -343,24 +395,24 @@ export default class ModifyApptServiceScreen extends React.Component {
             <View>
               <InputDivider />
               <InputNumber
-                value={gapTime}
-                onChange={(action, gapTime) => this.setState({ gapTime })}
-                step={15} // TODO should be apptgrid step
+                value={gapTime.asMinutes()}
+                onChange={this.handleChangeGapTime}
+                step={this.props.apptGridSettings.step} // TODO should be apptgrid step
                 label="Gap Time"
                 singularText="min"
                 pluralText="min"
               />
               <InputDivider />
               <InputNumber
-                value={afterTime}
-                onChange={(action, afterTime) => this.setState({ afterTime })}
+                value={afterTime.asMinutes()}
+                onChange={this.handleChangeAfterTime}
                 label="After"
-                step={15}
+                step={this.props.apptGridSettings.step}
                 singularText="min"
                 pluralText="min"
               />
             </View>
-        )}
+          )}
         </InputGroup>
         <SectionTitle value="Room & Resource" />
         <InputGroup>
@@ -389,6 +441,16 @@ export default class ModifyApptServiceScreen extends React.Component {
           <RemoveButton title="Remove Service" onPress={this.onPressRemove} />
         )}
         <SectionDivider />
+        {
+          toast && (
+            <SalonToast
+              description={toast.description}
+              type={toast.type}
+              btnRightText={toast.btnRight}
+              hide={this.hideToast}
+            />
+          )
+        }
       </ScrollView>
     );
   }

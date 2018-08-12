@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, { isDuration } from 'moment';
 import { get, isNil, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
@@ -500,6 +500,9 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
       employee: get(appointment, 'employee', null),
       fromTime,
       toTime,
+      bookBetween: get(appointment, 'bookBetween', false),
+      gapTime: moment.duration(get(appointment, 'gapTime', 0)),
+      afterTime: moment.duration(get(appointment, 'afterTime', 0)),
     };
     const newServiceItem = {
       itemId: uuid(),

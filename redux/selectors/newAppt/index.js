@@ -86,14 +86,14 @@ const isValidAppointment = createSelector(
       date, bookedByEmployee, client, serviceItems, conflicts, editType,
     },
   ) => (
-      date &&
+    date &&
       bookedByEmployee !== null &&
       client !== null &&
       serviceItems.length > 0 &&
       !conflicts.length > 0 &&
       !isLoading &&
       !isBooking
-    ),
+  ),
 );
 
 const appointmentLength = createSelector(
@@ -165,7 +165,8 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
   if (
     moment.isDuration(gapTimeDuration) && gapTimeDuration.asMilliseconds() > 0 &&
-    moment.isDuration(afterTimeDuration) && afterTimeDuration.asMilliseconds() > 0
+    moment.isDuration(afterTimeDuration) && afterTimeDuration.asMilliseconds() > 0 &&
+    itemData.bookBetween
   ) {
     itemData.bookBetween = true;
     itemData.gapTime = moment().startOf('day').add(gapTimeDuration).format('HH:mm:ss');

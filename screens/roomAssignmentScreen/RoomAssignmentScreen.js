@@ -10,9 +10,10 @@ import {
 import { get, times } from 'lodash';
 import moment, { isMoment } from 'moment';
 
+import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonModalPicker from '../../components/slidePanels/SalonModalPicker';
-
+import Colors from '../../constants/Colors';
 import {
   InputButton,
   InputDivider,
@@ -113,6 +114,7 @@ export default class RoomAssignmentScreen extends React.Component {
 
     this.state = {
       assignments,
+      toast: null,
       pickerType: 'room',
       currentOpenAssignment: 0,
       isModalPickerVisible: false,
@@ -196,6 +198,8 @@ export default class RoomAssignmentScreen extends React.Component {
     return room;
   }
 
+  hideToast = () => this.setState({ toast: null })
+
   composeAssignments = assignments => this.setState((state) => {
     const newState = state;
     assignments.forEach((item, index) => {
@@ -208,7 +212,9 @@ export default class RoomAssignmentScreen extends React.Component {
 
   canSave = () => {
     const { assignments } = this.state;
-    const canSave = assignments.map(assignment => this.isValidAssignment(assignment)).reduce((agg, ass) => agg || ass, false);
+    const canSave = assignments.map(assignment => (
+      this.isValidAssignment(assignment) &&
+      !this.isIncompleteAssignment(assignment))).reduce((agg, ass) => agg || ass, false);
     this.props.navigation.setParams({ canSave });
     return canSave;
   }
@@ -219,11 +225,25 @@ export default class RoomAssignmentScreen extends React.Component {
 
   handleSave = () => {
     if (this.canSave()) {
+      const { assignments } = this.state;
       this.props.navigation.setParams({ canSave: false });
       const params = this.props.navigation.state.params || {};
-      const employee = params.employee || null;
-      const onSave = params.onSave ? params.onSave : () => null;
-      this.props.roomAssignmentActions.putAssignments(
+      const employee = get(params, 'employee', null);
+      const onSave = get(params, 'onSave', () => null);
+      if (assignments.filter(itm => this.isIncompleteAssignment(itm)).length > 0) {
+        return this.setState({
+          toast: {
+            description: 'You have invalid assignments. Please try again.',
+            btnRight: 'OK',
+            type: 'error',
+          },
+          assignments: assignments.map(itm => (
+            this.isIncompleteAssignment(itm) ?
+              { ...itm, isIncomplete: true } : { ...itm, isIncomplete: false }
+          )),
+        });
+      }
+      return this.props.roomAssignmentActions.putAssignments(
         get(employee, 'id', null),
         this.serializeAssignmentsForRequest(),
         () => {
@@ -234,6 +254,7 @@ export default class RoomAssignmentScreen extends React.Component {
         },
       );
     }
+    return false;
   }
 
   isValidAssignment = assignment => (
@@ -241,6 +262,20 @@ export default class RoomAssignmentScreen extends React.Component {
     isMoment(assignment.startTime) &&
     isMoment(assignment.endTime) &&
     assignment.startTime < assignment.endTime
+  )
+
+  isIncompleteAssignment = assignment => (
+    !(
+      assignment.room === null &&
+      !isMoment(assignment.startTime) &&
+      !isMoment(assignment.fromTime)
+    ) &&
+    (
+      assignment.room !== null ||
+      isMoment(assignment.startTime) ||
+      isMoment(assignment.fromTime)
+    ) &&
+    !this.isValidAssignment(assignment)
   )
 
   serializeAssignmentsForRequest = () => {
@@ -256,36 +291,44 @@ export default class RoomAssignmentScreen extends React.Component {
     }));
   }
 
-  renderRoomData = () => this.state.assignments.map((assignment, index) => (
-    <InputGroup style={styles.marginBottom}>
-      <InputButton
-        label="Room"
-        value={assignment.room ? assignment.room.name : 'None'}
-        onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'room' }, this.openModal)}
-      />
-      <InputDivider />
-      <InputButton
-        noIcon
-        label="Start"
-        value={isMoment(assignment.startTime) ? assignment.startTime.format('hh:mm A') : 'Off'}
-        onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'startTime' }, this.openModal)}
-      />
-      <InputDivider />
-      <InputButton
-        noIcon
-        label="End"
-        disabled={!isMoment(assignment.startTime)}
-        value={isMoment(assignment.endTime) ? assignment.endTime.format('hh:mm A') : '-'}
-        onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'endTime' }, this.openModal)}
-      />
-    </InputGroup>
-  ))
+  renderRoomData = () => this.state.assignments.map((assignment, index) => {
+    const labelStyle = assignment.isIncomplete ? { color: Colors.defaultRed } : {};
+    const dividerStyle = assignment.isIncomplete ? { backgroundColor: Colors.defaultRed } : {};
+    return (
+      <InputGroup style={styles.marginBottom}>
+        <InputButton
+          label="Room"
+          labelStyle={labelStyle}
+          value={assignment.room ? assignment.room.name : 'None'}
+          onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'room' }, this.openModal)}
+        />
+        <InputDivider style={dividerStyle} />
+        <InputButton
+          noIcon
+          label="Start"
+          labelStyle={labelStyle}
+          value={isMoment(assignment.startTime) ? assignment.startTime.format('hh:mm A') : 'Off'}
+          onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'startTime' }, this.openModal)}
+        />
+        <InputDivider style={dividerStyle} />
+        <InputButton
+          noIcon
+          label="End"
+          labelStyle={labelStyle}
+          disabled={!isMoment(assignment.startTime)}
+          value={isMoment(assignment.endTime) ? assignment.endTime.format('hh:mm A') : '-'}
+          onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'endTime' }, this.openModal)}
+        />
+      </InputGroup>
+    );
+  })
 
   render() {
     const {
       isLoading,
     } = this.props.roomAssignmentState;
     const {
+      toast,
       isModalPickerVisible,
     } = this.state;
     return (
@@ -309,6 +352,16 @@ export default class RoomAssignmentScreen extends React.Component {
           hide={this.closeModal}
           visible={isModalPickerVisible}
         />
+        {
+          toast && (
+            <SalonToast
+              description={toast.description}
+              type={toast.type}
+              btnRightText={toast.btnRight}
+              hide={this.hideToast}
+            />
+          )
+        }
       </View>
     );
   }
