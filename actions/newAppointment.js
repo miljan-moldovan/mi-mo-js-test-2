@@ -294,7 +294,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
     const extraIndex = newServiceItems.findIndex(item => item.itemId === extra.itemId);
     newServiceItems.splice(extraIndex, 1);
   });
-  const deletedId = get(removedAppt.service, 'id', null);
+  // const deletedId = get(removedAppt.service, 'id', null);
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
@@ -302,7 +302,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
   );
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems, deletedId },
+    data: { serviceItems: newServiceItems },
   });
 };
 

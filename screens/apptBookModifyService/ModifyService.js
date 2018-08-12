@@ -93,6 +93,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       price,
       canSave: false,
       canRemove: !!params.onRemoveService,
+      id: get(serviceItem.service, 'id', null),
       selectedClient: serviceItem.guestId ? get(serviceItem.service, 'client', null) : client,
       selectedProvider: get(serviceItem.service, 'employee', null),
       selectedService: get(serviceItem.service, 'service', null),
@@ -149,12 +150,14 @@ export default class ModifyApptServiceScreen extends React.Component {
       price: priceString,
       resource,
       length,
+      id,
     } = this.state;
 
     if (canSave) {
       const price = isNumber(priceString) ? priceString : toNumber(priceString.replace(/\D/g, ''));
       const { params } = this.props.navigation.state;
       const serviceItem = {
+        id,
         client: selectedClient,
         employee: selectedProvider,
         service: { ...selectedService, price },

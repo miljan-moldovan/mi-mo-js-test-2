@@ -162,7 +162,6 @@ export default function newAppointmentReducer(state = defaultState, action) {
       return {
         ...state,
         serviceItems: data.serviceItems.slice(),
-        deletedIds: data.deletedId ? [...state.deletedIds, data.deletedId] : state.deletedIds,
       };
     case ADD_SERVICE_ITEM_EXTRAS:
       return {
