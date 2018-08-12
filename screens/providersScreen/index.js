@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import providersActions from './redux';
+import providersActions from '../../actions/providers';
 import ProvidersScreen from './ProvidersScreen';
 
 const mapStateToProps = state => ({

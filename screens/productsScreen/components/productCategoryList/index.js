@@ -1,9 +1,11 @@
 // @flow
 import React from 'react';
-import { View,
+import {
+  View,
   StyleSheet,
   RefreshControl,
-  FlatList } from 'react-native';
+  FlatList,
+} from 'react-native';
 import { connect } from 'react-redux';
 
 import {
@@ -85,9 +87,9 @@ class ProductCategoryList extends React.Component {
                 this.setState({ refreshing: true });
                 this.props.onRefresh(this.onRefreshFinish);
               }
-            }
+              }
             />
-        }
+          }
           style={styles.productCategoriesList}
           data={this.state.productCategories}
           extraData={this.props}

@@ -1,15 +1,19 @@
 import moment from 'moment';
-import { get, isNil, isFunction, isArray, isNull, reject } from 'lodash';
+import { get, isNil, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
-import { AppointmentBook, Appointment } from '../utilities/apiWrapper';
+import { Client, AppointmentBook, Appointment } from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
 } from './appointmentBook';
 import {
   appointmentLength,
   serializeApptToRequestData,
+  primaryClientForSelectedAppt,
 } from '../redux/selectors/newAppt';
+
+export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
+export const POPULATE_STATE_FROM_APPT = 'newAppointment/POPULATE_STATE_FROM_APPT';
 
 export const ADD_GUEST = 'newAppointment/ADD_GUEST';
 export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
@@ -67,13 +71,13 @@ const removeGuest = (guestId = false) => ({
 });
 
 const setGuestClient = (guestId, client) => (dispatch, getState) => {
-  const newGuests = getState().newAppointmentReducer.guests;
-  const guestIndex = newGuests.findIndex(item => item.guestId === guestId);
-  newGuests[guestIndex].client = client;
-
+  const { guests } = getState().newAppointmentReducer;
+  const guestIndex = guests.findIndex(item => item.guestId === guestId);
+  const guest = guests[guestIndex];
+  guest.client = client;
   return dispatch({
     type: SET_GUEST_CLIENT,
-    data: { guests: newGuests },
+    data: { guest },
   });
 };
 
@@ -121,7 +125,7 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
     service,
     length: serviceLength,
     client: serviceClient,
-    requested: true,
+    requested: getState().newAppointmentReducer.isQuickApptRequested,
     employee: bookedByEmployee,
     fromTime,
     toTime,
@@ -135,21 +139,23 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
     type: ADD_QUICK_SERVICE_ITEM,
     data: { serviceItem },
   });
-  dispatch(addServiceItemExtras(
-    serviceItem.itemId, // parentId
-    'addon', // extraService type
-    addons,
-  ));
-  dispatch(addServiceItemExtras(
-    serviceItem.itemId, // parentId
-    'recommended', // extraService type
-    recommended,
-  ));
-  dispatch(addServiceItemExtras(
-    serviceItem.itemId, // parentId
-    'required', // extraService type
-    required,
-  ));
+  setTimeout(() => {
+    dispatch(addServiceItemExtras(
+      serviceItem.itemId, // parentId
+      'addon', // extraService type
+      addons,
+    ));
+    dispatch(addServiceItemExtras(
+      serviceItem.itemId, // parentId
+      'recommended', // extraService type
+      recommended,
+    ));
+    dispatch(addServiceItemExtras(
+      serviceItem.itemId, // parentId
+      'required', // extraService type
+      required,
+    ));
+  });
 };
 
 // const addServiceItem = (service, guestId = false) => (dispatch, getState) => {
@@ -209,13 +215,13 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
   const { guestId } = parentService;
   const serializeServiceItem = (service) => {
     if (!service) {
-      return;
+      return null;
     }
     const length = appointmentLength(getState());
     const serviceLength = moment.duration(service.maxDuration);
     const fromTime = moment(startTime).add(moment.duration(length));
     const toTime = moment(fromTime).add(serviceLength);
-    const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId), 'client', null) : client;
+    const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId)[0], 'client', null) : client;
     const newService = {
       service,
       length: serviceLength,
@@ -239,7 +245,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
 
   const newServiceItems = reject(
     serviceItems,
-    item => item.type === type && item.parentId === parentId,
+    item => (get(item, 'type', null) === type && item.parentId === parentId),
   );
 
   if (isArray(services)) {
@@ -288,6 +294,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
     const extraIndex = newServiceItems.findIndex(item => item.itemId === extra.itemId);
     newServiceItems.splice(extraIndex, 1);
   });
+  const deletedId = get(removedAppt.service, 'id', null);
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
@@ -295,7 +302,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
   );
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems },
+    data: { serviceItems: newServiceItems, deletedId },
   });
 };
 
@@ -357,10 +364,13 @@ const getConflicts = callback => (dispatch, getState) => {
     items: [],
   };
   serviceItems.forEach((serviceItem) => {
+    const isFirstAvailable = get(serviceItem.service.employee, 'id', 0) === 0;
     conflictData.items.push({
+      isFirstAvailable,
+      appointmentId: get(serviceItem.service, 'id', null),
       clientId: serviceItem.guestId ? client.id : get(serviceItem.service.client, 'id', client.id),
       serviceId: serviceItem.service.service.id,
-      employeeId: serviceItem.service.employee.id,
+      employeeId: isFirstAvailable ? null : get(serviceItem.service.employee, 'id', null),
       fromTime: serviceItem.service.fromTime.format('HH:mm:ss', { trim: false }),
       toTime: serviceItem.service.toTime.format('HH:mm:ss', { trim: false }),
       bookBetween: false,
@@ -439,18 +449,94 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
         type: ADD_APPOINTMENT,
         data: { appointment: res },
       });
-      dispatch(bookNewApptSuccess(successCallback));
+      return dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
-      alert('There was an error posting the appointment, please try again');
-      dispatch({
+      if (isFunction(errorCallback)) {
+        errorCallback(err);
+      }
+      return dispatch({
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },
       });
-      if (isFunction(errorCallback)) {
-        errorCallback();
-      }
     });
+};
+
+const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
+  dispatch({
+    type: SET_SELECTED_APPT,
+    data: { appt },
+  });
+  const { badgeData: { isParty, primaryClient } } = appt;
+  const clients = groupData.reduce((agg, currentAppt) => [...agg, currentAppt.client], []);
+  const primaryClientId = isParty ? get(primaryClient, 'id', null) : get(appt.client, 'id', null);
+  const mainClient = isParty ? primaryClientId : appt.client;
+  const guests = reject(clients, item => item.id === primaryClientId)
+    .map(client => ({
+      client,
+      guestId: uuid(),
+    })).reduce((agg, guest) => {
+      if (agg.find(item => item.client && item.client.id === guest.client.id)) {
+        return agg;
+      }
+      return [...agg, guest];
+    }, []);
+  const serviceItems = groupData.reduce((services, appointment) => {
+    const isGuest = isParty && appointment.client.id !== primaryClientId;
+    let guest = false;
+    if (isGuest) {
+      guest = guests.find(itm => itm.client.id === appointment.client.id);
+    }
+    const fromTime = moment(appointment.fromTime, 'HH:mm:ss');
+    const toTime = moment(appointment.toTime, 'HH:mm:ss');
+    const length = moment.duration(toTime.diff(fromTime, true));
+    const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+    const newService = {
+      id: get(appointment, 'id', null),
+      length,
+      service: get(appointment, 'service', null),
+      requested: get(appointment, 'requested', true),
+      client: serviceClient,
+      employee: get(appointment, 'employee', null),
+      fromTime,
+      toTime,
+    };
+    const newServiceItem = {
+      itemId: uuid(),
+      guestId: guest ? get(guest, 'guestId', false) : false,
+      service: newService,
+    };
+    return [...services, newServiceItem];
+  }, []);
+
+  serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
+  const newState = {
+    selectedAppt: appt,
+    date: moment(get(appt, 'date', moment())),
+    startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
+    client: mainClient,
+    bookedByEmployee: get(appt, 'bookedByEmployee', null),
+    guests,
+    conflicts: [],
+    serviceItems,
+    remarks: get(appt, 'remarks', ''),
+    existingApptIds: groupData.map(item => get(item, 'id', null)),
+  };
+
+  if (isNumber(newState.client)) {
+    return Client.getClient(newState.client)
+      .then((client) => {
+        newState.client = client;
+        return dispatch({
+          type: POPULATE_STATE_FROM_APPT,
+          data: { newState },
+        });
+      });
+  }
+  return dispatch({
+    type: POPULATE_STATE_FROM_APPT,
+    data: { newState },
+  });
 };
 
 const bookNewAppt = appt => (dispatch) => {
@@ -515,6 +601,40 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
     .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
 };
 
+const modifyAppt = (apptId, successCallback = false, errorCallback = false) => (dispatch, getState) => {
+  const {
+    startTime,
+    serviceItems,
+    existingApptIds,
+  } = getState().newAppointmentReducer;
+
+  dispatch({
+    type: BOOK_NEW_APPT,
+  });
+  resetTimeForServices(serviceItems, -1, startTime);
+  const requestBody = serializeApptToRequestData(getState(), true);
+  const existingServices = reject(serviceItems, itm => !itm.service.id)
+    .map(itm => itm.service.id);
+  const deletedIds = reject(existingApptIds, id => existingServices.includes(id));
+  requestBody.deletedIds = deletedIds;
+  return Appointment.putAppointment(apptId, requestBody)
+    .then((res) => {
+      dispatch({
+        type: ADD_APPOINTMENT,
+        data: { appointment: res },
+      });
+      return dispatch(bookNewApptSuccess(successCallback));
+    })
+    .catch((err) => {
+      if (isFunction(errorCallback)) {
+        errorCallback(err);
+      }
+      return dispatch({
+        type: BOOK_NEW_APPT_FAILED,
+        data: { error: err },
+      });
+    });
+};
 
 const newAppointmentActions = {
   cleanForm,
@@ -539,5 +659,7 @@ const newAppointmentActions = {
   setRemarks,
   messageAllClients,
   messageProvidersClients,
+  populateStateFromAppt,
+  modifyAppt,
 };
 export default newAppointmentActions;

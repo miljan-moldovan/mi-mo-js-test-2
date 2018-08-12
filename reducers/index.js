@@ -16,7 +16,7 @@ import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux'
 import appointmentBookReducer from './appointmentBook';
 import checkinReducer from './checkin';
 import serviceReducer from './service';
-import { providersReducer } from '../screens/providersScreen/redux';
+import providersReducer from './providers';
 import productsReducer from './products';
 import appointmentReducer from './appointment';
 import newAppointmentReducer from './newAppointment';

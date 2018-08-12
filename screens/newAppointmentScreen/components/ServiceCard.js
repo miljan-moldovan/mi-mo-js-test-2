@@ -2,23 +2,40 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper/api';
+
 import {
   ConflictBox,
 } from '../../../components/slidePanels/SalonNewAppointmentSlide';
+import { DefaultAvatar } from '../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonCard from '../../../components/SalonCard';
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
+import Colors from '../../../constants/Colors';
+import styles from '../styles';
 
-import { styles } from '../NewAppointmentScreen';
+const SetExtras = ({ onPress }) => {
+  const textColor = { color: Colors.defaultBlue };
+  return (
+    <View style={styles.removeGuestContainer}>
+      <SalonTouchableOpacity
+        style={styles.flexRow}
+        onPress={onPress}
+      >
+        <Icon
+          name="plusCircle"
+          type="solid"
+          color={Colors.defaultBlue}
+          size={12}
+        />
+        <Text style={[styles.removeGuestText, textColor]}>SELECT EXTRAS</Text>
+      </SalonTouchableOpacity>
+    </View>
+  );
+};
 
 const ServiceInfo = props => (
   <Text style={styles.serviceInfo}>
@@ -55,9 +72,20 @@ const ServiceCard = (props) => {
   const { data } = props;
   const employee = data.employee || null;
   const isFirstAvailable = data.isFirstAvailable || false;
-  const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  // const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
+  const employeePhoto = employee.imagePath || null;
+  const serviceName = data.service.name || data.service.description;
+  const showSelectExtras = (
+    !props.isAddon &&
+    (
+      (data.service.addons && data.service.addons.length > 0) ||
+      (data.service.recommendedServices && data.service.recommendedServices.length > 0) ||
+      (data.service.requiredServices && data.service.requiredServices.length > 1)
+    )
+  );
   return (
     <React.Fragment>
+
       <SalonTouchableOpacity
         onPress={props.onPress}
       >
@@ -90,7 +118,7 @@ const ServiceCard = (props) => {
                   }}
                 >
                   <Text style={[styles.serviceTitle, props.conflicts.length > 0 ? { color: 'red' } : {}]}>
-                    {data.service.name}
+                    {serviceName}
                   </Text>
                   {props.isRequired && (
                     <Text style={{
@@ -142,7 +170,12 @@ const ServiceCard = (props) => {
                     </FontAwesome>
                   }
                   image={{ uri: employeePhoto }}
-                  defaultComponent={<ActivityIndicator />}
+                  defaultComponent={(
+                    <DefaultAvatar
+                      size={24}
+                      provider={employee}
+                    />
+                  )}
                 />
                 <Text
                   style={{
@@ -162,6 +195,9 @@ const ServiceCard = (props) => {
                   from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
                   to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
                 />
+                {showSelectExtras && (
+                  <SetExtras onPress={props.onSetExtras} />
+                )}
                 <SalonTouchableOpacity onPress={props.onPressDelete}>
                   <Icon
                     name="trashAlt"
@@ -189,13 +225,4 @@ const ServiceCard = (props) => {
   );
 };
 
-const mapStateToProps = (state, props) => ({
-
-});
-const mapActionsToProps = () => dispatch => ({
-
-});
-export default connect(
-  mapStateToProps,
-  mapActionsToProps,
-)(ServiceCard);
+export default ServiceCard;

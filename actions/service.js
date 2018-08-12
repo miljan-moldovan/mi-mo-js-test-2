@@ -21,12 +21,12 @@ const getServicesFailed = error => ({
   data: { error },
 });
 
-const getServices = (params, filterByProvider = false, filterProvider = null) => (dispatch, getState) => {
+const getServices = (params) => (dispatch) => {
   dispatch({ type: GET_SERVICES });
-  if (filterByProvider) {
-    const { selectedProvider } = getState().providersReducer;
-    // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
-  }
+  // if (filterByProvider) {
+  //   const { selectedProvider } = getState().providersReducer;
+  //   // params.employeeId = filterProvider === null ? selectedProvider.id : filterProvider.id;
+  // }
 
   return Services.getServiceTree(params)
     .then(response => dispatch(getServicesSuccess(response)))

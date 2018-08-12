@@ -10,6 +10,7 @@ import getApptAudit from './getApptAudit';
 import postCheckin from './postCheckin';
 import postAppointmentCheckout from './postAppointmentCheckout';
 import putAppointmentRemarks from './putAppointmentRemarks';
+import putAppointment from './putAppointment';
 
 export {
   getAppointment,
@@ -24,4 +25,5 @@ export {
   postEmployeesAppointmentOrder,
   postNewAppointment,
   putAppointmentRemarks,
+  putAppointment,
 };

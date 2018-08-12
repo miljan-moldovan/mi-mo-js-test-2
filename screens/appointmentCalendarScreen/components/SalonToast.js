@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   btn: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     fontSize: 12,
     color: '#fff',
-    fontWeight: '400',
+    // fontWeight: '400',
     padding: 15,
   },
   btnContainer: {
@@ -58,13 +58,14 @@ class SalonToast extends Component {
   }
 
   componentDidMount() {
+    const { timeout = 1000 } = this.props;
     Animated.timing(
       this.state.top,
       {
         toValue: 0,
         duration: 800,
       },
-    ).start(() => setTimeout(this.hide, 1000));
+    ).start(() => setTimeout(this.hide, timeout));
   }
 
   hide = () => {
@@ -96,11 +97,15 @@ class SalonToast extends Component {
   render() {
     const { top, visible } = this.state;
     const {
- type, description, btnRightText, btnLeftText 
-} = this.props;
+      type,
+      description,
+      btnRightText,
+      btnLeftText,
+    } = this.props;
     return (
       <View style={styles.container}>
-        <Animated.View style={[styles.toast, { backgroundColor: colors[type], top }]}>
+        <Animated.View style={[styles.toast,
+        { backgroundColor: colors[type], top }]}>
           <Text style={styles.description}>{description}</Text>
           <View style={styles.btnContainer}>
             {

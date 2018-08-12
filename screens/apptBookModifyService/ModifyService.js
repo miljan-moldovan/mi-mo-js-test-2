@@ -95,7 +95,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       canRemove: !!params.onRemoveService,
       selectedClient: serviceItem.guestId ? get(serviceItem.service, 'client', null) : client,
       selectedProvider: get(serviceItem.service, 'employee', null),
-      selectedService: get(serviceItem.service, 'service'),
+      selectedService: get(serviceItem.service, 'service', null),
       startTime: get(serviceItem.service, 'fromTime', moment()),
       endTime: get(serviceItem.service, 'toTime', moment().add(15, 'm')),
       requested: get(serviceItem.service, 'requested', true),
@@ -162,8 +162,8 @@ export default class ModifyApptServiceScreen extends React.Component {
         toTime: endTime,
         requested,
         bookBetween,
-        gapTime,
-        afterTime,
+        gapTime: moment().startOf('day').add(gapTime, 'minutes').format('HH:mm:ss'),
+        afterTime: moment().startOf('day').add(afterTime, 'minutes').format('HH:mm:ss'),
         room,
         resource,
         length,
@@ -268,6 +268,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           <ServiceInput
             apptBook
             noPlaceholder
+            nameKey={selectedService.description ? 'description' : 'name'}
             selectedProvider={selectedProvider}
             navigate={this.props.navigation.navigate}
             selectedService={selectedService}
@@ -292,11 +293,11 @@ export default class ModifyApptServiceScreen extends React.Component {
             onChange={this.handleRequested}
           />
           <InputDivider />
-          <LabeledTextInput
+          <InputLabel
             label="Price"
             value={`$ ${price}`}
-            keyboardType="numeric"
-            onChangeText={this.setPrice}
+            // keyboardType="numeric"
+            // onChangeText={this.setPrice}
           />
         </InputGroup>
         <SectionTitle value="Time" />

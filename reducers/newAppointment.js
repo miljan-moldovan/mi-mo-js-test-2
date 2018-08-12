@@ -24,17 +24,21 @@ import {
   REMOVE_GUEST,
   SET_GUEST_CLIENT,
   SET_REMARKS,
+  SET_SELECTED_APPT,
+  POPULATE_STATE_FROM_APPT,
 } from '../actions/newAppointment';
 
 const defaultState = {
   isLoading: false,
   isBooking: false,
+  editType: 'new',
   isBookingQuickAppt: false,
   isQuickApptRequested: true,
   date: moment(),
   startTime: moment(),
   client: null,
   bookedByEmployee: null,
+  deletedIds: [],
   guests: [],
   conflicts: [],
   serviceItems: [],
@@ -44,6 +48,7 @@ const defaultState = {
 export default function newAppointmentReducer(state = defaultState, action) {
   const { type, data } = action;
   const newGuests = state.guests.slice();
+  const newServiceItems = state.serviceItems.slice();
   switch (type) {
     case CLEAN_FORM:
       return {
@@ -51,6 +56,33 @@ export default function newAppointmentReducer(state = defaultState, action) {
         guests: [],
         conflicts: [],
         serviceItems: [],
+        editType: 'new',
+      };
+    case SET_SELECTED_APPT:
+      return {
+        ...state,
+        isLoading: true,
+        bookedByEmployee: data.appt.bookedByEmployee,
+        remarks: data.appt.remarks,
+        selectedAppt: data.appt,
+      };
+    case POPULATE_STATE_FROM_APPT:
+      return {
+        ...state,
+        isLoading: false,
+        isBooking: false,
+        editType: 'edit',
+        isBookingQuickAppt: false,
+        isQuickApptRequested: true,
+        date: data.newState.date,
+        startTime: data.newState.startTime,
+        client: data.newState.client,
+        bookedByEmployee: data.newState.bookedByEmployee,
+        deletedIds: data.newState.deletedIds,
+        guests: data.newState.guests,
+        conflicts: data.newState.conflicts,
+        serviceItems: data.newState.serviceItems,
+        remarks: data.newState.remarks,
       };
     case IS_BOOKING_QUICK_APPT:
       return {
@@ -61,11 +93,30 @@ export default function newAppointmentReducer(state = defaultState, action) {
       return {
         ...state,
         bookedByEmployee: data.employee,
+        serviceItems: newServiceItems.map((item) => {
+          const employee = (
+            item.service.employee.id === state.bookedByEmployee.id
+          ) ? data.employee : item.service.employee;
+          return ({
+            ...item,
+            service: {
+              ...item.service,
+              employee,
+            },
+          });
+        }),
       };
     case SET_CLIENT:
       return {
         ...state,
         client: data.client,
+        serviceItems: newServiceItems.map(item => ({
+          ...item,
+          service: {
+            ...item.service,
+            client: item.guestId ? item.service.clients : data.client,
+          },
+        })),
       };
     case SET_DATE:
       return {
@@ -111,6 +162,7 @@ export default function newAppointmentReducer(state = defaultState, action) {
       return {
         ...state,
         serviceItems: data.serviceItems.slice(),
+        deletedIds: data.deletedId ? [...state.deletedIds, data.deletedId] : state.deletedIds,
       };
     case ADD_SERVICE_ITEM_EXTRAS:
       return {
@@ -171,7 +223,24 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case SET_GUEST_CLIENT:
       return {
         ...state,
-        guests: data.guests,
+        guests: state.guests.map((guest) => {
+          if (guest.guestId === data.guest.guestId) {
+            return data.guest;
+          }
+          return guest;
+        }),
+        serviceItems: state.serviceItems.map((item) => {
+          if (item.guestId === data.guest.guestId) {
+            return ({
+              ...item,
+              service: {
+                ...item.service,
+                client: data.guest.client,
+              },
+            });
+          }
+          return item;
+        }),
       };
     default:
       return state;

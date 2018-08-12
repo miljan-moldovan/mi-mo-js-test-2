@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-
+import { groupBy } from 'lodash';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -10,7 +10,7 @@ import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointm
 import SalonAvatar from '../../../components/SalonAvatar';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonToast from './SalonToast';
-import NewApptSlide from '../../../components/slidePanels/NewApptSlide';
+import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 
@@ -100,6 +100,7 @@ export default class AppointmentScreen extends Component {
     isAlertVisible: false,
     selectedAppointment: null,
     bookAnotherEnabled: false,
+    selectedAppointment: null,
     screenHeight: 0,
     selectedApptId: -1,
   };
@@ -122,14 +123,21 @@ export default class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setGridView();
   }
 
-  onPressMenu = () => alert('Not Implemented');
+  onPressMenu = () => {
+    // this.props.appointmentCalendarActions.setToast({
+    //   description: 'Not Implemented',
+    //   type: 'warning',
+    //   btnRightText: 'DISMISS',
+    // });
+    this.props.navigation.navigate('ApptBookProducts');
+  };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
   onPressCalendar = () => {
     this.props.appointmentCalendarActions.setToast({
       description: 'Not Implemented',
-      type: 'success',
+      type: 'warning',
       btnRightText: 'DISMISS',
     });
   };
@@ -163,11 +171,15 @@ export default class AppointmentScreen extends Component {
     });
   }
 
-  onCardPressed = (selectedAppt) => {
-    //this.props.appointmentCalendarActions.setSelectedAppt(appointment);
+  onCardPressed = (appointment) => {
+    // const groupData = this.props.appointments.filter(appt => appt.appointmentGroupId === appointment.appointmentGroupId);
+    // this.props.newAppointmentActions.setSelectedAppt(appointment, groupData);
+    // this.props.navigation.navigate('NewAppointment');
+    this.props.modifyApptActions.setSelectedAppt(appointment);
     this.setState({
+      selectedAppointment: appointment,
       visibleAppointment: true,
-      selectedApptId: selectedAppt.id,
+      selectedApptId: appointment.id,
     });
   }
 
@@ -305,6 +317,15 @@ export default class AppointmentScreen extends Component {
     }
   }
 
+  handleModifyAppt = () => {
+    const { selectedAppointment: { appointmentGroupId, ...selectedAppointment } } = this.state;
+    const { appointments, newAppointmentActions, navigation: { navigate } } = this.props;
+    const groupData = appointments.filter(appt => appt.appointmentGroupId === appointmentGroupId);
+    this.setState({ visibleAppointment: false });
+    newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
+    navigate('NewAppointment');
+  }
+
   handleBook = (bookAnotherEnabled) => {
     const callback = () => {
       this.setState({
@@ -319,7 +340,15 @@ export default class AppointmentScreen extends Component {
         });
       });
     };
-    this.props.newAppointmentActions.quickBookAppt(callback);
+    const errorCallback = () => {
+      this.props.appointmentCalendarActions.setToast({
+        description: 'There was an error, please try again',
+        type: 'error',
+        btnRightText: 'DISMISS',
+      });
+      this.props.newAppointmentActions.getConflicts();
+    };
+    this.props.newAppointmentActions.quickBookAppt(callback, errorCallback);
   }
 
   changeNewApptSlideTab = newApptActiveTab => this.setState({ newApptActiveTab });
@@ -338,7 +367,7 @@ export default class AppointmentScreen extends Component {
   }
 
   goToShowAppt = (client) => {
-    const { startDate } = this.props.appointmentScreenState
+    const { startDate } = this.props.appointmentScreenState;
     this.setState(
       { visibleAppointment: false },
       () => { this.props.navigation.navigate('ShowApptScreen', { client, date: startDate.format('YYYY-MM-DD') }); },
@@ -354,12 +383,6 @@ export default class AppointmentScreen extends Component {
 
   hideApptSlide = () => {
     this.setState({ visibleAppointment: false });
-  }
-
-  handleModify = () => {
-    const { selectedAppointment } = this.state;
-    this.setState({ visibleAppointment: false });
-    this.props.navigation.navigate('ModifyAppointment');
   }
 
   render() {
@@ -524,7 +547,8 @@ export default class AppointmentScreen extends Component {
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}
           onHide={this.hideApptSlide}
-          handleModify={this.handleModify}
+          appointment={this.props.modifyApptState.appointment}
+          handleModify={this.handleModifyAppt}
           goToCancelAppt={this.goToCancelAppt}
           goToShowAppt={this.goToShowAppt}
           handleCheckin={appointmentActions.postAppointmentCheckin}
@@ -532,12 +556,25 @@ export default class AppointmentScreen extends Component {
           updateAppointments={this.props.appointmentCalendarActions.setGridView}
         />
         {
-          toast ?
-            <SalonToast type={toast.type} description={toast.description} hide={appointmentCalendarActions.hideToast} undo={appointmentActions.undoMove} btnRightText={toast.btnRightText} btnLeftText={toast.btnLeftText} /> : null
+          toast ? (
+            <SalonToast
+              timeout={2500}
+              type={toast.type}
+              description={toast.description}
+              hide={appointmentCalendarActions.hideToast}
+              undo={appointmentActions.undoMove}
+              btnRightText={toast.btnRightText}
+              btnLeftText={toast.btnLeftText}
+            />
+          ) : null
         }
         {
-          bookAnotherEnabled ?
-            <BookAnother client={this.props.newAppointmentState.client} hide={this.setBookAnother} /> : null
+          bookAnotherEnabled ? (
+            <BookAnother
+              hide={this.setBookAnother}
+              client={this.props.newAppointmentState.client}
+            />
+          ) : null
         }
       </View>
     );

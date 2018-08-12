@@ -6,6 +6,7 @@ import {
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import apptGridSettingsSelector from '../apptGridSettingsSelector';
+import { clientsSelector } from '../clientsSelector';
 
 const moment = extendMoment(Moment);
 
@@ -25,12 +26,18 @@ const isBookingQuickApptSelector = state => state.newAppointmentReducer.isBookin
 
 const isQuickRequestedSelector = state => state.newAppointmentReducer.isQuickApptRequested;
 
+const remarksSelector = state => state.newAppointmentReducer.remarks;
+
 const loadingStateSelector = state => ({
   isLoading: state.newAppointmentReducer.isLoading,
   isBooking: state.newAppointmentReducer.isBooking,
 });
 
 const conflictsSelector = state => state.newAppointmentReducer.conflicts;
+
+const editTypeSelector = state => state.newAppointmentReducer.editType;
+
+const deletedIdsSelector = state => state.newAppointmentReducer.deletedIds;
 
 const newAppointmentInfoSelector = createSelector(
   [
@@ -43,10 +50,15 @@ const newAppointmentInfoSelector = createSelector(
     isBookingQuickApptSelector,
     isQuickRequestedSelector,
     conflictsSelector,
+    editTypeSelector,
+    deletedIdsSelector,
+    remarksSelector,
   ],
   (
-    date, startTime, client, guests, bookedByEmployee,
-    serviceItems, isQuickBooking, isQuickApptRequested, conflicts,
+    date, startTime, client, guests,
+    bookedByEmployee, serviceItems,
+    isQuickBooking, isQuickApptRequested,
+    conflicts, editType, deletedIds, remarks,
   ) => ({
     date,
     startTime,
@@ -57,6 +69,9 @@ const newAppointmentInfoSelector = createSelector(
     isQuickBooking,
     isQuickApptRequested,
     conflicts,
+    editType,
+    deletedIds,
+    remarks,
   }),
 );
 
@@ -68,7 +83,7 @@ const isValidAppointment = createSelector(
   (
     { isLoading, isBooking },
     {
-      date, bookedByEmployee, client, serviceItems, conflicts,
+      date, bookedByEmployee, client, serviceItems, conflicts, editType,
     },
   ) => (
       date &&
@@ -115,17 +130,21 @@ const totalPrice = createSelector(
 const getEndTime = createSelector(
   startTimeSelector,
   appointmentLength,
-  (startTime, length) => moment(startTime).add(length),
+  apptGridSettingsSelector,
+  (startTime, length, { step }) => {
+    const addTime = length.asMilliseconds() > 0 ? length : moment.duration(step, 'minute');
+    return moment(startTime).add(addTime);
+  },
 );
 
 const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   const service = get(serviceItem, 'service', null);
   if (!service) {
-    return;
+    return null;
   }
-  const isFirstAvailable = get(service.employee, 'isFirstAvailable', false);
+  const isFirstAvailable = get(service.employee, 'id', 0) === 0;
   const itemData = {
-    clientId: serviceItem.guestId ? get(service.client, 'id') : get(appointment.client, 'id'),
+    clientId: serviceItem.guestId ? get(service.client, 'id', null) : get(appointment.client, 'id', null),
     serviceId: get(service.service, 'id'),
     employeeId: isFirstAvailable ? null : get(service.employee, 'id', null),
     fromTime: moment(service.fromTime, 'HH:mm').format('HH:mm:ss'),
@@ -139,11 +158,18 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
     resourceId: get(service.resource, 'id', null),
     resourceOrdinal: get(service, 'resourceOrdinal', null),
   };
-
-  if (!isNil(service.gapTime)) {
+  if (appointment.editType === 'edit') {
+    itemData.id = get(serviceItem.service, 'id', null);
+  }
+  const gapTimeDuration = moment.duration(get(service, 'gapTime', 0));
+  const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
+  if (
+    moment.isDuration(gapTimeDuration) && gapTimeDuration.asMilliseconds() > 0 &&
+    moment.isDuration(afterTimeDuration) && afterTimeDuration.asMilliseconds() > 0
+  ) {
     itemData.bookBetween = true;
-    itemData.gapTime = moment().startOf('day').add(service.gapTime, 'minutes').format('HH:mm:ss');
-    itemData.afterTime = moment().startOf('day').add(service.afterTime, 'minutes').format('HH:mm:ss');
+    itemData.gapTime = moment().startOf('day').add(gapTimeDuration).format('HH:mm:ss');
+    itemData.afterTime = moment().startOf('day').add(afterTimeDuration).format('HH:mm:ss');
   }
 
   return itemData;
@@ -155,13 +181,14 @@ const serializeApptToRequestData = createSelector(
   ],
   appt => ({
     dateRequired: true,
+    clientId: get(appt.client, 'id', null),
     date: moment(appt.date).format('YYYY-MM-DD'),
     bookedByEmployeeId: get(appt.bookedByEmployee, 'id'),
     rebooked: get(appt, 'rebooked', false),
     remarks: get(appt, 'remarks', ''),
-    // displayColor: appt.displayColor,
+    deletedIds: appt.editType === 'edit' ? appt.deletedIds : null,
     clientInfo: {
-      id: get(appt.client, 'id'),
+      id: get(appt.client, 'id', null),
       email: get(appt.client, 'email', ''),
       phones: get(appt.client, 'phones', []),
       // confirmationType: appt.client.confirmationType
@@ -189,6 +216,8 @@ const employeeScheduleChunkedSelector = createSelector(
     return reduced;
   },
 );
+
+// const selectedApptSelector = state => state.newAppointmentReducer.selectedAppt;
 
 export {
   totalPrice,

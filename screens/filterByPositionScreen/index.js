@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import providersActions from '../providersScreen/redux';
+import providersActions from '../../actions/providers';
 import FilterByPositionScreen from './FilterByPositionScreen';
 
 const mapStateToProps = state => ({

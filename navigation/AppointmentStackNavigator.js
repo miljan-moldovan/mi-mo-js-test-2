@@ -48,6 +48,7 @@ import ConflictsScreen from '../screens/conflictsScreen';
 import AddonServicesScreen from '../screens/addonServicesScreen';
 import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
 import RequiredServicesScreen from '../screens/requiredServicesScreen';
+import ProductsScreen from './../screens/productsScreen';
 
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
@@ -70,6 +71,9 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ApptBookViewOptions: {
       screen: apptBookViewOptions,
+    },
+    ApptBookProducts: {
+      screen: ProductsScreen,
     },
     EndsOn: {
       screen: EndsOnScreen,
