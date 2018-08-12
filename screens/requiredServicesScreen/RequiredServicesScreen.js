@@ -2,171 +2,88 @@ import React from 'react';
 import {
   Text,
   View,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
+import { includes } from 'lodash';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import Icon from '../../components/UI/Icon';
-import { getApiInstance } from '../../utilities/apiWrapper/api';
+import SelectableServiceList from '../../components/SelectableServiceList';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-});
+import styles from './styles';
 
-export default class RequiredServicesScreen extends React.Component {
+const PHONE_WIDTH = Dimensions.get('window').width;
+
+export default class RecommendedServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const serviceTitle = params.serviceTitle || '';
     const showCancelButton = params.showCancelButton || false;
+    const handleSave = params.handleSave || (() => null);
     const onNavigateBack = params.onNavigateBack || (() => null);
     const handleGoBack = () => {
       onNavigateBack();
       navigation.goBack();
     };
+    const title = PHONE_WIDTH < 375 ? 'Req. Services' : 'Required Services';
     return ({
       headerTitle: (
-        <View style={{
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        >
-          <Text style={{
-            fontFamily: 'Roboto-Medium',
-            fontSize: 17,
-            lineHeight: 22,
-            color: 'white',
-          }}
-          >
-            Required Services
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitleText}>
+            {title}
           </Text>
-          <Text style={{
-            fontFamily: 'Roboto',
-            fontSize: 10,
-            lineHeight: 12,
-            color: 'white',
-          }}
-          >
+          <Text style={styles.headerSubtitleText}>
             {serviceTitle}
           </Text>
         </View>
       ),
       headerLeft: showCancelButton ? (
         <SalonTouchableOpacity onPress={() => handleGoBack()}>
-          <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+          <Text style={styles.headerButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ) : null,
-      headerRight: null,
+      // headerRight: (
+      //   <SalonTouchableOpacity onPress={() => handleSave()}>
+      //     <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
+      //   </SalonTouchableOpacity>
+      // ),
     });
   };
 
   constructor(props) {
     super(props);
-
-    const params = this.props.navigation.state.params || {};
-    const serviceIds = params.services || [];
-    const services = this.getServices(serviceIds);
-    if (services.length === 1) {
-      this.handlePressRow(services[0]);
-    }
+    props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
-      isLoading: false,
-      services,
       selected: [],
     };
   }
 
-  getServices = (ids) => {
-    const { services } = this.props;
-    const results = [];
-    const check = (service, index) => service.id === ids[index].id;
-    for (let i = 0; i < ids.length; i += 1) {
-      const service = services.find(ser => check(ser, i));
-      if (service) { results.push(service); }
+  onChangeSelected = selected => this.setState({ selected }, this.handleSave)
+
+  handleSave = (empty = false) => {
+    const { navigation: { goBack, getParam }, services: allServices } = this.props;
+    const { selected } = this.state;
+    const onSave = getParam('onSave', srv => srv);
+    if (empty) {
+      onSave([]);
+      return goBack();
     }
-    return results;
+    const services = allServices.filter(srv => includes(selected, srv.id));
+    onSave(services);
+    return goBack();
   }
-
-  handlePressRow = (item) => {
-    const params = this.props.navigation.state.params || {};
-    const onSave = params.onSave || false;
-    if (onSave) {
-      onSave(item);
-      this.props.navigation.goBack();
-    }
-  }
-
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={{
-        backgroundColor: 'white',
-        flexDirection: 'row',
-        height: 44,
-        paddingHorizontal: 16,
-        alignItems: 'center',
-      }}
-      onPress={() => this.handlePressRow(item)}
-    >
-      <View style={{
-        flex: 9 / 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      }}
-      >
-        <Text style={{
-          fontSize: 14,
-          color: '#2F3142',
-        }}
-        >{item.name}
-        </Text>
-        {!!item.price && (
-          <Text style={{ fontSize: 12, color: '#115ECD' }}>{`$${item.price.toFixed(2)}`}</Text>
-        )}
-      </View>
-      <View style={{ flexDirection: 'row', flex: 1 / 10 }}>
-        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-          {item.selected && (
-            <Icon
-              name="checkCircle"
-              color="#1DBF12"
-              size={14}
-              type="solid"
-            />
-          )}
-        </View>
-      </View>
-    </SalonTouchableOpacity>
-  )
-
-  renderSeparator = () => (
-    <View style={{
-      height: StyleSheet.hairlineWidth,
-      backgroundColor: '#C0C1C6',
-    }}
-    />
-  )
 
   render() {
+    const {
+      selected,
+    } = this.state;
+    const services = this.props.navigation.getParam('services', []);
     return (
-      <View style={styles.container}>
-        {this.state.isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <FlatList
-            style={{ marginTop: 14 }}
-            data={this.state.services}
-            renderItem={this.renderItem}
-            ItemSeparatorComponent={this.renderSeparator}
-          />
-          )}
-      </View>
+      <SelectableServiceList
+        selected={selected}
+        services={services}
+        onChangeSelected={this.onChangeSelected}
+        ref={(ref) => { this.serviceList = ref; }}
+      />
     );
   }
 }

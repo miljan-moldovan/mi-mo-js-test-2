@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Modal,
-  StyleSheet,
   ScrollView,
   Animated,
   Switch,
@@ -16,16 +15,10 @@ import {
   slice,
   isFunction,
 } from 'lodash';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import newApptActions from '../../actions/newAppointment';
-import {
-  getEndTime,
-  appointmentLength,
-} from '../../redux/selectors/newAppt';
 
-import { AppointmentBook, Product } from '../../utilities/apiWrapper';
-import { AppointmentTime } from './SalonNewAppointmentSlide';
+import { Services, AppointmentBook, Product } from '../../utilities/apiWrapper';
+import Colors from '../../constants/Colors';
+import { AppointmentTime } from '../slidePanels/SalonNewAppointmentSlide';
 import SalonInputModal from '../SalonInputModal';
 import {
   InputButton,
@@ -37,245 +30,16 @@ import {
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
 import Icon from '../UI/Icon';
+import Button from './components/Button';
+import ConflictBox from './components/ConflictBox';
+import AddonsContainer from './components/AddonsContainer';
 
-const Button = props => (
-  <SalonTouchableOpacity
-    style={[{
-      height: 48,
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: props.disabled ? '#C0C0C0' : props.backgroundColor || '#115ECD',
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: props.disabled ? '#86868a' : '#115ECD',
-    }, props.style]}
-    onPress={props.onPress}
-    disabled={props.disabled}
-  >
-    <Text style={{
-      fontSize: 12,
-      color: props.color || 'white',
-      fontFamily: 'Roboto-Bold',
-    }}
-    >
-      {props.text}
-    </Text>
-  </SalonTouchableOpacity>
-);
-
-const AddonsContainer = (props) => {
-  const extrasArray = [...props.addons, ...props.recommended];
-  const extrasLength = extrasArray.reduce((aggregator, current) => {
-    if (current.maxDuration) {
-      return aggregator.add(moment.duration(current.maxDuration));
-    }
-    return aggregator;
-  }, moment.duration());
-  return props.visible ? (
-    <Animated.View style={{
-      maxHeight: props.height,
-      overflow: 'hidden',
-    }}
-    >
-      <View style={{
-        marginHorizontal: 2,
-        backgroundColor: '#F1F1F1',
-        borderBottomLeftRadius: 4,
-        borderBottomRightRadius: 4,
-        paddingBottom: 9,
-        paddingHorizontal: 8,
-      }}
-      >
-        <Text style={{
-          fontSize: 9,
-          lineHeight: 22,
-          color: '#727A8F',
-        }}
-        >ADD-ONS / RECOMMENDED / REQUIRED
-        </Text>
-        <View style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 4,
-          borderBottomColor: 'transparent',
-          borderTopColor: 'transparent',
-          borderColor: '#F4F7FC',
-          borderWidth: 1,
-          shadowColor: '#000000',
-          shadowOpacity: 0.2,
-          shadowRadius: 2,
-          elevation: 1,
-          zIndex: 2,
-          shadowOffset: { width: 0, height: 2 },
-          backgroundColor: '#F3F7FC',
-        }}
-        >
-          {extrasArray.length > 0 && (
-            <Addon
-              title={extrasArray[0].name}
-              number={extrasArray.length - 1}
-              onPress={props.onPressAddons}
-              length={`${extrasLength.asMinutes()} min`}
-            />
-          )}
-          {extrasArray.length > 0 && props.required !== null && (
-            <InputDivider style={styles.middleSectionDivider} />
-          )}
-          {props.required !== null && (
-            <Addon
-              required
-              icon="times"
-              title={props.required.name}
-              onPressIcon={props.onRemoveRequired}
-              length={`${moment.duration(props.required.maxDuration).asMinutes()} min`}
-              onPress={props.onPressRequired}
-            />
-          )}
-        </View>
-      </View>
-    </Animated.View>
-  ) : null;
-};
-
-const Addon = props => (
-  <SalonTouchableOpacity
-    style={{
-      height: 39,
-      flexDirection: 'row',
-      paddingLeft: 11,
-      paddingRight: 16,
-    }}
-    onPress={props.onPress}
-  >
-    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-      <Icon
-        style={{
-          marginRight: 10,
-          transform: [{ rotate: '90deg' }],
-        }}
-        name="levelUp"
-        type="regular"
-        color="black"
-        size={12}
-      />
-      <Text
-        style={{
-          fontSize: 14,
-          lineHeight: 22,
-          color: '#110A24',
-        }}
-        numberOfLines={1}
-      >{props.title}
-      </Text>
-      {props.number > 0 && (
-        <View style={{
-          height: 24,
-          borderRadius: 12,
-          backgroundColor: 'white',
-          padding: 5,
-          marginLeft: 10,
-        }}
-        >
-          <Text style={{
-            fontSize: 12,
-            color: '#115ECD',
-            fontFamily: 'Roboto-Bold',
-          }}
-          >+{props.number}
-          </Text>
-        </View>
-      )}
-      {props.required && (
-        <Text style={{
-          fontSize: 10,
-          lineHeight: 22,
-          color: '#F5A623',
-          marginLeft: 10,
-          fontFamily: 'Roboto-Medium',
-        }}
-        >
-          REQUIRED
-        </Text>
-      )}
-    </View>
-    <View style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-    }}
-    >
-      {props.length && (
-        <Text style={{
-          fontSize: 12,
-          lineHeight: 18,
-          fontFamily: 'Roboto-Medium',
-          color: '#727A8F',
-          opacity: 0.9,
-          marginRight: 10,
-        }}
-        >
-          {props.length}
-        </Text>
-      )}
-      <SalonTouchableOpacity onPress={props.onPressIcon || null}>
-        <Icon
-          name={props.required ? 'times' : 'angleRight'}
-          type="light"
-          color="#115ECD"
-          size={props.required ? 15 : 24}
-        />
-      </SalonTouchableOpacity>
-    </View>
-  </SalonTouchableOpacity>
-);
-
-const ConflictBox = props => (
-  <SalonTouchableOpacity
-    style={[{
-      alignSelf: 'stretch',
-      backgroundColor: '#FFF7CC',
-      borderRadius: 4,
-      marginVertical: 8,
-      flexDirection: 'row',
-      paddingHorizontal: 12,
-      height: 32,
-      alignItems: 'center',
-    }, props.style]}
-    onPress={() => props.onPress()}
-  >
-    <View style={{
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-    }}
-    >
-      <Icon type="solid" name="warning" color="#D1242A" size={12} />
-      <Text style={{
-        color: '#2F3142',
-        fontSize: 11,
-        lineHeight: 22,
-        marginLeft: 7,
-      }}
-      >
-        Conflicts found
-      </Text>
-    </View>
-    <Text style={{
-      fontSize: 11,
-      lineHeight: 22,
-      color: '#D1242A',
-      textDecorationLine: 'underline',
-    }}
-    >
-      Show Conflicts
-    </Text>
-  </SalonTouchableOpacity>
-);
+import styles from './styles';
 
 const TAB_BOOKING = 0;
 const TAB_OTHER = 1;
 
-export class NewApptSlide extends React.Component {
+class NewApptSlide extends React.Component {
   constructor(props) {
     super(props);
 
@@ -311,22 +75,66 @@ export class NewApptSlide extends React.Component {
     }
   }
 
+  // shouldComponentUpdate(nextProps) {
+
+  // }
+
+  onPressAddons = () => {
+    this.setState({
+      hasViewedAddons: false,
+      hasViewedRecommended: false,
+    }, () => {
+      const { service, itemId } = this.getService();
+      this.showAddons(service)
+        .then(addons => this.setState({ selectedAddons: addons }, () => {
+          this.showRecommended(service)
+            .then(recommended => this.setState({ selectedRecommended: recommended }, () => {
+              const { selectedAddons, selectedRecommended } = this.state;
+              const { newApptActions: { addServiceItemExtras } } = this.props;
+              addServiceItemExtras(
+                itemId,
+                'addon',
+                selectedAddons,
+              );
+              addServiceItemExtras(
+                itemId,
+                'recommended',
+                selectedRecommended,
+              );
+              this.showPanel().checkConflicts();
+            }));
+        }));
+    });
+  }
+
+  onPressRequired = () => {
+    const { service, itemId } = this.getService();
+    const { newApptActions: { addServiceItemExtras } } = this.props;
+    this.showRequired(service)
+      .then(required => this.setState({ selectedRequired: required }, () => {
+        addServiceItemExtras(
+          itemId,
+          'required',
+          this.state.selectedRequired,
+        );
+        this.showPanel().checkConflicts();
+      }));
+  }
+
+  onPressRemoveRequired = () => {
+    const { itemId } = this.getService();
+    const { newApptActions: { addServiceItemExtras } } = this.props;
+    addServiceItemExtras(
+      itemId,
+      'required',
+      [],
+    );
+    this.showPanel().checkConflicts();
+  }
+
   get shouldShowExtras() {
-    const {
-      addons = [],
-      requiredServices = [],
-      recommendedServices = [],
-    } = this.getService(true);
-    if (addons.length > 0) {
-      return true;
-    }
-    if (recommendedServices.length > 0) {
-      return true;
-    }
-    if (requiredServices.length > 0) {
-      return true;
-    }
-    return false;
+    const { addons, required, recommended } = this.getService(true);
+    return addons.length > 0 || recommended.length > 0 || required !== null;
   }
 
   setClient = (client) => {
@@ -335,48 +143,43 @@ export class NewApptSlide extends React.Component {
   }
 
   setService = (service) => {
-    this.props.newApptActions.addQuickServiceItem(service);
-  }
-
-  setAddons = (addons) => {
-    const { itemId } = this.getService();
-    this.props.newApptActions.addServiceItemExtras(
-      itemId,
-      'addon',
-      addons,
-    );
-    this.setState((state) => {
-      state.hasSelectedAddons = true;
-      if (state.hasSelectedAddons && state.hasSelectedRecommended) {
+    this.showAddons(service)
+      .then((selectedAddons) => {
+        this.setState({
+          selectedAddons,
+        }, () => {
+          this.showRecommended(service)
+            .then((selectedRecommended) => {
+              this.setState({
+                selectedRecommended,
+              }, () => {
+                this.showRequired(service)
+                  .then((selectedRequired) => {
+                    this.setState({ selectedRequired }, () => {
+                      const {
+                        selectedAddons: addons,
+                        selectedRecommended: recommended,
+                        selectedRequired: required,
+                      } = this.state;
+                      this.props.newApptActions.addQuickServiceItem({
+                        service,
+                        addons,
+                        recommended,
+                        required,
+                      });
+                      this.showPanel().checkConflicts();
+                    });
+                  });
+              });
+            });
+        });
+      })
+      .catch((err) => {
+        this.props.newApptActions.addQuickServiceItem({
+          service,
+        });
         this.showPanel().checkConflicts();
-      }
-      return state;
-    });
-  }
-
-  setRecommended = (recommended) => {
-    const { itemId } = this.getService();
-    this.props.newApptActions.addServiceItemExtras(
-      itemId,
-      'recommended',
-      recommended,
-    );
-    this.setState((state) => {
-      state.hasSelectedRecommended = true;
-      if (state.hasSelectedAddons && state.hasSelectedRecommended) {
-        this.showPanel().checkConflicts();
-      }
-      return state;
-    });
-  }
-
-  setRequired = (required) => {
-    const { itemId } = this.getService();
-    this.props.newApptActions.addServiceItemExtras(
-      itemId,
-      'required',
-      required,
-    );
+      });
   }
 
   setProvider = (provider) => {
@@ -427,7 +230,7 @@ export class NewApptSlide extends React.Component {
 
   getTotalLength = () => this.props.getLength;
 
-  getEndTime = () => this.props.getEndTime
+  getEndTime = () => this.props.getEndTime;
 
   getBookButtonText = () => {
     const {
@@ -443,6 +246,82 @@ export class NewApptSlide extends React.Component {
     return 'BOOK NOW';
   }
 
+  showRequired = service => new Promise((resolve) => {
+    try {
+      const {
+        navigation: { navigate },
+      } = this.props;
+      const { hasViewedRequired: showCancelButton } = this.state;
+      if (service && service.requiredServices.length > 0) {
+        if (service.requiredServices.length === 1) {
+          Services.getService(service.requiredServices[0].id)
+            .then(res => resolve({ name: res.description, ...res }));
+        } else {
+          const navigateCallback = () => navigate('RequiredServices', {
+            showCancelButton,
+            services: service.requiredServices,
+            serviceTitle: service.name,
+            onNavigateBack: this.showPanel,
+            onSave: selected => resolve(selected),
+          });
+          this.hidePanel(navigateCallback);
+        }
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      console.warn(err);
+      resolve([]);
+    }
+  })
+
+  showAddons = service => new Promise((resolve) => {
+    try {
+      const {
+        navigation: { navigate },
+      } = this.props;
+      const { hasViewedAddons: showCancelButton } = this.state;
+      if (service && service.addons.length > 0) {
+        const navigateCallback = () => navigate('AddonServices', {
+          showCancelButton,
+          services: service.addons,
+          serviceTitle: service.name,
+          onNavigateBack: this.showPanel,
+          onSave: services => resolve(services),
+        });
+        this.hidePanel(navigateCallback);
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      console.warn(err);
+      resolve([]);
+    }
+  })
+
+  showRecommended = service => new Promise((resolve) => {
+    try {
+      const {
+        navigation: { navigate },
+      } = this.props;
+      const { hasViewedRecommended: showCancelButton } = this.state;
+      if (service && service.recommendedServices.length > 0) {
+        const navigateCallback = () => navigate('RecommendedServices', {
+          showCancelButton,
+          services: service.recommendedServices,
+          serviceTitle: service.name,
+          onNavigateBack: this.showPanel,
+          onSave: services => resolve(services),
+        });
+        this.hidePanel(navigateCallback);
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      console.warn(err);
+      resolve([]);
+    }
+  })
 
   openAddons = () => {
     if (this.shouldShowExtras) {
@@ -572,16 +451,6 @@ export class NewApptSlide extends React.Component {
     },
   })
 
-  renderActiveTab = () => {
-    switch (this.props.activeTab) {
-      case TAB_OTHER:
-        return this.renderOthersTab();
-      case TAB_BOOKING:
-      default:
-        return this.renderBookingTab();
-    }
-  }
-
   showToast = (result) => {
     if (result) {
       alert('Messages has been successfully sent.');
@@ -612,6 +481,16 @@ export class NewApptSlide extends React.Component {
     this.setState({ isInputModalVisible: true, postModalFunction: this.messageAllClients });
   }
 
+  renderActiveTab = () => {
+    switch (this.props.activeTab) {
+      case TAB_OTHER:
+        return this.renderOthersTab();
+      case TAB_BOOKING:
+      default:
+        return this.renderBookingTab();
+    }
+  }
+
   renderOthersTab = () => (
     <View style={styles.body}>
       <InputButton
@@ -629,13 +508,13 @@ export class NewApptSlide extends React.Component {
         label="Block Time"
       >
         <View style={styles.iconContainer}>
-          <Icon name="clockO" size={18} color="#115ECD" type="solid" />
+          <Icon name="clockO" size={18} color={Colors.defaultBlue} type="solid" />
           <View style={styles.banIconContainer}>
             <Icon
               style={styles.subIcon}
               name="ban"
               size={9}
-              color="#115ECD"
+              color={Colors.defaultBlue}
               type="solid"
             />
           </View>
@@ -657,14 +536,13 @@ export class NewApptSlide extends React.Component {
         label="Edit Schedule"
       >
         <View style={styles.iconContainer}>
-          <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-
+          <Icon name="calendarO" size={18} color={Colors.defaultBlue} type="solid" />
           <View style={styles.penIconContainer}>
             <Icon
               style={styles.subIcon}
               name="pen"
               size={9}
-              color="#115ECD"
+              color={Colors.defaultBlue}
               type="solid"
             />
           </View>
@@ -679,7 +557,7 @@ export class NewApptSlide extends React.Component {
         label="Room Assignment"
       >
         <View style={styles.iconContainer}>
-          <Icon name="streetView" size={18} color="#115ECD" type="solid" />
+          <Icon name="streetView" size={18} color={Colors.defaultBlue} type="solid" />
         </View>
       </InputButton>
 
@@ -698,7 +576,7 @@ export class NewApptSlide extends React.Component {
         label="Turn Away"
       >
         <View style={styles.iconContainer}>
-          <Icon name="ban" size={18} color="#115ECD" type="solid" />
+          <Icon name="ban" size={18} color={Colors.defaultBlue} type="solid" />
         </View>
       </InputButton>
 
@@ -710,7 +588,7 @@ export class NewApptSlide extends React.Component {
         label="Message Provider's Clients"
       >
         <View style={styles.iconContainer}>
-          <Icon name="user" size={18} color="#115ECD" type="solid" />
+          <Icon name="user" size={18} color={Colors.defaultBlue} type="solid" />
         </View>
       </InputButton>
       <InputButton
@@ -721,7 +599,7 @@ export class NewApptSlide extends React.Component {
         label="Message All Clients"
       >
         <View style={styles.iconContainer}>
-          <Icon name="users" size={18} color="#115ECD" type="solid" />
+          <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
         </View>
       </InputButton>
     </View>
@@ -740,8 +618,6 @@ export class NewApptSlide extends React.Component {
       bookedByEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
-    const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
-    const selectedStyle = { fontSize: 14, lineHeight: 22, color: conflicts.length > 0 ? 'red' : 'black' };
     const {
       service = null,
       addons = [],
@@ -749,38 +625,25 @@ export class NewApptSlide extends React.Component {
       required = null,
     } = this.getService(true);
 
+    const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
+    const selectedStyle = { fontSize: 14, lineHeight: 22, color: conflicts.length > 0 ? 'red' : 'black' };
+    const serviceLengthStyle = {
+      opacity: service === null ? 0.5 : 1,
+      fontStyle: service === null ? 'italic' : 'normal',
+    };
     return (
       <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
         <AppointmentTime
-          containerStyle={{
-            justifyContent: 'flex-start',
-          }}
+          containerStyle={styles.flexStart}
           startTime={startTime}
           endTime={this.getEndTime()}
         />
-        <View style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 4,
-          borderBottomColor: 'transparent',
-          borderTopColor: 'transparent',
-          borderColor: '#F4F7FC',
-          borderWidth: 1,
-          marginTop: 15,
-          shadowColor: '#000000',
-          shadowOpacity: 0.2,
-          shadowRadius: 2,
-          elevation: 1,
-          zIndex: 2,
-          shadowOffset: { width: 0, height: 2 },
-          backgroundColor: '#F3F7FC',
-        }}
-        >
+        <View style={styles.mainInputGroup}>
           <ClientInput
             apptBook
             label={false}
-            style={{ height: 39 }}
+            style={styles.inputHeight}
             selectedClient={client}
             placeholder={client === null ? 'Select Client' : 'Client'}
             placeholderStyle={styles.placeholderText}
@@ -789,7 +652,7 @@ export class NewApptSlide extends React.Component {
             onPress={() => this.hidePanel()}
             navigate={navigation.navigate}
             headerProps={{ title: 'Clients', ...this.cancelButton() }}
-            iconStyle={{ color: '#115ECD' }}
+            iconStyle={styles.inputColor}
             onChange={this.setClient}
           />
           <InputDivider style={styles.middleSectionDivider} />
@@ -805,7 +668,7 @@ export class NewApptSlide extends React.Component {
             selectedClient={client}
             selectedProvider={provider}
             selectedService={service}
-            rootStyle={{ height: 39 }}
+            rootStyle={styles.inputHeight}
             selectedStyle={selectedStyle}
             placeholder="Select a Service"
             placeholderStyle={styles.placeholderText}
@@ -813,13 +676,8 @@ export class NewApptSlide extends React.Component {
             onPress={this.hidePanel}
             navigate={navigation.navigate}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
-            iconStyle={{ color: '#115ECD' }}
-            afterDone={() => { this.showPanel().checkConflicts(); }}
+            iconStyle={styles.inputColor}
             onChange={this.setService}
-            onChangeAddons={this.setAddons}
-            onChangeRecommended={this.setRecommended}
-            onChangeRequired={this.setRequired}
-            onCancelExtrasSelection={() => this.showPanel()}
           />
           <InputDivider style={styles.middleSectionDivider} />
           <ProviderInput
@@ -828,14 +686,14 @@ export class NewApptSlide extends React.Component {
             showFirstAvailable={false}
             isRequested={isQuickApptRequested}
             filterList={filterProviders}
-            rootStyle={{ height: 39 }}
+            rootStyle={styles.inputHeight}
             selectedProvider={provider}
             selectedService={service}
             placeholder="Select a Provider"
             placeholderStyle={styles.placeholderText}
             selectedStyle={selectedStyle}
             contentStyle={contentStyle}
-            iconStyle={{ color: '#115ECD' }}
+            iconStyle={styles.inputColor}
             avatarSize={20}
             onPress={this.hidePanel}
             navigate={navigation.navigate}
@@ -849,18 +707,9 @@ export class NewApptSlide extends React.Component {
           required={required}
           recommended={recommended}
           height={this.state.addonsHeight}
-          onPressAddons={() => {
-            this.setState({
-              hasSelectedAddons: false,
-              hasSelectedRecommended: false,
-            }, () => {
-              this.serviceInput.selectRecommended().selectAddons();
-            });
-          }}
-          onPressRequired={() => {
-            this.serviceInput.selectRequired();
-          }}
-          onRemoveRequired={() => this.setRequired([])}
+          onPressAddons={this.onPressAddons}
+          onPressRequired={this.onPressRequired}
+          onRemoveRequired={this.onPressRemoveRequired}
         />
         {conflicts.length > 0 && (
           <ConflictBox
@@ -870,7 +719,7 @@ export class NewApptSlide extends React.Component {
                   date,
                   conflicts,
                   startTime,
-                  endTime: moment(startTime).add(moment.duration(this.getTotalLength())),
+                  endTime: this.getEndTime(),
                   handleGoBack: () => this.showPanel(),
                 });
               };
@@ -878,77 +727,31 @@ export class NewApptSlide extends React.Component {
             }}
           />
         )}
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: 15,
-        }}
-        >
-          <Text style={{
-            fontSize: 14,
-            lineHeight: 22,
-            color: '#110A24',
-          }}
-          >Provider is Requested?
-          </Text>
+        <View style={styles.requestedContainer}>
+          <Text style={styles.requestedText}>Provider is Requested?</Text>
           <Switch
             value={this.props.newApptState.isQuickApptRequested}
             onValueChange={requested => this.props.newApptActions.setQuickApptRequested(requested)}
           />
         </View>
-        <View style={{
-          marginVertical: 14,
-          backgroundColor: '#F1F1F1',
-          height: 32,
-          borderRadius: 4,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          paddingHorizontal: 12,
-        }}
-        >
-          <Text style={{
-            fontSize: 13,
-            lineHeight: 22,
-            color: '#2F3142',
-            marginRight: 6,
-          }}
-          >Length
-          </Text>
-          <Text style={{
-            fontSize: 13,
-            lineHeight: 22,
-            color: '#2F3142',
-            opacity: service === null ? 0.5 : 1,
-            fontStyle: service === null ? 'italic' : 'normal',
-          }}
-          >
+        <View style={styles.lengthContainer}>
+          <Text style={styles.lengthText}>Length</Text>
+          <Text style={[styles.serviceLengthText, serviceLengthStyle]}>
             {service === null ? 'select a service first' : `${this.getTotalLength().asMinutes()} min`}
           </Text>
         </View>
-        <View style={{
-          flexDirection: 'column',
-        }}
-        >
+        <View style={styles.flexColumn}>
           <Button
             onPress={this.handleBook}
             disabled={!this.canBook()}
             text={this.getBookButtonText()}
           />
-          <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 16,
-          }}
-          >
+          <View style={styles.buttonGroupContainer}>
             <Button
               style={{ flex: 8 / 17 }}
               onPress={this.goToFullForm}
-              // disabled={this.state.canBook}
               backgroundColor="white"
-              color="#115ECD"
+              color={Colors.defaultBlue}
               text="MORE OPTIONS"
             />
             <Button
@@ -956,7 +759,7 @@ export class NewApptSlide extends React.Component {
               onPress={this.handleBookAnother}
               disabled={!this.canBook()}
               backgroundColor="white"
-              color={!this.canBook() ? '#fff' : '#115ECD'}
+              color={!this.canBook() ? '#fff' : Colors.defaultBlue}
               text="BOOK ANOTHER"
             />
           </View>
@@ -976,6 +779,7 @@ export class NewApptSlide extends React.Component {
   });
 
   render() {
+    const { maxHeight: height } = this.props;
     return (
       <Modal
         visible={this.props.visible}
@@ -983,11 +787,7 @@ export class NewApptSlide extends React.Component {
         animationType="slide"
       // style={{ marginBottom: 60 }}
       >
-        <View style={[
-          styles.container,
-          { height: this.props.maxHeight },
-        ]}
-        >
+        <View style={[styles.container, { height }]}>
           <SalonInputModal
             visible={this.state.isInputModalVisible}
             title="Enter a message"
@@ -995,37 +795,19 @@ export class NewApptSlide extends React.Component {
             onPressOk={this.onPressOkInputModal}
           />
           <TouchableWithoutFeedback onPress={this.hidePanel}>
-            <View style={{
-              backgroundColor: 'transparent', position: 'absolute', height: this.props.maxHeight, bottom: 0, right: 0, left: 0,
-            }}
-            />
+            <View style={styles.backDrop} />
           </TouchableWithoutFeedback>
-          <View style={[styles.slideContainer, {
-            maxHeight: this.props.maxHeight,
-          }]}
-          >
+          <View style={[styles.slideContainer, { maxHeight: height }]}>
             <View style={styles.header}>
-              <SalonTouchableOpacity
-                style={{ flex: 4 / 17, justifyContent: 'flex-start' }}
-                onPress={this.hidePanel}
-              >
-                <Text style={{
-                  color: 'white',
-                  fontSize: 14,
-                  lineHeight: 18,
-                  fontFamily: 'Roboto-Medium',
-                  textAlign: 'left',
-                }}
-                >
-                  Cancel
-                </Text>
+              <SalonTouchableOpacity style={styles.cancelButton} onPress={this.hidePanel}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
               </SalonTouchableOpacity>
-              <View style={{ flex: 9 / 17, justifyContent: 'center', alignItems: 'stretch' }}>
+              <View style={styles.headerMiddle}>
                 <SalonFlatPicker
-                  rootStyle={{ justifyContent: 'center' }}
+                  rootStyle={styles.justifyCenter}
                   dataSource={['New Appt.', 'Other']}
                   selectedColor="#FFFFFF"
-                  selectedTextColor="#115ECD"
+                  selectedTextColor={Colors.defaultBlue}
                   unSelectedTextColor="#FFFFFF"
                   textFontSize={13}
                   onItemPress={this.handleTabChange}
@@ -1040,15 +822,4 @@ export class NewApptSlide extends React.Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  newApptState: state.newAppointmentReducer,
-  getLength: appointmentLength(state),
-  getEndTime: getEndTime(state),
-});
-
-const mapActionsToProps = dispatch => ({
-  newApptActions: bindActionCreators({ ...newApptActions }, dispatch),
-});
-
-export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);
+export default NewApptSlide;

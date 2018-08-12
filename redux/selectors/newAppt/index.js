@@ -86,14 +86,14 @@ const isValidAppointment = createSelector(
       date, bookedByEmployee, client, serviceItems, conflicts, editType,
     },
   ) => (
-    date &&
-    bookedByEmployee !== null &&
-    client !== null &&
-    serviceItems.length > 0 &&
-    !conflicts.length > 0 &&
-    !isLoading &&
-    !isBooking
-  ),
+      date &&
+      bookedByEmployee !== null &&
+      client !== null &&
+      serviceItems.length > 0 &&
+      !conflicts.length > 0 &&
+      !isLoading &&
+      !isBooking
+    ),
 );
 
 const appointmentLength = createSelector(
@@ -130,7 +130,11 @@ const totalPrice = createSelector(
 const getEndTime = createSelector(
   startTimeSelector,
   appointmentLength,
-  (startTime, length) => moment(startTime).add(length),
+  apptGridSettingsSelector,
+  (startTime, length, { step }) => {
+    const addTime = length.asMilliseconds() > 0 ? length : moment.duration(step, 'minute');
+    return moment(startTime).add(addTime);
+  },
 );
 
 const serializeApptItem = (appointment, serviceItem, isQuick = false) => {

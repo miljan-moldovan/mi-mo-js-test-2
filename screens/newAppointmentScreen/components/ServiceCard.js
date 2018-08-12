@@ -14,8 +14,28 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonCard from '../../../components/SalonCard';
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
-
+import Colors from '../../../constants/Colors';
 import styles from '../styles';
+
+const SetExtras = ({ onPress }) => {
+  const textColor = { color: Colors.defaultBlue };
+  return (
+    <View style={styles.removeGuestContainer}>
+      <SalonTouchableOpacity
+        style={styles.flexRow}
+        onPress={onPress}
+      >
+        <Icon
+          name="plusCircle"
+          type="solid"
+          color={Colors.defaultBlue}
+          size={12}
+        />
+        <Text style={[styles.removeGuestText, textColor]}>SELECT EXTRAS</Text>
+      </SalonTouchableOpacity>
+    </View>
+  );
+};
 
 const ServiceInfo = props => (
   <Text style={styles.serviceInfo}>
@@ -55,8 +75,17 @@ const ServiceCard = (props) => {
   // const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
   const employeePhoto = employee.imagePath || null;
   const serviceName = data.service.name || data.service.description;
+  const showSelectExtras = (
+    !props.isAddon &&
+    (
+      data.service.addons.length > 0 ||
+      data.service.recommendedServices.length > 0 ||
+      data.service.requiredServices.length > 1
+    )
+  );
   return (
     <React.Fragment>
+
       <SalonTouchableOpacity
         onPress={props.onPress}
       >
@@ -166,6 +195,9 @@ const ServiceCard = (props) => {
                   from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
                   to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
                 />
+                {showSelectExtras && (
+                  <SetExtras onPress={props.onSetExtras} />
+                )}
                 <SalonTouchableOpacity onPress={props.onPressDelete}>
                   <Icon
                     name="trashAlt"

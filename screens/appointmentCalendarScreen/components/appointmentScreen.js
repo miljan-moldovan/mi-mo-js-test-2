@@ -11,7 +11,7 @@ import SalonAvatar from '../../../components/SalonAvatar';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonToast from './SalonToast';
-import NewApptSlide from '../../../components/slidePanels/NewApptSlide';
+import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 

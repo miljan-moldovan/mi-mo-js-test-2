@@ -102,19 +102,19 @@ const isBookingQuickAppt = isBookingQuickAppt => ({
   data: { isBookingQuickAppt },
 });
 
-const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) => {
+const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, getState) => {
   const {
     client,
     guests,
     startTime,
     bookedByEmployee,
   } = getState().newAppointmentReducer;
-  // const {
-  //   service,
-  //   addons = [],
-  //   recommended = [],
-  //   required = null,
-  // } = selectedServices;
+  const {
+    service,
+    addons = [],
+    recommended = [],
+    required = null,
+  } = selectedServices;
 
   const length = appointmentLength(getState());
   const serviceLength = moment.duration(service.maxDuration);
@@ -125,7 +125,7 @@ const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) =
     service,
     length: serviceLength,
     client: serviceClient,
-    requested: true,
+    requested: getState().newAppointmentReducer.isQuickApptRequested,
     employee: bookedByEmployee,
     fromTime,
     toTime,
@@ -139,21 +139,23 @@ const addQuickServiceItem = (service, guestId = false) => (dispatch, getState) =
     type: ADD_QUICK_SERVICE_ITEM,
     data: { serviceItem },
   });
-  // dispatch(addServiceItemExtras(
-  //   serviceItem.itemId, // parentId
-  //   'addon', // extraService type
-  //   addons,
-  // ));
-  // dispatch(addServiceItemExtras(
-  //   serviceItem.itemId, // parentId
-  //   'recommended', // extraService type
-  //   recommended,
-  // ));
-  // dispatch(addServiceItemExtras(
-  //   serviceItem.itemId, // parentId
-  //   'required', // extraService type
-  //   required,
-  // ));
+  setTimeout(() => {
+    dispatch(addServiceItemExtras(
+      serviceItem.itemId, // parentId
+      'addon', // extraService type
+      addons,
+    ));
+    dispatch(addServiceItemExtras(
+      serviceItem.itemId, // parentId
+      'recommended', // extraService type
+      recommended,
+    ));
+    dispatch(addServiceItemExtras(
+      serviceItem.itemId, // parentId
+      'required', // extraService type
+      required,
+    ));
+  });
 };
 
 // const addServiceItem = (service, guestId = false) => (dispatch, getState) => {
@@ -465,9 +467,10 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     type: SET_SELECTED_APPT,
     data: { appt },
   });
-  const { badgeData: { isParty, primaryClient: { id: primaryClientId } } } = appt;
+  const { badgeData: { isParty, primaryClient } } = appt;
   const clients = groupData.reduce((agg, currentAppt) => [...agg, currentAppt.client], []);
-  const primaryClient = !isParty ? appt.client : primaryClientId;
+  const primaryClientId = isParty ? get(primaryClient, 'id', null) : get(appt.client, 'id', null);
+  const mainClient = isParty ? primaryClientId : appt.client;
   const guests = reject(clients, item => item.id === primaryClientId)
     .map(client => ({
       client,
@@ -487,7 +490,7 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     const fromTime = moment(appointment.fromTime, 'HH:mm:ss');
     const toTime = moment(appointment.toTime, 'HH:mm:ss');
     const length = moment.duration(toTime.diff(fromTime, true));
-    const serviceClient = guest ? get(guest, 'client', null) : primaryClient;
+    const serviceClient = guest ? get(guest, 'client', null) : mainClient;
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -511,7 +514,7 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     selectedAppt: appt,
     date: moment(get(appt, 'date', moment())),
     startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
-    client: primaryClient,
+    client: mainClient,
     bookedByEmployee: get(appt, 'bookedByEmployee', null),
     guests,
     conflicts: [],
@@ -519,7 +522,7 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     remarks: get(appt, 'remarks', ''),
     existingApptIds: groupData.map(item => get(item, 'id', null)),
   };
-  debugger //eslint-disable-line
+
   if (isNumber(newState.client)) {
     return Client.getClient(newState.client)
       .then((client) => {

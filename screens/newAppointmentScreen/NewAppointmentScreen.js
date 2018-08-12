@@ -37,7 +37,7 @@ import Icon from '../../components/UI/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import { Store, Client } from '../../utilities/apiWrapper';
+import { Store, Client, Services } from '../../utilities/apiWrapper';
 
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
@@ -99,6 +99,9 @@ export default class NewAppointmentScreen extends React.Component {
     this.state = {
       toast: null,
       isRecurring: false,
+      selectedAddons: [],
+      selectedRequired: [],
+      selectedRecommended: [],
       clientEmail,
       clientPhone,
       isValidEmail,
@@ -117,12 +120,6 @@ export default class NewAppointmentScreen extends React.Component {
       startTime,
       bookedByEmployee,
     } = this.props.newAppointmentState;
-    // const {
-    //   service,
-    //   addons = [],
-    //   recommended = [],
-    //   required = null,
-    // } = selectedServices;
     const length = this.totalLength();
     const serviceLength = moment.duration(service.maxDuration);
     const fromTime = moment(startTime).add(length);
@@ -159,23 +156,9 @@ export default class NewAppointmentScreen extends React.Component {
     };
 
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
-    // this.props.newAppointmentActions.addServiceItemExtras(
-    //   newServiceItem.itemId, // parentId
-    //   'addon', // extraService type
-    //   addons,
-    // );
-    // this.props.newAppointmentActions.addServiceItemExtras(
-    //   newServiceItem.itemId, // parentId
-    //   'recommended', // extraService type
-    //   recommended,
-    // );
-    // this.props.newAppointmentActions.addServiceItemExtras(
-    //   newServiceItem.itemId, // parentId
-    //   'required', // extraService type
-    //   required,
-    // );
-
-    return this.checkConflicts();
+    setTimeout(() => {
+      this.selectExtraServices(newServiceItem);
+    });
   }
 
   createPhonesArr = (phones) => {
@@ -197,6 +180,108 @@ export default class NewAppointmentScreen extends React.Component {
       createPhone('work'),
     ];
   }
+
+  selectExtraServices = (serviceItem) => {
+    const { service: { service = null }, itemId } = serviceItem;
+    this.showAddons(service).then(selectedAddons => this.setState({ selectedAddons }, () => {
+      this.showRecommended(service).then(selectedRecommended => this.setState({ selectedRecommended }, () => {
+        this.showRequired(service).then(selectedRequired => this.setState({ selectedRequired }, () => {
+          const {
+            selectedAddons: addons,
+            selectedRequired: required,
+            selectedRecommended: recommended,
+          } = this.state;
+          this.props.newAppointmentActions.addServiceItemExtras(
+            itemId, // parentId
+            'addon', // extraService type
+            addons,
+          );
+          this.props.newAppointmentActions.addServiceItemExtras(
+            itemId, // parentId
+            'recommended', // extraService type
+            recommended,
+          );
+          this.props.newAppointmentActions.addServiceItemExtras(
+            itemId, // parentId
+            'required', // extraService type
+            required,
+          );
+          return this.checkConflicts();
+        }));
+      }));
+    }));
+  }
+
+  showRequired = service => new Promise((resolve) => {
+    try {
+      const {
+        navigation: { navigate },
+      } = this.props;
+      if (service && service.requiredServices.length > 0) {
+        if (service.requiredServices.length === 1) {
+          Services.getService(service.requiredServices[0].id)
+            .then(res => resolve({ name: res.description, ...res }));
+        } else {
+          navigate('RequiredServices', {
+            showCancelButton: false,
+            services: service.requiredServices,
+            serviceTitle: service.name,
+            onNavigateBack: this.showPanel,
+            onSave: selected => resolve(selected),
+          });
+        }
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      console.warn(err);
+      resolve([]);
+    }
+  });
+
+  showAddons = service => new Promise((resolve) => {
+    try {
+      const {
+        navigation: { navigate },
+      } = this.props;
+      if (service && service.addons.length > 0) {
+        navigate('AddonServices', {
+          showCancelButton: false,
+          services: service.addons,
+          serviceTitle: service.name,
+          onNavigateBack: this.showPanel,
+          onSave: services => resolve(services),
+        });
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      console.warn(err);
+      resolve([]);
+    }
+  });
+
+  showRecommended = service => new Promise((resolve) => {
+    try {
+      const {
+        navigation: { navigate },
+      } = this.props;
+      if (service && service.recommendedServices.length > 0) {
+        navigate('RecommendedServices', {
+          showCancelButton: false,
+          services: service.recommendedServices,
+          serviceTitle: service.name,
+          onNavigateBack: this.showPanel,
+          onSave: services => resolve(services),
+        });
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      console.warn(err);
+      resolve([]);
+    }
+  });
 
   shouldUpdateClientInfo = async () => {
     const {
@@ -683,6 +768,7 @@ export default class NewAppointmentScreen extends React.Component {
                   conflicts={this.getConflictsForService(item.itemId)}
                   addons={this.getAddonsForService(item.itemId)}
                   data={item.service}
+                  onSetExtras={() => this.selectExtraServices(item)}
                   onPress={() => this.onPressService(item.itemId)}
                   onPressConflicts={() => this.onPressConflicts(item.itemId)}
                   onPressDelete={() => this.removeServiceAlert(item.itemId)}
@@ -731,6 +817,7 @@ export default class NewAppointmentScreen extends React.Component {
                             key={item.itemId}
                             addons={this.getAddonsForService(item.itemId)}
                             data={item.service}
+                            onSetExtras={() => this.selectExtraServices(item)}
                             conflicts={this.getConflictsForService(item.itemId)}
                             onPress={() => this.onPressService(item.itemId, guest.guestId)}
                             onPressDelete={() => this.removeServiceAlert(item.itemId)}

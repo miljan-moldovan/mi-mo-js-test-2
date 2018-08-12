@@ -3,9 +3,10 @@ import {
   Text,
   View,
 } from 'react-native';
-
+import { includes } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SelectableServiceList from '../../components/SelectableServiceList';
+import Icon from '../../components/UI/Icon';
 import styles from './styles';
 
 export default class AddonServicesScreen extends React.Component {
@@ -54,41 +55,19 @@ export default class AddonServicesScreen extends React.Component {
   onChangeSelected = selected => this.setState({ selected })
 
   handleSave = (empty = false) => {
+    const { navigation: { goBack }, services: allServices } = this.props;
+    const { selected } = this.state;
     const onSave = this.props.navigation.getParam('onSave', null);
     if (empty) {
-      return onSave([]);
+      onSave([]);
+      return goBack();
     }
-    const selected = this.serviceList.selectedServices;
-
-    onSave(selected);
-    return this.props.navigation.goBack();
+    const services = allServices.filter(srv => includes(selected, srv.id));
+    onSave(services);
+    return goBack();
   }
 
   handlePressNone = () => this.handleSave(true)
-
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.listItem}
-      onPress={() => this.handlePressRow(index)}
-    >
-      <View style={styles.listItemContainer}>
-        <Text style={styles.listItemText}>{item.name}</Text>
-        {!!item.price && (
-          <Text style={styles.priceText}>{`$${item.price.toFixed(2)}`}</Text>
-        )}
-      </View>
-      <View style={styles.iconContainer}>
-        {item.selected && (
-          <Icon
-            name="checkCircle"
-            color="#1DBF12"
-            size={14}
-            type="solid"
-          />
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  )
 
   renderSeparator = () => (
     <View style={styles.listItemSeparator} />

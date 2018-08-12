@@ -44,14 +44,8 @@ export default class ServiceInput extends React.Component {
   handleServiceSelection = (service) => {
     const {
       onChange = srv => srv,
-      afterDone = () => null,
     } = this.props;
     onChange(service);
-    debugger //eslint-disable-line
-    if (this.shouldShowExtras) {
-      this.selectExtraServices();
-    }
-    afterDone();
   }
 
   handlePress = () => {

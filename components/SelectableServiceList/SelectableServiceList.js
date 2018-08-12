@@ -32,14 +32,12 @@ class SelectableServiceList extends React.Component {
     const ids = services.map(srv => (isNumber(srv) ? srv : get(srv, 'id', null)));
     const list = allServices.filter(srv => includes(ids, srv.id));
     if (noneButton) {
-      list.unshift(noneButton);
+      list.unshift({ ...noneButton, isNone: true });
     }
     return list;
   }
 
-  get selectedServices() {
-    return this.props.allServices.filter(srv => this.isSelected(srv.id));
-  }
+  selectedServices = () => this.props.allServices.filter(srv => this.isSelected(srv.id))
 
   isSelected = id => includes(this.props.selected, id)
 

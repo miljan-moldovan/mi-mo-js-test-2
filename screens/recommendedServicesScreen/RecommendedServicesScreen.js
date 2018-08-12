@@ -4,6 +4,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
+import { includes } from 'lodash';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SelectableServiceList from '../../components/SelectableServiceList';
@@ -59,14 +60,16 @@ export default class RecommendedServicesScreen extends React.Component {
   onChangeSelected = selected => this.setState({ selected })
 
   handleSave = (empty = false) => {
-    const onSave = this.props.navigation.getParam('onSave', null);
+    const { navigation: { goBack, getParam }, services: allServices } = this.props;
+    const { selected } = this.state;
+    const onSave = getParam('onSave', null);
     if (empty) {
-      return onSave([]);
+      onSave([]);
+      return goBack();
     }
-    const selected = this.serviceList.selectedServices;
-
-    onSave(selected);
-    return this.props.navigation.goBack();
+    const services = allServices.filter(srv => includes(selected, srv.id));
+    onSave(services);
+    return goBack();
   }
 
   handlePressNone = () => this.handleSave(true)
