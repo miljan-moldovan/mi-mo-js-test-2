@@ -56,7 +56,7 @@ class QueueScreen extends React.Component {
   };
   state = {
     refreshing: false,
-    index: 0,
+    index: '0',
     isWalkoutVisible: false,
     walkoutText: '',
     searchMode: false,
@@ -120,7 +120,9 @@ class QueueScreen extends React.Component {
     // setTimeout(() => this.setState({ refreshing: false }), 500);
   }
 
-  _renderLabel = ({ position, navigationState }) => ({ route, focused }) => {
+  _renderLabel = ({ position, navigationState }) => ({ route }) => {
+    const focused = this.state.index.toString() === route.key.toString();
+
     const interpolateColorActive = this.state.colorAnimActive.interpolate({
       inputRange: [0, 200],
       outputRange: ['#FFFFFF', '#1963CE'],
@@ -158,7 +160,7 @@ class QueueScreen extends React.Component {
         style={styles.tabContainer}
         renderLabel={this._renderLabel(props)}
         indicatorStyle={styles.indicator}
-        onTabPress={this.animateText}
+        onTabPress={this.onTabPress}
       />
       <View style={styles.summaryBar}>
         <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
@@ -284,13 +286,13 @@ class QueueScreen extends React.Component {
         subTitle: 'step 1 of 3',
         leftButton:
   <View style={styles.backContainer}>
-            <FontAwesome style={styles.backIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
-            <Text style={styles.leftButtonText}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
               Cancel
-            </Text>
-          </View>,
+    </Text>
+  </View>,
         leftButtonOnPress: (navigation) => {
           navigation.goBack();
         },
@@ -309,13 +311,13 @@ class QueueScreen extends React.Component {
         subTitle: 'step 2 of 3',
         leftButton:
   <View style={styles.backContainer}>
-            <FontAwesome style={styles.backIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
-            <Text style={styles.leftButtonText}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
               Back
-            </Text>
-          </View>,
+    </Text>
+  </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
@@ -339,13 +341,13 @@ class QueueScreen extends React.Component {
         subTitle: 'step 3 of 3',
         leftButton:
   <View style={styles.backContainer}>
-            <FontAwesome style={styles.backIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
-            <Text style={styles.leftButtonText}>
+    <FontAwesome style={styles.backIcon}>
+      {Icons.angleLeft}
+    </FontAwesome>
+    <Text style={styles.leftButtonText}>
               Back
-            </Text>
-          </View>,
+    </Text>
+  </View>,
       },
     });
   }
@@ -362,19 +364,21 @@ class QueueScreen extends React.Component {
     this.setState({ walkoutText: ev.nativeEvent.text });
   };
 
+  onTabPress = ({ route }) => {
+    this.setState({ index: route.key }, this.animateText);
+  }
+
   animateText = () => {
     Animated.loop(Animated.timing(this.state.colorAnimActive, {
       toValue: 200,
       duration: 2000,
     }), { iterations: 1 }).start();
 
-
     Animated.loop(Animated.timing(this.state.colorAnimInactive, {
       toValue: 200,
       duration: 2000,
     }), { iterations: 1 }).start();
   }
-
 
   render() {
     //
@@ -391,7 +395,7 @@ class QueueScreen extends React.Component {
           }}
           navigationState={this.state}
           renderScene={this._renderScene}
-          renderHeader={this._renderBar}
+          renderTabBar={this._renderBar}
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
 
