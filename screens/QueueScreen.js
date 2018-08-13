@@ -12,7 +12,7 @@ import {
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as actions from '../actions/queue';
@@ -383,7 +383,7 @@ class QueueScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        <TabViewAnimated
+        <TabView
           style={{
             flex: 1,
             backgroundColor: '#115ECD',

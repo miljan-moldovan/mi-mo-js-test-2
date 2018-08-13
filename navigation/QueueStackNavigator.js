@@ -6,7 +6,7 @@ import { StackNavigator } from 'react-navigation';
 import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
 
-import QueueScreen from './../screens/QueueScreen';
+import QueueScreen from '../screens/QueueScreen';
 import QueueCombineScreen from './../screens/QueueCombineScreen';
 import ClientMergeScreen from './../screens/ClientMergeScreen';
 import QueueDetailScreen from './../screens/QueueDetailScreen';
@@ -19,7 +19,7 @@ import ClientsScreen from './../screens/clientsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/NewClientScreen';
-import PromotionsScreen from '../screens/promotionsScreen';
+import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';

@@ -751,7 +751,7 @@
 			path = "New Group";
 			sourceTree = "<group>";
 		};
-		6991AB5B2086450700D9FD1A = {
+		6991AB5B2086450700D9FD1A /*  */ = {
 			isa = PBXGroup;
 			children = (
 				6991AB652086450700D9FD1A /* libRCTDirectedScrollView.a */,
@@ -964,8 +964,6 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				4CC8A318713285E093A238DC /* [CP] Embed Pods Frameworks */,
-				84D0FCFDA9315E8291DBE7AD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -987,8 +985,6 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				B3958C6C201B2BA500875291 /* Run Fabric */,
-				BC1BFBB1DBE657B028F40FA2 /* [CP] Embed Pods Frameworks */,
-				054C3831432C5E884EC724DD /* [CP] Copy Pods Resources */,
 				60B72D56211CB5290037F07D /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -1054,7 +1050,7 @@
 					ProjectRef = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
 				},
 				{
-					ProductGroup = 6991AB5B2086450700D9FD1A;
+					ProductGroup = 6991AB5B2086450700D9FD1A /*  */;
 					ProjectRef = 6991AB5A2086450700D9FD1A /* RCTDirectedScrollView.xcodeproj */;
 				},
 				{
@@ -1529,51 +1525,6 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		054C3831432C5E884EC724DD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4CC8A318713285E093A238DC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		84D0FCFDA9315E8291DBE7AD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		B229ABC978C59D4C64E3F30D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1605,21 +1556,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 57ed7a29664d211a062ac7a41c806fc3aeec24f2 069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc";
-		};
-		BC1BFBB1DBE657B028F40FA2 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		BD6EC48E91C8960A5BB0A3FA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
