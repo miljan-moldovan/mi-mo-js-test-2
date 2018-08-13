@@ -134,6 +134,7 @@ class ServiceSection extends Component {
       <View style={styles.serviceDataContainer}>
         <ProviderInput
           apptBook
+          showFirstAvailable={false}
           noLabel
           filterByService
           rootStyle={styles.providerRootStyle}
