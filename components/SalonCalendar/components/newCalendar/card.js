@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   clientContainer: {
     flexDirection: 'row',
-    paddingVertical: 2,
+    paddingVertical: 1,
     flexWrap: 'wrap',
   },
   textContainer: {
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   requestedStyle: {
     borderRadius: 8,
     alignItems: 'center',
+    borderWidth: 1,
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -336,7 +337,7 @@ class Card extends Component {
     const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
     const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
-    const badgeParty = badgeData.isParty && true ? <GroupBadge text={initials} /> : null;
+    const badgeParty = badgeData.isParty ? <GroupBadge text={initials} /> : null;
     return (
       <View style={styles.badgesContainer}>
         {badgeParty}
@@ -416,6 +417,7 @@ class Card extends Component {
         mainServiceColor,
         isFirstAvailable,
         requested,
+        badgeData,
       } = this.props.appointment;
     const {
       showFirstAvailable,
@@ -439,16 +441,17 @@ class Card extends Component {
     const borderColor = colors[color].dark;
     const backgroundColor = activeCard ? borderColor : colors[color].light;
     const clientName = `${client.name} ${client.lastName}`;
-    const clientTextColor = '#2F3142';
-    const activeClientTextColor = activeCard || requested ? '#fff' : clientTextColor;
+    const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
+    const activeClientTextColor = badgeData.isNoShow ? '#D0021B' : clientTextColor;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
-    const serviceTextColor = '#1D1E29';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
     const container = isBufferCard ? [styles.container, { position: 'relative' }] : styles.container;
     const marginTop = isMultiBlock ? { marginTop: 11 } : '';
-    const isRequested = requested ? [styles.requestedStyle, { backgroundColor: borderColor }] : '';
+    const clientBackgroundColor = badgeData.isNoShow ?
+      { borderColor } : { backgroundColor: borderColor, borderColor };
+    const isRequested = requested || badgeData.isNoShow ? [styles.requestedStyle, clientBackgroundColor] : '';
     if (!activeCard && isResizeing) {
       return null;
     }

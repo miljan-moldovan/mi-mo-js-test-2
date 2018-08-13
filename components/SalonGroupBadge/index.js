@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderColor: '#082E66',
     borderWidth: 1,
+    paddingLeft: 4,
   },
   textStyle: {
     fontFamily: 'Roboto',
@@ -21,18 +22,26 @@ const styles = StyleSheet.create({
     fontSize: 9,
     textAlign: 'center',
     color: '#2F3142',
+    marginHorizontal: 2,
   },
-  collarContainer: {
+  dollarContainer: {
+    height: '100%',
     paddingHorizontal: 4,
     backgroundColor: '#082E66',
+    borderTopRightRadius: 7.5,
+    borderBottomRightRadius: 7.5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
 const badge = ({ text }) => (
   <View style={styles.container}>
-    <Icon color="#082E66" size={16} name="userPlus" type="solid" />
-    <Text style={styles.textStyle}>{text}</Text>
-    <Icon color="#fff" size={16} name="dollar" type="solid" />
+    <Icon color="#082E66" size={12} name="userPlus" type="solid" />
+    <Text style={styles.textStyle}>{text.toUpperCase()}</Text>
+    <View style={styles.dollarContainer}>
+      <Icon color="#fff" size={10} name="dollar" type="solid" />
+    </View>
   </View>
 );
 
