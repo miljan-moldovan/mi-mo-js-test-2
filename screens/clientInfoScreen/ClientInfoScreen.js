@@ -3,10 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
   Dimensions,
 } from 'react-native';
-import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import ClientDetails from './components/clientDetails';
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 2,
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   leftButtonText: {
@@ -185,7 +184,7 @@ export default class ClientInfoScreen extends React.Component {
 
   );
 
-  renderHeader = props => (
+  renderTabBar = props => (
     <TabBar
       {...props}
       tabStyle={[styles.tabLabel, { backgroundColor: 'transparent' }]}
@@ -204,11 +203,11 @@ export default class ClientInfoScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <TabViewAnimated
+        <TabView
           style={{ flex: 1 }}
           navigationState={this.state}
           renderScene={this.renderScene}
-          renderHeader={this.renderHeader}
+          renderTabBar={this.renderTabBar}
           onIndexChange={this.handleIndexChange}
           initialLayout={initialLayout}
           swipeEnabled={false}
