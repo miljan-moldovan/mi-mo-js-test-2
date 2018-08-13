@@ -148,6 +148,11 @@ class SalonAppointmentSlide extends React.Component {
     this.props.goToShowAppt(this.props.appointment.client);
   }
 
+  handleRecommendProductPress = (client) => {
+    this.props.navigation.navigate('RecommendProduct', { client });
+    this.hidePanel();
+  }
+
   render() {
     const {
       appointment,
@@ -467,7 +472,7 @@ class SalonAppointmentSlide extends React.Component {
                         key={Math.random()}
                         style={styles.otherOptionsBtn}
                         labelStyle={styles.otherOptionsLabels}
-                        onPress={() => { alert('Not implemented'); }}
+                        onPress={() => this.handleRecommendProductPress(client)}
                         label="Recommended Products"
                       >
                         <View style={styles.iconContainer}>
