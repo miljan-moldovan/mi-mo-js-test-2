@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated, PanResponder } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -7,7 +7,7 @@ import Svg, {
   Defs,
   Stop,
 } from 'react-native-svg';
-import { get, times, reverse } from 'lodash';
+import { get, times } from 'lodash';
 import SvgUri from 'react-native-svg-uri';
 
 import colors from '../../../../constants/appointmentColors';
@@ -15,6 +15,7 @@ import multiProviderUri from '../../../../assets/svg/multi-provider-icon.svg';
 import Icon from '../../../UI/Icon';
 import Badge from '../../../SalonBadge';
 import ResizeButton from '../resizeButtons';
+import GroupBadge from '../../../SalonGroupBadge';
 
 const styles = StyleSheet.create({
   clientText: {
@@ -57,12 +58,12 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: 'row',
     paddingHorizontal: 2,
-    marginTop: 2
+    marginTop: 2,
   },
   clientContainer: {
     flexDirection: 'row',
     paddingVertical: 2,
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   textContainer: {
     flex: 1,
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 0,
     padding: 0,
-    color: 'white',
+    color: '#fff',
     transform: [{ rotate: '-90deg' }],
   },
   requestedStyle: {
@@ -115,11 +116,11 @@ class Card extends Component {
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return (nextProps.activeCard  || (nextProps.isInBuffer !== this.props.isInBuffer
+  shouldComponentUpdate(nextProps) {
+    return (nextProps.activeCard || (nextProps.isInBuffer !== this.props.isInBuffer
       || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
-      !nextProps.isLoading && this.props.isLoading ||
+      (!nextProps.isLoading && this.props.isLoading) ||
       (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)));
   }
 
@@ -145,7 +146,7 @@ class Card extends Component {
         verticalPositions: [{ top: 0, height: 46 }],
         opacity: isActive ? 0.7 : 1,
         isActiveEmployeeInCellTime: true,
-      }
+      };
     }
     const {
       appointment: {
@@ -211,7 +212,7 @@ class Card extends Component {
       case 'deskStaff':
       case 'providers':
         if (selectedProvider === 'all') {
-          index = headerData.findIndex(provider => provider.id === employee.id);
+          index = headerData.findIndex(item => item.id === employee.id);
         } else if (displayMode === 'week') {
           const apptDate = moment(date).format('YYYY-DD-MM');
           index = headerData.findIndex(item => item.format('YYYY-DD-MM') === apptDate);
@@ -229,12 +230,12 @@ class Card extends Component {
     let height = null;
     let top = null;
     if (gapTime !== '00:00:00') {
-      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm')
+      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm');
       height = ((firstBlockDuration / step) * 30) - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'm') / step) * 30;
       verticalPositions.push({ height, top });
       const gapMinutes = apptGapTimeMoment.diff(dateTime12, 'm');
-      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm')
+      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm');
       top = (newFromtTime.diff(startTimeMoment, 'm') / step) * 30;
       height = ((apptToTimeMoment.diff(newFromtTime, 'minutes') / step) * 30) - 1;
       verticalPositions.push({ height, top });
@@ -284,7 +285,7 @@ class Card extends Component {
     if (isBufferCard) {
       this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
         const { height } = this.props;
-        const newVerticalPositions = [{ top: y, height }]
+        const newVerticalPositions = [{ top: y, height }];
         onDrag(false, appointment, x, width, newVerticalPositions, true);
       });
     } else {
@@ -299,23 +300,22 @@ class Card extends Component {
     }
   }
 
-  renderAssistant = ({ height }) => {
-    return (
-      <View
-        style={[styles.assistantContainer, { height: height - 10 }]}
-      >
-        <Text
-          style={[styles.assistantText, { width: height }]}
-          numberOfLines={1}
-        >Assistant Assigned
-        </Text>
-      </View>
-    );
-  }
+  renderAssistant = ({ height }) => (
+    <View
+      style={[styles.assistantContainer, { height: height - 10 }]}
+    >
+      <Text
+        style={[styles.assistantText, { width: height }]}
+        numberOfLines={1}
+      >Assistant Assigned
+      </Text>
+    </View>
+  );
 
   renderBadges = () => {
     const { appointment } = this.props;
-    const { badgeData } = appointment;
+    const { badgeData, client: { name, lastName } } = appointment;
+    const initials = `${name[0]}${lastName[0]}`;
     const users = appointment.isMultipleProviders ? (
       <View style={styles.multiProviderFix}>
         <SvgUri
@@ -335,9 +335,11 @@ class Card extends Component {
     const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
     const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
-    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null
+    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    const badgeParty = badgeData.isParty && true ? <GroupBadge text={initials} /> : null;
     return (
       <View style={styles.badgesContainer}>
+        {badgeParty}
         { users }
         { star }
         { birthdayCake }
