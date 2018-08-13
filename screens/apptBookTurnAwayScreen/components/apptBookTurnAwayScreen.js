@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, StyleSheet, View, Text, ScrollView } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
 import moment from 'moment';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import PropTypes from 'prop-types';
 import DatePicker from '../../../components/modals/SalonDatePicker';
 import ServiceSection from './serviceSection';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -15,134 +16,8 @@ import {
   ClientInput,
 } from '../../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-    paddingTop: 18,
-  },
-  row: {
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  rowFirst: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#C0C1C6',
-  },
-  dataContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-  label: {
-    fontFamily: 'Roboto',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  textData: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-  },
-  iconStyle: {
-    tintColor: '#727A8F',
-    marginLeft: 5,
-  },
-  buttonStyle: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  titleRow: {
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: '#F1F1F1',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  title: {
-    color: '#727A8F',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  inputDividerContainer: { width: '100%', backgroundColor: '#FFFFFF' },
-  inputDivider: { marginHorizontal: 16 },
-  sectionDivider: { height: 37 },
-  optionaLabel: {
-    fontFamily: 'Roboto',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  clientInput: {
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
+import styles from './styles';
 
-  },
-  cancelButton: { fontSize: 14, color: 'white' },
-});
 
 class ApptBookTurnAwayScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -155,7 +30,7 @@ class ApptBookTurnAwayScreen extends Component {
       headerLeft:
   <View style={styles.leftButtonContainer}>
     <SalonTouchableOpacity
-      onPress={() => { navigation.goBack(); }}
+      onPress={navigation.goBack}
       style={styles.leftButton}
     >
       <Text style={styles.leftButtonText}>Cancel</Text>
@@ -217,7 +92,7 @@ class ApptBookTurnAwayScreen extends Component {
     const services = [];
 
     const selectedServices = JSON.parse(JSON.stringify(this.state.services));
-    for (let i = 0; i < selectedServices.length; i++) {
+    for (let i = 0; i < selectedServices.length; i += 1) {
       const service = selectedServices[i];
       delete service.service;
       delete service.provider;
@@ -252,7 +127,7 @@ class ApptBookTurnAwayScreen extends Component {
       provider: this.props.navigation.state.params.employee,
       service: null,
       fromTime: moment(),
-      toTime: moment().add(1, 'hours'),
+      toTime: moment().add(15, 'minutes'),
     };
 
     this.props.navigation.setParams({ canSave: false });
@@ -271,8 +146,7 @@ class ApptBookTurnAwayScreen extends Component {
   handleUpdateService= (index, service) => {
     const { services } = this.state;
     services[index] = service;
-    this.setState({ services });
-    this.props.navigation.setParams({ canSave: true });
+    this.setState({ services }, this.checkCanSave);
   }
 
   handleDateModal = () => {
@@ -280,7 +154,7 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   handleSelectDate = (data) => {
-    this.setState({ date: moment(data), isModalVisible: false });
+    this.setState({ date: moment(data), isModalVisible: false }, this.checkCanSave);
   }
 
   handlePressClient = () => {
@@ -305,8 +179,7 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   onChangeOtherReason = (text) => {
-    this.setState({ otherReason: text });
-    this.props.navigation.setParams({ canSave: text.length > 0 });
+    this.setState({ otherReason: text }, this.checkCanSave);
   }
 
 
@@ -315,19 +188,25 @@ class ApptBookTurnAwayScreen extends Component {
 
     const isEditableOtherReason = option.id === selectedReasonCode.id;
 
+    let { otherReason } = this.state;
+
     if (!isEditableOtherReason) {
-      this.setState({ otherReason: '' });
-      this.props.navigation.setParams({
-        canSave: true,
-      });
-    } else {
-      this.props.navigation.setParams({
-        canSave: this.state.otherReason.length > 0,
-      });
+      otherReason = '';
     }
+    this.setState({ selectedReasonCode: option, isEditableOtherReason, otherReason }, this.checkCanSave);
+  }
 
+  checkCanSave = () => {
+    const isTextValid = this.state.isEditableOtherReason ? this.state.otherReason.length > 0 : true;
 
-    this.setState({ selectedReasonCode: option, isEditableOtherReason });
+    if (isTextValid &&
+      this.state.date !== null &&
+      this.state.services.length > 0 &&
+      this.state.selectedReasonCode !== null) {
+      this.props.navigation.setParams({ canSave: true });
+    } else {
+      this.props.navigation.setParams({ canSave: false });
+    }
   }
 
   cancelButton = () => ({
@@ -342,12 +221,13 @@ class ApptBookTurnAwayScreen extends Component {
     const { selectedReasonCode } = this.state;
 
     return (
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={80} enableAutoAutomaticScroll>
 
-        {this.props.apptBookTurnAwayState.isLoading ? (
-          <View style={styles.activityIndicator}>
-            <ActivityIndicator />
-          </View>
+          {this.props.apptBookTurnAwayState.isLoading ? (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
       ) : (<View>
 
         <View style={[styles.row, styles.rowFirst]}>
@@ -392,7 +272,7 @@ class ApptBookTurnAwayScreen extends Component {
             onPress={this.onPressInputGroup}
           />
           <InputText
-            autoFocus
+            // autoFocus
             value={this.state.otherReason}
             isEditable={this.state.isEditableOtherReason}
             onChangeText={this.onChangeOtherReason}
@@ -402,10 +282,26 @@ class ApptBookTurnAwayScreen extends Component {
         <DatePicker onPress={this.handleSelectDate} isVisible={this.state.isModalVisible} />
 
       </View>)}
-
-      </ScrollView>
+        </KeyboardAwareScrollView>
+      </View>
     );
   }
 }
+
+ApptBookTurnAwayScreen.defaultProps = {
+
+};
+
+ApptBookTurnAwayScreen.propTypes = {
+  turnAwayReasonsActions: PropTypes.shape({
+    getTurnAwayReasons: PropTypes.func.isRequired,
+  }).isRequired,
+  apptBookTurnAwayActions: PropTypes.shape({
+    postApptBookTurnAway: PropTypes.func.isRequired,
+  }).isRequired,
+  turnAwayReasonsState: PropTypes.any.isRequired,
+  apptBookTurnAwayState: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
 
 export default ApptBookTurnAwayScreen;
