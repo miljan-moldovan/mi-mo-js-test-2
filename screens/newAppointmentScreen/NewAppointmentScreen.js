@@ -747,6 +747,7 @@ export default class NewAppointmentScreen extends React.Component {
             <InputDivider style={isValidEmail || !client ? {} : dividerWithErrorStyle} />
             <ValidatableInput
               label="Phone"
+              mask="[000]-[000]-[0000]"
               isValid={isValidPhone || !client}
               value={clientPhone}
               validation={this.isValidPhoneNumberRegExp}

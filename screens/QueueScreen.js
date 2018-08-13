@@ -15,7 +15,7 @@ import { bindActionCreators } from 'redux';
 import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import * as actions from '../actions/queue.js';
+import * as actions from '../actions/queue';
 import settingsActions from '../actions/settings';
 import checkinActions from '../actions/checkin';
 import serviceActions from '../actions/service';
@@ -43,14 +43,15 @@ class QueueScreen extends React.Component {
       searchMode, searchText, onChangeSearchMode, onChangeSearchText,
     } = params;
     return {
-      header:
-  <QueueHeader
-    navigation={navigation}
-    onChangeSearchMode={onChangeSearchMode}
-    onChangeSearchText={onChangeSearchText}
-    searchMode={searchMode}
-    searchText={searchText}
-  />,
+      header: (
+        <QueueHeader
+          navigation={navigation}
+          onChangeSearchMode={onChangeSearchMode}
+          onChangeSearchText={onChangeSearchText}
+          searchMode={searchMode}
+          searchText={searchText}
+        />
+      ),
     };
   };
   state = {
@@ -134,14 +135,14 @@ class QueueScreen extends React.Component {
       <View style={styles.tabLabelContainer}>
         <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
           <Animated.Text style={[styles.tabQueueCounterText, { color: focused ? interpolateColorActive : interpolateColorInactive }]}>
-            {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length }
+            {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length}
           </Animated.Text>
         </View>
         <Animated.Text style={{
-            fontFamily: 'Roboto-Medium',
-            fontSize: 12,
-            color: focused ? interpolateColorActive : interpolateColorInactive,
-          }}
+          fontFamily: 'Roboto-Medium',
+          fontSize: 12,
+          color: focused ? interpolateColorActive : interpolateColorInactive,
+        }}
         >
           {route.title}
         </Animated.Text>
@@ -213,7 +214,7 @@ class QueueScreen extends React.Component {
     return (
       <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
         <KeyboardAwareScrollView>
-          { !searchWaitingCount && !searchServiceCount ? (
+          {!searchWaitingCount && !searchServiceCount ? (
             <View style={styles.searchEmpty}>
               <View style={styles.searchEmptyIconContainer}>
                 {/* <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome> */}
@@ -226,7 +227,7 @@ class QueueScreen extends React.Component {
                 Check your spelling and try again or tap on one of the suggestions below
               </Text>
             </View>
-          ) : null }
+          ) : null}
           <Queue
             isWaiting
             onChangeFilterResultCount={this.updateSearchWaitingCount}
@@ -283,13 +284,13 @@ class QueueScreen extends React.Component {
         subTitle: 'step 1 of 3',
         leftButton:
   <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-            Cancel
-    </Text>
-  </View>,
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
+            <Text style={styles.leftButtonText}>
+              Cancel
+            </Text>
+          </View>,
         leftButtonOnPress: (navigation) => {
           navigation.goBack();
         },
@@ -308,13 +309,13 @@ class QueueScreen extends React.Component {
         subTitle: 'step 2 of 3',
         leftButton:
   <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-            Back
-    </Text>
-  </View>,
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
+            <Text style={styles.leftButtonText}>
+              Back
+            </Text>
+          </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
@@ -338,13 +339,13 @@ class QueueScreen extends React.Component {
         subTitle: 'step 3 of 3',
         leftButton:
   <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-            Back
-    </Text>
-  </View>,
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
+            <Text style={styles.leftButtonText}>
+              Back
+            </Text>
+          </View>,
       },
     });
   }
@@ -394,7 +395,7 @@ class QueueScreen extends React.Component {
           onIndexChange={this._handleIndexChange}
           initialLayout={initialLayout}
 
-          // swipeEnabled={false}
+        // swipeEnabled={false}
         />
         {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
@@ -405,33 +406,35 @@ class QueueScreen extends React.Component {
           )
         }
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
-          {[<View key={Math.random().toString()} style={styles.walkoutContainer}>
-            <View style={styles.walkoutImageContainer}>
-              <Image style={styles.walkoutImage} source={require('../assets/images/walkoutModal/icon_walkout.png')} />
-            </View>
-            <Text style={styles.walkoutText}>Walk-out reason:
-              <Text style={styles.walkoutTextBold}>Other</Text>
-            </Text>
-            <View style={styles.walkoutTextContainer}>
-              <SalonTextInput
-                multiline
-                placeholder="Please insert other reasons"
-                placeholderColor="#0A274A"
-                style={styles.walkoutInput}
-                placeholderStyle={styles.walkoutPlaceholder}
-                text={this.state.walkoutText}
-                onChange={this._handleWalkOutTextChange}
-              />
-            </View>
-            <View style={styles.walkoutButtonContainer}>
-              <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
-                <Text style={styles.walkoutTextCancel}>Cancel</Text>
-              </SalonTouchableOpacity>
-              <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
-                <Text style={styles.walkoutTextOk}>Ok</Text>
-              </SalonTouchableOpacity>
-            </View>
-          </View>]}
+          {[
+            <View key={Math.random().toString()} style={styles.walkoutContainer}>
+              <View style={styles.walkoutImageContainer}>
+                <Image style={styles.walkoutImage} source={require('../assets/images/walkoutModal/icon_walkout.png')} />
+              </View>
+              <Text style={styles.walkoutText}>Walk-out reason:
+                <Text style={styles.walkoutTextBold}>Other</Text>
+              </Text>
+              <View style={styles.walkoutTextContainer}>
+                <SalonTextInput
+                  multiline
+                  placeholder="Please insert other reasons"
+                  placeholderColor="#0A274A"
+                  style={styles.walkoutInput}
+                  placeholderStyle={styles.walkoutPlaceholder}
+                  text={this.state.walkoutText}
+                  onChange={this._handleWalkOutTextChange}
+                />
+              </View>
+              <View style={styles.walkoutButtonContainer}>
+                <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
+                  <Text style={styles.walkoutTextCancel}>Cancel</Text>
+                </SalonTouchableOpacity>
+                <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
+                  <Text style={styles.walkoutTextOk}>Ok</Text>
+                </SalonTouchableOpacity>
+              </View>
+            </View>,
+          ]}
         </SalonModal>
       </View>
     );

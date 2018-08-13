@@ -3,6 +3,7 @@ package com.salonultimatern;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.zyu.ReactNativeWheelPickerPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
 import com.rnds.DirectedScrollViewPackage;
 import com.zyu.ReactNativeWheelPickerPackage;
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativeWheelPickerPackage(),
             new RNTextInputMaskPackage(),
             new DirectedScrollViewPackage(),
             new ReactNativeWheelPickerPackage(),
