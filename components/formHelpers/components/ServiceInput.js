@@ -172,8 +172,13 @@ export default class ServiceInput extends React.Component {
       showLength = false,
       nameKey = 'name',
       label = 'Service',
-      placeholder = 'Select Service',
     } = this.props;
+
+    let placeholder = 'placeholder' in this.props ? this.props.placeholder : 'Select Service';
+    if (this.props.noPlaceholder) {
+      placeholder = null;
+    }
+
     const value = get(selectedService, nameKey, null);
     return (
       <SalonTouchableOpacity
