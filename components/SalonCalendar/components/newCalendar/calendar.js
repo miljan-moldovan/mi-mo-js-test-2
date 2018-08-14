@@ -118,6 +118,25 @@ export default class Calendar extends Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.goToPosition && !this.props.isLoading) {
+      const top = this.goToPosition.top - (this.state.calendarMeasure.height / 2);
+      const left = this.goToPosition.left - (this.state.calendarMeasure.width / 2);
+      this.board.scrollTo({ x: left >= 0 ? left : 0, y: top >= 0 ? top : 0, animated: true });
+      this.goToPosition.highlightCard();
+      this.props.clearGoToAppointment();
+      this.goToPosition = null;
+    }
+  }
+
+  setGoToPositon = ({ left, top, highlightCard }) => {
+    this.goToPosition = {
+      left,
+      top,
+      highlightCard,
+    };
+  }
+
   setCellsByColumn = (nextProps) => {
     const {
       apptGridSettings,
@@ -641,7 +660,8 @@ export default class Calendar extends Component {
   renderCard = (appointment) => {
     const {
       apptGridSettings, headerData, selectedProvider, selectedFilter,
-      displayMode, appointments, providerSchedule, isLoading, filterOptions, providers
+      displayMode, appointments, providerSchedule, isLoading, filterOptions, providers,
+      goToAppointmentId,
     } = this.props;
     const {
       calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
@@ -662,6 +682,8 @@ export default class Calendar extends Component {
     if (appointment.employee) {
       return (
         <Card
+          setGoToPositon={this.setGoToPositon}
+          goToAppointmentId={goToAppointmentId}
           provider={provider}
           headerData={headerData}
           panResponder={panResponder}

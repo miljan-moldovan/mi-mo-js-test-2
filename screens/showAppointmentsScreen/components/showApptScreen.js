@@ -58,8 +58,9 @@ class ShowApptScreen extends React.Component {
     isEmailVisible: false,
   };
   componentWillMount() {
-    const { navigation: { state: { params: { client } } } } = this.props;
+    const { clientApptActions, navigation: { state: { params: { client } } } } = this.props;
     this.state = { ...this.state, client };
+    clientApptActions.clearAppts();
   }
 
   componentDidMount() {
@@ -104,6 +105,14 @@ class ShowApptScreen extends React.Component {
     }
   }
 
+  handleOnPress = (item) => {
+    const {
+      navigation: { goBack, state: { params: { goToAppt } } },
+    } = this.props;
+    goToAppt({ date: item.date, endDate: item.date, appointmentId: item.id });
+    goBack();
+  }
+
   putClientSuccess = () => {
     this.sendEmail();
     this.props.appointmentCalendarActions.setGridView();
@@ -123,7 +132,13 @@ class ShowApptScreen extends React.Component {
     this.setState({ isEmailVisible: false });
   }
 
-  renderItem = ({ item }) => <Card key={item.id} item={item} />
+  renderItem = ({ item }) => (
+    <Card
+      onPress={() => this.handleOnPress(item)}
+      key={item.id}
+      item={item}
+    />
+  );
 
   renderSectionHeader = ({ section: { title } }) => {
     const isToday = title.startsWith('Today');
