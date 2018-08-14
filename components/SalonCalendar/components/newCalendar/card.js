@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated, PanResponder } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -7,7 +7,7 @@ import Svg, {
   Defs,
   Stop,
 } from 'react-native-svg';
-import { get, times, reverse } from 'lodash';
+import { get, times } from 'lodash';
 import SvgUri from 'react-native-svg-uri';
 
 import colors from '../../../../constants/appointmentColors';
@@ -15,6 +15,7 @@ import multiProviderUri from '../../../../assets/svg/multi-provider-icon.svg';
 import Icon from '../../../UI/Icon';
 import Badge from '../../../SalonBadge';
 import ResizeButton from '../resizeButtons';
+import GroupBadge from '../../../SalonGroupBadge';
 
 const styles = StyleSheet.create({
   clientText: {
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   },
   clientContainer: {
     flexDirection: 'row',
-    paddingVertical: 2,
+    paddingVertical: 1,
     flexWrap: 'wrap',
   },
   textContainer: {
@@ -93,12 +94,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 0,
     padding: 0,
-    color: 'white',
+    color: '#fff',
     transform: [{ rotate: '-90deg' }],
   },
   requestedStyle: {
     borderRadius: 8,
     alignItems: 'center',
+    borderWidth: 1,
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -116,8 +118,8 @@ class Card extends Component {
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return (nextProps.activeCard  || (nextProps.isInBuffer !== this.props.isInBuffer
+  shouldComponentUpdate(nextProps) {
+    return (nextProps.activeCard || (nextProps.isInBuffer !== this.props.isInBuffer
       || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
@@ -215,7 +217,7 @@ class Card extends Component {
       case 'deskStaff':
       case 'providers':
         if (selectedProvider === 'all') {
-          index = headerData.findIndex(provider => provider.id === employee.id);
+          index = headerData.findIndex(item => item.id === employee.id);
         } else if (displayMode === 'week') {
           const apptDate = moment(date).format('YYYY-DD-MM');
           index = headerData.findIndex(item => item.format('YYYY-DD-MM') === apptDate);
@@ -233,12 +235,12 @@ class Card extends Component {
     let height = null;
     let top = null;
     if (gapTime !== '00:00:00') {
-      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm')
+      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm');
       height = ((firstBlockDuration / step) * 30) - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'm') / step) * 30;
       verticalPositions.push({ height, top });
       const gapMinutes = apptGapTimeMoment.diff(dateTime12, 'm');
-      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm')
+      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm');
       top = (newFromtTime.diff(startTimeMoment, 'm') / step) * 30;
       height = ((apptToTimeMoment.diff(newFromtTime, 'minutes') / step) * 30) - 1;
       verticalPositions.push({ height, top });
@@ -291,7 +293,7 @@ class Card extends Component {
     if (isBufferCard) {
       this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
         const { height } = this.props;
-        const newVerticalPositions = [{ top: y, height }]
+        const newVerticalPositions = [{ top: y, height }];
         onDrag(false, appointment, x, width, newVerticalPositions, true);
       });
     } else {
@@ -327,23 +329,22 @@ class Card extends Component {
     ).start();
   }
 
-  renderAssistant = ({ height }) => {
-    return (
-      <View
-        style={[styles.assistantContainer, { height: height - 10 }]}
-      >
-        <Text
-          style={[styles.assistantText, { width: height }]}
-          numberOfLines={1}
-        >Assistant Assigned
-        </Text>
-      </View>
-    );
-  }
+  renderAssistant = ({ height }) => (
+    <View
+      style={[styles.assistantContainer, { height: height - 10 }]}
+    >
+      <Text
+        style={[styles.assistantText, { width: height }]}
+        numberOfLines={1}
+      >Assistant Assigned
+      </Text>
+    </View>
+  );
 
   renderBadges = () => {
     const { appointment } = this.props;
-    const { badgeData } = appointment;
+    const { badgeData, client: { name, lastName } } = appointment;
+    const initials = `${name[0]}${lastName[0]}`;
     const users = appointment.isMultipleProviders ? (
       <View style={styles.multiProviderFix}>
         <SvgUri
@@ -364,8 +365,10 @@ class Card extends Component {
     const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
     const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    const badgeParty = badgeData.isParty ? <GroupBadge text={initials} /> : null;
     return (
       <View style={styles.badgesContainer}>
+        {badgeParty}
         { users }
         { star }
         { birthdayCake }
@@ -442,6 +445,7 @@ class Card extends Component {
         mainServiceColor,
         isFirstAvailable,
         requested,
+        badgeData,
       } = this.props.appointment;
     const {
       showFirstAvailable,
@@ -466,16 +470,14 @@ class Card extends Component {
     const borderColor = colors[color].dark;
     const backgroundColor = activeCard ? borderColor : colors[color].light;
     const clientName = `${client.name} ${client.lastName}`;
-    const clientTextColor = '#2F3142';
-    const activeClientTextColor = activeCard || requested ? '#fff' : clientTextColor;
+    const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
+    const activeClientTextColor = badgeData.isNoShow ? '#D0021B' : clientTextColor;
     const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
-    const serviceTextColor = '#1D1E29';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
     const container = isBufferCard ? [styles.container, { position: 'relative' }] : styles.container;
     const marginTop = isMultiBlock ? { marginTop: 11 } : '';
-    const isRequested = requested ? [styles.requestedStyle, { backgroundColor: borderColor }] : '';
     const highlightCard = goToAppointmentId === id ? {
       shadowColor: 'rgba(248,231,28,1)',
       shadowOffset: { width: 0, height: 0 },
@@ -483,6 +485,9 @@ class Card extends Component {
       shadowRadius: this.state.shadowRadius,
       elevation: 1,
     } : '';
+    const clientBackgroundColor = badgeData.isNoShow ?
+      { borderColor } : { backgroundColor: borderColor, borderColor };
+    const isRequested = requested || badgeData.isNoShow ? [styles.requestedStyle, clientBackgroundColor] : '';
     if (!activeCard && isResizeing) {
       return null;
     }

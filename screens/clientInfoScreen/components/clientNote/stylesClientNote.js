@@ -28,7 +28,7 @@ export default StyleSheet.create({
   providerInputGroup: { height: 44 },
   sectionTitle: { height: 38 },
   inputSwitchSales: { height: 43, flex: 1 },
-  inputSwitchClient: { height: 43 },
+  inputSwitchAppointment: { height: 43 },
   inputSwitchQueue: { height: 43 },
   inputSwitchTextStyle: { color: '#000000' },
   sectionDivider: { height: 37 },
@@ -39,5 +39,8 @@ export default StyleSheet.create({
     lineHeight: 22,
     color: '#727A8F',
     fontFamily: 'Roboto-Regular',
+  },
+  activityIndicator: {
+    marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
   },
 });
