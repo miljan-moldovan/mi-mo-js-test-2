@@ -52,7 +52,7 @@ class ClientNote extends Component {
   };
 
   componentWillMount() {
-    let note = this.state.note;
+    let { note } = this.state;
 
     const { client } = this.props.navigation.state.params;
 
@@ -68,6 +68,12 @@ class ClientNote extends Component {
 
       if (cachedForm) {
         note = cachedForm;
+        const selectedProvider = this.props.clientNotesState.selectedProvider ? this.props.clientNotesState.selectedProvider : {};
+        const providerName = !selectedProvider.isFirstAvailable ? ((`${selectedProvider.name || ''} ${selectedProvider.lastName || ''}`).toUpperCase()) : 'First Available';
+
+        note.enteredBy = providerName;
+      } else {
+        this.props.clientNotesActions.selectProvider(null);
       }
     }
 
@@ -99,135 +105,153 @@ class ClientNote extends Component {
 
   onChangeProvider = (provider) => {
     this.props.clientNotesActions.selectProvider(provider);
-    const note = this.state.note;
+    const { note } = this.state;
 
     const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
 
-    note.updatedBy = providerName;
-    this.setState({ note, isVisible: true });
+    note.enteredBy = providerName;
+    this.setState({ note, isVisible: true }, this.checkCanSave);
   }
 
-  shouldSave = false
-
-  goBack() {
-    if (this.props.navigation.state.params.actionType === 'new') {
-      const { client } = this.props.navigation.state.params;
-      this.props.clientNotesActions.purgeClientNoteNewForm(
-        client.id.toString(),
-        this.state.note,
-      );
-    } else {
-      this.props.clientNotesActions.purgeClientNoteUpdateForm(this.state.note);
-    }
-    this.setState({ isVisible: false });
-    this.props.navigation.goBack();
-  }
-
-  // isNoteValid() {
-  //   if (this.state.note.text.length === 0) {
-  //     return false;
-  //   } else if (this.state.note.enteredBy === '') {
-  //     return false;
-  //   }
-  //
-  //   return true;
-  // }
-
-  saveNote() {
-    // if (this.isNoteValid()) {
-    const notes = this.props.clientNotesState.notes;
-    const { client } = this.props.navigation.state.params;
-
-    if (this.props.navigation.state.params.actionType === 'new') {
-      const note = this.state.note;
-      note.notes = note.text;
-      note.EnteredBy = note.updatedBy;
-      this.props.clientNotesActions.postClientNotes(client.id, note)
-        .then((response) => {
-          this.props.clientNotesActions.selectProvider(null);
-          this.props.navigation.goBack();
-          this.props.navigation.state.params.onNavigateBack();
-        }).catch((error) => {
-        });
-    } else if (this.props.navigation.state.params.actionType === 'update') {
-      const note = this.state.note;
-      note.notes = note.text;
-      this.props.clientNotesActions.putClientNotes(client.id, note)
-        .then((response) => {
-          this.props.clientNotesActions.selectProvider(null);
-          this.props.navigation.goBack();
-          this.props.navigation.state.params.onNavigateBack();
-        }).catch((error) => {
-        });
-    }
-    // } else {
-    //   alert('Please fill all the fields');
-    // }
-  }
-
-  checkCanSave = () => {
-    
-
-
-    let isNoteValid = false;
-    if (this.props.navigation.state.params.actionType === 'update') {
-      const { text } = this.state.note;
-      isNoteValid = text && text.length;
-    } else {
+    onChangeText = (txtNote) => {
       const { note } = this.state;
-      isNoteValid = note.text &&
-        note.text.length > 0 &&
-        note.date;
+      note.text = txtNote;
+      this.shouldSave = true;
+      this.setState({ note }, this.checkCanSave);
     }
 
-    if (isNoteValid) {
-      this.props.navigation.setParams({ canSave: true });
-    } else {
-      this.props.navigation.setParams({ canSave: false });
+    dismissOnSelect() {
+      const { navigate } = this.props.navigation;
+      this.setState({ isVisible: true });
+      navigate('ClientNote', { ...this.props });
     }
+
+  inputDate = (selectedDate) => {
+    const { note } = this.state;
+    note.expiration = selectedDate;
+    this.shouldSave = true;
+    this.setState({ note }, this.checkCanSave);
   }
+
+  inputSwitchQueue = () => {
+    const { note } = this.state;
+    note.forQueue = !this.state.forQueue;
+    this.shouldSave = true;
+    this.setState({ note, forQueue: !this.state.forQueue }, this.checkCanSave);
+  }
+
+  inputSwitchClient = () => {
+    const { note } = this.state;
+    note.forClient = !this.state.forClient;
+    this.shouldSave = true;
+    this.setState({ note, forClient: !this.state.forClient }, this.checkCanSave);
+  }
+
+  inputSwitchSales = () => {
+    const { note } = this.state;
+    note.forSales = !this.state.forSales;
+    this.shouldSave = true;
+    this.setState({ note, forSales: !this.state.forSales }, this.checkCanSave);
+  }
+
+
+    handleOnNavigateBack = () => {
+      this.setState({ isVisible: true });
+    }
+
+    handlePressProvider = () => {
+      const { navigate } = this.props.navigation;
+      const { selectedProvider } = this.props.clientNotesState;
+
+      this.shouldSave = true;
+
+      this.setState({ isVisible: false });
+
+      if (selectedProvider) {
+        navigate('Providers', {
+          actionType: 'update',
+          dismissOnSelect: this.dismissOnSelect,
+          onNavigateBack: this.handleOnNavigateBack,
+          ...this.props,
+        });
+      } else {
+        navigate('Providers', {
+          actionType: 'new',
+          dismissOnSelect: this.dismissOnSelect,
+          onNavigateBack: this.handleOnNavigateBack,
+          ...this.props,
+        });
+      }
+    }
 
   cancelButton = () => ({
-    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
       navigation.goBack();
     },
   });
+    checkCanSave = () => {
+      let isNoteValid = false;
+      if (this.props.navigation.state.params.actionType === 'update') {
+        const { text } = this.state.note;
+        isNoteValid = text && text.length;
+      } else {
+        const { note } = this.state;
+        isNoteValid = note.text &&
+          note.text.length > 0 &&
+          note.expiration &&
+          note.enteredBy;
+      }
 
-  handlePressProvider = () => {
-    const { navigate } = this.props.navigation;
-    const { selectedProvider } = this.props.clientNotesState;
-
-    this.shouldSave = true;
-
-    this.setState({ isVisible: false });
-
-    if (selectedProvider) {
-      navigate('Providers', {
-        actionType: 'update',
-        dismissOnSelect: this.dismissOnSelect,
-        onNavigateBack: this.handleOnNavigateBack,
-        ...this.props,
-      });
-    } else {
-      navigate('Providers', {
-        actionType: 'new',
-        dismissOnSelect: this.dismissOnSelect,
-        onNavigateBack: this.handleOnNavigateBack,
-        ...this.props,
-      });
+      this.props.navigation.setParams({ canSave: isNoteValid });
     }
-  }
 
-  handleOnNavigateBack = () => {
-    this.setState({ isVisible: true });
-  }
+    saveNote() {
+      const { client } = this.props.navigation.state.params;
 
-  dismissOnSelect() {
-    const { navigate } = this.props.navigation;
-    this.setState({ isVisible: true });
-    navigate('ClientNote', { ...this.props });
-  }
+      if (this.props.navigation.state.params.actionType === 'new') {
+      debugger //eslint-disable-line
+        const note = Object.assign({}, this.state.note);
+        note.notes = note.text;
+        delete note.text;
+        delete note.id;
+        delete note.isDeleted;
+
+        this.props.clientNotesActions.postClientNotes(client.id, note)
+          .then((response) => {
+            this.props.clientNotesActions.selectProvider(null);
+            this.props.navigation.goBack();
+            this.props.navigation.state.params.onNavigateBack();
+          }).catch((error) => {
+          });
+      } else if (this.props.navigation.state.params.actionType === 'update') {
+        const { note } = this.state;
+        note.notes = note.text;
+        this.props.clientNotesActions.putClientNotes(client.id, note)
+          .then((response) => {
+            this.props.clientNotesActions.selectProvider(null);
+            this.props.navigation.goBack();
+            this.props.navigation.state.params.onNavigateBack();
+          }).catch((error) => {
+          });
+      }
+    }
+
+    goBack() {
+      if (this.props.navigation.state.params.actionType === 'new') {
+        const { client } = this.props.navigation.state.params;
+        this.props.clientNotesActions.purgeClientNoteNewForm(
+          client.id.toString(),
+          this.state.note,
+        );
+      } else {
+        this.props.clientNotesActions.purgeClientNoteUpdateForm(this.state.note);
+      }
+      this.setState({ isVisible: false });
+      this.props.navigation.goBack();
+    }
+
+  shouldSave = false
 
   render() {
     return (
@@ -238,8 +262,8 @@ class ClientNote extends Component {
         <View style={styles.container}>
           <ClientNoteHeader rootProps={this.props} />
           <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-            <View style={{ marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 }} />
-            <InputGroup style={{ height: 44 }}>
+            <View style={styles.topSeparator} />
+            <InputGroup style={styles.providerInputGroup}>
               <ProviderInput
                 apptBook
                 noPlaceholder
@@ -251,83 +275,53 @@ class ClientNote extends Component {
                 avatarSize={20}
                 navigate={this.props.navigation.navigate}
                 headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                onChange={(provider) => { this.onChangeProvider(provider); }}
+                onChange={this.onChangeProvider}
                 onPress={this.handlePressProvider}
               />
             </InputGroup>
-            <SectionTitle value="NOTE" style={{ height: 38 }} />
+            <SectionTitle value="NOTE" style={styles.sectionTitle} />
             <InputGroup>
               <InputText
                 placeholder="Write Note"
-                onChangeText={(txtNote) => {
-                        const note = this.state.note;
-                        note.text = txtNote;
-                        this.shouldSave = true;
-                        this.setState({ note }, this.checkCanSave);
-                    }}
+                onChangeText={this.onChangeText}
                 value={this.state.note.text}
               />
             </InputGroup>
-            <SectionTitle value="TYPES" style={{ height: 37 }} />
+            <SectionTitle value="TYPES" style={styles.sectionTitle} />
             <InputGroup >
               <InputSwitch
-                style={{ height: 43, flex: 1 }}
-                textStyle={{ color: '#000000' }}
-                onChange={(state) => {
-                  const note = this.state.note;
-                  note.forSales = !this.state.forSales;
-                  this.shouldSave = true;
-                  this.setState({ note, forSales: !this.state.forSales }, this.checkCanSave);
-                }}
+                style={styles.inputSwitchSales}
+                textStyle={styles.inputSwitchTextStyle}
+                onChange={this.inputSwitchSales}
                 value={this.state.forSales}
                 text="Sales"
               />
               <InputDivider />
               <InputSwitch
-                style={{ height: 43 }}
-                textStyle={{ color: '#000000' }}
-                onChange={(state) => {
-                    const note = this.state.note;
-                    note.forClient = !this.state.forClient;
-                    this.shouldSave = true;
-                    this.setState({ note, forClient: !this.state.forClient }, this.checkCanSave);
-                  }}
+                style={styles.inputSwitchClient}
+                textStyle={styles.inputSwitchTextStyle}
+                onChange={this.inputSwitchClient}
                 value={this.state.forClient}
                 text="Client"
               />
               <InputDivider />
               <InputSwitch
-                style={{ height: 43 }}
-                textStyle={{ color: '#000000' }}
-                onChange={(state) => {
-                  const note = this.state.note;
-                  note.forQueue = !this.state.forQueue;
-                  this.shouldSave = true;
-                  this.setState({ note, forQueue: state }, this.checkCanSave);
-                 }}
+                style={styles.inputSwitchQueue}
+                textStyle={styles.inputSwitchTextStyle}
+                onChange={this.inputSwitchQueue}
                 value={this.state.forQueue}
                 text="Queue"
               />
             </InputGroup>
-            <SectionDivider style={{ height: 37 }} />
+            <SectionDivider style={styles.sectionDivider} />
 
-            <InputGroup style={{ flex: 1, flexDirection: 'row' }}>
+            <InputGroup style={styles.inputGroupDate}>
               <InputDate
-                style={{ flex: 1 }}
+                style={styles.inputDate}
                 placeholder="Expire Date"
                 noIcon={this.state.note.expiration == null}
-                onPress={(selectedDate) => {
-                const { note } = this.state;
-                note.expiration = selectedDate;
-                this.shouldSave = true;
-                this.setState({ note }, this.checkCanSave);
-              }}
-                valueStyle={this.state.note.expiration == null ? {
-                  fontSize: 14,
-                  lineHeight: 22,
-                  color: '#727A8F',
-                  fontFamily: 'Roboto-Regular',
-                } : {}}
+                onPress={this.inputDate}
+                valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
                 selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
               />
             </InputGroup>
@@ -350,10 +344,12 @@ ClientNote.propTypes = {
     purgeClientNoteNewForm: PropTypes.func.isRequired,
     purgeClientNoteUpdateForm: PropTypes.func.isRequired,
     postClientNotes: PropTypes.func.isRequired,
+    putClientNotes: PropTypes.func.isRequired,
   }).isRequired,
   clientNotesState: PropTypes.any.isRequired,
   client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
+  formCache: PropTypes.any.isRequired,
 };
 
 const mapStateToProps = state => ({
