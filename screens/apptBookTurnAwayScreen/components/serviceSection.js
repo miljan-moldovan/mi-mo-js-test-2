@@ -140,10 +140,6 @@ class ServiceSection extends Component {
           rootStyle={styles.providerRootStyle}
           selectedProvider={service.provider}
           placeholder="Provider"
-          placeholderStyle={styles.placeholderText}
-          contentStyle={styles.contentStyle}
-          iconStyle={styles.carretIcon}
-          avatarSize={20}
           navigate={this.props.navigate}
           headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
           onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
