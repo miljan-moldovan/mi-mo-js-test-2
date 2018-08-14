@@ -173,9 +173,9 @@ class ClientList extends React.Component {
               getItemLayout={(data, index) => (
                   { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                 )}
-              renderSectionHeader={item => ClientList.renderSection(item)}
-              ItemSeparatorComponent={() => ClientList.renderSeparator()}
-              ListEmptyComponent={EmptyList}
+              renderSectionHeader={ClientList.renderSection}
+              ItemSeparatorComponent={ClientList.renderSeparator}
+              ListEmptyComponent={<EmptyList navigate={this.props.navigate} />}
               refreshing={this.props.refreshing}
             />
 
