@@ -114,6 +114,7 @@ class Card extends Component {
     this.cards = [];
     this.state = {
       height: 0,
+      shadowRadius: new Animated.Value(0),
     };
   }
 
@@ -121,8 +122,9 @@ class Card extends Component {
     return (nextProps.activeCard || (nextProps.isInBuffer !== this.props.isInBuffer
       || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
-      (!nextProps.isLoading && this.props.isLoading) ||
-      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)));
+      !nextProps.isLoading && this.props.isLoading ||
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
+      || nextProps.goToAppointmentId === nextProps.appointment.id;
   }
 
   getCardProperties = () => {
@@ -173,6 +175,8 @@ class Card extends Component {
       headerData,
       isInBuffer,
       selectedProvider,
+      goToAppointmentId,
+      setGoToPositon,
     } = this.props;
     const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
@@ -262,6 +266,9 @@ class Card extends Component {
       isActiveEmployeeInCellTime = apptFromTimeMoment.diff(providerStartTime, 'm') >= 0 &&
         apptToTimeMoment.diff(providerEndTime, 'm') <= 0;
     }
+    if (goToAppointmentId === id) {
+      setGoToPositon({ left, top: verticalPositions[0].top, highlightCard: this.highlightGoTo });
+    }
     return {
       left,
       width,
@@ -299,6 +306,27 @@ class Card extends Component {
       const newLeft = left - calendarOffset.x;
       this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
     }
+  }
+
+  highlightGoTo = () => {
+    Animated.timing(
+      this.state.shadowRadius,
+      {
+        toValue: 8,
+        duration: 300,
+      },
+    ).start(this.hideHighlightGoTo);
+  }
+
+  hideHighlightGoTo = () => {
+    Animated.timing(
+      this.state.shadowRadius,
+      {
+        delay: 7000,
+        toValue: 0,
+        duration: 300,
+      },
+    ).start();
   }
 
   renderAssistant = ({ height }) => (
@@ -432,6 +460,7 @@ class Card extends Component {
       isResizeing,
       isResizeCard,
       isMultiBlock,
+      goToAppointmentId
     } = this.props;
     const lastIndex = verticalPositions.length - 1;
     if (isResizeCard && this.state.height === 0) {
@@ -449,6 +478,13 @@ class Card extends Component {
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
     const container = isBufferCard ? [styles.container, { position: 'relative' }] : styles.container;
     const marginTop = isMultiBlock ? { marginTop: 11 } : '';
+    const highlightCard = goToAppointmentId === id ? {
+      shadowColor: 'rgba(248,231,28,1)',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 1,
+      shadowRadius: this.state.shadowRadius,
+      elevation: 1,
+    } : '';
     const clientBackgroundColor = badgeData.isNoShow ?
       { borderColor } : { backgroundColor: borderColor, borderColor };
     const isRequested = requested || badgeData.isNoShow ? [styles.requestedStyle, clientBackgroundColor] : '';
@@ -474,10 +510,10 @@ class Card extends Component {
                       top,
                       borderStyle,
                       zIndex,
-                      opacity
+                      opacity,
                     },
                     positions[index],
-
+                    highlightCard,
                   ]}
                 >
                   {!isActiveEmployeeInCellTime && !activeCard ?
