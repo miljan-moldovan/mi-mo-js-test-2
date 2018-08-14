@@ -1,13 +1,12 @@
 import React from 'react';
 import {
   View,
-  StyleSheet,
   Text,
   ActivityIndicator,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import moment from 'moment';
-
+import styles from './styles';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import {
   InputRadioGroup,
@@ -16,43 +15,13 @@ import {
   SectionTitle,
 } from '../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  innerRow: {
-    flexDirection: 'row',
-    height: 44,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-    alignItems: 'center',
-    paddingRight: 16,
-  },
-  carretIcon: {
-    fontSize: 20,
-    color: '#727A8F',
-  },
-  contentStyle: { alignItems: 'flex-start', paddingLeft: 16 },
-  sectionTitle: {
-    fontSize: 14,
-    lineHeight: 22,
-    color: '#110A24',
-    fontFamily: 'Roboto',
-    marginLeft: 0,
-    marginTop: 5,
-  },
-});
-
-
 const types = [
   { id: 1, name: 'Personal' },
   { id: 2, name: 'Vacation' },
   { id: 3, name: 'OutSick' },
 ];
 
-export default class BlockTimesReasonsScreen extends React.Component {
+class BlockTimesReasonsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: (
       <View style={{
@@ -116,7 +85,7 @@ export default class BlockTimesReasonsScreen extends React.Component {
 
   }
 
-  _handleOnChangeBlockTimesReason = (option) => {
+  handleOnChangeBlockTimesReason = (option) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
@@ -143,7 +112,7 @@ export default class BlockTimesReasonsScreen extends React.Component {
                 <InputRadioGroup
                   options={this.props.blockTimesReasonsState.blockTimesReasons}
                   defaultOption={this.state.type}
-                  onPress={this._handleOnChangeBlockTimesReason}
+                  onPress={this.handleOnChangeBlockTimesReason}
                 />
               </InputGroup>
               <SectionTitle value="Please select a reason for blocking time" style={styles.sectionTitle} />
@@ -152,3 +121,18 @@ export default class BlockTimesReasonsScreen extends React.Component {
     );
   }
 }
+
+
+BlockTimesReasonsScreen.defaultProps = {
+
+};
+
+BlockTimesReasonsScreen.propTypes = {
+  blockTimesReasonsActions: PropTypes.shape({
+    getBlockTimesReasons: PropTypes.func.isRequired,
+  }).isRequired,
+  blockTimesReasonsState: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
+
+export default BlockTimesReasonsScreen;

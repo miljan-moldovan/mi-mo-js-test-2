@@ -1,13 +1,12 @@
 import React from 'react';
 import {
   View,
-  StyleSheet,
   Text,
   ActivityIndicator,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
-import { get } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import {
   InputDate,
@@ -19,61 +18,9 @@ import {
   InputText,
 } from '../../components/formHelpers';
 import SalonTimePicker from '../../components/formHelpers/components/SalonTimePicker';
+import styles from './styles';
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  innerRow: {
-    flexDirection: 'row',
-    height: 44,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-    alignItems: 'center',
-    paddingRight: 16,
-  },
-  carretIcon: {
-    fontSize: 20,
-    color: '#727A8F',
-  },
-  contentStyle: { alignItems: 'flex-start', paddingLeft: 16 },
-  sectionTitle: {
-    fontSize: 14,
-    lineHeight: 22,
-    color: '#110A24',
-    fontFamily: 'Roboto',
-    marginLeft: 0,
-    marginTop: 7,
-  },
-  rightButtonText: {
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  sectionDivider: { height: 37 },
-  inputGroup: { marginTop: 16 },
-  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  cancelButton: { fontSize: 14, color: 'white' },
-  leftButtonText: { fontSize: 14, color: 'white' },
-  titleContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleText: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 17,
-    lineHeight: 22,
-    color: 'white',
-  },
-});
-
-
-export default class BlockTimeScreen extends React.Component {
+class BlockTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
@@ -137,38 +84,28 @@ export default class BlockTimeScreen extends React.Component {
     comments: '',
   }
 
-  handleDone = () => {
-    const schedule = {
-      date: this.state.date.toISOString(),
-      fromTime: this.state.fromTime.format('HH:mm:ss'),
-      toTime: this.state.toTime.format('HH:mm:ss'),
-      notes: this.state.comments.length > 0 ? this.state.comments : null,
-      reasonId: this.state.blockTimesReason.id,
-      employeeId: this.state.provider.id,
-      bookedByEmployeeId: this.state.blockedBy.id,
-      //   id: 0,
-      updateStamp: moment().unix(),
-      isDeleted: false,
-    };
-
-
-    this.props.blockTimeActions.postBlockTime(schedule, (result, error) => {
-      if (result) {
-        this.props.appointmentCalendarActions.setGridView();
-        this.props.navigation.goBack();
-      } else {
-        alert(error.message);
-      }
-    });
-  }
 
   componentWillMount() {
     const params = this.props.navigation.state.params || {};
-    const employee = params.employee || { name: 'First', lastName: 'Available' };
     const date = params.date || moment();
-    const formated_date = moment(date).format('YYYY-MM-DD');
     this.state.date = date;
   }
+
+  onChangeBlockBy = (provider) => { this.handleBlockedBySelection(provider); }
+
+  onPressDate = (selectedDate) => {
+    this.setState({ selectedDate });
+  }
+
+  onChangeTextComments =(txtNote) => {
+    this.setState({ comments: txtNote });
+  }
+
+  onChangeBlockTimeReason = (blockTimesReason) => {
+    this.handleBlockTimesReasonSelection(blockTimesReason);
+  }
+
+  onChangeEmployee = (provider) => { this.handleProviderSelection(provider); };;
 
 
     handleChangefromTime = (fromTimeDateObj) => {
@@ -215,8 +152,12 @@ export default class BlockTimeScreen extends React.Component {
     }
 
     handleBlockTimesReasonSelection = (blockTimesReason) => {
+      const duration = moment.duration(blockTimesReason.defaultDuration);
+      const { fromTime } = this.state;
+      const toTime = moment(fromTime, 'hh:mm:ss A').add(duration);
+
       this.setState({
-        blockTimesReason,
+        blockTimesReason, toTime,
       });
       this.props.navigation.setParams({ canSave: true });
     }
@@ -230,42 +171,48 @@ export default class BlockTimeScreen extends React.Component {
       this.setState({ toTimePickerOpen: !this.state.toTimePickerOpen });
     }
 
-    onChangeTextComments =(txtNote) => {
-      this.setState({ comments: txtNote });
-    }
 
-    onChangeBlockTimeReason = (blockTimesReason) => {
-      this.handleBlockTimesReasonSelection(blockTimesReason);
-    }
-
-    onChangeEmployee = (provider) => { this.handleProviderSelection(provider); };;
-
-    onPressDate = (selectedDate) => {
-      this.setState({ selectedDate });
-    }
-    onChangeBlockBy = (provider) => { this.handleBlockedBySelection(provider); }
-
-    render() {
-      const {
-        blockTimeState,
-      } = this.props;
+      handleDone = () => {
+        const schedule = {
+          date: this.state.date.toISOString(),
+          fromTime: this.state.fromTime.format('HH:mm:ss'),
+          toTime: this.state.toTime.format('HH:mm:ss'),
+          notes: this.state.comments.length > 0 ? this.state.comments : null,
+          reasonId: this.state.blockTimesReason.id,
+          employeeId: this.state.provider.id,
+          bookedByEmployeeId: this.state.blockedBy.id,
+          //   id: 0,
+          updateStamp: moment().unix(),
+          isDeleted: false,
+        };
 
 
-      const {
-        fromTime,
-        toTime,
-        provider,
-        blockedBy,
-        blockTimesReason,
-      } = this.state;
+        this.props.blockTimeActions.postBlockTime(schedule, (result, error) => {
+          if (result) {
+            this.props.appointmentCalendarActions.setGridView();
+            this.props.navigation.goBack();
+          } else {
+            alert(error.message);
+          }
+        });
+      }
 
-      return (
-        <View style={styles.container}>
+      render() {
+        const {
+          fromTime,
+          toTime,
+          provider,
+          blockedBy,
+          blockTimesReason,
+        } = this.state;
 
-          {this.props.blockTimeState.isLoading ? (
-            <View style={styles.activityIndicator}>
-              <ActivityIndicator />
-            </View>
+        return (
+          <View style={styles.container}>
+
+            {this.props.blockTimeState.isLoading ? (
+              <View style={styles.activityIndicator}>
+                <ActivityIndicator />
+              </View>
       ) : (
 
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
@@ -276,7 +223,7 @@ export default class BlockTimeScreen extends React.Component {
               filterByService
               style={styles.innerRow}
               selectedProvider={blockedBy}
-              labelText="Blocked By"
+              label="Blocked By"
               iconStyle={styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
@@ -301,7 +248,7 @@ export default class BlockTimeScreen extends React.Component {
               filterByService
               style={styles.innerRow}
               selectedProvider={provider}
-              labelText="Employee"
+              label="Employee"
               iconStyle={styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
@@ -322,7 +269,7 @@ export default class BlockTimeScreen extends React.Component {
               iconStyle={styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
-              headerProps={{ title: 'Providers', ...this.cancelButton() }}
+              headerProps={{ title: 'Reason', ...this.cancelButton() }}
               onChange={this.onChangeBlockTimeReason}
             />
           </InputGroup>
@@ -358,7 +305,25 @@ export default class BlockTimeScreen extends React.Component {
           </InputGroup>
 
         </KeyboardAwareScrollView>)}
-        </View>
-      );
-    }
+          </View>
+        );
+      }
 }
+
+
+BlockTimeScreen.defaultProps = {
+
+};
+
+BlockTimeScreen.propTypes = {
+  blockTimeActions: PropTypes.shape({
+    postBlockTime: PropTypes.func.isRequired,
+  }).isRequired,
+  appointmentCalendarActions: PropTypes.shape({
+    setGridView: PropTypes.func.isRequired,
+  }).isRequired,
+  blockTimeState: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
+
+export default BlockTimeScreen;
