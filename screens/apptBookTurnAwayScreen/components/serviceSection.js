@@ -7,99 +7,13 @@ import moment from 'moment';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import styles from './stylesServiceSection';
 
 import {
   ProviderInput,
   InputDivider,
 } from '../../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-  },
-  innerRow: {
-    flexDirection: 'row',
-    height: 44,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-    alignItems: 'center',
-    paddingRight: 16,
-  },
-  lastInnerRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    paddingRight: 16,
-    paddingLeft: 16,
-  },
-  addRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingLeft: 16,
-    paddingRight: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-  },
-  plusIcon: {
-    color: '#115ECD',
-    fontSize: 22,
-    marginRight: 5,
-  },
-  textData: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-    marginLeft: 5,
-  },
-  serviceRow: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-  },
-  iconContainer: {
-    paddingRight: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  serviceDataContainer: {
-    flex: 1,
-  },
-  removeIcon: {
-    marginRight: 8,
-    fontSize: 22,
-    color: '#D1242A',
-  },
-  carretIcon: {
-    fontSize: 20,
-    color: '#727A8F',
-  },
-  label: {
-    fontFamily: 'Roboto',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  dataContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  contentStyle: { alignItems: 'flex-start', paddingLeft: 16 },
-  middleSectionDivider: {
-    width: '95%', height: 1, alignSelf: 'center', backgroundColor: '#DDE6F4',
-  },
-  providerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  providerWrapper: { marginRight: 5 },
-});
 
 class ServiceSection extends Component {
   constructor(props) {
@@ -173,7 +87,6 @@ class ServiceSection extends Component {
     if (provider) {
       return (<View style={styles.providerContainer}>
         <SalonAvatar
-          wrapperStyle={styles.providerWrapper}
           width={26}
           image={{ uri: providerPhoto }}
         />
@@ -187,10 +100,12 @@ class ServiceSection extends Component {
     );
   }
 
-  renderServiceInfo = (service) => {
+  renderServiceInfo = (serviceContainer, service) => {
     if (service) {
+      const durationInMinutes = moment.duration(service.minDuration).asMinutes();
+      serviceContainer.toTime = moment(serviceContainer.fromTime, 'HH:mm:ss').add(durationInMinutes, 'minutes');
       return (
-        <Text style={styles.textData}>{service.name}</Text>
+        <Text style={[styles.textData, { marginLeft: 0 }]}>{service.name}</Text>
       );
     }
     return (
@@ -219,9 +134,10 @@ class ServiceSection extends Component {
       <View style={styles.serviceDataContainer}>
         <ProviderInput
           apptBook
+          showFirstAvailable={false}
           noLabel
           filterByService
-          style={styles.innerRow}
+          rootStyle={styles.providerRootStyle}
           selectedProvider={service.provider}
           placeholder="Provider"
           placeholderStyle={styles.placeholderText}
@@ -235,7 +151,7 @@ class ServiceSection extends Component {
         <InputDivider style={styles.middleSectionDivider} />
         <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
-            {this.renderServiceInfo(service.service)}
+            {this.renderServiceInfo(service, service.service)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
@@ -283,7 +199,6 @@ class ServiceSection extends Component {
     );
   }
 }
-
 
 ServiceSection.propTypes = {
   services: PropTypes.arrayOf(PropTypes.object).isRequired,
