@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
-import { TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import AppointmentDetails from './components/appointmentDetails';
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 2,
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'center',
   },
 });
@@ -215,11 +215,11 @@ export default class AppointmentDetailsScreen extends React.Component {
       )
       : (
         <View style={styles.container}>
-          <TabViewAnimated
+          <TabView
             style={{ flex: 1 }}
             navigationState={this.state}
             renderScene={this.renderScene}
-            renderHeader={this.renderHeader}
+            renderTabBar={this.renderHeader}
             onIndexChange={this.handleIndexChange}
             initialLayout={initialLayout}
             swipeEnabled={false}
