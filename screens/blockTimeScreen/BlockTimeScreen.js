@@ -215,8 +215,12 @@ export default class BlockTimeScreen extends React.Component {
     }
 
     handleBlockTimesReasonSelection = (blockTimesReason) => {
+      const duration = moment.duration(blockTimesReason.defaultDuration);
+      const { fromTime } = this.state;
+      const toTime = moment(fromTime, 'hh:mm:ss A').add(duration);
+
       this.setState({
-        blockTimesReason,
+        blockTimesReason, toTime,
       });
       this.props.navigation.setParams({ canSave: true });
     }
@@ -276,7 +280,7 @@ export default class BlockTimeScreen extends React.Component {
               filterByService
               style={styles.innerRow}
               selectedProvider={blockedBy}
-              labelText="Blocked By"
+              label="Blocked By"
               iconStyle={styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
@@ -301,7 +305,7 @@ export default class BlockTimeScreen extends React.Component {
               filterByService
               style={styles.innerRow}
               selectedProvider={provider}
-              labelText="Employee"
+              label="Employee"
               iconStyle={styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
@@ -322,7 +326,7 @@ export default class BlockTimeScreen extends React.Component {
               iconStyle={styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
-              headerProps={{ title: 'Providers', ...this.cancelButton() }}
+              headerProps={{ title: 'Reason', ...this.cancelButton() }}
               onChange={this.onChangeBlockTimeReason}
             />
           </InputGroup>
