@@ -90,43 +90,63 @@ class EditScheduleScreen extends React.Component {
     const employee = params.employee || { name: 'First', lastName: 'Available' };
     const date = params.date || moment();
     const formatedDate = moment(date).format('YYYY-MM-DD');
-    this.props.employeeScheduleActions.getEmployeeSchedule(employee.id, formatedDate, (result) => {
-      if (result) {
-        this.getState();
+    this.props.employeeScheduleActions.getEmployeeScheduleException(employee.id, formatedDate, (result) => {
+      if (result && this.props.employeeScheduleState.employeeScheduleException.length > 0) {
+        this.getState(true);
+      } else {
+        // normal schedule for that day
+        this.props.employeeScheduleActions.getEmployeeSchedule(employee.id, formatedDate, (result) => {
+          if (result) {
+            this.getState(false);
+          }
+        });
       }
     });
   }
 
 
-  getState = () => {
-    let employeeSchedule = this.props.employeeScheduleState.employeeSchedule || false;
-    employeeSchedule = employeeSchedule[employeeSchedule.length - 1];
+  getState = (isException) => {
+    let employeeScheduleOne = {};
+    let employeeScheduleTwo = {};
 
-    let scheduleTypeId = get(employeeSchedule, 'scheduleType', -1);
+    if (isException) {
+      let employeeSchedules = this.props.employeeScheduleState.employeeScheduleException || false;
+      employeeSchedules = employeeSchedules[employeeSchedules.length - 1];
+      employeeScheduleOne = { start: employeeSchedules.start1, end: employeeSchedules.end1, comment: employeeSchedules.comments };
+      employeeScheduleTwo = { start: employeeSchedules.start2, end: employeeSchedules.end2 };
+    } else {
+      // normal schedule for that day
+      const employeeSchedules = this.props.employeeScheduleState.employeeSchedule.scheduledIntervals || false;
+      employeeScheduleOne = employeeSchedules.length > 0 ? employeeSchedules[0] : {};
+      employeeScheduleTwo = employeeSchedules.length > 1 ? employeeSchedules[1] : {};
+    }
 
-    let otherReason = get(employeeSchedule, 'comments', '');
+
+    let scheduleTypeId = get(employeeScheduleOne, 'scheduleType', -1);
+
+    let otherReason = get(employeeScheduleOne, 'comment', '');
     scheduleTypeId = otherReason !== null && otherReason.length > 0 ? 0 : scheduleTypeId;
 
     otherReason = otherReason !== null ? otherReason : '';
 
-    const hoursWorking = employeeSchedule ? ((!!employeeSchedule.start1 && !!employeeSchedule.end1) ||
-    (!!employeeSchedule.start2 && !!employeeSchedule.end2)) : false;
+    const hoursWorking = employeeScheduleOne ? ((!!employeeScheduleOne.start && !!employeeScheduleOne.end) ||
+    (!!employeeScheduleTwo.start && !!employeeScheduleTwo.end)) : false;
 
     let selectedScheduleExceptionReason = scheduleTypes.find(_scheduleType =>
       _scheduleType.id === scheduleTypeId);
     selectedScheduleExceptionReason = selectedScheduleExceptionReason || scheduleTypes.find(_scheduleType =>
       _scheduleType.id === ScheduleTypesEnum.Regular);
 
-    let startTimeScheduleOne = get(employeeSchedule, 'start1', '00:00:00');
+    let startTimeScheduleOne = get(employeeScheduleOne, 'start', '00:00:00');
     startTimeScheduleOne = startTimeScheduleOne ? moment(startTimeScheduleOne, 'HH:mm:ss') : '';
 
-    let endTimeScheduleOne = get(employeeSchedule, 'end1', '23:59:59');
+    let endTimeScheduleOne = get(employeeScheduleOne, 'end', '23:59:59');
     endTimeScheduleOne = endTimeScheduleOne ? moment(endTimeScheduleOne, 'HH:mm:ss') : '';
 
-    let startTimeScheduleTwo = get(employeeSchedule, 'start2', null);
+    let startTimeScheduleTwo = get(employeeScheduleTwo, 'start', null);
     startTimeScheduleTwo = startTimeScheduleTwo ? moment(startTimeScheduleTwo, 'HH:mm:ss') : '';
 
-    let endTimeScheduleTwo = get(employeeSchedule, 'end2', null);
+    let endTimeScheduleTwo = get(employeeScheduleTwo, 'end', null);
     endTimeScheduleTwo = endTimeScheduleTwo ? moment(endTimeScheduleTwo, 'HH:mm:ss') : '';
 
     const isEditableOtherReason = selectedScheduleExceptionReason.id === ScheduleTypesEnum.Regular;
@@ -187,7 +207,7 @@ class EditScheduleScreen extends React.Component {
       };
 
 
-      this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formatedDate, (result) => {
+      this.props.employeeScheduleActions.putEmployeeScheduleException(employee.id, schedule, formatedDate, (result) => {
         if (result) {
           this.props.appointmentCalendarActions.setGridView();
           this.props.navigation.goBack();
@@ -433,7 +453,8 @@ EditScheduleScreen.defaultProps = {
 EditScheduleScreen.propTypes = {
   employeeScheduleActions: PropTypes.shape({
     getEmployeeSchedule: PropTypes.func.isRequired,
-    putEmployeeSchedule: PropTypes.func.isRequired,
+    getEmployeeScheduleException: PropTypes.func.isRequired,
+    putEmployeeScheduleException: PropTypes.func.isRequired,
   }).isRequired,
   appointmentCalendarActions: PropTypes.shape({
     setGridView: PropTypes.func.isRequired,
