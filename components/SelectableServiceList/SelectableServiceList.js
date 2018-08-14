@@ -41,29 +41,32 @@ class SelectableServiceList extends React.Component {
 
   isSelected = id => includes(this.props.selected, id)
 
-  renderItem = ({ item }) => (
-    <SalonTouchableOpacity
-      style={styles.listItem}
-      onPress={() => this.onPressItem(item)}
-    >
-      <View style={styles.listItemContainer}>
-        <Text style={styles.listItemText}>{item.name}</Text>
-        {!!item.price && (
-          <Text style={styles.priceText}>{`$${item.price.toFixed(2)}`}</Text>
-        )}
-      </View>
-      <View style={styles.iconContainer}>
-        {this.isSelected(item.id) && (
-          <Icon
-            name="checkCircle"
-            color="#1DBF12"
-            size={14}
-            type="solid"
-          />
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  )
+  renderItem = ({ item }) => {
+    const price = item.price || 0;
+    return (
+      <SalonTouchableOpacity
+        style={styles.listItem}
+        onPress={() => this.onPressItem(item)}
+      >
+        <View style={styles.listItemContainer}>
+          <Text style={styles.listItemText}>{item.name}</Text>
+          {!item.isNone && (
+            <Text style={styles.priceText}>{`$${price.toFixed(2)}`}</Text>
+          )}
+        </View>
+        <View style={styles.iconContainer}>
+          {this.isSelected(item.id) && (
+            <Icon
+              name="checkCircle"
+              color="#1DBF12"
+              size={14}
+              type="solid"
+            />
+          )}
+        </View>
+      </SalonTouchableOpacity>
+    );
+  }
 
   renderSeparator = () => (
     <View style={styles.listItemSeparator} />

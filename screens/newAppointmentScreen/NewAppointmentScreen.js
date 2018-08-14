@@ -281,7 +281,6 @@ export default class NewAppointmentScreen extends React.Component {
         resolve([]);
       }
     } catch (err) {
-      console.warn(err);
       resolve([]);
     }
   });
@@ -575,6 +574,20 @@ export default class NewAppointmentScreen extends React.Component {
     );
   }
 
+  emailValidation = (email) => {
+    if (email !== '') {
+      return true;
+    }
+    return this.isValidEmailRegExp.test(email);
+  }
+
+  phoneValidation = (phone) => {
+    if (phone === '') {
+      return true;
+    }
+    return this.isValidPhoneNumberRegExp.test(phone);
+  }
+
   onChangeEmail = clientEmail => this.setState({ clientEmail })
 
   onChangePhone = clientPhone => this.setState({ clientPhone })
@@ -582,7 +595,7 @@ export default class NewAppointmentScreen extends React.Component {
   onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
     const { client } = this.props.newAppointmentState;
-    newState.isValidEmail = isValid;
+    newState.isValidEmail = newState.clientEmail === '' ? true : isValid;
     if (!isValid && state.clientEmail !== '' && !!client && !isFirstValidation) {
       newState.toast = {
         text: 'The email you provided is invalid!',
@@ -596,7 +609,7 @@ export default class NewAppointmentScreen extends React.Component {
   onValidatePhone = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
     const { client } = this.props.newAppointmentState;
-    newState.isValidPhone = isValid;
+    newState.isValidPhone = newState.clientPhone === '' ? true : isValid;
     if (!isValid && state.clientPhone !== '' && !!client && !isFirstValidation) {
       newState.toast = {
         text: 'The phone you provided is invalid!',
@@ -740,7 +753,7 @@ export default class NewAppointmentScreen extends React.Component {
               label="Email"
               value={clientEmail}
               isValid={isValidEmail || !client}
-              validation={this.isValidEmailRegExp}
+              validation={this.emailValidation}
               onValidated={this.onValidateEmail}
               onChangeText={this.onChangeEmail}
             />
@@ -750,7 +763,7 @@ export default class NewAppointmentScreen extends React.Component {
               mask="[000]-[000]-[0000]"
               isValid={isValidPhone || !client}
               value={clientPhone}
-              validation={this.isValidPhoneNumberRegExp}
+              validation={this.phoneValidation}
               onValidated={this.onValidatePhone}
               onChangeText={this.onChangePhone}
             />

@@ -230,6 +230,9 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
       employee: bookedByEmployee,
       fromTime,
       toTime,
+      bookBetween: get(service, 'bookBetween', false),
+      gapTime: moment.duration(get(service, 'gapDuration', 0)),
+      afterTime: moment.duration(get(service, 'afterDuration', 0)),
     };
     const serviceItem = {
       itemId: uuid(),
@@ -269,8 +272,7 @@ const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, get
   const serviceIndex = newServiceItems.findIndex(item => item.itemId === serviceId);
   const serviceItemToUpdate = newServiceItems[serviceIndex];
   const serviceItem = {
-    guestId,
-    itemId: newServiceItems[serviceIndex].itemId,
+    ...serviceItemToUpdate,
     service: { ...updatedService },
   };
   newServiceItems.splice(serviceIndex, 1, serviceItem);
