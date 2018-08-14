@@ -12,6 +12,7 @@ import styles from './stylesServiceSection';
 import {
   ProviderInput,
   InputDivider,
+  ServiceInput,
 } from '../../../components/formHelpers';
 
 
@@ -56,28 +57,15 @@ class ServiceSection extends Component {
     this.props.onUpdate(index, newService);
   }
 
-  handlePressProvider = (service, index) => {
-    this.props.navigate('Providers', {
-      dismissOnSelect: true,
-      ignoreNav: false,
-      headerProps: { title: 'Providers', ...this.props.cancelButton() },
-      onChangeProvider: provider => this.handleProviderSelection(provider, service, index),
-    });
-  }
 
   handleServiceSelection = (data, service, index) => {
     const newService = service;
+    debugger //eslint-disable-line
     newService.service = data;
     newService.myServiceId = data.id;
+    const durationInMinutes = moment.duration(data.minDuration).asMinutes();
+    newService.toTime = moment(newService.fromTime, 'HH:mm:ss').add(durationInMinutes, 'minutes');
     this.props.onUpdate(index, newService);
-  }
-
-  handlePressService = (service, index) => {
-    this.props.navigate('Services', {
-      actionType: 'update',
-      dismissOnSelect: true,
-      onChangeService: data => this.handleServiceSelection(data, service, index),
-    });
   }
 
   renderProvider = (provider) => {
@@ -145,14 +133,27 @@ class ServiceSection extends Component {
           onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
         />
         <InputDivider style={styles.middleSectionDivider} />
-        <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
+
+        <ServiceInput
+          apptBook
+          noPlaceholder
+          rootStyle={styles.providerRootStyle}
+          nameKey={service.service && service.service.description ? 'description' : 'name'}
+          selectedProvider={service.provider}
+          navigate={this.props.navigate}
+          selectedService={service.service}
+          headerProps={{ title: 'Services', ...this.props.cancelButton() }}
+          onChange={(selectedService) => { this.handleServiceSelection(selectedService, service, index); }}
+        />
+        <InputDivider style={styles.middleSectionDivider} />
+        {/*  <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
             {this.renderServiceInfo(service, service.service)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </SalonTouchableOpacity>
+        </SalonTouchableOpacity> */}
         <SalonTouchableOpacity onPress={() => this.showDateTimePickerFromTime(service, index)}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>

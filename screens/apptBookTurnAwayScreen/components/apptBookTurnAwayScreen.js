@@ -125,6 +125,8 @@ class ApptBookTurnAwayScreen extends Component {
   handleAddService= () => {
     const params = this.props.navigation.state.params || {};
 
+    debugger //eslint-disable-line
+
     const {
       fromTime,
       employee,
