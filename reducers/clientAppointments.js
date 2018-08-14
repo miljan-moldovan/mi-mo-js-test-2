@@ -6,6 +6,7 @@ import {
   GET_APPOINTMETNS_SUCCESS,
   GET_APPOINTMETNS_FAILED,
   GET_MORE_APPOINTMETNS_SUCCESS,
+  CLEAR_APPOINTMETNS,
 } from '../actions/clientAppointments';
 
 const initialState = {
@@ -51,6 +52,11 @@ export default function clientApptReducer(state = initialState, action) {
         isLoading: false,
         isLoadingMore: false,
         error: data.error,
+      };
+    case CLEAR_APPOINTMETNS:
+      return {
+        ...state,
+        appointments: [],
       };
     default:
       return state;
