@@ -5,6 +5,7 @@ export const GET_MORE_APPOINTMETNS = 'clientAppt/GET_MORE_APPOINTMETNS';
 export const GET_APPOINTMETNS_SUCCESS = 'clientAppt/GET_APPOINTMETNS_SUCCESS';
 export const GET_MORE_APPOINTMETNS_SUCCESS = 'clientAppt/GET_MORE_APPOINTMETNS_SUCCESS';
 export const GET_APPOINTMETNS_FAILED = 'clientAppt/GET_APPOINTMETNS_FAILED';
+export const CLEAR_APPOINTMETNS = 'clientAppt/CLEAR_APPOINTMETNS';
 
 const getClientApptSuccess = ({ response, total }) => ({
   type: GET_APPOINTMETNS_SUCCESS,
@@ -35,9 +36,14 @@ const getMoreClientAppt = ({ clientId, fromDate, query }) => (dispatch) => {
     .catch(error => dispatch(getClientApptFailed(error)));
 };
 
+const clearAppts = () => ({
+  type: CLEAR_APPOINTMETNS,
+});
+
 const clientApptActions = {
   getClientAppt,
   getMoreClientAppt,
+  clearAppts,
 };
 
 export default clientApptActions;
