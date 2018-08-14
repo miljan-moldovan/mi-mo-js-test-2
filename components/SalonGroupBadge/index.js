@@ -1,39 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 
 import Icon from '../UI/Icon';
-
-const styles = StyleSheet.create({
-  container: {
-    minWidth: 15,
-    height: 15,
-    borderRadius: 7.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    borderColor: '#082E66',
-    borderWidth: 1,
-    paddingLeft: 4,
-  },
-  textStyle: {
-    fontFamily: 'Roboto',
-    fontWeight: 'bold',
-    fontSize: 9,
-    textAlign: 'center',
-    color: '#2F3142',
-    marginHorizontal: 2,
-  },
-  dollarContainer: {
-    height: '100%',
-    paddingHorizontal: 4,
-    backgroundColor: '#082E66',
-    borderTopRightRadius: 7.5,
-    borderBottomRightRadius: 7.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+import styles from './styles';
 
 const badge = ({ text }) => (
   <View style={styles.container}>
