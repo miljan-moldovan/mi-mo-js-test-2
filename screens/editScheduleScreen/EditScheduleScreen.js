@@ -89,8 +89,8 @@ class EditScheduleScreen extends React.Component {
     const params = this.props.navigation.state.params || {};
     const employee = params.employee || { name: 'First', lastName: 'Available' };
     const date = params.date || moment();
-    const formated_date = moment(date).format('YYYY-MM-DD');
-    this.props.employeeScheduleActions.getEmployeeSchedule(employee.id, formated_date, (result) => {
+    const formatedDate = moment(date).format('YYYY-MM-DD');
+    this.props.employeeScheduleActions.getEmployeeSchedule(employee.id, formatedDate, (result) => {
       if (result) {
         this.getState();
       }
@@ -155,7 +155,7 @@ class EditScheduleScreen extends React.Component {
       const params = this.props.navigation.state.params || {};
       const employee = params.employee || { name: 'First', lastName: 'Available' };
 
-      const formated_date = moment(this.props.date).format('YYYY-MM-DD');
+      const formatedDate = moment(this.props.date).format('YYYY-MM-DD');
 
       if (!this.state.hoursWorking) {
         startTimeScheduleOne = null;
@@ -172,8 +172,8 @@ class EditScheduleScreen extends React.Component {
 
       const schedule = {
         existingExceptionId: this.props.employeeScheduleState.employeeSchedule.id,
-        startDate: formated_date,
-        endDate: formated_date,
+        startDate: formatedDate,
+        endDate: formatedDate,
         start1: startTimeScheduleOne,
         end1: endTimeScheduleOne,
         start2: startTimeScheduleTwo,
@@ -187,7 +187,7 @@ class EditScheduleScreen extends React.Component {
       };
 
 
-      this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formated_date, (result) => {
+      this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formatedDate, (result) => {
         if (result) {
           this.props.appointmentCalendarActions.setGridView();
           this.props.navigation.goBack();
