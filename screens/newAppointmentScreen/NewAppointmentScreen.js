@@ -629,6 +629,11 @@ export default class NewAppointmentScreen extends React.Component {
     return items;
   }
 
+
+  goToClientInfo = () => {
+    this.props.navigation.navigate('ClientInfo', { client: this.props.newAppointmentState.client });
+  }
+
   renderExtraClientButtons = isDisabled => ([
     <SalonTouchableOpacity
       disabled={isDisabled}
@@ -651,9 +656,7 @@ export default class NewAppointmentScreen extends React.Component {
     </SalonTouchableOpacity>,
     <SalonTouchableOpacity
       key={Math.random().toString()}
-      onPress={() => {
-        // TODO
-      }}
+      onPress={this.goToClientInfo}
       style={{
         marginHorizontal: 5,
       }}
