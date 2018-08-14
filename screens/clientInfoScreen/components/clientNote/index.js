@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import {
   View,
+  ActivityIndicator,
   Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -40,24 +41,28 @@ class ClientNote extends Component {
       id: Math.random().toString(),
       text: '',
       expiration: null,
-      forClient: false,
+      forAppointment: false,
       forQueue: false,
       forSales: false,
       isDeleted: false,
     },
     forSales: false,
     forQueue: false,
-    forClient: false,
+    forAppointment: false,
     isVisible: true,
   };
 
   componentWillMount() {
     let { note } = this.state;
-
     const { client } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params.actionType === 'update') {
       note = Object.assign({}, this.props.clientNotesState.onEditionNote);
+
+
+      const provider = { fullName: note.enteredBy, name: note.enteredBy.split(' ')[0], lastName: note.enteredBy.split(' ')[1] };
+      this.props.clientNotesActions.selectProvider(provider);
+
       const cachedForm = fetchFormCache('ClientNoteUpdate', this.props.clientNotesState.onEditionNote.id, this.props.formCache);
 
       if (this.props.clientNotesState.onEditionNote.id === cachedForm.id) {
@@ -69,7 +74,7 @@ class ClientNote extends Component {
       if (cachedForm) {
         note = cachedForm;
         const selectedProvider = this.props.clientNotesState.selectedProvider ? this.props.clientNotesState.selectedProvider : {};
-        const providerName = !selectedProvider.isFirstAvailable ? ((`${selectedProvider.name || ''} ${selectedProvider.lastName || ''}`).toUpperCase()) : 'First Available';
+        const providerName = !selectedProvider.isFirstAvailable ? ((`${selectedProvider.name || ''} ${selectedProvider.lastName || ''}`)) : 'First Available';
 
         note.enteredBy = providerName;
       } else {
@@ -78,7 +83,7 @@ class ClientNote extends Component {
     }
 
     this.setState({
-      note, forSales: note.forSales, forQueue: note.forQueue, forClient: note.forClient,
+      note, forSales: note.forSales, forQueue: note.forQueue, forAppointment: note.forAppointment,
     });
 
     this.props.navigation.setParams({
@@ -140,11 +145,11 @@ class ClientNote extends Component {
     this.setState({ note, forQueue: !this.state.forQueue }, this.checkCanSave);
   }
 
-  inputSwitchClient = () => {
+  inputSwitchAppointment = () => {
     const { note } = this.state;
-    note.forClient = !this.state.forClient;
+    note.forAppointment = !this.state.forAppointment;
     this.shouldSave = true;
-    this.setState({ note, forClient: !this.state.forClient }, this.checkCanSave);
+    this.setState({ note, forAppointment: !this.state.forAppointment }, this.checkCanSave);
   }
 
   inputSwitchSales = () => {
@@ -209,11 +214,12 @@ class ClientNote extends Component {
     saveNote() {
       const { client } = this.props.navigation.state.params;
 
+      const note = Object.assign({}, this.state.note);
+      note.notes = note.text;
+      delete note.text;
+
+
       if (this.props.navigation.state.params.actionType === 'new') {
-      debugger //eslint-disable-line
-        const note = Object.assign({}, this.state.note);
-        note.notes = note.text;
-        delete note.text;
         delete note.id;
         delete note.isDeleted;
 
@@ -225,8 +231,6 @@ class ClientNote extends Component {
           }).catch((error) => {
           });
       } else if (this.props.navigation.state.params.actionType === 'update') {
-        const { note } = this.state;
-        note.notes = note.text;
         this.props.clientNotesActions.putClientNotes(client.id, note)
           .then((response) => {
             this.props.clientNotesActions.selectProvider(null);
@@ -261,71 +265,80 @@ class ClientNote extends Component {
       >
         <View style={styles.container}>
           <ClientNoteHeader rootProps={this.props} />
-          <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-            <View style={styles.topSeparator} />
-            <InputGroup style={styles.providerInputGroup}>
-              <ProviderInput
-                apptBook
-                noPlaceholder
-                filterByService
-                style={styles.innerRow}
-                selectedProvider={this.props.clientNotesState.selectedProvider}
-                labelText="Added By"
-                iconStyle={styles.carretIcon}
-                avatarSize={20}
-                navigate={this.props.navigation.navigate}
-                headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                onChange={this.onChangeProvider}
-                onPress={this.handlePressProvider}
-              />
-            </InputGroup>
-            <SectionTitle value="NOTE" style={styles.sectionTitle} />
-            <InputGroup>
-              <InputText
-                placeholder="Write Note"
-                onChangeText={this.onChangeText}
-                value={this.state.note.text}
-              />
-            </InputGroup>
-            <SectionTitle value="TYPES" style={styles.sectionTitle} />
-            <InputGroup >
-              <InputSwitch
-                style={styles.inputSwitchSales}
-                textStyle={styles.inputSwitchTextStyle}
-                onChange={this.inputSwitchSales}
-                value={this.state.forSales}
-                text="Sales"
-              />
-              <InputDivider />
-              <InputSwitch
-                style={styles.inputSwitchClient}
-                textStyle={styles.inputSwitchTextStyle}
-                onChange={this.inputSwitchClient}
-                value={this.state.forClient}
-                text="Client"
-              />
-              <InputDivider />
-              <InputSwitch
-                style={styles.inputSwitchQueue}
-                textStyle={styles.inputSwitchTextStyle}
-                onChange={this.inputSwitchQueue}
-                value={this.state.forQueue}
-                text="Queue"
-              />
-            </InputGroup>
-            <SectionDivider style={styles.sectionDivider} />
 
-            <InputGroup style={styles.inputGroupDate}>
-              <InputDate
-                style={styles.inputDate}
-                placeholder="Expire Date"
-                noIcon={this.state.note.expiration == null}
-                onPress={this.inputDate}
-                valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
-                selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
-              />
-            </InputGroup>
-          </KeyboardAwareScrollView>
+          {this.props.clientNotesState.isLoading
+            ? (
+              <View style={styles.activityIndicator}>
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+                <View style={styles.topSeparator} />
+                <InputGroup style={styles.providerInputGroup}>
+                  <ProviderInput
+                    apptBook
+                    noPlaceholder
+                    showFirstAvailable={false}
+                    filterByService
+                    style={styles.innerRow}
+                    selectedProvider={this.props.clientNotesState.selectedProvider}
+                    labelText="Added By"
+                    iconStyle={styles.carretIcon}
+                    avatarSize={20}
+                    navigate={this.props.navigation.navigate}
+                    headerProps={{ title: 'Providers', ...this.cancelButton() }}
+                    onChange={this.onChangeProvider}
+                    onPress={this.handlePressProvider}
+                  />
+                </InputGroup>
+                <SectionTitle value="NOTE" style={styles.sectionTitle} />
+                <InputGroup>
+                  <InputText
+                    placeholder="Write Note"
+                    onChangeText={this.onChangeText}
+                    value={this.state.note.text}
+                  />
+                </InputGroup>
+                <SectionTitle value="TYPES" style={styles.sectionTitle} />
+                <InputGroup >
+                  <InputSwitch
+                    style={styles.inputSwitchSales}
+                    textStyle={styles.inputSwitchTextStyle}
+                    onChange={this.inputSwitchSales}
+                    value={this.state.forSales}
+                    text="Sales"
+                  />
+                  <InputDivider />
+                  <InputSwitch
+                    style={styles.inputSwitchAppointment}
+                    textStyle={styles.inputSwitchTextStyle}
+                    onChange={this.inputSwitchAppointment}
+                    value={this.state.forAppointment}
+                    text="Appointment"
+                  />
+                  <InputDivider />
+                  <InputSwitch
+                    style={styles.inputSwitchQueue}
+                    textStyle={styles.inputSwitchTextStyle}
+                    onChange={this.inputSwitchQueue}
+                    value={this.state.forQueue}
+                    text="Queue"
+                  />
+                </InputGroup>
+                <SectionDivider style={styles.sectionDivider} />
+
+                <InputGroup style={styles.inputGroupDate}>
+                  <InputDate
+                    style={styles.inputDate}
+                    placeholder="Expire Date"
+                    noIcon={this.state.note.expiration == null}
+                    onPress={this.inputDate}
+                    valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
+                    selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
+                  />
+                </InputGroup>
+              </KeyboardAwareScrollView>
+        )}
         </View>
       </Modal>
     );
