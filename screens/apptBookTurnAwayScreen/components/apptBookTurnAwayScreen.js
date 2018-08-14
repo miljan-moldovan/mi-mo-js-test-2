@@ -123,11 +123,18 @@ class ApptBookTurnAwayScreen extends Component {
   }
 
   handleAddService= () => {
+    const params = this.props.navigation.state.params || {};
+
+    const {
+      fromTime,
+      employee,
+    } = params;
+
     const service = {
-      provider: this.props.navigation.state.params.employee,
+      provider: employee,
       service: null,
-      fromTime: moment(),
-      toTime: moment().add(15, 'minutes'),
+      fromTime,
+      toTime: moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
     };
 
     this.props.navigation.setParams({ canSave: false });
