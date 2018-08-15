@@ -76,9 +76,10 @@ const MainNavigator = StackNavigator(
     Appointment: {
       screen: AppointmentScreen,
     },
-    // Service: {
-    //   screen: ModifyServiceScreen,
-    // },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
     Walkout: {
       screen: WalkOutScreen,
     },
@@ -158,14 +159,6 @@ const MainNavigator = StackNavigator(
     },
     ClientsQueue: {
       screen: ClientsScreen,
-    },
-    NewClient: {
-      screen: NewClientScreen,
-      navigationOptions: {
-        headerTitle: 'Create New Client',
-        headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
-        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
-      },
     },
     TurnAway: {
       screen: TurnAwayScreen,

@@ -6,11 +6,16 @@ import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
 
 import ClientsScreen from './../screens/clientsScreen';
+import NewClientScreen from '../screens/newClientScreen';
 
 const ClientsStackNavigator = StackNavigator(
   {
     Clients: {
       screen: ClientsScreen,
+    },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: { tabBarVisible: false },
     },
   },
   {

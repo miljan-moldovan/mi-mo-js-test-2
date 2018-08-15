@@ -24,6 +24,7 @@ import ClientNote from './../screens/clientInfoScreen/components/clientNote';
 import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
 import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
+import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -186,6 +187,10 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ClientInfo: {
       screen: ClientInfoScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientDetails: {
+      screen: ClientDetailsScreen,
       navigationOptions: { tabBarVisible: false },
     },
     Services: {
