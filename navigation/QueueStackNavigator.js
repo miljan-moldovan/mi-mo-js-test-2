@@ -18,7 +18,7 @@ import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeade
 import ClientsScreen from './../screens/clientsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
-import NewClientScreen from '../screens/NewClientScreen';
+import NewClientScreen from '../screens/newClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
