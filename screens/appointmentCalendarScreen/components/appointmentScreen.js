@@ -124,12 +124,12 @@ export default class AppointmentScreen extends Component {
   }
 
   onPressMenu = () => {
-    // this.props.appointmentCalendarActions.setToast({
-    //   description: 'Not Implemented',
-    //   type: 'warning',
-    //   btnRightText: 'DISMISS',
-    // });
-    this.props.navigation.navigate('ApptBookProducts');
+    this.props.appointmentCalendarActions.setToast({
+      description: 'Not Implemented',
+      type: 'warning',
+      btnRightText: 'DISMISS',
+    });
+    // this.props.navigation.navigate('ApptBookProducts');
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
@@ -160,7 +160,7 @@ export default class AppointmentScreen extends Component {
         name: 'First',
         lastName: 'Available',
       };
-      this.props.newAppointmentActions.setBookedBy(newApptProvider);
+      this.props.newAppointmentActions.setMainEmployee(newApptProvider);
       this.props.newAppointmentActions.setDate(startDate);
     }
     this.props.newAppointmentActions.setStartTime(startTime);
@@ -235,14 +235,14 @@ export default class AppointmentScreen extends Component {
     // };
     if (selectedFilter === 'providers') {
       if (selectedProvider === 'all') {
-        newAppointmentActions.setBookedBy(colData);
+        newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
       } else {
-        newAppointmentActions.setBookedBy(selectedProvider);
+        newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);
       }
     } else {
-      newAppointmentActions.setBookedBy(null);
+      newAppointmentActions.setMainEmployee(null);
       newAppointmentActions.setDate(startDate);
     }
     newAppointmentActions.setStartTime(startTime);
