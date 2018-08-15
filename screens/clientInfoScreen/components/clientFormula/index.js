@@ -222,6 +222,7 @@ class ClientFormula extends React.Component {
               <View style={styles.topView} />
               <InputGroup>
                 <ProviderInput
+                  showFirstAvailable={false}
                   apptBook
                   noPlaceholder
                   style={styles.innerRow}
@@ -267,6 +268,7 @@ class ClientFormula extends React.Component {
                 />
                 <InputDivider />
                 <ProviderInput
+                  showFirstAvailable={false}
                   apptBook
                   noPlaceholder
                   style={styles.innerRow}
