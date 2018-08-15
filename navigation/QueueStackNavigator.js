@@ -24,11 +24,16 @@ import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';
 
+import HeaderLateral from '../components/HeaderLateral';
+import HeaderRight from '../components/HeaderRight';
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
 import RecommendationsScreen from '../screens/recommendationsScreen';
+import RecommendProductScreen from '../screens/recommendProductScreen';
+import RecommendProductHeader from '../screens/recommendProductScreen/components/RecommendProductHeader';
+
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
@@ -103,6 +108,17 @@ const MainNavigator = StackNavigator(
       screen: ModifyProductScreen,
       navigationOptions: { tabBarVisible: false },
     },
+    RecommendProduct: {
+      screen: RecommendProductScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <RecommendProductHeader rootProps={rootProps} />,
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
+      }),
+    },
+
     Recommendations: {
       screen: RecommendationsScreen,
       navigationOptions: { tabBarVisible: false },
