@@ -60,7 +60,6 @@ class ServiceSection extends Component {
 
   handleServiceSelection = (data, service, index) => {
     const newService = service;
-    debugger //eslint-disable-line
     newService.service = data;
     newService.myServiceId = data.id;
     const durationInMinutes = moment.duration(data.minDuration).asMinutes();

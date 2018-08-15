@@ -88,13 +88,13 @@ class BlockTimeScreen extends React.Component {
   componentWillMount() {
     const params = this.props.navigation.state.params || {};
     const date = params.date || moment();
-    this.state.date = date;
+    this.state.selectedDate = date;
   }
 
   onChangeBlockBy = (provider) => { this.handleBlockedBySelection(provider); }
 
   onPressDate = (selectedDate) => {
-    this.setState({ selectedDate });
+    this.setState({ selectedDate }, this.checkCanSave);
   }
 
   onChangeTextComments =(txtNote) => {
@@ -116,7 +116,7 @@ class BlockTimeScreen extends React.Component {
       }
       return this.setState({
         fromTime,
-      });
+      }, this.checkCanSave);
     }
 
     handleChangetoTime = (toTimeDateObj) => {
@@ -127,7 +127,7 @@ class BlockTimeScreen extends React.Component {
       }
       return this.setState({
         toTime,
-      });
+      }, this.checkCanSave);
     }
 
     cancelButton = () => ({
@@ -141,14 +141,13 @@ class BlockTimeScreen extends React.Component {
     handleProviderSelection = (provider) => {
       this.setState({
         provider,
-      });
+      }, this.checkCanSave);
     }
 
     handleBlockedBySelection = (blockedBy) => {
       this.setState({
         blockedBy,
-      });
-      this.props.navigation.setParams({ canSave: true });
+      }, this.checkCanSave);
     }
 
     handleBlockTimesReasonSelection = (blockTimesReason) => {
@@ -158,8 +157,7 @@ class BlockTimeScreen extends React.Component {
 
       this.setState({
         blockTimesReason, toTime,
-      });
-      this.props.navigation.setParams({ canSave: true });
+      }, this.checkCanSave);
     }
 
 
@@ -174,14 +172,13 @@ class BlockTimeScreen extends React.Component {
 
       handleDone = () => {
         const schedule = {
-          date: this.state.date.toISOString(),
+          date: this.state.selectedDate,
           fromTime: this.state.fromTime.format('HH:mm:ss'),
           toTime: this.state.toTime.format('HH:mm:ss'),
           notes: this.state.comments.length > 0 ? this.state.comments : null,
           reasonId: this.state.blockTimesReason.id,
           employeeId: this.state.provider.id,
           bookedByEmployeeId: this.state.blockedBy.id,
-          //   id: 0,
           updateStamp: moment().unix(),
           isDeleted: false,
         };
@@ -195,6 +192,22 @@ class BlockTimeScreen extends React.Component {
             alert(error.message);
           }
         });
+      }
+
+      checkCanSave = () => {
+        const {
+          selectedDate, fromTime, toTime,
+          blockTimesReason, provider, blockedBy,
+        } = this.state;
+
+        const canSave = selectedDate &&
+        fromTime &&
+        toTime &&
+        blockTimesReason &&
+        provider &&
+        blockedBy;
+
+        this.props.navigation.setParams({ canSave });
       }
 
       render() {
@@ -220,6 +233,7 @@ class BlockTimeScreen extends React.Component {
             <ProviderInput
               apptBook
               noPlaceholder
+              showFirstAvailable={false}
               filterByService
               style={styles.innerRow}
               selectedProvider={blockedBy}
