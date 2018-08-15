@@ -11,21 +11,11 @@ import {
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
-import SideMenuItem from '../components/SideMenuItem';
 import SearchBar from '../components/searchBar';
 import SalonModal from '../components/SalonModal';
 import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
 
 export default class PromotionsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Promotions"
-        icon={require('../assets/images/sidemenu/icon_sales_menu.png')}
-      />
-    ),
-  };
 
   constructor(props) {
     super(props);

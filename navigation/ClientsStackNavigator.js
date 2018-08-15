@@ -2,7 +2,6 @@
 import React from 'react';
 import { StackNavigator } from 'react-navigation';
 import { View } from 'react-native';
-import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
 
 import ClientsScreen from './../screens/clientsScreen';
@@ -24,13 +23,6 @@ const ClientsStackNavigator = StackNavigator(
         fontSize: 20,
         color: '#fff',
       },
-      drawerLabel: props => (
-        <SideMenuItem
-          {...props}
-          title="Queue"
-          icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
-        />
-      ),
     },
   },
 );
