@@ -496,6 +496,7 @@ class ClientDetails extends Component {
           value={phone.value}
           onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
           placeholder="Enter"
+          inputStyle={phone.value ? {} : styles.inputStyle}
         />
         <InputDivider />
       </React.Fragment>) : null;
@@ -527,9 +528,11 @@ class ClientDetails extends Component {
                     value={this.state.client.name}
                     onChangeText={(text) => { this.onChangeClientField('name', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.name ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <LabeledTextInput
+                    inputStyle={this.state.client.middleName ? {} : styles.inputStyle}
                     label="Middle Name"
                     value={this.state.client.middleName}
                     onChangeText={(text) => { this.onChangeClientField('middleName', text); }}
@@ -538,6 +541,7 @@ class ClientDetails extends Component {
                   <InputDivider />
                   <ValidatableInput
                     validateOnChange
+                    inputStyle={this.state.client.lastName ? {} : styles.inputStyle}
                     validation={this.isValidText}
                     isValid={this.state.isValidLastName}
                     onValidated={this.onValidateLastName}
@@ -555,15 +559,20 @@ class ClientDetails extends Component {
                     value={this.state.client.loyalty}
                     onChangeText={(text) => { this.onChangeClientField('loyalty', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.loyalty ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <InputDate
+                    noIcon={!this.state.client.birthday}
                     placeholder="Birthday"
+                    format="D MMM YYYY"
+                    icon={Icons.calendar}
                     required={this.state.requiredFields.birth}
                     isValid={this.state.isValidBirth}
                     onValidated={this.onValidateBirth}
                     onPress={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
                     selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : false}
+                    valueStyle={!this.state.client.birthday ? styles.dateValueStyle : {}}
                   />
                   <InputDivider />
                   <InputPicker
@@ -578,9 +587,13 @@ class ClientDetails extends Component {
                   />
                   <InputDivider />
                   <InputDate
+                    format="D MMM YYYY"
+                    icon={Icons.calendar}
+                    noIcon={!this.state.client.anniversary}
                     placeholder="Anniversary"
                     onPress={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
-                    selectedDate={this.state.client.anniversary ? this.state.client.anniversary : false}
+                    selectedDate={this.state.client.anniversary ? this.state.client.anniversary : 'Select'}
+                    valueStyle={styles.dateValueStyle}
                   />
                   <InputDivider />
                   <LabeledTextInput
@@ -588,6 +601,7 @@ class ClientDetails extends Component {
                     value={this.state.client.clientId}
                     onChangeText={(text) => { this.onChangeClientField('clientId', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.clientId ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <InputPicker
@@ -612,6 +626,7 @@ class ClientDetails extends Component {
                     value={this.state.client.email}
                     onChangeText={(text) => { this.onChangeClientField('email', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.email ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   {this.state.client.phones && this.state.client.phones.map((phone, index) => this.renderPhone(phone, index))}
@@ -659,6 +674,7 @@ class ClientDetails extends Component {
                     value={this.state.client.street1}
                     onChangeText={(text) => { this.onChangeClientField('street1', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.street1 ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <ValidatableInput
@@ -670,6 +686,7 @@ class ClientDetails extends Component {
                     value={this.state.client.city}
                     onChangeText={(text) => { this.onChangeClientField('city', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.city ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <InputPicker
@@ -693,6 +710,7 @@ class ClientDetails extends Component {
                     value={this.state.client.zipCode}
                     onChangeText={(text) => { this.onChangeClientField('zipCode', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.zipCode ? {} : styles.inputStyle}
                   />
                 </InputGroup>
 
