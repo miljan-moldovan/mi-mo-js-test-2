@@ -102,9 +102,7 @@ class ClientFormula extends React.Component {
     }
 
     dismissOnSelect() {
-      const { navigate } = this.props.navigation;
       this.setState({ isVisible: true });
-      navigate('ClientFormula', { ...this.props });
     }
 
     handlePressProvider = () => {
@@ -192,8 +190,7 @@ class ClientFormula extends React.Component {
 
         this.props.clientFormulasActions.postClientFormulas(client.id, formula)
           .then((response) => {
-            // this.props.clientFormulasActions.selectProvider(null);
-            this.props.navigation.goBack();
+            this.goBack();
             this.props.navigation.state.params.onNavigateBack();
           }).catch((error) => {
           });
@@ -202,8 +199,7 @@ class ClientFormula extends React.Component {
         formula.text = formula.text;
         this.props.clientFormulasActions.putClientFormulas(client.id, formula)
           .then((response) => {
-            // this.props.clientNotesActions.selectProvider(null);
-            this.props.navigation.goBack();
+            this.goBack();
             this.props.navigation.state.params.onNavigateBack();
           }).catch((error) => {
           });
