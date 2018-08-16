@@ -11,18 +11,8 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
-import SideMenuItem from '../components/SideMenuItem';
 
 class ScorecardScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Scorecard"
-        icon={require('../assets/images/sidemenu/icon_score.png')}
-      />
-    ),
-  };
   state = {
 
   }

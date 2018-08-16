@@ -1,13 +1,28 @@
 // @flow
-import { AT } from '../actions/login.js';
+import { AT } from '../actions/login';
+import {
+  GET_SESSION_DATA,
+  GET_SESSION_DATA_SUCCESS,
+  GET_SESSION_DATA_FAILED,
+  GET_EMPLOYEE_DATA,
+  GET_EMPLOYEE_DATA_SUCCESS,
+  GET_EMPLOYEE_DATA_FAILED,
+} from '../actions/user';
 
 const initialState = {
   url: '',
   username: '',
   loggedIn: false,
+  userId: null,
+  guardUserId: 0,
+  centralEmployeeId: 0,
+  employeeId: 0,
+  storeKey: 0,
+  baseHost: '',
+  currentEmployee: null,
 };
 
-function auth(state: Object = initialState, action: Object) {
+function auth(state = initialState, action) {
   switch (action.type) {
     case AT.LOGIN_SUCCESS:
       return {
@@ -16,7 +31,6 @@ function auth(state: Object = initialState, action: Object) {
         jws: action.data.jws,
       };
     case AT.LOGIN_FAILURE:
-
       return {
         loggedIn: false,
       };

@@ -162,13 +162,6 @@ class ProviderScreen extends React.Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (null),
-      drawerLabel: props => (
-        <SideMenuItem
-          {...props}
-          title="Clients"
-          icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
-        />
-      ),
     };
   };
 

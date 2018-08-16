@@ -207,7 +207,7 @@ class EditScheduleScreen extends React.Component {
       };
 
 
-      this.props.employeeScheduleActions.putEmployeeScheduleException(employee.id, schedule, formatedDate, (result) => {
+      this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formatedDate, (result) => {
         if (result) {
           this.props.appointmentCalendarActions.setGridView();
           this.props.navigation.goBack();
@@ -454,7 +454,7 @@ EditScheduleScreen.propTypes = {
   employeeScheduleActions: PropTypes.shape({
     getEmployeeSchedule: PropTypes.func.isRequired,
     getEmployeeScheduleException: PropTypes.func.isRequired,
-    putEmployeeScheduleException: PropTypes.func.isRequired,
+    putEmployeeSchedule: PropTypes.func.isRequired,
   }).isRequired,
   appointmentCalendarActions: PropTypes.shape({
     setGridView: PropTypes.func.isRequired,

@@ -120,12 +120,12 @@ export default class AppointmentScreen extends Component {
   }
 
   onPressMenu = () => {
-    // this.props.appointmentCalendarActions.setToast({
-    //   description: 'Not Implemented',
-    //   type: 'warning',
-    //   btnRightText: 'DISMISS',
-    // });
-    this.props.navigation.navigate('ApptBookProducts');
+    this.props.appointmentCalendarActions.setToast({
+      description: 'Not Implemented',
+      type: 'warning',
+      btnRightText: 'DISMISS',
+    });
+    // this.props.navigation.navigate('ApptBookProducts');
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
@@ -148,7 +148,7 @@ export default class AppointmentScreen extends Component {
       startDate,
       selectedProvider,
     } = this.props.appointmentScreenState;
-
+    this.props.newAppointmentActions.cleanForm();
     const startTime = moment(time, 'hh:mm A');
     if (selectedProvider === 'all') {
       const newApptProvider = {
@@ -156,7 +156,8 @@ export default class AppointmentScreen extends Component {
         name: 'First',
         lastName: 'Available',
       };
-      this.props.newAppointmentActions.setBookedBy(newApptProvider);
+      this.props.newAppointmentActions.setMainEmployee(newApptProvider);
+      this.props.newAppointmentActions.setQuickApptRequested(false);
       this.props.newAppointmentActions.setDate(startDate);
     }
     this.props.newAppointmentActions.setStartTime(startTime);
@@ -231,14 +232,14 @@ export default class AppointmentScreen extends Component {
     // };
     if (selectedFilter === 'providers') {
       if (selectedProvider === 'all') {
-        newAppointmentActions.setBookedBy(colData);
+        newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
       } else {
-        newAppointmentActions.setBookedBy(selectedProvider);
+        newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);
       }
     } else {
-      newAppointmentActions.setBookedBy(null);
+      newAppointmentActions.setMainEmployee(null);
       newAppointmentActions.setDate(startDate);
     }
     newAppointmentActions.setStartTime(startTime);
@@ -431,7 +432,9 @@ export default class AppointmentScreen extends Component {
       storeSchedule,
     } = this.props.appointmentScreenState;
     const { availability, appointments, blockTimes } = this.props;
-    const { bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId } = this.state;
+    const {
+      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId,
+    } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
       || this.props.appointmentScreenState.isLoadingSchedule;

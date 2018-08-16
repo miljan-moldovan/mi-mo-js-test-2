@@ -11,7 +11,6 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Form, Item, Input, Button, Label } from 'native-base';
-import SideMenuItem from '../components/SideMenuItem';
 
 const URLKEY = '@APISettings:url';
 const STOREKEY = '@APISettings:store';
@@ -19,15 +18,6 @@ const USERKEY = '@APISettings:user';
 const PASSWORDKEY = '@APISettings:password';
 
 export default class SettingsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: props => (
-      <SideMenuItem
-        {...props}
-        title="Settings"
-        icon={require('../assets/images/sidemenu/icon_score.png')}
-      />
-    ),
-  };
   state = {
     loaded: false,
     store: '4',
