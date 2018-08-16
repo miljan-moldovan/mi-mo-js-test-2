@@ -9,6 +9,7 @@ import ScorecardScreen from './../screens/ScorecardScreen';
 import Icon from './../components/UI/Icon';
 
 import { isValidAppointment } from '../redux/selectors/newAppt';
+import userActions from '../actions/user';
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
 import appointmentNoteActions from '../actions/appointmentNotes';
@@ -90,17 +91,21 @@ const RootDrawerNavigator = TabNavigator(
 
 function RootNavigator(props) {
   const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = props.auth;
-
   const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
   const fingerprintExpireTime = fingerprintAuthenticationTime + (fingerprintTimeout * 1000);
-
   // if user is logged in AND fingerprint identification is NOT enabled
   if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
-    return (<RootDrawerNavigator screenProps={{
-      isNewApptValid: props.isNewApptValid,
-      clientsActions: props.clientsActions,
-    }}
-    />);
+    if (!props.userInfo.currentEmployee) {
+      props.userActions.getEmployeeData();
+    }
+    return (
+      <RootDrawerNavigator
+        screenProps={{
+          isNewApptValid: props.isNewApptValid,
+          clientsActions: props.clientsActions,
+        }}
+      />
+    );
   }
   // else redirect to login screen so the user can authenticate (user/pass or touchID)
   return <LoginStackNavigator />;
@@ -111,6 +116,9 @@ RootNavigator.propTypes = {
   clientsActions: PropTypes.shape({
     setClients: PropTypes.func.isRequired,
     setFilteredClients: PropTypes.func.isRequired,
+  }).isRequired,
+  userActions: PropTypes.shape({
+    getEmployeeData: PropTypes.func.isRequired,
   }).isRequired,
   auth: PropTypes.shape({
     loggedIn: PropTypes.bool.isRequired,
@@ -123,6 +131,7 @@ RootNavigator.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  userInfo: state.userInfoReducer,
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
   appointmentNoteState: state.appointmentNoteReducer,
@@ -130,6 +139,7 @@ const mapStateToProps = state => ({
   isNewApptValid: isValidAppointment(state),
 });
 const mapActionsToProps = dispatch => ({
+  userActions: bindActionCreators({ ...userActions }, dispatch),
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),

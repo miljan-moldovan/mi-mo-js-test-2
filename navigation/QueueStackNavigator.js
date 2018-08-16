@@ -3,7 +3,6 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
-import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
 
 import QueueScreen from '../screens/QueueScreen';
@@ -18,23 +17,34 @@ import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeade
 import ClientsScreen from './../screens/clientsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
-import NewClientScreen from '../screens/NewClientScreen';
+import NewClientScreen from '../screens/newClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';
 
+import HeaderLateral from '../components/HeaderLateral';
+import HeaderRight from '../components/HeaderRight';
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
 import RecommendationsScreen from '../screens/recommendationsScreen';
+import RecommendProductScreen from '../screens/recommendProductScreen';
+import RecommendProductHeader from '../screens/recommendProductScreen/components/RecommendProductHeader';
+
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
-import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
-import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
+// import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+// import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
-import AppointmentNoteScreen from './../screens/appointmentNote';
+// import AppointmentNoteScreen from './../screens/appointmentNote';
+
+import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
+import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
+import ClientNote from './../screens/clientInfoScreen/components/clientNote';
+import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
@@ -76,22 +86,35 @@ const MainNavigator = StackNavigator(
     Appointment: {
       screen: AppointmentScreen,
     },
-    // Service: {
-    //   screen: ModifyServiceScreen,
-    // },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientNotes: {
+      screen: ClientNotes,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormulas: {
+      screen: ClientFormulas,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientNote: {
+      screen: ClientNote,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormula: {
+      screen: ClientFormula,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientCopyFormula: {
+      screen: ClientCopyFormulaScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
     Walkout: {
       screen: WalkOutScreen,
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
-    },
-    AppointmentFormula: {
-      screen: AppointmentFormula,
-      navigationOptions: { tabBarVisible: false },
-    },
-    AppointmentNotes: {
-      screen: AppoinmentNotes,
       navigationOptions: { tabBarVisible: false },
     },
     Service: {
@@ -102,6 +125,17 @@ const MainNavigator = StackNavigator(
       screen: ModifyProductScreen,
       navigationOptions: { tabBarVisible: false },
     },
+    RecommendProduct: {
+      screen: RecommendProductScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <RecommendProductHeader rootProps={rootProps} />,
+        headerLeft: HeaderLeftText({
+          ...rootProps,
+          handlePress: () => rootProps.navigation.goBack(),
+        }),
+      }),
+    },
+
     Recommendations: {
       screen: RecommendationsScreen,
       navigationOptions: { tabBarVisible: false },
@@ -159,14 +193,6 @@ const MainNavigator = StackNavigator(
     ClientsQueue: {
       screen: ClientsScreen,
     },
-    NewClient: {
-      screen: NewClientScreen,
-      navigationOptions: {
-        headerTitle: 'Create New Client',
-        headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
-        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
-      },
-    },
     TurnAway: {
       screen: TurnAwayScreen,
       navigationOptions: { tabBarVisible: false },
@@ -198,13 +224,6 @@ const MainNavigator = StackNavigator(
         // backgroundColor: 'red',
         height: '100%',
       },
-      drawerLabel: props => (
-        <SideMenuItem
-          {...props}
-          title="Queue"
-          icon={require('../assets/images/sidemenu/icon_queue_menu.png')}
-        />
-      ),
     },
   },
 );
@@ -248,12 +267,6 @@ export default QueueStackNavigator = StackNavigator({
   ModalClients: {
     screen: ClientsScreen,
     navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
-  },
-  AppointmentNote: {
-    screen: AppointmentNoteScreen,
-    navigationOptions: {
-      tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false,
-    },
   },
 }, {
   mode: 'modal', // Remember to set the root navigator to display modally.

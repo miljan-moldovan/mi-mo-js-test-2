@@ -1,38 +1,36 @@
-// @flow
 import processError from '../utilities/processError';
 
 export const AT = {
-  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
-  LOGIN_FAILURE: 'LOGIN_FAILURE',
-  LOGOUT: 'LOGOUT',
-  FINGERPRINT_ENABLE: 'FINGERPRINT_ENABLE',
-  FINGERPRINT_DISABLE: 'FINGERPRINT_DISABLE',
-  FINGERPRINT_AUTHENTICATE: 'FINGERPRINT_AUTHENTICATE',
-  CHANGE_USERNAME: 'CHANGE_USERNAME',
-  CHANGE_URL: 'CHANGE_URL',
+  LOGIN_SUCCESS: 'login/LOGIN_SUCCESS',
+  LOGIN_FAILURE: 'login/LOGIN_FAILURE',
+  LOGOUT: 'login/LOGOUT',
+  FINGERPRINT_ENABLE: 'login/FINGERPRINT_ENABLE',
+  FINGERPRINT_DISABLE: 'login/FINGERPRINT_DISABLE',
+  FINGERPRINT_AUTHENTICATE: 'login/FINGERPRINT_AUTHENTICATE',
+  CHANGE_USERNAME: 'login/CHANGE_USERNAME',
+  CHANGE_URL: 'login/CHANGE_URL',
 };
 
-export const changeUsername = (username: string) => (dispatch: Object => void) => {
+
+export const changeUsername = username => dispatch =>
   dispatch({
     type: AT.CHANGE_USERNAME,
     data: username,
   });
-};
 
-export const changeURL = (url: string) => (dispatch: Object => void) => {
+export const changeURL = url => dispatch =>
   dispatch({
     type: AT.CHANGE_URL,
     data: url,
   });
-};
 
 export const login = (
-  url: string,
-  username: string,
-  password: string,
-  callback: (success: boolean, err:Error) => void,
+  url,
+  username,
+  password,
+  callback,
 ) =>
-  async (dispatch: Object => void) => {
+  async (dispatch) => {
     setTimeout(() => { // emulate delay while API isn't ready
       try {
         // const url = endpoints.LOGIN;

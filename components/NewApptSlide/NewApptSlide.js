@@ -183,7 +183,7 @@ class NewApptSlide extends React.Component {
   }
 
   setProvider = (provider) => {
-    this.props.newApptActions.setBookedBy(provider);
+    this.props.newApptActions.setMainEmployee(provider);
     return this.showPanel().checkConflicts();
   }
 
@@ -461,14 +461,14 @@ class NewApptSlide extends React.Component {
 
   messageProvidersClients = (message) => {
     this.hidePanel();
-    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    const { date, mainEmployee: employee } = this.props.newApptState;
     const formated_date = moment(date).format('YYYY-MM-DD');
     this.props.newApptActions.messageProvidersClients(formated_date, employee.id, message, this.showToast);
   }
 
   messageAllClients = (message) => {
     this.hidePanel();
-    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    const { date, mainEmployee: employee } = this.props.newApptState;
     const formated_date = moment(date).format('YYYY-MM-DD');
     this.props.newApptActions.messageAllClients(formated_date, 'test', message, this.showToast);
   }
@@ -499,7 +499,7 @@ class NewApptSlide extends React.Component {
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
           this.hidePanel();
-          const { date, bookedByEmployee: employee, startTime } = this.props.newApptState;
+          const { date, mainEmployee: employee, startTime } = this.props.newApptState;
           this.props.navigation.navigate(
             'BlockTime',
             { date, employee, fromTime: startTime },
@@ -527,7 +527,7 @@ class NewApptSlide extends React.Component {
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
           this.hidePanel();
-          const { date, bookedByEmployee: employee } = this.props.newApptState;
+          const { date, mainEmployee: employee } = this.props.newApptState;
           this.props.navigation.navigate(
             'EditSchedule',
             { date, employee },
@@ -567,7 +567,7 @@ class NewApptSlide extends React.Component {
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
           this.hidePanel();
-          const { date, bookedByEmployee: employee, startTime } = this.props.newApptState;
+          const { date, mainEmployee: employee, startTime } = this.props.newApptState;
           this.props.navigation.navigate(
             'ApptBookTurnAway',
             { date, employee, fromTime: startTime },
@@ -615,7 +615,7 @@ class NewApptSlide extends React.Component {
       startTime,
       client,
       conflicts,
-      bookedByEmployee: provider,
+      mainEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
     const {
@@ -683,7 +683,6 @@ class NewApptSlide extends React.Component {
           <ProviderInput
             apptBook
             label={false}
-            showFirstAvailable={false}
             isRequested={isQuickApptRequested}
             filterList={filterProviders}
             rootStyle={styles.inputHeight}

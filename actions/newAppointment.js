@@ -10,6 +10,7 @@ import {
   appointmentLength,
   serializeApptToRequestData,
   primaryClientForSelectedAppt,
+  getBookedByEmployee,
 } from '../redux/selectors/newAppt';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
@@ -22,6 +23,7 @@ export const REMOVE_GUEST = 'newAppointment/REMOVE_GUEST';
 export const SET_DATE = 'newAppointment/SET_DATE';
 export const SET_START_TIME = 'newAppointment/SET_START_TIME';
 export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
+export const SET_MAIN_EMPLOYEE = 'newAppointment/SET_MAIN_EMPLOYEE';
 export const SET_CLIENT = 'newAppointment/SET_CLIENT';
 export const SET_QUICK_APPT_REQUESTED = 'newAppointment/SET_QUICK_APPT_REQUESTED';
 
@@ -108,6 +110,7 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
     guests,
     startTime,
     bookedByEmployee,
+    mainEmployee: employee,
   } = getState().newAppointmentReducer;
   const {
     service,
@@ -123,10 +126,11 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
   const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId), 'client', null) : client;
   const newService = {
     service,
+    employee,
+    bookedByEmployee,
     length: serviceLength,
     client: serviceClient,
     requested: getState().newAppointmentReducer.isQuickApptRequested,
-    employee: bookedByEmployee,
     fromTime,
     toTime,
   };
@@ -210,6 +214,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
     startTime,
     serviceItems,
     bookedByEmployee,
+    mainEmployee: employee,
   } = getState().newAppointmentReducer;
   const [parentService] = serviceItems.filter(item => item.itemId === parentId);
   const { guestId } = parentService;
@@ -223,13 +228,17 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
     const toTime = moment(fromTime).add(serviceLength);
     const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId)[0], 'client', null) : client;
     const newService = {
-      service,
       length: serviceLength,
       client: serviceClient,
       requested: true,
-      employee: bookedByEmployee,
+      service,
+      employee,
+      bookedByEmployee,
       fromTime,
       toTime,
+      bookBetween: get(service, 'bookBetween', false),
+      gapTime: moment.duration(get(service, 'gapDuration', 0)),
+      afterTime: moment.duration(get(service, 'afterDuration', 0)),
     };
     const serviceItem = {
       itemId: uuid(),
@@ -269,8 +278,7 @@ const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, get
   const serviceIndex = newServiceItems.findIndex(item => item.itemId === serviceId);
   const serviceItemToUpdate = newServiceItems[serviceIndex];
   const serviceItem = {
-    guestId,
-    itemId: newServiceItems[serviceIndex].itemId,
+    ...serviceItemToUpdate,
     service: { ...updatedService },
   };
   newServiceItems.splice(serviceIndex, 1, serviceItem);
@@ -406,10 +414,18 @@ const cleanForm = () => ({
   type: CLEAN_FORM,
 });
 
-const setBookedBy = employee => ({
+const setBookedBy = () => (dispatch, getState) => dispatch({
   type: SET_BOOKED_BY,
-  data: { employee },
+  data: { bookedByEmployee: getBookedByEmployee(getState()) },
 });
+
+const setMainEmployee = employee => (dispatch) => {
+  dispatch({
+    type: SET_MAIN_EMPLOYEE,
+    data: { employee },
+  });
+  return dispatch(setBookedBy());
+};
 
 const setDate = date => ({
   type: SET_DATE,
@@ -664,5 +680,6 @@ const newAppointmentActions = {
   messageProvidersClients,
   populateStateFromAppt,
   modifyAppt,
+  setMainEmployee,
 };
 export default newAppointmentActions;

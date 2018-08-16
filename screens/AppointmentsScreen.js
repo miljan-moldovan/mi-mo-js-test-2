@@ -15,8 +15,6 @@ import {
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import * as actions from '../actions/login.js';
-import SideMenuItem from '../components/SideMenuItem';
-
 
 class AppointmentsScreen extends React.Component {
   static navigationOptions = {

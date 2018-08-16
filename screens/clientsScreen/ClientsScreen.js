@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
@@ -110,7 +109,7 @@ class ClientsScreen extends React.Component {
       leftButtonOnPress: () => { navigation.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { navigation.navigate('NewClientScreen'); },
+      rightButtonOnPress: () => { navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
     };
     const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
 
@@ -149,13 +148,6 @@ class ClientsScreen extends React.Component {
           paddingHorizontal: 20,
         }}
       />),
-      drawerLabel: props => (
-        <SideMenuItem
-          {...props}
-          title="Clients"
-          icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
-        />
-      ),
     };
   };
 
@@ -199,7 +191,7 @@ class ClientsScreen extends React.Component {
       leftButtonOnPress: () => { this.props.navigation.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { this.props.navigation.navigate('NewClientScreen'); },
+      rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
     },
   }
 
@@ -296,6 +288,7 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.clientsList}>
           <ClientList
+            navigate={this.props.navigation.navigate}
             boldWords={this.props.salonSearchHeaderState.searchText}
             style={styles.clientListContainer}
             clients={this.props.clientsSectionDataSource}

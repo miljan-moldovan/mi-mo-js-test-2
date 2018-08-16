@@ -78,4 +78,6 @@ export default StyleSheet.create({
   inputDivider: { marginBottom: 10 },
   cancelButton: { fontSize: 14, color: 'white' },
   clientReferralTypeContainer: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
+  inputStyle: { fontFamily: 'Roboto-Light' },
+  dateValueStyle: { color: '#727A8F', fontFamily: 'Roboto-Light' },
 });

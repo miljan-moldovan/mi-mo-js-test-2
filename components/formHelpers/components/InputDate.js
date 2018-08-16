@@ -50,7 +50,8 @@ export default class InputDate extends React.Component {
 
   render() {
     const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
-
+    const format = this.props.format ? this.props.format : 'YYYY-MM-DD';
+    const icon = this.props.icon ? this.props.icon : Icons.timesCircle;
     return (
       <View style={{ flexDirection: 'row', flex: 1 }}>
         <SalonDatePicker
@@ -65,7 +66,7 @@ export default class InputDate extends React.Component {
           onPress={this.onPressButton}
           noIcon
           label={this.props.placeholder}
-          value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format('YYYY-MM-DD') : this.props.selectedDate}
+          value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format(format) : this.props.selectedDate}
         />
         {!this.props.noIcon && (
           <SalonTouchableOpacity
@@ -73,7 +74,7 @@ export default class InputDate extends React.Component {
             style={styles.dateCancelButtonStyle}
           >
             <View style={styles.dateCancelStyle}>
-              <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{Icons.timesCircle}</FontAwesome>
+              <FontAwesome style={[styles.iconStyle, { marginLeft: 0 }]}>{icon}</FontAwesome>
             </View>
           </SalonTouchableOpacity>
           )}

@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
 });
 
 class ClientList extends React.Component {
-
   static renderSeparator() {
     return (<View
       style={{
@@ -173,9 +172,12 @@ class ClientList extends React.Component {
               getItemLayout={(data, index) => (
                   { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
                 )}
-              renderSectionHeader={item => ClientList.renderSection(item)}
-              ItemSeparatorComponent={() => ClientList.renderSeparator()}
-              ListEmptyComponent={EmptyList}
+              renderSectionHeader={ClientList.renderSection}
+              ItemSeparatorComponent={ClientList.renderSeparator}
+              ListEmptyComponent={<EmptyList
+                onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
+                navigate={this.props.navigate}
+              />}
               refreshing={this.props.refreshing}
             />
 

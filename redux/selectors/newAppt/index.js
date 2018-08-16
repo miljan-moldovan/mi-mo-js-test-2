@@ -218,13 +218,14 @@ const employeeScheduleChunkedSelector = createSelector(
   },
 );
 
-// const selectedApptSelector = state => state.newAppointmentReducer.selectedAppt;
+const getBookedByEmployee = state => state.userInfoReducer.currentEmployee;
 
 export {
   totalPrice,
   getEndTime,
   appointmentLength,
   isValidAppointment,
+  getBookedByEmployee,
   serializeApptToRequestData,
   employeeScheduleChunkedSelector,
 };

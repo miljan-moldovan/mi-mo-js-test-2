@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Icon from '../../../../components/UI/Icon';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,9 +37,32 @@ const styles = StyleSheet.create({
     color: '#727A8F',
     textAlign: 'center',
   },
+  textButton: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 12,
+    color: '#115ECD',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    paddingTop: 34,
+  },
+  buttonStyle: {
+    borderColor: '#86868A',
+    borderWidth: 0.8,
+    borderRadius: 5,
+    backgroundColor: 'white',
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+  },
 });
 
-const emptyClientList = ({ props }) => (
+const handleOnPress = (props) => {
+  debugger //eslint-disable-line
+  props.navigate('NewClient', { onChangeClient: props.onChangeClient });
+};
+
+const emptyClientList = props => (
   <View style={styles.container}>
     <View style={styles.circle}>
       <Icon color="#C0C1C6" size={50} name="search" type="regular" />
@@ -46,6 +70,11 @@ const emptyClientList = ({ props }) => (
     <View style={styles.textContainer}>
       <Text style={styles.textTitle}>Search for clients above.</Text>
       <Text style={styles.textDesc}>Type name, code, phone number or email</Text>
+    </View>
+    <View style={styles.buttonContainer}>
+      <SalonTouchableOpacity onPress={() => handleOnPress(props)} style={styles.buttonStyle}>
+        <Text style={styles.textButton}>ADD NEW CLIENT</Text>
+      </SalonTouchableOpacity>
     </View>
   </View>
 );

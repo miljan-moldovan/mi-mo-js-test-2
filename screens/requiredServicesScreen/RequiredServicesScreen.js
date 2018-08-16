@@ -59,6 +59,8 @@ export default class RecommendedServicesScreen extends React.Component {
 
   onChangeSelected = selected => this.setState({ selected }, this.handleSave)
 
+  onPressNone = () => this.handleSave(true)
+
   handleSave = (empty = false) => {
     const { navigation: { goBack, state }, services: allServices } = this.props;
     const { selected } = this.state;
@@ -83,6 +85,7 @@ export default class RecommendedServicesScreen extends React.Component {
       <SelectableServiceList
         selected={selected}
         services={services}
+        noneButton={{ name: 'No Required', onPress: this.onPressNone }}
         onChangeSelected={this.onChangeSelected}
         ref={(ref) => { this.serviceList = ref; }}
       />
