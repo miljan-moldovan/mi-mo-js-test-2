@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { times } from 'lodash';
 import moment from 'moment';
 
 import SalonTouchableOpacity from '../../../SalonTouchableOpacity';
@@ -33,15 +32,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderItems = (item, index, apptGridSettings, onPress = () => {}, providers) => {
+const renderItems = (item, index, apptGridSettings, onPress = null) => {
   let startTime;
   let timeSplit;
   let minutesSplit;
   let style;
-  if (item) {
+  if (item && item.totalSlots > 0) {
     startTime = moment(item.startTime, 'HH:mm').add(15, 'm').format('HH:mm');
     timeSplit = startTime.split(':');
-    minutesSplit = timeSplit[1];
+    [, minutesSplit] = timeSplit;
     style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
     const availableText = item.availableSlots / item.totalSlots === 1 ? 'All available' : `${item.availableSlots} available`;
     return (
@@ -51,13 +50,13 @@ const renderItems = (item, index, apptGridSettings, onPress = () => {}, provider
         key={item.startTime}
         style={style}
       >
-        <Text style={styles.textStyle}>{availableText}</Text>
+        <Text style={[styles.textStyle, item.availableSlots === 0 && { fontWeight: '300' }]}>{availableText}</Text>
       </SalonTouchableOpacity>
     );
   }
   startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add(15 * (index + 1), 'm').format('HH:mm');
   timeSplit = startTime.split(':');
-  minutesSplit = timeSplit[1];
+  [, minutesSplit] = timeSplit;
   style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
   return (
     <SalonTouchableOpacity

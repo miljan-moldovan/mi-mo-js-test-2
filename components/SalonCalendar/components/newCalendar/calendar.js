@@ -467,7 +467,7 @@ export default class Calendar extends Component {
     }
   }
 
-  handleMove = (date, newTime, employeeId, appointmentId) => {
+  handleMove = ({ date, newTime, employeeId, appointmentId, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null }) => {
     const { onDrop, appointments } = this.props;
     const { buffer } = this.state;
     const index = buffer.findIndex(appt => appt.id === appointmentId);
@@ -481,13 +481,16 @@ export default class Calendar extends Component {
     } else {
       oldAppointment = appointments.find(item => item.id === appointmentId);
     }
-
     onDrop(
       appointmentId,
       {
         date,
         newTime,
         employeeId,
+        resourceId,
+        resourceOrdinal,
+        roomId,
+        roomOrdinal,
       },
       oldAppointment,
     );
@@ -520,21 +523,26 @@ export default class Calendar extends Component {
     || yIndex < 0 || yIndex >= this.schedule.length;
     if (!isOutOfBounds) {
       const employeeId = selectedFilter === 'providers' && selectedProvider === 'all' ? headerData[xIndex].id : selectedProvider.id;
-      const date = selectedProvider === 'all' || displayMode === 'day' ? startDate : moment(headerData[xIndex], 'YYYY-MM-DD');
-      const newTime = moment(this.schedule[yIndex], 'h:mm A');
+      const dateMoment = selectedProvider === 'all' || displayMode === 'day' ? startDate : moment(headerData[xIndex], 'YYYY-MM-DD');
+      const newTimeMoment = moment(this.schedule[yIndex], 'h:mm A');
       const oldDate = moment(appointment.date, 'YYYY-MM-DD').format('MMM DD');
       const oldFromTime = moment(appointment.fromTime, 'HH:mm');
       const oldToTime = moment(appointment.toTime, 'HH:mm');
       const duration = oldToTime.diff(oldFromTime, 'minutes');
       const clientName = `${appointment.client.name} ${appointment.client.lastName}`;
-      const newToTime = moment(newTime).add(duration, 'm').format('h:mma');
+      const newToTime = moment(newTimeMoment).add(duration, 'm').format('h:mma');
+      const newTime = newTimeMoment.format('HH:mm');
+      const appointmentId = appointment.id;
+      const date = dateMoment.format('YYYY-MM-DD');
       this.setState({
         alert: {
           title: 'Move Appointment',
-          description: `Move ${clientName} Appt. from ${oldDate} ${oldFromTime.format('h:mma')}-${oldToTime.format('h:mma')} to ${date.format('MMM DD')} ${newTime.format('h:mma')}-${newToTime}?`,
+          description: `Move ${clientName} Appt. from ${oldDate} ${oldFromTime.format('h:mma')}-${oldToTime.format('h:mma')} to ${dateMoment.format('MMM DD')} ${newTimeMoment.format('h:mma')}-${newToTime}?`,
           btnLeftText: 'Cancel',
           btnRightText: 'Move',
-          handleMove: () => this.handleMove(date.format('YYYY-MM-DD'), newTime.format('HH:mm'), employeeId, appointment.id),
+          handleMove: () => this.handleMove({
+            date, newTime, employeeId, appointmentId,
+          }),
         },
       });
     } else {
