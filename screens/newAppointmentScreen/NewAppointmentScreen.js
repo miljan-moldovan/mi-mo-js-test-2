@@ -525,7 +525,6 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleSave = () => {
-    console.log('starting');
     const { editType } = this.props.newAppointmentState;
     const successCallback = () => {
       this.props.navigation.navigate('SalonCalendar');

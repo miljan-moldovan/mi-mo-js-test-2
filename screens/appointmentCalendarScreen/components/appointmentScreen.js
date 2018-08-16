@@ -148,7 +148,7 @@ export default class AppointmentScreen extends Component {
       startDate,
       selectedProvider,
     } = this.props.appointmentScreenState;
-
+    this.props.newAppointmentActions.cleanForm();
     const startTime = moment(time, 'hh:mm A');
     if (selectedProvider === 'all') {
       const newApptProvider = {
@@ -157,6 +157,7 @@ export default class AppointmentScreen extends Component {
         lastName: 'Available',
       };
       this.props.newAppointmentActions.setMainEmployee(newApptProvider);
+      this.props.newAppointmentActions.setQuickApptRequested(false);
       this.props.newAppointmentActions.setDate(startDate);
     }
     this.props.newAppointmentActions.setStartTime(startTime);
@@ -431,7 +432,9 @@ export default class AppointmentScreen extends Component {
       storeSchedule,
     } = this.props.appointmentScreenState;
     const { availability, appointments, blockTimes } = this.props;
-    const { bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId } = this.state;
+    const {
+      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId,
+    } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
       || this.props.appointmentScreenState.isLoadingSchedule;
