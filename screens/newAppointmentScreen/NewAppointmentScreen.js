@@ -61,12 +61,12 @@ export default class NewAppointmentScreen extends React.Component {
     return ({
       headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
-        <SalonTouchableOpacity onPress={() => { params.handleCancel(); }}>
+        <SalonTouchableOpacity onPress={params.handleCancel}>
           <Text style={styles.headerButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} onPress={() => params.handleSave()}>
+        <SalonTouchableOpacity disabled={!canSave} onPress={params.handleSave}>
           <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
         </SalonTouchableOpacity>
       ),
@@ -527,7 +527,7 @@ export default class NewAppointmentScreen extends React.Component {
   handleSave = () => {
     const { editType } = this.props.newAppointmentState;
     const successCallback = () => {
-      this.props.navigation.navigate('SalonCalendar');
+      this.props.navigation.goBack();
       this.props.apptBookActions.setGridView();
       this.props.apptBookActions.setToast({
         description: editType === 'edit' ? 'Appointment Modified' : 'Appointment Booked',
