@@ -30,9 +30,6 @@ import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from './../screens/apptBookViewOptions';
 
-import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
-import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
-
 import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
@@ -128,12 +125,6 @@ const AppointmentStackNavigator = StackNavigator(
     },
     Appointments: {
       screen: AppointmentScreen,
-    },
-    AppointmentFormula: {
-      screen: AppointmentFormula,
-    },
-    AppointmentNotes: {
-      screen: AppoinmentNotes,
     },
     NewAppointment: {
       screen: NewAppointmentScreen,

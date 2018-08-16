@@ -36,10 +36,16 @@ import RecommendProductHeader from '../screens/recommendProductScreen/components
 
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
-import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
-import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
+// import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+// import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
-import AppointmentNoteScreen from './../screens/appointmentNote';
+// import AppointmentNoteScreen from './../screens/appointmentNote';
+
+import ClientNotes from './../screens/clientNotes';
+import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
+import ClientNote from './../screens/clientInfoScreen/components/clientNote';
+import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
@@ -85,19 +91,31 @@ const MainNavigator = StackNavigator(
       screen: NewClientScreen,
       navigationOptions: { tabBarVisible: false },
     },
+    ClientNotes: {
+      screen: ClientNotes,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormulas: {
+      screen: ClientFormulas,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientNote: {
+      screen: ClientNote,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormula: {
+      screen: ClientFormula,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientCopyFormula: {
+      screen: ClientCopyFormulaScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
     Walkout: {
       screen: WalkOutScreen,
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
-    },
-    AppointmentFormula: {
-      screen: AppointmentFormula,
-      navigationOptions: { tabBarVisible: false },
-    },
-    AppointmentNotes: {
-      screen: AppoinmentNotes,
       navigationOptions: { tabBarVisible: false },
     },
     Service: {
@@ -257,12 +275,6 @@ export default QueueStackNavigator = StackNavigator({
   ModalClients: {
     screen: ClientsScreen,
     navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
-  },
-  AppointmentNote: {
-    screen: AppointmentNoteScreen,
-    navigationOptions: {
-      tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false,
-    },
   },
 }, {
   mode: 'modal', // Remember to set the root navigator to display modally.
