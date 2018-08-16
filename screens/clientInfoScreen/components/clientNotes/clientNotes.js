@@ -61,30 +61,65 @@ class ClientNotesScreen extends Component {
 
   constructor(props) {
     super(props);
-    const { client } = this.props;
+    let { client } = this.props;
+    const { params } = this.props.navigation.state;
+    const paramsClient = params.client;
+    client = client || paramsClient;
+
+    const showTagBar = 'showTagBar' in params ? params.showTagBar : true;
+    const editionMode = 'editionMode' in params ? params.editionMode : true;
+
+    const forQueue = 'forQueue' in params ? params.forQueue : true;
+    const forSales = 'forSales' in params ? params.forSales : true;
+    const forAppointment = 'forAppointment' in params ? params.forAppointment : true;
 
     this.state = {
+      showTagBar,
+      editionMode,
       client,
       note: null,
-      forQueue: true,
-      forSales: true,
+      forQueue,
+      forSales,
       refreshing: false,
       showDeleted: false,
-      forAppointment: true,
+      forAppointment,
     };
+
+    this.getNotes();
   }
 
   state:{
+    showTagBar: false,
+    editionMode: true,
     showDeleted: false,
     note: null,
-    forAppointment: true,
-    forQueue: true,
-    forSales: true,
+    forAppointment: false,
+    forQueue: false,
+    forSales: false,
     client: {}
   }
 
-  componentWillMount() {
-    this.getNotes();
+  // componentWillMount() {
+  //
+  //   this.getNotes();
+  // }
+
+  onPressSalonBtnAppointment = () => {
+
+    this.setState({ forAppointment: !this.state.forAppointment });
+    this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forAppointment, this.state.forQueue);
+  }
+
+  onPressSalonBtnSales = () => {
+
+    this.setState({ forSales: !this.state.forSales });
+    this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forAppointment, this.state.forQueue);
+  }
+
+  onPressSalonBtnQueue = () => {
+
+    this.setState({ forQueue: !this.state.forQueue });
+    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, !this.state.forQueue);
   }
 
   setNoteTags = (note) => {
@@ -92,8 +127,8 @@ class ClientNotesScreen extends Component {
 
     if (note.forQueue) {
       tags.push(<SalonTag
-        key={Math.random().toString()}
         tagHeight={17}
+        key={Math.random().toString()}
         backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
         value="QUEUE"
         valueSize={10}
@@ -103,8 +138,8 @@ class ClientNotesScreen extends Component {
 
     if (note.forSales) {
       tags.push(<SalonTag
-        key={Math.random().toString()}
         tagHeight={17}
+        key={Math.random().toString()}
         backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
         value="SALES"
         valueSize={10}
@@ -114,8 +149,8 @@ class ClientNotesScreen extends Component {
 
     if (note.forAppointment) {
       tags.push(<SalonTag
-        key={Math.random().toString()}
         tagHeight={17}
+        key={Math.random().toString()}
         backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
         value="APPOINTMENT"
         valueSize={10}
@@ -125,6 +160,7 @@ class ClientNotesScreen extends Component {
 
     return tags;
   }
+
 
   setTagsBar = () => {
     const activeStyle = {
@@ -145,10 +181,7 @@ class ClientNotesScreen extends Component {
       <View key={Math.random().toString()} style={styles.tag}>
         <SalonBtnTag
           iconSize={13}
-          onPress={() => {
-            this.setState({ forAppointment: !this.state.forAppointment });
-            this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forAppointment, this.state.forQueue);
-          }}
+          onPress={this.onPressSalonBtnAppointment}
           tagHeight={24}
           value="Appointment"
           valueSize={10}
@@ -160,10 +193,7 @@ class ClientNotesScreen extends Component {
       <View key={Math.random().toString()} style={styles.tag}>
         <SalonBtnTag
           iconSize={13}
-          onPress={() => {
-            this.setState({ forSales: !this.state.forSales });
-            this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forAppointment, this.state.forQueue);
-          }}
+          onPress={this.onPressSalonBtnSales}
           tagHeight={24}
           value="Sales"
           valueSize={10}
@@ -175,10 +205,7 @@ class ClientNotesScreen extends Component {
       <View key={Math.random().toString()} style={styles.tag}>
         <SalonBtnTag
           iconSize={13}
-          onPress={() => {
-            this.setState({ forQueue: !this.state.forQueue });
-            this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, !this.state.forQueue);
-          }}
+          onPress={this.onPressSalonBtnQueue}
           tagHeight={24}
           value="Queue"
           valueSize={10}
@@ -294,6 +321,7 @@ class ClientNotesScreen extends Component {
   }
 
   filterNotes(searchText, showDeleted, forSales, forAppointment, forQueue) {
+
     const baseNotes = showDeleted ?
       this.props.clientNotesState.notes : this.props.clientNotesState.notes.filter(el => !el.isDeleted);
 
@@ -349,16 +377,9 @@ class ClientNotesScreen extends Component {
     }
   }
 
-
   renderViewMore = onPress => (
     <Text style={styles.moreText} onPress={onPress}>... more</Text>
   )
-
-  // renderViewLess(onPress) {
-  //   // return (
-  //   //   <Text style={styles.moreText} onPress={onPress}> less</Text>
-  //   // );
-  // }
 
   onPressDelete = () => {
     this.setState({ showDeleted: !this.state.showDeleted });
@@ -399,9 +420,11 @@ class ClientNotesScreen extends Component {
                 onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue)}
               />
             </View>
-            <View style={styles.tagsBar} >
-              {this.setTagsBar()}
-            </View>
+            {this.state.showTagBar &&
+              <View style={styles.tagsBar} >
+                {this.setTagsBar()}
+              </View>
+            }
           </View>
           <View style={styles.notesScroller}>
             <View style={styles.notesView}>
@@ -416,7 +439,7 @@ class ClientNotesScreen extends Component {
                     key={index}
                     backgroundColor={!item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
                     headerChildren={[
-                      <View style={styles.noteTags} key={Math.random().toString()}>
+                      <View style={styles.noteTags}>
                         <View style={styles.noteHeaderLeft}>
 
                           <SalonDateTxt
@@ -442,6 +465,8 @@ class ClientNotesScreen extends Component {
 
                         </View>
                         <View style={styles.noteHeaderRight}>
+
+                          {this.state.editionMode &&
                           <SalonTouchableOpacity
                             style={styles.dotsButton}
                             onPress={() => { this.showActionSheet(item); }}
@@ -451,7 +476,7 @@ class ClientNotesScreen extends Component {
                               icon="dots"
                               style={styles.dotsIcon}
                             />
-                          </SalonTouchableOpacity>
+                          </SalonTouchableOpacity>}
                         </View>
                       </View>]}
 
@@ -462,7 +487,6 @@ class ClientNotesScreen extends Component {
                       //  renderViewLess={this.renderViewLess}
                       >
                         <Text
-                          key={Math.random().toString()}
                           style={[styles.noteText, { color: !item.isDeleted ? '#2E3032' : '#58595B' }]}
                         >
                           {item.text}
@@ -476,22 +500,25 @@ class ClientNotesScreen extends Component {
               />
 
               <View style={styles.showDeletedButtonContainer}>
-
-                <SalonTouchableOpacity
-                  style={styles.showDeletedButton}
-                  onPress={this.onPressDelete}
-                >
-                  <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
-                </SalonTouchableOpacity>
+                {this.state.editionMode ?
+                  <SalonTouchableOpacity
+                    style={styles.showDeletedButton}
+                    onPress={this.onPressDelete}
+                  >
+                    <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
+                  </SalonTouchableOpacity> : null
+              }
               </View>
 
             </View>
           </View>
         </ScrollView>
         <KeyboardSpacer />
-        <FloatingButton
-          rootStyle={styles.floatingButtonRoot}
-          handlePress={() => {
+
+        {this.state.editionMode ?
+          <FloatingButton
+            rootStyle={styles.floatingButtonRoot}
+            handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('ClientNote', {
              mode: 'modal',
@@ -501,20 +528,19 @@ class ClientNotesScreen extends Component {
              onNavigateBack: this.getNotes,
             });
           }}
-        >
-          <SalonIcon
-            size={24}
-            icon="plus"
-            style={styles.plusIcon}
-          />
-        </FloatingButton>
+          >
+            <SalonIcon
+              size={24}
+              icon="plus"
+              style={styles.plusIcon}
+            />
+          </FloatingButton> : null}
       </View>
     );
   }
 }
 
 ClientNotesScreen.defaultProps = {
-
 };
 
 ClientNotesScreen.propTypes = {

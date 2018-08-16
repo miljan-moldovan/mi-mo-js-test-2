@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import Icon from '../components/UI/Icon';
@@ -17,7 +17,7 @@ import HeaderLeftText from '../components/HeaderLeftText';
 import HeaderLateral from '../components/HeaderLateral';
 import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
-import ClientNotes from './../screens/clientNotes';
+import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
 import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
 import ClientNote from './../screens/clientInfoScreen/components/clientNote';
 import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
@@ -55,6 +55,7 @@ import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
 import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
+import styles from './styles';
 
 const AppointmentStackNavigator = StackNavigator(
   {
@@ -157,7 +158,44 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ClientNotes: {
       screen: ClientNotes,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
+      navigationOptions: rootProps => ({
+        tabBarVisible: false,
+        headerStyle: styles.headerStyle,
+        headerTitle: <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
+          <Text style={styles.subTitleText}>Appointment notes</Text>
+        </View>,
+        headerLeft: HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={styles.leftButtonContainer}>
+              <Icon
+                name="angleLeft"
+                size={28}
+                style={{ paddingHorizontal: 2 }}
+                color="#fff"
+                type="light"
+              />
+            </View>
+          ),
+        }),
+        headerRight: HeaderLateral({
+          handlePress: () => { alert('Not implemented'); },
+          button: (
+            <View style={styles.rightButtonContainer}>
+              <Icon
+                name="infoCircle"
+                size={20}
+                style={{ paddingHorizontal: 2 }}
+                color="#fff"
+                type="regular"
+              />
+            </View>
+          ),
+        }),
+      }),
+
     },
     ClientFormulas: {
       screen: ClientFormulas,
@@ -230,26 +268,6 @@ const AppointmentStackNavigator = StackNavigator(
             </View>
           ),
         }),
-        //       headerRight: HeaderLateral({
-        //         handlePress: () => rootProps.params.handlePress(),
-        //         params: rootProps.navigation.state.params,
-        //         button:
-        //         <View style={{
-        //           flex: 1,
-        //           flexDirection: 'row',
-        //           alignItems: 'center',
-        //           justifyContent: 'center',
-        //           }}
-        //         >
-        //   <Image
-        //     style={{
-        //             width: 24,
-        //             height: 24,
-        //           }}
-        //     source={require('../assets/images/icons/icon_filter.png')}
-        //   />
-        // </View>,
-        //       }),
         header: props => (
           <ImageHeader
             {...props}

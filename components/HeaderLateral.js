@@ -5,7 +5,7 @@ import SalonTouchableOpacity from './SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginHorizontal: 22,
+    marginHorizontal: 5,
   },
 });
 

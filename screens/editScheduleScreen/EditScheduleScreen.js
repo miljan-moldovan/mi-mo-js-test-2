@@ -207,7 +207,7 @@ class EditScheduleScreen extends React.Component {
       };
 
 
-      this.props.employeeScheduleActions.putEmployeeScheduleException(employee.id, schedule, formatedDate, (result) => {
+      this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formatedDate, (result) => {
         if (result) {
           this.props.appointmentCalendarActions.setGridView();
           this.props.navigation.goBack();

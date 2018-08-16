@@ -279,7 +279,7 @@ class ClientDetails extends Component {
   onValidateBirth = isValid => this.setState((state) => {
     const newState = state;
     newState.isValidBirth = this.state.requiredFields.birthday ? isValid : true;
-    debugger //eslint-disable-line
+    
     this.checkValidation();
 
     return newState;

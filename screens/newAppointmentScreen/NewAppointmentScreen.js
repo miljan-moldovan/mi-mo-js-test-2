@@ -652,9 +652,21 @@ export default class NewAppointmentScreen extends React.Component {
       disabled={isDisabled}
       key={Math.random().toString()}
       onPress={() => {
+        
         // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
         // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
-        this.props.navigation.navigate('ClientNotes', { client: this.props.newAppointmentState.client });
+        this.props.navigation.navigate(
+'ClientNotes',
+        {
+forAppointment: true,
+          forSales: false,
+          forQueue: false,
+          editionMode: false,
+showTagBar:
+          false,
+client: this.props.newAppointmentState.client,
+        },
+);
       }}
       style={{
         marginHorizontal: 5,

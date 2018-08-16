@@ -109,7 +109,7 @@ class ClientsScreen extends React.Component {
       leftButtonOnPress: () => { navigation.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { navigation.navigate('NewClient'); },
+      rightButtonOnPress: () => { navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
     };
     const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
 
@@ -191,7 +191,7 @@ class ClientsScreen extends React.Component {
       leftButtonOnPress: () => { this.props.navigation.goBack(); },
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { this.props.navigation.navigate('NewClient'); },
+      rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
     },
   }
 

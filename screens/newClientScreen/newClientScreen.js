@@ -57,6 +57,7 @@ export default class NewClientScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    debugger //eslint-disable-line
   }
 
   componentWillMount() {
@@ -71,8 +72,14 @@ export default class NewClientScreen extends React.Component {
     this.props.navigation.setParams({ handleDone });
   }
 
-  onDismiss = (client) => {
-    this.props.navigation.goBack();
+  onClientCreated = (client) => {
+    debugger //eslint-disable-line
+    const { onChangeClient } = this.props.navigation.state.params;
+
+    if (this.props.navigation.state.params && onChangeClient) {
+      onChangeClient(client);
+      this.props.navigation.goBack();
+    }
   }
 
   render() {
@@ -84,7 +91,7 @@ export default class NewClientScreen extends React.Component {
           editionMode
           actionType="new"
           client={null}
-          onDismiss={this.onDismiss}
+          onDismiss={this.onClientCreated}
           navigation={this.props.navigation}
           {...this.props}
         />

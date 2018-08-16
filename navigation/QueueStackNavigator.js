@@ -40,7 +40,7 @@ import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 // import AppointmentNoteScreen from './../screens/appointmentNote';
 
-import ClientNotes from './../screens/clientNotes';
+import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
 import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
 import ClientNote from './../screens/clientInfoScreen/components/clientNote';
 import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
