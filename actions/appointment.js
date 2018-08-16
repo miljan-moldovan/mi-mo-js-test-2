@@ -104,10 +104,18 @@ const undoMove = () => (dispatch, getState) => {
   let params;
   switch (undoType) {
     case 'move': {
+      const resourceId = oldAppointment.resource ? oldAppointment.resource.id : null;
+      const resourceOrdinal = oldAppointment.resource ? oldAppointment.resourceOrdinal : null;
+      const roomId = oldAppointment.room ? oldAppointment.room.id : null;
+      const roomOrdinal = oldAppointment.room ? oldAppointment.roomOrdinal : null;
       params = {
         date: oldAppointment.date,
         newTime: oldAppointment.fromTime,
         employeeId: oldAppointment.employee.id,
+        resourceId,
+        resourceOrdinal,
+        roomId,
+        roomOrdinal,
       };
       dispatch({ type: UNDO_MOVE });
       return dispatch(postAppointmentMove(oldAppointment.id, params, null));
