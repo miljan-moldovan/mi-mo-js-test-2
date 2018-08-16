@@ -12,7 +12,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
-import { last, get, flatten, isNil, sortBy, chain } from 'lodash';
+import { get, debounce } from 'lodash';
 
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import {
@@ -93,8 +93,8 @@ export default class NewAppointmentScreen extends React.Component {
     } = this.getClientInfo(client);
     this.props.navigation.setParams({
       editType,
-      handleSave: this.handleSave,
-      handleCancel: this.handleCancel,
+      handleSave: debounce(this.handleSave, 500),
+      handleCancel: debounce(this.handleCancel, 500),
     });
     this.state = {
       toast: null,
@@ -525,6 +525,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleSave = () => {
+    console.log('starting');
     const { editType } = this.props.newAppointmentState;
     const successCallback = () => {
       this.props.navigation.navigate('SalonCalendar');

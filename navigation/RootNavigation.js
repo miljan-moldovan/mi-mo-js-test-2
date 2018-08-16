@@ -95,7 +95,9 @@ function RootNavigator(props) {
   const fingerprintExpireTime = fingerprintAuthenticationTime + (fingerprintTimeout * 1000);
   // if user is logged in AND fingerprint identification is NOT enabled
   if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
-    props.userActions.getEmployeeData();
+    if (!props.userInfo.currentEmployee) {
+      props.userActions.getEmployeeData();
+    }
     return (
       <RootDrawerNavigator
         screenProps={{
@@ -129,6 +131,7 @@ RootNavigator.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  userInfo: state.userInfoReducer,
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
   appointmentNoteState: state.appointmentNoteReducer,
