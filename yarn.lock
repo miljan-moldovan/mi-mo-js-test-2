@@ -5169,9 +5169,9 @@ rimraf@~2.2.6:
   version "2.2.8"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.2.8.tgz#e439be2aaee327321952730f99a8929e4fc50582"
 
-rn-sliding-up-panel@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/rn-sliding-up-panel/-/rn-sliding-up-panel-1.2.0.tgz#77e7ca5674db623333cfa7ef7b7767e77a400cdc"
+"rn-sliding-up-panel@git+https://github.com/igor-slotin/rn-sliding-up-panel.git#default-y-position":
+  version "1.2.1"
+  resolved "git+https://github.com/igor-slotin/rn-sliding-up-panel.git#f140d950148ee688da872deeea08c7c16ec59e7e"
   dependencies:
     clamp "^1.0.1"
     prop-types "^15.6.0"
