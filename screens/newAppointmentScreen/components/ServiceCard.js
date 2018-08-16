@@ -4,6 +4,7 @@ import {
   Text,
 } from 'react-native';
 import moment from 'moment';
+import { get } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import {
@@ -70,10 +71,9 @@ const SalonAppointmentTime = props => (
 
 const ServiceCard = (props) => {
   const { data } = props;
-  const employee = data.employee || null;
-  const isFirstAvailable = data.isFirstAvailable || false;
-  // const employeePhoto = getEmployeePhoto(isFirstAvailable ? 0 : employee.id);
-  const employeePhoto = employee.imagePath || null;
+  const employee = get(data, 'employee', null);
+  const isFirstAvailable = get(employee, 'isFirstAvailable', false);
+  const employeePhoto = get(employee, 'imagePath', null);
   const serviceName = data.service.name || data.service.description;
   const showSelectExtras = (
     !props.isAddon &&

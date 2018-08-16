@@ -8,11 +8,13 @@ import getRoomAssignments from './getRoomAssignments';
 import putRoomAssignments from './putRoomAssignments';
 import getEmployeeScheduleException from './getEmployeeScheduleException';
 import putEmployeeScheduleException from './putEmployeeScheduleException';
+import getEmployee from './getEmployee';
 
 export {
   getEmployeeAppointments,
   getEmployeePhoto,
   getEmployeePositions,
+  getEmployee,
   getEmployees,
   getEmployeeSchedule,
   getEmployeeScheduleRange,

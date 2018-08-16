@@ -79,8 +79,8 @@ export default StyleSheet.create({
     marginBottom: '10%',
     marginLeft: 'auto',
     marginRight: 'auto',
-    height: 150,
-    width: 90,
+    height: 139,
+    width: 122,
   },
   backButtonLogo: {
     color: 'white',

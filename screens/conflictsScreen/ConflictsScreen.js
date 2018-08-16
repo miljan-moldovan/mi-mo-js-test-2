@@ -5,8 +5,8 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import moment from 'moment';
-
+import moment, { isMoment } from 'moment';
+import { isNull } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import { AppointmentTime } from '../../components/slidePanels/SalonNewAppointmentSlide';
@@ -148,7 +148,7 @@ export default class ConflictsScreen extends React.Component {
 
     this.props.navigation.setParams({ handleDone: this.handleDone });
     this.state = {
-      date: moment(params.date),
+      date: params.date,
       startTime: params.startTime,
       endTime: params.endTime,
       conflicts: params.conflicts,
@@ -176,17 +176,23 @@ export default class ConflictsScreen extends React.Component {
           <View style={{ flex: 1, flexDirection: 'column' }}>
             <View style={styles.conflictCardContainer}>
               <View style={styles.conflictInfoContainer}>
-                <AppointmentTime
-                  startTime={conflict.fromTime}
-                  endTime={conflict.toTime}
-                />
+                {!isNull(conflict.fromTime) && !isNull(conflict.toTime) && (
+                  <AppointmentTime
+                    startTime={conflict.fromTime}
+                    endTime={conflict.toTime}
+                  />
+                )}
                 <Text style={styles.conflictReasonText}>{conflict.reason}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                  <Text style={styles.conflictServiceText}>{`${conflict.serviceDescription} ${conflict.employeeFullName ? 'with ' : ''}`}</Text>
-                  <Text style={[styles.conflictServiceText, { fontFamily: 'Roboto-Medium' }]}>{conflict.employeeFullName}</Text>
+                  { !isNull(conflict.serviceDescription) &&
+                    <Text style={styles.conflictServiceText}>{`${conflict.serviceDescription} ${conflict.employeeFullName ? 'with ' : ''}`}</Text>
+                  }
+                  {!isNull(conflict.employeeFullName) &&
+                    <Text style={[styles.conflictServiceText, { fontFamily: 'Roboto-Medium' }]}>{conflict.employeeFullName}</Text>
+                  }
                 </View>
               </View>
-              {conflict.overlap !== null && (
+              {!isNull(conflict.overlap) && (
                 <View style={styles.conflictTypeContainer}>
                   <Text style={styles.conflictTypeText}>OVERLAP</Text>
                   <View style={{ flexDirection: 'row' }}>

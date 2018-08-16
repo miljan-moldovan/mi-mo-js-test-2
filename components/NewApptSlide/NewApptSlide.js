@@ -183,7 +183,7 @@ class NewApptSlide extends React.Component {
   }
 
   setProvider = (provider) => {
-    this.props.newApptActions.setBookedBy(provider);
+    this.props.newApptActions.setMainEmployee(provider);
     return this.showPanel().checkConflicts();
   }
 
@@ -615,7 +615,7 @@ class NewApptSlide extends React.Component {
       startTime,
       client,
       conflicts,
-      bookedByEmployee: provider,
+      mainEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
     const {
@@ -683,7 +683,6 @@ class NewApptSlide extends React.Component {
           <ProviderInput
             apptBook
             label={false}
-            showFirstAvailable={false}
             isRequested={isQuickApptRequested}
             filterList={filterProviders}
             rootStyle={styles.inputHeight}

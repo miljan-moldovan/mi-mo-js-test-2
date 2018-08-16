@@ -10,7 +10,6 @@ import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/servicesScreen';
 
-import SideMenuItem from '../components/SideMenuItem';
 import ImageHeader from '../components/ImageHeader';
 import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 import HeaderLeftText from '../components/HeaderLeftText';
@@ -289,13 +288,6 @@ const AppointmentStackNavigator = StackNavigator(
         fontSize: 17,
         color: '#fff',
       },
-      drawerLabel: props => (
-        <SideMenuItem
-          {...props}
-          title="Appointments"
-          icon={require('../assets/images/sidemenu/icon_appoint_menu.png')}
-        />
-      ),
     },
   },
 );

@@ -216,7 +216,6 @@ export default class ModifyApptServiceScreen extends React.Component {
         resource,
         length,
       };
-
       params.onSaveService(serviceItem);
       this.props.navigation.goBack();
     }

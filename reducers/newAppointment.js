@@ -26,6 +26,7 @@ import {
   SET_REMARKS,
   SET_SELECTED_APPT,
   POPULATE_STATE_FROM_APPT,
+  SET_MAIN_EMPLOYEE,
 } from '../actions/newAppointment';
 
 const defaultState = {
@@ -42,6 +43,7 @@ const defaultState = {
   guests: [],
   conflicts: [],
   serviceItems: [],
+  mainEmployee: null,
   remarks: '',
 };
 
@@ -92,10 +94,15 @@ export default function newAppointmentReducer(state = defaultState, action) {
     case SET_BOOKED_BY:
       return {
         ...state,
-        bookedByEmployee: data.employee,
+        bookedByEmployee: data.bookedByEmployee,
+      };
+    case SET_MAIN_EMPLOYEE:
+      return {
+        ...state,
+        mainEmployee: data.employee,
         serviceItems: newServiceItems.map((item) => {
           const employee = (
-            item.service.employee.id === state.bookedByEmployee.id
+            item.service.employee.id === state.mainEmployee.id
           ) ? data.employee : item.service.employee;
           return ({
             ...item,
