@@ -195,7 +195,7 @@ export default class ClientInfoScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <ClientDetails setHandleDone={this.setHandleDone} setCanSave={this.setCanSave} editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
+    0: () => <ClientDetails actionType="update" setHandleDone={this.setHandleDone} setCanSave={this.setCanSave} editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     2: () => <ClientFormulas editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
   })

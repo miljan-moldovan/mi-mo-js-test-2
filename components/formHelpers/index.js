@@ -221,7 +221,7 @@ const LabeledTextInput = props => (
     {props.mask ?
       <TextInputMask
         {...props}
-        style={[styles.inputText, { textAlign: 'right', flex: 1 }]}
+        style={[styles.inputText, { textAlign: 'right', flex: 1 }, props.inputStyle]}
         numberOfLines={1}
         value={props.value}
         placeholder={props.placeholder}
@@ -230,7 +230,7 @@ const LabeledTextInput = props => (
       :
       <TextInput
         {...props}
-        style={[styles.inputText, { textAlign: 'right', flex: 1 }]}
+        style={[styles.inputText, { textAlign: 'right', flex: 1 }, props.inputStyle]}
         numberOfLines={1}
         value={props.value}
         placeholder={props.placeholder}

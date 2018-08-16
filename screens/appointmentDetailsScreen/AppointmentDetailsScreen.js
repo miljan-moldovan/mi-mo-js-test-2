@@ -10,8 +10,10 @@ import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import AppointmentDetails from './components/appointmentDetails';
-import AppoinmentNotes from './components/appointmentNotes';
-import AppointmentFormulas from './components/appointmentFormulas';
+
+import ClientFormulas from '../clientInfoScreen/components/clientFormulas';
+import ClientNotes from '../clientInfoScreen/components/clientNotes';
+
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 
@@ -147,8 +149,7 @@ export default class AppointmentDetailsScreen extends React.Component {
       index: 0,
       loading: true,
       appointment: params && params.item ? params.item : null,
-      formulas: [],
-      notes: [],
+      client: params && params.item.client ? params.item.client : null,
       routes: [
         { key: '0', title: 'Appt. Details', icon: 'penAlt' },
         { key: '1', title: 'Notes', icon: 'fileText' },
@@ -199,8 +200,8 @@ export default class AppointmentDetailsScreen extends React.Component {
 
   renderScene = SceneMap({
     0: () => <AppointmentDetails onPressSummary={this.props.navigation.state.params.onPressSummary} isWaiting={this.props.navigation.state.params.isWaiting} appointment={this.state.appointment} navigation={this.props.navigation} />,
-    1: () => <AppoinmentNotes notes={this.state.notes} appointment={this.state.appointment} navigation={this.props.navigation} />,
-    2: () => <AppointmentFormulas formulas={this.state.formulas} appointment={this.state.appointment} navigation={this.props.navigation} />,
+    1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
+    2: () => <ClientFormulas client={this.state.client} navigation={this.props.navigation} {...this.props} />,
   });
 
 

@@ -17,7 +17,7 @@ import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeade
 import ClientsScreen from './../screens/clientsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
-import NewClientScreen from '../screens/NewClientScreen';
+import NewClientScreen from '../screens/newClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
@@ -35,10 +35,16 @@ import RecommendProductHeader from '../screens/recommendProductScreen/components
 
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
-import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
-import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
+// import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
+// import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
-import AppointmentNoteScreen from './../screens/appointmentNote';
+// import AppointmentNoteScreen from './../screens/appointmentNote';
+
+import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
+import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
+import ClientNote from './../screens/clientInfoScreen/components/clientNote';
+import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
@@ -80,22 +86,35 @@ const MainNavigator = StackNavigator(
     Appointment: {
       screen: AppointmentScreen,
     },
-    // Service: {
-    //   screen: ModifyServiceScreen,
-    // },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientNotes: {
+      screen: ClientNotes,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormulas: {
+      screen: ClientFormulas,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientNote: {
+      screen: ClientNote,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientFormula: {
+      screen: ClientFormula,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientCopyFormula: {
+      screen: ClientCopyFormulaScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
     Walkout: {
       screen: WalkOutScreen,
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
-    },
-    AppointmentFormula: {
-      screen: AppointmentFormula,
-      navigationOptions: { tabBarVisible: false },
-    },
-    AppointmentNotes: {
-      screen: AppoinmentNotes,
       navigationOptions: { tabBarVisible: false },
     },
     Service: {
@@ -174,14 +193,6 @@ const MainNavigator = StackNavigator(
     ClientsQueue: {
       screen: ClientsScreen,
     },
-    NewClient: {
-      screen: NewClientScreen,
-      navigationOptions: {
-        headerTitle: 'Create New Client',
-        headerLeft: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Cancel</Text>,
-        headerRight: <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'OpenSans-Regular' }}>Save</Text>,
-      },
-    },
     TurnAway: {
       screen: TurnAwayScreen,
       navigationOptions: { tabBarVisible: false },
@@ -256,12 +267,6 @@ export default QueueStackNavigator = StackNavigator({
   ModalClients: {
     screen: ClientsScreen,
     navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
-  },
-  AppointmentNote: {
-    screen: AppointmentNoteScreen,
-    navigationOptions: {
-      tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false,
-    },
   },
 }, {
   mode: 'modal', // Remember to set the root navigator to display modally.

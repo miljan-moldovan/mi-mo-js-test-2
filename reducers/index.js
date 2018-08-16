@@ -10,7 +10,6 @@ import appointmentNotesReducer from './appointmentNotes';
 import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
 import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
-import { appointmentFormulasReducer } from '../screens/appointmentDetailsScreen/components/appointmentFormulas/redux';
 import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
 import userInfoReducer from './userInfo';
 import appointmentBookReducer from './appointmentBook';
@@ -45,7 +44,6 @@ export default combineReducers({
   appointmentDetailsReducer,
   appointmentNotesReducer,
   walkoutReducer,
-  appointmentFormulasReducer,
   salonSearchHeaderReducer,
   checkinReducer,
   serviceReducer,
