@@ -12,7 +12,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
-import { last, get, flatten, isNil, sortBy, chain } from 'lodash';
+import { get, debounce } from 'lodash';
 
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import {
@@ -93,8 +93,8 @@ export default class NewAppointmentScreen extends React.Component {
     } = this.getClientInfo(client);
     this.props.navigation.setParams({
       editType,
-      handleSave: this.handleSave,
-      handleCancel: this.handleCancel,
+      handleSave: debounce(this.handleSave, 500),
+      handleCancel: debounce(this.handleCancel, 500),
     });
     this.state = {
       toast: null,
@@ -118,7 +118,7 @@ export default class NewAppointmentScreen extends React.Component {
     const {
       client,
       startTime,
-      bookedByEmployee,
+      mainEmployee: employee,
     } = this.props.newAppointmentState;
     const length = this.totalLength();
     const serviceLength = moment.duration(service.maxDuration);
@@ -130,7 +130,7 @@ export default class NewAppointmentScreen extends React.Component {
       length: serviceLength,
       client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
       requested: true,
-      employee: bookedByEmployee,
+      employee,
       fromTime,
       toTime,
       bookBetween: get(service, 'bookBetween', false),
@@ -476,14 +476,14 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleAddMainService = () => {
-    const { client, bookedByEmployee } = this.props.newAppointmentState;
+    const { client, mainEmployee } = this.props.newAppointmentState;
     if (client !== null) {
       return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
         selectExtraServices: true,
         filterByProvider: true,
         clientId: client.id,
-        employeeId: bookedByEmployee.id,
+        employeeId: mainEmployee.id,
         onChangeService: this.addService,
       });
     }
@@ -501,7 +501,7 @@ export default class NewAppointmentScreen extends React.Component {
   checkConflicts = () => this.props.newAppointmentActions.getConflicts(() => this.validate());
 
   handleAddGuestService = (guestId) => {
-    const { bookedByEmployee } = this.props.newAppointmentState;
+    const { mainEmployee } = this.props.newAppointmentState;
     const guest = this.getGuest(guestId);
     const { client = null } = guest;
 
@@ -511,7 +511,7 @@ export default class NewAppointmentScreen extends React.Component {
         selectExtraServices: true,
         filterByProvider: true,
         clientId: get(client, 'id', null),
-        employeeId: bookedByEmployee.id,
+        employeeId: mainEmployee.id,
         onChangeService: service => this.addService(service, guestId),
       });
     }
@@ -525,6 +525,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleSave = () => {
+    console.log('starting');
     const { editType } = this.props.newAppointmentState;
     const successCallback = () => {
       this.props.navigation.navigate('SalonCalendar');
@@ -556,10 +557,10 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleCancel = () => {
-    const { serviceItems, bookedByEmployee } = this.props.newAppointmentState;
+    const { serviceItems, mainEmployee } = this.props.newAppointmentState;
     const firstService = serviceItems[0] ? get(serviceItems[0].service, 'service', null) : null;
     const serviceTitle = get(firstService, 'name', null);
-    const employeeName = `${get(bookedByEmployee, 'name', bookedByEmployee.firstName || '')} ${get(bookedByEmployee, 'lastName', '')[0]}.`;
+    const employeeName = `${get(mainEmployee, 'name', mainEmployee.firstName || '')} ${get(mainEmployee, 'lastName', '')[0]}.`;
     const alertBody = serviceTitle ?
       `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?` :
       `Are you sure you want to discard this new appointment with ${employeeName}?`;
