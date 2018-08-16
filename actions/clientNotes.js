@@ -40,6 +40,8 @@ const putClientNotesFailed = error => ({
 });
 
 const putClientNotes = (clientId, note) => (dispatch) => {
+  debugger //eslint-disable-line
+
   dispatch({ type: PUT_CLIENT_NOTE });
   return Note.putClientNote({ clientId, id: note.id }, note)
     .then((response) => {

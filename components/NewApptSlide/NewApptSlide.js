@@ -567,10 +567,10 @@ class NewApptSlide extends React.Component {
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
           this.hidePanel();
-          const { date, bookedByEmployee: employee } = this.props.newApptState;
+          const { date, bookedByEmployee: employee, startTime } = this.props.newApptState;
           this.props.navigation.navigate(
             'ApptBookTurnAway',
-            { date, employee },
+            { date, employee, fromTime: startTime },
           );
         }}
         label="Turn Away"
