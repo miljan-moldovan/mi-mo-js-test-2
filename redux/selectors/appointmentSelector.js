@@ -9,13 +9,13 @@ const selectedApptId = (state, props) => props.appointmentId;
 
 const appoinmentGroupedByProvider = createSelector(
   appointmentSelector,
-  appts => groupBy(appts, appt => appt.employee.id),
+  appts => groupBy(appts, appt => (appt.employee ? appt.employee.id : 0)),
 );
 
 export const getVisibleAppointmentsDataSource = createSelector(
   [appoinmentGroupedByProvider, groupedAvailableProvidersSelector],
-  (groupedAppts, groupedAvailableProviders) => flatten(filter(groupedAppts, appts =>
-    (groupedAvailableProviders[appts[0].employee.id] ? appts : null))),
+  (groupedAppts, groupedAvailableProviders) => flatten(filter(groupedAppts, (appts, index) =>
+    (groupedAvailableProviders[index] ? appts : null))),
 );
 
 export const getSelectedAppt = createSelector(

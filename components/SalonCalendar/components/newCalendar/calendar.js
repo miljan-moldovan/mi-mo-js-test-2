@@ -116,6 +116,10 @@ export default class Calendar extends Component {
       this.state.buffer = [];
       nextProps.manageBuffer(false);
     }
+
+    if (nextProps.isLoading) {
+      this.clearActive();
+    }
   }
 
   componentDidUpdate() {
@@ -559,8 +563,8 @@ export default class Calendar extends Component {
   }
 
   handleShowfirstAvailalble = () => {
-    const { showFirstAvailable } = this.state;
-    this.setState({ showFirstAvailable: !showFirstAvailable });
+    this.clearActive();
+    this.setState(prevState => ({ showFirstAvailable: !prevState.showFirstAvailable }));
   }
 
   closeBuffer = () => {
@@ -588,6 +592,22 @@ export default class Calendar extends Component {
 
   setBufferCollapsed= (isCollapsed) => {
     this.isBufferCollapsed = isCollapsed;
+  }
+
+  clearActive = () => {
+    if (this.state.activeCard) {
+      this.setState({ activeCard: null });
+    }
+  }
+
+  handleCellPressed = (cell, colData) => {
+    this.clearActive();
+    this.props.onCellPressed(cell, colData);
+  }
+
+  handleOnPressAvailability = (startTime) => {
+    this.clearActive();
+    this.props.onCellPressed(startTime);
   }
 
   renderCards = () => {
@@ -622,7 +642,23 @@ export default class Calendar extends Component {
       blockTimes, rooms, selectedFilter,
       selectedProvider, displayMode, startDate,
     } = this.props;
+    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
+    const isRoom = selectedFilter === 'rooms';
+    const isResource = selectedFilter === 'resources';
     if (blockTimes) {
+      if (isRoom) {
+        const filteredBlocks = filter(blockTimes, block => block.room !== null);
+        return filteredBlocks.map(this.renderBlock);
+      }
+      if (isResource) {
+        const filteredBlocks = filter(blockTimes, block => block.resource !== null);
+        return filteredBlocks.map(this.renderBlock);
+      }
+      if (!isAllProviderView && displayMode === 'day') {
+        const filteredBlocks = filter(blockTimes, block => startDate.format('YYYY-MM-DD')
+        === moment(block.date).format('YYYY-MM-DD'));
+        return filteredBlocks.map(this.renderBlock);
+      }
       return blockTimes.map(this.renderBlock);
     }
     return null;
@@ -669,7 +705,7 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, headerData, selectedProvider, selectedFilter,
       displayMode, appointments, providerSchedule, isLoading, filterOptions, providers,
-      goToAppointmentId,
+      goToAppointmentId, storeSchedule
     } = this.props;
     const {
       calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
@@ -722,6 +758,7 @@ export default class Calendar extends Component {
           groupedProviders={this.groupedProviders}
           providerSchedule={providerSchedule}
           isLoading={isLoading}
+          storeSchedule={storeSchedule}
         />
       );
     }
@@ -815,7 +852,7 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule
+      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule,
     } = this.props;
 
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
@@ -849,8 +886,8 @@ export default class Calendar extends Component {
               style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
             >
               <Board
-                onPressAvailability={this.props.onPressAvailability}
-                onCellPressed={this.props.onCellPressed}
+                onPressAvailability={this.handleOnPressAvailability}
+                onCellPressed={this.handleCellPressed}
                 columns={headerData}
                 rows={this.schedule}
                 startTime={startTime}
