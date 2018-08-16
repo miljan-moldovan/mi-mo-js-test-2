@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import SideMenuItem from '../../components/SideMenuItem';
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import ClientSuggestions from './components/ClientSuggestions';
@@ -149,13 +148,6 @@ class ClientsScreen extends React.Component {
           paddingHorizontal: 20,
         }}
       />),
-      drawerLabel: props => (
-        <SideMenuItem
-          {...props}
-          title="Clients"
-          icon={require('../../assets/images/sidemenu/icon_appoint_menu.png')}
-        />
-      ),
     };
   };
 

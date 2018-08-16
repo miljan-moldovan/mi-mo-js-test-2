@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -18,40 +18,10 @@
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BackgroundCommon" translatesAutoresizingMaskIntoConstraints="NO" id="0W3-Vh-Jp7">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="736"/>
                 </imageView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WGh-4s-qcI">
-                    <rect key="frame" x="87" y="248.5" width="200" height="240"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logoIcon" translatesAutoresizingMaskIntoConstraints="NO" id="7gt-Cl-SEO">
-                            <rect key="frame" x="32" y="0.0" width="136" height="136"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="136" id="82i-DH-bcV"/>
-                                <constraint firstAttribute="height" constant="136" id="NJQ-xa-G51"/>
-                            </constraints>
-                        </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logoText" translatesAutoresizingMaskIntoConstraints="NO" id="09S-Wr-V29">
-                            <rect key="frame" x="40" y="158" width="121" height="82"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="82" id="923-fv-dff"/>
-                                <constraint firstAttribute="width" constant="121" id="fuj-oe-J6D"/>
-                            </constraints>
-                        </imageView>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <constraints>
-                        <constraint firstAttribute="bottom" secondItem="09S-Wr-V29" secondAttribute="bottom" id="6Ty-Or-e08"/>
-                        <constraint firstAttribute="height" constant="240" id="8YR-PB-7eR"/>
-                        <constraint firstItem="7gt-Cl-SEO" firstAttribute="centerX" secondItem="WGh-4s-qcI" secondAttribute="centerX" id="JOk-al-9ZE"/>
-                        <constraint firstItem="09S-Wr-V29" firstAttribute="centerX" secondItem="WGh-4s-qcI" secondAttribute="centerX" id="KZO-pc-cUU"/>
-                        <constraint firstItem="7gt-Cl-SEO" firstAttribute="top" secondItem="WGh-4s-qcI" secondAttribute="top" id="YUQ-f9-JVx"/>
-                        <constraint firstAttribute="width" constant="200" id="p3O-Sn-2tA"/>
-                    </constraints>
-                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="WGh-4s-qcI" firstAttribute="centerX" secondItem="0W3-Vh-Jp7" secondAttribute="centerX" id="AfG-iH-jHt"/>
                 <constraint firstItem="0W3-Vh-Jp7" firstAttribute="leading" secondItem="Ght-h1-90K" secondAttribute="leading" id="Con-wP-ocy"/>
-                <constraint firstItem="WGh-4s-qcI" firstAttribute="centerY" secondItem="0W3-Vh-Jp7" secondAttribute="centerY" id="ECg-Ug-ChP"/>
                 <constraint firstAttribute="trailing" secondItem="0W3-Vh-Jp7" secondAttribute="trailing" id="KBp-jA-0km"/>
                 <constraint firstAttribute="bottom" secondItem="0W3-Vh-Jp7" secondAttribute="bottom" constant="-69" id="OQ6-2H-PXq"/>
                 <constraint firstItem="0W3-Vh-Jp7" firstAttribute="top" secondItem="Ght-h1-90K" secondAttribute="top" id="kOT-U4-UCW"/>
@@ -59,8 +29,6 @@
         </view>
     </objects>
     <resources>
-        <image name="BackgroundCommon" width="414" height="736"/>
-        <image name="logoIcon" width="136" height="136"/>
-        <image name="logoText" width="121" height="82"/>
+        <image name="BackgroundCommon" width="375" height="667"/>
     </resources>
 </document>
