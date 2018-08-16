@@ -296,6 +296,7 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.clientsList}>
           <ClientList
+            navigate={this.props.navigation.navigate}
             boldWords={this.props.salonSearchHeaderState.searchText}
             style={styles.clientListContainer}
             clients={this.props.clientsSectionDataSource}

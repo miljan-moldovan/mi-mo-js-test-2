@@ -1,5 +1,7 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { InputButton } from '../index';
+import styles from '../styles';
 
 const ProductInput = (props) => {
   const value = props.selectedProduct ? props.selectedProduct.name : '';
@@ -15,8 +17,11 @@ const ProductInput = (props) => {
       }}
       value={value}
       label="Product"
-    />
+    >
+      {props.placeholder && !props.selectedProduct ? (
+        <Text style={styles.labelText}>{props.placeholder}</Text>
+      ) : null}
+    </InputButton>
   );
 };
 export default ProductInput;
-

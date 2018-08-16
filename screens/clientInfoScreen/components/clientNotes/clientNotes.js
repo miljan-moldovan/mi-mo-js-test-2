@@ -70,14 +70,14 @@ class ClientNotesScreen extends Component {
       forSales: true,
       refreshing: false,
       showDeleted: false,
-      forClient: true,
+      forAppointment: true,
     };
   }
 
   state:{
     showDeleted: false,
     note: null,
-    forClient: true,
+    forAppointment: true,
     forQueue: true,
     forSales: true,
     client: {}
@@ -112,7 +112,7 @@ class ClientNotesScreen extends Component {
       />);
     }
 
-    if (note.forClient) {
+    if (note.forAppointment) {
       tags.push(<SalonTag
         key={Math.random().toString()}
         tagHeight={17}
@@ -146,13 +146,13 @@ class ClientNotesScreen extends Component {
         <SalonBtnTag
           iconSize={13}
           onPress={() => {
-            this.setState({ forClient: !this.state.forClient });
-            this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forClient, this.state.forQueue);
+            this.setState({ forAppointment: !this.state.forAppointment });
+            this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forAppointment, this.state.forQueue);
           }}
           tagHeight={24}
-          value="Client"
+          value="Appointment"
           valueSize={10}
-          isVisible={this.state.forClient}
+          isVisible={this.state.forAppointment}
           activeStyle={activeStyle}
           inactiveStyle={inactiveStyle}
         />
@@ -162,7 +162,7 @@ class ClientNotesScreen extends Component {
           iconSize={13}
           onPress={() => {
             this.setState({ forSales: !this.state.forSales });
-            this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forClient, this.state.forQueue);
+            this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forAppointment, this.state.forQueue);
           }}
           tagHeight={24}
           value="Sales"
@@ -177,7 +177,7 @@ class ClientNotesScreen extends Component {
           iconSize={13}
           onPress={() => {
             this.setState({ forQueue: !this.state.forQueue });
-            this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forClient, !this.state.forQueue);
+            this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, !this.state.forQueue);
           }}
           tagHeight={24}
           value="Queue"
@@ -204,7 +204,7 @@ class ClientNotesScreen extends Component {
         this.props.clientNotesActions.setFilteredNotes(notes);
         this.props.clientNotesActions.setNotes(notes);
 
-        this.filterNotes(null, false, this.state.forSales, this.state.forClient, this.state.forQueue);
+        this.filterNotes(null, false, this.state.forSales, this.state.forAppointment, this.state.forQueue);
 
         this.setState({ refreshing: false });
       }
@@ -250,7 +250,6 @@ class ClientNotesScreen extends Component {
   }
 
   editNote(note) {
-
     this.props.clientNotesActions.setOnEditionNote(note);
     const { navigate } = this.props.navigation;
     const { item } = this.props.navigation.state.params;
@@ -265,11 +264,10 @@ class ClientNotesScreen extends Component {
   }
 
   reloadAfterChange = () => {
-    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forClient, this.state.forQueue);
+    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   showActionSheet = (note) => {
-
     this.setState({ note }, () => { this.SalonActionSheet.show(); });
   };
 
@@ -281,7 +279,6 @@ class ClientNotesScreen extends Component {
   }
 
   handlePressAction(i) {
-
     switch (i) {
       case 0:
         this.editNote(this.state.note);
@@ -296,13 +293,13 @@ class ClientNotesScreen extends Component {
     return false;
   }
 
-  filterNotes(searchText, showDeleted, forSales, forClient, forQueue) {
+  filterNotes(searchText, showDeleted, forSales, forAppointment, forQueue) {
     const baseNotes = showDeleted ?
       this.props.clientNotesState.notes : this.props.clientNotesState.notes.filter(el => !el.isDeleted);
 
     if (searchText && searchText.length > 0) {
       const criteria = [
-        { Field: 'updatedBy', Values: [searchText.toLowerCase()] },
+        { Field: 'enteredBy', Values: [searchText.toLowerCase()] },
         { Field: 'text', Values: [searchText.toLowerCase()] },
         { Field: 'enterTime', Values: [searchText.toLowerCase()] },
       ];
@@ -317,13 +314,13 @@ class ClientNotesScreen extends Component {
       for (let i = 0; i < filtered.length; i += 1) {
         const note = filtered[i];
 
-        if (forClient && note.forClient) {
+        if (forAppointment && note.forAppointment) {
           tagNotes.push(note);
         } else if (forSales && note.forSales) {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
-        } else if (!note.forClient && !note.forSales && !note.forQueue) {
+        } else if (!note.forAppointment && !note.forSales && !note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -336,13 +333,13 @@ class ClientNotesScreen extends Component {
 
       for (let i = 0; i < baseNotes.length; i += 1) {
         const note = baseNotes[i];
-        if (forClient && note.forClient) {
+        if (forAppointment && note.forAppointment) {
           tagNotes.push(note);
         } else if (forSales && note.forSales) {
           tagNotes.push(note);
         } else if (forQueue && note.forQueue) {
           tagNotes.push(note);
-        } else if (!note.forClient && !note.forSales && !note.forQueue) {
+        } else if (!note.forAppointment && !note.forSales && !note.forQueue) {
           tagNotes.push(note);
         }
       }
@@ -365,7 +362,7 @@ class ClientNotesScreen extends Component {
 
   onPressDelete = () => {
     this.setState({ showDeleted: !this.state.showDeleted });
-    this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forClient, this.state.forQueue);
+    this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   render() {
@@ -399,7 +396,7 @@ class ClientNotesScreen extends Component {
                 containerStyle={styles.salonSearchBarContainer}
                 borderColor="transparent"
                 backgroundColor="rgba(142, 142, 147, 0.24)"
-                onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forClient, this.state.forQueue)}
+                onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue)}
               />
             </View>
             <View style={styles.tagsBar} >
@@ -441,7 +438,7 @@ class ClientNotesScreen extends Component {
                           />
 
                           <Text style={styles.noteBy}>by</Text>
-                          <Text style={styles.noteAuthor}>{item.updatedBy}</Text>
+                          <Text style={styles.noteAuthor}>{item.enteredBy}</Text>
 
                         </View>
                         <View style={styles.noteHeaderRight}>
