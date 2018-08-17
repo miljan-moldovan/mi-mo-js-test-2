@@ -397,7 +397,7 @@ render() {
               //
               // </View>
 */}
-              <QueueTimeNote item={item} />
+              <QueueTimeNote type="long" item={item} />
               <ScrollView style={styles.listContainer}>
                 <FlatList
                   data={this.props.services}

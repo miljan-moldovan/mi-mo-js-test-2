@@ -4,13 +4,12 @@ import moment from 'moment';
 
 import Icon from '../components/UI/Icon';
 
+const smallDevice = Dimensions.get('window').width === 320;
+
 const styles = StyleSheet.create({
 
   serviceTimeContainer: {
     marginTop: 11,
-    //  marginBottom: 8,
-    flexDirection: Dimensions.get('window').width === 320 ? 'column' : 'row',
-    width: Dimensions.get('window').width === 320 ? 120 : '100%',
   },
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
@@ -44,7 +43,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     minWidth: 50,
     minHeight: 15,
-    marginLeft: Dimensions.get('window').width === 320 ? 20 : 0,
   },
   serviceTimeLeft: {
     flexDirection: 'row',
@@ -57,7 +55,7 @@ const styles = StyleSheet.create({
 });
 
 const QueueTimeNote = (props) => {
-  const { item } = props;
+  const { item, type } = props;
 
   let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
     ? moment(item.estimatedTime, 'hh:mm:ss').hours() * 60 + moment(item.estimatedTime, 'hh:mm:ss').minutes()
@@ -91,14 +89,22 @@ const QueueTimeNote = (props) => {
     serviceTime = <Text style={styles.serviceTime}>  exp, start in <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>0m</Text></Text>;
   }
 
+  const serviceContainerStyle = type === 'short' ? {
+    flexDirection: smallDevice ? 'column' : 'row',
+    width: smallDevice ? 120 : '100%',
+  } : { flexDirection: 'row', width: '100%' };
+
+  const serviceTimeRightStyle = type === 'short' ?
+    { marginLeft: smallDevice ? 20 : 0 } : { marginLeft: 0 };
+
   return (
-    <View style={[styles.serviceTimeContainer, props.containerStyles]}>
+    <View style={[styles.serviceTimeContainer, props.containerStyles, serviceContainerStyle]}>
       <View style={styles.serviceTimeLeft}>
         <Icon name="clockO" type="regularFree" style={styles.serviceClockIcon} />
         <Text style={styles.serviceTime}> {moment(item.enteredTime, 'hh:mm:ss').format('LT')} </Text>
         <Icon name="chevronRight" type="light" style={styles.chevronRightIcon} />
       </View>
-      <View style={styles.serviceTimeRight}>
+      <View style={[styles.serviceTimeRight, serviceTimeRightStyle]}>
         <Text style={styles.serviceTime}>{serviceTime}</Text>
         {isAppointment && <Text style={styles.apptLabel}> Appt.</Text>}
       </View>

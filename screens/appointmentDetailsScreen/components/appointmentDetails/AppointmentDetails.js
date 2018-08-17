@@ -604,7 +604,7 @@ class AppointmentDetails extends React.Component {
           <View style={styles.infoContainer}>
             <View style={{ flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
               <Text style={styles.infoTitleText}>Queue Appointment</Text>
-              <QueueTimeNote containerStyles={{ marginTop: 3 }} item={appointment} />
+              <QueueTimeNote type="long" containerStyles={{ marginTop: 3 }} item={appointment} />
               <View style={{ alignSelf: 'flex-start' }}>
                 <ServiceIcons hideInitials wrapperStyle={{ marginTop: 6 }} align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
               </View>

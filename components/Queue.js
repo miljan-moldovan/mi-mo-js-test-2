@@ -458,7 +458,7 @@ renderItem = (row) => {
 
         </Text>
 
-        <QueueTimeNote item={item} />
+        <QueueTimeNote item={item} type="short" />
 
 
       </View>
