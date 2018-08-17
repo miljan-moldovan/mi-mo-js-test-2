@@ -85,6 +85,7 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
+    this.props.actions.getQueueState();
     this.props.actions.receiveQueue();
     setInterval(this.props.actions.receiveQueue, 15000);
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
@@ -152,22 +153,32 @@ class QueueScreen extends React.Component {
     );
   };
   // }
-  _renderBar = props => (
-    <View>
-      <TabBar
-        {...props}
-        tabStyle={styles.tab}
-        style={styles.tabContainer}
-        renderLabel={this._renderLabel(props)}
-        indicatorStyle={styles.indicator}
-        onTabPress={this.onTabPress}
-      />
-      <View style={styles.summaryBar}>
-        <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
-        <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>25m </Text> Est. Wait</Text>
+  _renderBar = (props) => {
+    const { guestWaitMins } = this.props.queueState ? this.props.queueState : {};
+    let waitTime = '-';
+    if (guestWaitMins > 0) {
+      waitTime = `${guestWaitMins}`;
+    } else if (guestWaitMins === 0) {
+      waitTime = '0';
+    }
+
+    return (
+      <View>
+        <TabBar
+          {...props}
+          tabStyle={styles.tab}
+          style={styles.tabContainer}
+          renderLabel={this._renderLabel(props)}
+          indicatorStyle={styles.indicator}
+          onTabPress={this.onTabPress}
+        />
+        <View style={styles.summaryBar}>
+          <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
+          <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>{waitTime}m </Text> Est. Wait</Text>
+        </View>
       </View>
-    </View>
-  )
+    );
+  }
 
   _renderScene = ({ route }) => {
     const {
@@ -385,6 +396,7 @@ class QueueScreen extends React.Component {
     //
     if (this.state.searchMode) { return this._renderSearchResults(); }
 
+
     return (
       <View style={styles.container}>
         <TabView
@@ -446,6 +458,7 @@ class QueueScreen extends React.Component {
 }
 const mapStateToProps = (state, ownProps) => ({
   waitingQueue: state.queue.waitingQueue,
+  queueState: state.queue.queueState,
   serviceQueue: state.queue.serviceQueue,
   groups: state.queue.groups,
   error: state.queue.error,

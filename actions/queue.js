@@ -46,6 +46,10 @@ import {
   PUT_QUEUE,
   PUT_QUEUE_SUCCESS,
   PUT_QUEUE_FAILED,
+  GET_QUEUE_STATE,
+  GET_QUEUE_STATE_SUCCESS,
+  GET_QUEUE_STATE_FAILED,
+
 } from './constants';
 import { QueueStatus, Queue } from '../utilities/apiWrapper';
 
@@ -282,4 +286,23 @@ export const putQueue = (queueId, queue) => (dispatch) => {
   return Queue.putQueue(queueId, queue)
     .then(response => dispatch(putQueueSuccess(response)))
     .catch(error => dispatch(putQueueFailed(error)));
+};
+
+
+export const getQueueStateSuccess = response => ({
+  type: GET_QUEUE_STATE_SUCCESS,
+  data: { response },
+});
+
+export const getQueueStateFailed = error => ({
+  type: GET_QUEUE_STATE_FAILED,
+  data: { error },
+});
+
+export const getQueueState = callback => (dispatch) => {
+  callback = callback || (() => {});
+  dispatch({ type: GET_QUEUE_STATE });
+  return Queue.getQueueState()
+    .then((response) => { dispatch(getQueueStateSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(getQueueStateFailed(error)); callback(false); });
 };
