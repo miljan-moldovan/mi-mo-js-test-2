@@ -116,6 +116,9 @@ export default class AppointmentDetailsScreen extends React.Component {
     if (params && params.item) {
       title = `${params.item.client.name} ${params.item.client.lastName}`;
     }
+
+    const handleRightClick = params.handleRightClick ? params.handleRightClick : () => {};
+
     return ({
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -132,7 +135,7 @@ export default class AppointmentDetailsScreen extends React.Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity style={styles.rightButton} onPress={() => alert('Not Implemented')}>
+        <SalonTouchableOpacity style={styles.rightButton} onPress={handleRightClick}>
           <View style={styles.rightButtonContainer}>
             <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
           </View>
@@ -164,7 +167,16 @@ export default class AppointmentDetailsScreen extends React.Component {
     setTimeout(() => {
       this.setState({ loading: false });
     }, 2000);
+
+
+    this.props.navigation.setParams({ handleRightClick: this.goToClientInfo });
   }
+
+
+  goToClientInfo = () => {
+    this.props.navigation.navigate('ClientInfo', { client: this.state.client });
+  };
+
 
   handleIndexChange = index => this.setState({ index });
 
