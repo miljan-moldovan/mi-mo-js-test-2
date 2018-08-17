@@ -150,10 +150,7 @@ export default class Header extends Component {
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
           { selectedFilter === 'providers' && !isDate ? (
-            <FirstAvailableBtn
-              value={showFirstAvailable}
-              onChange={handleShowfirstAvailalble}
-            />
+            <FirstAvailableBtn />
           ) : null
           }
         </View>

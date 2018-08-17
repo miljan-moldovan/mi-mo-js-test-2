@@ -455,7 +455,6 @@ class Card extends Component {
         badgeData,
       } = this.props.appointment;
     const {
-      showFirstAvailable,
       showAssistant,
       isInBuffer,
       panResponder,
@@ -479,7 +478,7 @@ class Card extends Component {
     const clientName = `${client.name} ${client.lastName}`;
     const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
     const activeClientTextColor = badgeData.isNoShow ? '#D0021B' : clientTextColor;
-    const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
+    const borderStyle = isFirstAvailable ? 'dashed' : 'solid';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];

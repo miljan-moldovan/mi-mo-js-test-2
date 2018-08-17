@@ -60,7 +60,6 @@ export default class Calendar extends Component {
         x: 0,
         y: 0,
       },
-      showFirstAvailable: false,
       buffer: [],
       pan: new Animated.ValueXY({ x: 0, y: 0 }),
       pan2: new Animated.ValueXY({ x: 0, y: 0 }),
@@ -562,11 +561,6 @@ export default class Calendar extends Component {
     this.setState({ alert: null, activeCard: null, isResizeing: false });
   }
 
-  handleShowfirstAvailalble = () => {
-    this.clearActive();
-    this.setState(prevState => ({ showFirstAvailable: !prevState.showFirstAvailable }));
-  }
-
   closeBuffer = () => {
     const { buffer } = this.state;
     const alert = buffer.length > 0 ? {
@@ -708,7 +702,7 @@ export default class Calendar extends Component {
       goToAppointmentId, storeSchedule
     } = this.props;
     const {
-      calendarMeasure, calendarOffset, showFirstAvailable, activeCard, buffer,
+      calendarMeasure, calendarOffset, activeCard, buffer,
     } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const provider = isAllProviderView ?
@@ -754,7 +748,6 @@ export default class Calendar extends Component {
           selectedProvider={selectedProvider}
           startTime={startTime}
           appointments={appointments}
-          showFirstAvailable={showFirstAvailable}
           groupedProviders={this.groupedProviders}
           providerSchedule={providerSchedule}
           isLoading={isLoading}
@@ -800,7 +793,7 @@ export default class Calendar extends Component {
       appointments, providerSchedule, filterOptions,
       providers, selectedFilter
     } = this.props;
-    const { activeCard, calendarMeasure, isResizeing, showFirstAvailable } = this.state;
+    const { activeCard, calendarMeasure, isResizeing } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const provider = activeCard && isAllProviderView ?
       providers.find(item => item.id === get(activeCard.appointment.employee, 'id', false)) : selectedProvider;
@@ -842,7 +835,6 @@ export default class Calendar extends Component {
         selectedProvider={selectedProvider}
         startTime={startTime}
         appointments={appointments}
-        showFirstAvailable={showFirstAvailable}
         groupedProviders={this.groupedProviders}
         providerSchedule={providerSchedule}
       />) : null;
@@ -858,7 +850,7 @@ export default class Calendar extends Component {
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
     const {
-      alert, activeCard, showFirstAvailable, isResizeing,
+      alert, activeCard, isResizeing,
     } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const size = {
@@ -919,8 +911,6 @@ export default class Calendar extends Component {
                   isDate={isDate}
                   selectedFilter={selectedFilter}
                   cellWidth={this.cellWidth}
-                  handleShowfirstAvailalble={this.handleShowfirstAvailalble}
-                  showFirstAvailable={showFirstAvailable}
                   setSelectedProvider={setSelectedProvider}
                   setSelectedDay={setSelectedDay}
                 />
