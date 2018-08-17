@@ -57,7 +57,7 @@ export default class NewClientScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    debugger //eslint-disable-line
+    
   }
 
   componentWillMount() {
@@ -73,7 +73,7 @@ export default class NewClientScreen extends React.Component {
   }
 
   onClientCreated = (client) => {
-    debugger //eslint-disable-line
+    
     const { onChangeClient } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params && onChangeClient) {

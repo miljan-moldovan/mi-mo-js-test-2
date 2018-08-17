@@ -10,14 +10,14 @@ const selectedApptId = (state, props) => props.appointmentId;
 
 const appoinmentGroupedByProvider = createSelector(
   appointmentSelector,
-  appts => groupBy(appts, appt => appt.employee.id),
+  appts => groupBy(appts, appt => (appt.employee ? appt.employee.id : 0)),
 );
 
 export const getVisibleAppointmentsDataSource = createSelector(
   [appoinmentGroupedByProvider, groupedAvailableProvidersSelector, filterOptionsSelector],
   (groupedAppts, groupedAvailableProviders, filterOptions) =>
-    filter(flatten(filter(groupedAppts, appts =>
-      (groupedAvailableProviders[appts[0].employee.id] ? appts : null))), (appt) => {
+    filter(flatten(filter(groupedAppts, (appts, index) =>
+      (groupedAvailableProviders[index] ? appts : null))), (appt) => {
       if (!filterOptions.showFirstAvailable) {
         return !appt.isFirstAvailable ? appt : null;
       }
