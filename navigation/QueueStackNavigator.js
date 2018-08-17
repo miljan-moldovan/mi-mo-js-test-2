@@ -45,6 +45,8 @@ import ClientFormulas from './../screens/clientInfoScreen/components/clientFormu
 import ClientNote from './../screens/clientInfoScreen/components/clientNote';
 import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
 import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
+import ClientInfoScreen from '../screens/clientInfoScreen';
+import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
@@ -108,6 +110,14 @@ const MainNavigator = StackNavigator(
     },
     ClientCopyFormula: {
       screen: ClientCopyFormulaScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientInfo: {
+      screen: ClientInfoScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    ClientDetails: {
+      screen: ClientDetailsScreen,
       navigationOptions: { tabBarVisible: false },
     },
     Walkout: {
