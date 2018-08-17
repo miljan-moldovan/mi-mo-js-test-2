@@ -116,7 +116,7 @@ class ClientDetails extends Component {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       } else if (this.props.actionType === 'new') {
         this.setState({
-          client: defaultClient,
+          client: Object.assign({}, defaultClient),
           loadingClient: false,
         });
         this.props.setHandleDone(this.handleDone);
@@ -279,7 +279,7 @@ class ClientDetails extends Component {
   onValidateBirth = isValid => this.setState((state) => {
     const newState = state;
     newState.isValidBirth = this.state.requiredFields.birthday ? isValid : true;
-    
+
     this.checkValidation();
 
     return newState;
@@ -439,7 +439,7 @@ class ClientDetails extends Component {
       this.props.clientInfoActions.postClientInfo(client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: defaultClient,
+            client: Object.assign({}, defaultClient),
             loadingClient: false,
           });
 
@@ -456,7 +456,7 @@ class ClientDetails extends Component {
       this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: defaultClient,
+            client: Object.assign({}, defaultClient),
             loadingClient: false,
           });
 
@@ -554,6 +554,7 @@ class ClientDetails extends Component {
       <React.Fragment>
         <ValidatableInput
           mask="[000]-[000]-[0000]"
+          keyboardType="phone-pad"
           validateOnChange
           validation={this.isValidPhoneRegExp}
           isValid={this.state.isValidPhone}
@@ -686,6 +687,7 @@ class ClientDetails extends Component {
                 <InputGroup>
                   <ValidatableInput
                     // validateOnChange
+                    keyboardType="email-address"
                     validation={this.isValidEmailRegExp}
                     label="Email"
                     isValid={this.state.isValidEmail}
@@ -770,6 +772,7 @@ class ClientDetails extends Component {
                   <ValidatableInput
                     validateOnChange
                     mask="[00000]"
+                    keyboardType="numeric"
                     validation={this.isValidZipCodeRegExp}
                     isValid={this.state.isValidZipCode}
                     onValidated={this.onValidateZipCode}
