@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Animated, PanResponder, Alert, Modal, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated, PanResponder } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
 import { get, times, groupBy, filter, reverse } from 'lodash';
 import moment from 'moment';
@@ -12,6 +12,7 @@ import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
 import SalonAlert from './SalonAlert';
 import BlockTime from './blockCard';
+import EmptyScreen from './EmptyScreen';
 
 const styles = StyleSheet.create({
   container: {
@@ -205,6 +206,10 @@ export default class Calendar extends Component {
         },
       });
     }
+  }
+
+  createAlert = (alert) => {
+    this.setState({ alert });
   }
 
   scrollAnimation = () => {
@@ -433,14 +438,12 @@ export default class Calendar extends Component {
         description: `Resize ${clientName} Appt. from ${date} ${fromTime}-${oldToTime} to ${date} ${fromTime}-${newToTime}?`,
         btnLeftText: 'Cancel',
         btnRightText: 'Resize',
-        handleMove: () => {
+        onPressRight: () => {
           this.props.onResize(activeCard.appointment.id, params, activeCard.appointment);
           this.hideAlert();
         },
       };
-      this.setState({
-        alert,
-      });
+      this.createAlert(alert);
     } else {
       this.setState({
         alert: null,
@@ -544,7 +547,7 @@ export default class Calendar extends Component {
           description: `Move ${clientName} Appt. from ${oldDate} ${oldFromTime.format('h:mma')}-${oldToTime.format('h:mma')} to ${dateMoment.format('MMM DD')} ${newTimeMoment.format('h:mma')}-${newToTime}?`,
           btnLeftText: 'Cancel',
           btnRightText: 'Move',
-          handleMove: () => this.handleMove({
+          onPressRight: () => this.handleMove({
             date, newTime, employeeId, appointmentId,
           }),
         },
@@ -580,7 +583,7 @@ export default class Calendar extends Component {
       this.isBufferCollapsed = false;
       this.setState({ buffer: [] });
     } else {
-      this.setState({ alert });
+      this.createAlert(alert);
     }
   }
 
@@ -699,7 +702,7 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, headerData, selectedProvider, selectedFilter,
       displayMode, appointments, providerSchedule, isLoading, filterOptions, providers,
-      goToAppointmentId, storeSchedule
+      goToAppointmentId, storeSchedule, startDate
     } = this.props;
     const {
       calendarMeasure, calendarOffset, activeCard, buffer,
@@ -752,6 +755,7 @@ export default class Calendar extends Component {
           providerSchedule={providerSchedule}
           isLoading={isLoading}
           storeSchedule={storeSchedule}
+          startDate={startDate}
         />
       );
     }
@@ -761,7 +765,7 @@ export default class Calendar extends Component {
   renderActiveCard =() => {
     const {
       apptGridSettings, headerData, selectedProvider, displayMode, appointments,
-      filterOptions
+      filterOptions, startDate
     } = this.props;
     const { activeCard, calendarMeasure, isResizeing, pan, pan2 } = this.state;
     return activeCard ? (
@@ -784,6 +788,7 @@ export default class Calendar extends Component {
         isResizeing={this.state.isResizeing}
         isMultiBlock={filterOptions.showMultiBlock}
         showAssistant={filterOptions.showAssistantAssignments}
+        startDate={startDate}
       />) : null;
   }
 
@@ -845,6 +850,7 @@ export default class Calendar extends Component {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
       isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule,
+      startDate
     } = this.props;
 
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
@@ -878,6 +884,8 @@ export default class Calendar extends Component {
               style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
             >
               <Board
+                createAlert={this.createAlert}
+                startDate={startDate}
                 onPressAvailability={this.handleOnPressAvailability}
                 onCellPressed={this.handleCellPressed}
                 columns={headerData}
@@ -895,6 +903,7 @@ export default class Calendar extends Component {
                 availability={availability}
                 isLoading={isLoading}
                 storeSchedule={storeSchedule}
+                hideAlert={this.hideAlert}
               />
               { this.renderCards() }
               { this.renderBlockTimes() }
@@ -936,11 +945,11 @@ export default class Calendar extends Component {
             btnLeftText={alert ? alert.btnLeftText : ''}
             btnRightText={alert ? alert.btnRightText : ''}
             onPressLeft={this.hideAlert}
-            onPressRight={alert ? alert.handleMove : null}
+            onPressRight={alert ? alert.onPressRight : null}
           />
         </View>
       );
     }
-    return null;
+    return !isLoading ? <EmptyScreen /> : null;
   }
 }

@@ -35,11 +35,12 @@ const initialState = {
   roomAppointments: [],
   resourceAppointments: [],
   apptGridSettings: {
-    minStartTime: moment('07:00', 'HH:mm'),
-    maxEndTime: moment('21:00', 'HH:mm'),
+    minStartTime: moment('05:00', 'HH:mm'),
+    maxEndTime: moment('23:00', 'HH:mm'),
     numOfRow: 0,
     step: 15,
     weeklySchedule: [],
+    selectedDateSchedule: null,
   },
   filterOptions: {
     company: null,

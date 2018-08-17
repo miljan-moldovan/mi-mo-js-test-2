@@ -438,7 +438,6 @@ export default class AppointmentScreen extends Component {
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
       || this.props.appointmentScreenState.isLoadingSchedule;
-    const isLoadingDone = !isLoading && apptGridSettings.numOfRow > 0 && providers && providers.length > 0;
     let headerData = null;
     let dataSource = null;
     let isDate = false;
