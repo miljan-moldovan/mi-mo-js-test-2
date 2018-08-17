@@ -13,6 +13,7 @@ import putQueueEmployeeService from './putQueueEmployeeService';
 import putQueueEmployeeServiceEmployee from './putQueueEmployeeServiceEmployee';
 import putQueueGroupLeader from './putQueueGroupLeader';
 import putServiceByEmployee from './putServiceByEmployee';
+import getQueueState from './getQueueState';
 
 export {
   deleteQueueGroup,
@@ -30,4 +31,5 @@ export {
   putQueueEmployeeServiceEmployee,
   putQueueGroupLeader,
   putServiceByEmployee,
+  getQueueState,
 };
