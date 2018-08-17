@@ -124,7 +124,7 @@ class Card extends Component {
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
       (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
-      || nextProps.goToAppointmentId === nextProps.appointment.id;
+      || nextProps.goToAppointmentId === nextProps.appointment.id || nextProps.displayMode !== this.props.displayMode;
   }
 
   getCardProperties = () => {
@@ -165,7 +165,8 @@ class Card extends Component {
       },
       apptGridSettings: {
         step,
-        minStartTime
+        minStartTime,
+        weeklySchedule
       },
       appointments,
       cellWidth,
@@ -177,6 +178,7 @@ class Card extends Component {
       selectedProvider,
       goToAppointmentId,
       setGoToPositon,
+      storeSchedule,
     } = this.props;
     const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
@@ -255,7 +257,12 @@ class Card extends Component {
     const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
     // is emplyee active in cell time
     let isActiveEmployeeInCellTime = false;
-    const scheduledIntervals = provider.isOff ? [] : get(provider, 'scheduledIntervals', []);
+    const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
+    const todaySchedule = weeklySchedule[moment(date).isoWeekday() - 1];
+    const isTodayOff = !todaySchedule.start1 && !todaySchedule.end1
+      && !todaySchedule.start2 && !todaySchedule.end2;
+    const isStoreOff = isDate ? isTodayOff : storeSchedule.isOff;
+    const scheduledIntervals = isStoreOff || provider.isOff ? [] : get(provider, 'scheduledIntervals', []);
     let providerSchedule = null;
     let providerStartTime = null;
     let providerEndTime = null;
@@ -448,7 +455,6 @@ class Card extends Component {
         badgeData,
       } = this.props.appointment;
     const {
-      showFirstAvailable,
       showAssistant,
       isInBuffer,
       panResponder,
@@ -472,7 +478,7 @@ class Card extends Component {
     const clientName = `${client.name} ${client.lastName}`;
     const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
     const activeClientTextColor = badgeData.isNoShow ? '#D0021B' : clientTextColor;
-    const borderStyle = showFirstAvailable && isFirstAvailable ? 'dashed' : 'solid';
+    const borderStyle = isFirstAvailable ? 'dashed' : 'solid';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];

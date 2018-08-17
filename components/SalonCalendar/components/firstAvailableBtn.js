@@ -1,5 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import { appointmentCalendarActions }  from '../../../actions/appointmentBook';
 
 import { InputSwitch } from '../../formHelpers';
 
@@ -24,18 +28,26 @@ const styles = StyleSheet.create({
 });
 
 const firstAvailableBtn = ({
-  rootStyles, switchStyle, onChange, value,
+  rootStyles, switchStyle, showFirstAvailable, appointmentBookAction
 }) => (
   <View style={[styles.container, rootStyles]}>
     <InputSwitch
       text="First Available"
-      onChange={onChange}
+      onChange={appointmentBookAction.changeFirstAvailable}
       textStyle={styles.textStyle}
       switchStyle={styles.switchStyle}
       textRight
-      value={value}
+      value={showFirstAvailable}
     />
   </View>
 );
 
-export default firstAvailableBtn;
+const mapStateToProps = state => ({
+  showFirstAvailable: state.appointmentBookReducer.filterOptions.showFirstAvailable,
+});
+
+const mapActionsToProps = dispatch => ({
+  appointmentBookAction: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(firstAvailableBtn);

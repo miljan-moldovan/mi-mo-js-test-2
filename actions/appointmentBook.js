@@ -23,6 +23,7 @@ export const SET_WEEKLY_SCHEDULE = 'appointmentCalendar/SET_WEEKLY_SCHEDULE';
 export const SET_WEEKLY_SCHEDULE_SUCCESS = 'appointmentCalendar/SET_WEEKLY_SCHEDULE_SUCCESS';
 export const HIDE_TOAST = 'appointmentCalendar/HIDE_TOAST';
 export const SET_TOAST = 'appointmentCalendar/SET_TOAST';
+export const CHANGE_FIRST_AVAILABLE = 'appointmentCalendar/CHANGE_FIRST_AVAILABLE';
 
 const setToast = toast => ({
   type: SET_TOAST,
@@ -359,7 +360,12 @@ const hideToast = () => ({
   type: HIDE_TOAST,
 });
 
+const changeFirstAvailable = () => ({
+  type: CHANGE_FIRST_AVAILABLE,
+});
+
 export const appointmentCalendarActions = {
+  changeFirstAvailable,
   setGridView,
   setProviderScheduleDates,
   setPickerMode,

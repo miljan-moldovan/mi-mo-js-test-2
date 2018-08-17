@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import { groupBy, filter, flatten } from 'lodash';
+import filterOptionsSelector from './filterOptionsSelector';
 
 import groupedAvailableProvidersSelector from './providersSelector';
 
@@ -9,13 +10,19 @@ const selectedApptId = (state, props) => props.appointmentId;
 
 const appoinmentGroupedByProvider = createSelector(
   appointmentSelector,
-  appts => groupBy(appts, appt => appt.employee.id),
+  appts => groupBy(appts, appt => (appt.employee ? appt.employee.id : 0)),
 );
 
 export const getVisibleAppointmentsDataSource = createSelector(
-  [appoinmentGroupedByProvider, groupedAvailableProvidersSelector],
-  (groupedAppts, groupedAvailableProviders) => flatten(filter(groupedAppts, appts =>
-    (groupedAvailableProviders[appts[0].employee.id] ? appts : null))),
+  [appoinmentGroupedByProvider, groupedAvailableProvidersSelector, filterOptionsSelector],
+  (groupedAppts, groupedAvailableProviders, filterOptions) =>
+    filter(flatten(filter(groupedAppts, (appts, index) =>
+      (groupedAvailableProviders[index] ? appts : null))), (appt) => {
+      if (!filterOptions.showFirstAvailable) {
+        return !appt.isFirstAvailable ? appt : null;
+      }
+      return appt;
+    }),
 );
 
 export const getSelectedAppt = createSelector(

@@ -20,7 +20,7 @@ import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
   SET_SELECTED_PROVIDER, SET_SELECTED_FILTER,
   SET_PROVIDER_DATES, SET_WEEKLY_SCHEDULE,
   SET_WEEKLY_SCHEDULE_SUCCESS, HIDE_TOAST,
-  SET_TOAST } from '../actions/appointmentBook';
+  SET_TOAST, CHANGE_FIRST_AVAILABLE } from '../actions/appointmentBook';
 
 const initialState = {
   isLoading: false,
@@ -48,6 +48,7 @@ const initialState = {
     showOffEmployees: false,
     showRoomAssignments: false,
     showAssistantAssignments: false,
+    showFirstAvailable: false,
   },
   providers: [],
   rooms: [],
@@ -287,6 +288,15 @@ export default function appointmentBookReducer(state = initialState, action) {
         };
       }
       return state;
+    }
+    case CHANGE_FIRST_AVAILABLE: {
+      return {
+        ...state,
+        filterOptions: {
+          ...state.filterOptions,
+          showFirstAvailable: !state.filterOptions.showFirstAvailable,
+        },
+      };
     }
     default:
       return state;

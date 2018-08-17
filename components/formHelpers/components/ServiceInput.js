@@ -73,7 +73,7 @@ export default class ServiceInput extends React.Component {
   }
 
   selectExtraServices = () => {
-    debugger //eslint-disable-line
+    
     const {
       afterDone = () => null,
       onChangeAddons = srv => srv,

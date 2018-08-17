@@ -44,6 +44,7 @@ export default class Board extends Component {
         onCellPressed={this.props.onCellPressed}
         showRoomAssignments={showRoomAssignments}
         storeSchedule={storeSchedule}
+        displayMode={displayMode}
       />
     );
   }

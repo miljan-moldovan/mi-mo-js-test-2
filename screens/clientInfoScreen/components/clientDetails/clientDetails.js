@@ -50,6 +50,29 @@ const confirmByTypes = [
   { key: confirmByTypesEnum.EmailandSms, value: 'Email and Sms' },
   { key: confirmByTypesEnum.None, value: 'None' },
 ];
+const defaultClient = {
+  name: '',
+  middleName: '',
+  lastName: '',
+  loyalty: null,
+  birthday: '',
+  age: null,
+  anniversary: null,
+  clientId: null,
+  gender: null,
+  phones: [{ type: 0, value: '' }],
+  email: '',
+  confirmBy: null,
+  requireCard: null,
+  confirmationNote: null,
+  street1: '',
+  city: '',
+  state: null,
+  zipCode: null,
+  selectedReferredClient: null,
+  selectedClient: null,
+  clientReferralType: null,
+};
 
 class ClientDetails extends Component {
   constructor(props) {
@@ -72,7 +95,16 @@ class ClientDetails extends Component {
       isValidState: true,
       isValidGender: true,
       isValidBirth: true,
-      requiredFields: {},
+      requiredFields: {
+        age: false,
+        address: true,
+        city: true,
+        email: true,
+        birthday: false,
+        gender: false,
+        zip: true,
+        state: true,
+      },
     };
 
     this.props.settingsActions.getSettings(this.calculateRequiredFields);
@@ -80,8 +112,14 @@ class ClientDetails extends Component {
     this.handleClientSelection.bind(this);
 
     this.props.clientInfoActions.getClientReferralTypes((result) => {
-      if (result) {
+      if (result && this.props.actionType === 'update') {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+      } else if (this.props.actionType === 'new') {
+        this.setState({
+          client: Object.assign({}, defaultClient),
+          loadingClient: false,
+        });
+        this.props.setHandleDone(this.handleDone);
       }
     });
   }
@@ -176,6 +214,7 @@ class ClientDetails extends Component {
 
   onValidateZipCode = isValid => this.setState((state) => {
     const newState = state;
+
     newState.isValidZipCode = this.state.requiredFields.zip ? isValid : true;
 
     this.checkValidation();
@@ -239,7 +278,7 @@ class ClientDetails extends Component {
 
   onValidateBirth = isValid => this.setState((state) => {
     const newState = state;
-    newState.isValidBirth = this.state.requiredFields.birth ? isValid : true;
+    newState.isValidBirth = this.state.requiredFields.birthday ? isValid : true;
 
     this.checkValidation();
 
@@ -293,7 +332,7 @@ class ClientDetails extends Component {
       required.address = isLargeForm;// && address !== 'Decline';
       required.city = isLargeForm;
       required.email = isLargeForm;// && email !== 'Will-not-provide';
-      required.birth = trackClientAge && (forceChildBirthday || forceAdultBirthday);
+      required.birthday = trackClientAge && (forceChildBirthday || forceAdultBirthday);
       required.gender = requireClientGender;
       required.zip = isLargeForm;
       required.state = isLargeForm;
@@ -396,15 +435,42 @@ class ClientDetails extends Component {
       profilePhotoUuid: null,
     };
 
+    if (this.props.actionType === 'new') {
+      this.props.clientInfoActions.postClientInfo(client, (result, clientResult, message) => {
+        if (result) {
+          this.setState({
+            client: Object.assign({}, defaultClient),
+            loadingClient: false,
+          });
 
-    this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, message) => {
-      if (result) {
-        this.props.appointmentCalendarActions.setGridView();
-        this.props.navigation.goBack();
-      } else {
-        alert(message);
-      }
-    });
+          if (this.props.onDismiss) {
+            this.props.onDismiss(clientResult);
+          } else {
+            this.props.navigation.goBack();
+          }
+        } else {
+          alert(message);
+        }
+      });
+    } else if (this.props.actionType === 'update') {
+      this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult, message) => {
+        if (result) {
+          this.setState({
+            client: Object.assign({}, defaultClient),
+            loadingClient: false,
+          });
+
+          if (this.props.onDismiss) {
+            this.props.onDismiss(clientResult);
+          } else {
+            this.props.appointmentCalendarActions.setGridView();
+            this.props.navigation.goBack();
+          }
+        } else {
+          alert(message);
+        }
+      });
+    }
   }
 
   cancelButton = () => ({
@@ -488,6 +554,7 @@ class ClientDetails extends Component {
       <React.Fragment>
         <ValidatableInput
           mask="[000]-[000]-[0000]"
+          keyboardType="phone-pad"
           validateOnChange
           validation={this.isValidPhoneRegExp}
           isValid={this.state.isValidPhone}
@@ -496,6 +563,7 @@ class ClientDetails extends Component {
           value={phone.value}
           onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
           placeholder="Enter"
+          inputStyle={phone.value ? {} : styles.inputStyle}
         />
         <InputDivider />
       </React.Fragment>) : null;
@@ -527,9 +595,11 @@ class ClientDetails extends Component {
                     value={this.state.client.name}
                     onChangeText={(text) => { this.onChangeClientField('name', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.name ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <LabeledTextInput
+                    inputStyle={this.state.client.middleName ? {} : styles.inputStyle}
                     label="Middle Name"
                     value={this.state.client.middleName}
                     onChangeText={(text) => { this.onChangeClientField('middleName', text); }}
@@ -538,6 +608,7 @@ class ClientDetails extends Component {
                   <InputDivider />
                   <ValidatableInput
                     validateOnChange
+                    inputStyle={this.state.client.lastName ? {} : styles.inputStyle}
                     validation={this.isValidText}
                     isValid={this.state.isValidLastName}
                     onValidated={this.onValidateLastName}
@@ -555,15 +626,20 @@ class ClientDetails extends Component {
                     value={this.state.client.loyalty}
                     onChangeText={(text) => { this.onChangeClientField('loyalty', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.loyalty ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <InputDate
+                    noIcon={!this.state.client.birthday}
                     placeholder="Birthday"
-                    required={this.state.requiredFields.birth}
+                    format="D MMM YYYY"
+                    icon={Icons.calendar}
+                    required={this.state.requiredFields.birthday}
                     isValid={this.state.isValidBirth}
                     onValidated={this.onValidateBirth}
                     onPress={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
                     selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : false}
+                    valueStyle={!this.state.client.birthday ? styles.dateValueStyle : {}}
                   />
                   <InputDivider />
                   <InputPicker
@@ -578,9 +654,14 @@ class ClientDetails extends Component {
                   />
                   <InputDivider />
                   <InputDate
+                    format="D MMM YYYY"
+                    icon={Icons.calendar}
+                    noIcon={!this.state.client.anniversary}
                     placeholder="Anniversary"
                     onPress={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
-                    selectedDate={this.state.client.anniversary ? this.state.client.anniversary : false}
+                    selectedDate={this.state.client.anniversary ? moment(this.state.client.anniversary) : false}
+                    valueStyle={!this.state.client.anniversary ? styles.dateValueStyle : {}}
+
                   />
                   <InputDivider />
                   <LabeledTextInput
@@ -588,6 +669,7 @@ class ClientDetails extends Component {
                     value={this.state.client.clientId}
                     onChangeText={(text) => { this.onChangeClientField('clientId', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.clientId ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <InputPicker
@@ -604,7 +686,8 @@ class ClientDetails extends Component {
                 <SectionTitle value="CONTACTS" style={styles.sectionTitle} />
                 <InputGroup>
                   <ValidatableInput
-                    validateOnChange
+                    // validateOnChange
+                    keyboardType="email-address"
                     validation={this.isValidEmailRegExp}
                     label="Email"
                     isValid={this.state.isValidEmail}
@@ -612,6 +695,7 @@ class ClientDetails extends Component {
                     value={this.state.client.email}
                     onChangeText={(text) => { this.onChangeClientField('email', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.email ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   {this.state.client.phones && this.state.client.phones.map((phone, index) => this.renderPhone(phone, index))}
@@ -659,6 +743,7 @@ class ClientDetails extends Component {
                     value={this.state.client.street1}
                     onChangeText={(text) => { this.onChangeClientField('street1', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.street1 ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <ValidatableInput
@@ -670,6 +755,7 @@ class ClientDetails extends Component {
                     value={this.state.client.city}
                     onChangeText={(text) => { this.onChangeClientField('city', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.city ? {} : styles.inputStyle}
                   />
                   <InputDivider />
                   <InputPicker
@@ -686,6 +772,7 @@ class ClientDetails extends Component {
                   <ValidatableInput
                     validateOnChange
                     mask="[00000]"
+                    keyboardType="numeric"
                     validation={this.isValidZipCodeRegExp}
                     isValid={this.state.isValidZipCode}
                     onValidated={this.onValidateZipCode}
@@ -693,6 +780,7 @@ class ClientDetails extends Component {
                     value={this.state.client.zipCode}
                     onChangeText={(text) => { this.onChangeClientField('zipCode', text); }}
                     placeholder="Enter"
+                    inputStyle={this.state.client.zipCode ? {} : styles.inputStyle}
                   />
                 </InputGroup>
 
@@ -739,16 +827,19 @@ class ClientDetails extends Component {
                   </View>
                 </InputGroup>
                 <SectionDivider />
-                <InputGroup>
-                  <InputButton
-                    noIcon
-                    childrenContainerStyle={styles.deleteButton}
-                    onPress={this.deleteClient}
-                  >
-                    <Text style={styles.deleteText}>Delete Client</Text>
-                  </InputButton>
-                </InputGroup>
-                <SectionDivider />
+                {this.props.actionType === 'update' ?
+                  <React.Fragment>
+                    <InputGroup>
+                      <InputButton
+                        noIcon
+                        childrenContainerStyle={styles.deleteButton}
+                        onPress={this.deleteClient}
+                      >
+                        <Text style={styles.deleteText}>Delete Client</Text>
+                      </InputButton>
+                    </InputGroup>
+                    <SectionDivider />
+                  </React.Fragment> : null }
               </View>
             </KeyboardAwareScrollView>)}
       </View>
@@ -758,9 +849,14 @@ class ClientDetails extends Component {
 
 ClientDetails.defaultProps = {
   editionMode: true,
+  client: null,
+  actionType: 'update',
+  onDismiss: null,
 };
 
 ClientDetails.propTypes = {
+  onDismiss: PropTypes.func,
+  actionType: PropTypes.string,
   appointmentCalendarActions: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
   setCanSave: PropTypes.func.isRequired,
@@ -768,7 +864,7 @@ ClientDetails.propTypes = {
   editionMode: PropTypes.bool,
   settingsState: PropTypes.any.isRequired,
   clientInfoState: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
+  client: PropTypes.any,
   settingsActions: PropTypes.shape({
     getSettings: PropTypes.func.isRequired,
   }).isRequired,

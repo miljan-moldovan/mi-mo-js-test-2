@@ -204,7 +204,7 @@ class ClientNote extends Component {
         const { note } = this.state;
         isNoteValid = note.text &&
           note.text.length > 0 &&
-          note.expiration &&
+          // note.expiration &&
           note.enteredBy;
       }
 

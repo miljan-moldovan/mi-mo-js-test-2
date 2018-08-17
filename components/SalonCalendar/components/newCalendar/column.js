@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
   oClockBorder: {
     borderBottomColor: '#2c2f34',
   },
+  dayOff: {
+    backgroundColor: '#80889a',
+  },
 });
 
 export default class Column extends Component {
@@ -39,16 +42,25 @@ export default class Column extends Component {
 
   renderCell = (cell, index) => {
     const {
-      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule, storeSchedule
+      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule, storeSchedule,
+      displayMode
     } = this.props;
     const time = moment(cell, 'HH:mm A');
     let storeStartTime = '';
     let storeEndTime = '';
     let isStoreOpen = false;
-    for (let i = 0; i < storeSchedule.scheduledIntervals.length && !isStoreOpen; i += 1) {
-      storeStartTime = moment(storeSchedule.scheduledIntervals[i].start, 'HH:mm');
-      storeEndTime = moment(storeSchedule.scheduledIntervals[i].end, 'HH:mm');
-      isStoreOpen = time.isSameOrAfter(storeStartTime) && time.isBefore(storeEndTime);
+    if (!isDate) {
+      isStoreOpen = !storeSchedule.isOff;
+      for (let i = 0; i < storeSchedule.scheduledIntervals.length
+        && !isStoreOpen && !isDate; i += 1) {
+        storeStartTime = moment(storeSchedule.scheduledIntervals[i].start, 'HH:mm');
+        storeEndTime = moment(storeSchedule.scheduledIntervals[i].end, 'HH:mm');
+        isStoreOpen = time.isSameOrAfter(storeStartTime) && time.isBefore(storeEndTime);
+      }
+    } else {
+      const todaySchedule = apptGridSettings.weeklySchedule[colData.isoWeekday() - 1];
+      isStoreOpen = todaySchedule.start1 || todaySchedule.end1
+        || todaySchedule.start2 || todaySchedule.end2;
     }
     let styleOclock = '';
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
@@ -104,7 +116,7 @@ export default class Column extends Component {
     return (
       <View key={cell}>
         <TouchableOpacity
-          style={[styles.cellContainer, { backgroundColor: '#80889a', width: cellWidth }, styleOclock]}
+          style={[styles.cellContainer, styles.dayOff, { width: cellWidth }, styleOclock]}
           onPress={() => { this.onCellPressed(cell, colData); }}
         />
       </View>
