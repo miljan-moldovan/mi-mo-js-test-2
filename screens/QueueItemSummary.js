@@ -321,6 +321,13 @@ renderBtnContainer = () => {
   );
 }
 
+
+goToClientInfo = () => {
+  this.props.navigation.navigate('ClientInfo', { client: this.props.client });
+  this.props.onDonePress();
+};
+
+
 render() {
   const item = this.props.item ? this.props.item : {};
   let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
@@ -382,7 +389,7 @@ render() {
     }
 
                 <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-                <SalonTouchableOpacity onPress={() => alert('Not implemented')}>
+                <SalonTouchableOpacity onPress={this.goToClientInfo}>
                   <SalonIcon style={{ marginLeft: 5 }} icon="iconInfo" size={20} />
                 </SalonTouchableOpacity>
               </View>
@@ -397,7 +404,7 @@ render() {
               //
               // </View>
 */}
-              <QueueTimeNote item={item} />
+              <QueueTimeNote type="long" item={item} />
               <ScrollView style={styles.listContainer}>
                 <FlatList
                   data={this.props.services}

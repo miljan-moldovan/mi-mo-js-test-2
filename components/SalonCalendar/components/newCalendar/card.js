@@ -296,22 +296,27 @@ class Card extends Component {
   }
 
   handleOnLongPress = ({ verticalPositions, left, width }) => {
-    const { calendarOffset, appointment, isBufferCard, onDrag } = this.props;
-    if (isBufferCard) {
-      this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
-        const { height } = this.props;
-        const newVerticalPositions = [{ top: y, height }];
-        onDrag(false, appointment, x, width, newVerticalPositions, true);
-      });
-    } else {
-      const newVerticalPositions = [];
-      for (let i = 0; i < verticalPositions.length; i += 1) {
-        const item = verticalPositions[i];
-        const newItem = { ...item, top: item.top - calendarOffset.y };
-        newVerticalPositions.push(newItem);
+    const {
+      calendarOffset, appointment, isBufferCard, onDrag, startDate
+    } = this.props;
+    const today = moment();
+    if (startDate.isSameOrAfter(today, 'day')) {
+      if (isBufferCard) {
+        this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
+          const { height } = this.props;
+          const newVerticalPositions = [{ top: y, height }];
+          onDrag(false, appointment, x, width, newVerticalPositions, true);
+        });
+      } else {
+        const newVerticalPositions = [];
+        for (let i = 0; i < verticalPositions.length; i += 1) {
+          const item = verticalPositions[i];
+          const newItem = { ...item, top: item.top - calendarOffset.y };
+          newVerticalPositions.push(newItem);
+        }
+        const newLeft = left - calendarOffset.x;
+        this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
       }
-      const newLeft = left - calendarOffset.x;
-      this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
     }
   }
 

@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
 class WalkInScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const handlePress = navigation.state.params && navigation.state.params.walkin ? navigation.state.params.walkin : () => {};
-
+    const waitTime = navigation.state.params && navigation.state.params.waitTime ? navigation.state.params.waitTime : 0;
     return ({
       headerTitle: (
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>Walk-in</Text>
-          <Text style={styles.subTitleText}>25m Est. wait</Text>
+          <Text style={styles.subTitleText}>{waitTime}m Est. wait</Text>
         </View>
       ),
       headerLeft: (
@@ -148,6 +148,8 @@ class WalkInScreen extends Component {
   }
 
   componentWillMount() {
+    this.props.queueActions.getQueueState(this.setWaitMins);
+
     const { newAppointment } = this.props.navigation.state.params;
     if (newAppointment) {
       const { client, provider, service } = newAppointment;
@@ -161,6 +163,20 @@ class WalkInScreen extends Component {
         // navigation.navigate('Main');
       },
     });
+  }
+
+
+  setWaitMins = () => {
+    const { guestWaitMins } = this.props.queue.queueState ? this.props.queue.queueState : {};
+    let waitTime = '-';
+    if (guestWaitMins > 0) {
+      waitTime = `${guestWaitMins}`;
+    } else if (guestWaitMins === 0) {
+      waitTime = '0';
+    }
+
+    const { navigation } = this.props;
+    navigation.setParams({ waitTime });
   }
 
   getFullName = () => {
@@ -197,7 +213,6 @@ class WalkInScreen extends Component {
         serviceId: service.id,
       };
       this.props.walkInActions.postWalkinClient(params).then(() => {
-
         this.saving = false;
         this.props.navigation.navigate('Main');
       });
@@ -231,7 +246,7 @@ class WalkInScreen extends Component {
 
   render() {
     const fullName = this.getFullName();
-    const email = this.state.client && this.state.client.email ? this.client.email : '';
+    const email = this.state.client && this.state.client.email ? this.state.client.email : '';
     const phones = this.state.client && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
     return (
       <ScrollView style={styles.container}>
