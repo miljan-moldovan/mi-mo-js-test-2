@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
-import { forEach } from 'lodash';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 
 const styles = StyleSheet.create({
@@ -35,7 +34,28 @@ const styles = StyleSheet.create({
 
 export default class Column extends Component {
   onCellPressed = (cellId, colData) => {
-    this.props.onCellPressed(cellId, colData);
+    const { startDate } = this.props;
+    const time = moment(`${startDate.format('YYYY-MM-DD')} ${cellId}`, 'YYYY-MM-DD HH:mm A');
+    const showAlert = moment().isAfter(time, 'minute');
+    if (!showAlert) {
+      this.props.onCellPressed(cellId, colData);
+    } else {
+      this.showBookingPastAlert({ cell: cellId, colData });
+    }
+  }
+
+  showBookingPastAlert = ({ cell, colData }) => {
+    const alert = {
+      title: 'Question',
+      description: 'The selected time is in the past. Do you want to book the appointment anyway?',
+      btnLeftText: 'No',
+      btnRightText: 'Yes',
+      onPressRight: () => {
+        this.props.onCellPressed(cell, colData);
+        this.props.hideAlert();
+      },
+    };
+    this.props.createAlert(alert);
   }
 
   convertFromTimeToMoment = time => moment(time, 'HH:mm');
@@ -43,8 +63,9 @@ export default class Column extends Component {
   renderCell = (cell, index) => {
     const {
       apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule, storeSchedule,
-      displayMode
+      displayMode, startDate
     } = this.props;
+    const isCellDisabled = moment().isAfter(startDate, 'day');
     const time = moment(cell, 'HH:mm A');
     let storeStartTime = '';
     let storeEndTime = '';
@@ -107,6 +128,7 @@ export default class Column extends Component {
       return (
         <View key={cell}>
           <TouchableOpacity
+            disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
             onPress={() => { this.onCellPressed(cell, colData); }}
           />
@@ -116,6 +138,7 @@ export default class Column extends Component {
     return (
       <View key={cell}>
         <TouchableOpacity
+          disabled={isCellDisabled}
           style={[styles.cellContainer, styles.dayOff, { width: cellWidth }, styleOclock]}
           onPress={() => { this.onCellPressed(cell, colData); }}
         />

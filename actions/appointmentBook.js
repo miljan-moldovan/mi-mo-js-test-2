@@ -2,6 +2,8 @@ import moment from 'moment';
 import { groupBy, orderBy, maxBy, minBy, times } from 'lodash';
 import { Store, AppointmentBook, Appointment, Employees } from '../utilities/apiWrapper';
 
+import { getMinMaxTimes } from '../utilities/helpers/appointmentGrid/getMinMaxTimes'
+
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY = 'appointmentScreen/SET_FILTER_OPTION_COMPANY';
 export const SET_FILTER_OPTION_POSITION = 'appointmentScreen/SET_FILTER_OPTION_POSITION';
@@ -92,23 +94,24 @@ const setGridAllViewSuccess =
   (employees, appointments, availabilityParam, blockTimes, schedule) => {
     const { scheduledIntervals } = schedule;
     const step = 15;
-    // min start time calulation
-    const minScheduleTime = scheduledIntervals.length > 0 ? moment(scheduledIntervals[0].start, 'HH:mm') : moment('07:00', 'HH:mm');
-    const minAppointmentStartTime = appointments.length > 0 ? moment(minBy(appointments, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minScheduleTime;
-    const minBlokTimeStartTime = blockTimes.length > 0 ? moment(minBy(blockTimes, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minScheduleTime;
-    const minStartTimeMoment =
-      moment.min(minAppointmentStartTime, minScheduleTime, minBlokTimeStartTime);
-    const minStartTime = minStartTimeMoment.format('HH:mm');
-    // max end time calculation
-    const maxScheduleEndTime = scheduledIntervals.length > 0 ?
-      moment(scheduledIntervals[scheduledIntervals.length - 1].end, 'HH:mm') : moment('19:00', 'HH:mm');
-    const maxAppointmentEndTime = appointments.length > 0 ? moment(maxBy(appointments, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxScheduleEndTime;
-    const maxBlockTimeEndTime = blockTimes.length > 0 ? moment(maxBy(blockTimes, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxScheduleEndTime;
-    const maxEndTimeMoment =
-      moment.max(maxAppointmentEndTime, maxScheduleEndTime, maxBlockTimeEndTime);
-    const maxEndTime = maxEndTimeMoment.format('HH:mm');
-    // end
-    const numOfRow = Math.round(maxEndTimeMoment.diff(minStartTimeMoment, 'minutes') / step);
+    const { minStartTime, maxEndTime, numOfRow } =
+      getMinMaxTimes({ storeSchedule: scheduledIntervals, appointments, blockTimes });
+    // // min start time calulation
+    // const minScheduleTime = scheduledIntervals.length > 0 ? moment(scheduledIntervals[0].start, 'HH:mm') : moment('07:00', 'HH:mm');
+    // const minAppointmentStartTime = appointments.length > 0 ? moment(minBy(appointments, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minScheduleTime;
+    // const minBlokTimeStartTime = blockTimes.length > 0 ? moment(minBy(blockTimes, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minScheduleTime;
+    // const minStartTimeMoment =
+    //   moment.min(minAppointmentStartTime, minScheduleTime, minBlokTimeStartTime);
+    // const minStartTime = minStartTimeMoment.format('HH:mm');
+    // // max end time calculation
+    // const maxScheduleEndTime = scheduledIntervals.length > 0 ?
+    //   moment(scheduledIntervals[scheduledIntervals.length - 1].end, 'HH:mm') : moment('19:00', 'HH:mm');
+    // const maxAppointmentEndTime = appointments.length > 0 ? moment(maxBy(appointments, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxScheduleEndTime;
+    // const maxBlockTimeEndTime = blockTimes.length > 0 ? moment(maxBy(blockTimes, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxScheduleEndTime;
+    // const maxEndTimeMoment =
+    //   moment.max(maxAppointmentEndTime, maxScheduleEndTime, maxBlockTimeEndTime);
+    // const maxEndTime = maxEndTimeMoment.format('HH:mm');
+    // // end
     const availability = availabilityParam.length > 0 ? availabilityParam : times(numOfRow, 'All');
 
     const apptGridSettings = {
@@ -116,6 +119,7 @@ const setGridAllViewSuccess =
       maxEndTime,
       numOfRow,
       step,
+      selectedDateSchedule: schedule,
     };
 
     return {
@@ -156,9 +160,15 @@ const setGridDayWeekViewSuccess = (
 };
 
 const setGridRoomViewSuccess = (rooms, schedule, roomAppointments, appointments, availability) => {
+  const { scheduledIntervals } = schedule;
+  const { minStartTime, maxEndTime, numOfRow } =
+    getMinMaxTimes({ storeSchedule: scheduledIntervals, appointments });
   const apptGridSettings = {
-    numOfRow: availability.length,
+    numOfRow,
+    maxEndTime,
+    minStartTime,
     step: 15,
+    selectedDateSchedule: schedule,
   };
   return {
     type: SET_GRID_ROOM_VIEW_SUCCESS,
@@ -170,11 +180,16 @@ const setGridRoomViewSuccess = (rooms, schedule, roomAppointments, appointments,
 
 const setGridResourceViewSuccess = (
   resources, schedule, resourceAppointments,
-  appointments, availability,
+  appointments,
 ) => {
+  const { scheduledIntervals } = schedule;
+  const { minStartTime, maxEndTime, numOfRow } =
+    getMinMaxTimes({ storeSchedule: scheduledIntervals, appointments });
   const apptGridSettings = {
-    numOfRow: availability.length,
+    numOfRow,
     step: 15,
+    minStartTime,
+    maxEndTime,
   };
   return {
     type: SET_GRID_RESOURCE_VIEW_SUCCESS,
