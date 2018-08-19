@@ -73,10 +73,10 @@ export function saveQueueItem(queueItem) {
   };
 }
 
-export const startService = id => async (dispatch: Object => void) => {
+export const startService = (id, serviceData) => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_START_SERVICE, data: { id } });
   try {
-    const data = await QueueStatus.putStartService(id);
+    const data = await QueueStatus.putStartService(id, serviceData);
     dispatch({ type: CLIENT_START_SERVICE_RECEIVED, data });
   } catch (error) {
     dispatch({ type: CLIENT_START_SERVICE_FAILED, error });
