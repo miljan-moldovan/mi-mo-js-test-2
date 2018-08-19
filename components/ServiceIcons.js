@@ -22,10 +22,10 @@ const ServiceIcons = ({
   ]}
   >
 
-    {item.membership ? <Star direction={props.direction} /> : null}
-    {item.newGlobal ? <NewGlobal direction={props.direction} /> : null}
-    {item.newLocal ? <NewLocal direction={props.direction} /> : null}
-    {item.client.isBirthdayToday ? <Birthday direction={props.direction} /> : null}
+    {item.badgeDataclientHasMembership ? <Star direction={props.direction} /> : null}
+    {item.badgeData.clientIsNew ? <NewGlobal direction={props.direction} /> : null}
+    {(item.badgeData.clientIsNewLocally && !item.badgeData.clientIsNew) ? <NewLocal direction={props.direction} /> : null}
+    {item.badgeData.clientBirthday ? <Birthday direction={props.direction} /> : null}
     { item.groupId && (groupLeaderName || hideInitials) ? (<Group direction={props.direction} color={props.color} leader={item.isGroupLeader} hideInitials={hideInitials} leaderName={groupLeaderName} />) : null }
     {item.attributes && item.attributes.length ? <Tag direction={props.direction} /> : null}
 
@@ -96,8 +96,8 @@ const Birthday = ({ direction }) => (<Icon
   name="gift"
 />);
 const Tag = ({ direction }) => (<Icon style={{ marginRight: 3, color: 'black', marginBottom: direction === 'column' ? marginBottom : 0 }} type="regular" name="tag" />);
-const NewGlobal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>NL</Text></View>);
-const NewLocal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>N</Text></View>);
+const NewGlobal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>N</Text></View>);
+const NewLocal = ({ direction }) => (<View style={[styles.newClientTag, { marginBottom: direction === 'column' ? marginBottom : 0 }]}><Text style={styles.newClientTagText}>NL</Text></View>);
 const Star = ({ direction }) => (<Icon style={{ color: '#FFA300', marginRight: 3, marginBottom: direction === 'column' ? marginBottom : 0 }} type="regular" name="star" />);
 const Group = ({
   leader, leaderName, color, direction, hideInitials,

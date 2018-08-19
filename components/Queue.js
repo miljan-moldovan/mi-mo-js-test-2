@@ -136,78 +136,80 @@ _onRefresh = () => {
   // emulate refresh call
   setTimeout(() => this.setState({ refreshing: false }), 500);
 }
-
-getButtonsForItem = (item) => {
-  const {
-    noShow, returnLater, clientReturned, service, walkout, checkin,
-    uncheckin, undoFinish, rebook, checkout, notesFormulas,
-    toWaiting, finishService,
-  } = QueueButtonTypes;
-  const { id: queueId } = item;
-  let left,
-    right;
-  if (!item.serviced) {
-    if (!item.checked_in) {
-      left = [
-        <QueueButton type={noShow} left />,
-      ];
-      right = [
-        <QueueButton
-          type={checkin}
-          right
-          onPress={() => {
-LayoutAnimation.spring();
-this.props.checkInClient(queueId);
-}}
-        />,
-        <QueueButton
-          type={service}
-          right
-          onPress={() => {
-LayoutAnimation.spring();
-this.props.startService(queueId);
-this.showNotification(item, 'service');
-}}
-        />,
-      ];
-    } else {
-      left = [
-        <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId); }} left />,
-        <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId); }} left />,
-      ];
-      right = [
-        <QueueButton type={uncheckin} right />,
-        <QueueButton
-          type={service}
-          onPress={() => {
-LayoutAnimation.spring();
-this.props.startService(queueId);
-this.showNotification(item, 'service');
-}}
-          right
-        />,
-      ];
-    }
-  } else if (item.finishService) {
-    left = [
-      <QueueButton type={undoFinish} left />,
-    ];
-    right = [
-      <QueueButton type={rebook} right />,
-      <QueueButton type={checkout} right />,
-    ];
-  } else {
-    left = [
-      <QueueButton type={notesFormulas} left />,
-      <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
-    ];
-    right = [
-      <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
-      <QueueButton type={checkout} right />,
-    ];
-  }
-  return { left, right };
-}
+//
+// getButtonsForItem = (item) => {
+//   const {
+//     noShow, returnLater, clientReturned, service, walkout, checkin,
+//     uncheckin, undoFinish, rebook, checkout, notesFormulas,
+//     toWaiting, finishService,
+//   } = QueueButtonTypes;
+//   const { id: queueId } = item;
+//   let left,
+//     right;
+//   if (!item.serviced) {
+//     if (!item.checked_in) {
+//       left = [
+//         <QueueButton type={noShow} left />,
+//       ];
+//       right = [
+//         <QueueButton
+//           type={checkin}
+//           right
+//           onPress={() => {
+// LayoutAnimation.spring();
+// this.props.checkInClient(queueId);
+// }}
+//         />,
+//         <QueueButton
+//           type={service}
+//           right
+//           onPress={() => {
+//             debugger //eslint-disable-line
+//           LayoutAnimation.spring();
+//           this.props.startService(queueId);
+//           this.showNotification(item, 'service');
+//           }}
+//         />,
+//       ];
+//     } else {
+//       left = [
+//         <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId); }} left />,
+//         <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId); }} left />,
+//       ];
+//       right = [
+//         <QueueButton type={uncheckin} right />,
+//         <QueueButton
+//           type={service}
+//           onPress={() => {
+//             debugger //eslint-disable-line
+//             LayoutAnimation.spring();
+//             this.props.startService(queueId);
+//             this.showNotification(item, 'service');
+//             }}
+//           right
+//         />,
+//       ];
+//     }
+//   } else if (item.finishService) {
+//     left = [
+//       <QueueButton type={undoFinish} left />,
+//     ];
+//     right = [
+//       <QueueButton type={rebook} right />,
+//       <QueueButton type={checkout} right />,
+//     ];
+//   } else {
+//     left = [
+//       <QueueButton type={notesFormulas} left />,
+//       <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
+//     ];
+//     right = [
+//       <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
+//       <QueueButton type={checkout} right />,
+//     ];
+//   }
+//   return { left, right };
+// }
 getLabelForItem = (item) => {
   switch (item.status) {
     case QUEUE_ITEM_FINISHED:
@@ -346,7 +348,20 @@ handleReturning = (returned) => {
 
 handleStartService = () => {
   const { appointment } = this.state;
-  this.props.startService(appointment.id);
+  const service = appointment.services[0];
+
+  const serviceData = {
+    serviceEmployees: [
+      {
+        serviceEmployeeId: service.id,
+        serviceId: service.serviceId,
+        employeeId: service.employee.id,
+        isRequested: true,
+      },
+    ],
+    deletedServiceEmployeeIds: [],
+  };
+  this.props.startService(appointment.id, serviceData);
   this.hideDialog();
 }
 
@@ -449,7 +464,7 @@ renderItem = (row) => {
 }
 
           <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-          <ServiceIcons color={color} item={item} groupLeaderName={groupLeaderName} />
+          <ServiceIcons badgeData={item.badgeData} color={color} item={item} groupLeaderName={groupLeaderName} />
         </View>
         <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
           {serviceName}

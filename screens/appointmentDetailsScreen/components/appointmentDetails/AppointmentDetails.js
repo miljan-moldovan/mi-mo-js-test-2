@@ -22,6 +22,8 @@ import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../../../../components/QueueTimeNote';
 import Icon from '../../../../components/UI/Icon';
+import StatusEnum from '../../../../constants/Status';
+import QueueTypes from '../../../../constants/QueueTypes';
 
 const styles = StyleSheet.create({
   container: {
@@ -528,16 +530,16 @@ class AppointmentDetails extends React.Component {
 
     if (this.props.appointment) {
       isDisabledWalkOut = true;
-      if (this.props.appointment.status === 0 || this.props.appointment.status === 1) {
+      if (this.props.appointment.status === StatusEnum.checkedIn || this.props.appointment.status === StatusEnum.notArrived) {
         isActiveStart = true;
         isDisabledStart = false;
       } else {
         isDisabledStart = true;
       }
-      returned = this.props.appointment.status === 5;
-      isActiveWalkOut = !(this.props.appointment.queueType === 1);
+      returned = this.props.appointment.status === StatusEnum.returningLater;
+      isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment);
 
-      if (this.props.appointment.status === 1) {
+      if (this.props.appointment.status === StatusEnum.notArrived) {
         isDisabledReturnLater = true;
         isActiveCheckin = true;
       } else {
@@ -546,7 +548,7 @@ class AppointmentDetails extends React.Component {
       }
 
 
-      if (this.props.appointment.status === 6) {
+      if (this.props.appointment.status === StatusEnum.inService) {
         isActiveWaiting = true;
         isActiveFinish = true;
       } else {
@@ -606,7 +608,7 @@ class AppointmentDetails extends React.Component {
               <Text style={styles.infoTitleText}>Queue Appointment</Text>
               <QueueTimeNote type="long" containerStyles={{ marginTop: 3 }} item={appointment} />
               <View style={{ alignSelf: 'flex-start' }}>
-                <ServiceIcons hideInitials wrapperStyle={{ marginTop: 6 }} align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
+                <ServiceIcons badgeData={appointment.badgeData} hideInitials wrapperStyle={{ marginTop: 6 }} align="flex-start" direction="column" item={appointment} groupLeaderName={groupLeaderName} />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end' }}>
