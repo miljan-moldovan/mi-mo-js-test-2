@@ -189,9 +189,13 @@ class EditScheduleScreen extends React.Component {
         endTimeScheduleTwo = endTimeScheduleTwo && startTimeScheduleTwo ? endTimeScheduleTwo.format('HH:mm:ss') : null;
       }
 
+      const employeeSchedule = this.props.employeeScheduleState.employeeScheduleException
+        ?
+        this.props.employeeScheduleState.employeeScheduleException :
+        this.props.employeeScheduleState.employeeSchedule;
 
       const schedule = {
-        existingExceptionId: this.props.employeeScheduleState.employeeSchedule.id,
+        existingExceptionId: employeeSchedule.id,
         startDate: formatedDate,
         endDate: formatedDate,
         start1: startTimeScheduleOne,
@@ -432,7 +436,6 @@ class EditScheduleScreen extends React.Component {
               onPress={this.onPressRadioGroup}
             />
             <InputText
-              autoFocus={this.state.isEditableOtherReason}
               value={this.state.otherReason}
               isEditable={this.state.isEditableOtherReason}
               onChangeText={this.onChangeOtherReason}
