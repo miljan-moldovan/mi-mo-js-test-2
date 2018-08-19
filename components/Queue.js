@@ -464,7 +464,7 @@ renderItem = (row) => {
 }
 
           <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-          <ServiceIcons color={color} item={item} groupLeaderName={groupLeaderName} />
+          <ServiceIcons badgeData={item.badgeData} color={color} item={item} groupLeaderName={groupLeaderName} />
         </View>
         <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
           {serviceName}

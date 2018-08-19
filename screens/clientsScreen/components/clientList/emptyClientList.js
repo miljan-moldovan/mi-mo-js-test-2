@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
 });
 
 const handleOnPress = (props) => {
-  debugger //eslint-disable-line
   props.navigate('NewClient', { onChangeClient: props.onChangeClient });
 };
 

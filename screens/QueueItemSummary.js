@@ -195,8 +195,6 @@ renderBtnContainer = () => {
     returned = this.props.appointment.status === StatusEnum.returningLater;
     isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment);
 
-    debugger //eslint-disable-line
-
     if (this.props.appointment.status === StatusEnum.notArrived) {
       isDisabledReturnLater = true;
       isActiveCheckin = true;
