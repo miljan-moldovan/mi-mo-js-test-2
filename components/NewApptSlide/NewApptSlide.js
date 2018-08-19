@@ -499,10 +499,14 @@ class NewApptSlide extends React.Component {
         labelStyle={styles.otherOptionsLabels}
         onPress={() => {
           this.hidePanel();
-          const { date, mainEmployee: employee, startTime } = this.props.newApptState;
+          const {
+           date, mainEmployee: employee, startTime, bookedByEmployee,
+          } = this.props.newApptState;
           this.props.navigation.navigate(
             'BlockTime',
-            { date, employee, fromTime: startTime },
+            {
+              date, employee, fromTime: startTime, bookedByEmployee,
+            },
           );
         }}
         label="Block Time"
