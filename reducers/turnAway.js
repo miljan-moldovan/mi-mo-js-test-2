@@ -9,11 +9,11 @@ const initialState = {
   turnAway: {
   },
   onEditionTurnAway: null,
-  isLoading: true,
+  isLoading: false,
   error: null,
 };
 
-export default function clientsReducer(state = initialState, action) {
+export default function turnAwayReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
     case POST_TURN_AWAY:
