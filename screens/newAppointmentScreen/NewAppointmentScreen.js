@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
@@ -565,7 +564,7 @@ export default class NewAppointmentScreen extends React.Component {
     const { serviceItems, mainEmployee } = this.props.newAppointmentState;
     const firstService = serviceItems[0] ? get(serviceItems[0].service, 'service', null) : null;
     const serviceTitle = get(firstService, 'name', null);
-    const employeeName = `${get(mainEmployee, 'name', mainEmployee.firstName || '')} ${get(mainEmployee, 'lastName', '')[0]}.`;
+    const employeeName = `${get(mainEmployee, 'name', get(mainEmployee, 'firstName', ''))} ${get(mainEmployee, 'lastName', '')[0]}.`;
     const alertBody = serviceTitle ?
       `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?` :
       `Are you sure you want to discard this new appointment with ${employeeName}?`;

@@ -545,6 +545,7 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
     client: mainClient,
     bookedByEmployee: get(appt, 'bookedByEmployee', null),
+    mainEmployee: get(appt, 'employee', null),
     guests,
     conflicts: [],
     serviceItems,

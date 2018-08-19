@@ -81,6 +81,7 @@ export default function newAppointmentReducer(state = defaultState, action) {
         startTime: data.newState.startTime,
         client: data.newState.client,
         bookedByEmployee: data.newState.bookedByEmployee,
+        mainEmployee: data.newState.mainEmployee,
         deletedIds: data.newState.deletedIds,
         guests: data.newState.guests,
         conflicts: data.newState.conflicts,
