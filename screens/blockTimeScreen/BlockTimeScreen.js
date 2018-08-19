@@ -64,12 +64,14 @@ class BlockTimeScreen extends React.Component {
       fromTime,
       employee,
       date,
+      bookedByEmployee,
     } = params;
 
     this.state.fromTime = fromTime;
     this.state.toTime = moment(fromTime, 'hh:mm:ss A').add(15, 'minutes');
     this.state.provider = employee;
     this.state.selectedDate = date;
+    this.state.blockedBy = bookedByEmployee;
   }
 
   state = {

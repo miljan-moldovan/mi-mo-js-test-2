@@ -1,132 +1,28 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
 import moment from 'moment';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import PropTypes from 'prop-types';
 import DatePicker from '../../../components/modals/SalonDatePicker';
-import ClientRow from './clientRow';
 import ServiceSection from './serviceSection';
-import fetchFormCache from '../../../utilities/fetchFormCache';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 import {
+  SectionDivider,
+  InputText,
+  InputGroup,
+  InputRadioGroup,
   InputDivider,
+  ClientInput,
 } from '../../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-    paddingTop: 18,
-  },
-  row: {
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    //  borderBottomWidth: 1,
-    // borderColor: '#C0C1C6',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  rowFirst: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#C0C1C6',
-  },
-  dataContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-  label: {
-    fontFamily: 'Roboto',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  textData: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-  },
-  iconStyle: {
-    tintColor: '#727A8F',
-    marginLeft: 5,
-  },
-  buttonStyle: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  titleRow: {
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: '#F1F1F1',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  title: {
-    color: '#727A8F',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    color: '#19428A',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-});
+import styles from './styles';
+
 
 class TurnAwayScreen extends Component {
   static navigationOptions = ({ navigation }) => {
-    const handlePress = navigation.state.params && navigation.state.params.onDone ? navigation.state.params.onDone : () => {};
-
+    const params = navigation.state.params || {};
+    const canSave = params.canSave || false;
     return {
       headerTitle: <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Turn Away</Text>
@@ -134,7 +30,7 @@ class TurnAwayScreen extends Component {
       headerLeft:
   <View style={styles.leftButtonContainer}>
     <SalonTouchableOpacity
-      onPress={() => { navigation.goBack(); }}
+      onPress={navigation.goBack}
       style={styles.leftButton}
     >
       <Text style={styles.leftButtonText}>Cancel</Text>
@@ -143,107 +39,106 @@ class TurnAwayScreen extends Component {
       headerRight: (
         <View style={styles.rightButtonContainer}>
           <SalonTouchableOpacity
+            disabled={!canSave}
             wait={3000}
-            onPress={handlePress}
+            onPress={() => {
+            if (navigation.state.params.handleDone) {
+              navigation.state.params.handleDone();
+            }
+          }}
             style={styles.rightButton}
           >
-            <Text style={styles.rightButtonText}>Done</Text>
+            <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
           </SalonTouchableOpacity>
         </View>
       ),
     };
   };
 
-  // static navigationOptions = rootProps => ({
-  //   headerTitle: <Text style={styles.titleText}>Turn Away</Text>,
-  //   headerLeft:
-  // <SalonTouchableOpacity
-  //   onPress={() => { rootProps.navigation.goBack(); }}
-  // >
-  //   <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-  // </SalonTouchableOpacity>,
-  //
-  //   headerRight: (
-  //     <SalonTouchableOpacity
-  //       wait={3000}
-  //       onPress={rootProps.navigation.state.params ? rootProps.navigation.state.params.onDone : () => {}}
-  //     >
-  //       <Text style={{ fontSize: 14, color: 'white' }}>Done</Text>
-  //     </SalonTouchableOpacity>
-  //   ),
-  // });
-
   constructor(props) {
     super(props);
-    this.state = {
+
+    props.navigation.setParams({ handleDone: this.handleDone });
+    props.turnAwayReasonsActions.getTurnAwayReasons(this.finishedGetTurnAwayReasons);
+  }
+
+  state = {
+    date: moment(),
+    isModalVisible: false,
+    selectedClient: null,
+    services: [],
+    selectedReasonCode: null,
+    isEditableOtherReason: true,
+    otherReason: '',
+  }
+
+  finishedGetTurnAwayReasons = (result) => {
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
+    this.setState({
       date: moment(),
       isModalVisible: false,
       selectedClient: null,
       services: [],
-    };
-
-    this.props.navigation.setParams({ onDone: this.onDone.bind(this) });
+      selectedReasonCode,
+      isEditableOtherReason: true,
+      otherReason: '',
+    });
   }
-
 
   componentWillMount() {
-    // let note = this.state.note;
-    //
-    // const cachedForm = fetchFormCache('TurnAwayScreen', this.props.formCache);
-    //
-    // if (cachedForm) {
-    //   note = cachedForm;
-    // }
-    //
-    // this.setState({
-    //   note,
-    // });
-
-
   }
 
-  isTurnAwayValid = () => true
+  handleDone = () => {
+    const services = [];
 
-  onDone() {
-    alert('Not Implemented');
-    // if (this.isTurnAwayValid()) {
-    //   const services = [];
-    //   for (let i = 0; i < this.state.services.length; i++) {
-    //     const service = this.state.services[i];
-    //     delete service.service;
-    //     delete service.provider;
-    //     service.toTime = service.toTime.format();
-    //     service.fromTime = service.fromTime.format();
-    //     services.push(service);
-    //   }
-    //
-    //   const turnAway = {
-    //     date: this.state.date.format('YYYY-MM-DD'),
-    //     reasonCode: 'providerUnavail',
-    //     reason: 'string',
-    //     myClientId: this.state.selectedClient.id,
-    //     isAppointmentBookTurnAway: true,
-    //     services,
-    //   };
-    //
-    //   this.props.turnAwayActions.postTurnAway(turnAway)
-    //     .then((response) => {
-    //       // this.getNotes();
-    //     }).catch((error) => {
-    //
-    //     });
-    // } else {
-    //   alert('Please fill all the fields');
-    // }
+    const selectedServices = JSON.parse(JSON.stringify(this.state.services));
+    for (let i = 0; i < selectedServices.length; i += 1) {
+      const service = selectedServices[i];
+      delete service.service;
+      delete service.provider;
+      service.toTime = moment(service.toTime).format('HH:mm:ss');
+      service.fromTime = moment(service.fromTime).format('HH:mm:ss');
+      services.push(service);
+    }
+
+
+    const turnAway = {
+      date: this.state.date.format('YYYY-MM-DD'),
+      reasonCode: this.state.selectedReasonCode.id,
+      reason: this.state.otherReason.length > 0 ? this.state.otherReason : null,
+      myClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
+      isAppointmentBookTurnAway: true,
+      services,
+    };
+
+    this.props.turnAwayActions.postTurnAway(turnAway, this.goBack);
+  }
+
+  goBack = (result) => {
+    if (result) {
+      this.props.navigation.goBack();
+    } else {
+      alert('An error ocurred');
+    }
   }
 
   handleAddService= () => {
+    const params = this.props.navigation.state.params || {};
+
+    const {
+      fromTime,
+      employee,
+    } = params;
+
     const service = {
-      provider: null,
+      provider: employee,
       service: null,
-      fromTime: moment(),
-      toTime: moment().add(1, 'hours'),
+      fromTime,
+      toTime: moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
     };
+
+    this.props.navigation.setParams({ canSave: false });
+
     const { services } = this.state;
     services.push(service);
     this.setState({ services });
@@ -258,7 +153,7 @@ class TurnAwayScreen extends Component {
   handleUpdateService= (index, service) => {
     const { services } = this.state;
     services[index] = service;
-    this.setState({ services });
+    this.setState({ services }, this.checkCanSave);
   }
 
   handleDateModal = () => {
@@ -266,11 +161,13 @@ class TurnAwayScreen extends Component {
   }
 
   handleSelectDate = (data) => {
-    this.setState({ date: moment(data), isModalVisible: false });
+    this.setState({ date: moment(data), isModalVisible: false }, this.checkCanSave);
   }
 
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
+
+    this.setState({ isEditableOtherReason: false });
 
     navigate('Clients', {
       actionType: 'update',
@@ -280,28 +177,88 @@ class TurnAwayScreen extends Component {
   }
 
   handleClientSelection = (client) => {
-    this.setState({ selectedClient: client });
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
+    this.setState({ selectedClient: client, isEditableOtherReason: this.state.selectedReasonCode.id === selectedReasonCode.id });
   }
 
   handleRemoveClient = () => {
     this.setState({ selectedClient: null });
   }
 
+  onChangeOtherReason = (text) => {
+    this.setState({ otherReason: text }, this.checkCanSave);
+  }
+
+
+  onPressInputGroup = (option, index) => {
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
+
+    const isEditableOtherReason = option.id === selectedReasonCode.id;
+
+    let { otherReason } = this.state;
+
+    if (!isEditableOtherReason) {
+      otherReason = '';
+    }
+    this.setState({ selectedReasonCode: option, isEditableOtherReason, otherReason }, this.checkCanSave);
+  }
+
+  checkCanSave = () => {
+    const isTextValid = this.state.isEditableOtherReason ? this.state.otherReason.length > 0 : true;
+
+    if (isTextValid &&
+      this.state.date !== null &&
+      this.state.services.length > 0 &&
+      this.state.selectedReasonCode !== null) {
+      this.props.navigation.setParams({ canSave: true });
+    } else {
+      this.props.navigation.setParams({ canSave: false });
+    }
+  }
+
+  cancelButton = () => ({
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      navigation.goBack();
+    },
+  })
+
   render() {
     const { navigate } = this.props.navigation;
+    const { selectedReasonCode } = this.state;
+
     return (
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={80} enableAutoAutomaticScroll>
+
+          {this.props.turnAwayState.isLoading ? (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
+      ) : (<View>
+
         <View style={[styles.row, styles.rowFirst]}>
           <Text style={styles.label}>Date</Text>
           <View style={styles.dataContainer}>
             <Text onPress={this.handleDateModal} style={styles.textData}>{this.state.date.format('DD MMMM YYYY')}</Text>
           </View>
         </View>
-        <View style={{ width: '100%', backgroundColor: '#FFFFFF' }} ><InputDivider style={{ marginHorizontal: 16 }} /></View>
-        <ClientRow
-          client={this.state.selectedClient}
+        <View style={styles.inputDividerContainer}>
+          <InputDivider style={styles.inputDivider} />
+        </View>
+        <ClientInput
+          apptBook
+          label={false}
+          selectedClient={this.state.selectedClient}
+          placeholder={this.state.selectedClient === null ? 'Select Client' : 'Client'}
+          placeholderStyle={styles.placeholderText}
+          style={styles.clientInput}
+          extraComponents={this.state.selectedClient === null ?
+            <Text style={styles.optionaLabel}>Optional</Text> : null}
           onPress={this.handlePressClient}
-          onCrossPress={this.handleRemoveClient}
+          navigate={navigate}
+          headerProps={{ title: 'Clients', ...this.cancelButton() }}
+          onChange={this.handleClientSelection}
         />
         <View style={styles.titleRow}>
           <Text style={styles.title}>SERVICES</Text>
@@ -311,12 +268,47 @@ class TurnAwayScreen extends Component {
           onAdd={this.handleAddService}
           onRemove={this.handleRemoveService}
           onUpdate={this.handleUpdateService}
+          cancelButton={this.cancelButton}
           navigate={navigate}
         />
+        <SectionDivider />
+        <InputGroup>
+          <InputRadioGroup
+            options={this.props.turnAwayReasonsState.turnAwayReasons}
+            defaultOption={selectedReasonCode}
+            onPress={this.onPressInputGroup}
+          />
+          <InputText
+            // autoFocus
+            value={this.state.otherReason}
+            isEditable={this.state.isEditableOtherReason}
+            onChangeText={this.onChangeOtherReason}
+            placeholder="Please specify"
+          />
+        </InputGroup>
         <DatePicker onPress={this.handleSelectDate} isVisible={this.state.isModalVisible} />
-      </ScrollView>
+
+      </View>)}
+        </KeyboardAwareScrollView>
+      </View>
     );
   }
 }
+
+TurnAwayScreen.defaultProps = {
+
+};
+
+TurnAwayScreen.propTypes = {
+  turnAwayReasonsActions: PropTypes.shape({
+    getTurnAwayReasons: PropTypes.func.isRequired,
+  }).isRequired,
+  turnAwayActions: PropTypes.shape({
+    postTurnAway: PropTypes.func.isRequired,
+  }).isRequired,
+  turnAwayReasonsState: PropTypes.any.isRequired,
+  turnAwayState: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+};
 
 export default TurnAwayScreen;

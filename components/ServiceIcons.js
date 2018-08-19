@@ -25,7 +25,7 @@ const ServiceIcons = ({
     {item.membership ? <Star direction={props.direction} /> : null}
     {item.newGlobal ? <NewGlobal direction={props.direction} /> : null}
     {item.newLocal ? <NewLocal direction={props.direction} /> : null}
-    {item.birthday ? <Birthday direction={props.direction} /> : null}
+    {item.client.isBirthdayToday ? <Birthday direction={props.direction} /> : null}
     { item.groupId && (groupLeaderName || hideInitials) ? (<Group direction={props.direction} color={props.color} leader={item.isGroupLeader} hideInitials={hideInitials} leaderName={groupLeaderName} />) : null }
     {item.attributes && item.attributes.length ? <Tag direction={props.direction} /> : null}
 

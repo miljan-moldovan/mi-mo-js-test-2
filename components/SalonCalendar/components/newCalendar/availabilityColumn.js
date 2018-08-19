@@ -32,11 +32,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderItems = (item, index, apptGridSettings, onPress = null) => {
+const renderItems = (item, index, apptGridSettings, onPress = null, startDate) => {
   let startTime;
   let timeSplit;
   let minutesSplit;
   let style;
+  const isCellDisabled = moment().isAfter(startDate, 'day');
   if (item && item.totalSlots > 0) {
     startTime = moment(item.startTime, 'HH:mm').add(15, 'm').format('HH:mm');
     timeSplit = startTime.split(':');
@@ -49,6 +50,7 @@ const renderItems = (item, index, apptGridSettings, onPress = null) => {
         onPress={() => onPress(item.startTime)}
         key={item.startTime}
         style={style}
+        disabled={isCellDisabled}
       >
         <Text style={[styles.textStyle, item.availableSlots === 0 && { fontWeight: '300' }]}>{availableText}</Text>
       </SalonTouchableOpacity>
@@ -64,17 +66,18 @@ const renderItems = (item, index, apptGridSettings, onPress = null) => {
       wait={3000}
       key={startTime}
       style={style}
+      disabled={isCellDisabled}
     >
       <Text style={styles.disabledTextStyle}>No Availability</Text>
     </SalonTouchableOpacity>
   );
 };
 
-const availabilityColumn = ({ availability, apptGridSettings, onPress, providers }) => (
+const availabilityColumn = ({ availability, apptGridSettings, onPress, startDate }) => (
   <View>
     {
       availability.length > 0 ? availability.map((item, index) =>
-        renderItems(item, index, apptGridSettings, onPress, providers)) : null
+        renderItems(item, index, apptGridSettings, onPress, startDate)) : null
     }
   </View>
 );

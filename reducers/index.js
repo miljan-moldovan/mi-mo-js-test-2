@@ -25,7 +25,7 @@ import turnAway from './turnAway';
 import formulasAndNotesReducer from './formulasAndNotes';
 import roomAssignmentReducer from './roomAssignment';
 import employeeScheduleReducer from './employeeSchedule';
-import apptBookTurnAwayReducer from './apptBookTurnAway';
+import turnAwayReducer from './turnAway';
 import blockTimeReducer from './blockTime';
 import blockTimesReasonsReducer from './blockTimesReasons';
 import turnAwayReasonsReducer from './turnAwayReasons';
@@ -59,7 +59,7 @@ export default combineReducers({
   formulasAndNotesReducer,
   roomAssignmentReducer,
   employeeScheduleReducer,
-  apptBookTurnAwayReducer,
+  turnAwayReducer,
   blockTimeReducer,
   blockTimesReasonsReducer,
   turnAwayReasonsReducer,

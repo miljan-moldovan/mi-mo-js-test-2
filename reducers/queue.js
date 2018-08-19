@@ -47,6 +47,9 @@ import {
   PUT_QUEUE,
   PUT_QUEUE_SUCCESS,
   PUT_QUEUE_FAILED,
+  GET_QUEUE_STATE,
+  GET_QUEUE_STATE_SUCCESS,
+  GET_QUEUE_STATE_FAILED,
 } from '../actions/constants';
 import { POST_WALKIN_CLIENT_SUCCESS } from '../actions/walkIn';
 
@@ -62,6 +65,7 @@ const initialState = {
   groups: {},
   lastGroupId: 0,
   updatedGroups: [],
+  queueState: null,
 };
 
 export default (state = initialState, action) => {
@@ -604,6 +608,25 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
+        error: data.error,
+      };
+    case GET_QUEUE_STATE:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_QUEUE_STATE_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        queueState: data.response,
+        error: null,
+      };
+    case GET_QUEUE_STATE_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        queueState: null,
         error: data.error,
       };
     default:

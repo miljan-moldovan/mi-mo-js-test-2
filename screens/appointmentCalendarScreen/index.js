@@ -8,9 +8,13 @@ import AppointmentScreen from './components/appointmentScreen';
 import visbleBlocksSelector from '../../redux/selectors/blocksSelector';
 import { getVisibleAppointmentsDataSource } from '../../redux/selectors/appointmentSelector';
 import getAvailabilityWithGaps from '../../redux/selectors/availabilitySelector';
+import { filteredProviders } from '../../redux/selectors/providersSelector';
 
 const mapStateToProps = state => ({
-  appointmentScreenState: state.appointmentBookReducer,
+  appointmentScreenState: {
+    ...state.appointmentBookReducer,
+    providers: filteredProviders(state),
+  },
   appointmentState: state.appointmentReducer,
   providersState: state.providersReducer,
   newAppointmentState: state.newAppointmentReducer,
