@@ -4,9 +4,9 @@ import {
   StyleSheet,
   Text,
   View,
-  ActionSheetIOS,
   TextInput,
 } from 'react-native';
+import moment from 'moment';
 import { SafeAreaView } from 'react-navigation';
 import Icon from './UI/Icon';
 import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
@@ -172,7 +172,10 @@ export default class QueueHeader extends React.Component {
 
     switch (i) {
       case 0:
-        navigation.navigate('TurnAway');
+        navigation.navigate(
+          'TurnAway',
+          { date: moment(), employee: null, fromTime: moment().format('HH:mm:ss') },
+        );
         break;
       case 1:
         navigation.navigate('QueueCombine');

@@ -7,89 +7,14 @@ import moment from 'moment';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import styles from './stylesServiceSection';
 
+import {
+  ProviderInput,
+  InputDivider,
+  ServiceInput,
+} from '../../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-  },
-  innerRow: {
-    flexDirection: 'row',
-    height: 44,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-    alignItems: 'center',
-    paddingRight: 16,
-  },
-  lastInnerRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    paddingRight: 16,
-    paddingLeft: 16,
-  },
-  addRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingLeft: 16,
-    paddingRight: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-  },
-  plusIcon: {
-    color: '#115ECD',
-    fontSize: 22,
-    marginRight: 5,
-  },
-  textData: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-    marginLeft: 5,
-  },
-  serviceRow: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-  },
-  iconContainer: {
-    paddingRight: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  serviceDataContainer: {
-    flex: 1,
-  },
-  removeIcon: {
-    marginRight: 8,
-    fontSize: 22,
-    color: '#D1242A',
-  },
-  carretIcon: {
-    fontSize: 20,
-    color: '#727A8F',
-  },
-  label: {
-    fontFamily: 'Roboto',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  dataContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-});
 
 class ServiceSection extends Component {
   constructor(props) {
@@ -100,6 +25,7 @@ class ServiceSection extends Component {
       index: 0,
       type: '',
       isDateTimePickerVisible: false,
+      minuteInterval: 15,
     };
   }
 
@@ -131,27 +57,14 @@ class ServiceSection extends Component {
     this.props.onUpdate(index, newService);
   }
 
-  handlePressProvider = (service, index) => {
-    this.props.navigate('Providers', {
-      actionType: 'update',
-      dismissOnSelect: true,
-      onChangeProvider: provider => this.handleProviderSelection(provider, service, index),
-    });
-  }
 
   handleServiceSelection = (data, service, index) => {
     const newService = service;
     newService.service = data;
     newService.myServiceId = data.id;
+    const durationInMinutes = moment.duration(data.minDuration).asMinutes();
+    newService.toTime = moment(newService.fromTime, 'HH:mm:ss').add(durationInMinutes, 'minutes');
     this.props.onUpdate(index, newService);
-  }
-
-  handlePressService = (service, index) => {
-    this.props.navigate('Services', {
-      actionType: 'update',
-      dismissOnSelect: true,
-      onChangeService: data => this.handleServiceSelection(data, service, index),
-    });
   }
 
   renderProvider = (provider) => {
@@ -159,9 +72,8 @@ class ServiceSection extends Component {
     const providerPhoto = provider ? (getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 
     if (provider) {
-      return (<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+      return (<View style={styles.providerContainer}>
         <SalonAvatar
-          wrapperStyle={{ marginRight: 5 }}
           width={26}
           image={{ uri: providerPhoto }}
         />
@@ -175,15 +87,25 @@ class ServiceSection extends Component {
     );
   }
 
-  renderServiceInfo = (service) => {
+  renderServiceInfo = (serviceContainer, service) => {
     if (service) {
+      const durationInMinutes = moment.duration(service.minDuration).asMinutes();
+      serviceContainer.toTime = moment(serviceContainer.fromTime, 'HH:mm:ss').add(durationInMinutes, 'minutes');
       return (
-        <Text style={styles.textData}>{service.name}</Text>
+        <Text style={[styles.textData, { marginLeft: 0 }]}>{service.name}</Text>
       );
     }
     return (
       <Text style={styles.label}>Service</Text>
     );
+  }
+
+  showDateTimePickerToTime = (service, index) => {
+    this.showDateTimePicker(service.toTime, service, index, 'toTime');
+  }
+
+  showDateTimePickerFromTime = (service, index) => {
+    this.showDateTimePicker(service.fromTime, service, index, 'fromTime');
   }
 
   renderService = (service, index) => (
@@ -197,23 +119,40 @@ class ServiceSection extends Component {
         </SalonTouchableOpacity>
       </View>
       <View style={styles.serviceDataContainer}>
-        <SalonTouchableOpacity onPress={() => this.handlePressProvider(service, index)}>
+        <ProviderInput
+          apptBook
+          noLabel
+          filterByService
+          rootStyle={styles.providerRootStyle}
+          selectedProvider={service.provider}
+          placeholder="Provider"
+          navigate={this.props.navigate}
+          headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
+          onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
+        />
+        <InputDivider style={styles.middleSectionDivider} />
+
+        <ServiceInput
+          apptBook
+          noPlaceholder
+          rootStyle={styles.providerRootStyle}
+          nameKey={service.service && service.service.description ? 'description' : 'name'}
+          selectedProvider={service.provider}
+          navigate={this.props.navigate}
+          selectedService={service.service}
+          headerProps={{ title: 'Services', ...this.props.cancelButton() }}
+          onChange={(selectedService) => { this.handleServiceSelection(selectedService, service, index); }}
+        />
+        <InputDivider style={styles.middleSectionDivider} />
+        {/*  <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
           <View style={styles.innerRow}>
-            {this.renderProvider(service.provider)}
+            {this.renderServiceInfo(service, service.service)}
             <View style={styles.dataContainer}>
               <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
             </View>
           </View>
-        </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
-          <View style={styles.innerRow}>
-            {this.renderServiceInfo(service.service)}
-            <View style={styles.dataContainer}>
-              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
-            </View>
-          </View>
-        </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.fromTime, service, index, 'start')}>
+        </SalonTouchableOpacity> */}
+        <SalonTouchableOpacity onPress={() => this.showDateTimePickerFromTime(service, index)}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
             <View style={styles.dataContainer}>
@@ -221,7 +160,7 @@ class ServiceSection extends Component {
             </View>
           </View>
         </SalonTouchableOpacity>
-        <SalonTouchableOpacity onPress={() => this.showDateTimePicker(service.toTime, service, index, 'end')}>
+        <SalonTouchableOpacity onPress={() => this.showDateTimePickerToTime(service, index)}>
           <View style={styles.lastInnerRow}>
             <Text style={styles.label}>End</Text>
             <View style={styles.dataContainer}>
@@ -248,13 +187,13 @@ class ServiceSection extends Component {
           onConfirm={this.handleDateSelection}
           onCancel={this.hideDateTimePicker}
           mode="time"
+          minuteInterval={this.state.minuteInterval}
           date={this.state.date}
         />
       </View>
     );
   }
 }
-
 
 ServiceSection.propTypes = {
   services: PropTypes.arrayOf(PropTypes.object).isRequired,

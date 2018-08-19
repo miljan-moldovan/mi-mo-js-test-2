@@ -39,7 +39,7 @@ import EndsOnScreen from './../screens/endsOnScreen';
 import EditScheduleScreen from './../screens/editScheduleScreen';
 import BlockTimeScreen from './../screens/blockTimeScreen';
 import BlockTimesReasonsScreen from './../screens/blockTimesReasons';
-import ApptBookTurnAwayScreen from './../screens/apptBookTurnAwayScreen';
+import TurnAwayScreen from './../screens/turnAwayScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
 import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 import ConflictsScreen from '../screens/conflictsScreen';
@@ -89,8 +89,8 @@ const AppointmentStackNavigator = StackNavigator(
       screen: BlockTimesReasonsScreen,
       navigationOptions: { tabBarVisible: false },
     },
-    ApptBookTurnAway: {
-      screen: ApptBookTurnAwayScreen,
+    TurnAway: {
+      screen: TurnAwayScreen,
       navigationOptions: { tabBarVisible: false },
     },
     ModifyApptService: {

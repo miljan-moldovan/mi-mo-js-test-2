@@ -691,7 +691,7 @@ export class NewApptSlide extends React.Component {
           this.hidePanel();
           const { date, bookedByEmployee: employee } = this.props.newApptState;
           this.props.navigation.navigate(
-            'ApptBookTurnAway',
+            'TurnAway',
             { date, employee },
           );
         }}
