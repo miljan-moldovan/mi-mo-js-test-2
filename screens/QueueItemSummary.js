@@ -6,6 +6,8 @@ import ListItem from './QueueListItemSummary';
 import SalonIcon from '../components/SalonIcon';
 import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 import QueueTimeNote from '../components/QueueTimeNote';
+import StatusEnum from '../constants/Status';
+import QueueTypes from '../constants/QueueTypes';
 
 const styles = StyleSheet.create({
   container: {
@@ -183,16 +185,19 @@ renderBtnContainer = () => {
 
   if (this.props.appointment) {
     isDisabledWalkOut = true;
-    if (this.props.appointment.status === 0 || this.props.appointment.status === 1) {
+    if (this.props.appointment.status === StatusEnum.checkedIn ||
+      this.props.appointment.status === StatusEnum.notArrived) {
       isActiveStart = true;
       isDisabledStart = false;
     } else {
       isDisabledStart = true;
     }
-    returned = this.props.appointment.status === 5;
-    isActiveWalkOut = !(this.props.appointment.queueType === 1);
+    returned = this.props.appointment.status === StatusEnum.returningLater;
+    isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment);
 
-    if (this.props.appointment.status === 1) {
+    debugger //eslint-disable-line
+
+    if (this.props.appointment.status === StatusEnum.notArrived) {
       isDisabledReturnLater = true;
       isActiveCheckin = true;
     } else {
@@ -201,7 +206,7 @@ renderBtnContainer = () => {
     }
 
 
-    if (this.props.appointment.status === 6) {
+    if (this.props.appointment.status === StatusEnum.inService) {
       isActiveWaiting = true;
       isActiveFinish = true;
     } else {
@@ -338,9 +343,9 @@ render() {
     estimatedTime *= (-1);
   }
 
-  const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
-  const isAppointment = item.queueType === 1;
-  const isBookedByWeb = item.queueType === 3;
+  const timeCheckedIn = item.status === StatusEnum.returningLater ? 0 : estimatedTime;
+  const isAppointment = item.queueType === QueueTypes.PosAppointment;
+  const isBookedByWeb = item.queueType === QueueTypes.BookedbyWeb;
 
   const { translateYAnim } = this.state;
 
