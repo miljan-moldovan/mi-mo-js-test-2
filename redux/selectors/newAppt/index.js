@@ -200,7 +200,7 @@ const serializeApptToRequestData = createSelector(
 
 const employeeScheduledIntervalsSelector = createSelector(
   bookedByEmployeeSelector,
-  employee => get(employee, 'scheduledIntervals', null),
+  employee => get(employee, 'scheduledIntervals', []),
 );
 
 const employeeScheduleChunkedSelector = createSelector(

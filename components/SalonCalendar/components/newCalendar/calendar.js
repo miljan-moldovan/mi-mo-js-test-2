@@ -601,7 +601,13 @@ export default class Calendar extends Component {
 
   handleOnPressAvailability = (startTime) => {
     this.clearActive();
-    this.props.onCellPressed(startTime);
+    const firstAvailableProvider = {
+      isFirstAvailable: true,
+      id: 0,
+      name: 'First',
+      lastName: 'Available',
+    };
+    this.props.onCellPressed(startTime, firstAvailableProvider);
   }
 
   renderCards = () => {

@@ -9,6 +9,7 @@ import servicesActions, {
   SET_CATEGORY_SERVICES,
   GET_CATEGORY_SERVICES,
   SET_SELECTED_SERVICE,
+  IS_SELECTING_EXTRAS,
 } from '../actions/service';
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
   showCategoryServices: false,
   categoryServices: [],
   selectedService: null,
+  isSelectingExtras: false,
 };
 
 export default function serviceReducer(state = initialState, action) {
@@ -27,6 +29,11 @@ export default function serviceReducer(state = initialState, action) {
   //   console.log(data);
   // }
   switch (type) {
+    case IS_SELECTING_EXTRAS:
+      return {
+        ...state,
+        isSelectingExtras: data.isSelectingExtras,
+      };
     case GET_CATEGORY_SERVICES:
       return {
         ...state,

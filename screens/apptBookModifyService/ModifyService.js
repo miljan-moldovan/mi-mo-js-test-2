@@ -350,8 +350,6 @@ export default class ModifyApptServiceScreen extends React.Component {
           <InputLabel
             label="Price"
             value={`$ ${price}`}
-          // keyboardType="numeric"
-          // onChangeText={this.setPrice}
           />
         </InputGroup>
         <SectionTitle value="Time" />

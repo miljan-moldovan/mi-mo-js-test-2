@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import newAppointmentActions from '../../actions/newAppointment';
+import serviceActions from '../../actions/service';
 import { appointmentCalendarActions } from '../../actions/appointmentBook';
 import NewAppointmentScreen from './NewAppointmentScreen';
 import formulaActions from '../../actions/formulasAndNotes';
@@ -26,6 +27,7 @@ const mapActionsToProps = dispatch => ({
   newAppointmentActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
   apptBookActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
   formulaActions: bindActionCreators({ ...formulaActions }, dispatch),
+  servicesActions: bindActionCreators({ ...serviceActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(NewAppointmentScreen);

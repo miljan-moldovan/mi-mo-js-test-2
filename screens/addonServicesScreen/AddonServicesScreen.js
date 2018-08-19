@@ -6,7 +6,7 @@ import {
 import { get, includes } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SelectableServiceList from '../../components/SelectableServiceList';
-import Icon from '../../components/UI/Icon';
+import LoadingOverlay from '../../components/LoadingOverlay';
 import styles from './styles';
 
 export default class AddonServicesScreen extends React.Component {
@@ -75,17 +75,19 @@ export default class AddonServicesScreen extends React.Component {
   )
 
   render() {
+    const { isLoading } = this.props.servicesState;
     const {
       selected,
     } = this.state;
     const params = this.props.navigation.state.params || {};
     const services = get(params, 'services', []);
-    return (
+    return isLoading ? (
+      <LoadingOverlay />
+    ) : (
       <SelectableServiceList
         selected={selected}
         services={services}
         onChangeSelected={this.onChangeSelected}
-        ref={(ref) => { this.serviceList = ref; }}
         noneButton={{ name: 'No Add-on', onPress: this.handlePressNone }}
       />
     );

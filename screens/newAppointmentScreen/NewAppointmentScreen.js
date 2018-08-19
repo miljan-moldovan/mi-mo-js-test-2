@@ -12,7 +12,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
-import { get, debounce } from 'lodash';
+import { get, debounce, isNull } from 'lodash';
 
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import {
@@ -28,6 +28,7 @@ import {
   ClientInput,
   InputNumber,
   InputButton,
+  ProviderInput,
   ValidatableInput,
 } from '../../components/formHelpers';
 import {
@@ -186,6 +187,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   selectExtraServices = (serviceItem) => {
     const { service: { service = null }, itemId } = serviceItem;
+    this.props.servicesActions.setSelectingExtras(true);
     this.showAddons(service).then(selectedAddons => this.setState({ selectedAddons }, () => {
       this.showRecommended(service).then(selectedRecommended => this.setState({ selectedRecommended }, () => {
         this.showRequired(service).then(selectedRequired => this.setState({ selectedRequired }, () => {
@@ -209,8 +211,12 @@ export default class NewAppointmentScreen extends React.Component {
             'required', // extraService type
             required,
           );
+          this.props.servicesActions.setSelectingExtras(false);
           return this.checkConflicts();
-        }));
+        }))
+          .catch(() => {
+            this.props.servicesActions.setSelectingExtras(false);
+          });
       }));
     }));
   }
@@ -377,15 +383,15 @@ export default class NewAppointmentScreen extends React.Component {
   getClientInfo = (client) => {
     const phones = get(client, 'phones', []);
     const phone = phones.find(item => (get(item, 'type', null) === ClientPhoneTypes.cell));
-    const clientEmail = get(client, 'email', '');
-    const clientPhone = get(phone, 'value', '');
+    const clientEmail = get(client, 'email', '') || '';
+    const clientPhone = get(phone, 'value', '') || '';
     const clientPhoneType = get(phone, 'type', ClientPhoneTypes.cell);
     return {
-      clientPhone,
-      clientEmail,
+      clientPhone: isNull(clientPhone) ? '' : clientPhone,
+      clientEmail: isNull(clientEmail) ? '' : clientEmail,
       clientPhoneType,
-      isValidEmail: this.isValidEmailRegExp.test(clientEmail),
-      isValidPhone: this.isValidPhoneNumberRegExp.test(clientPhone),
+      isValidEmail: this.emailValidation(clientEmail),
+      isValidPhone: this.phoneValidation(clientPhone),
     };
   }
 
@@ -436,8 +442,8 @@ export default class NewAppointmentScreen extends React.Component {
 
   onChangeRecurring = isRecurring => isRecurring // this.setState({ isRecurring: !isRecurring });
 
-  onChangeProvider = (employee) => {
-    this.setState({ employee }, this.checkConflicts);
+  onChangeBookedBy = (employee) => {
+    this.props.newAppointmentActions.setBookedBy(employee);
   }
 
   onChangeClient = (client) => {
@@ -575,14 +581,14 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   emailValidation = (email) => {
-    if (email !== '') {
+    if (email === '' || isNull(email)) {
       return true;
     }
     return this.isValidEmailRegExp.test(email);
   }
 
   phoneValidation = (phone) => {
-    if (phone === '') {
+    if (phone === '' || isNull(phone)) {
       return true;
     }
     return this.isValidPhoneNumberRegExp.test(phone);
@@ -595,7 +601,7 @@ export default class NewAppointmentScreen extends React.Component {
   onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
     const { client } = this.props.newAppointmentState;
-    newState.isValidEmail = newState.clientEmail === '' ? true : isValid;
+    newState.isValidEmail = state.clientEmail === '' ? true : isValid;
     if (!isValid && state.clientEmail !== '' && !!client && !isFirstValidation) {
       newState.toast = {
         text: 'The email you provided is invalid!',
@@ -652,21 +658,21 @@ export default class NewAppointmentScreen extends React.Component {
       disabled={isDisabled}
       key={Math.random().toString()}
       onPress={() => {
-        
+
         // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
         // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
         this.props.navigation.navigate(
-'ClientNotes',
-        {
-forAppointment: true,
-          forSales: false,
-          forQueue: false,
-          editionMode: false,
-showTagBar:
-          false,
-client: this.props.newAppointmentState.client,
-        },
-);
+          'ClientNotes',
+          {
+            forAppointment: true,
+            forSales: false,
+            forQueue: false,
+            editionMode: false,
+            showTagBar:
+              false,
+            client: this.props.newAppointmentState.client,
+          },
+        );
       }}
       style={{
         marginHorizontal: 5,
@@ -706,6 +712,7 @@ client: this.props.newAppointmentState.client,
       conflicts,
       guests,
       remarks,
+      isBookedByFieldEnabled,
     } = this.props.newAppointmentState;
     const {
       clientEmail,
@@ -719,6 +726,11 @@ client: this.props.newAppointmentState.client,
     const dividerWithErrorStyle = { backgroundColor: '#D1242A' };
 
     // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
+    const disabledLabelStyle = {
+      fontSize: 14,
+      lineHeight: 18,
+      color: '#727A8F',
+    };
     const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
@@ -727,17 +739,25 @@ client: this.props.newAppointmentState.client,
         {(isLoading || isBooking) ? <LoadingOverlay /> : null}
         <ScrollView style={styles.container}>
           <InputGroup style={{ marginTop: 15 }}>
-            <InputLabel
+            <ProviderInput
+              apptBook
+              noAvatar
               label="Booked by"
-              value={(
-                <Text style={{
-                  fontSize: 14,
-                  lineHeight: 18,
-                  color: '#727A8F',
-                }}
-                >{`${bookedByEmployee.name} ${bookedByEmployee.lastName}`}
-                </Text>
-              )}
+              placeholder={false}
+              showFirstAvailable={false}
+              noIcon={!isBookedByFieldEnabled}
+              selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
+              selectedProvider={bookedByEmployee}
+              disabled={!isBookedByFieldEnabled}
+              onChange={this.onChangeBookedBy}
+              navigate={this.props.navigation.navigate}
+              headerProps={{
+                title: 'Providers',
+                leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+                leftButtonOnPress: (navigation) => {
+                  navigation.goBack();
+                },
+              }}
             />
             <InputDivider />
             <InputButton
@@ -797,23 +817,23 @@ client: this.props.newAppointmentState.client,
               (
                 <ServiceCard
                   key={item.itemId}
-                  conflicts={this.getConflictsForService(item.itemId)}
-                  addons={this.getAddonsForService(item.itemId)}
                   data={item.service}
-                  onSetExtras={() => this.selectExtraServices(item)}
+                  addons={this.getAddonsForService(item.itemId)}
                   onPress={() => this.onPressService(item.itemId)}
-                  onPressConflicts={() => this.onPressConflicts(item.itemId)}
+                  onSetExtras={() => this.selectExtraServices(item)}
+                  conflicts={this.getConflictsForService(item.itemId)}
                   onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                  onPressConflicts={() => this.onPressConflicts(item.itemId)}
                 />
               ),
               this.getAddonsForService(item.itemId).map(addon => (
                 <ServiceCard
+                  isAddon
                   key={addon.itemId}
                   data={addon.service}
-                  isAddon
                   isRequired={addon.isRequired}
-                  conflicts={this.getConflictsForService(addon.itemId)}
                   onPress={() => this.onPressService(addon.itemId)}
+                  conflicts={this.getConflictsForService(addon.itemId)}
                   onPressDelete={() => this.removeServiceAlert(addon.itemId)}
                   onPressConflicts={() => this.onPressConflicts(addon.itemId)}
                 />
@@ -847,25 +867,25 @@ client: this.props.newAppointmentState.client,
                         (
                           <ServiceCard
                             key={item.itemId}
-                            addons={this.getAddonsForService(item.itemId)}
                             data={item.service}
+                            addons={this.getAddonsForService(item.itemId)}
                             onSetExtras={() => this.selectExtraServices(item)}
                             conflicts={this.getConflictsForService(item.itemId)}
-                            onPress={() => this.onPressService(item.itemId, guest.guestId)}
                             onPressDelete={() => this.removeServiceAlert(item.itemId)}
                             onPressConflicts={() => this.onPressConflicts(item.itemId)}
+                            onPress={() => this.onPressService(item.itemId, guest.guestId)}
                           />
                         ),
                         this.getAddonsForService(item.itemId).map(addon => (
                           <ServiceCard
+                            isAddon
                             key={addon.itemId}
                             data={addon.service}
-                            isAddon
                             isRequired={addon.isRequired}
                             conflicts={this.getConflictsForService(addon.itemId)}
-                            onPress={() => this.onPressService(addon.itemId, guest.guestId)}
                             onPressDelete={() => this.removeServiceAlert(addon.itemId)}
                             onPressConflicts={() => this.onPressConflicts(addon.itemId)}
+                            onPress={() => this.onPressService(addon.itemId, guest.guestId)}
                           />
                         )),
                       ]))
