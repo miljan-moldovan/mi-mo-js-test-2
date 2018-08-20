@@ -5,6 +5,7 @@ import AddonServicesScreen from './AddonServicesScreen';
 
 const mapStateToProps = state => ({
   services: flatServicesSelector(state),
+  servicesState: state.serviceReducer,
 });
 const mapActionsToProps = dispatch => ({
 });

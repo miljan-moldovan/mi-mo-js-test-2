@@ -152,13 +152,14 @@ export default class AppointmentScreen extends Component {
     const startTime = moment(time, 'hh:mm A');
     if (selectedProvider === 'all') {
       const newApptProvider = {
+        id: 0,
         isFirstAvailable: true,
         name: 'First',
         lastName: 'Available',
       };
-      this.props.newAppointmentActions.setMainEmployee(newApptProvider);
       this.props.newAppointmentActions.setQuickApptRequested(false);
       this.props.newAppointmentActions.setDate(startDate);
+      this.props.newAppointmentActions.setMainEmployee(newApptProvider);
     }
     this.props.newAppointmentActions.setStartTime(startTime);
 
@@ -234,6 +235,9 @@ export default class AppointmentScreen extends Component {
       if (selectedProvider === 'all') {
         newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
+        if (colData.isFirstAvailable) {
+          this.props.newAppointmentActions.setQuickApptRequested(false);
+        }
       } else {
         newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);

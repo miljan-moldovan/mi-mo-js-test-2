@@ -4,7 +4,7 @@ export const SET_SERVICES = 'services/SET_SERVICES';
 export const SET_FILTERED_SERVICES = 'services/SET_FILTERED_SERVICES';
 export const SET_SHOW_CATEGORY_SERVICES = 'services/SET_SHOW_CATEGORY_SERVICES';
 export const SET_CATEGORY_SERVICES = 'services/SET_CATEGORY_SERVICES';
-
+export const IS_SELECTING_EXTRAS = 'services/IS_SELECTING_EXTRAS';
 export const GET_SERVICES = 'services/GET_SERVICES';
 export const GET_SERVICES_SUCCESS = 'services/GET_SERVICES_SUCCESS';
 export const GET_SERVICES_FAILED = 'services/GET_SERVICES_FAILED';
@@ -21,7 +21,17 @@ const getServicesFailed = error => ({
   data: { error },
 });
 
-const getServices = (params) => (dispatch) => {
+const setSelectingExtras = isSelectingExtras => ({
+  type: IS_SELECTING_EXTRAS,
+  data: { isSelectingExtras },
+});
+
+const getServices = params => (dispatch, getState) => {
+  const { isSelectingExtras } = getState().serviceReducer;
+  if (isSelectingExtras) {
+    return false;
+  }
+
   dispatch({ type: GET_SERVICES });
   // if (filterByProvider) {
   //   const { selectedProvider } = getState().providersReducer;
@@ -70,6 +80,7 @@ function setFilteredServices(filtered) {
 }
 
 const servicesActions = {
+  setSelectingExtras,
   setServices,
   setFilteredServices,
   getServices,

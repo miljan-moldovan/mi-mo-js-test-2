@@ -13,6 +13,7 @@ import {
   compact,
   get,
   slice,
+  isNull,
   isFunction,
 } from 'lodash';
 
@@ -33,6 +34,7 @@ import Icon from '../UI/Icon';
 import Button from './components/Button';
 import ConflictBox from './components/ConflictBox';
 import AddonsContainer from './components/AddonsContainer';
+import SalonToast from '../../screens/appointmentCalendarScreen/components/SalonToast';
 
 import styles from './styles';
 
@@ -65,6 +67,7 @@ class NewApptSlide extends React.Component {
     addonsHeight: new Animated.Value(0),
     isInputModalVisible: false,
     postModalFunction: null,
+    toast: null,
   });
 
   componentWillReceiveProps(newProps) {
@@ -80,6 +83,7 @@ class NewApptSlide extends React.Component {
   // }
 
   onPressAddons = () => {
+    this.props.servicesActions.setSelectingExtras(true);
     this.setState({
       hasViewedAddons: false,
       hasViewedRecommended: false,
@@ -101,9 +105,13 @@ class NewApptSlide extends React.Component {
                 'recommended',
                 selectedRecommended,
               );
+              this.props.servicesActions.setSelectingExtras(false);
               this.showPanel().checkConflicts();
             }));
-        }));
+        }))
+        .catch(() => {
+          this.props.servicesActions.setSelectingExtras(false);
+        });
     });
   }
 
@@ -143,6 +151,7 @@ class NewApptSlide extends React.Component {
   }
 
   setService = (service) => {
+    this.props.servicesActions.setSelectingExtras(true);
     this.showAddons(service)
       .then((selectedAddons) => {
         this.setState({
@@ -167,18 +176,20 @@ class NewApptSlide extends React.Component {
                         recommended,
                         required,
                       });
+                      this.props.servicesActions.setSelectingExtras(false);
                       this.showPanel().checkConflicts();
                     });
+                  })
+                  .catch((err) => {
+                    this.props.newApptActions.addQuickServiceItem({
+                      service,
+                    });
+                    this.props.servicesActions.setSelectingExtras(false);
+                    this.showPanel().checkConflicts();
                   });
               });
             });
         });
-      })
-      .catch((err) => {
-        this.props.newApptActions.addQuickServiceItem({
-          service,
-        });
-        this.showPanel().checkConflicts();
       });
   }
 
@@ -245,6 +256,8 @@ class NewApptSlide extends React.Component {
     }
     return 'BOOK NOW';
   }
+
+  hideToast = () => this.setState({ toast: null })
 
   showRequired = service => new Promise((resolve) => {
     try {
@@ -343,12 +356,14 @@ class NewApptSlide extends React.Component {
       conflicts,
       isLoading,
       isBooking,
+      mainEmployee,
       bookedByEmployee,
     } = this.props.newApptState;
     const { service } = this.getService();
     if (
       service === null ||
       client === null ||
+      mainEmployee === null ||
       bookedByEmployee === null ||
       conflicts.length > 0 ||
       isLoading ||
@@ -369,10 +384,28 @@ class NewApptSlide extends React.Component {
   }
 
   handleBook = (bookAnother) => {
+    const { bookedByEmployee } = this.props.newApptState;
     if (!this.canBook()) {
       return false;
     }
-
+    if (isNull(bookedByEmployee)) {
+      return this.setState({
+        toast: {
+          description: 'Logged in user isn\'t employee\nPlease select booked by from More Options',
+          type: 'error',
+          btnRightText: 'DISMISS',
+        },
+      });
+    }
+    if (bookedByEmployee.isFirstAvailable) {
+      return this.setState({
+        toast: {
+          description: 'Booking employee can\'t be first available\nPlease select booked by from More Options',
+          type: 'error',
+          btnRightText: 'DISMISS',
+        },
+      });
+    }
     return this.props.handleBook(bookAnother);
   }
 
@@ -438,9 +471,19 @@ class NewApptSlide extends React.Component {
   }
 
   goToRoomAssignment = () => {
-    const { date, bookedByEmployee: employee } = this.props.newApptState;
+    const { date, mainEmployee: employee } = this.props.newApptState;
     const onSave = () => this.showPanel();
-    return this.props.navigation.navigate('RoomAssignment', { date, employee, onSave });
+    if (employee.isFirstAvailable) {
+      return this.setState({
+        toast: {
+          description: 'Please select a specific employee',
+          type: 'error',
+          btnRightText: 'DISMISS',
+        },
+      });
+    }
+    const navigationCallback = () => this.props.navigation.navigate('RoomAssignment', { date, employee, onSave });
+    return this.hidePanel(navigationCallback);
   }
 
   cancelButton = () => ({
@@ -557,7 +600,7 @@ class NewApptSlide extends React.Component {
         noIcon
         style={styles.otherOptionsBtn}
         labelStyle={styles.otherOptionsLabels}
-        onPress={() => this.hidePanel(this.goToRoomAssignment)}
+        onPress={this.goToRoomAssignment}
         label="Room Assignment"
       >
         <View style={styles.iconContainer}>
@@ -635,6 +678,16 @@ class NewApptSlide extends React.Component {
       opacity: service === null ? 0.5 : 1,
       fontStyle: service === null ? 'italic' : 'normal',
     };
+    const conflictsCallback = () => {
+      navigation.navigate('Conflicts', {
+        date,
+        conflicts,
+        startTime,
+        endTime: this.getEndTime(),
+        handleGoBack: () => this.showPanel(),
+      });
+    };
+    const onPressConflicts = () => this.hidePanel(conflictsCallback);
     return (
       <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
@@ -714,22 +767,10 @@ class NewApptSlide extends React.Component {
           onPressRequired={this.onPressRequired}
           onRemoveRequired={this.onPressRemoveRequired}
         />
-        {conflicts.length > 0 && (
-          <ConflictBox
-            onPress={() => {
-              const callback = () => {
-                this.props.navigation.navigate('Conflicts', {
-                  date,
-                  conflicts,
-                  startTime,
-                  endTime: this.getEndTime(),
-                  handleGoBack: () => this.showPanel(),
-                });
-              };
-              return this.hidePanel(callback);
-            }}
-          />
-        )}
+        {
+          conflicts.length > 0 &&
+          <ConflictBox onPress={onPressConflicts} />
+        }
         <View style={styles.requestedContainer}>
           <Text style={styles.requestedText}>Provider is Requested?</Text>
           <Switch
@@ -783,6 +824,7 @@ class NewApptSlide extends React.Component {
 
   render() {
     const { maxHeight: height } = this.props;
+    const { toast } = this.state;
     return (
       <Modal
         visible={this.props.visible}
@@ -791,6 +833,15 @@ class NewApptSlide extends React.Component {
       // style={{ marginBottom: 60 }}
       >
         <View style={[styles.container, { height }]}>
+          {
+            toast &&
+            <SalonToast
+              type={toast.type}
+              hide={this.hideToast}
+              description={toast.description}
+              btnRightText={toast.btnRightText}
+            />
+          }
           <SalonInputModal
             visible={this.state.isInputModalVisible}
             title="Enter a message"

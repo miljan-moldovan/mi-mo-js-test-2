@@ -192,8 +192,8 @@ const ServiceCard = (props) => {
               />
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <SalonAppointmentTime
-                  from={moment(data.fromTime, 'HH:mm').format('HH:mm A')}
-                  to={moment(data.toTime, 'HH:mm').format('HH:mm A')}
+                  from={moment(data.fromTime, 'hh:mm').format('hh:mm A')}
+                  to={moment(data.toTime, 'hh:mm').format('hh:mm A')}
                 />
                 {showSelectExtras && (
                   <SetExtras onPress={props.onSetExtras} />
