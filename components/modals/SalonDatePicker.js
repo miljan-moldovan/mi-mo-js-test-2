@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   container: {
     left: 0,
-    height: 300,
+    height: 350,
     width: '100%',
     backgroundColor: 'gray',
     flexDirection: 'column',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#eee',
-    height: 300,
+    height: 350,
     width: '100%',
     borderRadius: 4,
   },
@@ -79,6 +79,7 @@ class SalonDatePicker extends React.Component {
 
   hideModal = () => {
     this.setState({ isVisible: false });
+    this.props.onPress(null);
   }
   render() {
     return (
@@ -89,7 +90,7 @@ class SalonDatePicker extends React.Component {
         closeModal={this.hideModal}
       >
         {[
-          <View key={Math.random().toString()} style={styles.container}>
+          <View style={styles.container}>
             <Calendar
               minDate={this.state.minDate}
               maxDate={this.state.maxDate}
