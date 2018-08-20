@@ -88,6 +88,7 @@ class QueueScreen extends React.Component {
     this.props.actions.getQueueState();
     this.props.actions.receiveQueue();
     setInterval(this.props.actions.receiveQueue, 15000);
+    setInterval(this.props.actions.getQueueState, 5000);
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
     // this._refreshData();
