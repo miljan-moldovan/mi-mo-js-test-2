@@ -9,16 +9,11 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { Button } from 'native-base';
-import { connect } from 'react-redux';
-// import FontAwesome, { Icons } from 'react-native-fontawesome';
-import Icon from '../components/UI/Icon';
-import SalonTouchableOpacity from './SalonTouchableOpacity';
-
-import * as actions from '../actions/queue';
-import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEUE_ITEM_INSERVICE, QUEUE_ITEM_CHECKEDIN } from '../constants/QueueStatus.js';
-
-import type { QueueItem } from '../models';
+import Icon from '../../../components/UI/Icon';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import * as actions from '../../../actions/queue';
+import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEUE_ITEM_INSERVICE, QUEUE_ITEM_CHECKEDIN } from '../../../constants/QueueStatus';
+import type { QueueItem } from '../../../models';
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },

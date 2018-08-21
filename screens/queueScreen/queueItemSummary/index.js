@@ -1,134 +1,14 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Animated, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
 import moment from 'moment';
-import Icon from '../components/UI/Icon';
-import ListItem from './QueueListItemSummary';
-import SalonIcon from '../components/SalonIcon';
-import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
-import QueueTimeNote from '../components/QueueTimeNote';
-import StatusEnum from '../constants/Status';
-import QueueTypes from '../constants/QueueTypes';
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#00000040',
-    justifyContent: 'flex-end',
-  },
-  header: {
-    backgroundColor: '#115ECD',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    height: 40,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    paddingHorizontal: 19,
-  },
-  body: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 17,
-    paddingTop: 15,
-  },
-  btnText: {
-    color: '#fff',
-    fontFamily: 'Roboto',
-    fontWeight: '500',
-    fontSize: 14,
-  },
-  nameText: {
-    color: '#111415',
-    fontFamily: 'Roboto',
-    fontWeight: '500',
-    fontSize: 16,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoIcon: {
-    color: '#115ECD',
-    fontSize: 20,
-  },
-  clockIcon: {
-    fontSize: 12,
-    color: '#c8c8c8',
-    marginRight: 5,
-  },
-  angleIcon: {
-    fontSize: 12,
-    marginHorizontal: 8,
-    color: '#111415',
-  },
-  timeText: {
-    fontSize: 11,
-    color: '#111415',
-    fontFamily: 'Roboto',
-  },
-  remTimeText: {
-    fontSize: 10,
-    color: '#111415',
-    fontFamily: 'Roboto',
-  },
-  underlineText: {
-    textDecorationLine: 'underline',
-  },
-  listContainer: {
-    marginTop: 10,
-    maxHeight: 430,
-  },
-  btnContainer: {
-    marginTop: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    marginBottom: 16,
-  },
-  btnBottom: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#727A8F',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btnIcon: {
-    color: '#fff',
-    fontSize: 26,
-  },
-  btnbottomText: {
-    fontFamily: 'Roboto',
-    fontSize: 9,
-    color: '#727A8F',
-    lineHeight: 9,
-    marginTop: 5,
-  },
-  btnGroup: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconStartService: {
-    marginLeft: 4,
-  },
-  btnDisabled: {
-    backgroundColor: '#C0C1C6',
-  },
-  hideBtn: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  apptLabel: {
-    paddingLeft: 5,
-    fontSize: 10,
-    height: 10,
-    width: 10,
-    color: '#53646F',
-  },
-});
+import Icon from '../../../components/UI/Icon';
+import ListItem from '../queueListItemSummary';
+import SalonIcon from '../../../components/SalonIcon';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import QueueTimeNote from '../queueTimeNote';
+import StatusEnum from '../../../constants/Status';
+import QueueTypes from '../../../constants/QueueTypes';
+import styles from './styles';
 
 class QueueItemSummary extends Component {
   constructor(props) {

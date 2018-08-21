@@ -20,7 +20,7 @@ import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import QueueTimeNote from '../../../../components/QueueTimeNote';
+import QueueTimeNote from '../../../queueScreen/queueTimeNote';
 import Icon from '../../../../components/UI/Icon';
 import StatusEnum from '../../../../constants/Status';
 import QueueTypes from '../../../../constants/QueueTypes';

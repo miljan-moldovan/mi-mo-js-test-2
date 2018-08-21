@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { SafeAreaView } from 'react-navigation';
-import Icon from './UI/Icon';
-import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
-import SalonActionSheet from '../components/SalonActionSheet';
+import Icon from '../../../components/UI/Icon';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import SalonActionSheet from '../../../components/SalonActionSheet';
 
 
 const styles = StyleSheet.create({

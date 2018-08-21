@@ -7,10 +7,9 @@ import {
   View,
   Alert,
 } from 'react-native';
-import SalonTouchableHighlight from './SalonTouchableHighlight';
+import SalonTouchableHighlight from '../../../components/SalonTouchableHighlight';
 
 export const QueueButton = (props) => {
-  // <QueueButton title={action.title} image={action.image} color={action.color} left />
   const {
     onPress, left, right, type,
   } = props;
@@ -32,67 +31,67 @@ width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: col
 export const QueueButtonTypes = {
   noShow: {
     title: 'No Show',
-    image: require('../assets/images/queue/no_show_icon.png'),
+    image: require('../../../assets/images/queue/no_show_icon.png'),
     color: '#666767',
   },
   returnLater: {
     title: 'Return Later',
-    image: require('../assets/images/queue/return-icon.png'),
+    image: require('../../../assets/images/queue/return-icon.png'),
     color: '#666767',
   },
   clientReturned: {
     title: 'Client Returned',
-    image: require('../assets/images/queue/client_returned_icon.png'),
+    image: require('../../../assets/images/queue/client_returned_icon.png'),
     color: '#666767',
   },
   service: {
     title: 'Service',
-    image: require('../assets/images/queue/service-icon.png'),
+    image: require('../../../assets/images/queue/service-icon.png'),
     color: '#68A3C5',
   },
   walkout: {
     title: 'Walk Out',
-    image: require('../assets/images/queue/walkout-icon.png'),
+    image: require('../../../assets/images/queue/walkout-icon.png'),
     color: '#68A3C5',
   },
   checkin: {
     title: 'Check-In',
-    image: require('../assets/images/queue/checkIn-icon.png'),
+    image: require('../../../assets/images/queue/checkIn-icon.png'),
     color: '#8A9295',
   },
   uncheckin: {
     title: 'UnCheck-In',
-    image: require('../assets/images/queue/uncheckIn-icon.png'),
+    image: require('../../../assets/images/queue/uncheckIn-icon.png'),
     color: '#8A9295',
   },
   notesFormulas: {
     title: 'Notes & Formulas',
-    image: require('../assets/images/queue/formulas-icon.png'),
+    image: require('../../../assets/images/queue/formulas-icon.png'),
     color: '#666767',
   },
   toWaiting: {
     title: 'To Waiting',
-    image: require('../assets/images/queue/icon_to_waiting.png'),
+    image: require('../../../assets/images/queue/icon_to_waiting.png'),
     color: '#68A3C5',
   },
   finishService: {
     title: 'Finish Service',
-    image: require('../assets/images/queue/icon_finish.png'),
+    image: require('../../../assets/images/queue/icon_finish.png'),
     color: '#68A3C5',
   },
   checkout: {
     title: 'Checkout',
-    image: require('../assets/images/queue/checkIn-icon.png'),
+    image: require('../../../assets/images/queue/checkIn-icon.png'),
     color: '#666767',
   },
   undoFinish: {
     title: 'Undo Finish',
-    image: require('../assets/images/queue/icon_finish.png'),
+    image: require('../../../assets/images/queue/icon_finish.png'),
     color: '#68A3C5',
   },
   rebook: {
     title: 'Rebook',
-    image: require('../assets/images/queue/uncheckIn-icon.png'),
+    image: require('../../../assets/images/queue/uncheckIn-icon.png'),
     color: '#8A9295',
   },
 };

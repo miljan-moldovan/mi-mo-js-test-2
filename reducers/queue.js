@@ -50,7 +50,8 @@ import {
   GET_QUEUE_STATE,
   GET_QUEUE_STATE_SUCCESS,
   GET_QUEUE_STATE_FAILED,
-} from '../actions/constants';
+} from '../actions/queue';
+
 import { POST_WALKIN_CLIENT_SUCCESS } from '../actions/walkIn';
 
 const initialState = {

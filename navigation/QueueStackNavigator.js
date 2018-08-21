@@ -5,10 +5,10 @@ import { StackNavigator } from 'react-navigation';
 
 import ImageHeader from '../components/ImageHeader';
 
-import QueueScreen from '../screens/QueueScreen';
-import QueueCombineScreen from './../screens/QueueCombineScreen';
+import QueueScreen from './../screens/queueScreen';
+import QueueCombineScreen from './../screens/queueCombineScreen';
 import ClientMergeScreen from './../screens/ClientMergeScreen';
-import QueueDetailScreen from './../screens/QueueDetailScreen';
+import QueueDetailScreen from './../screens/queueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
 import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
