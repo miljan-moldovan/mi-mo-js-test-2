@@ -109,7 +109,7 @@ handlePressProvider = () => {
 };
 
 render() {
-  const employeeInitials = this.props.service.employee.fullName ? `${this.props.service.employee.name[0]}${this.props.service.employee.lastName[0]}` : '';
+  const employeeInitials = this.props.service.employee && this.props.service.employee.fullName ? `${this.props.service.employee.name[0]}${this.props.service.employee.lastName[0]}` : '';
   return (<View>
     <View style={styles.serviceContainer}>
       <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>

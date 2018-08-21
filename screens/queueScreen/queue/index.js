@@ -124,7 +124,7 @@ handlePressSummary = {
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
   returning: returned => this.handleReturning(returned),
-  toService: () => this.handleStartService(),
+  toService: () => this.checkHasProvider(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
 }
@@ -278,6 +278,41 @@ handleReturning = (returned) => {
   this.hideDialog();
 }
 
+cancelButton = () => ({
+  leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+  leftButtonOnPress: (navigation) => {
+    this.showPanel();
+    navigation.goBack();
+  },
+})
+
+checkHasProvider = () => {
+  const { appointment } = this.state;
+  const service = appointment.services[0];
+  if (service.employee) {
+    this.handleStartService();
+  } else {
+    this.hideDialog();
+
+    this.props.navigation.navigate('Providers', {
+      headerProps: { title: 'Providers', ...this.cancelButton() },
+      dismissOnSelect: true,
+      selectedService: service,
+      filterByService: true,
+      onChangeProvider: provider => this.handleProviderSelection(provider),
+    });
+  }
+}
+
+
+handleProviderSelection = (provider) => {
+  const { appointment } = this.state;
+  const service = appointment.services[0];
+  service.employee = provider;
+  this.handleStartService();
+}
+
+
 handleStartService = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
@@ -374,8 +409,6 @@ sortItems = (option, items) => {
 renderItem = (row) => {
   const item: QueueItem = row.item;
   const index = row.index;
-
-  debugger //eslint-disable-line
 
   const label = this.getLabelForItem(item);
   const groupLeaderName = this.getGroupLeaderName(item);
