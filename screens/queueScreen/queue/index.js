@@ -9,6 +9,8 @@ import {
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
@@ -38,7 +40,6 @@ const groupColors = [
 ];
 
 const groups = {};
-const assignedColors = [];
 
 class Queue extends React.Component {
 state = {
@@ -71,15 +72,19 @@ componentWillReceiveProps({
     this.setState({ data: sortedItems });
   }
   // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
-  if (searchClient != this.props.searchClient ||
-searchProvider != this.props.searchProvider ||
-filterText != this.props.filterText || (data !== this.props.data && filterText)) {
+  if (searchClient !== this.props.searchClient ||
+    searchProvider !== this.props.searchProvider ||
+    filterText !== this.props.filterText ||
+    (data !== this.props.data && filterText)) {
     this.searchText(filterText, searchClient, searchProvider);
   }
 }
 onChangeFilterResultCount = () => {
-  if (this.props.onChangeFilterResultCount) { this.props.onChangeFilterResultCount(this.state.data.length); }
+  if (this.props.onChangeFilterResultCount) {
+    this.props.onChangeFilterResultCount(this.state.data.length);
+  }
 }
+
 searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
   const { data } = this.props;
   const prevCount = this.state.data.length;
@@ -128,6 +133,12 @@ _onRefresh = () => {
   // FIXME this._refreshData();
   // emulate refresh call
   setTimeout(() => this.setState({ refreshing: false }), 500);
+}
+
+getGroupLeaderName = (item: QueueItem) => {
+  const { groups } = this.props;
+  if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
+  return null;
 }
 
 getLabelForItem = (item) => {
@@ -307,12 +318,37 @@ hideDialog = () => {
   this.setState({ isVisible: false });
 }
 
-getGroupLeaderName = (item: QueueItem) => {
-  const { groups } = this.props;
-  if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
-  return null;
-}
-
+searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
+  const { data } = this.props;
+  const prevCount = this.state.data.length;
+  if (query === '' || (!searchClient && !searchProvider)) {
+    this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
+  }
+  const text = query.toLowerCase();
+  // search by the client full name
+  const filteredData = data.filter(({ client, services }) => {
+  //  if (searchClient) {
+    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+    // if this row is a match, we don't need to check providers
+    if (fullName.toLowerCase().match(text)) { return true; }
+    //  }
+    //    if (searchProvider) {
+    for (let i = 0; i < services.length; i++) {
+      const { employeeFirstName, employeeLastName } = services[i];
+      const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
+      // if this provider is a match, we don't need to check other providers
+      if (fullName.toLowerCase().match(text)) { return true; }
+    }
+    //  }
+    return false;
+  });
+  // if no match, set empty array
+  if (!filteredData || !filteredData.length) { this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined); }
+  // if the matched numbers are equal to the original data, keep it the same
+  else if (filteredData.length === data.length) { this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined); }
+  // else, set the filtered data
+  else { this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined); }
+};
 
 sortItems = (option, items) => {
   let sortedItems = [];
@@ -489,4 +525,19 @@ render() {
   );
 }
 }
+
+
+Queue.defaultProps = {
+
+};
+
+Queue.propTypes = {
+  data: PropTypes.any.isRequired,
+  searchClient: PropTypes.any.isRequired,
+  searchProvider: PropTypes.any.isRequired,
+  filterText: PropTypes.any.isRequired,
+  isWaiting: PropTypes.any.isRequired,
+  onChangeFilterResultCount: PropTypes.any.isRequired,
+};
+
 export default connect(null, actions)(Queue);
