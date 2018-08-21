@@ -26,10 +26,9 @@ const QueueTimeNote = (props) => {
   if (status === 0 || status === 1 || status === 5) {
     const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
     serviceTime = (
-      <Text style={styles.serviceTime}>  exp, start in
-        <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>
-          {timeCheckedIn}m
-        </Text>
+      <Text style={styles.serviceTime}>  exp, start in <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>
+        {timeCheckedIn}m
+      </Text>
       </Text>);
   } else if (status === 6) {
     if (estimatedTime >= 0) {

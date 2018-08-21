@@ -3,6 +3,7 @@ import {
   ScrollView,
   Text,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
@@ -127,9 +128,8 @@ class WalkInScreen extends Component {
         isProviderRequested,
       } = this.state;
 
-      debugger //eslint-disable-line
 
-      console.log('provider ', provider);
+      const providerBlock = provider.isFirstAvailable ? {} : { providerId: provider.id };
 
       const params = {
         clientId: client.id,
@@ -138,7 +138,7 @@ class WalkInScreen extends Component {
         services: [
           {
             serviceId: service.id,
-            providerId: provider.id,
+            ...providerBlock,
             isProviderRequested,
             isFirstAvailable: provider.isFirstAvailable,
           },
@@ -202,39 +202,46 @@ class WalkInScreen extends Component {
       const phones = this.state.client && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
       return (
         <ScrollView style={styles.container}>
-          <SectionTitle value="CLIENT" />
-          <InputGroup>
-            <ClientInput
-              apptBook
-              navigate={this.props.navigation.navigate}
-              label={this.state.client === null ? 'Client' : 'Client'}
-              headerProps={{
+
+          {this.props.walkInState.isLoading ? (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
+        ) : (
+          <View style={styles.container}>
+            <SectionTitle value="CLIENT" />
+            <InputGroup>
+              <ClientInput
+                navigate={this.props.navigation.navigate}
+                label={this.state.client === null ? 'Client' : 'Client'}
+                headerProps={{
               title: 'Clients',
               leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
                 leftButtonOnPress: (navigation) => {
                   navigation.goBack();
                 },
               }}
-              selectedClient={this.state.client}
-              onChange={this.onChangeClient}
-              extraComponents={this.state.client !== null && this.renderExtraClientButtons()}
+                selectedClient={this.state.client}
+                onChange={this.onChangeClient}
+                extraComponents={this.state.client !== null && this.renderExtraClientButtons()}
+              />
+              <InputDivider />
+              <InputLabel label="Email" value={email} />
+              <InputDivider />
+              <InputLabel label="Phone" value={phones} />
+            </InputGroup>
+            <SectionTitle value="SERVICE AND PROVIDER" />
+            <ServiceSection
+              service={this.state.service}
+              provider={this.state.provider}
+              navigate={this.props.navigation.navigate}
+              onRemove={this.handleRemoveService}
+              onUpdateService={this.handleUpdateService}
+              onUpdateProvider={this.handleUpdateProvider}
+              onUpdateIsProviderRequested={this.handleUpdateIsProviderRequested}
+              isProviderRequested={this.state.isProviderRequested}
             />
-            <InputDivider />
-            <InputLabel label="Email" value={email} />
-            <InputDivider />
-            <InputLabel label="Phone" value={phones} />
-          </InputGroup>
-          <SectionTitle value="SERVICE AND PROVIDER" />
-          <ServiceSection
-            service={this.state.service}
-            provider={this.state.provider}
-            navigate={this.props.navigation.navigate}
-            onRemove={this.handleRemoveService}
-            onUpdateService={this.handleUpdateService}
-            onUpdateProvider={this.handleUpdateProvider}
-            onUpdateIsProviderRequested={this.handleUpdateIsProviderRequested}
-            isProviderRequested={this.state.isProviderRequested}
-          />
+          </View>)}
         </ScrollView>
       );
     }

@@ -98,13 +98,23 @@ class queueListItemSummary extends Component {
     this.props.onDonePress();
   };
 
+
+  cancelButton = () => ({
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      navigation.goBack();
+    },
+  })
+
+
 handlePressProvider = () => {
-  this.props.navigation.navigate('ModalProviders', {
-    index: 0,
-    client: this.props.appointment.client,
+  this.props.navigation.navigate('Providers', {
     dismissOnSelect: true,
+    headerProps: { title: 'Providers', ...this.cancelButton() },
+    client: this.props.appointment.client,
     onChangeProvider: data => this.saveQueueProvider(data),
   });
+
   this.props.onDonePress();
 };
 

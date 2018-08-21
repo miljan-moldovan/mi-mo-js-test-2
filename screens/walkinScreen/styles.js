@@ -65,4 +65,6 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   headerLeftIcon: { marginRight: 8, fontSize: 30, color: '#fff' },
+  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+
 });

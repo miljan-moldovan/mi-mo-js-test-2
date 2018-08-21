@@ -281,7 +281,6 @@ handleReturning = (returned) => {
 cancelButton = () => ({
   leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
   leftButtonOnPress: (navigation) => {
-    this.showPanel();
     navigation.goBack();
   },
 })
@@ -299,6 +298,7 @@ checkHasProvider = () => {
       dismissOnSelect: true,
       selectedService: service,
       filterByService: true,
+      showFirstAvailable: false,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }

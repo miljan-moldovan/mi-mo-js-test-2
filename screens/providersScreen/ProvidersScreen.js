@@ -84,6 +84,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 10,
   },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
 });
 
 const FirstAvailableRow = props => (
