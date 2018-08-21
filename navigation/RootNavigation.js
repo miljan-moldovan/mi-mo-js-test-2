@@ -66,6 +66,7 @@ const RootDrawerNavigator = TabNavigator(
         }
         jumpToIndex(scene.index);
       },
+      tabBarVisible: screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',
@@ -80,6 +81,7 @@ const RootDrawerNavigator = TabNavigator(
         backgroundColor: '#F2F2F2',
         borderTopColor: '#9D9D9D',
         borderTopWidth: 1,
+        zIndex: 0,
       },
     },
     tabBarComponent: TabBarBottom,
@@ -103,6 +105,7 @@ function RootNavigator(props) {
         screenProps={{
           isNewApptValid: props.isNewApptValid,
           clientsActions: props.clientsActions,
+          drawerOptions: props.drawerOptions,
         }}
       />
     );
@@ -127,6 +130,9 @@ RootNavigator.propTypes = {
     username: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   }).isRequired,
+  drawerOptions: PropTypes.shape({
+    showTabBar: PropTypes.bool.isRequired,
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -136,6 +142,7 @@ const mapStateToProps = state => ({
   clientsState: state.clientsReducer,
   appointmentNoteState: state.appointmentNoteReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
+  drawerOptions: state.rootDrawerNavigator,
   isNewApptValid: isValidAppointment(state),
 });
 const mapActionsToProps = dispatch => ({

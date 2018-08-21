@@ -2,7 +2,7 @@ import moment, { isDuration } from 'moment';
 import { get, isNil, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
-import { Client, AppointmentBook, Appointment } from '../utilities/apiWrapper';
+import { Settings, Client, AppointmentBook, Appointment } from '../utilities/apiWrapper';
 import {
   ADD_APPOINTMENT,
 } from './appointmentBook';
@@ -127,12 +127,14 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
   const newService = {
     service,
     employee,
-    bookedByEmployee,
     length: serviceLength,
     client: serviceClient,
     requested: getState().newAppointmentReducer.isQuickApptRequested,
     fromTime,
     toTime,
+    bookBetween: get(service, 'bookBetween', false),
+    gapTime: moment.duration(get(service, 'gapDuration', 0)),
+    afterTime: moment.duration(get(service, 'afterDuration', 0)),
   };
   const serviceItem = {
     itemId: uuid(),
@@ -233,7 +235,6 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
       requested: true,
       service,
       employee,
-      bookedByEmployee,
       fromTime,
       toTime,
       bookBetween: get(service, 'bookBetween', false),
@@ -414,15 +415,24 @@ const cleanForm = () => ({
   type: CLEAN_FORM,
 });
 
-const setBookedBy = () => (dispatch, getState) => dispatch({
-  type: SET_BOOKED_BY,
-  data: { bookedByEmployee: getBookedByEmployee(getState()) },
-});
+const setBookedBy = (employee = null) => async (dispatch, getState) => {
+  const currentEmployee = getBookedByEmployee(getState());
+  const forceReceptionistUser = await Settings.getSettingsByName('ForceReceptionistUser');
+  const isBookedByFieldEnabled = forceReceptionistUser.settingValue || isNull(currentEmployee);
+  const bookedByEmployee = currentEmployee || getState().newAppointmentReducer.mainEmployee;
+  dispatch({
+    type: SET_BOOKED_BY,
+    data: {
+      isBookedByFieldEnabled,
+      bookedByEmployee: !isNull(employee) && isBookedByFieldEnabled ? employee : bookedByEmployee,
+    },
+  });
+};
 
-const setMainEmployee = employee => (dispatch) => {
+const setMainEmployee = mainEmployee => (dispatch) => {
   dispatch({
     type: SET_MAIN_EMPLOYEE,
-    data: { employee },
+    data: { mainEmployee },
   });
   return dispatch(setBookedBy());
 };
@@ -535,6 +545,7 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
     client: mainClient,
     bookedByEmployee: get(appt, 'bookedByEmployee', null),
+    mainEmployee: get(appt, 'employee', null),
     guests,
     conflicts: [],
     serviceItems,
@@ -620,7 +631,11 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
     .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
 };
 
-const modifyAppt = (apptId, successCallback = false, errorCallback = false) => (dispatch, getState) => {
+const modifyAppt = (
+  apptId,
+  successCallback = false,
+  errorCallback = false,
+) => (dispatch, getState) => {
   const {
     startTime,
     serviceItems,
