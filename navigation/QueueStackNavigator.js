@@ -200,7 +200,7 @@ const MainNavigator = StackNavigator(
       }),
       navigationOptions: { tabBarVisible: false },
     },
-    ClientsQueue: {
+    ChangeClient: {
       screen: ClientsScreen,
     },
     TurnAway: {

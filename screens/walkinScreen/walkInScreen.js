@@ -205,7 +205,6 @@ class WalkInScreen extends Component {
           <SectionTitle value="CLIENT" />
           <InputGroup>
             <ClientInput
-              apptBook
               navigate={this.props.navigation.navigate}
               label={this.state.client === null ? 'Client' : 'Client'}
               headerProps={{
