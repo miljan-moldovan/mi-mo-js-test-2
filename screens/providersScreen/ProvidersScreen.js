@@ -200,6 +200,7 @@ class ProviderScreen extends React.Component {
     const { navigation: { state, goBack } } = props;
     const params = state.params || {};
     const showFirstAvailable = get(params, 'showFirstAvailable', true);
+    const showEstimatedTime = get(params, 'showEstimatedTime', true);
     const filterList = get(params, 'filterList', false);
     const filterByService = get(params, 'filterByService', false);
     const selectedProvider = get(params, 'selectedProvider', null);
@@ -208,6 +209,7 @@ class ProviderScreen extends React.Component {
       filterByService,
       selectedProvider,
       showFirstAvailable,
+      showEstimatedTime,
       refreshing: false,
       headerProps: {
         title: 'Providers',
@@ -324,7 +326,7 @@ class ProviderScreen extends React.Component {
         </WordHighlighter>
       </View>
       <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        <Text style={[styles.timeLeftText]}>21m</Text>
+        {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
       </View>
       <View style={{ flex: 1, alignItems: 'center' }}>
         {this.state.selectedProvider === item.id && (

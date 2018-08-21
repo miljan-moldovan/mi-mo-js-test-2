@@ -22,14 +22,12 @@ import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';
+
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
 import RecommendationsScreen from '../screens/recommendationsScreen';
-import RecommendProductScreen from '../screens/recommendProductScreen';
-import RecommendProductHeader from '../screens/recommendProductScreen/components/RecommendProductHeader';
-
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
@@ -129,17 +127,6 @@ const MainNavigator = StackNavigator(
       screen: ModifyProductScreen,
       navigationOptions: { tabBarVisible: false },
     },
-    RecommendProduct: {
-      screen: RecommendProductScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <RecommendProductHeader rootProps={rootProps} />,
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-      }),
-    },
-
     Recommendations: {
       screen: RecommendationsScreen,
       navigationOptions: { tabBarVisible: false },
@@ -149,7 +136,7 @@ const MainNavigator = StackNavigator(
       navigationOptions: {
         headerMode: 'none',
         gesturesEnabled: false,
-        header: props => (<View />),
+        header: props => <View />,
       },
     },
     NewAppointment: {
@@ -186,11 +173,7 @@ const MainNavigator = StackNavigator(
       screen: PromotionsScreen,
       navigationOptions: rootProps => ({
         headerTitle: <WalkInStepHeader dataName="selectedPromotion" rootProps={rootProps} />,
-        header: props => (
-          <ImageHeader
-            {...props}
-            {...rootProps}
-          />),
+        header: props => <ImageHeader {...props} {...rootProps} />,
       }),
       navigationOptions: { tabBarVisible: false },
     },
@@ -232,47 +215,48 @@ const MainNavigator = StackNavigator(
   },
 );
 
-
-export default QueueStackNavigator = StackNavigator({
-  Main: {
-    screen: MainNavigator,
-    navigationOptions: { headerMode: 'none' },
-  },
-
-  /** MODAL SCREENS GO HERE * */
-  ModalServices: {
-    screen: ServicesScreen,
-    navigationOptions: {
-
-      tabBarVisible: false,
-      headerMode: 'screen',
-      gesturesEnabled: false,
+export default (QueueStackNavigator = StackNavigator(
+  {
+    Main: {
+      screen: MainNavigator,
+      navigationOptions: { headerMode: 'none' },
     },
-  },
-  ModalProviders: {
-    screen: ProvidersScreen,
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#115ECD',
-        paddingHorizontal: 10,
-        paddingVertical: 14,
-        paddingTop: 20,
-        borderWidth: 0,
-        shadowColor: 'transparent',
-        elevation: 0,
-        borderBottomWidth: 0,
-        justifyContent: 'center',
+
+    /** MODAL SCREENS GO HERE * */
+    ModalServices: {
+      screen: ServicesScreen,
+      navigationOptions: {
+        tabBarVisible: false,
+        headerMode: 'screen',
+        gesturesEnabled: false,
       },
-      tabBarVisible: false,
-      headerMode: 'screen',
-      gesturesEnabled: false,
+    },
+    ModalProviders: {
+      screen: ProvidersScreen,
+      navigationOptions: {
+        headerStyle: {
+          backgroundColor: '#115ECD',
+          paddingHorizontal: 10,
+          paddingVertical: 14,
+          paddingTop: 20,
+          borderWidth: 0,
+          shadowColor: 'transparent',
+          elevation: 0,
+          borderBottomWidth: 0,
+          justifyContent: 'center',
+        },
+        tabBarVisible: false,
+        headerMode: 'screen',
+        gesturesEnabled: false,
+      },
+    },
+    ModalClients: {
+      screen: ClientsScreen,
+      navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
     },
   },
-  ModalClients: {
-    screen: ClientsScreen,
-    navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
+  {
+    mode: 'modal', // Remember to set the root navigator to display modally.
+    //  headerMode: 'none', // This ensures we don't get two top bars.
   },
-}, {
-  mode: 'modal', // Remember to set the root navigator to display modally.
-//  headerMode: 'none', // This ensures we don't get two top bars.
-});
+));
