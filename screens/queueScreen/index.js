@@ -2,13 +2,12 @@
 import React from 'react';
 import {
   Image,
-  StyleSheet,
   Text,
   View,
   Dimensions,
   Animated,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -27,6 +26,8 @@ import Icon from '../../components/UI/Icon';
 import SalonModal from '../../components/SalonModal';
 import SalonTextInput from '../../components/SalonTextInput';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+
+const walkoutImage = require('../../assets/images/walkoutModal/icon_walkout.png');
 
 const WAITING = '0';
 const SERVICED = '1';
@@ -55,8 +56,14 @@ class QueueScreen extends React.Component {
       ),
     };
   };
+
+  constructor(props) {
+    super(props);
+    this.animateText();
+  }
+
+
   state = {
-    refreshing: false,
     index: '0',
     isWalkoutVisible: false,
     walkoutText: '',
@@ -65,10 +72,6 @@ class QueueScreen extends React.Component {
     searchType: '',
     searchWaitingCount: 0,
     searchServiceCount: 0,
-    routes: [
-      { key: WAITING, title: 'Waiting' },
-      { key: SERVICED, title: 'In Service' },
-    ],
     newAppointment: {
       service: null,
       client: null,
@@ -76,13 +79,6 @@ class QueueScreen extends React.Component {
     },
     colorAnimActive: new Animated.Value(0),
     colorAnimInactive: new Animated.Value(0),
-  }
-  searchWaitingRef = null;
-  searchServicingRef = null;
-
-  constructor(props) {
-    super(props);
-    this.animateText();
   }
 
   componentWillMount() {
@@ -92,7 +88,6 @@ class QueueScreen extends React.Component {
     setInterval(this.props.actions.getQueueState, 5000);
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
-    // this._refreshData();
   }
 
   componentDidMount() {
@@ -111,182 +106,33 @@ class QueueScreen extends React.Component {
     this.setState({ searchText }, () => this.props.navigation.setParams({ searchText }));
   }
 
-  _refreshData = () => {
+  onTabPress = ({ route }) => {
+    this.setState({ index: route.key }, this.animateText);
+  }
+
+  onRefresh = () => {
+
+  }
+
+  refreshData = () => {
     this.props.actions.receiveQueue();
   }
 
-  _onRefresh = () => {
-    // this._refreshData();
-    // this.setState({ refreshing: true });
-    // // FIXME this._refreshData();
-    // // emulate refresh call
-    // setTimeout(() => this.setState({ refreshing: false }), 500);
-  }
-
-  _renderLabel = ({ position, navigationState }) => ({ route }) => {
-    const focused = this.state.index.toString() === route.key.toString();
-
-    const interpolateColorActive = this.state.colorAnimActive.interpolate({
-      inputRange: [0, 200],
-      outputRange: ['#FFFFFF', '#1963CE'],
-    });
-
-    const interpolateColorInactive = this.state.colorAnimInactive.interpolate({
-      inputRange: [0, 200],
-      outputRange: ['#1963CE', '#FFFFFF'],
-    });
-
-    return (
-      <View style={styles.tabLabelContainer}>
-        <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
-          <Animated.Text style={[styles.tabQueueCounterText, { color: focused ? interpolateColorActive : interpolateColorInactive }]}>
-            {route.key === WAITING ? this.props.waitingQueue.length : this.props.serviceQueue.length}
-          </Animated.Text>
-        </View>
-        <Animated.Text style={{
-          fontFamily: 'Roboto-Medium',
-          fontSize: 12,
-          color: focused ? interpolateColorActive : interpolateColorInactive,
-        }}
-        >
-          {route.title}
-        </Animated.Text>
-      </View>
-    );
-  };
-  // }
-  _renderBar = (props) => {
-    const { guestWaitMins } = this.props.queueState ? this.props.queueState : {};
-    let waitTime = '-';
-    if (guestWaitMins > 0) {
-      waitTime = `${guestWaitMins}`;
-    } else if (guestWaitMins === 0) {
-      waitTime = '0';
-    }
-
-    return (
-      <View>
-        <TabBar
-          {...props}
-          tabStyle={[styles.tab, { width: initialLayout.width === 320 ? 100 : 120 }]}
-          style={[styles.tabContainer,
-            {
-              width: initialLayout.width === 320 ? 200 : 240,
-              marginLeft: initialLayout.width === 320 ? 10 : 12,
-            }]}
-          renderLabel={this._renderLabel(props)}
-          indicatorStyle={styles.indicator}
-          onTabPress={this.onTabPress}
-        />
-        <View style={styles.summaryBar}>
-          <Text style={styles.summaryBarTextLeft}><Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY</Text>
-          <Text style={styles.summaryBarTextRight}><Text style={styles.summaryBarTextRightEm}>{waitTime}m </Text> Est. Wait</Text>
-        </View>
-      </View>
-    );
-  }
-
-  _renderScene = ({ route }) => {
-    const {
-      navigation, waitingQueue, serviceQueue, groups, loading,
-    } = this.props;
-    switch (route.key) {
-      case WAITING:
-        return (
-          <Queue data={waitingQueue} groups={groups} navigation={navigation} loading={loading} isWaiting />
-        );
-      case SERVICED:
-        return (
-          <Queue data={serviceQueue} groups={groups} navigation={navigation} loading={loading} />
-        );
-      default:
-        return route;
-    }
-  }
   handleSearchClients = () => {
     this.setState({ searchType: SEARCH_CLIENTS });
   }
   handleSearchProviders = () => {
     this.setState({ searchType: SEARCH_PROVIDERS });
   }
+
   updateSearchWaitingCount = searchWaitingCount => this.setState({ searchWaitingCount });
   updateSearchServiceCount = searchServiceCount => this.setState({ searchServiceCount });
 
-  _renderSearchResults = () => {
-    const {
-      navigation, waitingQueue, serviceQueue, groups, loading,
-    } = this.props;
-    const {
-      searchType, searchWaitingCount, searchServiceCount, searchText: filterText,
-    } = this.state;
-    const p = {
-      groups,
-      navigation,
-      loading,
-      filterText,
-      searchClient: searchType === SEARCH_CLIENTS,
-      searchProvider: searchType === SEARCH_PROVIDERS,
-    };
-    const active = { backgroundColor: 'white' };
-    const activeText = { color: '#115ECD' };
-
-    return (
-      <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-        <KeyboardAwareScrollView>
-          {!searchWaitingCount && !searchServiceCount ? (
-            <View style={styles.searchEmpty}>
-              <View style={styles.searchEmptyIconContainer}>
-                {/* <FontAwesome style={styles.searchEmptyIcon}>{Icons.search}</FontAwesome> */}
-                <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
-              </View>
-              <Text style={styles.searchEmptyText}>
-                Results matching <Text style={{ color: 'black' }}>“{filterText}”</Text> were not found.
-              </Text>
-              <Text style={styles.searchEmptyTextSmall}>
-                Check your spelling and try again or tap on one of the suggestions below
-              </Text>
-            </View>
-          ) : null}
-          <Queue
-            isWaiting
-            onChangeFilterResultCount={this.updateSearchWaitingCount}
-            data={waitingQueue}
-            headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
-            {...p}
-          />
-          <Queue
-            onChangeFilterResultCount={this.updateSearchServiceCount}
-            data={serviceQueue}
-            headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
-            {...p}
-          />
-        </KeyboardAwareScrollView>
-        {/*  <View style={styles.searchTypeContainer}>
-
-          <View style={styles.searchType}>
-            <SalonTouchableOpacity
-              style={[styles.searchClient, searchType === SEARCH_CLIENTS ? active : null]}
-              onPress={this.handleSearchClients}
-            >
-              <Text style={[styles.searchTypeText, searchType === SEARCH_CLIENTS ? activeText : null]}>Client</Text>
-            </SalonTouchableOpacity>
-            <SalonTouchableOpacity
-              style={[styles.searchProvider, searchType === SEARCH_PROVIDERS ? active : null]}
-              onPress={this.handleSearchProviders}
-            >
-              <Text style={[styles.searchTypeText, searchType === SEARCH_PROVIDERS ? activeText : null]}>Provider</Text>
-            </SalonTouchableOpacity>
-          </View>
-        </View> */}
-      </View>
-    );
-  }
-
-  _handleIndexChange = (index) => {
+  handleIndexChange = (index) => {
     this.setState({ index });
   };
 
-  _handleWalkInPress = () => {
+  handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
 
     this.setState({
@@ -369,21 +215,17 @@ class QueueScreen extends React.Component {
     });
   }
 
-  _handleWalkOutPress = () => {
+  handleWalkOutPress = () => {
     this.setState({ isWalkoutVisible: true });
   }
 
-  _closeWalkOut = () => {
+  closeWalkOut = () => {
     this.setState({ isWalkoutVisible: false });
   }
 
-  _handleWalkOutTextChange = (ev) => {
+  handleWalkOutTextChange = (ev) => {
     this.setState({ walkoutText: ev.nativeEvent.text });
   };
-
-  onTabPress = ({ route }) => {
-    this.setState({ index: route.key }, this.animateText);
-  }
 
   animateText = () => {
     Animated.loop(Animated.timing(this.state.colorAnimActive, {
@@ -397,72 +239,251 @@ class QueueScreen extends React.Component {
     }), { iterations: 1 }).start();
   }
 
-  render() {
-    //
-    //
-    if (this.state.searchMode) { return this._renderSearchResults(); }
 
+  searchWaitingRef = null;
+  searchServicingRef = null;
+
+
+  renderLabel = () => ({ route }) => {
+    const focused = this.state.index.toString() === route.key.toString();
+
+    const interpolateColorActive = this.state.colorAnimActive.interpolate({
+      inputRange: [0, 200],
+      outputRange: ['#FFFFFF', '#1963CE'],
+    });
+
+    const interpolateColorInactive = this.state.colorAnimInactive.interpolate({
+      inputRange: [0, 200],
+      outputRange: ['#1963CE', '#FFFFFF'],
+    });
 
     return (
-      <View style={styles.container}>
-        <TabView
-          style={{
-            flex: 1,
-            backgroundColor: '#115ECD',
-            borderWidth: 0,
-          }}
-          navigationState={this.state}
-          renderScene={this._renderScene}
-          renderTabBar={this._renderBar}
-          onIndexChange={this._handleIndexChange}
-          initialLayout={initialLayout}
+      <View style={styles.tabLabelContainer}>
+        <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
+          <Animated.Text style={[styles.tabQueueCounterText,
+            { color: focused ? interpolateColorActive : interpolateColorInactive }]}
+          >
+            {route.key === WAITING ?
+              this.props.waitingQueue.length : this.props.serviceQueue.length}
+          </Animated.Text>
+        </View>
+        <Animated.Text style={[styles.animatedText,
+          { color: focused ? interpolateColorActive : interpolateColorInactive }]}
+        >
+          {route.title}
+        </Animated.Text>
+      </View>
+    );
+  };
 
-        // swipeEnabled={false}
-        />
-        {
+
+      renderBar = (props) => {
+        const { guestWaitMins } = this.props.queueState ? this.props.queueState : {};
+        let waitTime = '-';
+        if (guestWaitMins > 0) {
+          waitTime = `${guestWaitMins}`;
+        } else if (guestWaitMins === 0) {
+          waitTime = '0';
+        }
+
+        return (
+          <View>
+            <TabBar
+              {...props}
+              tabStyle={[styles.tab, { width: initialLayout.width === 320 ? 100 : 120 }]}
+              style={[styles.tabContainer,
+                {
+                  width: initialLayout.width === 320 ? 200 : 240,
+                  marginLeft: initialLayout.width === 320 ? 10 : 12,
+                }]}
+              renderLabel={this.renderLabel(props)}
+              indicatorStyle={styles.indicator}
+              onTabPress={this.onTabPress}
+            />
+            <View style={styles.summaryBar}>
+              <Text style={styles.summaryBarTextLeft}>
+                <Text style={styles.summaryBarTextLeftEm}>
+                  {this.props.queueLength}
+                </Text> CLIENTS TODAY
+              </Text>
+              <Text style={styles.summaryBarTextRight}>
+                <Text style={styles.summaryBarTextRightEm}>
+                  {waitTime}m
+                </Text> Est. Wait
+              </Text>
+            </View>
+          </View>
+        );
+      }
+
+      renderScene = ({ route }) => {
+        const {
+          navigation, waitingQueue, serviceQueue, groups, loading,
+        } = this.props;
+        switch (route.key) {
+          case WAITING:
+            return (
+              <Queue
+                data={waitingQueue}
+                groups={groups}
+                navigation={navigation}
+                loading={loading}
+                isWaiting
+              />
+            );
+          case SERVICED:
+            return (
+              <Queue
+                data={serviceQueue}
+                groups={groups}
+                navigation={navigation}
+                loading={loading}
+              />
+            );
+          default:
+            return route;
+        }
+      }
+
+      renderSearchResults = () => {
+        const {
+          navigation, waitingQueue, serviceQueue, groups, loading,
+        } = this.props;
+        const {
+          searchType, searchWaitingCount, searchServiceCount, searchText: filterText,
+        } = this.state;
+        const p = {
+          groups,
+          navigation,
+          loading,
+          filterText,
+          searchClient: searchType === SEARCH_CLIENTS,
+          searchProvider: searchType === SEARCH_PROVIDERS,
+        };
+
+        return (
+          <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
+            <KeyboardAwareScrollView>
+              {!searchWaitingCount && !searchServiceCount ? (
+                <View style={styles.searchEmpty}>
+                  <View style={styles.searchEmptyIconContainer}>
+                    <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
+                  </View>
+                  <Text style={styles.searchEmptyText}>
+                    Results matching
+                    <Text style={styles.notFoundText}>“{filterText}”</Text> were not found.
+                  </Text>
+                  <Text style={styles.searchEmptyTextSmall}>
+                    Check your spelling and try again or tap on one of the suggestions below
+                  </Text>
+                </View>
+              ) : null}
+              <Queue
+                isWaiting
+                onChangeFilterResultCount={this.updateSearchWaitingCount}
+                data={waitingQueue}
+                headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
+                {...p}
+              />
+              <Queue
+                onChangeFilterResultCount={this.updateSearchServiceCount}
+                data={serviceQueue}
+                headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
+                {...p}
+              />
+            </KeyboardAwareScrollView>
+          </View>
+        );
+      }
+
+      render() {
+        if (this.state.searchMode) { return this.renderSearchResults(); }
+
+        return (
+          <View style={styles.container}>
+            <TabView
+              style={styles.tabViewStyle}
+              navigationState={this.state}
+              renderScene={this.renderScene}
+              renderTabBar={this.renderBar}
+              onIndexChange={this.handleIndexChange}
+              initialLayout={initialLayout}
+            />
+            {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
-            <SalonTouchableOpacity onPress={this._handleWalkInPress} style={styles.walkinButton}>
+            <SalonTouchableOpacity onPress={this.handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
               <Icon style={styles.walkinButtonIcon} color="white" name="signIn" />
             </SalonTouchableOpacity>
           )
         }
-        <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this._closeWalkOut}>
-          {[
-            <View key={Math.random().toString()} style={styles.walkoutContainer}>
-              <View style={styles.walkoutImageContainer}>
-                <Image style={styles.walkoutImage} source={require('../../assets/images/walkoutModal/icon_walkout.png')} />
-              </View>
-              <Text style={styles.walkoutText}>Walk-out reason:
-                <Text style={styles.walkoutTextBold}>Other</Text>
-              </Text>
-              <View style={styles.walkoutTextContainer}>
-                <SalonTextInput
-                  multiline
-                  placeholder="Please insert other reasons"
-                  placeholderColor="#0A274A"
-                  style={styles.walkoutInput}
-                  placeholderStyle={styles.walkoutPlaceholder}
-                  text={this.state.walkoutText}
-                  onChange={this._handleWalkOutTextChange}
-                />
-              </View>
-              <View style={styles.walkoutButtonContainer}>
-                <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonCancel}>
-                  <Text style={styles.walkoutTextCancel}>Cancel</Text>
-                </SalonTouchableOpacity>
-                <SalonTouchableOpacity onPress={this._closeWalkOut} style={styles.walkoutButtonOk}>
-                  <Text style={styles.walkoutTextOk}>Ok</Text>
-                </SalonTouchableOpacity>
-              </View>
-            </View>,
+            <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this.closeWalkOut}>
+              {[
+                <View key={Math.random().toString()} style={styles.walkoutContainer}>
+                  <View style={styles.walkoutImageContainer}>
+                    <Image style={styles.walkoutImage} source={walkoutImage} />
+                  </View>
+                  <Text style={styles.walkoutText}>Walk-out reason:
+                    <Text style={styles.walkoutTextBold}>Other</Text>
+                  </Text>
+                  <View style={styles.walkoutTextContainer}>
+                    <SalonTextInput
+                      multiline
+                      placeholder="Please insert other reasons"
+                      placeholderColor="#0A274A"
+                      style={styles.walkoutInput}
+                      placeholderStyle={styles.walkoutPlaceholder}
+                      text={this.state.walkoutText}
+                      onChange={this.handleWalkOutTextChange}
+                    />
+                  </View>
+                  <View style={styles.walkoutButtonContainer}>
+                    <SalonTouchableOpacity
+                      onPress={this.closeWalkOut}
+                      style={styles.walkoutButtonCancel}
+                    >
+                      <Text style={styles.walkoutTextCancel}>Cancel</Text>
+                    </SalonTouchableOpacity>
+                    <SalonTouchableOpacity
+                      onPress={this.closeWalkOut}
+                      style={styles.walkoutButtonOk}
+                    >
+                      <Text style={styles.walkoutTextOk}>Ok</Text>
+                    </SalonTouchableOpacity>
+                  </View>
+                </View>,
           ]}
-        </SalonModal>
-      </View>
-    );
-  }
+            </SalonModal>
+          </View>
+        );
+      }
 }
-const mapStateToProps = (state, ownProps) => ({
+
+QueueScreen.defaultProps = {
+
+};
+
+QueueScreen.propTypes = {
+  actions: PropTypes.shape({
+    getBlockTimesReasons: PropTypes.func.isRequired,
+    receiveQueue: PropTypes.any.isRequired,
+    getQueueState: PropTypes.any.isRequired,
+  }).isRequired,
+
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
+  }).isRequired,
+  settings: PropTypes.any.isRequired,
+  queueState: PropTypes.any.isRequired,
+  navigation: PropTypes.any.isRequired,
+  groups: PropTypes.any.isRequired,
+  loading: PropTypes.any.isRequired,
+  waitingQueue: PropTypes.any.isRequired,
+  serviceQueue: PropTypes.any.isRequired,
+  queueLength: PropTypes.any.isRequired,
+};
+
+const mapStateToProps = state => ({
   waitingQueue: state.queue.waitingQueue,
   queueState: state.queue.queueState,
   serviceQueue: state.queue.serviceQueue,

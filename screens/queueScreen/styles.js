@@ -313,4 +313,14 @@ export default StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  animateText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 12,
+  },
+  notFoundText: { color: 'black' },
+  tabViewStyle: {
+    flex: 1,
+    backgroundColor: '#115ECD',
+    borderWidth: 0,
+  },
 });
