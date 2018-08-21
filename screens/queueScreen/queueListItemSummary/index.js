@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper';
@@ -10,11 +11,11 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './styles';
 
 
-class queueListItemSummary extends React.Component {
+class queueListItemSummary extends Component {
   saveQueueService = (service) => {
     const newServices = [];
 
-    for (let i = 0; i < this.props.services.length; i++) {
+    for (let i = 0; i < this.props.services.length; i += 1) {
       const oldService = this.props.services[i];
 
       let newService = {
@@ -45,17 +46,13 @@ class queueListItemSummary extends React.Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    }).then((response) => {
-
-
-    }).catch((error) => {
     });
   }
 
   saveQueueProvider = (provider) => {
     const newServices = [];
 
-    for (let i = 0; i < this.props.services.length; i++) {
+    for (let i = 0; i < this.props.services.length; i += 1) {
       const service = this.props.services[i];
 
       let newService = {
@@ -86,10 +83,6 @@ class queueListItemSummary extends React.Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    }).then((response) => {
-
-
-    }).catch((error) => {
     });
   }
 
@@ -105,7 +98,7 @@ class queueListItemSummary extends React.Component {
     this.props.onDonePress();
   };
 
-handlePressProvider = (service) => {
+handlePressProvider = () => {
   this.props.navigation.navigate('ModalProviders', {
     index: 0,
     client: this.props.appointment.client,
@@ -134,7 +127,11 @@ render() {
             borderWidth={2}
             wrapperStyle={styles.providerRound}
             width={26}
-            image={{ uri: getEmployeePhoto(!this.props.service.isFirstAvailable ? this.props.service.employeeId : 0) }}
+            image={{
+              uri:
+              getEmployeePhoto(!this.props.service.isFirstAvailable ?
+              this.props.service.employeeId : 0),
+            }}
             hasBadge
             badgeComponent={
               <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
@@ -153,10 +150,23 @@ render() {
         </View>
       </SalonTouchableOpacity>
     </View>
-          </View>);
+  </View>);
 }
 }
 
-// export default queueListItemSummary;
+
+queueListItemSummary.defaultProps = {
+
+};
+
+queueListItemSummary.propTypes = {
+  services: PropTypes.any.isRequired,
+  service: PropTypes.any.isRequired,
+  appointment: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  putQueue: PropTypes.any.isRequired,
+  onDonePress: PropTypes.any.isRequired,
+};
+
 
 export default connect(null, actions)(queueListItemSummary);
