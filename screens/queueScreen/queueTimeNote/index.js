@@ -11,7 +11,7 @@ const QueueTimeNote = (props) => {
   const { item, type } = props;
 
   let estimatedTime = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-    ? moment((item.estimatedTime, 'hh:mm:ss').hours() * 60) + moment(item.estimatedTime, 'hh:mm:ss').minutes()
+    ? (moment(item.estimatedTime, 'hh:mm:ss').hours() * 60) + moment(item.estimatedTime, 'hh:mm:ss').minutes()
     : 0;
 
   if (item.estimatedTime && item.estimatedTime[0] === '-') {

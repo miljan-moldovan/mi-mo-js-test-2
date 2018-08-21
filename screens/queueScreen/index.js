@@ -21,7 +21,7 @@ import checkinActions from '../../actions/checkin';
 import serviceActions from '../../actions/service';
 import walkInActions from '../../actions/walkIn';
 import Queue from './queue';
-import QueueHeader from './components/QueueHeader';
+import QueueHeader from './queueHeader';
 import Icon from '../../components/UI/Icon';
 import SalonModal from '../../components/SalonModal';
 import SalonTextInput from '../../components/SalonTextInput';
@@ -77,6 +77,10 @@ class QueueScreen extends React.Component {
       client: null,
       provider: null,
     },
+    routes: [
+      { key: WAITING, title: 'Waiting' },
+      { key: SERVICED, title: 'In Service' },
+    ],
     colorAnimActive: new Animated.Value(0),
     colorAnimInactive: new Animated.Value(0),
   }
