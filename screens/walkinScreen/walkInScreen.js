@@ -127,7 +127,7 @@ class WalkInScreen extends Component {
         isProviderRequested,
       } = this.state;
 
-      debugger //eslint-disable-line
+
 
       console.log('provider ', provider);
 

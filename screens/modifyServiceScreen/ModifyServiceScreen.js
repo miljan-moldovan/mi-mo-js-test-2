@@ -2,10 +2,8 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
-
 import {
   InputGroup,
   InputDivider,
@@ -16,53 +14,45 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
 import * as actions from '../../actions/queue';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-});
+import styles from './styles';
 
 export default class ModifyServiceScreen extends React.Component {
-  static navigationOptions = rootProps => ({
-    headerTitle: (
-      <Text style={styles.titleText}>
-        {'service' in rootProps.navigation.state.params ? 'Modify Service' : 'Add Service'}
-      </Text>
-    ),
-    headerLeft:
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+    // const canSave = params.canSave || false;
+    const canSave = true;
 
-  <SalonTouchableOpacity
-    onPress={() => { rootProps.navigation.goBack(); }}
-  >
-    <Icon
-      name="angleLeft"
-      type="regularFree"
-      color="white"
-      size={26}
-    />
-  </SalonTouchableOpacity>,
+    return {
+      tabBarVisible: false,
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>
+            {'service' in params ? 'Modify Service' : 'Add Service'}
+          </Text>
+        </View>
+      ),
 
-    headerRight: (
-      <SalonTouchableOpacity
-        wait={3000}
-        onPress={rootProps.navigation.state.params.onSave}
-      >
-        <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
-      </SalonTouchableOpacity>
-    ),
-  });
+      headerLeft: (
+        <SalonTouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.leftButtonText}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity
+          disabled={!canSave}
+          onPress={() => {
+          if (params.onSave) {
+            params.onSave();
+          }
+        }}
+        >
+          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+        </SalonTouchableOpacity>
+      ),
+    };
+  }
 
   constructor(props) {
     super(props);
@@ -70,23 +60,34 @@ export default class ModifyServiceScreen extends React.Component {
 
     this.props.navigation.setParams({ ...params, onSave: this.onSave.bind(this) });
 
+    debugger //eslint-disable-line
+
     this.state = {
       index: 'index' in params ? params.index : null,
       service: 'service' in params ? params.service : null,
       services: 'services' in params ? params.services : null,
       selectedService: 'service' in params ? params.service : null,
       appointment: 'appointment' in params ? params.appointment : null,
-      selectedProvider: 'service' in params ? {
-        id: params.service ? (!params.service.isFirstAvailable ? params.service.employeeId : 0) : null,
-        name: params.service ? (!params.service.isFirstAvailable ? params.service.employeeFirstName : 'First') : null,
-        lastName: params.service ? (!params.service.isFirstAvailable ? params.service.employeeLastName : 'Available') : null,
-      } : null,
+      selectedProvider: 'service' in params ? params.service.employee : null,
       selectedPromotion: 'promotion' in params ? params.promotion : null,
       providerRequested: false,
       price: 'service' in params ? params.service.price : 0,
       discount: '0',
     };
   }
+
+  state = {
+    index: null,
+    service: null,
+    services: null,
+    selectedService: null,
+    appointment: null,
+    selectedProvider: null,
+    selectedPromotion: null,
+    providerRequested: false,
+    price: 0,
+    discount: '0',
+  };
 
   onSave = () => {
     alert('Not implemented');
@@ -143,69 +144,90 @@ export default class ModifyServiceScreen extends React.Component {
     });
   }
 
+onChangeProvider = (provider) => {
+  this.setState({
+    selectedProvider: provider,
+  });
+}
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <InputGroup style={{ marginTop: 16 }}>
-          <ServiceInput
-            navigate={this.props.navigation.navigate}
-            selectedService={this.state.selectedService}
-            onChange={(selected) => {
-              this.setState({
-                selectedService: selected,
-              });
-            }}
-          />
-          <InputDivider />
-          <ProviderInput
-            navigate={this.props.navigation.navigate}
-            selectedProvider={this.state.selectedProvider}
-            onChange={(provider) => {
-              this.setState({
-                selectedProvider: provider,
-              });
-            }}
-          />
-          {this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable && <InputDivider />}
-          {this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable && <InputSwitch
-            value={this.state.providerRequested}
-            onChange={providerRequested => this.setState({ providerRequested })}
-            text="Provider is requested?"
-          />}
-        </InputGroup>
-        <SectionDivider />
-        <InputGroup>
-          <PromotionInput
-            navigate={this.props.navigation.navigate}
-            onChange={(promotion) => {
+cancelButton = () => ({
+  leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+  leftButtonOnPress: (navigation) => {
+    navigation.goBack();
+  },
+})
+
+handleSelectService = (selected) => {
+  this.setState({
+    selectedService: selected,
+  });
+}
+
+render() {
+  return (
+    <View style={styles.container}>
+      <InputGroup style={{ marginTop: 16 }}>
+        <ServiceInput
+          noPlaceholder
+          selectedProvider={this.state.selectedProvider}
+          navigate={this.props.navigation.navigate}
+          selectedService={this.state.selectedService}
+          onChange={this.handleSelectService}
+          headerProps={{ title: 'Services', ...this.cancelButton() }}
+        />
+        <InputDivider />
+        <ProviderInput
+          noPlaceholder
+          showFirstAvailable={false}
+          filterByService
+          style={styles.innerRow}
+          selectedProvider={this.state.selectedProvider}
+          label="Provider"
+          iconStyle={styles.carretIcon}
+          avatarSize={20}
+          navigate={this.props.navigation.navigate}
+          headerProps={{ title: 'Providers', ...this.cancelButton() }}
+          onChange={this.onChangeProvider}
+        />
+        {this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable && <InputDivider />}
+        {this.state.selectedProvider && !this.state.selectedProvider.isFirstAvailable && <InputSwitch
+          value={this.state.providerRequested}
+          onChange={providerRequested => this.setState({ providerRequested })}
+          text="Provider is requested?"
+        />}
+      </InputGroup>
+      <SectionDivider />
+      <InputGroup>
+        <PromotionInput
+          navigate={this.props.navigation.navigate}
+          onChange={(promotion) => {
               this.setState({ selectedPromotion: promotion });
             }}
-          />
-          <InputDivider />
-          <InputLabel label="Discount" value={`${this.state.discount}`} />
-          <InputLabel label="Price" value={`$${this.state.price}`} />
-        </InputGroup>
-        <SectionDivider />
-        {this.state.index !== null && (
-          <InputGroup>
-            <SalonTouchableOpacity
-              style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
-              onPress={() => {
+        />
+        <InputDivider />
+        <InputLabel label="Discount" value={`${this.state.discount}`} />
+        <InputLabel label="Price" value={`$${this.state.price}`} />
+      </InputGroup>
+      <SectionDivider />
+      {this.state.index !== null && (
+      <InputGroup>
+        <SalonTouchableOpacity
+          style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
+          onPress={() => {
                 this.removeService(this.state.index);
                 this.props.navigation.goBack();
               }}
-            >
-              <Text style={{
+        >
+          <Text style={{
               fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
               }}
-              >
+          >
               Remove Service
-              </Text>
-            </SalonTouchableOpacity>
-          </InputGroup>
+          </Text>
+        </SalonTouchableOpacity>
+      </InputGroup>
       )}
-      </View>
-    );
-  }
+    </View>
+  );
+}
 }

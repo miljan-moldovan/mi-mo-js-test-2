@@ -236,7 +236,7 @@ const caretRight = (
 
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
-  const providerName = !props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available';
+  const providerName = !props.service.isFirstAvailable ? `${props.service.employee.name} ${props.service.employee.lastName}` : 'First Available';
 
   return (
     <SalonCard
@@ -478,6 +478,7 @@ class AppointmentDetails extends React.Component {
   }
 
   handlePressService = (service, index) => {
+
     this.props.navigation.navigate('Service', {
       service,
       index,
