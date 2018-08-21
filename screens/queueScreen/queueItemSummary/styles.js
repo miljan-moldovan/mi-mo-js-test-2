@@ -121,4 +121,16 @@ export default StyleSheet.create({
     width: 10,
     color: '#53646F',
   },
+  bookedbyWebStyle: {
+    backgroundColor: '#115ECD',
+    width: 16,
+    height: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
+    marginTop: 2,
+  },
+  bookedbyWebText: { fontWeight: '700', color: '#FFFFFF', fontSize: 8 },
+  clientIcon: { marginLeft: 5 },
 });
