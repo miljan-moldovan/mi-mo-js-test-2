@@ -109,7 +109,7 @@ handlePressProvider = () => {
 };
 
 render() {
-  const employeeInitials = this.props.service.employeeFirstName ? `${this.props.service.employeeFirstName[0]}${this.props.service.employeeLastName[0]}` : '';
+  const employeeInitials = this.props.service.employee.fullName ? `${this.props.service.employee.name[0]}${this.props.service.employee.lastName[0]}` : '';
   return (<View>
     <View style={styles.serviceContainer}>
       <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
@@ -143,7 +143,7 @@ render() {
               </View>
 }
           />
-          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employeeFirstName ? `${this.props.service.employeeFirstName} ${this.props.service.employeeLastName}` : 'First Available'}</Text>
+          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employee.fullName ? `${this.props.service.employee.fullName}` : 'First Available'}</Text>
           <View style={styles.iconContainer}>
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
           </View>
