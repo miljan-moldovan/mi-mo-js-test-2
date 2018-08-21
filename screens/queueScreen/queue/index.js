@@ -101,8 +101,9 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
     //  }
     //    if (searchProvider) {
     for (let i = 0; i < services.length; i++) {
-      const { employeeFirstName, employeeLastName } = services[i];
-      const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
+      const { employee } = services[i];
+
+      const fullName = `${employee.fullName || ''}`;
       // if this provider is a match, we don't need to check other providers
       if (fullName.toLowerCase().match(text)) { return true; }
     }
@@ -334,8 +335,8 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
     //  }
     //    if (searchProvider) {
     for (let i = 0; i < services.length; i++) {
-      const { employeeFirstName, employeeLastName } = services[i];
-      const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
+      const { employee } = services[i];
+      const fullName = `${employee.fullName || ''}`;
       // if this provider is a match, we don't need to check other providers
       if (fullName.toLowerCase().match(text)) { return true; }
     }
@@ -374,11 +375,13 @@ renderItem = (row) => {
   const item: QueueItem = row.item;
   const index = row.index;
 
+  debugger //eslint-disable-line
+
   const label = this.getLabelForItem(item);
   const groupLeaderName = this.getGroupLeaderName(item);
   const firstService = item.services[0] || {};
   const serviceName = (firstService.serviceName || '').toUpperCase();
-  const employee = !firstService.isFirstAvailable && firstService.employeeFirstName ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
+  const employee = !firstService.isFirstAvailable && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
 
   const isBookedByWeb = item.queueType === 3;
 
