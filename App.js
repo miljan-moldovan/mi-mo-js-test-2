@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 
-export default class App extends Component<{}> {
+export default class App extends Component {
   state = {
     isLoadingComplete: true,
     storeIsReady: false,
