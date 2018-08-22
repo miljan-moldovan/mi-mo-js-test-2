@@ -59,20 +59,37 @@ translateY = value => Animated.timing( // Animate over time
 ); // Starts the animation
 
 renderBtnContainer = () => {
-  let isActiveCheckin;
+  let isActiveCheckin = false;
   let isDisabledReturnLater;
   let returned;
   let isActiveWalkOut;
   let isActiveFinish;
   let isActiveWaiting = true;
+  let isAppointment = true;
+  let isActiveUnCheckin = false;
+  let isDisabledStart = true;
 
   if (this.props.appointment) {
     returned = this.props.appointment.status === StatusEnum.returningLater;
-    isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment);
+    isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment &&
+    !(this.props.appointment.status === StatusEnum.checkedIn));
+
+    isAppointment = this.props.appointment.queueType === QueueTypes.PosAppointment;
 
     if (this.props.appointment.status === StatusEnum.notArrived) {
       isDisabledReturnLater = true;
       isActiveCheckin = true;
+    }
+
+    if (this.props.appointment.status === StatusEnum.checkedIn ||
+      this.props.appointment.status === StatusEnum.notArrived ||
+      this.props.appointment.status === StatusEnum.returningLater
+    ) {
+      isDisabledStart = false;
+    }
+
+    if (isAppointment && this.props.appointment.status === StatusEnum.checkedIn) {
+      isActiveUnCheckin = true;
     }
 
     if (this.props.appointment.status === StatusEnum.inService) {
@@ -88,19 +105,33 @@ renderBtnContainer = () => {
   if (this.props.isWaiting) {
     return (
       <View style={styles.btnContainer}>
-        <SalonTouchableOpacity
-          onPress={this.props.onPressSummary.checkIn}
-          disabled={!isActiveCheckin}
-        >
-          <View style={styles.btnGroup}>
-            <View style={!isActiveCheckin ?
-              [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}
-            >
-              <Icon name="check" size={16} color="#fff" type="solid" />
+
+        {isActiveUnCheckin ?
+          <SalonTouchableOpacity
+            onPress={() => this.props.onPressSummary.checkIn(isActiveCheckin)}
+          >
+            <View style={styles.btnGroup}>
+              <View style={styles.btnBottom}>
+                <Icon name="check" size={16} color="#fff" type="solid" />
+              </View>
+              <Text style={styles.btnbottomText}>Uncheck-in</Text>
             </View>
-            <Text style={styles.btnbottomText}>Check-in</Text>
-          </View>
-        </SalonTouchableOpacity>
+          </SalonTouchableOpacity>
+          :
+          <SalonTouchableOpacity
+            onPress={() => this.props.onPressSummary.checkIn(isActiveCheckin)}
+            disabled={!isActiveCheckin}
+          >
+            <View style={styles.btnGroup}>
+              <View style={!isActiveCheckin ?
+                  [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}
+              >
+                <Icon name="check" size={16} color="#fff" type="solid" />
+              </View>
+              <Text style={styles.btnbottomText}>Check-in</Text>
+            </View>
+          </SalonTouchableOpacity>
+        }
         <SalonTouchableOpacity
           onPress={() => this.props.onPressSummary.walkOut(isActiveWalkOut)}
         >
@@ -134,11 +165,11 @@ renderBtnContainer = () => {
         </SalonTouchableOpacity>
         <SalonTouchableOpacity
           onPress={this.props.onPressSummary.toService}
-          disabled={(returned || isActiveCheckin)}
+          disabled={isDisabledStart}
         >
           <View style={styles.btnGroup}>
 
-            <View style={(returned || isActiveCheckin) ?
+            <View style={isDisabledStart ?
               [styles.btnBottom, styles.btnDisabled] : styles.btnBottom}
             >
               <Icon name="play" size={16} color="#fff" type="solid" />
