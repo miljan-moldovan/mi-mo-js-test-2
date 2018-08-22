@@ -11,6 +11,9 @@ import {
   CLIENT_CHECKED_IN,
   CLIENT_CHECKED_IN_FAILED,
   CLIENT_CHECKED_IN_RECEIVED,
+  CLIENT_UNCHECKED_IN,
+  CLIENT_UNCHECKED_IN_FAILED,
+  CLIENT_UNCHECKED_IN_RECEIVED,
   CLIENT_RETURNED_LATER,
   CLIENT_RETURNED_LATER_FAILED,
   CLIENT_RETURNED_LATER_RECEIVED,
@@ -190,8 +193,6 @@ export default (state = initialState, action) => {
           item.enteredTime = helpers.getSecondsPassedSinceMidnight();
           item.background = helpers.getLabelColor(item);
           item.processTime = helpers.getWaitTime(item);
-          // item.estimatedTime = helpers.getEstimatedWaitTime(item);
-          //  item.expectedStartTime = helpers.getExpectedStartTime(item);
           item = { ...item };
         }
         return item;
@@ -209,6 +210,32 @@ export default (state = initialState, action) => {
       return {
         ...state,
       };
+    case CLIENT_UNCHECKED_IN:
+      const itemsUnCheckedIn = state.waitingQueue.map((item) => {
+        if (item.id === data.id) {
+          item.status = 1;
+          item.checked_in = false;
+          item.enteredTime = helpers.getSecondsPassedSinceMidnight();
+          item.background = helpers.getLabelColor(item);
+          item.processTime = helpers.getWaitTime(item);
+          item = { ...item };
+        }
+        return item;
+      });
+
+      return {
+        ...state,
+        waitingQueue: itemsUnCheckedIn,
+      };
+    case CLIENT_UNCHECKED_IN_RECEIVED:
+      return {
+        ...state,
+      };
+    case CLIENT_UNCHECKED_IN_FAILED:
+      return {
+        ...state,
+      };
+
     case CLIENT_RETURNED_LATER:
       const itemsReturnLater = state.waitingQueue.map((item) => {
         if (item.id === data.id) {

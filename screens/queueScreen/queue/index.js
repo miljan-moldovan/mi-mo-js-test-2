@@ -120,7 +120,7 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 };
 
 handlePressSummary = {
-  checkIn: () => this.handlePressCheckIn(),
+  checkIn: isActiveCheckin => this.handlePressCheckIn(isActiveCheckin),
   rebook: () => this.handlePressRebook(),
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
@@ -242,9 +242,14 @@ handlePressRebook = () => {
   }
 }
 
-handlePressCheckIn = () => {
+handlePressCheckIn = (isActiveCheckin) => {
   const { appointment } = this.state;
-  this.props.checkInClient(appointment.id);
+  if (isActiveCheckin) {
+    this.props.checkInClient(appointment.id);
+  } else {
+    this.props.uncheckInClient(appointment.id);
+  }
+
   this.hideDialog();
 }
 
