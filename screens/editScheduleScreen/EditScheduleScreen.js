@@ -83,6 +83,10 @@ class EditScheduleScreen extends React.Component {
     selectedScheduleExceptionReason: scheduleTypes.find(_scheduleType =>
       _scheduleType.id === ScheduleTypesEnum.Regular),
     isEditableOtherReason: false,
+    startTimeScheduleOnePickerOpen: false,
+    endTimeScheduleOnePickerOpen: false,
+    startTimeScheduleTwoPickerOpen: false,
+    endTimeScheduleTwoPickerOpen: false,
   }
 
   componentWillMount() {
@@ -94,7 +98,6 @@ class EditScheduleScreen extends React.Component {
       if (result && this.props.employeeScheduleState.employeeScheduleException.length > 0) {
         this.getState(true);
       } else {
-        // normal schedule for that day
         this.props.employeeScheduleActions.getEmployeeSchedule(employee.id, formatedDate, (result) => {
           if (result) {
             this.getState(false);
@@ -118,7 +121,7 @@ class EditScheduleScreen extends React.Component {
       // normal schedule for that day
       const employeeSchedules = this.props.employeeScheduleState.employeeSchedule.scheduledIntervals || false;
       employeeScheduleOne = employeeSchedules.length > 0 ? employeeSchedules[0] : {};
-      employeeScheduleTwo = employeeSchedules.length > 1 ? employeeSchedules[1] : {};
+      employeeScheduleTwo = {};
     }
 
 
@@ -266,10 +269,6 @@ class EditScheduleScreen extends React.Component {
 
       this.setState({
         hoursWorking,
-        startTimeScheduleOne: '',
-        endTimeScheduleOne: '',
-        startTimeScheduleTwo: '',
-        endTimeScheduleTwo: '',
       }, this.checkCanSave);
     }
 
@@ -343,12 +342,6 @@ class EditScheduleScreen extends React.Component {
           (!!startTimeScheduleTwo && endTimeScheduleTwo === '')) {
           canSave = false;
         }
-      }
-
-      const isEditableOtherReason = selectedScheduleExceptionReason.id === ScheduleTypesEnum.Regular;
-
-      if (isEditableOtherReason) {
-        canSave = canSave && otherReason && otherReason.length > 0;
       }
 
       this.props.navigation.setParams({ canSave });

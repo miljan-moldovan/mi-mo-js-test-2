@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 });
 
 const SalonTimePicker = (props) => {
-  const format = props.format || 'hh:mm A';
+  const format = props.format || 'HH:mm A';
   const value = moment(props.value).isValid() ? moment(props.value).format(format) : props.placeholder || '-';
   const dateObject = moment(props.value).isValid() ? moment(props.value).toDate() : new Date();
   const valueStyle = props.isOpen ? { color: '#1B65CF' } : null;
@@ -40,7 +40,6 @@ const SalonTimePicker = (props) => {
       {props.isOpen && (
         <View style={styles.pickerContainer}>
           <DatePicker
-            {...props}
             style={styles.container}
             itemStyle={styles.whiteBg}
             date={dateObject}
