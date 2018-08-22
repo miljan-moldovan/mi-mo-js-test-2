@@ -316,7 +316,7 @@ class ProviderList extends React.Component {
           ItemSeparatorComponent={this.renderDivider}
           ListFooterComponent={this.renderDivider}
         />
-        <ListLetterFilter />
+        {/* <ListLetterFilter /> */}
       </View>
     );
   }

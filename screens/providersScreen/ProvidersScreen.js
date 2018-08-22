@@ -406,7 +406,7 @@ class ProviderScreen extends React.Component {
               )
             }
           </View>
-          <View style={styles.letterListContainer}>
+          {/* <View style={styles.letterListContainer}>
             {letters.map(item => (
               <SalonTouchableOpacity
                 key={item}
@@ -415,7 +415,7 @@ class ProviderScreen extends React.Component {
                 <Text style={styles.letterListText}>{item}</Text>
               </SalonTouchableOpacity>
             ))}
-          </View>
+          </View> */}
         </View>
       </View>
     );
