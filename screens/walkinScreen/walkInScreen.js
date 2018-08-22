@@ -63,10 +63,8 @@ class WalkInScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      service: null,
-      provider: null,
       client: null,
-      isProviderRequested: false,
+      services: [],
     };
   }
 
@@ -76,7 +74,14 @@ class WalkInScreen extends Component {
     const { newAppointment } = this.props.navigation.state.params;
     if (newAppointment) {
       const { client, provider, service } = newAppointment;
-      this.setState({ client, provider, service });
+
+      const services = [{
+        service,
+        provider,
+        isProviderRequested: !provider.isFirstAvailable,
+      }];
+
+      this.setState({ client, services });
     }
     const { navigation } = this.props;
     // We can only set the function after the component has been initialized
@@ -122,27 +127,33 @@ class WalkInScreen extends Component {
     if (!this.saving) {
       this.saving = true;
       const {
-        service,
-        provider,
+        services,
         client,
         isProviderRequested,
       } = this.state;
 
 
-      const providerBlock = provider.isFirstAvailable ? {} : { providerId: provider.id };
+      const servicesBlock = [];
+      for (let i = 0; i < services.length; i += 1) {
+        const serviceContainer = services[i];
+
+        const providerBlock =
+        serviceContainer.provider.isFirstAvailable ?
+          {} : { providerId: serviceContainer.provider.id };
+
+        servicesBlock.push({
+          serviceId: serviceContainer.service.id,
+          ...providerBlock,
+          isProviderRequested,
+          isFirstAvailable: serviceContainer.provider.isFirstAvailable,
+        });
+      }
 
       const params = {
         clientId: client.id,
         phoneNumber: client.phone,
         email: client.email,
-        services: [
-          {
-            serviceId: service.id,
-            ...providerBlock,
-            isProviderRequested,
-            isFirstAvailable: provider.isFirstAvailable,
-          },
-        ],
+        services: servicesBlock,
       };
       this.props.walkInActions.postWalkinClient(params).then(() => {
         this.saving = false;
@@ -150,19 +161,6 @@ class WalkInScreen extends Component {
       });
     }
   }
-
-  handleUpdateService= (service) => {
-    this.setState({ service });
-  }
-
-  handleUpdateProvider= (provider) => {
-    this.setState({ provider });
-  }
-
-  handleUpdateIsProviderRequested= () => {
-    this.setState({ isProviderRequested: !this.state.isProviderRequested });
-  }
-
 
   handleUpdateClient= (client) => {
     this.setState({ client });
@@ -195,6 +193,49 @@ class WalkInScreen extends Component {
         />
        </SalonTouchableOpacity>)
     ;
+
+
+    handleRemoveService= (index) => {
+      const { services } = this.state;
+      services.splice(index, 1);
+      this.setState({ services });
+    }
+
+    handleUpdateService= (index, service) => {
+      const { services } = this.state;
+      services[index] = service;
+      this.setState({ services }, this.checkCanSave);
+    }
+
+    checkCanSave = () => {
+
+    }
+
+    handleAddService= () => {
+      const params = this.props.navigation.state.params || {};
+
+      const {
+        employee,
+      } = params;
+
+      const service = {
+        provider: employee,
+        service: null,
+        isProviderRequested: true,
+      };
+
+      const { services } = this.state;
+      services.push(service);
+      this.setState({ services });
+    }
+
+
+    cancelButton = () => ({
+      leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+      leftButtonOnPress: (navigation) => {
+        navigation.goBack();
+      },
+    })
 
     render() {
       const fullName = this.getFullName();
@@ -232,14 +273,12 @@ class WalkInScreen extends Component {
             </InputGroup>
             <SectionTitle value="SERVICE AND PROVIDER" />
             <ServiceSection
-              service={this.state.service}
-              provider={this.state.provider}
-              navigate={this.props.navigation.navigate}
+              services={this.state.services}
+              onAdd={this.handleAddService}
               onRemove={this.handleRemoveService}
-              onUpdateService={this.handleUpdateService}
-              onUpdateProvider={this.handleUpdateProvider}
-              onUpdateIsProviderRequested={this.handleUpdateIsProviderRequested}
-              isProviderRequested={this.state.isProviderRequested}
+              onUpdate={this.handleUpdateService}
+              cancelButton={this.cancelButton}
+              navigate={this.props.navigation.navigate}
             />
           </View>)}
         </ScrollView>

@@ -318,6 +318,7 @@ checkHasProvider = () => {
       selectedService: service,
       filterByService: true,
       showFirstAvailable: false,
+      apptBook,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
