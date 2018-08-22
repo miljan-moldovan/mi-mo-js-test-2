@@ -269,7 +269,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
 
     Alert.alert(
       'No show',
-      `Are you sure yoy want to mark ${fullName} as a no show?`,
+      `Are you sure you want to mark ${fullName} as a no show?`,
       [
         { text: 'No, cancel', onPress: () => { this.hideDialog(); }, style: 'cancel' },
         {
