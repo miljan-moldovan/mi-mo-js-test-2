@@ -22,9 +22,6 @@ import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';
-
-import HeaderLateral from '../components/HeaderLateral';
-import HeaderRight from '../components/HeaderRight';
 import HeaderLeftText from '../components/HeaderLeftText';
 
 import ModifyServiceScreen from '../screens/modifyServiceScreen';
@@ -35,10 +32,7 @@ import RecommendProductHeader from '../screens/recommendProductScreen/components
 
 
 import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
-// import AppoinmentNotes from './../screens/appointmentDetailsScreen/components/appointmentNotes';
-// import AppointmentFormula from './../screens/appointmentDetailsScreen/components/appointmentFormulas/AppointmentFormula';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
-// import AppointmentNoteScreen from './../screens/appointmentNote';
 
 import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
 import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
