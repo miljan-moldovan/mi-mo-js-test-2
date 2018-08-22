@@ -21,7 +21,6 @@ import appointmentReducer from './appointment';
 import newAppointmentReducer from './newAppointment';
 import apptBookViewOptionsReducer from './apptBookViewOptions';
 import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
-import turnAway from './turnAway';
 import formulasAndNotesReducer from './formulasAndNotes';
 import roomAssignmentReducer from './roomAssignment';
 import employeeScheduleReducer from './employeeSchedule';
@@ -33,6 +32,7 @@ import clientNotesReducer from './clientNotes';
 import clientFormulasReducer from './clientFormulas';
 import clientInfoReducer from './clientInfo';
 import clientAppointmentsReducer from './clientAppointments';
+import storeReducer from './store';
 
 export default combineReducers({
   auth,
@@ -53,7 +53,6 @@ export default combineReducers({
   appointmentBookReducer,
   apptBookViewOptionsReducer,
   apptBookSetEmployeeOrderReducer,
-  turnAway,
   newAppointmentReducer,
   modifyApptReducer,
   formulasAndNotesReducer,
@@ -68,4 +67,5 @@ export default combineReducers({
   clientInfoReducer,
   clientAppointmentsReducer,
   userInfoReducer,
+  storeReducer,
 });

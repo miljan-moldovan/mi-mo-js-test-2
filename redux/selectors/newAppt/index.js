@@ -5,7 +5,6 @@ import {
 } from 'lodash';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
-import apptGridSettingsSelector from '../apptGridSettingsSelector';
 import { clientsSelector } from '../clientsSelector';
 
 const moment = extendMoment(Moment);
@@ -130,7 +129,7 @@ const totalPrice = createSelector(
 const getEndTime = createSelector(
   startTimeSelector,
   appointmentLength,
-  apptGridSettingsSelector,
+  state => state.appointmentBookReducer.apptGridSettings,
   (startTime, length, { step }) => {
     const addTime = length.asMilliseconds() > 0 ? length : moment.duration(step, 'minute');
     return moment(startTime).add(addTime);
@@ -204,7 +203,7 @@ const employeeScheduledIntervalsSelector = createSelector(
 );
 
 const employeeScheduleChunkedSelector = createSelector(
-  [apptGridSettingsSelector, employeeScheduledIntervalsSelector],
+  [state => state.appointmentBookReducer.apptGridSettings, employeeScheduledIntervalsSelector],
   (settings, intervals) => {
     const reduced = intervals.reduce((agg, schedule) => {
       const { step = 15 } = settings;

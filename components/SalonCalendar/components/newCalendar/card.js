@@ -166,7 +166,7 @@ class Card extends Component {
       apptGridSettings: {
         step,
         minStartTime,
-        weeklySchedule
+        weeklySchedule,
       },
       appointments,
       cellWidth,
@@ -179,6 +179,7 @@ class Card extends Component {
       goToAppointmentId,
       setGoToPositon,
       storeSchedule,
+      numberOfOverlaps,
     } = this.props;
     const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
@@ -186,25 +187,6 @@ class Card extends Component {
     const apptGapTimeMoment = moment(gapTime, 'HH:mm');
     const apptAfterTimeMoment = moment(afterTime, 'HH:mm');
     const startTimeMoment = moment(minStartTime, 'HH:mm');
-    const formatedDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
-    // calculate number of overlaps
-    let currentAppt = null;
-    let currentDate = null;
-    let numberOfOverlaps = 0;
-    for (let i = 0; i < appointments.length; i += 1) {
-      currentAppt = appointments[i];
-      if (currentAppt.id !== id) {
-        currentDate = moment(currentAppt.date).format('YYYY-MM-DD');
-        if (formatedDate === currentDate && get(currentAppt.employee, 'id', -1) === get(employee, 'id', -2)) {
-          const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
-          const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
-          if (apptFromTimeMoment.isSameOrAfter(currentStartTime)
-          && apptFromTimeMoment.isBefore(currentEndTime)) {
-            numberOfOverlaps += 1;
-          }
-        }
-      }
-    }
     const gap = numberOfOverlaps * 8;
     // calculate left position
     const firstCellWidth = selectedFilter === 'providers' && selectedProvider === 'all' ? 130 : 0;
@@ -259,19 +241,33 @@ class Card extends Component {
     let isActiveEmployeeInCellTime = false;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const todaySchedule = weeklySchedule[moment(date).isoWeekday() - 1];
-    const isTodayOff = !todaySchedule.start1 && !todaySchedule.end1
+    const isStoreOff = !todaySchedule.start1 && !todaySchedule.end1
       && !todaySchedule.start2 && !todaySchedule.end2;
-    const isStoreOff = isDate ? isTodayOff : storeSchedule.isOff;
-    const scheduledIntervals = isStoreOff || provider.isOff ? [] : get(provider, 'scheduledIntervals', []);
     let providerSchedule = null;
     let providerStartTime = null;
     let providerEndTime = null;
-    for (let i = 0; !isActiveEmployeeInCellTime && i < scheduledIntervals.length; i += 1) {
-      providerSchedule = scheduledIntervals[i];
-      providerStartTime = moment(providerSchedule.start, 'HH:mm');
-      providerEndTime = moment(providerSchedule.end, 'HH:mm');
-      isActiveEmployeeInCellTime = apptFromTimeMoment.diff(providerStartTime, 'm') >= 0 &&
-        apptToTimeMoment.diff(providerEndTime, 'm') <= 0;
+    if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
+      const scheduledIntervals = isStoreOff || provider.isOff ? [] : get(provider, 'scheduledIntervals', []);
+      for (let i = 0; !isActiveEmployeeInCellTime && i < scheduledIntervals.length; i += 1) {
+        providerSchedule = scheduledIntervals[i];
+        providerStartTime = moment(providerSchedule.start, 'HH:mm');
+        providerEndTime = moment(providerSchedule.end, 'HH:mm');
+        isActiveEmployeeInCellTime = apptFromTimeMoment.diff(providerStartTime, 'm') >= 0 &&
+          apptToTimeMoment.diff(providerEndTime, 'm') <= 0;
+      }
+    } else {
+      const storeStart1Moment = todaySchedule.start1 ? moment(todaySchedule.start1, 'HH:mm') : null;
+      const storeEnd1Moment = todaySchedule.start1 ? moment(todaySchedule.end1, 'HH:mm') : null;
+      const storeStart2Moment = todaySchedule.start1 ? moment(todaySchedule.start2, 'HH:mm') : null;
+      const storeEnd2Moment = todaySchedule.start1 ? moment(todaySchedule.end2, 'HH:mm') : null;
+      if (storeStart1Moment) {
+        isActiveEmployeeInCellTime = apptFromTimeMoment.isSameOrAfter(storeStart1Moment)
+          && apptFromTimeMoment.isBefore(storeEnd1Moment);
+        if (!isActiveEmployeeInCellTime && storeStart2Moment) {
+          isActiveEmployeeInCellTime = apptFromTimeMoment.isSameOrAfter(storeStart2Moment)
+            && apptFromTimeMoment.isBefore(storeEnd2Moment);
+        }
+      }
     }
     if (goToAppointmentId === id) {
       setGoToPositon({ left, top: verticalPositions[0].top, highlightCard: this.highlightGoTo });

@@ -10,7 +10,6 @@ import Svg, {
 import { times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
-//import ResizeButton from '../resizeButtons';
 
 const styles = StyleSheet.create({
   blockText: {

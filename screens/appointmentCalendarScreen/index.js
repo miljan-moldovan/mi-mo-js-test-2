@@ -8,6 +8,7 @@ import AppointmentScreen from './components/appointmentScreen';
 import visbleBlocksSelector from '../../redux/selectors/blocksSelector';
 import { getVisibleAppointmentsDataSource } from '../../redux/selectors/appointmentSelector';
 import getAvailabilityWithGaps from '../../redux/selectors/availabilitySelector';
+import { apptGridSettingsSelector } from '../../redux/selectors/apptGridSettingsSelector';
 import { filteredProviders } from '../../redux/selectors/providersSelector';
 
 const mapStateToProps = state => ({
@@ -22,6 +23,8 @@ const mapStateToProps = state => ({
   blockTimes: visbleBlocksSelector(state),
   appointments: getVisibleAppointmentsDataSource(state),
   availability: getAvailabilityWithGaps(state),
+  apptGridSettings: apptGridSettingsSelector(state),
+  storeScheduleExceptions: state.storeReducer.scheduleExceptions,
 });
 
 const mapActionsToProps = dispatch => ({

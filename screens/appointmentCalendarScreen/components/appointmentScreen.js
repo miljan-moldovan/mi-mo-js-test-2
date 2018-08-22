@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-import { groupBy } from 'lodash';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -102,12 +101,6 @@ export default class AppointmentScreen extends Component {
   };
 
   componentDidMount() {
-    // super(props);
-    const { props } = this;
-    props.appointmentCalendarActions.setStoreWeeklySchedule();
-    const params = props.navigation.state.params || {};
-    const filterProvider = params.filterProvider || 'all';
-
     this.props.navigation.setParams({
       onPressMenu: this.onPressMenu,
       onPressEllipsis: this.onPressEllipsis,
@@ -125,7 +118,6 @@ export default class AppointmentScreen extends Component {
       type: 'warning',
       btnRightText: 'DISMISS',
     });
-    // this.props.navigation.navigate('ApptBookProducts');
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
@@ -169,9 +161,6 @@ export default class AppointmentScreen extends Component {
   }
 
   onCardPressed = (appointment) => {
-    // const groupData = this.props.appointments.filter(appt => appt.appointmentGroupId === appointment.appointmentGroupId);
-    // this.props.newAppointmentActions.setSelectedAppt(appointment, groupData);
-    // this.props.navigation.navigate('NewAppointment');
     this.props.modifyApptActions.setSelectedAppt(appointment);
     this.setState({
       selectedAppointment: appointment,
@@ -179,40 +168,6 @@ export default class AppointmentScreen extends Component {
       selectedApptId: appointment.id,
     });
   }
-
-  // onCalendarCellPressed = (cellId, colData) => {
-  //   const {
-  //     startDate,
-  //     selectedFilter,
-  //     selectedProvider,
-  //   } = this.props.appointmentScreenState;
-  //   const { newAppointmentActions } = this.props;
-  //   const startTime = moment(cellId, 'HH:mm A');
-
-  //   this.newApptSlide.resetForm();
-  //   const newState = {
-  //     newApptStartTime: startTime,
-  //   };
-  //   if (selectedFilter === 'providers') {
-  //     if (selectedProvider === 'all') {
-  //       newState.newApptProvider = colData;
-  //       newState.newApptDate = startDate;
-  //     } else {
-  //       newState.newApptProvider = selectedProvider;
-  //       newState.newApptDate = colData;
-  //     }
-  //   } else {
-  //     newState.newApptProvider = null;
-  //     newState.newApptDate = startDate;
-  //   }
-
-
-  //   this.setState({
-  //     newApptActiveTab: 0,
-  //     visibleNewAppointment: true,
-  //     ...newState,
-  //   });
-  // }
 
   onCalendarCellPressed = (cellId, colData) => {
     const {
@@ -227,9 +182,6 @@ export default class AppointmentScreen extends Component {
     if (this.state.bookAnotherEnabled) {
       newAppointmentActions.setClient(client);
     }
-    // const newState = {
-    //   newApptStartTime: startTime,
-    // };
     if (selectedFilter === 'providers') {
       if (selectedProvider === 'all') {
         newAppointmentActions.setMainEmployee(colData);
@@ -419,7 +371,6 @@ export default class AppointmentScreen extends Component {
       selectedProvider,
       selectedFilter,
       providerSchedule,
-      apptGridSettings,
       providerAppointments,
       providers,
       toast,
@@ -431,7 +382,7 @@ export default class AppointmentScreen extends Component {
       resourceAppointments,
       storeSchedule,
     } = this.props.appointmentScreenState;
-    const { availability, appointments, blockTimes } = this.props;
+    const { storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings } = this.props;
     const {
       bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId,
     } = this.state;
@@ -474,37 +425,38 @@ export default class AppointmentScreen extends Component {
           onDateChange={this.handleChangeDate}
           selectedDate={moment(startDate)}
         />
-        <SalonCalendar
-          providers={providers}
-          onPressAvailability={this.onAvailabilityCellPressed}
-          onCellPressed={this.onCalendarCellPressed}
-          onCardPressed={this.onCardPressed}
-          apptGridSettings={apptGridSettings}
-          dataSource={dataSource}
-          appointments={appointments}
-          blockTimes={blockTimes}
-          headerData={headerData}
-          isDate={isDate}
-          isRoom={selectedFilter === 'rooms'}
-          isResource={selectedFilter === 'resources'}
-          onDrop={this.props.appointmentActions.postAppointmentMove}
-          onResize={this.props.appointmentActions.postAppointmentResize}
-          selectedFilter={selectedFilter}
-          selectedProvider={selectedProvider}
-          displayMode={pickerMode}
-          providerSchedule={providerSchedule}
-          availability={availability}
-          startDate={startDate}
-          isLoading={isLoading}
-          bufferVisible={bufferVisible}
-          manageBuffer={this.manageBuffer}
-          filterOptions={filterOptions}
-          setSelectedProvider={this.setSelectedProvider}
-          setSelectedDay={this.setSelectedDay}
-          storeSchedule={storeSchedule}
-          goToAppointmentId={goToAppointmentId}
-          clearGoToAppointment={this.clearGoToAppointment}
-        />
+          <SalonCalendar
+            storeScheduleExceptions={storeScheduleExceptions}
+            providers={providers}
+            onPressAvailability={this.onAvailabilityCellPressed}
+            onCellPressed={this.onCalendarCellPressed}
+            onCardPressed={this.onCardPressed}
+            apptGridSettings={apptGridSettings}
+            dataSource={dataSource}
+            appointments={appointments}
+            blockTimes={blockTimes}
+            headerData={headerData}
+            isDate={isDate}
+            isRoom={selectedFilter === 'rooms'}
+            isResource={selectedFilter === 'resources'}
+            onDrop={this.props.appointmentActions.postAppointmentMove}
+            onResize={this.props.appointmentActions.postAppointmentResize}
+            selectedFilter={selectedFilter}
+            selectedProvider={selectedProvider}
+            displayMode={pickerMode}
+            providerSchedule={providerSchedule}
+            availability={availability}
+            startDate={startDate}
+            isLoading={isLoading}
+            bufferVisible={bufferVisible}
+            manageBuffer={this.manageBuffer}
+            filterOptions={filterOptions}
+            setSelectedProvider={this.setSelectedProvider}
+            setSelectedDay={this.setSelectedDay}
+            storeSchedule={storeSchedule}
+            goToAppointmentId={goToAppointmentId}
+            clearGoToAppointment={this.clearGoToAppointment}
+          />
         {
           isLoading ?
             <View style={{
@@ -526,60 +478,60 @@ export default class AppointmentScreen extends Component {
           />
         )}
 
-        <NewApptSlide
-          ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
-          maxHeight={screenHeight}
-          navigation={this.props.navigation}
-          visible={this.state.visibleNewAppointment}
-          startTime={this.state.newApptStartTime}
-          provider={this.state.newApptProvider}
-          filterProviders={providers}
-          hide={this.hideNewApptSlide}
-          show={this.showNewApptSlide}
-          handleBook={this.handleBook}
-          activeTab={this.state.newApptActiveTab}
-          onChangeTab={this.changeNewApptSlideTab}
-        />
+          <NewApptSlide
+            ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
+            maxHeight={screenHeight}
+            navigation={this.props.navigation}
+            visible={this.state.visibleNewAppointment}
+            startTime={this.state.newApptStartTime}
+            provider={this.state.newApptProvider}
+            filterProviders={providers}
+            hide={this.hideNewApptSlide}
+            show={this.showNewApptSlide}
+            handleBook={this.handleBook}
+            activeTab={this.state.newApptActiveTab}
+            onChangeTab={this.changeNewApptSlideTab}
+          />
 
-        <SalonDatePickerSlide
-          mode={pickerMode}
-          visible={this.state.visible}
-          selectedDate={moment(startDate)}
-          onHide={() => this.setState({ visible: false })}
-          markedDates={{
-            [moment().format('YYYY-MM-DD')]: {
-              customStyles: {
-                container: {
-                  borderWidth: 1,
-                  borderColor: '#1DBF12',
+            <SalonDatePickerSlide
+              mode={pickerMode}
+              visible={this.state.visible}
+              selectedDate={moment(startDate)}
+              onHide={() => this.setState({ visible: false })}
+              markedDates={{
+                [moment().format('YYYY-MM-DD')]: {
+                  customStyles: {
+                    container: {
+                      borderWidth: 1,
+                      borderColor: '#1DBF12',
+                    },
+                    text: {
+                      fontFamily: 'Roboto',
+                      fontWeight: '700',
+                      color: '#1DBF12',
+                    },
+                  },
                 },
-                text: {
-                  fontFamily: 'Roboto',
-                  fontWeight: '700',
-                  color: '#1DBF12',
-                },
-              },
-            },
-          }}
-          onDateSelected={(startDate, endDate) => {
-            this.setState({ visible: false });
-            this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
-            this.props.appointmentCalendarActions.setGridView();
-          }}
-        />
-        <SalonAppointmentSlide
-          navigation={this.props.navigation}
-          visible={this.state.visibleAppointment}
-          appointmentId={this.state.selectedApptId}
-          onHide={this.hideApptSlide}
-          appointment={this.props.modifyApptState.appointment}
-          handleModify={this.handleModifyAppt}
-          goToCancelAppt={this.goToCancelAppt}
-          goToShowAppt={this.goToShowAppt}
-          handleCheckin={appointmentActions.postAppointmentCheckin}
-          handleCheckout={appointmentActions.postAppointmentCheckout}
-          updateAppointments={this.props.appointmentCalendarActions.setGridView}
-        />
+              }}
+              onDateSelected={(startDate, endDate) => {
+                this.setState({ visible: false });
+                this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
+                this.props.appointmentCalendarActions.setGridView();
+              }}
+            />
+              <SalonAppointmentSlide
+                navigation={this.props.navigation}
+                visible={this.state.visibleAppointment}
+                appointmentId={this.state.selectedApptId}
+                onHide={this.hideApptSlide}
+                appointment={this.props.modifyApptState.appointment}
+                handleModify={this.handleModifyAppt}
+                goToCancelAppt={this.goToCancelAppt}
+                goToShowAppt={this.goToShowAppt}
+                handleCheckin={appointmentActions.postAppointmentCheckin}
+                handleCheckout={appointmentActions.postAppointmentCheckout}
+                updateAppointments={this.props.appointmentCalendarActions.setGridView}
+              />
         {
           toast ? (
             <SalonToast
