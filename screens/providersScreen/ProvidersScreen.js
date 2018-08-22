@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
-import { getEmployeePhoto } from '../../utilities/apiWrapper';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -84,6 +83,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     color: '#fff',
     fontSize: 10,
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
   },
 });
 
@@ -401,7 +406,7 @@ class ProviderScreen extends React.Component {
               )
             }
           </View>
-          <View style={styles.letterListContainer}>
+          {/* <View style={styles.letterListContainer}>
             {letters.map(item => (
               <SalonTouchableOpacity
                 key={item}
@@ -410,7 +415,7 @@ class ProviderScreen extends React.Component {
                 <Text style={styles.letterListText}>{item}</Text>
               </SalonTouchableOpacity>
             ))}
-          </View>
+          </View> */}
         </View>
       </View>
     );

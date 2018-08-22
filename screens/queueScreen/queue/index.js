@@ -1,33 +1,29 @@
 // @flow
 import React from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   FlatList,
   RefreshControl,
-  LayoutAnimation,
-  // ActivityIndicator,
-  Dimensions,
+  Alert,
 } from 'react-native';
-import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
-import QueueItemSummary from '../screens/QueueItemSummary';
-import * as actions from '../actions/queue';
-import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../constants/QueueStatus.js';
+import PropTypes from 'prop-types';
 
-import CircularCountdown from '../components/CircularCountdown';
-import { NotificationBanner, NotificationBannerButton } from '../components/NotificationBanner';
-import { QueueButton, QueueButtonTypes } from './QueueButton';
-import ServiceIcons from './ServiceIcons';
-import Icon from '../components/UI/Icon';
-import SalonTouchableOpacity from './SalonTouchableOpacity';
-import QueueTimeNote from './QueueTimeNote';
+import QueueItemSummary from '../queueItemSummary';
+import * as actions from '../../../actions/queue';
+import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import CircularCountdown from '../../../components/CircularCountdown';
+import { NotificationBanner, NotificationBannerButton } from '../../../components/NotificationBanner';
+import ServiceIcons from '../../../components/ServiceIcons';
+import Icon from '../../../components/UI/Icon';
+import QueueTimeNote from '../queueTimeNote';
+import styles from './styles';
 
-
-import type { QueueItem } from '../models';
+import type { QueueItem } from '../../../models';
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },
@@ -45,7 +41,6 @@ const groupColors = [
 ];
 
 const groups = {};
-const assignedColors = [];
 
 class Queue extends React.Component {
 state = {
@@ -78,15 +73,19 @@ componentWillReceiveProps({
     this.setState({ data: sortedItems });
   }
   // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
-  if (searchClient != this.props.searchClient ||
-searchProvider != this.props.searchProvider ||
-filterText != this.props.filterText || (data !== this.props.data && filterText)) {
+  if (searchClient !== this.props.searchClient ||
+    searchProvider !== this.props.searchProvider ||
+    filterText !== this.props.filterText ||
+    (data !== this.props.data && filterText)) {
     this.searchText(filterText, searchClient, searchProvider);
   }
 }
 onChangeFilterResultCount = () => {
-  if (this.props.onChangeFilterResultCount) { this.props.onChangeFilterResultCount(this.state.data.length); }
+  if (this.props.onChangeFilterResultCount) {
+    this.props.onChangeFilterResultCount(this.state.data.length);
+  }
 }
+
 searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
   const { data } = this.props;
   const prevCount = this.state.data.length;
@@ -103,8 +102,9 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
     //  }
     //    if (searchProvider) {
     for (let i = 0; i < services.length; i++) {
-      const { employeeFirstName, employeeLastName } = services[i];
-      const fullName = `${employeeFirstName || ''} ${employeeLastName || ''}`;
+      const { employee } = services[i];
+
+      const fullName = `${employee.fullName || ''}`;
       // if this provider is a match, we don't need to check other providers
       if (fullName.toLowerCase().match(text)) { return true; }
     }
@@ -120,12 +120,12 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 };
 
 handlePressSummary = {
-  checkIn: () => this.handlePressCheckIn(),
+  checkIn: isActiveCheckin => this.handlePressCheckIn(isActiveCheckin),
   rebook: () => this.handlePressRebook(),
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
   returning: returned => this.handleReturning(returned),
-  toService: () => this.handleStartService(),
+  toService: () => this.checkHasProvider(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
 }
@@ -136,80 +136,13 @@ _onRefresh = () => {
   // emulate refresh call
   setTimeout(() => this.setState({ refreshing: false }), 500);
 }
-//
-// getButtonsForItem = (item) => {
-//   const {
-//     noShow, returnLater, clientReturned, service, walkout, checkin,
-//     uncheckin, undoFinish, rebook, checkout, notesFormulas,
-//     toWaiting, finishService,
-//   } = QueueButtonTypes;
-//   const { id: queueId } = item;
-//   let left,
-//     right;
-//   if (!item.serviced) {
-//     if (!item.checked_in) {
-//       left = [
-//         <QueueButton type={noShow} left />,
-//       ];
-//       right = [
-//         <QueueButton
-//           type={checkin}
-//           right
-//           onPress={() => {
-// LayoutAnimation.spring();
-// this.props.checkInClient(queueId);
-// }}
-//         />,
-//         <QueueButton
-//           type={service}
-//           right
-//           onPress={() => {
-//             debugger //eslint-disable-line
-//           LayoutAnimation.spring();
-//           this.props.startService(queueId);
-//           this.showNotification(item, 'service');
-//           }}
-//         />,
-//       ];
-//     } else {
-//       left = [
-//         <QueueButton type={returnLater} onPress={() => { LayoutAnimation.spring(); this.props.returnLater(queueId); }} left />,
-//         <QueueButton type={walkout} onPress={() => { LayoutAnimation.spring(); this.props.walkOut(queueId); }} left />,
-//       ];
-//       right = [
-//         <QueueButton type={uncheckin} right />,
-//         <QueueButton
-//           type={service}
-//           onPress={() => {
-//             debugger //eslint-disable-line
-//             LayoutAnimation.spring();
-//             this.props.startService(queueId);
-//             this.showNotification(item, 'service');
-//             }}
-//           right
-//         />,
-//       ];
-//     }
-//   } else if (item.finishService) {
-//     left = [
-//       <QueueButton type={undoFinish} left />,
-//     ];
-//     right = [
-//       <QueueButton type={rebook} right />,
-//       <QueueButton type={checkout} right />,
-//     ];
-//   } else {
-//     left = [
-//       <QueueButton type={notesFormulas} left />,
-//       <QueueButton type={toWaiting} onPress={() => { LayoutAnimation.spring(); this.props.toWaiting(queueId); }} left />,
-//     ];
-//     right = [
-//       <QueueButton type={finishService} onPress={() => { LayoutAnimation.spring(); this.props.finishService(queueId); }} right />,
-//       <QueueButton type={checkout} right />,
-//     ];
-//   }
-//   return { left, right };
-// }
+
+getGroupLeaderName = (item: QueueItem) => {
+  const { groups } = this.props;
+  if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
+  return null;
+}
+
 getLabelForItem = (item) => {
   switch (item.status) {
     case QUEUE_ITEM_FINISHED:
@@ -309,9 +242,14 @@ handlePressRebook = () => {
   }
 }
 
-handlePressCheckIn = () => {
+handlePressCheckIn = (isActiveCheckin) => {
   const { appointment } = this.state;
-  this.props.checkInClient(appointment.id);
+  if (isActiveCheckin) {
+    this.props.checkInClient(appointment.id);
+  } else {
+    this.props.uncheckInClient(appointment.id);
+  }
+
   this.hideDialog();
 }
 
@@ -327,11 +265,29 @@ handlePressWalkOut = (isActiveWalkOut) => {
         ...this.props,
       });
     }
-  } else {
-    this.props.noShow(appointment.id);
-  }
 
-  this.hideDialog();
+    this.hideDialog();
+  } else {
+    const { client } = appointment;
+
+    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+
+    Alert.alert(
+      'No show',
+      `Are you sure you want to mark ${fullName} as a no show?`,
+      [
+        { text: 'No, cancel', onPress: () => { this.hideDialog(); }, style: 'cancel' },
+        {
+          text: 'Yes, Im sure',
+          onPress: () => {
+            this.props.noShow(appointment.id);
+            this.hideDialog();
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  }
 }
 
 handleReturning = (returned) => {
@@ -345,6 +301,42 @@ handleReturning = (returned) => {
 
   this.hideDialog();
 }
+
+cancelButton = () => ({
+  leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+  leftButtonOnPress: (navigation) => {
+    navigation.goBack();
+  },
+})
+
+checkHasProvider = () => {
+  const { appointment } = this.state;
+  const service = appointment.services[0];
+  if (service.employee) {
+    this.handleStartService();
+  } else {
+    this.hideDialog();
+
+    this.props.navigation.navigate('Providers', {
+      headerProps: { title: 'Providers', ...this.cancelButton() },
+      dismissOnSelect: true,
+      selectedService: service,
+      filterByService: true,
+      showFirstAvailable: false,
+      apptBook,
+      onChangeProvider: provider => this.handleProviderSelection(provider),
+    });
+  }
+}
+
+
+handleProviderSelection = (provider) => {
+  const { appointment } = this.state;
+  const service = appointment.services[0];
+  service.employee = provider;
+  this.handleStartService();
+}
+
 
 handleStartService = () => {
   const { appointment } = this.state;
@@ -387,12 +379,37 @@ hideDialog = () => {
   this.setState({ isVisible: false });
 }
 
-getGroupLeaderName = (item: QueueItem) => {
-  const { groups } = this.props;
-  if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
-  return null;
-}
-
+searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
+  const { data } = this.props;
+  const prevCount = this.state.data.length;
+  if (query === '' || (!searchClient && !searchProvider)) {
+    this.setState({ data }, prevCount != data.length ? this.onChangeFilterResultCount : undefined);
+  }
+  const text = query.toLowerCase();
+  // search by the client full name
+  const filteredData = data.filter(({ client, services }) => {
+  //  if (searchClient) {
+    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+    // if this row is a match, we don't need to check providers
+    if (fullName.toLowerCase().match(text)) { return true; }
+    //  }
+    //    if (searchProvider) {
+    for (let i = 0; i < services.length; i++) {
+      const { employee } = services[i];
+      const fullName = `${employee.fullName || ''}`;
+      // if this provider is a match, we don't need to check other providers
+      if (fullName.toLowerCase().match(text)) { return true; }
+    }
+    //  }
+    return false;
+  });
+  // if no match, set empty array
+  if (!filteredData || !filteredData.length) { this.setState({ data: [] }, prevCount != 0 ? this.onChangeFilterResultCount : undefined); }
+  // if the matched numbers are equal to the original data, keep it the same
+  else if (filteredData.length === data.length) { this.setState({ data: this.props.data }, prevCount != this.props.data.length ? this.onChangeFilterResultCount : undefined); }
+  // else, set the filtered data
+  else { this.setState({ data: filteredData }, prevCount != filteredData.length ? this.onChangeFilterResultCount : undefined); }
+};
 
 sortItems = (option, items) => {
   let sortedItems = [];
@@ -422,7 +439,7 @@ renderItem = (row) => {
   const groupLeaderName = this.getGroupLeaderName(item);
   const firstService = item.services[0] || {};
   const serviceName = (firstService.serviceName || '').toUpperCase();
-  const employee = !firstService.isFirstAvailable && firstService.employeeFirstName ? ((`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase()) : 'First Available';
+  const employee = !firstService.isFirstAvailable && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
 
   const isBookedByWeb = item.queueType === 3;
 
@@ -569,202 +586,19 @@ render() {
   );
 }
 }
+
+
+Queue.defaultProps = {
+
+};
+
+Queue.propTypes = {
+  data: PropTypes.any.isRequired,
+  searchClient: PropTypes.any.isRequired,
+  searchProvider: PropTypes.any.isRequired,
+  filterText: PropTypes.any.isRequired,
+  isWaiting: PropTypes.any.isRequired,
+  onChangeFilterResultCount: PropTypes.any.isRequired,
+};
+
 export default connect(null, actions)(Queue);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f1f1f1',
-  },
-  itemContainer: {
-    // width: '100%',
-    height: Dimensions.get('window').width === 320 ? 110 : 94,
-    // borderBottomWidth: 1,
-    // borderBottomColor: 'rgba(29,29,38,1)',
-    borderRadius: 4,
-    // borderWidth: 1,
-    // borderColor: '#ccc',
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 8,
-    marginTop: 4,
-    shadowColor: 'black',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1.1,
-    paddingBottom: 26,
-    // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
-  },
-  itemSummary: {
-    marginLeft: 10,
-    marginRight: 'auto',
-    paddingRight: 10,
-    height: Dimensions.get('window').width === 320 ? 96 : 90,
-    flex: Dimensions.get('window').width === 320 ? 3 : 3.5,
-    justifyContent: 'flex-end',
-  },
-  itemIcons: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    height: Dimensions.get('window').width === 320 ? 96 : 90,
-    flex: 1,
-    paddingTop: 11,
-  },
-  clientName: {
-    fontSize: 16,
-    fontFamily: 'Roboto-Regular',
-    fontWeight: '500',
-    color: '#111415',
-  },
-  serviceName: {
-    fontSize: 11,
-    fontFamily: 'Roboto-Regular',
-    color: '#4D5067',
-    marginTop: 4,
-    // marginBottom: 12
-  },
-  serviceTimeContainer: {
-    fontSize: 11,
-    fontFamily: 'Roboto-Regular',
-    color: '#000',
-    marginTop: 11,
-    marginBottom: 8,
-    flexDirection: 'row',
-  },
-  serviceRemainingWaitTime: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 10,
-    //  textDecorationLine: 'underline',
-  },
-  serviceTime: {
-
-  },
-  chevronRightIcon: {
-    fontSize: 12,
-    color: '#000000',
-  },
-  waitingTime: {
-    marginRight: 8,
-    alignItems: 'center',
-    backgroundColor: 'rgba(17,10,36,1)',
-    borderRadius: 4,
-    borderColor: 'transparent',
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    height: 16,
-    minWidth: 56,
-    // marginBottom: 14,
-  },
-  circularCountdown: {
-    marginLeft: 'auto',
-    marginBottom: 'auto',
-    marginRight: 52,
-    marginTop: 16,
-    alignItems: 'center',
-  },
-  waitingTimeTextTop: {
-    fontSize: 9,
-    fontFamily: 'Roboto-Regular',
-    color: '#999',
-    fontWeight: '500',
-  },
-  listItem: {
-    height: 75,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  serviceClockIcon: {
-    fontSize: 12,
-    // padding: 0,
-    color: '#7E8D98',
-    paddingRight: 7,
-  },
-  notArrivedContainer: {
-    height: 16,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    position: 'absolute',
-    zIndex: 99999,
-    right: Dimensions.get('window').width === 320 ? 0 : 15,
-    bottom: 0,
-  },
-  returningContainer: {
-    height: 16,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    position: 'absolute',
-    zIndex: 99999,
-    right: Dimensions.get('window').width === 320 ? 0 : 10,
-    bottom: 0,
-  },
-  finishedContainer: {
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    position: 'absolute',
-    zIndex: 99999,
-    right: 30,
-    bottom: 0,
-  },
-  finishedTime: {
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    height: 16,
-    // marginBottom: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  finishedTimeText: {
-    fontSize: 9,
-    fontFamily: 'Roboto-Medium',
-    color: '#4D5067',
-  },
-  finishedTimeFlag: {
-    backgroundColor: '#31CF48',
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 3,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'transparent',
-  },
-  header: {
-    flexDirection: 'row',
-    marginBottom: 6,
-    marginTop: 22,
-    marginHorizontal: 16,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontFamily: 'Roboto-Regular',
-    fontWeight: '500',
-    color: '#4D5067',
-    fontSize: 14,
-  },
-  headerCount: {
-    fontFamily: 'Roboto-Regular',
-    color: '#4D5067',
-    fontSize: 11,
-  },
-  chevron: {
-    position: 'absolute',
-    top: 17,
-    right: 10,
-    fontSize: 15,
-    color: '#115ECD',
-  },
-  apptLabel: {
-    paddingLeft: 5,
-    fontSize: 10,
-    height: 10,
-    width: 10,
-    color: '#53646F',
-  },
-});

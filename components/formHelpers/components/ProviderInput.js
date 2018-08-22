@@ -58,6 +58,7 @@ export default class ProviderInput extends React.Component {
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
         onPress={this.handlePress}
+        disabled={this.props.disabled || false}
       >
         {
           label && (
@@ -109,7 +110,10 @@ export default class ProviderInput extends React.Component {
             )
           }
         </View>
-        <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
+        {
+          !this.props.noIcon &&
+          <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
+        }
       </SalonTouchableOpacity>
     );
   }

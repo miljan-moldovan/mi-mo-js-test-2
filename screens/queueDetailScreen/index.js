@@ -8,9 +8,9 @@ import {
 
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
-import HeaderRight from '../components/HeaderRight';
-import * as actions from '../actions/queue.js';
-import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
+import HeaderRight from '../../components/HeaderRight';
+import * as actions from '../../actions/queue.js';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 class QueueDetailScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {

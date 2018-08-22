@@ -1,108 +1,21 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { getEmployeePhoto } from '../utilities/apiWrapper';
-import * as actions from '../actions/queue';
-import SalonAvatar from '../components/SalonAvatar';
+import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
-import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
+import PropTypes from 'prop-types';
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    height: 40,
-    alignItems: 'center',
-  },
-  textMedium: {
-    fontSize: 14,
-    color: '#111415',
-    fontFamily: 'Roboto',
-    fontWeight: '500',
-  },
-  textNormal: {
-    fontSize: 14,
-    color: '#111415',
-    fontFamily: 'Roboto',
-  },
-  iconContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  serviceContainer: {
-    borderRadius: 4,
-    borderColor: 'rgba(195,214,242,0.2)',
-    borderWidth: 1,
-    backgroundColor: '#f4f7fc',
-    paddingHorizontal: 10,
-    marginBottom: 3,
-    justifyContent: 'center',
-    shadowColor: 'rgba(192,192,192,0.9)',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 1,
-    height: 82,
-  },
-  angleIcon: {
-    fontSize: 20,
-    color: '#115ECD',
-  },
-  rowBorderBottom: {
-    borderBottomWidth: 1,
-    borderColor: 'rgba(195,214,242,0.5)',
-  },
-  imageContainer: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#fff',
-    marginRight: 8,
-  },
-  providerRound: {
-    width: 26,
-    marginRight: 14.5,
-  },
-  firstAvailable: {
-    backgroundColor: '#C3D6F2',
-    borderRadius: 13,
-    height: 26,
-    width: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  firstAvailableText: {
-    marginLeft: 5,
-    color: '#115ECD',
-    fontSize: 9,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    fontWeight: 'bold',
-  },
-  avatarDefaultComponent: {
-    width: 24,
-    height: 24,
-    borderRadius: 13,
-    borderWidth: 2,
-    borderColor: '#115ECD',
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarDefaultComponentText: {
-    fontSize: 10,
-    color: '#115ECD',
-    fontWeight: 'bold',
-    fontFamily: 'Roboto',
-  },
-});
+import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { getEmployeePhoto } from '../../../utilities/apiWrapper';
+import * as actions from '../../../actions/queue';
+import SalonAvatar from '../../../components/SalonAvatar';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import styles from './styles';
 
 
-class queueListItemSummary extends React.Component {
+class queueListItemSummary extends Component {
   saveQueueService = (service) => {
     const newServices = [];
 
-    for (let i = 0; i < this.props.services.length; i++) {
+    for (let i = 0; i < this.props.services.length; i += 1) {
       const oldService = this.props.services[i];
 
       let newService = {
@@ -133,17 +46,13 @@ class queueListItemSummary extends React.Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    }).then((response) => {
-
-
-    }).catch((error) => {
     });
   }
 
   saveQueueProvider = (provider) => {
     const newServices = [];
 
-    for (let i = 0; i < this.props.services.length; i++) {
+    for (let i = 0; i < this.props.services.length; i += 1) {
       const service = this.props.services[i];
 
       let newService = {
@@ -174,10 +83,6 @@ class queueListItemSummary extends React.Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    }).then((response) => {
-
-
-    }).catch((error) => {
     });
   }
 
@@ -193,18 +98,28 @@ class queueListItemSummary extends React.Component {
     this.props.onDonePress();
   };
 
-handlePressProvider = (service) => {
-  this.props.navigation.navigate('ModalProviders', {
-    index: 0,
-    client: this.props.appointment.client,
+
+  cancelButton = () => ({
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      navigation.goBack();
+    },
+  })
+
+
+handlePressProvider = () => {
+  this.props.navigation.navigate('Providers', {
     dismissOnSelect: true,
+    headerProps: { title: 'Providers', ...this.cancelButton() },
+    client: this.props.appointment.client,
     onChangeProvider: data => this.saveQueueProvider(data),
   });
+
   this.props.onDonePress();
 };
 
 render() {
-  const employeeInitials = this.props.service.employeeFirstName ? `${this.props.service.employeeFirstName[0]}${this.props.service.employeeLastName[0]}` : '';
+  const employeeInitials = this.props.service.employee && this.props.service.employee.fullName ? `${this.props.service.employee.name[0]}${this.props.service.employee.lastName[0]}` : '';
   return (<View>
     <View style={styles.serviceContainer}>
       <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
@@ -222,7 +137,11 @@ render() {
             borderWidth={2}
             wrapperStyle={styles.providerRound}
             width={26}
-            image={{ uri: getEmployeePhoto(!this.props.service.isFirstAvailable ? this.props.service.employeeId : 0) }}
+            image={{
+              uri:
+              getEmployeePhoto(!this.props.service.isFirstAvailable ?
+              this.props.service.employeeId : 0),
+            }}
             hasBadge
             badgeComponent={
               <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
@@ -234,17 +153,30 @@ render() {
               </View>
 }
           />
-          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employeeFirstName ? `${this.props.service.employeeFirstName} ${this.props.service.employeeLastName}` : 'First Available'}</Text>
+          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employee.fullName ? `${this.props.service.employee.fullName}` : 'First Available'}</Text>
           <View style={styles.iconContainer}>
             <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
           </View>
         </View>
       </SalonTouchableOpacity>
     </View>
-          </View>);
+  </View>);
 }
 }
 
-// export default queueListItemSummary;
+
+queueListItemSummary.defaultProps = {
+
+};
+
+queueListItemSummary.propTypes = {
+  services: PropTypes.any.isRequired,
+  service: PropTypes.any.isRequired,
+  appointment: PropTypes.any.isRequired,
+  client: PropTypes.any.isRequired,
+  putQueue: PropTypes.any.isRequired,
+  onDonePress: PropTypes.any.isRequired,
+};
+
 
 export default connect(null, actions)(queueListItemSummary);

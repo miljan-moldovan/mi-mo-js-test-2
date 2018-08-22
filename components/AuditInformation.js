@@ -183,7 +183,11 @@ export default class AuditInformation extends React.Component {
   }
 
   render() {
-    const { audit, isBlockTime, isOpen } = this.state;
+    const { isBlockTime, isOpen } = this.state;
+    let { audit } = this.state;
+    if (!isOpen && !this.props.isLoading && audit && audit.length > 1) {
+      audit = audit.splice(0, 1);
+    }
 
     return this.props.isLoading ? (
       <View style={{

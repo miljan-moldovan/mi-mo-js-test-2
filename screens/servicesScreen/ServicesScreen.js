@@ -156,7 +156,6 @@ class ServicesScreen extends React.Component {
   constructor(props) {
     super(props);
     this.clearSearch();
-    this.getServices();
     const params = props.navigation.state.params || {};
     const selectedService = get(params, 'selectedService', null);
     props.servicesActions.setSelectedService(selectedService);
@@ -181,6 +180,10 @@ class ServicesScreen extends React.Component {
       ignoreNav: false,
       defaultProps: this.state.defaultHeaderProps,
     });
+  }
+
+  componentDidMount() {
+    this.getServices();
   }
 
   clearSearch = () => {
@@ -231,19 +234,13 @@ class ServicesScreen extends React.Component {
     const params = navigation.state.params || {};
     const onChangeService = get(params, 'onChangeService', false);
     const dismissOnSelect = get(params, 'dismissOnSelect', false);
-    this.setState(() => {
-      if (isFunction(onChangeService)) {
-        onChangeService(service);
-        if (dismissOnSelect) {
-          navigation.goBack();
-        }
+    setSelectedService(service);
+    if (isFunction(onChangeService)) {
+      onChangeService(service);
+      if (dismissOnSelect) {
+        navigation.goBack();
       }
-      setSelectedService(service);
-      return {
-        isLoading: true,
-        selectedService: service,
-      };
-    });
+    }
   }
 
   getServicesById = (ids) => {
@@ -323,9 +320,9 @@ class ServicesScreen extends React.Component {
         <ActivityIndicator />
       </View>
     ) : (
-      <View style={styles.container}>
-        <View style={styles.servicesList}>
-          {(!this.props.servicesState.showCategoryServices
+        <View style={styles.container}>
+          <View style={styles.servicesList}>
+            {(!this.props.servicesState.showCategoryServices
               && !this.props.salonSearchHeaderState.showFilter
               && this.props.servicesState.filtered.length > 0) &&
               <ServiceCategoryList
@@ -335,7 +332,7 @@ class ServicesScreen extends React.Component {
               />
             }
 
-          {(!this.props.servicesState.showCategoryServices
+            {(!this.props.servicesState.showCategoryServices
               && this.props.salonSearchHeaderState.showFilter
               && this.props.servicesState.filtered.length > 0) &&
               <ServiceList
@@ -348,7 +345,7 @@ class ServicesScreen extends React.Component {
               />
             }
 
-          {(this.props.servicesState.showCategoryServices
+            {(this.props.servicesState.showCategoryServices
               && this.props.servicesState.filtered.length > 0) &&
               <CategoryServicesList
                 {...this.props}
@@ -357,9 +354,9 @@ class ServicesScreen extends React.Component {
                 categoryServices={this.props.servicesState.categoryServices}
               />
             }
+          </View>
         </View>
-      </View>
-    );
+      );
   }
 }
 

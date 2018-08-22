@@ -33,6 +33,7 @@ import clientFormulasReducer from './clientFormulas';
 import clientInfoReducer from './clientInfo';
 import clientAppointmentsReducer from './clientAppointments';
 import storeReducer from './store';
+import rootDrawerNavigator from './rootDrawerNavigator';
 
 export default combineReducers({
   auth,
@@ -68,4 +69,5 @@ export default combineReducers({
   clientAppointmentsReducer,
   userInfoReducer,
   storeReducer,
+  rootDrawerNavigator,
 });

@@ -49,7 +49,7 @@
     "redux-persist": "4.10.2",
     "redux-thunk": "2.2.0",
     "reselect": "3.0.1",
-    "rn-sliding-up-panel": "1.2.0",
+    "rn-sliding-up-panel": "git+https://github.com/igor-slotin/rn-sliding-up-panel.git#default-y-position",
     "shouldcomponentupdate-children": "1.1.0",
     "url-parse": "^1.4.0",
     "uuid": "^3.2.1"

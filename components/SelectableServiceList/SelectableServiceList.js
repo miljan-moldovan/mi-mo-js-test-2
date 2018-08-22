@@ -6,6 +6,8 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { get, includes, remove, isNumber } from 'lodash';
+
+import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import Icon from '../UI/Icon';
 import styles from './styles';
@@ -50,9 +52,11 @@ class SelectableServiceList extends React.Component {
       >
         <View style={styles.listItemContainer}>
           <Text style={styles.listItemText}>{item.name}</Text>
-          {!item.isNone && (
-            <Text style={styles.priceText}>{`$${price.toFixed(2)}`}</Text>
-          )}
+          {
+            !item.isNone && (
+              <Text style={styles.priceText}>{`$${price.toFixed(2)}`}</Text>
+            )
+          }
         </View>
         <View style={styles.iconContainer}>
           {this.isSelected(item.id) && (
@@ -73,7 +77,10 @@ class SelectableServiceList extends React.Component {
   )
 
   render() {
-    return (
+    const { isLoading } = this.props.servicesState;
+    return isLoading ? (
+      <LoadingOverlay />
+    ) : (
       <View style={styles.container}>
         <FlatList
           style={styles.marginTop}

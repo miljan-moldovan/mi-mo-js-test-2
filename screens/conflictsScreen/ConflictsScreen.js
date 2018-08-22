@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   conflictCardContainer: {
-    height: 64,
+    // height: 64,
     flexDirection: 'row',
     flex: 1,
   },

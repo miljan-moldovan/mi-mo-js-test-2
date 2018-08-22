@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import walkInActions from '../../actions/walkIn';
 import * as queueActions from '../../actions/queue';
 import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
-import WalkInScreen from './components/WalkInScreen';
+import WalkInScreen from './walkInScreen';
 
 const mapStateToProps = state => ({
   queue: state.queue,

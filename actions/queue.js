@@ -1,59 +1,55 @@
-// @flow
-// queue constants from webend redux
-
-import axios from 'axios';
-
-import {
-  QUEUE,
-  QUEUE_RECEIVED,
-  QUEUE_FAILED,
-  QUEUE_DELETE_ITEM,
-  QUEUE_UPDATE_ITEM,
-  CLIENT_CHECKED_IN,
-  CLIENT_CHECKED_IN_FAILED,
-  CLIENT_CHECKED_IN_RECEIVED,
-  CLIENT_NO_SHOW,
-  CLIENT_NO_SHOW_RECEIVED,
-  CLIENT_NO_SHOW_FAILED,
-  CLIENT_RETURNED_LATER,
-  CLIENT_RETURNED_LATER_FAILED,
-  CLIENT_RETURNED_LATER_RECEIVED,
-  CLIENT_RETURNED,
-  CLIENT_RETURNED_RECEIVED,
-  CLIENT_RETURNED_FAILED,
-  CLIENT_WALKED_OUT,
-  CLIENT_START_SERVICE,
-  CLIENT_START_SERVICE_FAILED,
-  CLIENT_START_SERVICE_RECEIVED,
-  CLIENT_FINISH_SERVICE,
-  CLIENT_FINISH_SERVICE_FAILED,
-  CLIENT_FINISH_SERVICE_RECEIVED,
-  CLIENT_UNDOFINISH_SERVICE,
-  CLIENT_UNDOFINISH_SERVICE_FAILED,
-  CLIENT_UNDOFINISH_SERVICE_RECEIVED,
-  CLIENT_TO_WAITING,
-  CLIENT_TO_WAITING_RECEIVED,
-  CLIENT_TO_WAITING_FAILED,
-  TIME_UPDATE,
-  ROW_EXPANDED,
-  START_COMBINE,
-  CANCEL_COMBINE,
-  FINISH_COMBINE,
-  COMBINE_CLIENT,
-  GROUP_LEAD_UPDATE,
-  UNCOMBINE,
-  UPDATE_GROUPS,
-  PUT_QUEUE,
-  PUT_QUEUE_SUCCESS,
-  PUT_QUEUE_FAILED,
-  GET_QUEUE_STATE,
-  GET_QUEUE_STATE_SUCCESS,
-  GET_QUEUE_STATE_FAILED,
-
-} from './constants';
 import { QueueStatus, Queue } from '../utilities/apiWrapper';
 
-const queueData = require('./queueNew.json');
+export const QUEUE = 'queue/QUEUE';
+export const QUEUE_RECEIVED = 'queue/QUEUE_RECEIVED';
+export const QUEUE_FAILED = 'queue/QUEUE_FAILED';
+export const QUEUE_DELETE_ITEM = 'queue/QUEUE_DELETE_ITEM';
+export const QUEUE_UPDATE_ITEM = 'queue/QUEUE_UPDATE_ITEM';
+export const CLIENT_CHECKED_IN = 'queue/CLIENT_CHECKED_IN';
+export const CLIENT_CHECKED_IN_FAILED = 'queue/CLIENT_CHECKED_IN_FAILED';
+export const CLIENT_CHECKED_IN_RECEIVED = 'queue/CLIENT_CHECKED_IN_RECEIVED';
+export const CLIENT_UNCHECKED_IN = 'queue/CLIENT_UNCHECKED_IN';
+export const CLIENT_UNCHECKED_IN_FAILED = 'queue/CLIENT_UNCHECKED_IN_FAILED';
+export const CLIENT_UNCHECKED_IN_RECEIVED = 'queue/CLIENT_UNCHECKED_IN_RECEIVED';
+export const CLIENT_NO_SHOW = 'queue/CLIENT_NO_SHOW';
+export const CLIENT_NO_SHOW_RECEIVED = 'queue/CLIENT_NO_SHOW_RECEIVED';
+export const CLIENT_NO_SHOW_FAILED = 'queue/CLIENT_NO_SHOW_FAILED';
+export const CLIENT_RETURNED_LATER = 'queue/CLIENT_RETURNED_LATER';
+export const CLIENT_RETURNED_LATER_FAILED = 'queue/CLIENT_RETURNED_LATER_FAILED';
+export const CLIENT_RETURNED_LATER_RECEIVED = 'queue/CLIENT_RETURNED_LATER_RECEIVED';
+export const CLIENT_RETURNED = 'queue/CLIENT_RETURNED';
+export const CLIENT_RETURNED_RECEIVED = 'queue/CLIENT_RETURNED_RECEIVED';
+export const CLIENT_RETURNED_FAILED = 'queue/CLIENT_RETURNED_FAILED';
+export const CLIENT_WALKED_OUT = 'queue/CLIENT_WALKED_OUT';
+export const CLIENT_WALKED_OUT_RECEIVED = 'queue/CLIENT_WALKED_OUT_RECEIVED';
+export const CLIENT_WALKED_OUT_FAILED = 'queue/CLIENT_WALKED_OUT_FAILED';
+export const CLIENT_START_SERVICE = 'queue/CLIENT_START_SERVICE';
+export const CLIENT_START_SERVICE_FAILED = 'queue/CLIENT_START_SERVICE_FAILED';
+export const CLIENT_START_SERVICE_RECEIVED = 'queue/CLIENT_START_SERVICE_RECEIVED';
+export const CLIENT_FINISH_SERVICE = 'queue/CLIENT_FINISH_SERVICE';
+export const CLIENT_FINISH_SERVICE_FAILED = 'queue/CLIENT_FINISH_SERVICE_FAILED';
+export const CLIENT_FINISH_SERVICE_RECEIVED = 'queue/CLIENT_FINISH_SERVICE_RECEIVED';
+export const CLIENT_UNDOFINISH_SERVICE = 'queue/CLIENT_UNDOFINISH_SERVICE';
+export const CLIENT_UNDOFINISH_SERVICE_FAILED = 'queue/CLIENT_UNDOFINISH_SERVICE_FAILED';
+export const CLIENT_UNDOFINISH_SERVICE_RECEIVED = 'queue/CLIENT_UNDOFINISH_SERVICE_RECEIVED';
+export const CLIENT_TO_WAITING = 'queue/CLIENT_TO_WAITING';
+export const CLIENT_TO_WAITING_RECEIVED = 'queue/CLIENT_TO_WAITING_RECEIVED';
+export const CLIENT_TO_WAITING_FAILED = 'queue/CLIENT_TO_WAITING_FAILED';
+export const TIME_UPDATE = 'queue/TIME_UPDATE';
+export const ROW_EXPANDED = 'queue/ROW_EXPANDED';
+export const START_COMBINE = 'queue/START_COMBINE';
+export const CANCEL_COMBINE = 'queue/CANCEL_COMBINE';
+export const FINISH_COMBINE = 'queue/FINISH_COMBINE';
+export const COMBINE_CLIENT = 'queue/COMBINE_CLIENT';
+export const GROUP_LEAD_UPDATE = 'queue/GROUP_LEAD_UPDATE';
+export const UNCOMBINE = 'queue/UNCOMBINE';
+export const UPDATE_GROUPS = 'queue/UPDATE_GROUPS';
+export const PUT_QUEUE = 'queue/PUT_QUEUE';
+export const PUT_QUEUE_SUCCESS = 'queue/PUT_QUEUE_SUCCESS';
+export const PUT_QUEUE_FAILED = 'queue/PUT_QUEUE_FAILED';
+export const GET_QUEUE_STATE = 'queue/GET_QUEUE_STATE';
+export const GET_QUEUE_STATE_SUCCESS = 'queue/GET_QUEUE_STATE_SUCCESS';
+export const GET_QUEUE_STATE_FAILED = 'queue/GET_QUEUE_STATE_FAILED';
 
 export const receiveQueue = () => async (dispatch: Object => void) => {
   dispatch({ type: QUEUE });
@@ -87,7 +83,6 @@ export const startService = (id, serviceData) => async (dispatch: Object => void
   }
 };
 
-
 export const checkInClient = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_CHECKED_IN, data: { id } });
   try {
@@ -95,6 +90,16 @@ export const checkInClient = id => async (dispatch: Object => void) => {
     dispatch({ type: CLIENT_CHECKED_IN_RECEIVED, data });
   } catch (error) {
     dispatch({ type: CLIENT_CHECKED_IN_FAILED, error });
+  }
+};
+
+export const uncheckInClient = id => async (dispatch: Object => void) => {
+  dispatch({ type: CLIENT_UNCHECKED_IN, data: { id } });
+  try {
+    const data = await QueueStatus.putUncheckIn(id);
+    dispatch({ type: CLIENT_UNCHECKED_IN_RECEIVED, data });
+  } catch (error) {
+    dispatch({ type: CLIENT_UNCHECKED_IN_FAILED, error });
   }
 };
 

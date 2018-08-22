@@ -5,9 +5,13 @@ import walkInActions, {
   SELECTED_SERVICE,
   SELECTED_PROVIDER,
   SELECTED_PROMOTION,
+  POST_WALKIN_CLIENT,
+  POST_WALKIN_CLIENT_SUCCESS,
+  POST_WALKIN_CLIENT_FAILED,
 } from '../actions/walkIn';
 
 const initialState = {
+  isLoading: false,
   estimatedWaitTime: 0,
   currentStep: 1,
   selectedClient: null,
@@ -54,6 +58,21 @@ export default function walkInReducer(state = initialState, action) {
         ...state,
         error: null,
         selectedClient: data.client,
+      };
+    case POST_WALKIN_CLIENT:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case POST_WALKIN_CLIENT_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case POST_WALKIN_CLIENT_FAILED:
+      return {
+        ...state,
+        isLoading: false,
       };
     default:
       return state;

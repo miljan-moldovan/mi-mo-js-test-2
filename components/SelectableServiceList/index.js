@@ -4,6 +4,7 @@ import SelectableServiceList from './SelectableServiceList';
 
 const mapStateToProps = state => ({
   allServices: flatServicesSelector(state),
+  servicesState: state.serviceReducer,
 });
 const mapActionsToProps = dispatch => ({});
 export default connect(mapStateToProps, mapActionsToProps)(SelectableServiceList);

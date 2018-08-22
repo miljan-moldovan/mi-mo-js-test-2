@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { appointmentCalendarActions } from '../../actions/appointmentBook';
 import appointmentActions from '../../actions/appointment';
 import newAppointmentActions from '../../actions/newAppointment';
+import rootDrawerNavigatorAction from '../../actions/rootDrawerNavigator';
 import modifyApptActions from '../modifyAppointmentScreen/redux';
 import AppointmentScreen from './components/appointmentScreen';
 import visbleBlocksSelector from '../../redux/selectors/blocksSelector';
@@ -32,6 +33,7 @@ const mapActionsToProps = dispatch => ({
   appointmentActions: bindActionCreators({ ...appointmentActions }, dispatch),
   newAppointmentActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
   modifyApptActions: bindActionCreators({ ...modifyApptActions }, dispatch),
+  rootDrawerNavigatorAction: bindActionCreators({ ...rootDrawerNavigatorAction }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(AppointmentScreen);

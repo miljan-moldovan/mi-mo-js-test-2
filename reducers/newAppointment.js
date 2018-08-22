@@ -35,6 +35,7 @@ const defaultState = {
   editType: 'new',
   isBookingQuickAppt: false,
   isQuickApptRequested: true,
+  isBookedByFieldEnabled: false,
   date: moment(),
   startTime: moment(),
   client: null,
@@ -80,6 +81,7 @@ export default function newAppointmentReducer(state = defaultState, action) {
         startTime: data.newState.startTime,
         client: data.newState.client,
         bookedByEmployee: data.newState.bookedByEmployee,
+        mainEmployee: data.newState.mainEmployee,
         deletedIds: data.newState.deletedIds,
         guests: data.newState.guests,
         conflicts: data.newState.conflicts,
@@ -95,15 +97,16 @@ export default function newAppointmentReducer(state = defaultState, action) {
       return {
         ...state,
         bookedByEmployee: data.bookedByEmployee,
+        isBookedByFieldEnabled: data.isBookedByFieldEnabled,
       };
     case SET_MAIN_EMPLOYEE:
       return {
         ...state,
-        mainEmployee: data.employee,
+        mainEmployee: data.mainEmployee,
         serviceItems: newServiceItems.map((item) => {
           const employee = (
             item.service.employee.id === state.mainEmployee.id
-          ) ? data.employee : item.service.employee;
+          ) ? data.mainEmployee : item.service.employee;
           return ({
             ...item,
             service: {

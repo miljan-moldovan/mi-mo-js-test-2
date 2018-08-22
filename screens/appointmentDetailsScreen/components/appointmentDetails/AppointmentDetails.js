@@ -20,7 +20,7 @@ import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import QueueTimeNote from '../../../../components/QueueTimeNote';
+import QueueTimeNote from '../../../queueScreen/queueTimeNote';
 import Icon from '../../../../components/UI/Icon';
 import StatusEnum from '../../../../constants/Status';
 import QueueTypes from '../../../../constants/QueueTypes';
@@ -236,7 +236,7 @@ const caretRight = (
 
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
-  const providerName = !props.service.isFirstAvailable ? `${props.service.employeeFirstName} ${props.service.employeeLastName}` : 'First Available';
+  const providerName = !props.service.isFirstAvailable ? `${props.service.employee.name} ${props.service.employee.lastName}` : 'First Available';
 
   return (
     <SalonCard
@@ -516,55 +516,61 @@ class AppointmentDetails extends React.Component {
 
 
   renderBtnContainer = () => {
-    let isActiveCheckin,
-      isDisabledCheckin;
-    let isActiveReturnLater,
-      isDisabledReturnLater;
+    let isActiveCheckin = false;
+    let isDisabledReturnLater;
     let returned;
-    let isActiveWalkOut,
-      isDisabledWalkOut;
-    let isActiveStart,
-      isDisabledStart;
-    let isActiveWaiting,
-      isActiveFinish = true;
+    let isActiveWalkOut;
+    let isActiveFinish;
+    let isActiveWaiting = true;
+    let isAppointment = true;
+    let isActiveUnCheckin = false;
+    let isDisabledStart = true;
 
     if (this.props.appointment) {
-      isDisabledWalkOut = true;
-      if (this.props.appointment.status === StatusEnum.checkedIn || this.props.appointment.status === StatusEnum.notArrived) {
-        isActiveStart = true;
-        isDisabledStart = false;
-      } else {
-        isDisabledStart = true;
-      }
       returned = this.props.appointment.status === StatusEnum.returningLater;
-      isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment);
+      isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment &&
+      !(this.props.appointment.status === StatusEnum.checkedIn));
+
+      isAppointment = this.props.appointment.queueType === QueueTypes.PosAppointment;
 
       if (this.props.appointment.status === StatusEnum.notArrived) {
         isDisabledReturnLater = true;
         isActiveCheckin = true;
-      } else {
-        isActiveReturnLater = true;
-        isDisabledCheckin = true;
       }
 
+      if (this.props.appointment.status === StatusEnum.checkedIn ||
+        this.props.appointment.status === StatusEnum.notArrived ||
+        this.props.appointment.status === StatusEnum.returningLater
+      ) {
+        isDisabledStart = false;
+      }
+
+      if (isAppointment && this.props.appointment.status === StatusEnum.checkedIn) {
+        isActiveUnCheckin = true;
+      }
 
       if (this.props.appointment.status === StatusEnum.inService) {
         isActiveWaiting = true;
         isActiveFinish = true;
       } else {
-        isActiveFinish = false;
         isActiveWaiting = false;
+        isActiveFinish = false;
       }
     }
+
     const otherBtnStyle = styles.btnBottom;
 
     if (this.props.isWaiting) {
       return (
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-          <BottomButton disabled={!isActiveCheckin} icon="check" onPress={() => { this.props.onPressSummary.checkIn(); this.props.navigation.goBack(); }} title="Check In" />
+          {isActiveUnCheckin ?
+            <BottomButton icon="check" onPress={() => { this.props.onPressSummary.checkIn(isActiveCheckin); this.props.navigation.goBack(); }} title="Uncheck In" />
+            :
+            <BottomButton disabled={!isActiveCheckin} icon="check" onPress={() => { this.props.onPressSummary.checkIn(isActiveCheckin); this.props.navigation.goBack(); }} title="Check In" />
+          }
           <BottomButton disabled={false} icon="signOut" onPress={() => { this.props.onPressSummary.walkOut(isActiveWalkOut); this.props.navigation.goBack(); }} title={isActiveWalkOut ? 'Walk-out' : 'No Show'} />
           <BottomButton disabled={isDisabledReturnLater} icon="history" onPress={() => { this.props.onPressSummary.returning(returned); this.props.navigation.goBack(); }} title={returned ? 'Returned' : 'Return later'} />
-          <BottomButton disabled={(returned || isActiveCheckin)} icon="play" onPress={() => { this.props.onPressSummary.toService(); this.props.navigation.goBack(); }} title="To Service" />
+          <BottomButton disabled={isDisabledStart} icon="play" onPress={() => { this.props.onPressSummary.toService(); this.props.navigation.goBack(); }} title="To Service" />
         </View>
       );
     }
