@@ -5,6 +5,7 @@ import {
   View,
   FlatList,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -259,11 +260,29 @@ handlePressWalkOut = (isActiveWalkOut) => {
         ...this.props,
       });
     }
-  } else {
-    this.props.noShow(appointment.id);
-  }
 
-  this.hideDialog();
+    this.hideDialog();
+  } else {
+    const { client } = appointment;
+
+    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+
+    Alert.alert(
+      'No show',
+      `Are you sure yoy want to mark ${fullName} as a no show?`,
+      [
+        { text: 'No, cancel', onPress: () => { this.hideDialog(); }, style: 'cancel' },
+        {
+          text: 'Yes, Im sure',
+          onPress: () => {
+            this.props.noShow(appointment.id);
+            this.hideDialog();
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  }
 }
 
 handleReturning = (returned) => {
