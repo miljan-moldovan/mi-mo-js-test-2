@@ -324,7 +324,6 @@ export default class Calendar extends Component {
   }
 
   handleOnDrag = (isScrollEnabled, appointment, left, cardWidth, verticalPositions, isBufferCard) => {
-    //const { top } = verticalPositions[0];
     let newState;
     this.moveX = null;
     this.moveY = null;
@@ -333,7 +332,6 @@ export default class Calendar extends Component {
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
       this.fixOffsetY = offsetY;
       const { pan, pan2 } = this.state;
-      // const newTop = top + offsetY;
       const newVerticalPositions = [];
       for (let i = 0; i < verticalPositions.length; i += 1) {
         const item = verticalPositions[i];
