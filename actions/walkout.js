@@ -28,17 +28,19 @@ const putWalkoutFailed = error => ({
   data: { error },
 });
 
-const putWalkout = (clientQueueItemId, params) => (dispatch) => {
+const putWalkout = (clientQueueItemId, params, callback) => (dispatch) => {
   dispatch({ type: PUT_WALKOUT });
   return QueueStatus.putWalkOut(clientQueueItemId, params)
     .then((response) => {
       dispatch(purgeForm('WalkoutScreen', clientQueueItemId.toString()));
+      callback(true);
       return dispatch(putWalkoutSuccess(response));
     })
     .catch((error) => {
       if (error.responseCode === 99) {
         dispatch(storeForm('WalkoutScreen', clientQueueItemId.toString(), params));
       }
+      callback(false);
       return dispatch(putWalkoutFailed(error));
     });
 };

@@ -25,11 +25,11 @@ const setReasonsNames = (reasons) => {
 
     switch (reason.name.toLowerCase()) {
       case TurnAwayReasonCode.providerUnavail.toLowerCase():
-        reason.name = 'Desired provider has no avaliability';
+        reason.name = 'Provider is not available';
         break;
 
       case TurnAwayReasonCode.providerOut.toLowerCase():
-        reason.name = 'Desired provider is not working';
+        reason.name = 'Provider is not working';
         break;
 
       case TurnAwayReasonCode.salonClosed.toLowerCase():
@@ -37,11 +37,11 @@ const setReasonsNames = (reasons) => {
         break;
 
       case TurnAwayReasonCode.resourceUnavail.toLowerCase():
-        reason.name = 'Needed resource is unavaliable';
+        reason.name = 'Resource is unavaliable';
         break;
 
       case TurnAwayReasonCode.roomUnavail.toLowerCase():
-        reason.name = 'Needed room is unavaliable';
+        reason.name = 'Room is unavaliable';
         break;
 
       default:
