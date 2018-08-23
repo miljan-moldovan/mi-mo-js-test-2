@@ -16,6 +16,8 @@ const clientSelector = state => state.newAppointmentReducer.client;
 
 const bookedByEmployeeSelector = state => state.newAppointmentReducer.bookedByEmployee;
 
+const mainEmployeeSelector = state => state.newAppointmentReducer.mainEmployee;
+
 const dateSelector = state => state.newAppointmentReducer.date;
 
 const startTimeSelector = state => state.newAppointmentReducer.startTime;
@@ -46,6 +48,7 @@ const newAppointmentInfoSelector = createSelector(
     clientSelector,
     guestsSelector,
     bookedByEmployeeSelector,
+    mainEmployeeSelector,
     serviceItemsSelector,
     isBookingQuickApptSelector,
     isQuickRequestedSelector,
@@ -56,7 +59,7 @@ const newAppointmentInfoSelector = createSelector(
   ],
   (
     date, startTime, client, guests,
-    bookedByEmployee, serviceItems,
+    bookedByEmployee, mainEmployee, serviceItems,
     isQuickBooking, isQuickApptRequested,
     conflicts, editType, deletedIds, remarks,
   ) => ({
@@ -65,6 +68,7 @@ const newAppointmentInfoSelector = createSelector(
     client,
     guests,
     bookedByEmployee,
+    mainEmployee,
     serviceItems,
     isQuickBooking,
     isQuickApptRequested,
@@ -83,11 +87,12 @@ const isValidAppointment = createSelector(
   (
     { isLoading, isBooking },
     {
-      date, bookedByEmployee, client, serviceItems, conflicts, editType,
+      date, bookedByEmployee, mainEmployee, client, serviceItems, conflicts,
     },
   ) => (
     date &&
       bookedByEmployee !== null &&
+      mainEmployee !== null &&
       client !== null &&
       serviceItems.length > 0 &&
       !conflicts.length > 0 &&
@@ -199,7 +204,7 @@ const serializeApptToRequestData = createSelector(
 );
 
 const employeeScheduledIntervalsSelector = createSelector(
-  bookedByEmployeeSelector,
+  mainEmployeeSelector,
   employee => get(employee, 'scheduledIntervals', []),
 );
 
