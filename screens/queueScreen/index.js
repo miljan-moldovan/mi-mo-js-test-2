@@ -201,9 +201,11 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.service = service;
     this.setState({ newAppointment });
+
+    this.props.serviceActions.setSelectedService({ id: service.id });
+
     this.props.navigation.navigate('ModalProviders', {
       filterByService: true,
-      selectedService: service,
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',
@@ -330,6 +332,7 @@ class QueueScreen extends React.Component {
           case WAITING:
             return (
               <Queue
+                serviceActions={this.props.serviceActions}
                 data={waitingQueue}
                 groups={groups}
                 navigation={navigation}
@@ -340,6 +343,7 @@ class QueueScreen extends React.Component {
           case SERVICED:
             return (
               <Queue
+                serviceActions={this.props.serviceActions}
                 data={serviceQueue}
                 groups={groups}
                 navigation={navigation}
@@ -386,12 +390,14 @@ class QueueScreen extends React.Component {
               ) : null}
               <Queue
                 isWaiting
+                serviceActions={this.props.serviceActions}
                 onChangeFilterResultCount={this.updateSearchWaitingCount}
                 data={waitingQueue}
                 headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
                 {...p}
               />
               <Queue
+                serviceActions={this.props.serviceActions}
                 onChangeFilterResultCount={this.updateSearchServiceCount}
                 data={serviceQueue}
                 headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}

@@ -47,6 +47,8 @@ import AddonServicesScreen from '../screens/addonServicesScreen';
 import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
 import RequiredServicesScreen from '../screens/requiredServicesScreen';
 import ProductsScreen from './../screens/productsScreen';
+import RecommendProductScreen from '../screens/recommendProductScreen';
+import RecommendProductHeader from '../screens/recommendProductScreen/components/RecommendProductHeader';
 
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
@@ -80,6 +82,13 @@ const AppointmentStackNavigator = StackNavigator(
     EditSchedule: {
       screen: EditScheduleScreen,
       navigationOptions: { tabBarVisible: false },
+    },
+    RecommendProduct: {
+      screen: RecommendProductScreen,
+      navigationOptions: rootProps => ({
+        headerTitle: <RecommendProductHeader rootProps={rootProps} />,
+        tabBarVisible: false
+      }),
     },
     BlockTime: {
       screen: BlockTimeScreen,

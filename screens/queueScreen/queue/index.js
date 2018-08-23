@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
+
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import CircularCountdown from '../../../components/CircularCountdown';
@@ -317,13 +318,14 @@ checkHasProvider = () => {
   } else {
     this.hideDialog();
 
+
+    this.props.serviceActions.setSelectedService({ id: service.serviceId });
+
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: true,
-      selectedService: service,
       filterByService: true,
       showFirstAvailable: false,
-      apptBook,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
@@ -353,6 +355,8 @@ handleStartService = () => {
     ],
     deletedServiceEmployeeIds: [],
   };
+
+
   this.props.startService(appointment.id, serviceData);
   this.hideDialog();
 }
@@ -439,7 +443,7 @@ renderItem = (row) => {
   const groupLeaderName = this.getGroupLeaderName(item);
   const firstService = item.services[0] || {};
   const serviceName = (firstService.serviceName || '').toUpperCase();
-  const employee = !firstService.isFirstAvailable && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
+  const employee = !firstService.isFirstAvailable && firstService.employee && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
 
   const isBookedByWeb = item.queueType === 3;
 
@@ -593,6 +597,9 @@ Queue.defaultProps = {
 };
 
 Queue.propTypes = {
+  serviceActions: PropTypes.shape({
+    setSelectedService: PropTypes.func.isRequired,
+  }).isRequired,
   data: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
   searchProvider: PropTypes.any.isRequired,

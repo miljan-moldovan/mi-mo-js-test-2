@@ -2,10 +2,10 @@ import rebookActions, {
   POST_REBOOK,
   POST_REBOOK_SUCCESS,
   POST_REBOOK_FAILED,
-} from '../actions/rebook';
+} from '../actions/rebookDialog';
 
 const initialState = {
-  isLoading: true,
+  isLoading: false,
   error: null,
 };
 

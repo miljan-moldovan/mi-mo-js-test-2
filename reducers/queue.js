@@ -314,6 +314,8 @@ export default (state = initialState, action) => {
     case CLIENT_START_SERVICE:
       const newServicedItem = state.waitingQueue.find(item => item.id === data.id);
 
+      // /eslint-disable-line
+
       newServicedItem.servicedTime = helpers.getSecondsPassedSinceMidnight();
       newServicedItem.startTime = helpers.formatServiceStartTime(newServicedItem.servicedTime);
       newServicedItem.checked_in = false;
