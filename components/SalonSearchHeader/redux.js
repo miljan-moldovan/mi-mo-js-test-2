@@ -5,6 +5,7 @@ export const SET_TITLE = 'salonSearchHeader/SET_TITLE';
 export const SET_SUBTITLE_TITLE = 'salonSearchHeader/SET_SUBTITLE_TITLE';
 export const SET_SEARCH_TEXT = 'salonSearchHeader/SET_SEARCH_TEXT';
 export const SET_FILTER_ACTION = 'salonSearchHeader/SET_FILTER_ACTION';
+export const SET_IGNORED_NUMBER_OF_LETTERS = 'salonSearchHeader/SET_IGNORED_NUMBER_OF_LETTERS';
 
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
   subTitle: null,
   searchText: '',
   filterList: () => {},
+  ignoredNumberOfLetters: 2,
 };
 
 export function salonSearchHeaderReducer(state = initialState, action) {
@@ -62,6 +64,8 @@ export function salonSearchHeaderReducer(state = initialState, action) {
         error: null,
         searchText: data.searchText,
       };
+    case SET_IGNORED_NUMBER_OF_LETTERS:
+      return { ...state, ignoredNumberOfLetters: data };
     default:
       return state;
   }
@@ -116,6 +120,13 @@ function setFilterAction(filterList) {
   };
 }
 
+function setIgnoredNumberOfLetters(number) {
+  return {
+    type: SET_IGNORED_NUMBER_OF_LETTERS,
+    data: number,
+  };
+}
+
 
 const salonSearchHeaderActions = {
   setFilterTypes,
@@ -125,6 +136,7 @@ const salonSearchHeaderActions = {
   setSubTitle,
   setSearchText,
   setFilterAction,
+  setIgnoredNumberOfLetters,
 };
 
 export default salonSearchHeaderActions;

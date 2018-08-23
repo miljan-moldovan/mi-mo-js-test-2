@@ -34,6 +34,7 @@ import clientInfoReducer from './clientInfo';
 import clientAppointmentsReducer from './clientAppointments';
 import storeReducer from './store';
 import rootDrawerNavigator from './rootDrawerNavigator';
+import rebookReducer from './rebookDialog';
 
 export default combineReducers({
   auth,
@@ -70,4 +71,5 @@ export default combineReducers({
   userInfoReducer,
   storeReducer,
   rootDrawerNavigator,
+  rebookReducer,
 });

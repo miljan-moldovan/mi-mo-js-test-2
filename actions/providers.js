@@ -41,6 +41,7 @@ const getProviders = (params, filterByService = false, filterList = false) =>
   (dispatch, getState) => {
     dispatch({ type: GET_PROVIDERS });
     const { selectedService } = getState().serviceReducer;
+    
     const serviceId = get(selectedService || {}, 'id', false);
     if (serviceId && filterByService) {
       return Services.getEmployeesByService(serviceId, params)

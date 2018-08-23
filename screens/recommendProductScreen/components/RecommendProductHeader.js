@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     color: '#fff',
     fontSize: 17,
+    paddingTop: 3,
   },
   subTitle: {
     fontFamily: 'Roboto',
@@ -19,7 +20,7 @@ const RecommendProductHeader = (props) => {
   const client = props.rootProps.navigation.getParam('client', {});
   return (
     <HeaderMiddle
-      title={<Text style={styles.title}>Recommend Product</Text>}
+      title={<Text style={styles.title}>Rec. Products</Text>}
       subTitle={<Text style={styles.subTitle}>{`${client.name} ${client.lastName}`}</Text>}
     />
   );

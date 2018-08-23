@@ -26,6 +26,7 @@ export default class ProviderInput extends React.Component {
       selectedService = null,
       selectedProvider = null,
       showFirstAvailable = true,
+      showEstimatedTime = true,
     } = this.props;
     if (isFunction(onPress)) { onPress(); }
     navigate(apptBook ? 'ApptBookProvider' : 'Providers', {
@@ -34,6 +35,7 @@ export default class ProviderInput extends React.Component {
       selectedService,
       selectedProvider,
       showFirstAvailable,
+      showEstimatedTime,
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });

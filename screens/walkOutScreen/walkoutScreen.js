@@ -175,7 +175,7 @@ class WalkoutScreen extends Component {
           rootStyle={styles.providerRootStyle}
           selectedProvider={this.state.provider}
           placeholder="Provider"
-          navigate={this.props.navigate}
+          navigate={this.props.navigation.navigate}
           headerProps={{ title: 'Providers', ...this.cancelButton() }}
           onChange={this.onChangeProvider}
         />

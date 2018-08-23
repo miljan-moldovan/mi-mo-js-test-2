@@ -1,112 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, ViewPropTypes, Text } from 'react-native';
+import { View, ViewPropTypes, Text } from 'react-native';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    backgroundColor: '#115ECD',
-    height: 115,
-    width: '100%',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  header: {
-    backgroundColor: '#115ECD',
-    height: 64,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 35,
-    paddingHorizontal: 10,
-    paddingBottom: 8,
-  },
-  topSearchBar: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  topSearchBarText: {
-    color: '#1D1D26',
-    fontSize: 12,
-    marginLeft: 30,
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    backgroundColor: 'transparent',
-  },
-  filterBarContainer: {
-    backgroundColor: '#115ECD',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterBar: {
-    flex: 1,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-});
-
+import styles from './styles';
 
 class SalonSearchHeader extends React.Component {
   constructor(props) {
@@ -117,16 +17,8 @@ class SalonSearchHeader extends React.Component {
   componentWillMount() {
   }
 
-  showSuggestions() {
-    this.props.salonSearchHeaderActions.setShowFilter(!this.props.salonSearchHeaderState.showFilter);
-  }
-
-  handleTypeChange=(ev, selectedIndex) => {
-    this.props.salonSearchHeaderActions.setSelectedFilter(selectedIndex);
-  }
-
   onChangeText = (searchText) => {
-    if (searchText.length > 2) {
+    if (searchText.length > this.props.salonSearchHeaderState.ignoredNumberOfLetters) {
       this.props.salonSearchHeaderActions.setSearchText(searchText);
       this.props.salonSearchHeaderState.filterList(searchText);
     }
@@ -137,10 +29,22 @@ class SalonSearchHeader extends React.Component {
     }
   }
 
+  handleTypeChange = (ev, selectedIndex) => {
+    this.props.salonSearchHeaderActions.setSelectedFilter(selectedIndex);
+  }
+
+  showSuggestions() {
+    this.props.salonSearchHeaderActions
+      .setShowFilter(!this.props.salonSearchHeaderState.showFilter);
+  }
+
   render() {
     return (
       <View style={[styles.headerContainer, this.props.headerContainerStyle,
-        { height: this.props.salonSearchHeaderState.showFilter && !this.props.hasFilter ? 70 : 115 }]}
+        {
+          height: this.props.salonSearchHeaderState.showFilter &&
+          !this.props.hasFilter ? 70 : 115,
+        }]}
       >
 
         { !this.props.salonSearchHeaderState.showFilter &&
@@ -149,19 +53,20 @@ class SalonSearchHeader extends React.Component {
             <View style={styles.leftButton}>
               <SalonTouchableOpacity
                 style={{ flex: 1 }}
-                onPress={() => { this.props.leftButtonOnPress();  }}
+                onPress={this.props.leftButtonOnPress}
               >
                 {this.props.leftButton}
               </SalonTouchableOpacity>
             </View>
             <View style={styles.titleContainer}>
               <Text style={styles.titleText}>{this.props.title}</Text>
-              {this.props.subTitle && <Text style={styles.subTitleText}>{this.props.subTitle}</Text>}
+              {this.props.subTitle &&
+              (<Text style={styles.subTitleText}>{this.props.subTitle}</Text>)}
             </View>
             <View style={styles.rightButton}>
               <SalonTouchableOpacity
                 style={{ flex: 1 }}
-                onPress={() => { this.props.rightButtonOnPress(); }}
+                onPress={this.props.rightButtonOnPress}
               >
                 {this.props.rightButton}
               </SalonTouchableOpacity>
@@ -219,9 +124,31 @@ class SalonSearchHeader extends React.Component {
     );
   }
 }
+
+SalonSearchHeader.defaultProps = {
+  headerContainerStyle: {},
+  subTitle: '',
+  leftButtonOnPress: () => {},
+  leftButton: null,
+};
+
 SalonSearchHeader.propTypes = {
   hasFilter: PropTypes.bool,
   headerContainerStyle: ViewPropTypes.style,
+  salonSearchHeaderState: PropTypes.shape({
+    showFilter: PropTypes.bool.isRequired,
+    filterList: PropTypes.func.isRequired,
+    ignoredNumberOfLetters: PropTypes.number.isRequired,
+  }).isRequired,
+  salonSearchHeaderActions: PropTypes.shape({
+    setShowFilter: PropTypes.func.isRequired,
+    setSelectedFilter: PropTypes.func.isRequired,
+    setSearchText: PropTypes.func.isRequired,
+  }).isRequired,
+  subTitle: PropTypes.string,
+  leftButtonOnPress: PropTypes.func,
+  title: PropTypes.string.isRequired,
+  leftButton: PropTypes.node,
 };
 
 SalonSearchHeader.defaultProps = {

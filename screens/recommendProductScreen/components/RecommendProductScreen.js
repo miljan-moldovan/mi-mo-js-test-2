@@ -17,19 +17,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
-  cancelButton: {
+  headerButtons: {
     fontSize: 14,
+    paddingTop: 10,
+    lineHeight: 22,
     color: 'white',
   },
   inputGroupContainer: {
     marginTop: 15,
   },
+  divider: {
+    marginLeft: -20,
+  },
 });
 
 const headerRightButtonStyle = (canSave) => {
   const style = {
-    fontSize: 14,
-    lineHeight: 22,
+    fontFamily: canSave ? 'Roboto-Bold' : 'Roboto-Regular',
     color: canSave ? 'white' : 'rgba(0,0,0,0.3)',
   };
   return style;
@@ -52,7 +56,14 @@ export default class RecommendProductScreen extends React.Component {
             }
           }}
         >
-          <Text style={headerRightButtonStyle(canSave)}>Done</Text>
+          <Text style={[styles.headerButtons, headerRightButtonStyle(canSave)]}>Done</Text>
+        </SalonTouchableOpacity>
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.headerButtons}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
     };
@@ -146,8 +157,10 @@ export default class RecommendProductScreen extends React.Component {
     });
 
   handleSelectProvider = (selectedProvider) => {
-    this.setState({
-      selectedProvider,
+    this.setState({ selectedProvider }, () => {
+      this.props.navigation.setParams({
+        isValidInfo: this.validateFields,
+      });
     });
   };
 
@@ -162,18 +175,26 @@ export default class RecommendProductScreen extends React.Component {
   };
 
   cancelButton = () => ({
-    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButton: <Text style={styles.headerButtons}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
       navigation.goBack();
     },
   });
 
   handleChangeText = (clientEmail) => {
-    this.setState({ clientEmail });
+    this.setState({ clientEmail }, () => {
+      this.props.navigation.setParams({
+        isValidInfo: this.validateFields,
+      });
+    });
   };
 
   handleChangeProduct = (product) => {
-    this.setState({ selectedProduct: product });
+    this.setState({ selectedProduct: product }, () => {
+      this.props.navigation.setParams({
+        isValidInfo: this.validateFields,
+      });
+    });
   };
 
   render() {
@@ -190,30 +211,33 @@ export default class RecommendProductScreen extends React.Component {
             onValidated={this.onValidateEmail}
             onChangeText={email => this.handleChangeText(email)}
           />
-          <InputDivider
-            style={{
+            <InputDivider
+              style={[styles.divider, {
               backgroundColor: this.isValidEmailRegExp.test(clientEmail) ? null : '#D1242A',
-            }}
-          />
+            }]}
+            />
         </InputGroup>
-        <InputGroup style={styles.inputGroupContainer}>
-          <ProductInput
-            selectedProduct={selectedProduct}
-            placeholder="Select a Product"
-            onChange={product => this.handleChangeProduct(product)}
-            navigate={this.props.navigation.navigate}
-          />
-          <InputDivider />
-          <ProviderInput
-            filterByService
-            client={client}
-            placeholder="Select a Provider"
-            navigate={this.props.navigation.navigate}
-            selectedProvider={selectedProvider}
-            onChange={this.handleSelectProvider}
-            goBack
-            headerProps={{ title: 'Providers', ...this.cancelButton() }}
-          />
+          <InputGroup style={styles.inputGroupContainer}>
+            <ProductInput
+              selectedProduct={selectedProduct}
+              placeholder="Select a Product"
+              apptBook
+              onChange={product => this.handleChangeProduct(product)}
+              navigate={this.props.navigation.navigate}
+            />
+            <InputDivider />
+            <ProviderInput
+              apptBook 
+              filterByService
+              client={client}
+              placeholder="Select a Provider"
+              navigate={this.props.navigation.navigate}
+              selectedProvider={selectedProvider}
+              onChange={this.handleSelectProvider}
+              showFirstAvailable = {false}
+              showEstimatedTime = {false}
+              headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            />
         </InputGroup>
       </View>
     );
