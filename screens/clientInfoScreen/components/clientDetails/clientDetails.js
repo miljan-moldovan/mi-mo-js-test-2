@@ -82,7 +82,7 @@ class ClientDetails extends Component {
       loadingClient: true,
       selectedClient: null,
       selectedReferredClient: true,
-      requireCard: true,
+      requireCard: false,
       hasChanged: false,
       isValidEmail: false,
       isValidZipCode: false,
@@ -199,8 +199,8 @@ class ClientDetails extends Component {
   }
 
 
-  onChangeInputSwitch = (requireCard) => {
-    this.setState({ requireCard });
+  onChangeInputSwitch = () => {
+    this.setState({ requireCard: !this.state.requireCard });
   }
 
   onValidateEmail = isValid => this.setState((state) => {
@@ -630,7 +630,7 @@ class ClientDetails extends Component {
                   />
                   <InputDivider />
                   <InputDate
-                    noIcon={!this.state.client.birthday}
+                    // noIcon={!this.state.client.birthday}
                     placeholder="Birthday"
                     format="D MMM YYYY"
                     icon={Icons.calendar}
@@ -638,7 +638,7 @@ class ClientDetails extends Component {
                     isValid={this.state.isValidBirth}
                     onValidated={this.onValidateBirth}
                     onPress={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
-                    selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : false}
+                    selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : 'Select'}
                     valueStyle={!this.state.client.birthday ? styles.dateValueStyle : {}}
                   />
                   <InputDivider />
@@ -647,6 +647,7 @@ class ClientDetails extends Component {
                     required={this.state.requiredFields.age}
                     isValid={this.state.isValidAge}
                     onValidated={this.onValidateAge}
+                    noValueStyle={!this.state.client.age ? styles.dateValueStyle : {}}
                     value={this.state.client.age ? this.state.client.age : null}
                     onChange={(option) => { this.onChangeClientField('age', option); }}
                     defaultOption={this.state.client.age}
@@ -656,10 +657,10 @@ class ClientDetails extends Component {
                   <InputDate
                     format="D MMM YYYY"
                     icon={Icons.calendar}
-                    noIcon={!this.state.client.anniversary}
+                    // noIcon={!this.state.client.anniversary}
                     placeholder="Anniversary"
                     onPress={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
-                    selectedDate={this.state.client.anniversary ? moment(this.state.client.anniversary) : false}
+                    selectedDate={this.state.client.anniversary ? moment(this.state.client.anniversary) : 'Select'}
                     valueStyle={!this.state.client.anniversary ? styles.dateValueStyle : {}}
 
                   />
@@ -668,7 +669,7 @@ class ClientDetails extends Component {
                     label="Client ID"
                     value={this.state.client.clientId}
                     onChangeText={(text) => { this.onChangeClientField('clientId', text); }}
-                    placeholder="Enter"
+                    placeholder="####"
                     inputStyle={this.state.client.clientId ? {} : styles.inputStyle}
                   />
                   <InputDivider />
@@ -677,6 +678,7 @@ class ClientDetails extends Component {
                     required={this.state.requiredFields.gender}
                     isValid={this.state.isValidGender}
                     onValidated={this.onValidateGender}
+                    noValueStyle={!this.state.client.gender ? styles.dateValueStyle : {}}
                     value={this.state.client.gender ? this.state.client.gender : null}
                     onChange={(option) => { this.onChangeClientField('gender', option); }}
                     defaultOption={this.state.client.gender}
@@ -711,7 +713,7 @@ class ClientDetails extends Component {
                 <InputGroup>
                   <InputPicker
                     label="Confirmation"
-                    value={this.state.client.confirmBy ? this.state.client.confirmBy : null}
+                    value={this.state.client.confirmBy ? this.state.client.confirmBy : confirmByTypes[0]}
                     onChange={(option) => { this.onChangeClientField('confirmBy', option); }}
                     defaultOption={this.state.client.confirmBy}
                     options={confirmByTypes}
@@ -727,7 +729,7 @@ class ClientDetails extends Component {
                   <InputDivider style={styles.inputDivider} />
                   <LabeledTextarea
                     label="Notes"
-                    placeholder="Please insert here your comments"
+                    placeholder="Some note here"
                     onChangeText={(text) => { this.onChangeClientField('confirmationNote', text); }}
                     value={this.state.client.confirmationNote}
                   />
@@ -763,6 +765,7 @@ class ClientDetails extends Component {
                     required={this.state.requiredFields.state}
                     isValid={this.state.isValidState}
                     onValidated={this.onValidateState}
+                    noValueStyle={!this.state.client.state ? styles.dateValueStyle : {}}
                     value={this.state.client.state ? this.state.client.state : null}
                     onChange={(option) => { this.onChangeClientField('state', option); }}
                     defaultOption={this.state.client.state}
@@ -776,7 +779,7 @@ class ClientDetails extends Component {
                     validation={this.isValidZipCodeRegExp}
                     isValid={this.state.isValidZipCode}
                     onValidated={this.onValidateZipCode}
-                    label="ZipCode"
+                    label="ZIP"
                     value={this.state.client.zipCode}
                     onChangeText={(text) => { this.onChangeClientField('zipCode', text); }}
                     placeholder="Enter"
@@ -799,7 +802,7 @@ class ClientDetails extends Component {
                       selectedClient={this.state.selectedClient}
                       style={styles.clientInput}
                       extraComponents={this.state.selectedClient === null ?
-                        <Text style={styles.optionaLabel}>Optional</Text> : null}
+                        <Text style={styles.optionaLabel}>Select</Text> : null}
                       onPress={this.setReferredOptionTrue}
                       navigate={this.props.navigation.navigate}
                       headerProps={{ title: 'Clients', ...this.cancelButton() }}
@@ -817,6 +820,7 @@ class ClientDetails extends Component {
                     <View style={styles.clientReferralTypeInput}>
                       <InputPicker
                         label="Other"
+                        noValueStyle={!this.state.client.clientReferralType ? styles.dateValueStyle : {}}
                         value={this.state.client.clientReferralType ?
                           this.state.client.clientReferralType : null}
                         onChange={this.onChangeClientReferralTypes}

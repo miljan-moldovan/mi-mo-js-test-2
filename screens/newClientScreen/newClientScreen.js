@@ -11,7 +11,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 export default class NewClientScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    let title = 'New Client';
+    let title = 'Add New Client';
     if (params && params.client) {
       title = `${params.client.name} ${params.client.lastName}`;
     }
@@ -32,11 +32,8 @@ export default class NewClientScreen extends React.Component {
       headerLeft: (
         <SalonTouchableOpacity style={styles.sideButton} onPress={() => { navigation.goBack(); }}>
           <View style={styles.backContainer}>
-            <FontAwesome style={styles.backIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
             <Text style={styles.leftButtonText}>
-                    Back
+              Cancel
             </Text>
           </View>
         </SalonTouchableOpacity>
@@ -48,7 +45,7 @@ export default class NewClientScreen extends React.Component {
           style={styles.sideButton}
         >
           <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-          Done
+          Save
           </Text>
         </SalonTouchableOpacity>
       ),
@@ -57,7 +54,6 @@ export default class NewClientScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    
   }
 
   componentWillMount() {
@@ -73,7 +69,6 @@ export default class NewClientScreen extends React.Component {
   }
 
   onClientCreated = (client) => {
-    
     const { onChangeClient } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params && onChangeClient) {
