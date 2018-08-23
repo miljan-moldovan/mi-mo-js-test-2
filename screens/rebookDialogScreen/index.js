@@ -4,7 +4,7 @@ import rebookDialogActions from '../../actions/rebookDialog';
 import RebookDialogScreen from './rebookDialogScreen';
 
 const mapStateToProps = state => ({
-  rebookDialogState: state.rebookDialogReducer,
+  rebookState: state.rebookReducer,
   formCache: state.formCache,
 });
 
