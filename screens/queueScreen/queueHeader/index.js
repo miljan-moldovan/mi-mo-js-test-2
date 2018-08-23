@@ -74,7 +74,9 @@ class QueueHeader extends React.Component {
       case 0:
         navigation.navigate(
           'TurnAway',
-          { date: moment(), employee: null, fromTime: moment().format('HH:mm:ss') },
+          {
+            date: moment(), employee: null, fromTime: moment().format('HH:mm:ss'), apptBook: false,
+          },
         );
         break;
       case 1:

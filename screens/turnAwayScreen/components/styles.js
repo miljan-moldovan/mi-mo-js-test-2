@@ -108,7 +108,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
-  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  activityIndicator: {
+    marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
+  },
   inputDividerContainer: { width: '100%', backgroundColor: '#FFFFFF' },
   inputDivider: { marginHorizontal: 16 },
   sectionDivider: { height: 37 },
