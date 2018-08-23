@@ -482,7 +482,7 @@ class Card extends Component {
     const borderStyle = isFirstAvailable ? 'dashed' : 'solid';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
-    const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : [''];
+    const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : ['', ''];
     const container = isBufferCard ? [styles.container, { position: 'relative' }] : styles.container;
     const marginTop = isMultiBlock ? { marginTop: 11 } : '';
     const highlightCard = goToAppointmentId === id ? {
@@ -570,7 +570,6 @@ class Card extends Component {
                       onPress={this.props.onResize}
                       color={colors[color].dark}
                       position={styles.resizePosition}
-                      apptGridSettings={this.props.apptGridSettings}
                       height={height}
                       calendarMeasure={this.props.calendarMeasure}
                       calendarOffset={this.props.calendarOffset}

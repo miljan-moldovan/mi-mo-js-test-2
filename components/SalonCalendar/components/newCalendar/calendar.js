@@ -854,10 +854,12 @@ export default class Calendar extends Component {
     const provider = activeCard && isAllProviderView ?
       providers.find(item => item.id === get(activeCard.appointment.employee, 'id', false)) : selectedProvider;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
-
-    return provider && isResizeing && activeCard ? (
+    if (provider && isResizeing && activeCard) {
+      const numberOfOverlaps = this.getOverlapingCards(activeCard.appointment);
+    return (
       <Card
         ref={(card) => { this.resizeCard = card; }}
+        numberOfOverlaps={numberOfOverlaps}
         panResponder={this.panResponder}
         appointment={activeCard.appointment}
         apptGridSettings={apptGridSettings}
@@ -893,7 +895,9 @@ export default class Calendar extends Component {
         appointments={appointments}
         groupedProviders={this.groupedProviders}
         providerSchedule={providerSchedule}
-      />) : null;
+      />)
+    }
+      return null;
   }
 
   render() {
