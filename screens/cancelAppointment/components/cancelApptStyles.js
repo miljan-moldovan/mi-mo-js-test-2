@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: '#C0C1C6',
-    marginBottom: 23,
   },
   clientName: {
     fontFamily: 'Roboto',
@@ -75,6 +74,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginHorizontal: 17,
     marginTop: 6,
+    textAlign: 'center',
   },
   label: {
     fontSize: 14,
@@ -113,6 +113,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  bottomContainer: {
+    paddingTop: 23,
+    paddingBottom: 8,
   },
 });
 

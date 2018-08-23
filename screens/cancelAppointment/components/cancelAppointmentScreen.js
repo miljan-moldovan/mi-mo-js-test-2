@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-import Icon from '../../../components/UI/Icon';
 import { ProviderInput, InputGroup, InputDivider, InputText } from '../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './cancelApptStyles';
+import Card from './card';
 
 export default class CancelAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -37,13 +37,15 @@ export default class CancelAppointmentScreen extends React.Component {
       ),
     };
   };
-
   constructor(props) {
     super(props);
-    const { appointment: { employee } } = props.navigation.state.params;
+    const { appointments } = props.navigation.state.params;
+    const { employee } = appointments[0];
     this.state = {
       selectedProvider: employee,
       reason: '',
+      height1: 0,
+      height2: 0,
     };
     props.navigation.setParams({ handleCancel: this.handleCancel, isBtnEnabled: false });
   }
@@ -59,10 +61,10 @@ export default class CancelAppointmentScreen extends React.Component {
   }
 
   handleCancel = () => {
-    const { reason, selectedProvider } = this.state;
-    const { appointment } = this.props.navigation.state.params;
-    const employeeId = selectedProvider.id;
-    this.props.cancelAppointment(appointment.id, { reason, employeeId });
+    const { reason } = this.state;
+    const { appointments } = this.props.navigation.state.params;
+    const appointmentIds = appointments.map(appt => appt.id);
+    this.props.cancelAppointment({ appointmentIds, appointmentCancellation: { reason } });
   }
 
   goBack = (navigation) => {
@@ -85,56 +87,78 @@ export default class CancelAppointmentScreen extends React.Component {
     navigation.setParams({ isBtnEnabled });
   }
 
-  render() {
-    const { selectedProvider, reason } = this.state;
-    const { appointment } = this.props.navigation.state.params;
+  measureView = ({ nativeEvent: { layout: { width, height } } }) => {
+    if (!this.state.height1){
+      this.setState((prevState) => ({
+          height1: height,
+      }));}
+  }
+
+  measureView2 = ({ nativeEvent: { layout: { width, height } } }) => {
+  if(!this.state.height2){
+      this.setState((prevState) => ({
+          height2: height,
+      }));}
+  }
+
+  renderCard = (appointment) => {
     const { client, service, employee } = appointment;
     const serviceName = service.description.toUpperCase();
     const employeeName = `${employee.name.toUpperCase()} ${employee.lastName[0]}.`;
-    const fromTimeMoment = moment(appointment.fromTime, 'HH:mm');
-    const toTimeMoment = moment(appointment.toTime, 'HH:mm');
+    const fromTime = moment(appointment.fromTime, 'HH:mm').format('h:mmA');
+    const toTime = moment(appointment.toTime, 'HH:mm').format('h:mmA');
     const dateMoment = moment(appointment.date, 'YYYY-MM-DD');
+    const props = {
+      client,
+      serviceName,
+      employeeName,
+      fromTime,
+      toTime,
+      day: dateMoment.format('D'),
+      month: dateMoment.format('MMM').toUpperCase(),
+    };
+    return (<Card {...props} />);
+  }
+
+  render() {
+    const { selectedProvider, reason } = this.state;
+    const { appointments } = this.props.navigation.state.params;
+    const maxHeight = this.state.height1 - this.height2;
+    const scrollViewHeight = 86.5 * appointments.length;
+    const height = scrollViewHeight > maxHeight ? maxHeight : scrollViewHeight;
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.apptInfo}>
-            <Text style={styles.clientName}>{`${client.name} ${client.lastName}`}</Text>
-            <Text style={styles.serviceInfo}>{`${serviceName} with ${employeeName}`}</Text>
-            <View style={styles.timeContainer}>
-              <Icon style={styles.clockIcon} name="clockO" type="regular" size={12} color="rgb(122, 139, 149)" />
-              <Text style={styles.timeInfo}>{fromTimeMoment.format('HH:mmA')}</Text>
-              <Icon name="chevronRight" size={8} type="light" color="#000" style={styles.chevronRightIcon} />
-              <Text style={styles.timeInfo}>{toTimeMoment.format('HH:mmA')}</Text>
-            </View>
-          </View>
-          <View style={styles.dateContainer}>
-            <Text style={styles.dayText}>{dateMoment.format('D')}</Text>
-            <Text style={styles.monthText}>{dateMoment.format('MMM').toUpperCase()}</Text>
-          </View>
-        </View>
-        <InputGroup>
-          <ProviderInput
-            placeholder="Select Employee"
-            labelText="Employee"
-            selectedProvider={selectedProvider}
-            avatarSize={20}
-            navigate={this.props.navigation.navigate}
-            headerProps={{ title: 'Providers', ...this.cancelButton() }}
-            onChange={this.setProvider}
-            apptBook
-          />
-          <InputDivider />
-          <Text style={styles.label}>Reason</Text>
-          <InputText
-            isEditable
-            placeholder="Please specify"
-            onChangeText={this.handleChange}
-            value={reason}
-          />
-        </InputGroup>
-        <Text style={styles.footer}>IN ORDER TO CANCEL THIS APPOINTMENT, PLEASE ENTER
+      <View
+        style={styles.container}
+        onLayout={this.measureView}
+      >
+        <ScrollView contentContainerStyle={{ maxHeight: height }} style={{ maxHeight: height }}>
+          {appointments.map(this.renderCard)}
+        </ScrollView>
+        <View style={styles.bottomContainer} onLayout={this.measureView2}>
+          <InputGroup>
+            <ProviderInput
+              placeholder="Select Employee"
+              labelText="Employee"
+              selectedProvider={selectedProvider}
+              avatarSize={20}
+              navigate={this.props.navigation.navigate}
+              headerProps={{ title: 'Providers', ...this.cancelButton() }}
+              onChange={this.setProvider}
+              apptBook
+            />
+            <InputDivider />
+            <Text style={styles.label}>Reason</Text>
+            <InputText
+              isEditable
+              placeholder="Please specify"
+              onChangeText={this.handleChange}
+              value={reason}
+            />
+          </InputGroup>
+          <Text style={styles.footer}>IN ORDER TO CANCEL THIS APPOINTMENT, PLEASE ENTER
           YOUR REASON FOR CANCELING THE APPOINTMENT.
-        </Text>
+          </Text>
+        </View>
       </View>
     );
   }
@@ -151,7 +175,7 @@ CancelAppointmentScreen.propTypes = {
       params: PropTypes.shape({
         isBtnEnabled: PropTypes.bool,
         handleCancel: PropTypes.func,
-        appointment: PropTypes.shape({
+        appointments: PropTypes.arrayOf(PropTypes.shape({
           id: PropTypes.number,
           fromTime: PropTypes.string,
           toTime: PropTypes.string,
@@ -167,7 +191,7 @@ CancelAppointmentScreen.propTypes = {
           service: PropTypes.shape({
             description: PropTypes.string,
           }),
-        }),
+        })),
       }),
     }),
   }).isRequired,

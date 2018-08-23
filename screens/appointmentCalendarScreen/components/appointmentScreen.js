@@ -313,27 +313,42 @@ class AppointmentScreen extends Component {
   }
 
   goToCancelAppt = (appointment) => {
-    const { appointments } = this.props;
     const { client, date } = appointment;
     const dateMoment = moment(date, 'YYYY-MM-DD');
-    const hasMoreAppointmets = filter(appointments, appt => (appt.client.id === client.id
+    const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
       && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
     const onPressRight = () => {
       this.setState(
         { visibleAppointment: false },
         () => {
           this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
-          this.props.navigation.navigate('CancelAppointmentScreen', { appointment });
+          this.props.navigation.navigate('CancelAppointmentScreen', { appointments });
+          if (appointments.length > 1) {
+            this.hideAlert();
+          }
         },
       );
     };
-    if (hasMoreAppointmets.length > 1) {
+    const onPressLeft = () => {
+      this.setState(
+        { visibleAppointment: false },
+        () => {
+          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.navigate('CancelAppointmentScreen', { appointments: [appointment] });
+          if (appointments.length > 1) {
+            this.hideAlert();
+          }
+        },
+      );
+    };
+    if (appointments.length > 1) {
       const alert = {
         title: 'Question',
         description: 'The client has other appointments scheduled today, would you like to cancel them all?',
         btnLeftText: 'No',
         btnRightText: 'Yes',
         onPressRight,
+        onPressLeft,
       };
       this.setState({ alert });
     } else {
@@ -581,7 +596,7 @@ class AppointmentScreen extends Component {
           description={alert ? alert.description : ''}
           btnLeftText={alert ? alert.btnLeftText : ''}
           btnRightText={alert ? alert.btnRightText : ''}
-          onPressLeft={this.hideAlert}
+          onPressLeft={alert ? alert.onPressLeft : null}
           onPressRight={alert ? alert.onPressRight : null}
         />
       </View>
