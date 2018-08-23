@@ -120,7 +120,7 @@ class ServiceSection extends Component {
       </View>
       <View style={styles.serviceDataContainer}>
         <ProviderInput
-          apptBook
+          apptBook={this.props.apptBook}
           noLabel
           filterByService
           rootStyle={styles.providerRootStyle}
@@ -133,7 +133,7 @@ class ServiceSection extends Component {
         <InputDivider style={styles.middleSectionDivider} />
 
         <ServiceInput
-          apptBook
+          apptBook={this.props.apptBook}
           noPlaceholder
           rootStyle={styles.providerRootStyle}
           nameKey={service.service && service.service.description ? 'description' : 'name'}
