@@ -23,7 +23,7 @@ import styles from './styles';
 import images from './imagesMap';
 import UserNameInput from '../../components/login/UserNameInput';
 import UrlInput from '../../components/login/UrlInput';
-import ErrorsView from '../../components/login/ErrorsView';
+import ErrorsView from '../../components/ErrorsView';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {

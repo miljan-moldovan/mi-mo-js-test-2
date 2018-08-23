@@ -9,19 +9,22 @@ function ErrorsView(props) {
   return (
     <View style={styles.errorContainer}>
       <FontAwesome style={styles.errorIcon}>{Icons.exclamationTriangle}</FontAwesome>
-      {props.errors.length > 0 && (
-        <View style={styles.errorItemsContainer}>
-          {props.errors.map((err, index) => (
+      <View style={styles.errorItemsContainer}>
+        {props.errors.length > 0 && (
+          props.errors.map((err, index) => (
             <View style={styles.errorListItem}>
               <Text style={styles.bullet}>{'\u2022 '}</Text>
               <Text key={`err__${index}`} style={styles.errorListMessage}>{err}</Text>
             </View>
-          ))}
-        </View>
-      )}
-      {props.errors.length === 0 && (
-        <Text style={styles.errorMessage}>{props.error}</Text>
-      )}
+          ))
+        )}
+        {props.errors.length === 0 && props.error && (
+          <View style={styles.errorListItem}>
+            <Text style={styles.bullet}>{'\u2022 '}</Text>
+            <Text key="err_0" style={styles.errorListMessage}>{props.error}</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }

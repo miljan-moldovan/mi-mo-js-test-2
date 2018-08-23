@@ -8,6 +8,8 @@ import getBlockTypes from './getBlockTypes';
 import getClientReferralTypes from './getClientReferralTypes';
 import getScheduleExceptions from './getScheduleExceptions';
 import getStoreInfo from './getStoreInfo';
+import getListOfStores from './getListOfStores';
+import postSetStore from './postSetStore';
 
 export {
   getCompanies,
@@ -20,4 +22,6 @@ export {
   getTurnAwayReasons,
   getBlockTypes,
   getClientReferralTypes,
+  getListOfStores,
+  postSetStore,
 };

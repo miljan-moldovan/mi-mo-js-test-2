@@ -1,4 +1,8 @@
+import { AsyncStorage } from 'react-native';
+
 import processError from '../utilities/processError';
+import { Login } from '../utilities/apiWrapper';
+import { JWTKEY } from '../utilities/apiWrapper/api';
 
 export const AT = {
   LOGIN_SUCCESS: 'login/LOGIN_SUCCESS',
@@ -31,50 +35,49 @@ export const login = (
   callback,
 ) =>
   async (dispatch) => {
-    setTimeout(() => { // emulate delay while API isn't ready
-      try {
-        // const url = endpoints.LOGIN;
-        // let { data } = await axios.post(url, { email, password });
-        const urlError = url !== 'sportclips';
-        const usernameError = username !== 'test';
-        const passwordError = password !== 'test';
+    try {
+      // const url = endpoints.LOGIN;
+      // let { data } = await axios.post(url, { email, password });
+      const urlError = url !== 'sportclips';
+      const errObj = {
+        response: {
+          data: {},
+        },
+      };
 
-        if (urlError || usernameError || passwordError) {
-          const errObj = {
-            response: {
-              data: {},
-            },
-          };
+      if (urlError) {
+        errObj.response.data.urlError = urlError;
+      }
 
-          if (urlError) {
-            errObj.response.data.urlError = urlError;
-          }
+      const data = await Login.signIn(username, password);
 
-          if (usernameError || passwordError) {
-            errObj.response.data.message = 'Invalid username or password. Try u: test p: test';
-            errObj.response.data.errors = [
-              'Password is 12 chars. minimum',
-              'Username and Password don\'t match.',
-            ];
-            errObj.response.data.loginError = true;
-          }
-          throw errObj;
-        }
-        const data = { jws: 'abcxyz' };
+      if (data.result !== 1) {
+        errObj.response.data.message = data.userMessage;
+        errObj.response.data.errors = [data.userMessage];
+        errObj.response.data.loginError = true;
+      } else if (!urlError) {
+        const userToken = { jws: data.response };
+        await AsyncStorage.setItem(JWTKEY, data.response);
         dispatch({
           type: AT.LOGIN_SUCCESS,
-          data,
+          data: userToken,
         });
         callback(true);
-      } catch (error) {
-        const e = processError(error);
-        dispatch({
-          type: AT.LOGIN_FAILURE,
-          data: { errorMessage: e.message },
-        });
-        callback(false, e, error);
       }
-    }, 2000);
+
+      if (errObj.response.data.urlError || (errObj.response.data.errors &&
+        errObj.response.data.errors.length > 0)
+      ) {
+        throw errObj;
+      }
+    } catch (error) {
+      const e = processError(error);
+      dispatch({
+        type: AT.LOGIN_FAILURE,
+        data: { errorMessage: e.message },
+      });
+      callback(false, e, error);
+    }
   };
 
 export const logout = () => ({ type: AT.LOGOUT });

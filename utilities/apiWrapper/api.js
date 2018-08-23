@@ -177,13 +177,12 @@ import { NetInfo, AsyncStorage } from 'react-native';
 import axios from 'axios';
 //import { showError } from 'redux/actions';
 
-const URLKEY = '@APISettings:url';
-const STOREKEY = '@APISettings:store';
+export const URLKEY = '@APISettings:url';
+export const STOREKEY = '@APISettings:store';
+export const JWTKEY = '@APISettings:jwt';
 let BASEURL = '';
 let headers = {
   'Content-Type': 'application/json',
-  'X-SU-store-key': '1',
-  'X-SU-user-id': '60',
 };
 
 let axiosInstance = null;
@@ -193,14 +192,19 @@ const getApiInstance = async () => {
     try {
       const apiURL = await AsyncStorage.getItem(URLKEY);
       const store = await AsyncStorage.getItem(STOREKEY);
-      if (apiURL !== null || store !== null) {
-        headers = { ...headers, 'X-SU-store-key': store };
-        // setting option domains parameter during fetch doesn't work, so we need to reset the API
-        // fetchData.domains = { default: apiURL };
+      const jwt = await AsyncStorage.getItem(JWTKEY);
+      if (apiURL !== null) {
         BASEURL = apiURL;
       } else {
-        BASEURL = 'https://zenithnew-mob.qa.cicd.salondev.net/api/v1/';
-        headers = { ...headers, 'X-SU-store-key': 1 };
+        BASEURL = 'http://zenithnew-mob.dev.cicd.salondev.net/api/v1';
+      }
+
+      if (store !== null) {
+        headers = { ...headers, 'X-SU-store-key': store };
+      }
+
+      if (jwt !== null) {
+        headers = { ...headers, 'X-AuthToken': jwt };
       }
     } catch (error) {
       // Error retrieving data, keep default settings

@@ -19,6 +19,7 @@ import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
 import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
+import SelectStoreStackNavigator from './SelectStoreStackNavigator';
 
 const RootDrawerNavigator = TabNavigator(
   {
@@ -96,6 +97,9 @@ function RootNavigator(props) {
   const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
   const fingerprintExpireTime = fingerprintAuthenticationTime + (fingerprintTimeout * 1000);
   // if user is logged in AND fingerprint identification is NOT enabled
+  if (loggedIn && !props.store.hasStore) {
+    return <SelectStoreStackNavigator />;
+  }
   if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
     if (!props.userInfo.currentEmployee) {
       props.userActions.getEmployeeData();
@@ -133,6 +137,12 @@ RootNavigator.propTypes = {
   drawerOptions: PropTypes.shape({
     showTabBar: PropTypes.bool.isRequired,
   }).isRequired,
+  store: PropTypes.shape({
+    hasStore: PropTypes.bool.isRequired,
+  }).isRequired,
+  userInfo: PropTypes.shape({
+    currentEmployee: PropTypes.shape({}),
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -144,6 +154,7 @@ const mapStateToProps = state => ({
   salonSearchHeaderState: state.salonSearchHeaderReducer,
   drawerOptions: state.rootDrawerNavigator,
   isNewApptValid: isValidAppointment(state),
+  store: state.storeReducer,
 });
 const mapActionsToProps = dispatch => ({
   userActions: bindActionCreators({ ...userActions }, dispatch),

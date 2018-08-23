@@ -5,6 +5,8 @@ import {
 } from '../actions/store';
 
 const initialState = {
+  hasStore: false,
+  storeId: null,
   storeInfo: null,
   scheduleExceptions: [],
 };

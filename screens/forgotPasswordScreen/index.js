@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import styles from './styles';
 import UserNameInput from '../../components/login/UserNameInput';
 import UrlInput from '../../components/login/UrlInput';
-import ErrorsView from '../../components/login/ErrorsView';
+import ErrorsView from '../../components/ErrorsView';
 
 import { Auth } from '../../utilities/apiWrapper';
 import * as actions from '../../actions/login';
