@@ -202,6 +202,8 @@ class QueueScreen extends React.Component {
     newAppointment.service = service;
     this.setState({ newAppointment });
     this.props.navigation.navigate('ModalProviders', {
+      filterByService: true,
+      selectedService: service,
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',

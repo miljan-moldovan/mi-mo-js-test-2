@@ -1,138 +1,53 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
-
-import SalonAvatar from '../../../components/SalonAvatar';
-import { InputSwitch, InputDivider, InputGroup, InputButton } from '../../../components/formHelpers';
 import { getEmployeePhoto } from '../../../utilities/apiWrapper';
+import SalonAvatar from '../../../components/SalonAvatar';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import styles from './stylesServiceSection';
 
+import {
+  ProviderInput,
+  InputDivider,
+  ServiceInput,
+  InputSwitch,
+} from '../../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-  },
-  innerRow: {
-    flexDirection: 'row',
-    height: 44,
-    borderBottomWidth: 1,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-    alignItems: 'center',
-    paddingRight: 16,
-  },
-  lastInnerRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    paddingRight: 16,
-    paddingLeft: 16,
-  },
-  addRow: {
-    flexDirection: 'row',
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingLeft: 16,
-    paddingRight: 16,
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    borderColor: '#C0C1C6',
-  },
-  plusIcon: {
-    color: '#115ECD',
-    fontSize: 22,
-    marginRight: 5,
-  },
-  textData: {
-    fontFamily: 'Roboto-Medium',
-    color: '#110A24',
-    fontSize: 14,
-  },
-  textLabel: {
-    fontFamily: 'Roboto',
-    color: '#110A24',
-    fontSize: 14,
-  },
-  serviceRow: {
-    flexDirection: 'column',
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderColor: '#C0C1C6',
-    paddingLeft: 16,
-  },
-  iconContainer: {
-    paddingRight: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  serviceDataContainer: {
-    flex: 1,
-  },
-  removeIcon: {
-    marginRight: 8,
-    fontSize: 22,
-    color: '#D1242A',
-  },
-  carretIcon: {
-    fontSize: 20,
-    color: '#727A8F',
-  },
-  label: {
-    fontFamily: 'Roboto-Medium',
-    color: '#727A8F',
-    fontSize: 14,
-  },
-  dataContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-});
 
 class ServiceSection extends Component {
-  handleProviderSelection = (newProvider) => {
-    this.props.onUpdateProvider(newProvider);
+  handleProviderSelection = (provider, service, index) => {
+    const newService = service;
+    newService.provider = provider;
+    newService.myEmployeeId = provider.id;
+    this.props.onUpdate(index, newService);
   }
 
-  handlePressProvider = () => {
-    this.props.navigate('Providers', {
-      actionType: 'update',
-      dismissOnSelect: true,
-      onChangeProvider: this.handleProviderSelection,
-    });
+  handleServiceSelection = (data, service, index) => {
+    const newService = service;
+    newService.service = data;
+    newService.myServiceId = data.id;
+    this.props.onUpdate(index, newService);
   }
 
-  handleServiceSelection = (newService) => {
-    this.props.onUpdateService(newService);
+  handleUpdateIsProviderRequested= (service, index) => {
+    const newService = service;
+    newService.isProviderRequested = !newService.isProviderRequested;
+    this.props.onUpdate(index, newService);
   }
 
-  handlePressService = () => {
-    this.props.navigate('Services', {
-      actionType: 'update',
-      dismissOnSelect: true,
-      onChangeService: this.handleServiceSelection,
-    });
-  }
-
-  renderProvider = () => {
-    const { provider } = this.props;
-    const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
+  renderProvider = (provider) => {
+    const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
+    const providerPhoto = provider ? (getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 
     if (provider) {
       return (
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={styles.providerContainer}>
           <SalonAvatar
-            wrapperStyle={{ marginRight: 5 }}
             width={26}
-            borderWidth={1}
-            borderColor="transparent"
-            image={{ uri: getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0) }}
+            image={{ uri: providerPhoto }}
           />
-          <Text style={styles.textData}>{`${providerName}`}</Text>
+          <Text style={styles.textData}>{providerName}</Text>
         </View>
       );
     }
@@ -141,11 +56,10 @@ class ServiceSection extends Component {
     );
   }
 
-  renderService = () => {
-    const { service } = this.props;
+  renderServiceInfo = (serviceContainer, service) => {
     if (service) {
       return (
-        <Text style={styles.textData}>{service.name}</Text>
+        <Text style={[styles.textData, { marginLeft: 0 }]}>{service.name}</Text>
       );
     }
     return (
@@ -153,27 +67,70 @@ class ServiceSection extends Component {
     );
   }
 
-  render() {
-    const { service, provider } = this.props;
-    return (
-      <InputGroup>
-        <InputButton label={this.renderService()} onPress={this.handlePressService} />
-        <InputDivider />
-        <InputButton label={this.renderProvider()} onPress={this.handlePressProvider} />
-        {!this.props.provider.isFirstAvailable && <InputDivider />}
-        {!this.props.provider.isFirstAvailable && <InputSwitch
+  renderService = (service, index) => (
+    <View style={styles.serviceRow} key={index}>
+      <View style={styles.iconContainer}>
+        <SalonTouchableOpacity onPress={() => this.props.onRemove(index)}>
+          <View style={styles.row}>
+            <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
+            <Text style={styles.textData}>service</Text>
+          </View>
+        </SalonTouchableOpacity>
+      </View>
+      <View style={styles.serviceDataContainer}>
+        <ProviderInput
+          noLabel
+          filterByService
+          rootStyle={styles.providerRootStyle}
+          selectedProvider={service.provider}
+          placeholder="Provider"
+          navigate={this.props.navigate}
+          headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
+          onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
+        />
+        <InputDivider style={styles.middleSectionDivider} />
+        <ServiceInput
+          noPlaceholder
+          rootStyle={styles.providerRootStyle}
+          nameKey={service.service && service.service.description ? 'description' : 'name'}
+          selectedProvider={service.provider}
+          navigate={this.props.navigate}
+          selectedService={service.service}
+          headerProps={{ title: 'Services', ...this.props.cancelButton() }}
+          onChange={(selectedService) => { this.handleServiceSelection(selectedService, service, index); }}
+        />
+        {service.provider && !service.provider.isFirstAvailable && <InputDivider style={styles.middleSectionDivider} />}
+        {service.provider && !service.provider.isFirstAvailable && <InputSwitch
           textStyle={styles.textLabel}
-          onChange={this.props.onUpdateIsProviderRequested}
+          style={styles.providerRequestedStyle}
+          onChange={() => { this.handleUpdateIsProviderRequested(service, index); }}
           text="Provider is Requested?"
-          value={this.props.isProviderRequested}
+          value={service.isProviderRequested}
         />}
-      </InputGroup>
+      </View>
+    </View>
+  )
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {this.props.services.map((service, index) => this.renderService(service, index))}
+        <SalonTouchableOpacity onPress={this.props.onAdd}>
+          <View style={styles.addRow}>
+            <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
+            <Text style={styles.textData}>add service</Text>
+          </View>
+        </SalonTouchableOpacity>
+      </View>
     );
   }
 }
 
-
 ServiceSection.propTypes = {
+  services: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onAdd: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
 };
 

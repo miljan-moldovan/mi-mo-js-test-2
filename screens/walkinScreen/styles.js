@@ -13,12 +13,14 @@ export default StyleSheet.create({
     fontSize: 14,
   },
   leftButton: {
+    paddingTop: 25,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   rightButton: {
+    paddingTop: 25,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -59,12 +61,15 @@ export default StyleSheet.create({
     fontSize: 10,
   },
   titleContainer: {
+    paddingTop: 25,
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerLeftIcon: { marginRight: 8, fontSize: 30, color: '#fff' },
-  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-
+  activityIndicator: {
+    marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
+  },
+  cancelButton: { fontSize: 14, color: 'white' },
 });

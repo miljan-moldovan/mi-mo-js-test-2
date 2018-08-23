@@ -70,12 +70,13 @@ class QueueHeader extends React.Component {
 
   handlePressAction(i) {
     const { navigation } = this.props;
-
     switch (i) {
       case 0:
         navigation.navigate(
           'TurnAway',
-          { date: moment(), employee: null, fromTime: moment().format('HH:mm:ss') },
+          {
+            date: moment(), employee: null, fromTime: moment().format('HH:mm:ss'), apptBook: false,
+          },
         );
         break;
       case 1:

@@ -1,31 +1,13 @@
-import React, { Component } from 'react';
-import { Text } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
-import HeaderMiddle from '../../../components/HeaderMiddle';
+import styles from '../styles';
 
-const WalkInHeader = props => HeaderMiddle({
-  title: (
-    <Text
-      style={{
-        fontFamily: 'Roboto',
-        color: '#fff',
-        fontSize: 17,
-      }}
-    >
-      WalkIn
-    </Text>),
-  subTitle: (
-    <Text
-      style={{
-        fontFamily: 'Roboto',
-        color: '#fff',
-        fontSize: 10,
-      }}
-    >
-      { `${props.walkInState.estimatedWaitTime}m Est. Wait` }
-    </Text>
-  ),
-});
+const WalkInHeader = props => (
+  <View style={styles.titleContainer}>
+    <Text style={styles.titleText}>WalkIn</Text>
+    <Text style={styles.subTitleText}>  { `${props.walkInState.estimatedWaitTime}m Est. Wait` }</Text>
+  </View>);
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,

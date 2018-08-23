@@ -617,7 +617,9 @@ class NewApptSlide extends React.Component {
           const { date, mainEmployee: employee, startTime } = this.props.newApptState;
           this.props.navigation.navigate(
             'TurnAway',
-            { date, employee, fromTime: startTime },
+            {
+ date, employee, fromTime: startTime, apptBook: true,
+},
           );
         }}
         label="Turn Away"

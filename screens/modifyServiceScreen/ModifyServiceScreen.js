@@ -60,8 +60,6 @@ export default class ModifyServiceScreen extends React.Component {
 
     this.props.navigation.setParams({ ...params, onSave: this.onSave.bind(this) });
 
-    debugger //eslint-disable-line
-
     this.state = {
       index: 'index' in params ? params.index : null,
       service: 'service' in params ? params.service : null,

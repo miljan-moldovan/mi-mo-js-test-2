@@ -125,6 +125,7 @@ class TurnAwayScreen extends Component {
   handleAddService= () => {
     const params = this.props.navigation.state.params || {};
 
+
     const {
       fromTime,
       employee,
@@ -133,7 +134,7 @@ class TurnAwayScreen extends Component {
     const service = {
       provider: employee,
       service: null,
-      fromTime,
+      fromTime: moment(fromTime, 'hh:mm:ss A'),
       toTime: moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
     };
 
@@ -225,6 +226,8 @@ class TurnAwayScreen extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
+    const params = this.props.navigation.state.params || {};
+    const { apptBook } = params;
     const { selectedReasonCode } = this.state;
 
     return (
@@ -247,10 +250,10 @@ class TurnAwayScreen extends Component {
           <InputDivider style={styles.inputDivider} />
         </View>
         <ClientInput
-          apptBook
+          apptBook={apptBook}
           label={false}
           selectedClient={this.state.selectedClient}
-          placeholder={this.state.selectedClient === null ? 'Select Client' : 'Client'}
+          placeholder="Client"
           placeholderStyle={styles.placeholderText}
           style={styles.clientInput}
           extraComponents={this.state.selectedClient === null ?
@@ -264,6 +267,7 @@ class TurnAwayScreen extends Component {
           <Text style={styles.title}>SERVICES</Text>
         </View>
         <ServiceSection
+          apptBook={apptBook}
           services={this.state.services}
           onAdd={this.handleAddService}
           onRemove={this.handleRemoveService}

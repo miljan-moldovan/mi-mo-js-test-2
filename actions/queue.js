@@ -8,6 +8,9 @@ export const QUEUE_UPDATE_ITEM = 'queue/QUEUE_UPDATE_ITEM';
 export const CLIENT_CHECKED_IN = 'queue/CLIENT_CHECKED_IN';
 export const CLIENT_CHECKED_IN_FAILED = 'queue/CLIENT_CHECKED_IN_FAILED';
 export const CLIENT_CHECKED_IN_RECEIVED = 'queue/CLIENT_CHECKED_IN_RECEIVED';
+export const CLIENT_UNCHECKED_IN = 'queue/CLIENT_UNCHECKED_IN';
+export const CLIENT_UNCHECKED_IN_FAILED = 'queue/CLIENT_UNCHECKED_IN_FAILED';
+export const CLIENT_UNCHECKED_IN_RECEIVED = 'queue/CLIENT_UNCHECKED_IN_RECEIVED';
 export const CLIENT_NO_SHOW = 'queue/CLIENT_NO_SHOW';
 export const CLIENT_NO_SHOW_RECEIVED = 'queue/CLIENT_NO_SHOW_RECEIVED';
 export const CLIENT_NO_SHOW_FAILED = 'queue/CLIENT_NO_SHOW_FAILED';
@@ -18,6 +21,8 @@ export const CLIENT_RETURNED = 'queue/CLIENT_RETURNED';
 export const CLIENT_RETURNED_RECEIVED = 'queue/CLIENT_RETURNED_RECEIVED';
 export const CLIENT_RETURNED_FAILED = 'queue/CLIENT_RETURNED_FAILED';
 export const CLIENT_WALKED_OUT = 'queue/CLIENT_WALKED_OUT';
+export const CLIENT_WALKED_OUT_RECEIVED = 'queue/CLIENT_WALKED_OUT_RECEIVED';
+export const CLIENT_WALKED_OUT_FAILED = 'queue/CLIENT_WALKED_OUT_FAILED';
 export const CLIENT_START_SERVICE = 'queue/CLIENT_START_SERVICE';
 export const CLIENT_START_SERVICE_FAILED = 'queue/CLIENT_START_SERVICE_FAILED';
 export const CLIENT_START_SERVICE_RECEIVED = 'queue/CLIENT_START_SERVICE_RECEIVED';
@@ -78,7 +83,6 @@ export const startService = (id, serviceData) => async (dispatch: Object => void
   }
 };
 
-
 export const checkInClient = id => async (dispatch: Object => void) => {
   dispatch({ type: CLIENT_CHECKED_IN, data: { id } });
   try {
@@ -86,6 +90,16 @@ export const checkInClient = id => async (dispatch: Object => void) => {
     dispatch({ type: CLIENT_CHECKED_IN_RECEIVED, data });
   } catch (error) {
     dispatch({ type: CLIENT_CHECKED_IN_FAILED, error });
+  }
+};
+
+export const uncheckInClient = id => async (dispatch: Object => void) => {
+  dispatch({ type: CLIENT_UNCHECKED_IN, data: { id } });
+  try {
+    const data = await QueueStatus.putUncheckIn(id);
+    dispatch({ type: CLIENT_UNCHECKED_IN_RECEIVED, data });
+  } catch (error) {
+    dispatch({ type: CLIENT_UNCHECKED_IN_FAILED, error });
   }
 };
 
