@@ -10,7 +10,7 @@ import TimeColumn from './timeColumn';
 import Card from './card';
 import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
-import SalonAlert from './SalonAlert';
+import SalonAlert from '../../../SalonAlert';
 import BlockTime from './blockCard';
 import EmptyScreen from './EmptyScreen';
 

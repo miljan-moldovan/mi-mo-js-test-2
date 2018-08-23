@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
+import { filter } from 'lodash';
+
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -12,6 +14,7 @@ import SalonToast from './SalonToast';
 import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
+import SalonAlert from '../../../components/SalonAlert';
 
 import styles from './styles';
 
@@ -310,13 +313,32 @@ class AppointmentScreen extends Component {
   }
 
   goToCancelAppt = (appointment) => {
-    this.setState(
-      { visibleAppointment: false },
-      () => {
-        this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
-        this.props.navigation.navigate('CancelAppointmentScreen', { appointment });
-      },
-    );
+    const { appointments } = this.props;
+    const { client, date } = appointment;
+    const dateMoment = moment(date, 'YYYY-MM-DD');
+    const hasMoreAppointmets = filter(appointments, appt => (appt.client.id === client.id
+      && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
+    const onPressRight = () => {
+      this.setState(
+        { visibleAppointment: false },
+        () => {
+          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.navigate('CancelAppointmentScreen', { appointment });
+        },
+      );
+    };
+    if (hasMoreAppointmets.length > 1) {
+      const alert = {
+        title: 'Question',
+        description: 'The client has other appointments scheduled today, would you like to cancel them all?',
+        btnLeftText: 'No',
+        btnRightText: 'Yes',
+        onPressRight,
+      };
+      this.setState({ alert });
+    } else {
+      onPressRight();
+    }
   }
 
   goToShowAppt = (client) => {
@@ -349,6 +371,8 @@ class AppointmentScreen extends Component {
     this.props.appointmentCalendarActions.setProviderScheduleDates(startDate, endDate);
     this.props.appointmentCalendarActions.setGridView();
   }
+
+  hideAlert = () => this.setState({ alert: null });
 
   goToAppt = ({ date, appointmentId }) => {
     const {
@@ -391,7 +415,7 @@ class AppointmentScreen extends Component {
     } = this.props.appointmentScreenState;
     const { storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings } = this.props;
     const {
-      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId,
+      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId, alert
     } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
@@ -551,6 +575,15 @@ class AppointmentScreen extends Component {
             />
           ) : null
         }
+        <SalonAlert
+          visible={!!alert}
+          title={alert ? alert.title : ''}
+          description={alert ? alert.description : ''}
+          btnLeftText={alert ? alert.btnLeftText : ''}
+          btnRightText={alert ? alert.btnRightText : ''}
+          onPressLeft={this.hideAlert}
+          onPressRight={alert ? alert.onPressRight : null}
+        />
       </View>
     );
   }
