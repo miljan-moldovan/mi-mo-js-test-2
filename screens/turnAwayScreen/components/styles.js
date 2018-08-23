@@ -61,7 +61,6 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
-    marginBottom: 5,
   },
   subTitleText: {
     fontFamily: 'Roboto',
@@ -69,6 +68,7 @@ export default StyleSheet.create({
     fontSize: 10,
   },
   titleContainer: {
+    paddingTop: 20,
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
@@ -99,11 +99,13 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   rightButtonContainer: {
+    paddingTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
   leftButtonContainer: {
+    paddingTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',

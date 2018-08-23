@@ -253,7 +253,7 @@ class TurnAwayScreen extends Component {
           apptBook={apptBook}
           label={false}
           selectedClient={this.state.selectedClient}
-          placeholder={this.state.selectedClient === null ? 'Select Client' : 'Client'}
+          placeholder="Client"
           placeholderStyle={styles.placeholderText}
           style={styles.clientInput}
           extraComponents={this.state.selectedClient === null ?
