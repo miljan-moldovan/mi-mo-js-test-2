@@ -64,6 +64,7 @@ export default class InputPicker extends React.Component {
 
   render() {
     const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
+    const noValueStyle = this.props.noValueStyle ? this.props.noValueStyle : {};
 
     return (
       <React.Fragment>
@@ -72,6 +73,7 @@ export default class InputPicker extends React.Component {
           noIcon={this.props.noIcon}
           label={this.props.label}
           value={this.state.selectedOption ? this.state.selectedOption.value : 'Select'}
+          valueStyle={this.state.selectedOption ? {} : noValueStyle}
           onPress={this.pickerToogle}
           style={styles.noPadding}
         />
