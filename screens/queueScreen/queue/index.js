@@ -443,7 +443,7 @@ renderItem = (row) => {
   const groupLeaderName = this.getGroupLeaderName(item);
   const firstService = item.services[0] || {};
   const serviceName = (firstService.serviceName || '').toUpperCase();
-  const employee = !firstService.isFirstAvailable && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
+  const employee = !firstService.isFirstAvailable && firstService.employee && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
 
   const isBookedByWeb = item.queueType === 3;
 
