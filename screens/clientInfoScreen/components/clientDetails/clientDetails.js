@@ -549,7 +549,7 @@ class ClientDetails extends Component {
 
 
   renderPhone = (phone, index) => {
-    const phoneType = phone.type === 0 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
+    const phoneType = phone.type === 2 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
     const element = phone.value !== null ? (
       <React.Fragment>
         <ValidatableInput
