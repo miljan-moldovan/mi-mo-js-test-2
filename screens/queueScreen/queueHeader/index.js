@@ -70,7 +70,6 @@ class QueueHeader extends React.Component {
 
   handlePressAction(i) {
     const { navigation } = this.props;
-
     switch (i) {
       case 0:
         navigation.navigate(

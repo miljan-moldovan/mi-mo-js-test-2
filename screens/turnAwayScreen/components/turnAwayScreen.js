@@ -125,6 +125,8 @@ class TurnAwayScreen extends Component {
   handleAddService= () => {
     const params = this.props.navigation.state.params || {};
 
+    
+
     const {
       fromTime,
       employee,
@@ -133,7 +135,7 @@ class TurnAwayScreen extends Component {
     const service = {
       provider: employee,
       service: null,
-      fromTime,
+      fromTime: moment(fromTime, 'hh:mm:ss A'),
       toTime: moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
     };
 
@@ -150,7 +152,7 @@ class TurnAwayScreen extends Component {
     this.setState({ services });
   }
 
-  handleUpdateService= (index, service) => {
+  UpdateService= (index, service) => {
     const { services } = this.state;
     services[index] = service;
     this.setState({ services }, this.checkCanSave);
@@ -247,7 +249,6 @@ class TurnAwayScreen extends Component {
           <InputDivider style={styles.inputDivider} />
         </View>
         <ClientInput
-          apptBook
           label={false}
           selectedClient={this.state.selectedClient}
           placeholder={this.state.selectedClient === null ? 'Select Client' : 'Client'}
