@@ -1,4 +1,4 @@
-import servicesActions, {
+import {
   SET_SERVICES,
   SET_FILTERED_SERVICES,
   SET_SHOW_CATEGORY_SERVICES,
@@ -24,10 +24,6 @@ const initialState = {
 
 export default function serviceReducer(state = initialState, action) {
   const { type, data } = action;
-  // if (type.indexOf('services/') >= 0) {
-  //   console.log(`Doing Stuff: ${type}`);
-  //   console.log(data);
-  // }
   switch (type) {
     case IS_SELECTING_EXTRAS:
       return {

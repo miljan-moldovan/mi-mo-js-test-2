@@ -20,17 +20,15 @@ const postRebookFailed = error => ({
   data: { error },
 });
 
-const postRebook = (appointmentId, rebook) => (dispatch) => {
+const postRebook = (data, callback) => (dispatch) => {
   dispatch({ type: POST_REBOOK });
-  return AppointmentBook.postAppointmentBookRebook(appointmentId, rebook)
+  return AppointmentBook.postAppointmentBookRebookMulti(data)
     .then((response) => {
-      dispatch(purgeForm('RebookScreen', appointmentId.toString()));
+      callback(true);
       return dispatch(postRebookSuccess(response));
     })
     .catch((error) => {
-      if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
-        dispatch(storeForm('RebookScreen', appointmentId.toString(), rebook));
-      }
+      callback(false);
       return dispatch(postRebookFailed(error));
     });
 };

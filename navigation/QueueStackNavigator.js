@@ -146,11 +146,7 @@ const MainNavigator = StackNavigator(
     },
     RebookDialog: {
       screen: RebookDialogScreen,
-      navigationOptions: {
-        headerMode: 'none',
-        gesturesEnabled: false,
-        header: props => (<View />),
-      },
+      navigationOptions: { tabBarVisible: false },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,

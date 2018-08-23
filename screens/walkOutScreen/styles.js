@@ -150,4 +150,5 @@ export default StyleSheet.create({
   activityIndicator: {
     marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
   },
+  cancelButton: { fontSize: 14, color: 'white' },
 });

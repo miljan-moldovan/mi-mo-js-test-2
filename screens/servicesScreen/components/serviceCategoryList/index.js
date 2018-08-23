@@ -1,39 +1,19 @@
 // @flow
 import React from 'react';
-import { View,
-  StyleSheet,
+import {
+  View,
   RefreshControl,
-  FlatList } from 'react-native';
+  FlatList,
+} from 'react-native';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import {
   InputGroup,
   InputButton,
 } from '../../../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  serviceCategoriesList: {
-    backgroundColor: '#FFF',
-    flex: 1,
-  },
-  selectedProvider: {
-    flexDirection: 'row',
-    backgroundColor: '#F6F6F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  selectedProviderName: {
-    color: '#1D1D26',
-    fontSize: 18,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  serviceCategoryListContainer: {
-    flex: 9,
-    backgroundColor: '#FFF',
-    flexDirection: 'column',
-  },
-});
+import styles from './styles';
 
 class ServiceCategoryList extends React.Component {
   constructor(props) {
@@ -44,8 +24,19 @@ class ServiceCategoryList extends React.Component {
     };
   }
 
-  _keyExtractor = (item, index) => item.id;
+  componentDidUpdate(prevProps) {
+    if (prevProps.serviceCategories.length !== this.props.serviceCategories.length) {
+      this.updateServiceCategories(this.props.serviceCategories);
+    }
+  }
 
+  onRefreshFinish = () => {
+    this.setState({ refreshing: false });
+  }
+
+  keyExtractor = item => item.id;
+
+  updateServiceCategories = serviceCategories => this.setState({ serviceCategories })
 
   renderItem(elem) {
     return (
@@ -68,10 +59,6 @@ class ServiceCategoryList extends React.Component {
     );
   }
 
-  onRefreshFinish = () => {
-    this.setState({ refreshing: false });
-  }
-
   render() {
     return (
 
@@ -90,13 +77,23 @@ class ServiceCategoryList extends React.Component {
           style={styles.serviceCategoriesList}
           data={this.state.serviceCategories}
           extraData={this.props}
-          keyExtractor={this._keyExtractor}
+          keyExtractor={this.keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />
       </View>
     );
   }
 }
+
+ServiceCategoryList.defaultProps = {
+  serviceCategories: [],
+};
+
+ServiceCategoryList.propTypes = {
+  onRefresh: PropTypes.func.isRequired,
+  handlePressServiceCategory: PropTypes.func.isRequired,
+  serviceCategories: PropTypes.shape([]),
+};
 
 const mapStateToProps = state => ({
   servicesState: state.serviceReducer,
