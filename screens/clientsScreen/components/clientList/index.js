@@ -86,6 +86,10 @@ class ClientList extends React.Component {
     });
   }
 
+  goToClientInfo = (client) => {
+    this.props.navigate('ClientInfo', { client });
+  }
+
 
       scrollToIndex = (letter) => {
         let total = 0;
@@ -119,7 +123,7 @@ class ClientList extends React.Component {
           <ClientListItem
             client={obj.item}
             boldWords={this.props.boldWords}
-            onPress={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
+            onPress={this.props.onChangeClient ? this.props.onChangeClient : () => this.goToClientInfo(obj.item)}
           />
         </View>)
 
