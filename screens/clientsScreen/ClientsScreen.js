@@ -1,16 +1,10 @@
 // @flow
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
-import ClientSuggestions from './components/ClientSuggestions';
-import Icon from '../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,6 +93,9 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingRight: 0,
   },
+  headerContainer: {
+    paddingHorizontal: 20,
+  },
 });
 
 class ClientsScreen extends React.Component {
@@ -130,24 +127,25 @@ class ClientsScreen extends React.Component {
     const onChangeClient = navigation.state.params &&
     navigation.state.params.onChangeClient ? navigation.state.params.onChangeClient : null;
     return {
-      header: props => (<SalonSearchHeader
-        title={title}
-        subTitle={subTitle}
-        leftButton={leftButton}
-        leftButtonOnPress={() => {
+      header: props => (
+        <SalonSearchHeader
+          title={title}
+          subTitle={subTitle}
+          leftButton={leftButton}
+          leftButtonOnPress={() => {
             if (clearSearch) {
               clearSearch();
             }
             leftButtonOnPress(navigation);
-          }
-        }
-        rightButton={rightButton}
-        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-        hasFilter
-        containerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />),
+          }}
+          rightButton={rightButton}
+          rightButtonOnPress={() => {
+            rightButtonOnPress(navigation);
+          }}
+          hasFilter
+          containerStyle={styles.headerContainer}
+        />
+      ),
     };
   };
 
@@ -177,7 +175,11 @@ class ClientsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.clearSearch();
-    this.props.navigation.setParams({ defaultProps: this.state.headerProps, clearSearch: this.clearSearch, ignoreNav: false });
+    this.props.navigation.setParams({
+      defaultProps: this.state.headerProps,
+      clearSearch: this.clearSearch,
+      ignoreNav: false,
+    });
 
     this.props.salonSearchHeaderActions.setShowFilter(false);
 
@@ -188,16 +190,15 @@ class ClientsScreen extends React.Component {
     headerProps: {
       title: 'Clients',
       subTitle: null,
-      leftButtonOnPress: () => { this.props.navigation.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      leftButtonOnPress: this.props.navigation.goBack,
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
       rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
     },
-  }
+  };
 
   clearSearch = () => {
     this.props.clientsActions.setClients([]);
-  }
+  };
 
   getSuggestionsList = (clients) => {
     let suggestions = [];
@@ -218,7 +219,7 @@ class ClientsScreen extends React.Component {
     });
 
     return suggestions;
-  }
+  };
 
   _handleOnChangeClient = (client) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
@@ -226,12 +227,14 @@ class ClientsScreen extends React.Component {
     }
 
     const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeClient) { onChangeClient(client); }
+    if (this.props.navigation.state.params && onChangeClient) {
+      onChangeClient(client);
+    }
     if (dismissOnSelect) {
       this.props.salonSearchHeaderActions.setShowFilter(false);
       this.props.navigation.goBack();
     }
-  }
+  };
 
   filterClients = (searchText) => {
     if (searchText && searchText.length > 0) {
@@ -243,14 +246,13 @@ class ClientsScreen extends React.Component {
       };
       this.props.clientsActions.getClients(params);
     }
-  }
+  };
 
   onPressItem = (item) => {
     this.props.salonSearchHeaderActions.setSearchText(item);
     this.filterClients(item);
     this.props.salonSearchHeaderActions.setShowFilter(false);
-  }
-
+  };
 
   filterSuggestions = (searchText) => {
     if (searchText && searchText.length > 0) {
@@ -267,7 +269,7 @@ class ClientsScreen extends React.Component {
     } else {
       this.props.clientsActions.setFilteredSuggestions(this.props.clientsState.suggestionsList);
     }
-  }
+  };
 
   filterList = (searchText) => {
     if (!this.props.salonSearchHeaderState.showFilter) {
@@ -275,14 +277,15 @@ class ClientsScreen extends React.Component {
     } else {
       this.filterSuggestions(searchText);
     }
-  }
+  };
 
   render() {
     let onChangeClient = null;
     const { state } = this.props.navigation;
     // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeClient) { onChangeClient = this._handleOnChangeClient; }
-
+    if (state.params && state.params.onChangeClient) {
+      onChangeClient = this._handleOnChangeClient;
+    }
 
     return (
       <View style={styles.container}>
@@ -296,7 +299,6 @@ class ClientsScreen extends React.Component {
             refreshing={this.props.salonSearchHeaderState.isLoading}
           />
         </View>
-
       </View>
     );
   }
