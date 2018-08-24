@@ -15,16 +15,14 @@ import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
   SET_FILTER_OPTION_MULTIBLOCK, SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
   SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS, SET_GRID_VIEW,
   SET_GRID_ROOM_VIEW_SUCCESS, SET_GRID_RESOURCE_VIEW_SUCCESS,
-  SET_GRID_ALL_VIEW_SUCCESS, SET_GRID_DAY_WEEK_VIEW_SUCCESS,
+  SET_GRID_ALL_VIEW_SUCCESS, SET_GRID_WEEK_VIEW_SUCCESS,
   SET_DATE_RANGE, SET_PICKER_MODE,
   SET_SELECTED_PROVIDER, SET_SELECTED_FILTER,
-  SET_PROVIDER_DATES, SET_WEEKLY_SCHEDULE,
-  SET_WEEKLY_SCHEDULE_SUCCESS, HIDE_TOAST,
+  SET_PROVIDER_DATES, HIDE_TOAST,
   SET_TOAST, CHANGE_FIRST_AVAILABLE } from '../actions/appointmentBook';
 
 const initialState = {
   isLoading: false,
-  isLoadingSchedule: false,
   error: null,
   selectedFilter: 'providers',
   selectedProvider: 'all',
@@ -39,8 +37,6 @@ const initialState = {
     maxEndTime: moment('23:00', 'HH:mm'),
     numOfRow: 0,
     step: 15,
-    weeklySchedule: [],
-    selectedDateSchedule: null,
   },
   filterOptions: {
     company: null,
@@ -55,7 +51,6 @@ const initialState = {
   rooms: [],
   resources: [],
   deskStaff: [],
-  storeSchedule: [],
   providerSchedule: [],
   toast: null,
   blockTimes: [],
@@ -114,17 +109,6 @@ export default function appointmentBookReducer(state = initialState, action) {
         ...state,
         appointments,
       };
-    case SET_WEEKLY_SCHEDULE_SUCCESS:
-      return {
-        ...state,
-        apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
-        isLoadingSchedule: false,
-      };
-    case SET_WEEKLY_SCHEDULE:
-      return {
-        ...state,
-        isLoadingSchedule: true,
-      };
     case SET_SELECTED_PROVIDER:
       return {
         ...state,
@@ -158,34 +142,28 @@ export default function appointmentBookReducer(state = initialState, action) {
         isLoading: true,
       };
     case SET_GRID_ROOM_VIEW_SUCCESS: {
-      const { scheduledIntervals } = data.schedule;
-      const minStartTime = scheduledIntervals[0].start;
-      const maxEndTime = scheduledIntervals[scheduledIntervals.length - 1].end;
+      //const { scheduledIntervals } = data.schedule;
       return {
         ...state,
         isLoading: false,
         error: null,
         apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
+          ...state.apptGridSettings, ...data.apptGridSettings,
         },
         rooms: data.rooms,
-        providerSchedule: data.schedule,
         appointments: data.appointments,
         roomAppointments: data.roomAppointments,
       };
     }
     case SET_GRID_RESOURCE_VIEW_SUCCESS: {
-      const minStartTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].start1;
-      const maxEndTime = state.apptGridSettings.weeklySchedule[state.startDate.format('E') - 1].end1;
       return {
         ...state,
         isLoading: false,
         error: null,
         apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings, maxEndTime, minStartTime,
+          ...state.apptGridSettings, ...data.apptGridSettings
         },
         resources: data.resources,
-        providerSchedule: data.schedule,
         appointments: data.appointments,
         resourceAppointments: data.resourceAppointments,
       };
@@ -205,7 +183,7 @@ export default function appointmentBookReducer(state = initialState, action) {
         storeSchedule: data.schedule,
       };
     }
-    case SET_GRID_DAY_WEEK_VIEW_SUCCESS:
+    case SET_GRID_WEEK_VIEW_SUCCESS:
       return {
         ...state,
         isLoading: false,

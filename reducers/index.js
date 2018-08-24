@@ -32,6 +32,7 @@ import clientNotesReducer from './clientNotes';
 import clientFormulasReducer from './clientFormulas';
 import clientInfoReducer from './clientInfo';
 import clientAppointmentsReducer from './clientAppointments';
+import storeReducer from './store';
 import rootDrawerNavigator from './rootDrawerNavigator';
 import rebookReducer from './rebookDialog';
 
@@ -68,6 +69,7 @@ export default combineReducers({
   clientInfoReducer,
   clientAppointmentsReducer,
   userInfoReducer,
+  storeReducer,
   rootDrawerNavigator,
   rebookReducer,
 });

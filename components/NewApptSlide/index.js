@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import newApptActions from '../../actions/newAppointment';
 import serviceActions from '../../actions/service';
 import { appointmentCalendarActions } from '../../actions/appointmentBook';
-import apptGridSettingsSelector from '../../redux/selectors/apptGridSettingsSelector';
+
 import {
   getEndTime,
   appointmentLength,
@@ -14,7 +14,6 @@ const mapStateToProps = state => ({
   newApptState: state.newAppointmentReducer,
   getLength: appointmentLength(state),
   getEndTime: getEndTime(state),
-  apptGridSettings: apptGridSettingsSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({

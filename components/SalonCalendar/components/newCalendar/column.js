@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
+import { get, filter } from 'lodash';
 
 const styles = StyleSheet.create({
   colContainer: {
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 30,
     borderColor: '#C0C1C6',
-    backgroundColor: '#dddfe0',
+    backgroundColor: 'rgb(221,223,224)',
     borderBottomWidth: 1,
     borderRightWidth: 1,
   },
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#2c2f34',
   },
   dayOff: {
-    backgroundColor: '#80889a',
+    backgroundColor: 'rgb(129, 136, 152)',
   },
 });
 
@@ -43,6 +44,8 @@ export default class Column extends Component {
       this.showBookingPastAlert({ cell: cellId, colData });
     }
   }
+
+  isBetweenTimes = (time, fromTime, toTime) => time.isSameOrAfter(fromTime) && time.isBefore(toTime);
 
   showBookingPastAlert = ({ cell, colData }) => {
     const alert = {
@@ -62,36 +65,39 @@ export default class Column extends Component {
 
   renderCell = (cell, index) => {
     const {
-      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule, storeSchedule,
-      displayMode, startDate
+      apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule,
+      displayMode, startDate, storeScheduleExceptions
     } = this.props;
+    const { weeklySchedule } = apptGridSettings;
     const isCellDisabled = moment().isAfter(startDate, 'day');
     const time = moment(cell, 'HH:mm A');
     let storeStartTime = '';
     let storeEndTime = '';
-    let isStoreOpen = false;
+    let isStoreOff = false;
+    let exception;
+    let storeTodaySchedule;
     if (!isDate) {
-      isStoreOpen = !storeSchedule.isOff;
-      for (let i = 0; i < storeSchedule.scheduledIntervals.length
-        && !isStoreOpen && !isDate; i += 1) {
-        storeStartTime = moment(storeSchedule.scheduledIntervals[i].start, 'HH:mm');
-        storeEndTime = moment(storeSchedule.scheduledIntervals[i].end, 'HH:mm');
-        isStoreOpen = time.isSameOrAfter(storeStartTime) && time.isBefore(storeEndTime);
-      }
+      exception = get(storeScheduleExceptions, ['0'], null);
+      storeTodaySchedule = exception ? exception : weeklySchedule[startDate.isoWeekday() - 1];
     } else {
-      const todaySchedule = apptGridSettings.weeklySchedule[colData.isoWeekday() - 1];
-      isStoreOpen = todaySchedule.start1 || todaySchedule.end1
-        || todaySchedule.start2 || todaySchedule.end2;
+      storeTodaySchedule = apptGridSettings.weeklySchedule[colData.isoWeekday() - 1];
+      exception = filter(storeScheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(colData, 'day'))[0];
+      storeTodaySchedule = exception || storeTodaySchedule;
+    }
+    isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
+    if (!isStoreOff) {
+      isStoreOff = !this.isBetweenTimes(time, moment(storeTodaySchedule.start1, 'HH:mm'), moment(storeTodaySchedule.end1, 'HH:mm'))
+        && (!storeTodaySchedule.start2 ||
+            !this.isBetweenTimes(time, moment(storeTodaySchedule.start2, 'HH:mm'), moment(storeTodaySchedule.end2, 'HH:mm')));
     }
     let styleOclock = '';
-    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm').add((index * apptGridSettings.step) + 15, 'm').format('HH:mm');
-    const timeSplit = startTime.split(':');
+    const timeSplit = moment(cell).add(15, 'm').format('h:mm').split(':');
     const minutesSplit = timeSplit[1];
     if (minutesSplit === '00') {
       styleOclock = styles.oClockBorder;
     }
     let style = styles.cellContainerDisabled;
-    if (isStoreOpen) {
+    if (!isStoreOff) {
       let schedule;
       switch (selectedFilter) {
         case 'deskStaff':
@@ -109,7 +115,7 @@ export default class Column extends Component {
         }
         case 'resources':
         case 'rooms': {
-          schedule = providerSchedule.scheduledIntervals;
+          style = styles.cellContainer;
           break;
         }
         default:
@@ -118,8 +124,8 @@ export default class Column extends Component {
 
       if (schedule) {
         for (let i = 0; i < schedule.length; i += 1) {
-          if (time.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
-          time.isBefore(moment(schedule[i].end, 'HH:mm'))) {
+          if (cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
+          cell.isBefore(moment(schedule[i].end, 'HH:mm'))) {
             style = styles.cellContainer;
             break;
           }
@@ -203,11 +209,11 @@ export default class Column extends Component {
   }
 
   render() {
-    const { rows, showRoomAssignments } = this.props;
+    const { apptGridSettings, showRoomAssignments } = this.props;
     const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>
-        { rows ? rows.map(this.renderCell) : null }
+        { apptGridSettings.schedule.map(this.renderCell) }
         { rooms }
       </View>
     );

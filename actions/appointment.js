@@ -59,9 +59,8 @@ const postAppointmentResizeFailed = error => ({
   data: { error },
 });
 
-const postAppointmentCancelSuccess = appointmentId => ({
+const postAppointmentCancelSuccess = () => ({
   type: POST_APPOINTMENT_CANCEL_SUCCESS,
-  data: { appointmentId },
 });
 
 const postAppointmentCancelFailed = error => ({
@@ -92,10 +91,17 @@ const postAppointmentResize = (appointmentId, params, oldAppointment) => (dispat
     .catch(error => dispatch(postAppointmentResizeFailed(error)));
 };
 
-const postAppointmentCancel = (appointmentId, { reason, employeeId }) => (dispatch) => {
+const postAppointmentCancel = ({
+  appointmentIds, appointmentCancellation,
+}) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_CANCEL });
-  return Appointment.postAppointmentCancel(appointmentId, { employeeId, reason })
-    .then(() => dispatch(postAppointmentCancelSuccess(appointmentId)))
+  return Appointment.postAppointmentCancel({
+    appointmentIds, appointmentCancellation,
+  })
+    .then(() => {
+      dispatch(appointmentCalendarActions.setGridView());
+      return dispatch(postAppointmentCancelSuccess());
+    })
     .catch(error => dispatch(postAppointmentCancelFailed(error)));
 };
 
