@@ -114,7 +114,7 @@ export default class calendarBuffer extends React.Component {
 
   renderCard = ({ item }) => {
     const { panResponder, activeCard, startDate } = this.props;
-    const isActive = activeCard && activeCard.appointment.id === item.id;
+    const isActive = activeCard && activeCard.data.id === item.id;
     const hasPanResponder = !activeCard || isActive ? panResponder : null;
     return (
       <Card
