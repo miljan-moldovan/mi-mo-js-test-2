@@ -44,15 +44,98 @@ const styles = StyleSheet.create({
 class BlockCard extends Component {
   constructor(props) {
     super(props);
-    this.scrollValue = 0;
-    this.state = this.calcualteStateValues(props);
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.isActive !== this.props.isActive
+    return (nextProps.activeBlock || (nextProps.isInBuffer !== this.props.isInBuffer
+      || nextProps.isActive !== this.props.isActive
     || nextProps.cellWidth !== this.props.cellWidth ||
       !nextProps.isLoading && this.props.isLoading ||
-      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing);
+      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
+      || nextProps.goToBlockId === nextProps.block.id || nextProps.displayMode !== this.props.displayMode;
+  }
+
+  getCardProperties = () => {
+    const { isBufferBlock, activeBlock, isActive, isResizeBlock, isResizeing } = this.props;
+    if (!isResizeBlock && activeBlock) {
+      const { cardWidth, top, left, height } = activeBlock;
+      const opacity = isResizeing ? 0 : 1;
+      return {
+        left,
+        width: cardWidth,
+        zIndex: 999,
+        top,
+        height,
+        opacity,
+      };
+    }
+    if (!activeBlock && isBufferBlock) {
+      return {
+        left: 0,
+        width: 85,
+        zIndex: 1,
+        top: 0,
+        height: 46,
+        opacity: isActive ? 0.7 : 1,
+      };
+    }
+    const {
+      block: {
+        toTime, fromTime, employee, date,
+      },
+      apptGridSettings: {
+        step,
+        minStartTime,
+        weeklySchedule,
+      },
+      cellWidth,
+      displayMode,
+      provider,
+      selectedFilter,
+      headerData,
+      isInBuffer,
+      selectedProvider,
+      goToBlockId,
+      setGoToPositon,
+      storeSchedule,
+      numberOfOverlaps,
+    } = this.props;
+    const blockFromTimeMoment = moment(fromTime, 'HH:mm');
+    const blockToTimeMoment = moment(toTime, 'HH:mm');
+    const startTimeMoment = moment(minStartTime, 'HH:mm');
+    const gap = numberOfOverlaps * 8;
+    // calculate left position
+    const firstCellWidth = selectedFilter === 'providers' && selectedProvider === 'all' ? 130 : 0;
+    let index = 0;
+    if (selectedProvider === 'all') {
+      index = headerData.findIndex(item => item.id === employee.id);
+    } else if (displayMode === 'week') {
+      const blockDate = moment(date).format('YYYY-DD-MM');
+      index = headerData.findIndex(item => item.format('YYYY-DD-MM') === blockDate);
+    }
+    const left = (index * cellWidth) + firstCellWidth + gap;
+    // calculate card width
+    const width = cellWidth - gap;
+    // calculate height and top
+    const height = ((blockToTimeMoment.diff(blockFromTimeMoment, 'minutes') / step) * 30) - 1;
+    const top = (blockFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
+    // calculate zIndex
+    const zIndex = isResizeBlock ? 999 : numberOfOverlaps + 1;
+    // opacity
+    const opacity = (!isActive && !isInBuffer) || isResizeBlock ? 1 : 0.7;
+    // go to selected
+    if (goToBlockId === id) {
+      setGoToPositon({ left, top: verticalPositions[0].top, highlightCard: this.highlightGoTo });
+    }
+    return {
+      left,
+      width,
+      zIndex,
+      top,
+      height,
+      opacity,
+      isActiveEmployeeInCellTime,
+    };
   }
 
   calcualteStateValues = (props) => {
@@ -63,7 +146,7 @@ class BlockCard extends Component {
     const {
       startTime, groupedProviders, selectedProvider, providerSchedule
     } = props;
-    const apptDate = moment(date).format('YYYY-MM-DD');
+    const blockDate = moment(date).format('YYYY-MM-DD');
     const provider = selectedProvider === 'all' ? groupedProviders[employee.id] ? groupedProviders[employee.id][0] : null : providerSchedule[apptDate] ? providerSchedule[apptDate][0] : null;
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;

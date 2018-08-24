@@ -76,7 +76,6 @@ export const apptGridSettingsSelector = createSelector(
         moment.max(maxEndTimeMoment, maxAppointmentTime, maxBlockTimeTime);
       currentDay.add(1, 'd');
     }
-    debugger
     const minStartTime = minStartTimeMoment.format('HH:mm');
     const maxEndTime = maxEndTimeMoment.format('HH:mm');
     storeTodaySchedule = exception || storeTodaySchedule;
