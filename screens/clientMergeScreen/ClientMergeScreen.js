@@ -1,29 +1,22 @@
 // @flow
 import React from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   Alert,
   ActivityIndicator,
 } from 'react-native';
-
-import { Button } from 'native-base';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { SafeAreaView } from 'react-navigation';
-
-import { connect } from 'react-redux';
-import * as actions from '../actions/clients.js';
-import { ClientMerge } from '../components/ClientMerge';
-import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
-
-const mergeClients = require('../mockData/mergeClients.json');
-
+import { ClientMerge } from './ClientMerge';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import styles from './styles';
 
 class ClientMergeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
-    const { onPressDone, loading } = params;
+    const { onPressDone, isLoading } = params;
+    const { onPressBack } = params;
+    const goBack = (() => { navigation.goBack(); onPressBack(); });
 
     return {
       header: (
@@ -31,14 +24,14 @@ class ClientMergeScreen extends React.Component {
 justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
 }}
         >
-          <SalonTouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+          <SalonTouchableOpacity style={styles.navButton} onPress={goBack}>
             <Text style={styles.navButtonText}>Cancel</Text>
           </SalonTouchableOpacity>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <Text style={styles.headerTitle}>Duplicated Clients</Text>
             <Text style={styles.headerSubtitle}>Select clients to merge</Text>
           </View>
-          {loading ? (
+          {isLoading ? (
             <View style={styles.navButton}>
               <ActivityIndicator />
             </View>
@@ -58,24 +51,25 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
     mainClient: null,
   }
   componentWillMount() {
-    // this.loadClients();
+    this.loadClients();
   }
+
   loadClients() {
     const { params = {} } = this.props.navigation.state;
-    const clientId = params.clientId || 1832;
-    this.props.getMergeableClients(clientId);
+    const clientId = params.clientId;
+    this.props.clientsActions.getMergeableClients(clientId, (response) => {});
   }
 
   componentWillReceiveProps(nextProps) {
-    const { error, loading } = nextProps;
+    const { error, isLoading } = nextProps;
 
     if (error) {
       Alert.alert('Error', error.toString());
     }
 
-    if (loading !== undefined && loading !== this.props.loading) {
+    if (isLoading !== undefined && isLoading !== this.props.isLoading) {
       //
-      this.props.navigation.setParams({ loading });
+      this.props.navigation.setParams({ isLoading });
     }
   }
 
@@ -95,10 +89,18 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
   }
   onFinishMergeClients = () => {
     const { mergedClients, mainClient } = this.state;
-    this.props.mergeClients(mainClient, mergedClients, (success) => {
+
+    const { params = {} } = this.props.navigation.state;
+    const { onDismiss } = params;
+
+    this.props.clientsActions.mergeClients(mainClient, mergedClients, (success) => {
       if (success) {
         Alert.alert('Success', 'Clients were successfully merged.');
-        this.props.navigation.goBack();
+        if (onDismiss) {
+          onDismiss();
+        } else {
+          this.props.navigation.goBack();
+        }
       } else {
         Alert.alert('Error', 'Error merging clients. Please try again.');
       }
@@ -106,47 +108,19 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
   }
 
   render() {
-    return this.props.loading ?
+    return this.props.isLoading ?
       (
-        <ActivityIndicator />
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator />
+        </View>
       ) : (
         <ClientMerge
-        // data={this.props.mergeableClients}
-          data={mergeClients}
+          data={this.props.mergeableClients}
           navigation={this.props.navigation}
           onChangeMergeClients={this.onChangeMergeClients}
         />
       );
   }
 }
-const mapStateToProps = ({ clientsReducer: clients }, ownProps) => ({
-  mergeableClients: clients.mergeableClients,
-  loading: clients.isLoading,
-  waitingMerge: clients.waitingMerge,
-  error: clients.error,
-});
-export default connect(mapStateToProps, actions)(ClientMergeScreen);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f1f1f1',
-  },
-
-  headerTitle: {
-    fontSize: 17,
-    fontFamily: 'Roboto-Regular',
-    color: 'white',
-  },
-  headerSubtitle: {
-    fontSize: 10,
-    fontFamily: 'Roboto-Regular',
-    color: 'white',
-    marginBottom: 6,
-  },
-  navButtonText: {
-    fontSize: 14,
-    fontFamily: 'Roboto-Regular',
-    color: 'white',
-  },
-});
+export default ClientMergeScreen;

@@ -21,6 +21,7 @@ const initialState = {
   mergeableClients: [],
   suggestionsList: [],
   filteredSuggestions: [],
+  isLoading: false,
 };
 
 export default function clientsReducer(state = initialState, action) {
@@ -78,7 +79,7 @@ export default function clientsReducer(state = initialState, action) {
       return {
         ...state,
         isLoading: false,
-        mergeableClients: data.mergeableClients,
+        mergeableClients: data.response,
         error: null,
       };
     case GET_MERGEABLE_CLIENTS_FAILED:
@@ -88,23 +89,26 @@ export default function clientsReducer(state = initialState, action) {
         error: data.error,
         mergeableClients: [],
       };
-      case MERGE_CLIENTS:
-        return {
-          ...state,
-          waitingMerge: true,
-        };
-      case MERGE_CLIENTS_SUCCESS:
-        return {
-          ...state,
-          waitingMerge: false,
-          error: null,
-        };
-      case MERGE_CLIENTS_FAILED:
-        return {
-          ...state,
-          waitingMerge: false,
-          error: data.error,
-        };
+    case MERGE_CLIENTS:
+      return {
+        ...state,
+        waitingMerge: true,
+        isLoading: true,
+      };
+    case MERGE_CLIENTS_SUCCESS:
+      return {
+        ...state,
+        waitingMerge: false,
+        error: null,
+        isLoading: false,
+      };
+    case MERGE_CLIENTS_FAILED:
+      return {
+        ...state,
+        waitingMerge: false,
+        isLoading: false,
+        error: data.error,
+      };
     default:
       return state;
   }

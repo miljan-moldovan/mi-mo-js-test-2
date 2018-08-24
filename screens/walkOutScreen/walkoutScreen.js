@@ -81,7 +81,10 @@ class WalkoutScreen extends Component {
   componentWillMount() {
     const { appointment } = this.props.navigation.state.params;
     const service = appointment.services[0];
-    const provider = service.employee;
+    const provider = service.isFirstAvailable ?
+      {
+        id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+      } : service.employee;
 
     this.setState({ provider, employeeId: provider.id });
   }
