@@ -133,7 +133,7 @@ class ForgotPassword extends React.Component {
   render = () => {
     const { usernameError } = this.state;
     const { username, url } = this.props.auth;
-    console.log(username, url);
+    //console.log(username, url);
 
     return (
       <View style={styles.container}>

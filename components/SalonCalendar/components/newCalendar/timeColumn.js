@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 
 export default class TimeColumn extends Component {
   renderRowLabel = (row, index) => {
-    const timeSplit = row.split(':');
+    const timeSplit = row.format('h:mm A').split(':');
     const minutesSplit = timeSplit[1].split(' ');
     const minutes = minutesSplit[0];
     if (row && index !== 0 && minutes % 30 === 0) {
@@ -54,7 +54,7 @@ export default class TimeColumn extends Component {
       const text = isOClock ? `${hour}${ampm}` : `${hour}:${minutes}`;
       const style = isOClock ? styles.rowTitleOClock : styles.rowTitle;
       return (
-        <View key={row.id} style={styles.rowLabel} pointerEvents="box-none">
+        <View key={row.format('HH:mm')} style={styles.rowLabel} pointerEvents="box-none">
           <Text style={style}>
             {text}
           </Text>
