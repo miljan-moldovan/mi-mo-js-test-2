@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { connect } from 'react-redux';
+
 import moment from 'moment';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -126,7 +127,7 @@ handlePressSummary = {
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
   returning: returned => this.handleReturning(returned),
-  toService: () => this.checkHasProvider(),
+  toService: () => this.checkShouldMerge(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
 }
@@ -306,7 +307,7 @@ handleReturning = (returned) => {
 cancelButton = () => ({
   leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
   leftButtonOnPress: (navigation) => {
-    navigation.goBack();
+    this.props.navigation.navigate('Main');
   },
 })
 
@@ -315,20 +316,43 @@ checkHasProvider = () => {
   const service = appointment.services[0];
   if (service.employee) {
     this.handleStartService();
+    this.props.navigation.navigate('Main');
   } else {
     this.hideDialog();
 
-
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
-
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
-      dismissOnSelect: true,
+      dismissOnSelect: false,
       filterByService: true,
       showFirstAvailable: false,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
+}
+
+checkShouldMerge = () => {
+  const { appointment } = this.state;
+
+  const { client } = appointment;
+
+  this.props.clientsActions.getMergeableClients(client.id, (response) => {
+    if (response) {
+      const { mergeableClients } = this.props.clientsState;
+      if (mergeableClients.length === 0) {
+        this.checkHasProvider();
+      } else {
+        this.hideDialog();
+        this.props.navigation.navigate('ClientMerge', {
+          clientId: client.id,
+          onPressBack: () => { this.checkHasProvider(); },
+          onDismiss: () => { this.checkHasProvider(); },
+        });
+      }
+    } else {
+      alert('error');
+    }
+  });
 }
 
 
@@ -337,6 +361,7 @@ handleProviderSelection = (provider) => {
   const service = appointment.services[0];
   service.employee = provider;
   this.handleStartService();
+  this.props.navigation.navigate('Main');
 }
 
 
@@ -597,6 +622,12 @@ Queue.defaultProps = {
 };
 
 Queue.propTypes = {
+  clientsActions: PropTypes.shape({
+    getMergeableClients: PropTypes.func.isRequired,
+  }).isRequired,
+  clientsState: PropTypes.shape({
+    mergeableClients: PropTypes.any.isRequired,
+  }).isRequired,
   serviceActions: PropTypes.shape({
     setSelectedService: PropTypes.func.isRequired,
   }).isRequired,

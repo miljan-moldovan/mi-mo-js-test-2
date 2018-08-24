@@ -1,13 +1,12 @@
 // @flow
 import React from 'react';
-import { View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import ImageHeader from '../components/ImageHeader';
 
 import QueueScreen from './../screens/queueScreen';
 import QueueCombineScreen from './../screens/queueCombineScreen';
-import ClientMergeScreen from './../screens/ClientMergeScreen';
+import ClientMergeScreen from './../screens/clientMergeScreen';
 import QueueDetailScreen from './../screens/queueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
@@ -55,6 +54,7 @@ const MainNavigator = StackNavigator(
     Main: {
       screen: QueueScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         headerTitle: 'Queue',
       },
     },

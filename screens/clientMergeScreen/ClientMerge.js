@@ -1,30 +1,14 @@
 // @flow
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  Alert,
-  Modal,
   FlatList,
-  SectionList,
   RefreshControl,
-  TouchableHighlight,
-  LayoutAnimation,
-  ActivityIndicator,
 } from 'react-native';
-import { Button } from 'native-base';
-import { connect } from 'react-redux';
-import Icon from '../components/UI/Icon';
-import SalonTouchableOpacity from './SalonTouchableOpacity';
-
-import * as actions from '../actions/clients';
-import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEUE_ITEM_INSERVICE, QUEUE_ITEM_CHECKEDIN } from '../constants/QueueStatus.js';
-
-import type { QueueItem } from '../models';
+import Icon from '../../components/UI/Icon';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 class ClientMergeItem extends React.PureComponent {
   _onPress = () => {

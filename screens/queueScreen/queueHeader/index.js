@@ -13,8 +13,8 @@ import SalonActionSheet from '../../../components/SalonActionSheet';
 import styles from './styles';
 import QueueNavButton from './queueNavButton';
 
-const CANCEL_INDEX = 3;
-const DESTRUCTIVE_INDEX = 3;
+const CANCEL_INDEX = 2;
+const DESTRUCTIVE_INDEX = 2;
 const options = [
   <View style={styles.actionItemContainer}>
     <View style={styles.actionItemLeft}>
@@ -46,7 +46,7 @@ const options = [
   </View>,
 
 
-  <View style={styles.actionItemContainer}>
+  /*  <View style={styles.actionItemContainer}>
     <View style={styles.actionItemLeft}>
       <Text style={styles.actionItemTitle}>[DEV] Client Merge</Text>
     </View>
@@ -58,7 +58,7 @@ const options = [
         size={16}
       />
     </View>
-  </View>,
+  </View>, */
   <Text style={styles.cancelTitle}>Cancel
   </Text>,
 ];
