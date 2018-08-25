@@ -10,7 +10,6 @@ import Svg, {
 import { times } from 'lodash';
 
 import colors from '../../../../constants/appointmentColors';
-//import ResizeButton from '../resizeButtons';
 
 const styles = StyleSheet.create({
   blockText: {
@@ -19,6 +18,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingHorizontal: 8,
     color: '#2F3142',
+  },
+  notesText: {
+    fontWeight: 'normal',
+    fontSize: 10,
   },
   header: {
     height: 4,
@@ -65,6 +68,8 @@ class BlockCard extends Component {
     const start = moment(fromTime, 'HH:mm');
     const top = (start.diff(startTime, 'minutes') / step) * 30;
     const end = moment(toTime, 'HH:mm');
+    const timeToSpend = end.diff(start, 'minutes');
+    const notesLines = timeToSpend >= 30 ? (3 + (((timeToSpend - 30) / 15) * 2)) : 0;
     const { left, cardWidth, zIndex } = this.calculateLeftAndGap(props);
     const height = ((end.diff(start, 'minutes') / step) * 30) - 1;
     const usedBlocks = (height + 1) / 30;
@@ -90,6 +95,7 @@ class BlockCard extends Component {
       zIndex,
       step,
       usedBlocks,
+      notesLines,
       isActiveEmployeeInCellTime,
     };
   }
@@ -126,6 +132,7 @@ class BlockCard extends Component {
     const {
       color,
       reason,
+      notes,
       fromTime,
       toTime,
       id,
@@ -135,7 +142,7 @@ class BlockCard extends Component {
       zIndex, cardWidth, left,
     } = this.state;
     const renderColor = colors[color] ? color : 0;
-    const { height } = this.state;
+    const { height, notesLines } = this.state;
     const borderColor = colors[renderColor].dark;
     const contentColor = colors[renderColor].light;
     let countOpacity2 = 0;
@@ -204,6 +211,9 @@ class BlockCard extends Component {
                 style={styles.blockText}
               >
                 {reason.name}
+              </Text>
+              <Text numberOfLines={notesLines} style={[styles.blockText, styles.notesText]}>
+                {notes}
               </Text>
             </View>
           </TouchableOpacity>

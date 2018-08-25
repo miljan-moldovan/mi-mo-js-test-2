@@ -10,7 +10,7 @@ import TimeColumn from './timeColumn';
 import Card from './card';
 import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
-import SalonAlert from './SalonAlert';
+import SalonAlert from '../../../SalonAlert';
 import BlockTime from './blockCard';
 import EmptyScreen from './EmptyScreen';
 
@@ -150,9 +150,7 @@ export default class Calendar extends Component {
       startDate,
       displayMode,
     } = nextProps;
-
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
-      this.schedule = times(apptGridSettings.numOfRow, index => this.createSchedule(index, nextProps));
       if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
         if (selectedProvider === 'all') {
           const firstColumnWidth = selectedFilter === 'providers' ? 166 : 36;
@@ -326,7 +324,6 @@ export default class Calendar extends Component {
   }
 
   handleOnDrag = (isScrollEnabled, appointment, left, cardWidth, verticalPositions, isBufferCard) => {
-    //const { top } = verticalPositions[0];
     let newState;
     this.moveX = null;
     this.moveY = null;
@@ -335,7 +332,6 @@ export default class Calendar extends Component {
       const offsetX = isBufferCard ? -this.calendarPosition.x : 36 - this.offset.x;
       this.fixOffsetY = offsetY;
       const { pan, pan2 } = this.state;
-      // const newTop = top + offsetY;
       const newVerticalPositions = [];
       for (let i = 0; i < verticalPositions.length; i += 1) {
         const item = verticalPositions[i];
@@ -527,11 +523,11 @@ export default class Calendar extends Component {
     const xIndex = (dx / this.cellWidth).toFixed() - 1;
     const yIndex = (dy / cellHeight).toFixed();
     const isOutOfBounds = xIndex < 0 || xIndex >= headerData.length
-    || yIndex < 0 || yIndex >= this.schedule.length;
+    || yIndex < 0 || yIndex >= apptGridSettings.schedule.length;
     if (!isOutOfBounds) {
       const employeeId = selectedFilter === 'providers' && selectedProvider === 'all' ? headerData[xIndex].id : selectedProvider.id;
       const dateMoment = selectedProvider === 'all' || displayMode === 'day' ? startDate : moment(headerData[xIndex], 'YYYY-MM-DD');
-      const newTimeMoment = moment(this.schedule[yIndex], 'h:mm A');
+      const newTimeMoment = moment(apptGridSettings.schedule[yIndex], 'h:mm A');
       const oldDate = moment(appointment.date, 'YYYY-MM-DD').format('MMM DD');
       const oldFromTime = moment(appointment.fromTime, 'HH:mm');
       const oldToTime = moment(appointment.toTime, 'HH:mm');
@@ -571,7 +567,7 @@ export default class Calendar extends Component {
       description: 'You still have appointments in the move bar. Do you want to return all of these appointments to their original place and close the move bar?',
       btnLeftText: 'No',
       btnRightText: 'Yes',
-      handleMove: () => {
+      onPressRight: () => {
         this.props.manageBuffer(false);
         this.setState({ buffer: [], alert: null });
         this.isBufferCollapsed = false;
@@ -613,11 +609,57 @@ export default class Calendar extends Component {
     this.props.onCellPressed(startTime, firstAvailableProvider);
   }
 
+  getOverlapingCards = (appointment) => {
+    const { appointments } = this.props;
+    const { id, fromTime, toTime, employee, date } = appointment;
+    let currentAppt = null;
+    let currentDate = null;
+    let numberOfOverlaps = 0;
+    const formatedDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
+    const apptFromTimeMoment = moment(fromTime, 'HH:mm');
+    const apptToTimeMoment = moment(toTime, 'HH:mm');
+    for (let i = 0; i < appointments.length; i += 1) {
+      currentAppt = appointments[i];
+      if (currentAppt.id !== id) {
+        currentDate = moment(currentAppt.date).format('YYYY-MM-DD');
+        if (formatedDate === currentDate && get(currentAppt.employee, 'id', -1) === get(employee, 'id', -2)) {
+          const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
+          const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
+          if(apptFromTimeMoment.isSame(currentStartTime)
+          && apptToTimeMoment.isSame(currentEndTime)) {
+            numberOfOverlaps += this.processedCardsIds[currentAppt.id] ? 0 : 1;
+          } else if (apptFromTimeMoment.isSameOrAfter(currentStartTime)
+          && apptToTimeMoment.isSameOrBefore(currentEndTime)) {
+            let aux = this.processedCardsIds[currentAppt.id];
+            if (aux) {
+              numberOfOverlaps = aux + 1;
+            } else {
+              numberOfOverlaps += 1;
+            }
+          } else {
+            if (apptFromTimeMoment.isSameOrAfter(currentStartTime)
+            && apptFromTimeMoment.isBefore(currentEndTime)) {
+              let aux = this.processedCardsIds[currentAppt.id];
+              if (aux) {
+                numberOfOverlaps = aux + 1;
+              } else {
+                numberOfOverlaps += 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    this.processedCardsIds[id] = numberOfOverlaps;
+    return numberOfOverlaps;
+  }
+
   renderCards = () => {
     const {
       appointments, rooms, selectedFilter,
       selectedProvider, displayMode, startDate,
     } = this.props;
+    this.processedCardsIds = [];
     if (appointments) {
       const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
       const isRoom = selectedFilter === 'rooms';
@@ -727,6 +769,7 @@ export default class Calendar extends Component {
     const panResponder = (activeCard &&
       activeCard.appointment.id !== appointment.id) || isInBuffer ? null : this.panResponder;
     if (appointment.employee) {
+      const numberOfOverlaps = this.getOverlapingCards(appointment);
       return (
         <Card
           setGoToPositon={this.setGoToPositon}
@@ -758,10 +801,10 @@ export default class Calendar extends Component {
           startTime={startTime}
           appointments={appointments}
           groupedProviders={this.groupedProviders}
-          providerSchedule={providerSchedule}
           isLoading={isLoading}
           storeSchedule={storeSchedule}
           startDate={startDate}
+          numberOfOverlaps={numberOfOverlaps}
         />
       );
     }
@@ -809,10 +852,12 @@ export default class Calendar extends Component {
     const provider = activeCard && isAllProviderView ?
       providers.find(item => item.id === get(activeCard.appointment.employee, 'id', false)) : selectedProvider;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
-
-    return provider && isResizeing && activeCard ? (
+    if (provider && isResizeing && activeCard) {
+      const numberOfOverlaps = this.getOverlapingCards(activeCard.appointment);
+    return (
       <Card
         ref={(card) => { this.resizeCard = card; }}
+        numberOfOverlaps={numberOfOverlaps}
         panResponder={this.panResponder}
         appointment={activeCard.appointment}
         apptGridSettings={apptGridSettings}
@@ -848,7 +893,9 @@ export default class Calendar extends Component {
         appointments={appointments}
         groupedProviders={this.groupedProviders}
         providerSchedule={providerSchedule}
-      />) : null;
+      />)
+    }
+      return null;
   }
 
   render() {
@@ -856,7 +903,7 @@ export default class Calendar extends Component {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
       isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule,
-      startDate
+      startDate, storeScheduleExceptions
     } = this.props;
 
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
@@ -865,97 +912,96 @@ export default class Calendar extends Component {
       alert, activeCard, isResizeing,
     } = this.state;
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
-    const size = {
+    let size = {
       width: this.size.width,
-      height: bufferVisible ? this.size.height + 110 : this.size.heigh,
+      height: bufferVisible ? this.size.height + 110 : this.size.height,
     };
     const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
-    if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
-      return (
-        <View style={{ flex: 1, backgroundColor: '#fff' }} ref={(view) => { this.calendar = view; }}>
-          <ScrollView
-            bounces={false}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={[styles.contentContainer, size, { borderTopWidth: !showHeader ? 1 : 0 }]}
-            style={styles.container}
-            scrollEnabled={!activeCard && !isLoading}
-            onScroll={this.handleScroll}
-            ref={(board) => { this.board = board; }}
-            onLayout={this.measureScrollView}
-            scrollEventThrottle={16}
+    const areProviders = apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0;
+    size = areProviders ? size : { width: 0, height: 0, opacity: 0 };
+    return (
+      <View style={{ flex: 1 }} ref={(view) => { this.calendar = view; }}>
+        { !areProviders && !isLoading ? <EmptyScreen /> : null}
+        <ScrollView
+          bounces={false}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.contentContainer, size, { borderTopWidth: !showHeader ? 1 : 0 }]}
+          style={styles.container}
+          scrollEnabled={!activeCard && !isLoading}
+          onScroll={this.handleScroll}
+          ref={(board) => { this.board = board; }}
+          onLayout={this.measureScrollView}
+          scrollEventThrottle={16}
+        >
+          <ScrollViewChild
+            scrollDirection="both"
+            style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
           >
-            <ScrollViewChild
-              scrollDirection="both"
-              style={[styles.boardContainer, { marginTop: showHeader ? headerHeight : 0 }]}
-            >
-              <Board
-                createAlert={this.createAlert}
-                startDate={startDate}
-                onPressAvailability={this.handleOnPressAvailability}
-                onCellPressed={this.handleCellPressed}
-                columns={headerData}
-                rows={this.schedule}
-                startTime={startTime}
-                apptGridSettings={apptGridSettings}
-                timeSchedules={dataSource}
-                showAvailability={showAvailability}
-                cellWidth={this.cellWidth}
-                displayMode={displayMode}
-                selectedProvider={selectedProvider}
+            <Board
+              createAlert={this.createAlert}
+              startDate={startDate}
+              onPressAvailability={this.handleOnPressAvailability}
+              onCellPressed={this.handleCellPressed}
+              columns={headerData}
+              startTime={startTime}
+              apptGridSettings={apptGridSettings}
+              showAvailability={showAvailability}
+              cellWidth={this.cellWidth}
+              displayMode={displayMode}
+              selectedProvider={selectedProvider}
+              selectedFilter={selectedFilter}
+              showRoomAssignments={filterOptions.showRoomAssignments}
+              providerSchedule={providerSchedule}
+              availability={availability}
+              isLoading={isLoading}
+              hideAlert={this.hideAlert}
+              storeScheduleExceptions={storeScheduleExceptions}
+            />
+            { this.renderCards() }
+            { this.renderBlockTimes() }
+            {this.renderResizeCard()}
+          </ScrollViewChild>
+          <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
+            <TimeColumn schedule={apptGridSettings.schedule} />
+            <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime} />
+          </ScrollViewChild>
+          { showHeader ?
+            <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
+              <Header
+                dataSource={headerData}
+                isDate={isDate}
                 selectedFilter={selectedFilter}
-                showRoomAssignments={filterOptions.showRoomAssignments}
-                providerSchedule={providerSchedule}
-                availability={availability}
-                isLoading={isLoading}
-                storeSchedule={storeSchedule}
-                hideAlert={this.hideAlert}
+                cellWidth={this.cellWidth}
+                setSelectedProvider={setSelectedProvider}
+                setSelectedDay={setSelectedDay}
               />
-              { this.renderCards() }
-              { this.renderBlockTimes() }
-              {this.renderResizeCard()}
-            </ScrollViewChild>
-            <ScrollViewChild scrollDirection="vertical" style={[styles.columnContainer, { top: showHeader ? headerHeight : 0 }]}>
-              <TimeColumn schedule={this.schedule} />
-              <CurrentTime apptGridSettings={apptGridSettings} startTime={startTime} />
-            </ScrollViewChild>
-            { showHeader ?
-              <ScrollViewChild scrollDirection="horizontal" style={styles.headerContainer}>
-                <Header
-                  dataSource={headerData}
-                  isDate={isDate}
-                  selectedFilter={selectedFilter}
-                  cellWidth={this.cellWidth}
-                  setSelectedProvider={setSelectedProvider}
-                  setSelectedDay={setSelectedDay}
-                />
-              </ScrollViewChild> : null
-            }
-          </ScrollView>
-          <Buffer
-            panResponder={this.panResponder}
-            dataSource={this.state.buffer}
-            visible={this.props.bufferVisible}
-            manageBuffer={this.props.manageBuffer}
-            onCardLongPress={this.handleOnDrag}
-            screenHeight={screenHeight}
-            closeBuffer={this.closeBuffer}
-            setBufferCollapsed={this.setBufferCollapsed}
-            activeCard={activeCard}
-          />
-          { this.renderActiveCard() }
-          <SalonAlert
-            visible={!!alert}
-            title={alert ? alert.title : ''}
-            description={alert ? alert.description : ''}
-            btnLeftText={alert ? alert.btnLeftText : ''}
-            btnRightText={alert ? alert.btnRightText : ''}
-            onPressLeft={this.hideAlert}
-            onPressRight={alert ? alert.onPressRight : null}
-          />
-        </View>
-      );
-    }
-    return !isLoading ? <EmptyScreen /> : null;
+            </ScrollViewChild> : null
+          }
+        </ScrollView>
+        <Buffer
+          panResponder={this.panResponder}
+          dataSource={this.state.buffer}
+          visible={this.props.bufferVisible}
+          manageBuffer={this.props.manageBuffer}
+          onCardLongPress={this.handleOnDrag}
+          screenHeight={screenHeight}
+          closeBuffer={this.closeBuffer}
+          setBufferCollapsed={this.setBufferCollapsed}
+          activeCard={activeCard}
+          startDate={startDate}
+        />
+        { this.renderActiveCard() }
+        <SalonAlert
+          visible={!!alert}
+          title={alert ? alert.title : ''}
+          description={alert ? alert.description : ''}
+          btnLeftText={alert ? alert.btnLeftText : ''}
+          btnRightText={alert ? alert.btnRightText : ''}
+          onPressLeft={this.hideAlert}
+          onPressRight={alert ? alert.onPressRight : null}
+        />
+      </View>
+    );
   }
 }

@@ -964,8 +964,8 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				F1C647A2864C7874C3059B0E /* [CP] Embed Pods Frameworks */,
-				97A1AC814C1171293BC3FE25 /* [CP] Copy Pods Resources */,
+				8F124D90D77EE5A316175BED /* [CP] Embed Pods Frameworks */,
+				C18E7801CF6DF2CA99EB2FA3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -988,8 +988,8 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				B3958C6C201B2BA500875291 /* Run Fabric */,
 				60B72D56211CB5290037F07D /* Embed Frameworks */,
-				248A62BDEE2B1239F052B5ED /* [CP] Embed Pods Frameworks */,
-				BC4DBFA653402D553DEDC4E4 /* [CP] Copy Pods Resources */,
+				5379103019769D7FEA3EF5AF /* [CP] Embed Pods Frameworks */,
+				645DF27CC610D62F3FC98975 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1529,7 +1529,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		248A62BDEE2B1239F052B5ED /* [CP] Embed Pods Frameworks */ = {
+		5379103019769D7FEA3EF5AF /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1544,7 +1544,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		97A1AC814C1171293BC3FE25 /* [CP] Copy Pods Resources */ = {
+		645DF27CC610D62F3FC98975 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1556,7 +1556,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8F124D90D77EE5A316175BED /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B229ABC978C59D4C64E3F30D /* [CP] Check Pods Manifest.lock */ = {
@@ -1591,21 +1606,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 57ed7a29664d211a062ac7a41c806fc3aeec24f2 069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc";
 		};
-		BC4DBFA653402D553DEDC4E4 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		BD6EC48E91C8960A5BB0A3FA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1624,19 +1624,19 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F1C647A2864C7874C3059B0E /* [CP] Embed Pods Frameworks */ = {
+		C18E7801CF6DF2CA99EB2FA3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

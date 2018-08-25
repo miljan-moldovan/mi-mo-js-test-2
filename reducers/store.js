@@ -1,36 +1,51 @@
 import moment from 'moment';
 import { cloneDeep } from 'lodash';
 import {
+  LOAD_STORE_INFO_SUCCESS,
+  LOAD_SCHEDULE_EXCEPTIONS_SUCCESS,
   GET_SCHEDULE_FOR_DATE,
   GET_SCHEDULE_FOR_DATE_FAILED,
   GET_SCHEDULE_FOR_DATE_SUCCESS,
 } from '../actions/store';
 
-const defaultState = {
+const initialState = {
   isLoading: false,
+  storeInfo: null,
+  scheduleExceptions: [],
   selectedDate: moment(),
   selectedDateScheduledIntervals: [],
 };
 
-const storeReducer = (state = defaultState, action) => {
+export default function storeReducer(state = initialState, action) {
   const { type, data = {} } = action;
-  const newState = cloneDeep(state);
   switch (type) {
+    case LOAD_STORE_INFO_SUCCESS:
+      return {
+        ...state,
+        storeInfo: data.storeInfo,
+      };
+    case LOAD_SCHEDULE_EXCEPTIONS_SUCCESS:
+      return {
+        ...state,
+        scheduleExceptions: data.scheduleExceptions,
+      };
     case GET_SCHEDULE_FOR_DATE:
-      newState.isLoading = true;
-      newState.selectedDate = data.date;
-      break;
+      return {
+        ...state,
+        isLoading: true,
+        selectedDate: data.date,
+      };
     case GET_SCHEDULE_FOR_DATE_FAILED:
-      newState.isLoading = false;
-      break;
+      return {
+        isLoading: false,
+      };
     case GET_SCHEDULE_FOR_DATE_SUCCESS:
-      newState.isLoading = false;
-      newState.selectedDateScheduledIntervals = data.schedule;
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        selectedDateScheduledIntervals: data.schedule,
+      };
     default:
-      break;
+      return state;
   }
-
-  return newState;
-};
-export default storeReducer;
+}

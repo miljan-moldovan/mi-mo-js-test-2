@@ -20,6 +20,7 @@ import settingsActions from '../../actions/settings';
 import checkinActions from '../../actions/checkin';
 import serviceActions from '../../actions/service';
 import walkInActions from '../../actions/walkIn';
+import clientsActions from '../../actions/clients';
 import Queue from './queue';
 import QueueHeader from './queueHeader';
 import Icon from '../../components/UI/Icon';
@@ -201,9 +202,11 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.service = service;
     this.setState({ newAppointment });
+
+    this.props.serviceActions.setSelectedService({ id: service.id });
+
     this.props.navigation.navigate('ModalProviders', {
       filterByService: true,
-      selectedService: service,
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',
@@ -330,6 +333,7 @@ class QueueScreen extends React.Component {
           case WAITING:
             return (
               <Queue
+                {...this.props}
                 data={waitingQueue}
                 groups={groups}
                 navigation={navigation}
@@ -340,6 +344,7 @@ class QueueScreen extends React.Component {
           case SERVICED:
             return (
               <Queue
+                {...this.props}
                 data={serviceQueue}
                 groups={groups}
                 navigation={navigation}
@@ -386,12 +391,14 @@ class QueueScreen extends React.Component {
               ) : null}
               <Queue
                 isWaiting
+                {...this.props}
                 onChangeFilterResultCount={this.updateSearchWaitingCount}
                 data={waitingQueue}
                 headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
                 {...p}
               />
               <Queue
+                {...this.props}
                 onChangeFilterResultCount={this.updateSearchServiceCount}
                 data={serviceQueue}
                 headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
@@ -479,6 +486,9 @@ QueueScreen.propTypes = {
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
+  clientsActions: PropTypes.shape({
+    getMergeableClients: PropTypes.func.isRequired,
+  }).isRequired,
   settings: PropTypes.any.isRequired,
   queueState: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
@@ -492,6 +502,7 @@ QueueScreen.propTypes = {
 const mapStateToProps = state => ({
   waitingQueue: state.queue.waitingQueue,
   queueState: state.queue.queueState,
+  clientsState: state.clientsReducer,
   serviceQueue: state.queue.serviceQueue,
   groups: state.queue.groups,
   error: state.queue.error,
@@ -506,5 +517,6 @@ const mapActionsToProps = dispatch => ({
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   checkinActions: bindActionCreators({ ...checkinActions }, dispatch),
   serviceActions: bindActionCreators({ ...serviceActions }, dispatch),
+  clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(QueueScreen);

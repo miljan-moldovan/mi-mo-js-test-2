@@ -1,6 +1,6 @@
 import { getApiInstance } from '../../api';
 
-export default async (id, { reason, employeeId }) => {
+export default async ({ appointmentIds, appointmentCancellation }) => {
   const apiInstance = await getApiInstance();
-  return apiInstance.post(`Appointment/${id}/Cancel`, { reason, employeeId }).then(({ data: { response } }) => response);
+  return apiInstance.post('Appointment/CancelBulk', { appointmentIds, appointmentCancellation }).then(({ data: { response } }) => response);
 };

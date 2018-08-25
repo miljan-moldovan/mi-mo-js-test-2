@@ -8,12 +8,14 @@ import {
   Alert,
 } from 'react-native';
 import { connect } from 'react-redux';
+
 import moment from 'moment';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
+
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import CircularCountdown from '../../../components/CircularCountdown';
@@ -125,7 +127,7 @@ handlePressSummary = {
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
   returning: returned => this.handleReturning(returned),
-  toService: () => this.checkHasProvider(),
+  toService: () => this.checkShouldMerge(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
 }
@@ -305,7 +307,7 @@ handleReturning = (returned) => {
 cancelButton = () => ({
   leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
   leftButtonOnPress: (navigation) => {
-    navigation.goBack();
+    this.props.navigation.navigate('Main');
   },
 })
 
@@ -314,19 +316,43 @@ checkHasProvider = () => {
   const service = appointment.services[0];
   if (service.employee) {
     this.handleStartService();
+    this.props.navigation.navigate('Main');
   } else {
     this.hideDialog();
 
+    this.props.serviceActions.setSelectedService({ id: service.serviceId });
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
-      dismissOnSelect: true,
-      selectedService: service,
+      dismissOnSelect: false,
       filterByService: true,
       showFirstAvailable: false,
-      apptBook,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
+}
+
+checkShouldMerge = () => {
+  const { appointment } = this.state;
+
+  const { client } = appointment;
+
+  this.props.clientsActions.getMergeableClients(client.id, (response) => {
+    if (response) {
+      const { mergeableClients } = this.props.clientsState;
+      if (mergeableClients.length === 0) {
+        this.checkHasProvider();
+      } else {
+        this.hideDialog();
+        this.props.navigation.navigate('ClientMerge', {
+          clientId: client.id,
+          onPressBack: () => { this.checkHasProvider(); },
+          onDismiss: () => { this.checkHasProvider(); },
+        });
+      }
+    } else {
+      alert('error');
+    }
+  });
 }
 
 
@@ -335,6 +361,7 @@ handleProviderSelection = (provider) => {
   const service = appointment.services[0];
   service.employee = provider;
   this.handleStartService();
+  this.props.navigation.navigate('Main');
 }
 
 
@@ -353,6 +380,8 @@ handleStartService = () => {
     ],
     deletedServiceEmployeeIds: [],
   };
+
+
   this.props.startService(appointment.id, serviceData);
   this.hideDialog();
 }
@@ -439,7 +468,7 @@ renderItem = (row) => {
   const groupLeaderName = this.getGroupLeaderName(item);
   const firstService = item.services[0] || {};
   const serviceName = (firstService.serviceName || '').toUpperCase();
-  const employee = !firstService.isFirstAvailable && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
+  const employee = !firstService.isFirstAvailable && firstService.employee && firstService.employee.fullName ? (firstService.employee.fullName).toUpperCase() : 'First Available';
 
   const isBookedByWeb = item.queueType === 3;
 
@@ -593,6 +622,15 @@ Queue.defaultProps = {
 };
 
 Queue.propTypes = {
+  clientsActions: PropTypes.shape({
+    getMergeableClients: PropTypes.func.isRequired,
+  }).isRequired,
+  clientsState: PropTypes.shape({
+    mergeableClients: PropTypes.any.isRequired,
+  }).isRequired,
+  serviceActions: PropTypes.shape({
+    setSelectedService: PropTypes.func.isRequired,
+  }).isRequired,
   data: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
   searchProvider: PropTypes.any.isRequired,

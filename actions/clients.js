@@ -70,31 +70,52 @@ function setSuggestionsList(suggestionsList) {
     data: { suggestionsList },
   };
 }
-export const getMergeableClients = (clientId: string) => async (dispatch: Object => void) => {
-  try {
-    dispatch({ type: GET_MERGEABLE_CLIENTS });
-    const mergeableClients = await Client.getMergeableClients({ id: clientId });
-    dispatch({ type: GET_MERGEABLE_CLIENTS_SUCCESS, data: { mergeableClients } });
-  } catch (error) {
-    dispatch({ type: GET_MERGEABLE_CLIENTS_FAILED, data: { error } });
-  }
+
+const getEmployeeScheduleExceptionSuccess = response => ({
+  type: GET_MERGEABLE_CLIENTS_SUCCESS,
+  data: { response },
+});
+
+const getEmployeeScheduleExceptionFailed = error => ({
+  type: GET_MERGEABLE_CLIENTS_FAILED,
+  data: { error },
+});
+
+const getMergeableClients = (clientId, callback) => (dispatch) => {
+  dispatch({ type: GET_MERGEABLE_CLIENTS });
+
+  return Client.getMergeableClients(clientId)
+    .then((response) => {
+      dispatch(getEmployeeScheduleExceptionSuccess(response));
+
+      callback(true);
+    })
+    .catch((error) => {
+      dispatch(getEmployeeScheduleExceptionFailed(error));
+
+      callback(false);
+    });
 };
 
-export const mergeClients = (mainClientId: string, mergeClientsId: Array<String>, callback) => async (dispatch: Object => void) => {
-  try {
-    dispatch({ type: MERGE_CLIENTS });
-    // let mergeableClients = await apiWrapper.doRequest('postMergeClients',  {
-    //   path: { id: clientId },
-    //   body: JSON.stringify(mergeClientsId)
-    // });
-    //
-    // callback(true);
-    // dispatch({ type: MERGE_CLIENTS_SUCCESS, data: { mergeableClients } });
-  } catch (error) {
-    callback(false);
-    dispatch({ type: MERGE_CLIENTS_FAILED, data: { error } });
-  }
+
+const mergeClientsSuccess = response => ({
+  type: MERGE_CLIENTS_SUCCESS,
+  data: { response },
+});
+
+const mergeClientsFailed = error => ({
+  type: MERGE_CLIENTS_FAILED,
+  data: { error },
+});
+
+const mergeClients = (mainClientId: string, mergeClientsId: Array<String>, callback) => (dispatch) => {
+  dispatch({ type: MERGE_CLIENTS });
+
+  return Client.postMergeClients(mainClientId, mergeClientsId)
+    .then((response) => { dispatch(mergeClientsSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(mergeClientsFailed(error)); callback(false); });
 };
+
 
 const clientsActions = {
   setClients,
@@ -102,6 +123,8 @@ const clientsActions = {
   setSuggestionsList,
   setFilteredSuggestions,
   getClients,
+  getMergeableClients,
+  mergeClients,
 };
 
 export default clientsActions;

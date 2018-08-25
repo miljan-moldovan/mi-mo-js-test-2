@@ -113,11 +113,12 @@ export default class calendarBuffer extends React.Component {
   }
 
   renderCard = ({ item }) => {
-    const { panResponder, activeCard } = this.props;
+    const { panResponder, activeCard, startDate } = this.props;
     const isActive = activeCard && activeCard.appointment.id === item.id;
     const hasPanResponder = !activeCard || isActive ? panResponder : null;
     return (
       <Card
+        startDate={startDate}
         isBufferCard
         isActive={isActive}
         panResponder={hasPanResponder}
@@ -131,20 +132,7 @@ export default class calendarBuffer extends React.Component {
         onDrag={this.props.onCardLongPress}
       />
     );
-    // return (
-    //   <NewCard
-    //     panResponder={hasPanResponder}
-    //     key={item.id}
-    //     appointment={item}
-    //     cardWidth={85}
-    //     height={46}
-    //     left={0}
-    //     top={0}
-    //     onDrop={() => {}}
-    //     onLongPress={this.props.onCardLongPress}
-    //   />
-    // );
-}
+  }
 
   render() {
     return (
