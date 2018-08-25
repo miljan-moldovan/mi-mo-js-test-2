@@ -43,13 +43,20 @@ import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
 
-const SubTitle = props => (
-  <View style={styles.subTitleContainer}>
-    <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
+export const SubTitle = props => (
+  <View style={[styles.subTitleContainer, props.style || {}]}>
+    <View style={styles.subTitleTextContainer}>
+      <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
+    </View>
+    {props.children}
   </View>
 );
 SubTitle.propTypes = {
   title: PropTypes.string.isRequired,
+  children: PropTypes.node,
+};
+SubTitle.defaultProps = {
+  children: [],
 };
 
 export default class NewAppointmentScreen extends React.Component {
@@ -191,37 +198,40 @@ export default class NewAppointmentScreen extends React.Component {
     const recommendedIds = extras.filter(itm => itm.type === 'recommended').map(itm => itm.service.service.id);
     const requiredIds = extras.filter(itm => itm.type === 'required').map(itm => itm.service.service.id);
     this.props.servicesActions.setSelectingExtras(true);
-    this.showAddons(service, addonIds).then(selectedAddons => this.setState({ selectedAddons }, () => {
-      this.showRecommended(service, recommendedIds).then(selectedRecommended => this.setState({ selectedRecommended }, () => {
-        this.showRequired(service, requiredIds).then(selectedRequired => this.setState({ selectedRequired }, () => {
-          const {
-            selectedAddons: addons,
-            selectedRequired: required,
-            selectedRecommended: recommended,
-          } = this.state;
-          this.props.newAppointmentActions.addServiceItemExtras(
-            itemId, // parentId
-            'addon', // extraService type
-            addons,
-          );
-          this.props.newAppointmentActions.addServiceItemExtras(
-            itemId, // parentId
-            'recommended', // extraService type
-            recommended,
-          );
-          this.props.newAppointmentActions.addServiceItemExtras(
-            itemId, // parentId
-            'required', // extraService type
-            required,
-          );
-          this.props.servicesActions.setSelectingExtras(false);
-          return this.checkConflicts();
-        }))
-          .catch(() => {
-            this.props.servicesActions.setSelectingExtras(false);
-          });
+    this.showAddons(service, addonIds)
+      .then(selectedAddons => this.setState({ selectedAddons }, () => {
+        this.showRecommended(service, recommendedIds)
+          .then(selectedRecommended => this.setState({ selectedRecommended }, () => {
+            this.showRequired(service, requiredIds)
+              .then(selectedRequired => this.setState({ selectedRequired }, () => {
+                const {
+                  selectedAddons: addons,
+                  selectedRequired: required,
+                  selectedRecommended: recommended,
+                } = this.state;
+                this.props.newAppointmentActions.addServiceItemExtras(
+                  itemId, // parentId
+                  'addon', // extraService type
+                  addons,
+                );
+                this.props.newAppointmentActions.addServiceItemExtras(
+                  itemId, // parentId
+                  'recommended', // extraService type
+                  recommended,
+                );
+                this.props.newAppointmentActions.addServiceItemExtras(
+                  itemId, // parentId
+                  'required', // extraService type
+                  required,
+                );
+                this.props.servicesActions.setSelectingExtras(false);
+                return this.checkConflicts();
+              }))
+              .catch(() => {
+                this.props.servicesActions.setSelectingExtras(false);
+              });
+          }));
       }));
-    }));
   }
 
   showRequired = (service, selectedIds = []) => new Promise((resolve) => {
@@ -859,12 +869,11 @@ export default class NewAppointmentScreen extends React.Component {
           </View>
           {guests.length > 0 && (
             <View>
-              <SubTitle title={guestsLabel} />
               {
                 guests.map((guest, guestIndex) => (
                   <View>
                     <Guest
-                      index={guest.guestId}
+                      index={guestIndex}
                       navigate={this.props.navigation.navigate}
                       selectedClient={guest.client || null}
                       onRemove={() => this.removeGuest(guest.guestId)}

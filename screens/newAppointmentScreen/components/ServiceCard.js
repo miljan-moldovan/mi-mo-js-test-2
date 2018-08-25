@@ -19,9 +19,10 @@ import Colors from '../../../constants/Colors';
 import styles from '../styles';
 
 const SetExtras = ({ onPress }) => {
+  const marginRight = { marginRight: 12 };
   const textColor = { color: Colors.defaultBlue };
   return (
-    <View style={styles.removeGuestContainer}>
+    <View style={[styles.removeGuestContainer, marginRight]}>
       <SalonTouchableOpacity
         style={styles.flexRow}
         onPress={onPress}
@@ -192,8 +193,8 @@ const ServiceCard = (props) => {
               />
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <SalonAppointmentTime
-                  from={moment(data.fromTime, 'hh:mm').format('hh:mm A')}
-                  to={moment(data.toTime, 'hh:mm').format('hh:mm A')}
+                  from={moment(data.fromTime).format('hh:mm A')}
+                  to={moment(data.toTime).format('hh:mm A')}
                 />
                 {showSelectExtras && (
                   <SetExtras onPress={props.onSetExtras} />

@@ -26,6 +26,7 @@ import InputRadioGroup from './components/InputRadioGroup';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import BlockTimesReasonInput from './components/BlockTimesReasonInput';
 import InputPicker from './components/InputPicker';
+import SchedulePicker from './components/SchedulePicker';
 import styles from './styles';
 
 const DefaultAvatar = props => (
@@ -266,4 +267,5 @@ export {
   ValidatableInput,
   LabeledTextarea,
   InputPicker,
+  SchedulePicker,
 };

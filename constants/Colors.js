@@ -23,6 +23,7 @@ export default {
   mediumBlue: '#DDE6F4',
   lightBlue: '#F3F7FC',
   lightBlueBorder: '#F4F7FC',
+  secondaryLightBlue: '#1B65CF',
   secondaryBlack: '#2F3142',
   conflictBox: '#FFF7CC',
 };

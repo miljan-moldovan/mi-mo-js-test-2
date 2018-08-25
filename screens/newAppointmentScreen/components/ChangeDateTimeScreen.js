@@ -12,6 +12,7 @@ import {
   InputGroup,
   InputDivider,
   SalonTimePicker,
+  SchedulePicker,
 } from '../../../components/formHelpers';
 import newAppointmentActions from '../../../actions/newAppointment';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -98,10 +99,9 @@ class ChangeDateTimeScreen extends React.Component {
             onChange={this.onChangeDate}
           />
           <InputDivider />
-          <SalonTimePicker
-            mode="time"
+          <SchedulePicker
             label="Time"
-            format="hh:mm A"
+            date={date}
             value={startTime}
             isOpen={isOpenTimePicker}
             toggle={this.toggleTimePicker}

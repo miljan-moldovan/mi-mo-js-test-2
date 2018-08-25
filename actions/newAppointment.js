@@ -1,5 +1,5 @@
 import moment, { isDuration } from 'moment';
-import { get, isNil, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
+import { get, isNil, cloneDeep, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
 import { Settings, Client, AppointmentBook, Appointment } from '../utilities/apiWrapper';
@@ -275,7 +275,9 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
 };
 
 const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, getState) => {
-  const newServiceItems = getState().newAppointmentReducer.serviceItems;
+  debugger //eslint-disable-line
+
+  const newServiceItems = cloneDeep(getState().newAppointmentReducer.serviceItems);
   const serviceIndex = newServiceItems.findIndex(item => item.itemId === serviceId);
   const serviceItemToUpdate = newServiceItems[serviceIndex];
   const serviceItem = {
@@ -286,7 +288,7 @@ const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, get
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
-    serviceItemToUpdate.service.fromTime,
+    updatedService.fromTime,
   );
   return dispatch({
     type: UPDATE_SERVICE_ITEM,
