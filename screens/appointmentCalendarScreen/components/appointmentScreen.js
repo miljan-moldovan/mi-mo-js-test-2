@@ -180,16 +180,15 @@ class AppointmentScreen extends Component {
     if (this.state.bookAnotherEnabled) {
       newAppointmentActions.setClient(client);
     }
-    if (selectedFilter === 'providers') {
+    if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
       if (selectedProvider === 'all') {
         newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
-        if (colData.isFirstAvailable) {
-          this.props.newAppointmentActions.setQuickApptRequested(false);
-        }
+        newAppointmentActions.setQuickApptRequested(!colData.isFirstAvailable);
       } else {
         newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);
+        newAppointmentActions.setQuickApptRequested(true);        
       }
     } else {
       newAppointmentActions.setMainEmployee(null);

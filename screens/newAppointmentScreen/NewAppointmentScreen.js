@@ -191,6 +191,22 @@ export default class NewAppointmentScreen extends React.Component {
     ];
   }
 
+  selectMainEmployee = () => new Promise((resolve) => {
+    const { appointmentScreenState: { providers: filterList = false } } = this.props;
+    this.props.navigation.navigate('ApptBookProvider', {
+      filterList,
+      headerProps: {
+        title: 'Providers',
+        leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+        leftButtonOnPress: navigation => navigation.goBack,
+      },
+      showFirstAvailable: true,
+      showEstimatedTime: true,
+      dismissOnSelect: true,
+      onChangeProvider: provider => resolve(provider),
+    });
+  });
+
   selectExtraServices = (serviceItem) => {
     const { service: { service = null }, itemId } = serviceItem;
     const extras = this.getAddonsForService(itemId);
@@ -502,23 +518,34 @@ export default class NewAppointmentScreen extends React.Component {
 
   handleAddMainService = () => {
     const { client, mainEmployee } = this.props.newAppointmentState;
-    if (client !== null) {
-      return this.props.navigation.navigate('ApptBookService', {
+    const selectServiceCallback = employee => this.props.navigation.navigate(
+      'ApptBookService',
+      {
         dismissOnSelect: true,
         selectExtraServices: true,
         filterByProvider: true,
         clientId: client.id,
-        employeeId: mainEmployee.id,
+        employeeId: employee.id,
         onChangeService: this.addService,
+      },
+    );
+    if (isNull(client)) {
+      return this.setState({
+        toast: {
+          text: 'Select a client first',
+          type: 'warning',
+          btnRightText: 'DISMISS',
+        },
       });
     }
-    return this.setState({
-      toast: {
-        text: 'Select a client first',
-        type: 'warning',
-        btnRightText: 'DISMISS',
-      },
-    });
+    if (isNull(mainEmployee)) {
+      return this.selectMainEmployee()
+        .then((employee) => {
+          this.props.newAppointmentActions.setMainEmployee(employee);
+          return selectServiceCallback(employee);
+        });
+    }
+    return selectServiceCallback(mainEmployee);
   }
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime')

@@ -85,7 +85,7 @@ export default class SalonAvatar extends React.Component {
         <View style={containerStyle}>
           {
             !defaultComponent && isLoading &&
-            <ActivityIndicator size={width} />
+            <ActivityIndicator />
           }
           {
             defaultComponent && (isNull(image) || !image.uri) &&

@@ -275,8 +275,6 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
 };
 
 const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, getState) => {
-  debugger //eslint-disable-line
-
   const newServiceItems = cloneDeep(getState().newAppointmentReducer.serviceItems);
   const serviceIndex = newServiceItems.findIndex(item => item.itemId === serviceId);
   const serviceItemToUpdate = newServiceItems[serviceIndex];
