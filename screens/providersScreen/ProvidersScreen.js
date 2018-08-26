@@ -309,7 +309,7 @@ class ProviderScreen extends React.Component {
         <View style={styles.inputRow}>
           <SalonAvatar
             wrapperStyle={styles.providerRound}
-            width={30}
+            width={22}
             borderWidth={1}
             borderColor="transparent"
             image={image}
