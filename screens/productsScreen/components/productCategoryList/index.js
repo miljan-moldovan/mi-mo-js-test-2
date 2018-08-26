@@ -60,13 +60,13 @@ class ProductCategoryList extends React.Component {
         borderTopWidth: 0,
       }}
       >
-        {[<InputButton
+        <InputButton
           key={Math.random().toString()}
           style={{ flex: 1 }}
           labelStyle={{ color: '#110A24' }}
           onPress={() => { this.props.handlePressProductCategory(elem.item); }}
           label={elem.item.name}
-        />]}
+        />
       </InputGroup>
     );
   }
