@@ -7,6 +7,7 @@ import moment from 'moment';
 import { get } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import {
   ConflictBox,
 } from '../../../components/slidePanels/SalonNewAppointmentSlide';
@@ -74,7 +75,6 @@ const ServiceCard = (props) => {
   const { data } = props;
   const employee = get(data, 'employee', null);
   const isFirstAvailable = get(employee, 'isFirstAvailable', false);
-  const employeePhoto = get(employee, 'imagePath', null);
   const serviceName = data.service.name || data.service.description;
   const showSelectExtras = (
     !props.isAddon &&
@@ -170,7 +170,7 @@ const ServiceCard = (props) => {
                     >{Icons.lock}
                     </FontAwesome>
                   }
-                  image={{ uri: employeePhoto }}
+                  image={getEmployeePhotoSource(employee)}
                   defaultComponent={(
                     <DefaultAvatar
                       size={24}
@@ -193,8 +193,8 @@ const ServiceCard = (props) => {
               />
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <SalonAppointmentTime
-                  from={moment(data.fromTime).format('hh:mm A')}
-                  to={moment(data.toTime).format('hh:mm A')}
+                  from={moment(data.fromTime, 'hh:mm').format('hh:mm A')}
+                  to={moment(data.toTime, 'hh:mm').format('hh:mm A')}
                 />
                 {showSelectExtras && (
                   <SetExtras onPress={props.onSetExtras} />

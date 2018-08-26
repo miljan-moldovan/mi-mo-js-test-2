@@ -1,9 +1,11 @@
 import React from 'react';
 import {
-  View, Image, StyleSheet,
+  View,
+  StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Icon from './../UI/Icon';
+import { isNull } from 'lodash';
 import { CachedImage } from 'react-native-img-cache';
 
 const styles = StyleSheet.create({
@@ -21,141 +23,120 @@ const styles = StyleSheet.create({
 });
 
 export default class SalonAvatar extends React.Component {
-  constructor(props) {
-    super(props);
-    let image = 'image' in this.props ? this.props.image : this.state.image;
-    if (image && typeof image === 'string' && image.startsWith('https:')) {
-      image = { uri: image };
-    }
-    this.state.image = image;
-
-    this.imageStyle = 'imageStyle' in this.props ? this.props.imageStyle : styles.imageStyle;
-
-    this.state.borderColor = 'borderColor' in this.props ? this.props.borderColor : this.state.borderColor;
-    this.state.borderWidth = 'borderWidth' in this.props ? this.props.borderWidth : this.state.borderWidth;
-
-    this.wrapperStyle = 'wrapperStyle' in this.props ? this.props.wrapperStyle : styles.wrapperStyle;
-
-    this.state.width = 'width' in this.props ? this.props.width : this.state.width;
-    this.state.totalWidth = this.state.width;
-    this.state.width = this.state.width - this.state.borderWidth;
-
-    this.state.borderRadius = this.state.width / 2;
-  }
-
   state = {
-    image: null,
-    width: 26,
-    totalWidth: 26,
-    borderRadius: 13,
-    borderColor: 'transparent',
-    borderWidth: 0,
-    isLoading: true,
-  }
-
-  componentWillReceiveProps(nextProps) {
-    let image = 'image' in nextProps ? nextProps.image : this.state.image;
-    if (typeof image === 'string' && image.startsWith('http')) {
-      image = { uri: image };
-    }
-
-    let width = 'width' in nextProps ? nextProps.width : this.state.width;
-    width -= nextProps.borderWidth;
-
-    const borderRadius = width / 2;
-
-
-    this.setState({
-      image,
-      borderRadius,
-      width,
-      borderColor: nextProps.borderColor,
-      borderWidth: nextProps.borderWidth,
-    });
-  }
-
-  setNativeProps(nativeProps) {
-    this._root.setNativeProps(nativeProps);
+    isLoading: false,
   }
 
   render() {
-    const badgeSize = this.state.totalWidth / 2;
+    const {
+      image,
+      width,
+      hasBadge,
+      borderWidth,
+      badgeColor,
+      borderColor,
+      wrapperStyle,
+      badgeComponent,
+      defaultComponent,
+      imageStyle: imageStyleProp,
+    } = this.props;
+    const { isLoading } = this.state;
+    const badgeSize = width / 2;
     const badgeBorderRadius = badgeSize / 2;
     const badgeOffsetTop = badgeSize - (badgeSize / 5);
     const badgeOffsetRight = -(badgeSize / 1.5);
-
+    const containerStyle = {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      width,
+      height: width,
+      borderRadius: width / 2,
+      borderWidth: isLoading ? 0 : borderWidth,
+      borderColor: isLoading ? 'transparent' : borderColor,
+    };
+    const defaultComponentStyle = {
+      position: 'absolute',
+      zIndex: 999,
+      width,
+      height: width,
+      borderRadius: width / 2,
+    };
+    const imageStyle = {
+      zIndex: 9999,
+      width,
+      height: width,
+      borderRadius: width / 2,
+    };
+    const badgeStyle = {
+      position: 'absolute',
+      width: badgeSize,
+      height: badgeSize,
+      borderRadius: badgeBorderRadius,
+      backgroundColor: badgeColor,
+      top: badgeOffsetTop,
+      right: badgeOffsetRight,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999,
+    };
     return (
-      <View style={[styles.wrapperStyle, this.wrapperStyle]}>
-        <View style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            width: this.state.totalWidth,
-            height: this.state.totalWidth,
-            borderRadius: this.state.totalWidth / 2,
-            borderWidth: this.state.isLoading ? 0 : this.state.borderWidth,
-            borderColor: this.state.isLoading ? 'transparent' : this.state.borderColor,
-          }}
-        >
-
-          {!this.props.defaultComponent && this.state.isLoading && <Icon style={{ position: 'absolute', zIndex: 999 }} name="spinner" size={this.state.width} color="#4D5067" type="solid" />
-        }
-
-
+      <View style={[styles.wrapperStyle, wrapperStyle]}>
+        <View style={containerStyle}>
           {
-            this.props.defaultComponent && this.state.image ?
-              <View style={{
-                  position: 'absolute',
-                  zIndex: 999,
-                  width: this.state.width,
-                  height: this.state.width,
-                  borderRadius: this.state.width / 2,
-                }}
-              >{this.props.defaultComponent}
-              </View> :
-              <CachedImage
-                style={{
-                    zIndex: 9999,
-                    width: this.state.width,
-                    height: this.state.width,
-                    borderRadius: this.state.width / 2,
-                  }}
-                source={this.state.image}
-                onLoadEnd={() => this.setState({ isLoading: false })}
-              />
+            !defaultComponent && isLoading &&
+            <ActivityIndicator size={width} />
           }
-
-          {this.props.hasBadge && (
-            <View style={{
-              position: 'absolute',
-              width: badgeSize,
-              height: badgeSize,
-              borderRadius: badgeBorderRadius,
-              backgroundColor: this.props.badgeColor,
-              top: badgeOffsetTop,
-              right: badgeOffsetRight,
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 9999,
-            }}
-            >
-              {this.props.badgeComponent}
-            </View>
-          )}
+          {
+            defaultComponent && (isNull(image) || !image.uri) &&
+            <View style={defaultComponentStyle}>{defaultComponent}</View>
+          }
+          {
+            !isNull(image) && image.uri &&
+            <CachedImage
+              style={[
+                imageStyle,
+                imageStyleProp,
+              ]}
+              source={image}
+              onLoadStart={() => this.setState({ isLoading: true })}
+              onLoadEnd={() => this.setState({ isLoading: false })}
+            />
+          }
+          {
+            hasBadge &&
+            <View style={badgeStyle}>{badgeComponent}</View>
+          }
         </View>
       </View>
     );
   }
 }
 SalonAvatar.propTypes = {
+  image: PropTypes.oneOfType([
+    PropTypes.shape({
+      uri: PropTypes.string,
+    }),
+    null,
+  ]),
+  width: PropTypes.number.isRequired,
   badgeColor: PropTypes.string,
+  borderWidth: PropTypes.number,
   badgeComponent: PropTypes.element,
   defaultComponent: PropTypes.element,
   hasBadge: PropTypes.bool,
+  borderColor: PropTypes.string,
+  wrapperStyle: PropTypes.any,
+  imageStyle: PropTypes.any,
 };
 SalonAvatar.defaultProps = {
+  image: null,
   badgeColor: 'white',
+  borderWidth: 0,
   badgeComponent: null,
   defaultComponent: null,
   hasBadge: false,
+  wrapperStyle: {},
+  imageStyle: {},
+  borderColor: '',
 };

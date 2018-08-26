@@ -26,4 +26,5 @@ export default {
   secondaryLightBlue: '#1B65CF',
   secondaryBlack: '#2F3142',
   conflictBox: '#FFF7CC',
+  serviceCheckBlack: '#0C4699',
 };

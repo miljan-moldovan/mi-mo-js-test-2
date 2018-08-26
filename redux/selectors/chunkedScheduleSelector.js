@@ -1,7 +1,7 @@
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import { createSelector } from 'reselect';
-import apptGridSettingsSelector from './apptGridSettingsSelector';
+import { apptGridSettingsSelector } from './apptGridSettingsSelector';
 
 const moment = extendMoment(Moment);
 
@@ -9,7 +9,7 @@ const storeScheduledIntervalsSelector = state => state.storeReducer.selectedDate
 
 const chunkedScheduleSelector = createSelector(
   [apptGridSettingsSelector, storeScheduledIntervalsSelector],
-  (settings, intervals) => {
+  (settings, intervals = []) => {
     const reduced = intervals.reduce((agg, schedule) => {
       const { step = 15 } = settings;
       const start = moment(schedule.start, 'hh:mm:ss');

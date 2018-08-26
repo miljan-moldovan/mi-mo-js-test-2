@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { cloneDeep } from 'lodash';
+
 import {
   LOAD_STORE_INFO_SUCCESS,
   LOAD_SCHEDULE_EXCEPTIONS_SUCCESS,
@@ -17,7 +17,7 @@ const initialState = {
 };
 
 export default function storeReducer(state = initialState, action) {
-  const { type, data = {} } = action;
+  const { type, data } = action;
   switch (type) {
     case LOAD_STORE_INFO_SUCCESS:
       return {

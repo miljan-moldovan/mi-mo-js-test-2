@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
+  navButton: {
+    fontSize: 14,
+    color: 'white',
+  },
   searchBarContainer: {
     backgroundColor: '#F1F1F1',
   },
@@ -118,24 +122,36 @@ export default class ServiceCheckScreen extends React.Component {
     });
   }
 
+  cancelButton = () => ({
+    leftButton: <Text style={styles.navButton}>Cancel</Text>,
+    leftButtonOnPress: navigation => navigation.goBack(),
+  })
+
   render() {
     const { navigate } = this.props.navigation;
+    const { selectedProvider, selectedService } = this.state;
     return (
       <View style={styles.container}>
         <InputGroup style={{ marginTop: 17 }}>
           <ProviderInput
+            apptBook
             noPlaceholder
             filterByService
             navigate={navigate}
-            selectedProvider={this.state.selectedProvider}
-            onChange={selectedProvider => this.setState({ selectedProvider })}
+            selectedService={selectedService}
+            selectedProvider={selectedProvider}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            onChange={provider => this.setState({ selectedProvider: provider })}
           />
           <InputDivider />
           <ServiceInput
+            apptBook
             filterByProvider
             navigate={navigate}
-            selectedService={this.state.selectedService}
-            onChange={selectedService => this.setState({ selectedService })}
+            selectedService={selectedService}
+            selectedProvider={selectedProvider}
+            headerProps={{ title: 'Services', ...this.cancelButton() }}
+            onChange={service => this.setState({ selectedService: service })}
           />
         </InputGroup>
       </View>

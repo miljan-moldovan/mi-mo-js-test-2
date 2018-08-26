@@ -9,11 +9,15 @@ export const LOAD_STORE_INFO_SUCCESS = 'store/LOAD_STORE_INFO_SUCCESS';
 export const LOAD_SCHEDULE_EXCEPTIONS_SUCCESS = 'store/LOAD_SCHEDULE_EXCEPTIONS_SUCCESS';
 
 const getScheduleForDate = date => (dispatch, getState) => {
+  const { storeReducer: { isLoading } } = getState();
+  if (isLoading) {
+    return;
+  }
   dispatch({
     type: GET_SCHEDULE_FOR_DATE,
     data: { date },
   });
-  return Store.getSchedule(date)
+  Store.getSchedule(date)
     .then(({ scheduledIntervals: schedule = [] }) => dispatch({
       type: GET_SCHEDULE_FOR_DATE_SUCCESS,
       data: { schedule },

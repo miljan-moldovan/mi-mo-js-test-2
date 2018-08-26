@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import moment from 'moment';
-import { filter, minBy, maxBy, times } from 'lodash';
+import { get, filter, minBy, maxBy, times } from 'lodash';
 
 import { storeInfoSelector, storeScheduleExceptionsSelector } from './storeSelector';
 
@@ -58,7 +58,7 @@ export const apptGridSettingsSelector = createSelector(
     while (currentDay.isSameOrBefore(newEndDate)) {
       storeTodaySchedule = storeInfo ?
         storeInfo.weeklySchedules[currentDay.isoWeekday() - 1] : null;
-      exception = scheduleExceptions.length > 0 ?
+      exception = get(scheduleExceptions, 'length', 0) > 0 ?
         filter(scheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(currentDay, 'day'))[0] : null;
       storeTodaySchedule = exception || storeTodaySchedule;
       // min startTime

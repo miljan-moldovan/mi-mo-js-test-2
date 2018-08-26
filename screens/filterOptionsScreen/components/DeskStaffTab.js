@@ -10,10 +10,11 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import WordHighlighter from '../../../components/wordHighlighter';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper/api';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import { Employees } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonAvatar from '../../../components/SalonAvatar';
+import { DefaultAvatar } from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -118,7 +119,12 @@ export default class DeskStaffTab extends React.Component {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: getEmployeePhoto(item.id) }}
+          image={getEmployeePhotoSource(item)}
+          defaultComponent={(
+            <DefaultAvatar
+              provider={item}
+            />
+          )}
         />
         <WordHighlighter
           highlight={this.props.searchText}

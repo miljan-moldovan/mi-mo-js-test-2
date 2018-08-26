@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper';
+
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import * as actions from '../../../actions/queue';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -107,61 +107,61 @@ class queueListItemSummary extends Component {
   })
 
 
-handlePressProvider = () => {
-  this.props.navigation.navigate('Providers', {
-    dismissOnSelect: true,
-    headerProps: { title: 'Providers', ...this.cancelButton() },
-    client: this.props.appointment.client,
-    onChangeProvider: data => this.saveQueueProvider(data),
-  });
+  handlePressProvider = () => {
+    this.props.navigation.navigate('Providers', {
+      dismissOnSelect: true,
+      headerProps: { title: 'Providers', ...this.cancelButton() },
+      client: this.props.appointment.client,
+      onChangeProvider: data => this.saveQueueProvider(data),
+    });
 
-  this.props.onDonePress();
-};
+    this.props.onDonePress();
+  };
 
-render() {
-  const employeeInitials = this.props.service.employee && this.props.service.employee.fullName ? `${this.props.service.employee.name[0]}${this.props.service.employee.lastName[0]}` : '';
-  return (<View>
-    <View style={styles.serviceContainer}>
-      <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
-        <View style={[styles.row, styles.rowBorderBottom]}>
-          <Text style={styles.textMedium}>{this.props.service.serviceName}</Text>
-          <View style={styles.iconContainer}>
-            <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
-          </View>
-        </View>
-      </SalonTouchableOpacity>
-      <SalonTouchableOpacity onPress={() => this.handlePressProvider(this.props.service)}>
-        <View style={styles.row}>
-          <SalonAvatar
-            borderColor="#FFFFFF"
-            borderWidth={2}
-            wrapperStyle={styles.providerRound}
-            width={26}
-            image={{
-              uri:
-              getEmployeePhoto(!this.props.service.isFirstAvailable ?
-              this.props.service.employeeId : 0),
-            }}
-            hasBadge
-            badgeComponent={
-              <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
-                {Icons.lock}
-              </FontAwesome>}
-            defaultComponent={
-              <View style={styles.avatarDefaultComponent}>
-                <Text style={styles.avatarDefaultComponentText}>{!this.props.service.isFirstAvailable ? employeeInitials : 'FA'}</Text>
+  render() {
+    const { employee } = this.props.service;
+    const employeeInitials = employee && employee.fullName ? `${employee.name[0]}${employee.lastName[0]}` : '';
+    const image = getEmployeePhotoSource(employee);
+    return (
+      <View>
+        <View style={styles.serviceContainer}>
+          <SalonTouchableOpacity onPress={() => this.handlePressService(this.props.service)}>
+            <View style={[styles.row, styles.rowBorderBottom]}>
+              <Text style={styles.textMedium}>{this.props.service.serviceName}</Text>
+              <View style={styles.iconContainer}>
+                <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
               </View>
-}
-          />
-          <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employee.fullName ? `${this.props.service.employee.fullName}` : 'First Available'}</Text>
-          <View style={styles.iconContainer}>
-            <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
-          </View>
+            </View>
+          </SalonTouchableOpacity>
+          <SalonTouchableOpacity onPress={() => this.handlePressProvider(this.props.service)}>
+            <View style={styles.row}>
+              <SalonAvatar
+                borderColor="#FFFFFF"
+                borderWidth={2}
+                wrapperStyle={styles.providerRound}
+                width={26}
+                image={image}
+                hasBadge
+                badgeComponent={
+                  <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
+                    {Icons.lock}
+                  </FontAwesome>}
+                defaultComponent={
+                  <View style={styles.avatarDefaultComponent}>
+                    <Text style={styles.avatarDefaultComponentText}>{!this.props.service.isFirstAvailable ? employeeInitials : 'FA'}</Text>
+                  </View>
+                }
+              />
+              <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employee.fullName ? `${this.props.service.employee.fullName}` : 'First Available'}</Text>
+              <View style={styles.iconContainer}>
+                <FontAwesome style={styles.angleIcon}>{Icons.angleRight}</FontAwesome>
+              </View>
+            </View>
+          </SalonTouchableOpacity>
         </View>
-      </SalonTouchableOpacity>
-    </View>
-  </View>);
-}
+      </View>
+    );
+  }
 }
 
 

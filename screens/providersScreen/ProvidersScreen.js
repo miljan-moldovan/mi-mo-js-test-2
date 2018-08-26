@@ -10,7 +10,9 @@ import {
   Text,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get } from 'lodash';
+import { get, isNull } from 'lodash';
+
+import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -296,45 +298,48 @@ class ProviderScreen extends React.Component {
     );
   }
 
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this.handleOnChangeProvider(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={{ uri: item.imagePath }}
-          defaultComponent={(
-            <DefaultAvatar
-              size={22}
-              fontSize={9}
-              provider={item}
-            />
+  renderItem = ({ item, index }) => {
+    const image = getEmployeePhotoSource(item);
+    return (
+      <SalonTouchableOpacity
+        style={styles.itemRow}
+        onPress={() => this.handleOnChangeProvider(item)}
+        key={index}
+      >
+        <View style={styles.inputRow}>
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={30}
+            borderWidth={1}
+            borderColor="transparent"
+            image={image}
+            defaultComponent={(
+              <DefaultAvatar
+                size={22}
+                fontSize={9}
+                provider={item}
+              />
+            )}
+          />
+          <WordHighlighter
+            highlight={this.state.searchText}
+            style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+            highlightStyle={{ color: '#1DBF12' }}
+          >
+            {item.fullName}
+          </WordHighlighter>
+        </View>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          {this.state.selectedProvider === item.id && (
+            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
           )}
-        />
-        <WordHighlighter
-          highlight={this.state.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-          <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+        </View>
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderSeparator = () => (
     <View
