@@ -280,7 +280,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
       [
         { text: 'No, cancel', onPress: () => { this.hideDialog(); }, style: 'cancel' },
         {
-          text: 'Yes, Im sure',
+          text: 'Yes, I’m sure',
           onPress: () => {
             this.props.noShow(appointment.id);
             this.hideDialog();
