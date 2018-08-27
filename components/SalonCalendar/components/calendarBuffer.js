@@ -4,6 +4,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '../../UI/Icon';
 import Card from './newCalendar/card';
+import BlockCard from './newCalendar/blockCard';
 
 const styles = {
   cardContainer: {
@@ -116,6 +117,24 @@ export default class calendarBuffer extends React.Component {
     const { panResponder, activeCard, startDate } = this.props;
     const isActive = activeCard && activeCard.data.id === item.id;
     const hasPanResponder = !activeCard || isActive ? panResponder : null;
+    if (item.isBlockTime) {
+      return (
+        <BlockCard
+          startDate={startDate}
+          isBufferBlock
+          isActive={isActive}
+          panResponder={hasPanResponder}
+          key={item.id}
+          block={item}
+          cardWidth={85}
+          height={46}
+          left={0}
+          top={0}
+          onDrop={() => {}}
+          onDrag={this.props.onBlockLongPress}
+        />
+      );
+    }
     return (
       <Card
         startDate={startDate}

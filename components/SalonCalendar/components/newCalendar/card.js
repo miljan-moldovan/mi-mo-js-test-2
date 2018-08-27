@@ -239,7 +239,6 @@ class Card extends Component {
     const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
     // is emplyee active in cell time
     let isActiveEmployeeInCellTime = false;
-    const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const todaySchedule = weeklySchedule[moment(date).isoWeekday() - 1];
     const isStoreOff = !todaySchedule.start1 && !todaySchedule.end1
       && !todaySchedule.start2 && !todaySchedule.end2;

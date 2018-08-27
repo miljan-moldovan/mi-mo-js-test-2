@@ -9,9 +9,14 @@ import Svg, {
 } from 'react-native-svg';
 import { times } from 'lodash';
 
+import ResizeButton from '../resizeButtons';
 import colors from '../../../../constants/appointmentColors';
 
 const styles = StyleSheet.create({
+  resizePosition: {
+    left: -13,
+    bottom: -27,
+  },
   blockText: {
     fontFamily: 'Roboto',
     fontSize: 12,
@@ -44,7 +49,7 @@ const styles = StyleSheet.create({
 class BlockCard extends Component {
   constructor(props) {
     super(props);
-    this.state = { notesLines: 1 }
+    this.state = { notesLines: 1, height: 0 }
   }
 
   shouldComponentUpdate(nextProps) {
@@ -154,6 +159,16 @@ class BlockCard extends Component {
     }
   }
 
+
+  resize = (size) => {
+    let { height } = this.state;
+    if (height + size >= 30) {
+      height += size;
+      this.setState({ height });
+    }
+    return height;
+  }
+
   render() {
     const {
       left,
@@ -181,6 +196,9 @@ class BlockCard extends Component {
       isResizeing,
       isResizeBlock,
     } = this.props;
+    if (isResizeBlock && this.state.height === 0) {
+      this.state.height = height;
+    }
     const renderColor = colors[color] ? color : 0;
     const { notesLines } = this.state;
     const borderColor = colors[renderColor].dark;
@@ -191,7 +209,10 @@ class BlockCard extends Component {
     let countOpacity2 = 0;
     let countGap2 = 0;
     const panHandlers = panResponder ? panResponder.panHandlers : {};
-    const integerHeight = isResizeBlock && isResizeing ? this.state.height._value : height;
+    const integerHeight = isResizeBlock && isResizeing ? this.state.height : height;
+    if (!activeBlock && isResizeing) {
+      return null;
+    }
     return (
       <Animated.View
         {...panHandlers}
@@ -266,6 +287,17 @@ class BlockCard extends Component {
               </Text>
             </View>
         </TouchableOpacity>
+        {activeBlock && !isBufferBlock ?
+          <ResizeButton
+            onPress={this.props.onResize}
+            color={colors[color].dark}
+            position={styles.resizePosition}
+            height={height}
+            calendarMeasure={this.props.calendarMeasure}
+            calendarOffset={this.props.calendarOffset}
+            onScrollY={this.props.onScrollY}
+            isDisabled={isResizeing}
+          /> : null }
       </Animated.View>
     );
   }
