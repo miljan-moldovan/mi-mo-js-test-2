@@ -104,11 +104,16 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
     //  }
     //    if (searchProvider) {
     for (let i = 0; i < services.length; i++) {
-      const { employee } = services[i];
+      const service = services[i];
 
-      const fullName = `${employee.fullName || ''}`;
-      // if this provider is a match, we don't need to check other providers
-      if (fullName.toLowerCase().match(text)) { return true; }
+      const employee = service.isFirstAvailable ?
+        {
+          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+        } : service.employee;
+
+      const fullNameProvider = `${employee.name || ''} ${employee.lastName || ''}`;
+
+      if (fullNameProvider.toLowerCase().match(text)) { return true; }
     }
     //  }
     return false;
@@ -421,15 +426,21 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
     const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
     // if this row is a match, we don't need to check providers
     if (fullName.toLowerCase().match(text)) { return true; }
-    //  }
-    //    if (searchProvider) {
+
     for (let i = 0; i < services.length; i++) {
-      const { employee } = services[i];
-      const fullName = `${employee.fullName || ''}`;
+      const service = services[i];
+
+      const employee = service.isFirstAvailable ?
+        {
+          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+        } : service.employee;
+
+      const fullNameProvider = `${employee.fullName || ''}`;
+
       // if this provider is a match, we don't need to check other providers
-      if (fullName.toLowerCase().match(text)) { return true; }
+      if (fullNameProvider.toLowerCase().match(text)) { return true; }
     }
-    //  }
+
     return false;
   });
   // if no match, set empty array
