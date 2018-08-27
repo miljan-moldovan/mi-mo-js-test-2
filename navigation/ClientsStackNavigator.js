@@ -15,6 +15,9 @@ const ClientsStackNavigator = StackNavigator(
     NewClient: {
       screen: NewClientScreen,
     },
+    ChangeClient: {
+      screen: ClientsScreen,
+    },
     ClientInfo: {
       screen: ClientInfoScreen,
       navigationOptions: { tabBarVisible: false },
