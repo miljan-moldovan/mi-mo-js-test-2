@@ -35,8 +35,7 @@ const styles = StyleSheet.create({
 
 export default class Column extends Component {
   onCellPressed = (cellId, colData) => {
-    const { startDate } = this.props;
-    const time = moment(`${startDate.format('YYYY-MM-DD')} ${cellId}`, 'YYYY-MM-DD HH:mm A');
+    const time = moment(`${colData.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
     const showAlert = moment().isAfter(time, 'minute');
     if (!showAlert) {
       this.props.onCellPressed(cellId, colData);
@@ -70,9 +69,6 @@ export default class Column extends Component {
     } = this.props;
     const { weeklySchedule } = apptGridSettings;
     const isCellDisabled = moment().isAfter(startDate, 'day');
-    const time = moment(cell, 'HH:mm A');
-    let storeStartTime = '';
-    let storeEndTime = '';
     let isStoreOff = false;
     let exception;
     let storeTodaySchedule;
@@ -86,9 +82,9 @@ export default class Column extends Component {
     }
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
     if (!isStoreOff) {
-      isStoreOff = !this.isBetweenTimes(time, moment(storeTodaySchedule.start1, 'HH:mm'), moment(storeTodaySchedule.end1, 'HH:mm'))
+      isStoreOff = !this.isBetweenTimes(cell, moment(storeTodaySchedule.start1, 'HH:mm'), moment(storeTodaySchedule.end1, 'HH:mm'))
         && (!storeTodaySchedule.start2 ||
-            !this.isBetweenTimes(time, moment(storeTodaySchedule.start2, 'HH:mm'), moment(storeTodaySchedule.end2, 'HH:mm')));
+            !this.isBetweenTimes(cell, moment(storeTodaySchedule.start2, 'HH:mm'), moment(storeTodaySchedule.end2, 'HH:mm')));
     }
     let styleOclock = '';
     const timeSplit = moment(cell).add(15, 'm').format('h:mm').split(':');
@@ -132,11 +128,11 @@ export default class Column extends Component {
         }
       }
       return (
-        <View key={cell}>
+        <View key={cell.format('HH:mm')}>
           <TouchableOpacity
             disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
-            onPress={() => { this.onCellPressed(cell, colData); }}
+            onPress={() => { this.onCellPressed(cell, !isDate ? startDate : colData); }}
           />
         </View>
       );
