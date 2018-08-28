@@ -123,10 +123,11 @@ class ClientDetails extends Component {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       } else if (this.props.actionType === 'new') {
         this.setState({
-          client: Object.assign({}, defaultClient),
+          client: JSON.parse(JSON.stringify(defaultClient)),
           loadingClient: false,
         });
         this.props.setHandleDone(this.handleDone);
+        this.props.setHandleBack(this.handleBack);
       }
     });
   }
@@ -318,8 +319,8 @@ class ClientDetails extends Component {
     this.selectReferredOption(SelectedReferredClientEnum.Other);
   }
 
-  setReferredOptionClient =() => {
-    this.selectReferredOption(SelectedReferredClientEnum.Client);
+  setReferredOptionClient =(navigateToClients) => {
+    this.selectReferredOption(SelectedReferredClientEnum.Client, navigateToClients);
   }
 
   calculateRequiredFields = (result) => {
@@ -388,12 +389,15 @@ class ClientDetails extends Component {
   }
 
 
-  selectReferredOption = (selectedReferredClient) => {
+  selectReferredOption = (selectedReferredClient, navigateToClients) => {
     if (selectedReferredClient === SelectedReferredClientEnum.Client) {
       const newClient = this.state.client;
       newClient.clientReferralType = null;
       this.setState({ selectedReferredClient, client: newClient });
-      this.handlePressClient();
+
+      if (navigateToClients) {
+        this.handlePressClient();
+      }
     } else {
       this.setState({ selectedClient: null, selectedReferredClient });
     }
@@ -408,6 +412,13 @@ class ClientDetails extends Component {
       dismissOnSelect: true,
       headerProps: { title: 'Clients', ...this.cancelButton() },
       onChangeClient: client => this.handleClientSelection(client),
+    });
+  }
+
+  handleBack = () => {
+    this.setState({
+      client: JSON.parse(JSON.stringify(defaultClient)),
+      loadingClient: false,
     });
   }
 
@@ -446,7 +457,7 @@ class ClientDetails extends Component {
       this.props.clientInfoActions.postClientInfo(client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: Object.assign({}, defaultClient),
+            client: JSON.parse(JSON.stringify(defaultClient)),
             loadingClient: false,
           });
 
@@ -463,7 +474,7 @@ class ClientDetails extends Component {
       this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: Object.assign({}, defaultClient),
+            client: JSON.parse(JSON.stringify(defaultClient)),
             loadingClient: false,
           });
 
@@ -539,6 +550,7 @@ class ClientDetails extends Component {
 
       this.props.setCanSave(false);
       this.props.setHandleDone(this.handleDone);
+      this.props.setHandleBack(this.handleBack);
 
       const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
       client.clientReferralType = clientReferralType;
@@ -590,7 +602,7 @@ class ClientDetails extends Component {
             </View>
           ) : (
 
-            <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+            <KeyboardAwareScrollView extraHeight={300}>
               <View pointerEvents={this.state.pointerEvents}>
                 <SectionTitle value="NAME" style={styles.sectionTitle} />
                 <InputGroup>
@@ -798,7 +810,7 @@ class ClientDetails extends Component {
                 <SectionTitle value="REFERRED BY" style={styles.sectionTitle} />
                 <InputGroup>
                   <View style={styles.referredClientView}>
-                    <SalonTouchableOpacity onPress={this.setReferredOptionClient}>
+                    <SalonTouchableOpacity onPress={() => { this.setReferredOptionClient(true); }}>
                       <FontAwesome style={this.state.selectedReferredClient === SelectedReferredClientEnum.Client ? styles.selectedCheck : styles.unselectedCheck}>
                         {this.state.selectedReferredClient === SelectedReferredClientEnum.Client ? Icons.checkCircle : Icons.circle}
                       </FontAwesome>
@@ -872,6 +884,7 @@ ClientDetails.propTypes = {
   navigation: PropTypes.any.isRequired,
   setCanSave: PropTypes.func.isRequired,
   setHandleDone: PropTypes.func.isRequired,
+  setHandleBack: PropTypes.func.isRequired,
   editionMode: PropTypes.bool,
   settingsState: PropTypes.any.isRequired,
   clientInfoState: PropTypes.any.isRequired,

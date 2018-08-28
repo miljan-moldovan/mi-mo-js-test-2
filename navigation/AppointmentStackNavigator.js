@@ -24,6 +24,7 @@ import ClientFormula from './../screens/clientInfoScreen/components/clientFormul
 import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
 import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
+import NewClientScreen from '../screens/newClientScreen';
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -87,7 +88,7 @@ const AppointmentStackNavigator = StackNavigator(
       screen: RecommendProductScreen,
       navigationOptions: rootProps => ({
         headerTitle: <RecommendProductHeader rootProps={rootProps} />,
-        tabBarVisible: false
+        tabBarVisible: false,
       }),
     },
     BlockTime: {
@@ -228,6 +229,10 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    NewClient: {
+      screen: NewClientScreen,
       navigationOptions: { tabBarVisible: false },
     },
     Services: {
