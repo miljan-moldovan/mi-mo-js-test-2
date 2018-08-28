@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
 });
 
 export default class Column extends Component {
-  onCellPressed = (cellId, colData) => {
-    const time = moment(`${colData.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
+  onCellPressed = (cellId, colData, date) => {
+    const time = moment(`${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
     const showAlert = moment().isAfter(time, 'minute');
     if (!showAlert) {
       this.props.onCellPressed(cellId, colData);
@@ -132,7 +132,7 @@ export default class Column extends Component {
           <TouchableOpacity
             disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
-            onPress={() => { this.onCellPressed(cell, !isDate ? startDate : colData); }}
+            onPress={() => { this.onCellPressed(cell, colData, !isDate ? startDate : colData); }}
           />
         </View>
       );
@@ -142,7 +142,7 @@ export default class Column extends Component {
         <TouchableOpacity
           disabled={isCellDisabled}
           style={[styles.cellContainer, styles.dayOff, { width: cellWidth }, styleOclock]}
-          onPress={() => { this.onCellPressed(cell, colData); }}
+          onPress={() => { this.onCellPressed(cell, colData, !isDate ? startDate : colData); }}
         />
       </View>
     );
