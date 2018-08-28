@@ -124,7 +124,7 @@ class ForgotPassword extends React.Component {
         >Link sent successfully!
         </Text>
         <Text style={styles.successMessage}>
-          We&#39;ve sent an email to r******@g****.com with password reset instructions
+          We&#39;ve sent an email to {this.props.auth.username} with password reset instructions
         </Text>
       </View>
     </View>

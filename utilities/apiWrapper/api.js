@@ -196,7 +196,7 @@ const getApiInstance = async () => {
       if (apiURL !== null) {
         BASEURL = apiURL;
       } else {
-        BASEURL = 'http://zenithnew-mob.dev.cicd.salondev.net/api/v1';
+        BASEURL = 'https://zenithpos.dev.cicd.salondev.net/api/v1';
       }
 
       if (store !== null) {
