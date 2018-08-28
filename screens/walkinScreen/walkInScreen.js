@@ -238,9 +238,8 @@ class WalkInScreen extends Component {
     })
 
     render() {
-      const fullName = this.getFullName();
       const email = this.state.client && this.state.client.email ? this.state.client.email : '';
-      const phones = this.state.client && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
+      const phones = this.state.client && this.state.client.phones && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
       return (
         <ScrollView style={styles.container}>
 
