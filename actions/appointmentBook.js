@@ -112,7 +112,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     case 'deskStaff':
     case 'providers': {
       if (selectedProvider === 'all' || pickerMode === 'day') {
-        Promise.all([
+        return Promise.all([
           AppointmentBook.getAppointmentBookEmployees(date, filterOptions),
           Appointment.getAppointmentsByDate(date),
           AppointmentBook.getAppointmentBookAvailability(date),
@@ -140,39 +140,36 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             // TODO
             console.log(ex);
           });
-        break;
-      } else {
-        const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
-        Promise.all([
-          Employees.getEmployeeScheduleRange({
-            id: selectedProvider.id,
-            startDate: startDate.format('YYYY-MM-DD'),
-            endDate: dateTo,
-          }),
-          Employees.getEmployeeAppointments({ id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo }),
-          AppointmentBook.getBlockTimesBetweenDates({ fromDate: startDate.format('YYYY-MM-DD'), toDate: dateTo }),
-          Store.getScheduleExceptions({ fromDate: date, toDate: dateTo }),
-          Store.getStoreInfo(),
-        ])
-          .then(([providerSchedule, appointments, blockTimes, scheduleExceptions, storeInfo]) => {
-            const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
-            const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
-            dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
-            dispatch(StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions));
-            dispatch(setGridWeekViewSuccess(
-              orderedAppointments,
-              groupedProviderSchedule,
-              blockTimes,
-            ));
-          })
-          .catch(() => {
-            // TODO
-          });
-        break;
       }
+      const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
+      return Promise.all([
+        Employees.getEmployeeScheduleRange({
+          id: selectedProvider.id,
+          startDate: startDate.format('YYYY-MM-DD'),
+          endDate: dateTo,
+        }),
+        Employees.getEmployeeAppointments({ id: selectedProvider.id, dateFrom: startDate.format('YYYY-MM-DD'), dateTo }),
+        AppointmentBook.getBlockTimesBetweenDates({ fromDate: startDate.format('YYYY-MM-DD'), toDate: dateTo }),
+        Store.getScheduleExceptions({ fromDate: date, toDate: dateTo }),
+        Store.getStoreInfo(),
+      ])
+        .then(([providerSchedule, appointments, blockTimes, scheduleExceptions, storeInfo]) => {
+          const groupedProviderSchedule = groupBy(providerSchedule, schedule => moment(schedule.date).format('YYYY-MM-DD'));
+          const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
+          dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
+          dispatch(StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions));
+          dispatch(setGridWeekViewSuccess(
+            orderedAppointments,
+            groupedProviderSchedule,
+            blockTimes,
+          ));
+        })
+        .catch(() => {
+          // TODO
+        });
     }
     case 'rooms': {
-      Promise.all([
+      return Promise.all([
         Store.getRooms(),
         Store.getScheduleExceptions({ fromDate: date, toDate: date }),
         AppointmentBook.getRoomAppointments(date),
@@ -194,10 +191,9 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         .catch(() => {
           // TODO
         });
-      break;
     }
     case 'resources': {
-      Promise.all([
+      return Promise.all([
         Store.getResources(),
         Store.getScheduleExceptions({ fromDate: date, toDate: date }),
         AppointmentBook.getResourceAppointments(date),
@@ -220,7 +216,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         .catch(() => {
           // TODO
         });
-      break;
     }
     default:
       break;
@@ -231,7 +226,7 @@ const setGridView = () => (dispatch) => {
   dispatch({
     type: SET_GRID_VIEW,
   });
-  dispatch(reloadGridRelatedStuff());
+  return dispatch(reloadGridRelatedStuff());
 };
 
 const setScheduleDateRange = () => (dispatch, getState) => {

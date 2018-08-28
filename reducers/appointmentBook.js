@@ -10,6 +10,10 @@ import { POST_APPOINTMENT_RESIZE,
   POST_APPOINTMENT_CHECKOUT_FAILED,
   UNDO_MOVE,
 } from '../actions/appointment';
+import {
+  PUT_BLOCKTIME_MOVE, PUT_BLOCKTIME_MOVE_SUCCESS, PUT_BLOCKTIME_MOVE_FAILED, UNDO_MOVE_BLOCK,
+  PUT_BLOCKTIME_RESIZE_SUCCESS, PUT_BLOCKTIME_RESIZE, PUT_BLOCKTIME_RESIZE_FAILED
+} from '../actions/blockTime';
 import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
   SET_FILTER_OPTION_POSITION, SET_FILTER_OPTION_OFF_EMPLOYEES,
   SET_FILTER_OPTION_MULTIBLOCK, SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
@@ -193,20 +197,26 @@ export default function appointmentBookReducer(state = initialState, action) {
         providerSchedule: data.providerSchedule,
         blockTimes: data.blockTimes,
       };
+    case PUT_BLOCKTIME_MOVE:
+    case PUT_BLOCKTIME_RESIZE:
     case POST_APPOINTMENT_MOVE:
     case POST_APPOINTMENT_RESIZE:
       return {
         ...state,
         isLoading: true,
       };
+    case PUT_BLOCKTIME_MOVE_SUCCESS:
+    case PUT_BLOCKTIME_RESIZE_SUCCESS: {
+      const { undoType, toast, oldBlockTime } = data;
+      return {
+        ...state,
+        toast,
+        oldBlockTime,
+        undoType,
+      };
+    }
     case POST_APPOINTMENT_MOVE_SUCCESS:
     case POST_APPOINTMENT_RESIZE_SUCCESS: {
-      const index = appointments.findIndex(appt => appt.id === data.appointment.id);
-      if (index > -1) {
-        appointments[index] = data.appointment;
-      } else {
-        appointments.push(data.appointment);
-      }
       const newTime = moment(data.appointment.fromTime, 'HH:mm').format('h:mm a');
       const newToTime = moment(data.appointment.toTime, 'HH:mm').format('h:mm a');
       const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
@@ -222,13 +232,13 @@ export default function appointmentBookReducer(state = initialState, action) {
       } : null;
       return {
         ...state,
-        appointments: appointments.slice(),
-        isLoading: false,
         toast,
         oldAppointment: data.oldAppointment,
         undoType,
       };
     }
+    case PUT_BLOCKTIME_MOVE_FAILED:
+    case PUT_BLOCKTIME_RESIZE_FAILED:
     case POST_APPOINTMENT_MOVE_FAILED:
     case POST_APPOINTMENT_RESIZE_FAILED:
     case POST_APPOINTMENT_CHECKIN_FAILED:
@@ -244,10 +254,12 @@ export default function appointmentBookReducer(state = initialState, action) {
       };
     case HIDE_TOAST:
     case UNDO_MOVE:
+    case UNDO_MOVE_BLOCK:
       return {
         ...state,
         toast: null,
         oldAppointment: null,
+        oldBlockTime: null,
         undoType: null,
         error: null,
       };
