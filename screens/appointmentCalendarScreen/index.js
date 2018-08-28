@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { appointmentCalendarActions } from '../../actions/appointmentBook';
+import blockTimeActions from '../../actions/blockTime';
 import appointmentActions from '../../actions/appointment';
 import newAppointmentActions from '../../actions/newAppointment';
 import rootDrawerNavigatorAction from '../../actions/rootDrawerNavigator';
@@ -34,6 +35,7 @@ const mapActionsToProps = dispatch => ({
   newAppointmentActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
   modifyApptActions: bindActionCreators({ ...modifyApptActions }, dispatch),
   rootDrawerNavigatorAction: bindActionCreators({ ...rootDrawerNavigatorAction }, dispatch),
+  blockTimeActions: bindActionCreators({ ...blockTimeActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(AppointmentScreen);

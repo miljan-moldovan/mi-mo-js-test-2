@@ -239,7 +239,6 @@ class Card extends Component {
     const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
     // is emplyee active in cell time
     let isActiveEmployeeInCellTime = false;
-    const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const todaySchedule = weeklySchedule[moment(date).isoWeekday() - 1];
     const isStoreOff = !todaySchedule.start1 && !todaySchedule.end1
       && !todaySchedule.start2 && !todaySchedule.end2;
@@ -478,7 +477,8 @@ class Card extends Component {
     const backgroundColor = activeCard ? borderColor : colors[color].light;
     const clientName = `${client.name} ${client.lastName}`;
     const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
-    const activeClientTextColor = badgeData.isNoShow ? '#D0021B' : clientTextColor;
+    let activeClientTextColor = badgeData.isCashedOut ? '#1DA314' : clientTextColor;
+    activeClientTextColor = badgeData.isNoShow ? '#D0021B' : activeClientTextColor;
     const borderStyle = isFirstAvailable ? 'dashed' : 'solid';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
@@ -492,9 +492,10 @@ class Card extends Component {
       shadowRadius: this.state.shadowRadius,
       elevation: 1,
     } : '';
-    const clientBackgroundColor = badgeData.isNoShow ?
+    const clientBackgroundColor = badgeData.isNoShow || badgeData.isCashedOut ?
       { borderColor } : { backgroundColor: borderColor, borderColor };
-    const isRequested = requested || badgeData.isNoShow ? [styles.requestedStyle, clientBackgroundColor] : '';
+    const isRequested = requested || badgeData.isNoShow || badgeData.isCashedOut ?
+      [styles.requestedStyle, clientBackgroundColor] : '';
     if (!activeCard && isResizeing) {
       return null;
     }
