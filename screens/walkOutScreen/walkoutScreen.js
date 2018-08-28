@@ -105,7 +105,7 @@ class WalkoutScreen extends Component {
       [
         { text: 'No, cancel', onPress: () => { console.log('cancel'); }, style: 'cancel' },
         {
-          text: 'Yes, Im sure',
+          text: 'Yes, I’m sure',
           onPress: () => {
             this.handleWalkout();
           },
