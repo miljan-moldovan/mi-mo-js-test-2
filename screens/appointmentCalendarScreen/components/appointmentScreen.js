@@ -188,7 +188,7 @@ class AppointmentScreen extends Component {
       } else {
         newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);
-        newAppointmentActions.setQuickApptRequested(true);        
+        newAppointmentActions.setQuickApptRequested(true);
       }
     } else {
       newAppointmentActions.setMainEmployee(null);
@@ -405,6 +405,15 @@ class AppointmentScreen extends Component {
     this.setState({ goToAppointmentId: appointmentId });
   }
 
+  handleUndo = () => {
+    const { appointmentActions, blockTimeActions, appointmentScreenState: { toast } } = this.props;
+    if (toast.isBlockTime) {
+      blockTimeActions.undoMove();
+    } else {
+      appointmentActions.undoMove();
+    }
+  }
+
   clearGoToAppointment = () => this.setState({ goToAppointmentId: null });
 
   render() {
@@ -487,6 +496,8 @@ class AppointmentScreen extends Component {
           isRoom={selectedFilter === 'rooms'}
           isResource={selectedFilter === 'resources'}
           onDrop={this.props.appointmentActions.postAppointmentMove}
+          onDropBlock={this.props.blockTimeActions.putBlockTimeMove}
+          onResizeBlock={this.props.blockTimeActions.putBlockTimeResize}
           onResize={this.props.appointmentActions.postAppointmentResize}
           selectedFilter={selectedFilter}
           selectedProvider={selectedProvider}
@@ -506,7 +517,8 @@ class AppointmentScreen extends Component {
         />
         {
           isLoading ?
-            <View style={styles.loadingContainer}><ActivityIndicator />
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator />
             </View> : null
         }
         {selectedFilter === 'providers' && selectedProvider !== 'all' && (
@@ -521,7 +533,6 @@ class AppointmentScreen extends Component {
             }}
           />
         )}
-
         <NewApptSlide
           ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
           maxHeight={screenHeight}
@@ -576,7 +587,7 @@ class AppointmentScreen extends Component {
               type={toast.type}
               description={toast.description}
               hide={appointmentCalendarActions.hideToast}
-              undo={appointmentActions.undoMove}
+              undo={this.handleUndo}
               btnRightText={toast.btnRightText}
               btnLeftText={toast.btnLeftText}
             />

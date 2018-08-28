@@ -11,6 +11,8 @@ import postMessageProvidersClients from './postMessageProvidersClients';
 import postAppointmentBookBlockTime from './postAppointmentBookBlockTime';
 import postEmailUpcomingAppointments from './postEmailUpcomingAppointments';
 import postAppointmentBookRebookMulti from './postAppointmentBookRebookMulti';
+import putBlockTimeMove from './putBlockTimeMove';
+import putBlockTimeResize from './putBlockTimeResize';
 
 export {
   getAppointmentBookAvailability,
@@ -26,4 +28,6 @@ export {
   postMessageProvidersClients,
   postAppointmentBookBlockTime,
   postAppointmentBookRebookMulti,
+  putBlockTimeMove,
+  putBlockTimeResize,
 };
