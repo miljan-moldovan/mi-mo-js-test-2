@@ -1,6 +1,8 @@
 import {
-  StyleSheet,
+  StyleSheet, Dimensions,
 } from 'react-native';
+
+const smallDevice = Dimensions.get('window').width === 320;
 
 export default StyleSheet.create({
   container: {
@@ -11,24 +13,24 @@ export default StyleSheet.create({
     height: 44,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
-    paddingLeft: 10,
+    paddingLeft: smallDevice ? 5 : 10,
     alignItems: 'center',
-    paddingRight: 16,
+    paddingRight: smallDevice ? 10 : 16,
   },
   lastInnerRow: {
     flexDirection: 'row',
     height: 44,
     alignItems: 'center',
-    paddingRight: 16,
-    paddingLeft: 10,
+    paddingRight: smallDevice ? 10 : 16,
+    paddingLeft: smallDevice ? 5 : 10,
   },
   addRow: {
     flexDirection: 'row',
     height: 44,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingLeft: 10,
-    paddingRight: 16,
+    paddingLeft: smallDevice ? 10 : 10,
+    paddingRight: smallDevice ? 10 : 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
@@ -49,10 +51,10 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '#C0C1C6',
-    paddingLeft: 10,
+    paddingLeft: smallDevice ? 10 : 10,
   },
   iconContainer: {
-    paddingRight: 10,
+    paddingRight: smallDevice ? 5 : 16,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -87,8 +89,8 @@ export default StyleSheet.create({
   },
   providerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   providerWrapper: { marginRight: 5 },
-  providerRootStyle: { marginLeft: 10 },
-  providerRequestedStyle: { marginLeft: 10 },
+  providerRootStyle: { marginLeft: smallDevice ? 5 : 10, paddingRight: smallDevice ? 10 : 16 },
+  providerRequestedStyle: { marginLeft: smallDevice ? 5 : 10, paddingRight: smallDevice ? 10 : 16 },
   cancelButton: { fontSize: 14, color: 'white' },
 
 });
