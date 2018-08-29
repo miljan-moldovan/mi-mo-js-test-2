@@ -34,7 +34,11 @@ const postClientInfoFailed = error => ({
 const postClientInfo = (client, callback) => (dispatch) => {
   dispatch({ type: POST_CLIENT });
   return Client.postClient(client)
-    .then((response) => { dispatch(postClientInfoSuccess(response)); callback(true, response); })
+    .then((response) => {
+      dispatch(postClientInfoSuccess(response));
+      const clientResult = { ...client, ...response };
+      callback(true, clientResult);
+    })
     .catch((error) => { dispatch(postClientInfoFailed(error)); callback(false, null, error.message); });
 };
 
@@ -51,7 +55,11 @@ const putClientInfoFailed = error => ({
 const putClientInfo = (clientId, client, callback) => (dispatch) => {
   dispatch({ type: PUT_CLIENT });
   return Client.putClient(clientId, client)
-    .then((response) => { dispatch(putClientInfoSuccess(response)); callback(true, response); })
+    .then((response) => {
+      dispatch(putClientInfoSuccess(response));
+      const clientResult = { ...client, ...response };
+      callback(true, clientResult);
+    })
     .catch((error) => { dispatch(putClientInfoFailed(error)); callback(false, null, error.message); });
 };
 
