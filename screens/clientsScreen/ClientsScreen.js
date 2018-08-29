@@ -108,7 +108,8 @@ class ClientsScreen extends React.Component {
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
       rightButtonOnPress: () => { navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
     };
-    const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
+
+    const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav;
 
     const { leftButton } = navigation.state.params &&
     navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };

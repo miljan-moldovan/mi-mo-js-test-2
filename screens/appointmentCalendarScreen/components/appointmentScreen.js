@@ -71,10 +71,10 @@ class AppointmentScreen extends Component {
       header: (
         <ApptCalendarHeader
           title={title}
-          onPressMenu={() => navigation.state.params.onPressMenu()}
-          onPressTitle={() => navigation.state.params.onPressTitle()}
-          onPressEllipsis={() => navigation.state.params.onPressEllipsis()}
-          onPressCalendar={() => navigation.state.params.onPressCalendar()}
+          onPressMenu={params ? params.onPressMenu : null}
+          onPressTitle={params ? params.onPressTitle : null}
+          onPressEllipsis={params ? params.onPressEllipsis : null}
+          onPressCalendar={params ? params.onPressCalendar : null}
         />
       ),
       tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
@@ -118,12 +118,29 @@ class AppointmentScreen extends Component {
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
+  onChangeClient = (client) => {
+    this.goToShowAppt(client);
+  }
+
+  handleClientScreenGoBack = (navigation) => {
+    navigation.goBack();
+  }
+
+  handleClientScreenNewClient = (navigation) => {
+    navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient });
+  }
+
   onPressCalendar = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    const headerProps = {
+      title: 'Appointment List',
+      subTitle: null,
+      leftButtonOnPress: this.handleClientScreenGoBack,
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+      rightButtonOnPress: this.handleClientScreenNewClient,
+    };
+
+    this.props.navigation.navigate('ApptBookClient', { onChangeClient: this.onChangeClient, headerProps });
   };
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {

@@ -37,5 +37,17 @@ export default StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '700',
     color: '#1DBF12',
-  }
+  }, leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  rightButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+    textAlign: 'right',
+  },
 });
