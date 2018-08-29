@@ -8,6 +8,7 @@ import {
   FlatList,
   RefreshControl,
   Text,
+  Alert,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
@@ -200,15 +201,19 @@ class ProviderScreen extends React.Component {
     const { navigation: { state, goBack } } = props;
     const params = state.params || {};
     const showFirstAvailable = get(params, 'showFirstAvailable', true);
+    const checkProviderStatus = get(params, 'checkProviderStatus', false);
     const showEstimatedTime = get(params, 'showEstimatedTime', true);
     const filterList = get(params, 'filterList', false);
     const filterByService = get(params, 'filterByService', false);
     const selectedProvider = get(params, 'selectedProvider', null);
+
+    
     this.state = {
       filterList,
       filterByService,
       selectedProvider,
       showFirstAvailable,
+      checkProviderStatus,
       showEstimatedTime,
       refreshing: false,
       headerProps: {
@@ -245,11 +250,44 @@ class ProviderScreen extends React.Component {
       return;
     }
 
-    this.props.providersActions.setSelectedProvider(provider);
 
-    const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
+
+    if (this.state.checkProviderStatus) {
+      this.props.providersActions.getProviderStatus(provider.id, (result) => {
+        if (result) {
+          console.log('providerStatus: ', this.props.providersState.providerStatus);
+
+          if (!this.props.providersState.providerStatus.isWorking ||
+          this.props.providersState.providerStatus.isOnBreak) {
+            const message = `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
+
+            Alert.alert(
+              'Provider not available',
+              message,
+              [
+                {
+                  text: 'Ok, got it',
+                  onPress: () => {},
+                },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            this.props.providersActions.setSelectedProvider(provider);
+
+            const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
+            if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
+            if (dismissOnSelect) { this.props.navigation.goBack(); }
+          }
+        }
+      });
+    } else {
+      this.props.providersActions.setSelectedProvider(provider);
+
+      const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
+      if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
+      if (dismissOnSelect) { this.props.navigation.goBack(); }
+    }
   }
 
   filterProviders = (searchText) => {
