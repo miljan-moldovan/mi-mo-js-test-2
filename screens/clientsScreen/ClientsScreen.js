@@ -235,7 +235,9 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <BarsActionSheet
           ref={item => this.BarsActionSheet = item}
-          onLogout={this.props.auth.logout} />
+          onLogout={this.props.auth.logout}
+          navigation={this.props.navigation}
+        />
         <View style={styles.clientsList}>
           <ClientList
             navigate={this.props.navigation.navigate}

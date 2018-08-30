@@ -145,6 +145,7 @@ class QueueHeader extends React.Component {
         <BarsActionSheet
           ref={this.assignBarsActionSheet}
           onLogout={this.onLogoutPressed}
+          navigation={this.props.navigation}
         />
 
         <QueueNavButton

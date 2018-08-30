@@ -468,6 +468,7 @@ class AppointmentScreen extends Component {
       default:
         break;
     }
+
     return (
       <View
         style={styles.mainContainer}
@@ -476,6 +477,7 @@ class AppointmentScreen extends Component {
         <BarsActionSheet
           ref={item => this.BarsActionSheet = item}
           onLogout={this.props.auth.logout}
+          navigation={this.props.navigation}
         />
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
