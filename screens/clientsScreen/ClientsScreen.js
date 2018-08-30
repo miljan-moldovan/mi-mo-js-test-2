@@ -1,131 +1,67 @@
 // @flow
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#333',
-    flexDirection: 'column',
-  },
-  clientListContainer: {
-    flex: 1,
-    backgroundColor: '#333',
-    flexDirection: 'column',
-  },
-  title: {
-    color: 'white',
-    fontSize: 20,
-    fontFamily: 'Roboto',
-    padding: 20,
-    marginTop: 20,
-    alignSelf: 'center',
-    backgroundColor: 'transparent',
-  },
-  clientsHeader: {
-    flex: 1.6,
-    backgroundColor: 'rgba(0, 0, 0, 0.30)',
-    flexDirection: 'column',
-  },
-  clientsList: {
-    flex: 9,
-    backgroundColor: '#F8F8F8',
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'right',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  searchClients: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchClientsTitle: {
-    color: '#727A8F',
-    fontSize: 13,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  searchClientsText: {
-    color: '#727A8F',
-    fontSize: 11,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  searchIconContainer: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    paddingTop: 5,
-    paddingRight: 0,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-  },
-});
+import Icon from '../../components/UI/Icon';
+import styles from './styles';
+import BarsActionSheet from '../../components/BarsActionSheet';
 
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
-      title: 'Clients',
-      subTitle: null,
-      leftButtonOnPress: () => { navigation.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
-    };
-    const ignoreNav = navigation.state.params && navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
+    const defaultProps = navigation.state.params &&
+      navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
+        title: 'Clients',
+        subTitle: null,
+        leftButtonOnPress: () => { navigation.goBack(); },
+        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+        rightButtonOnPress: () => { navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
+      };
+    const ignoreNav = navigation.state.params &&
+    navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
 
-    const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+    let { leftButton } = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
-    const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+      navigation.state.params.headerProps &&
+      !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+    let { leftButtonOnPress } = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav ? navigation.state.params.headerProps : {
+        leftButtonOnPress: defaultProps.leftButtonOnPress,
+      };
     const { rightButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+      navigation.state.params.headerProps &&
+      !ignoreNav ? navigation.state.params.headerProps : {
+        rightButtonOnPress: defaultProps.rightButtonOnPress,
+      };
     const { title } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+      navigation.state.params.headerProps &&
+      !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+      navigation.state.params.headerProps &&
+      !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
     const clearSearch = navigation.state.params &&
-    navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
+      navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
     const onChangeClient = navigation.state.params &&
-    navigation.state.params.onChangeClient ? navigation.state.params.onChangeClient : null;
+      navigation.state.params.onChangeClient ? navigation.state.params.onChangeClient : null;
+
+    if (!leftButton) {
+      leftButton = (
+        <Icon
+          name="bars"
+          type="solid"
+          color="white"
+          size={19}
+        />
+      );
+
+      leftButtonOnPress = defaultProps.defaultLeftButtonOnPress;
+    }
     return {
       header: props => (
         <SalonSearchHeader
@@ -185,11 +121,19 @@ class ClientsScreen extends React.Component {
 
     this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
   }
+  /* eslint-disable */
+  handleLeftButton = () => {
+    if (this.BarsActionSheet) {
+      this.BarsActionSheet.show();
+    }
+  }
+  /* eslint-enable */
 
   state = {
     headerProps: {
       title: 'Clients',
       subTitle: null,
+      defaultLeftButtonOnPress: this.handleLeftButton,
       leftButtonOnPress: this.props.navigation.goBack,
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
       rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
@@ -289,6 +233,9 @@ class ClientsScreen extends React.Component {
 
     return (
       <View style={styles.container}>
+        <BarsActionSheet
+          ref={item => this.BarsActionSheet = item}
+          onLogout={this.props.auth.logout} />
         <View style={styles.clientsList}>
           <ClientList
             navigate={this.props.navigation.navigate}
