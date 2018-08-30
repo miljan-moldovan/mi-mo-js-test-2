@@ -1,4 +1,6 @@
 import { QueueStatus, Queue } from '../utilities/apiWrapper';
+import { showErrorAlert } from './utils';
+
 
 export const QUEUE = 'queue/QUEUE';
 export const QUEUE_RECEIVED = 'queue/QUEUE_RECEIVED';
@@ -51,6 +53,32 @@ export const GET_QUEUE_STATE = 'queue/GET_QUEUE_STATE';
 export const GET_QUEUE_STATE_SUCCESS = 'queue/GET_QUEUE_STATE_SUCCESS';
 export const GET_QUEUE_STATE_FAILED = 'queue/GET_QUEUE_STATE_FAILED';
 
+
+const startServiceSuccess = data => ({
+  type: CLIENT_START_SERVICE_RECEIVED,
+  data: { data },
+});
+
+const startServiceFailed = error => ({
+  type: CLIENT_START_SERVICE_FAILED,
+  data: { error },
+});
+
+
+export const startService = (id, serviceData, callback) => (dispatch) => {
+  dispatch({ type: CLIENT_START_SERVICE, data: { id } });
+
+  return QueueStatus.putStartService(id, serviceData)
+    .then((resp) => {
+      dispatch(startServiceSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(startServiceFailed(error)); callback(false, error);
+    });
+};
+
+
 export const receiveQueue = () => async (dispatch: Object => void) => {
   dispatch({ type: QUEUE });
   try {
@@ -73,120 +101,211 @@ export function saveQueueItem(queueItem) {
   };
 }
 
-export const startService = (id, serviceData) => async (dispatch: Object => void) => {
-  dispatch({ type: CLIENT_START_SERVICE, data: { id } });
-  try {
-    const data = await QueueStatus.putStartService(id, serviceData);
-    dispatch({ type: CLIENT_START_SERVICE_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_START_SERVICE_FAILED, error });
-  }
-};
 
-export const checkInClient = id => async (dispatch: Object => void) => {
+const checkInClientSuccess = data => ({
+  type: CLIENT_CHECKED_IN_RECEIVED,
+  data: { data },
+});
+
+const checkInClientFailed = error => ({
+  type: CLIENT_CHECKED_IN_FAILED,
+  data: { error },
+});
+
+
+export const checkInClient = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_CHECKED_IN, data: { id } });
-  try {
-    const data = await QueueStatus.putCheckIn(id);
-    dispatch({ type: CLIENT_CHECKED_IN_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_CHECKED_IN_FAILED, error });
-  }
+  return QueueStatus.putCheckIn(id)
+    .then((resp) => {
+      dispatch(checkInClientSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(checkInClientFailed(error)); callback(false, error);
+    });
 };
 
-export const uncheckInClient = id => async (dispatch: Object => void) => {
+const uncheckInClientSuccess = data => ({
+  type: CLIENT_UNCHECKED_IN_RECEIVED,
+  data: { data },
+});
+
+const uncheckInClientFailed = error => ({
+  type: CLIENT_UNCHECKED_IN_FAILED,
+  data: { error },
+});
+
+export const uncheckInClient = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_UNCHECKED_IN, data: { id } });
-  try {
-    const data = await QueueStatus.putUncheckIn(id);
-    dispatch({ type: CLIENT_UNCHECKED_IN_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_UNCHECKED_IN_FAILED, error });
-  }
+  return QueueStatus.putUncheckIn(id)
+    .then((resp) => {
+      dispatch(uncheckInClientSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(uncheckInClientFailed(error)); callback(false, error);
+    });
 };
 
-export const returnLater = id => async (dispatch: Object => void) => {
+
+const returnLaterSuccess = data => ({
+  type: CLIENT_RETURNED_LATER_RECEIVED,
+  data: { data },
+});
+
+const returnLaterFailed = error => ({
+  type: CLIENT_RETURNED_LATER_FAILED,
+  data: { error },
+});
+
+export const returnLater = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_RETURNED_LATER, data: { id } });
-
-  try {
-    const data = await QueueStatus.putReturnLater(id);
-
-    dispatch({ type: CLIENT_RETURNED_LATER_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_RETURNED_LATER_FAILED, error });
-  }
+  return QueueStatus.putReturnLater(id)
+    .then((resp) => {
+      dispatch(returnLaterSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(returnLaterFailed(error)); callback(false, error);
+    });
 };
 
 
-export const returned = id => async (dispatch: Object => void) => {
+const returnedSuccess = data => ({
+  type: CLIENT_RETURNED_RECEIVED,
+  data: { data },
+});
+
+const returnedFailed = error => ({
+  type: CLIENT_RETURNED_FAILED,
+  data: { error },
+});
+
+export const returned = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_RETURNED, data: { id } });
-
-  try {
-    const data = await QueueStatus.putReturned(id);
-
-    dispatch({ type: CLIENT_RETURNED_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_RETURNED_FAILED, error });
-  }
+  return QueueStatus.putReturned(id)
+    .then((resp) => {
+      dispatch(returnedSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(returnedFailed(error)); callback(false, error);
+    });
 };
 
-export const walkOut = id => async (dispatch: Object => void) => {
+
+const walkOutSuccess = data => ({
+  type: CLIENT_WALKED_OUT_RECEIVED,
+  data: { data },
+});
+
+const walkOutFailed = error => ({
+  type: CLIENT_WALKED_OUT_FAILED,
+  data: { error },
+});
+
+export const walkOut = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_WALKED_OUT, data: { id } });
-
-  try {
-    const data = await QueueStatus.putWalkOut(id);
-
-    dispatch({ type: CLIENT_WALKED_OUT_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_WALKED_OUT_FAILED, error });
-  }
+  return QueueStatus.putWalkOut(id)
+    .then((resp) => {
+      dispatch(walkOutSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(walkOutFailed(error)); callback(false, error);
+    });
 };
 
-export const noShow = id => async (dispatch: Object => void) => {
+
+const noShowSuccess = data => ({
+  type: CLIENT_NO_SHOW_RECEIVED,
+  data: { data },
+});
+
+const noShowFailed = error => ({
+  type: CLIENT_NO_SHOW_FAILED,
+  data: { error },
+});
+
+export const noShow = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_NO_SHOW, data: { id } });
-
-  try {
-    const data = QueueStatus.putNoShow(id);
-
-    dispatch({ type: CLIENT_NO_SHOW_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_NO_SHOW_FAILED, error });
-  }
+  return QueueStatus.putNoShow(id)
+    .then((resp) => {
+      dispatch(noShowSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(noShowFailed(error)); callback(false, error);
+    });
 };
 
-export const finishService = id => async (dispatch: Object => void) => {
+
+const finishServiceSuccess = data => ({
+  type: CLIENT_FINISH_SERVICE_RECEIVED,
+  data: { data },
+});
+
+const finishServiceFailed = error => ({
+  type: CLIENT_FINISH_SERVICE_FAILED,
+  data: { error },
+});
+
+export const finishService = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_FINISH_SERVICE, data: { id } });
-
-  try {
-    const data = await QueueStatus.putFinish(id);
-
-    dispatch({ type: CLIENT_FINISH_SERVICE_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_FINISH_SERVICE_FAILED, error });
-  }
+  return QueueStatus.putFinish(id)
+    .then((resp) => {
+      dispatch(finishServiceSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(finishServiceFailed(error)); callback(false, error);
+    });
 };
 
 
-export const undoFinishService = id => async (dispatch: Object => void) => {
+const undoFinishServiceSuccess = data => ({
+  type: CLIENT_UNDOFINISH_SERVICE_RECEIVED,
+  data: { data },
+});
+
+const undoFinishServiceFailed = error => ({
+  type: CLIENT_UNDOFINISH_SERVICE_FAILED,
+  data: { error },
+});
+
+export const undoFinishService = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_UNDOFINISH_SERVICE, data: { id } });
-
-  try {
-    const data = await QueueStatus.putUndoFinish(id);
-
-    dispatch({ type: CLIENT_UNDOFINISH_SERVICE_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_UNDOFINISH_SERVICE_FAILED, error });
-  }
+  return QueueStatus.putUndoFinish(id)
+    .then((resp) => {
+      dispatch(undoFinishServiceSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(undoFinishServiceFailed(error)); callback(false, error);
+    });
 };
 
-export const toWaiting = id => async (dispatch: Object => void) => {
+
+const toWaitingSuccess = data => ({
+  type: CLIENT_TO_WAITING_RECEIVED,
+  data: { data },
+});
+
+const toWaitingFailed = error => ({
+  type: CLIENT_TO_WAITING_FAILED,
+  data: { error },
+});
+
+export const toWaiting = (id, callback) => (dispatch) => {
   dispatch({ type: CLIENT_TO_WAITING, data: { id } });
-
-  try {
-    const data = await QueueStatus.putToWaiting(id);
-
-    dispatch({ type: CLIENT_TO_WAITING_RECEIVED, data });
-  } catch (error) {
-    dispatch({ type: CLIENT_TO_WAITING_FAILED, error });
-  }
+  return QueueStatus.putToWaiting(id)
+    .then((resp) => {
+      dispatch(toWaitingSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(toWaitingFailed(error)); callback(false, error);
+    });
 };
 
 export function updateTime() {
@@ -213,6 +332,7 @@ export function cancelCombine() {
     type: CANCEL_COMBINE,
   };
 }
+
 export const finishCombine = (combiningClients: Array<Object>) => async (dispatch: Object => void) => {
   try {
     dispatch({ type: QUEUE });

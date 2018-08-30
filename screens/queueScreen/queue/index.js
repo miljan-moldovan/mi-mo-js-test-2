@@ -319,13 +319,15 @@ cancelButton = () => ({
   },
 })
 
-checkHasProvider = () => {
+checkHasProvider = (ignoreAutoAssign) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
 
   const { settings } = this.props.settings;
 
-  const autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
+
 
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.handleStartService();
@@ -356,13 +358,13 @@ checkShouldMerge = () => {
     if (response) {
       const { mergeableClients } = this.props.clientsState;
       if (mergeableClients.length === 0) {
-        this.checkHasProvider();
+        this.checkHasProvider(false);
       } else {
         this.hideDialog();
         this.props.navigation.navigate('ClientMerge', {
           clientId: client.id,
-          onPressBack: () => { this.checkHasProvider(); },
-          onDismiss: () => { this.checkHasProvider(); },
+          onPressBack: () => { this.checkHasProvider(false); },
+          onDismiss: () => { this.checkHasProvider(false); },
         });
       }
     } else {
@@ -400,7 +402,12 @@ handleStartService = () => {
   };
 
 
-  this.props.startService(appointment.id, serviceData);
+  this.props.startService(appointment.id, serviceData, (response) => {
+    if (!response) {
+      this.checkHasProvider(true);
+    }
+  });
+
   this.hideDialog();
 }
 
