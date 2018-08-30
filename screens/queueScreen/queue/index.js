@@ -325,9 +325,7 @@ checkHasProvider = () => {
 
   const { settings } = this.props.settings;
 
-  // const autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
-
-  const autoAssignFirstAvailableProvider = false;
+  const autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
 
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.handleStartService();
@@ -378,7 +376,7 @@ handleProviderSelection = (provider) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
   service.employee = provider;
-  // this.handleStartService();
+  this.handleStartService();
   this.props.navigation.navigate('Main');
 }
 
