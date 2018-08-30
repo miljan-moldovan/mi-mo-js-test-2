@@ -153,6 +153,26 @@ getGroupLeaderName = (item: QueueItem) => {
   return null;
 }
 
+getprocessMinutes = (item) => {
+  const processTime = moment(item.processTime, 'hh:mm:ss');
+  const processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+    ? processTime.minutes() + processTime.hours() * 60
+    : 0;
+
+  return processMinutes;
+}
+
+
+getprogressMaxMinutes = (item) => {
+  const progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss');
+
+  const progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+    ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+    : 0;
+
+  return progressMaxMinutes;
+}
+
 getLabelForItem = (item) => {
   switch (item.status) {
     case QUEUE_ITEM_FINISHED:
@@ -161,12 +181,8 @@ getLabelForItem = (item) => {
 
           <View style={styles.finishedTime}>
             <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-            <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
-              ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
-              : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-                ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
-                : 0)}min est.
-              </Text>
+            <Text style={styles.finishedTimeText}>{this.getprocessMinutes(item)}min /
+              <Text style={{ fontFamily: 'Roboto-Regular' }}>{this.getprogressMaxMinutes(item)}min est. </Text>
             </Text>
           </View>
 
