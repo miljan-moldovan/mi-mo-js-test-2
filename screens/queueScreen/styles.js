@@ -1,6 +1,4 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -312,6 +310,11 @@ export default StyleSheet.create({
   backContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  rightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   animateText: {
     fontFamily: 'Roboto-Medium',
