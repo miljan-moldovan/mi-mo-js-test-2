@@ -165,17 +165,6 @@ class TurnAwayScreen extends Component {
     this.setState({ date: moment(data), isModalVisible: false }, this.checkCanSave);
   }
 
-  handlePressClient = () => {
-    const { navigate } = this.props.navigation;
-
-    this.setState({ isEditableOtherReason: false });
-
-    navigate('Clients', {
-      actionType: 'update',
-      dismissOnSelect: true,
-      onChangeClient: this.handleClientSelection,
-    });
-  }
 
   handleClientSelection = (client) => {
     const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[this.props.turnAwayReasonsState.turnAwayReasons.length - 1];
@@ -228,6 +217,7 @@ class TurnAwayScreen extends Component {
     const { navigate } = this.props.navigation;
     const params = this.props.navigation.state.params || {};
     const { apptBook } = params;
+    debugger //eslint-disable-line
     const { selectedReasonCode } = this.state;
 
     return (
@@ -258,7 +248,6 @@ class TurnAwayScreen extends Component {
           style={styles.clientInput}
           extraComponents={this.state.selectedClient === null ?
             <Text style={styles.optionaLabel}>Optional</Text> : null}
-          onPress={this.handlePressClient}
           navigate={navigate}
           headerProps={{ title: 'Clients', ...this.cancelButton() }}
           onChange={this.handleClientSelection}
