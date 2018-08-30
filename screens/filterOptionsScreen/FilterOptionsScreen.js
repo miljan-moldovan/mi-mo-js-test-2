@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
+import { get } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
@@ -19,6 +20,7 @@ import SalonAvatar from '../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import OthersTab from './components/OthersTab';
 import DeskStaffTab from './components/DeskStaffTab';
+import { InputButton, DefaultAvatar } from '../../components/formHelpers';
 
 
 const TAB_PROVIDERS = 0;
@@ -30,6 +32,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  fullSizeCenter: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   searchBarContainer: {
     backgroundColor: '#F1F1F1',
   },
@@ -43,6 +46,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 44,
     color: '#110A24',
+  },
+  boldText: {
     fontFamily: 'Roboto-Medium',
   },
   itemRow: {
@@ -56,7 +61,7 @@ const styles = StyleSheet.create({
     // borderBottomColor: '#C0C1C6',
   },
   inputRow: {
-    flex: 9,
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -65,14 +70,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 7,
     color: '#110A24',
-    fontFamily: 'Roboto-Medium',
   },
   providerRound: {
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
   },
+  greenColor: { color: '#1DBF12' },
+  viewAllButton: { paddingHorizontal: 14 },
 });
+
+const ViewAllProviders = ({ icon, onPress, isSelected, separator }) => (
+  <React.Fragment>
+    <InputButton
+      icon={icon}
+      noIcon={!icon}
+      style={styles.viewAllButton}
+      onPress={onPress}
+      label="View all providers"
+      labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
+    />
+    {separator}
+  </React.Fragment>
+);
 
 export default class FilterOptionsScreen extends React.Component {
   static navigationOptions = rootProps => ({
@@ -112,8 +132,24 @@ export default class FilterOptionsScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    const {
+      selectedFilter,
+    } = this.props.apptScreenState;
+    let activeTab = TAB_PROVIDERS;
+    switch (selectedFilter) {
+      case 'deskStaff':
+        activeTab = TAB_DESK_STAFF;
+        break;
+      case 'rooms':
+      case 'resources':
+        activeTab = TAB_OTHERS;
+        break;
+      case 'providers':
+      default:
+        break;
+    }
     this.state = {
-      activeTab: TAB_PROVIDERS,
+      activeTab,
       searchText: '',
     };
 
@@ -188,45 +224,48 @@ export default class FilterOptionsScreen extends React.Component {
   }
 
   renderActiveTab = () => {
+    const { selectedFilter, selectedProvider } = this.props.apptScreenState;
+    const changeFilter = () => this.handleChangeProvider('all');
+    const isViewAllSelected = selectedFilter === 'providers';
+    const icon = isViewAllSelected && selectedProvider === 'all'
+      ? <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
     switch (this.state.activeTab) {
       case TAB_PROVIDERS:
         return (
           <View style={styles.container}>
-            <SalonTouchableOpacity
-              style={styles.row}
-              onPress={() => this.handleChangeProvider('all')}
-            >
-              <Text style={styles.rowText}>View all providers</Text>
-            </SalonTouchableOpacity>
-            {this.props.providersState.isLoading
-              ? (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  <ActivityIndicator />
-                </View>
-              ) : (
-                <FlatList
-                  data={this.props.providersState.currentData}
-                  ItemSeparatorComponent={this.renderSeparator}
-                  // renderItem={({ item }) => (
-                  //   <View key={item.id} style={styles.row}>
-                  //     <Text style={styles.rowText}>{item.fullName}</Text>
-                  //   </View>
-                  // )}
-                  renderItem={this.renderItem}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.onRefresh}
-                    />
-                  }
-                />
-              )
+            <ViewAllProviders
+              icon={icon}
+              onPress={changeFilter}
+              separator={this.renderSeparator()}
+              isSelected={isViewAllSelected}
+            />
+            {
+              this.props.providersState.isLoading
+                ? (
+                  <View style={styles.fullSizeCenter}>
+                    <ActivityIndicator />
+                  </View>
+                ) : (
+                  <FlatList
+                    data={this.props.providersState.currentData}
+                    ItemSeparatorComponent={this.renderSeparator}
+                    renderItem={this.renderItem}
+                    refreshControl={
+                      <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.onRefresh}
+                      />
+                    }
+                  />
+                )
             }
           </View>
         );
       case TAB_DESK_STAFF:
         return (
           <DeskStaffTab
+            selectedFilter={selectedFilter}
+            selectedProvider={selectedProvider}
             searchText={this.state.searchText}
             onRefresh={this.onRefresh}
             isLoading={this.props.providersState.isLoading}
@@ -236,7 +275,10 @@ export default class FilterOptionsScreen extends React.Component {
         );
       case TAB_OTHERS:
         return (
-          <OthersTab handleSelect={this.handleChangeOther} />
+          <OthersTab
+            selectedFilter={selectedFilter}
+            handleSelect={this.handleChangeOther}
+          />
         );
       default:
         break;
@@ -245,35 +287,45 @@ export default class FilterOptionsScreen extends React.Component {
     return null;
   }
 
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this.handleChangeProvider(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={getEmployeePhotoSource(item)}
-        />
-        <WordHighlighter
-          highlight={this.state.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-        <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+  renderItem = ({ item, index }) => {
+    const { selectedFilter, selectedProvider } = this.props.apptScreenState;
+    const isViewAllSelected = selectedFilter === 'providers' && selectedProvider === 'all';
+    const isSelected = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && get(selectedProvider, 'id', null) === item.id;
+    const onPress = () => this.handleChangeProvider(item);
+    return (
+      <SalonTouchableOpacity
+        style={styles.itemRow}
+        onPress={onPress}
+        key={item.id}
+      >
+        <View style={styles.inputRow}>
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={30}
+            borderWidth={1}
+            borderColor="transparent"
+            image={getEmployeePhotoSource(item)}
+            defaultComponent={
+              <DefaultAvatar
+                provider={item}
+              />
+            }
+          />
+          <WordHighlighter
+            highlight={this.state.searchText}
+            style={isSelected || isViewAllSelected ? [styles.providerName, styles.boldText] : styles.providerName}
+            highlightStyle={styles.greenColor}
+          >
+            {item.fullName}
+          </WordHighlighter>
+        </View>
+        {
+          isSelected &&
+          <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome>
+        }
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderSeparator = () => (
     <View
@@ -303,13 +355,13 @@ export default class FilterOptionsScreen extends React.Component {
           />
         </View>
         <View style={{
-            // height: 26,
-            // flex: 1,
-            // overflow: 'hidden',
-            backgroundColor: '#F1F1F1',
-            borderBottomWidth: StyleSheet.hairlineWidth,
-            borderBottomColor: '#C0C1C6',
-          }}
+          // height: 26,
+          // flex: 1,
+          // overflow: 'hidden',
+          backgroundColor: '#F1F1F1',
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: '#C0C1C6',
+        }}
         >
           <SalonFlatPicker
             selectedIndex={this.state.activeTab}

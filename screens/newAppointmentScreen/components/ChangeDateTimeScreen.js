@@ -102,6 +102,7 @@ class ChangeDateTimeScreen extends React.Component {
             isOpen={isOpenDatePicker}
             toggle={this.toggleDatePicker}
             onChange={this.onChangeDate}
+            minimumDate={moment().toDate()}
           />
           <InputDivider />
           <SchedulePicker

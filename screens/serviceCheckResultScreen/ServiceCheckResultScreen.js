@@ -23,6 +23,7 @@ export default class ServiceCheckResultScreen extends React.Component {
     const { params } = navigation.state;
     const employeeName = `${params.selectedProvider.name} ${params.selectedProvider.lastName}`;
     const serviceName = params.selectedService.name;
+    const doneFunc = () => navigation.state.params.handleDone();
     return ({
       headerTitle: (
         <View style={styles.headerTitleContainer}>
@@ -34,14 +35,14 @@ export default class ServiceCheckResultScreen extends React.Component {
         <SalonTouchableOpacity
           style={styles.headerLeftButton}
           wait={3000}
-          onPress={navigation.goBacks}
+          onPress={navigation.goBack}
         >
           <Icon name="angleLeft" type="regular" color="white" size={22} />
           <Text style={[styles.headerButtonText, styles.marginLeft]}>Back</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.handleDone()}>
+        <SalonTouchableOpacity wait={3000} onPress={doneFunc}>
           <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
         </SalonTouchableOpacity>
       ),
@@ -78,8 +79,14 @@ export default class ServiceCheckResultScreen extends React.Component {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onChangePosition, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangePosition) { onChangePosition(this.state.selectedPosition); }
+    const {
+      onChangePosition,
+      onNavigateBack,
+      dismissOnSelect,
+    } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangePosition) {
+      onChangePosition(this.state.selectedPosition);
+    }
     if (dismissOnSelect) { onNavigateBack(); }
   }
 

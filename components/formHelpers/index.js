@@ -34,8 +34,8 @@ const DefaultAvatar = props => (
     <Text style={[styles.avatarDefaultComponentText, props.fontSize ? { fontSize: props.fontSize } : '']}>
       {
         props.provider && !props.provider.isFirstAvailable
-        ? `${props.provider.name[0]}${props.provider.lastName[0]}`
-        : 'FA'
+          ? `${props.provider.name[0]}${props.provider.lastName[0]}`
+          : 'FA'
       }
     </Text>
   </View>
@@ -62,20 +62,20 @@ const LabeledTextarea = props => (
 const RemoveButton = ({ title, onPress }) => (
   <SalonTouchableOpacity
     style={{
-        height: 44,
-        alignSelf: 'stretch',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#FFFFFF',
-      }}
+      height: 44,
+      alignSelf: 'stretch',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFFFFF',
+    }}
     onPress={onPress}
   >
     <Text style={{
-        fontSize: 14,
-        lineHeight: 22,
-        color: '#D1242A',
-        fontFamily: 'Roboto-Medium',
-      }}
+      fontSize: 14,
+      lineHeight: 22,
+      color: '#D1242A',
+      fontFamily: 'Roboto-Medium',
+    }}
     >{title}
     </Text>
   </SalonTouchableOpacity>
@@ -139,23 +139,27 @@ const InputButton = props => (
     onPress={props.onPress}
     disabled={props.disabled || false}
   >
-    { props.label && typeof props.label === 'string'
-    ? (
-      <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
-    ) : props.label }
+    {props.label && typeof props.label === 'string'
+      ? (
+        <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
+      ) : props.label}
     <View style={[{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }, props.childrenContainerStyle]}>
       {
         typeof props.value === 'string'
-        ? (
-          <Text numberOfLines={1} style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
-        ) :
+          ? (
+            <Text numberOfLines={1} style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
+          ) :
           props.value
       }
       {props.children}
     </View>
-    {!props.noIcon && (
+    {
+      !props.noIcon && props.icon && props.icon
+    }
+    {
+      !props.noIcon && !props.icon &&
       <FontAwesome style={[styles.iconStyle, props.iconStyle]}>{Icons.angleRight}</FontAwesome>
-    )}
+    }
   </SalonTouchableOpacity>
 );
 InputButton.propTypes = {
@@ -167,6 +171,7 @@ InputButton.propTypes = {
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,
+  icon: PropTypes.oneOfType([PropTypes.element, null]),
   iconStyle: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 InputButton.defaultProps = {
@@ -178,6 +183,7 @@ InputButton.defaultProps = {
   noIcon: false,
   children: null,
   iconStyle: {},
+  icon: null,
 };
 
 const InputLabel = props => (

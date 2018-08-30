@@ -113,9 +113,6 @@ const FirstAvailableRow = props => (
       />
       <Text style={styles.providerName}>First Available</Text>
     </View>
-    <View style={{ flex: 1, alignItems: 'flex-end' }}>
-      <Text style={[styles.timeLeftText]}>21m</Text>
-    </View>
     <View style={{ flex: 1, alignItems: 'center' }} />
   </SalonTouchableOpacity>
 );
@@ -125,7 +122,7 @@ class ProviderScreen extends React.Component {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
       title: 'Providers',
       subTitle: null,
-      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButtonOnPress: navigation.goBack,
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
     };
 
@@ -211,7 +208,7 @@ class ProviderScreen extends React.Component {
       filterByService,
       selectedProvider,
       showFirstAvailable,
-      showEstimatedTime,
+      showEstimatedTime: false,
       refreshing: false,
       headerProps: {
         title: 'Providers',
@@ -278,8 +275,8 @@ class ProviderScreen extends React.Component {
   }
 
   filterByLetter = (letter) => {
-    const filtered = this.props.providersState.providers.filter(item => item.name.indexOf(letter) === 0);
-
+    const filtered = this.props.providersState.providers
+      .filter(item => item.name.indexOf(letter) === 0);
     this.props.providersActions.setFilteredProviders(filtered);
     this.setState({ providers: this.props.providersState.filtered });
   }

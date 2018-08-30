@@ -259,6 +259,7 @@ class AppointmentScreen extends Component {
     newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
     navigate('NewAppointment');
   }
+
   manageBuffer = (bufferVisible) => {
     if (this.state.bufferVisible !== bufferVisible) {
       this.setState({ bufferVisible });

@@ -475,13 +475,13 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
         type: ADD_APPOINTMENT,
         data: { appointment: res },
       });
-      return dispatch(bookNewApptSuccess(successCallback));
+      dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
       if (isFunction(errorCallback)) {
         errorCallback(err);
       }
-      return dispatch({
+      dispatch({
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },
       });

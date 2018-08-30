@@ -63,14 +63,14 @@ export const apptGridSettingsSelector = createSelector(
       storeTodaySchedule = exception || storeTodaySchedule;
       // min startTime
       minStartTimeMoment = storeTodaySchedule && storeTodaySchedule.start1 ? moment(storeTodaySchedule.start1, 'HH:mm') : moment('05:00', 'HH:mm');
-      minAppointmentTime = filteredAppts.length > 0 ? moment(minBy(filteredAppts, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minStartTimeMoment;
+      minAppointmentTime = filteredAppts.length > 0 ? moment(minBy(filteredAppts, item => moment(get(item, 'fromTime', ''), 'HH:mm').unix()).fromTime, 'HH:mm') : minStartTimeMoment;
       minBlokTimeTime = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && blockTimes.length > 0 ? moment(minBy(blockTimes, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minStartTimeMoment;
       minStartTimeMoment =
         moment.min(minStartTimeMoment, minAppointmentTime, minBlokTimeTime);
       // max endTime
       morningEndTime = storeTodaySchedule && storeTodaySchedule.end1 ? moment(storeTodaySchedule.end1, 'HH:mm') : moment('23:00', 'HH:mm');
       maxEndTimeMoment = storeTodaySchedule && storeTodaySchedule.end2 ? moment(storeTodaySchedule.end2, 'HH:mm') : morningEndTime;
-      maxAppointmentTime = filteredAppts.length > 0 ? moment(maxBy(filteredAppts, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxEndTimeMoment;
+      maxAppointmentTime = filteredAppts.length > 0 ? moment(maxBy(filteredAppts, item => moment(get(item, 'toTime', ''), 'HH:mm').unix()).toTime, 'HH:mm') : maxEndTimeMoment;
       maxBlockTimeTime = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && blockTimes.length > 0 ? moment(maxBy(blockTimes, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxEndTimeMoment;
       maxEndTimeMoment =
         moment.max(maxEndTimeMoment, maxAppointmentTime, maxBlockTimeTime);

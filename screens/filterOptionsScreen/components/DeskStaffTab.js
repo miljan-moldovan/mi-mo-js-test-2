@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
+import { get } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import WordHighlighter from '../../../components/wordHighlighter';
@@ -14,7 +15,7 @@ import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoS
 import { Employees } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonAvatar from '../../../components/SalonAvatar';
-import { DefaultAvatar } from '../../../components/formHelpers';
+import { InputButton, DefaultAvatar } from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,6 +35,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 44,
     color: '#110A24',
+  },
+  boldText: {
     fontFamily: 'Roboto-Medium',
   },
   itemRow: {
@@ -56,14 +59,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 7,
     color: '#110A24',
-    fontFamily: 'Roboto-Medium',
   },
   providerRound: {
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
   },
+  centered: { flex: 1, alignItems: 'center' },
+  greenColor: { color: '#1DBF12' },
+  viewAllButton: { paddingHorizontal: 14 },
 });
+
+const ViewAllProviders = ({ icon, onPress, isSelected, separator }) => (
+  <React.Fragment>
+    <InputButton
+      icon={icon}
+      noIcon={!icon}
+      style={styles.viewAllButton}
+      onPress={onPress}
+      label="View All Desk Staff"
+      labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
+    />
+    {separator}
+  </React.Fragment>
+);
 
 export default class DeskStaffTab extends React.Component {
   constructor(props) {
@@ -107,68 +126,81 @@ export default class DeskStaffTab extends React.Component {
     />
   );
 
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this.props.handleSelect(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={getEmployeePhotoSource(item)}
-          defaultComponent={(
-            <DefaultAvatar
-              provider={item}
-            />
-          )}
-        />
-        <WordHighlighter
-          highlight={this.props.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-        <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+  renderItem = ({ item }) => {
+    const { selectedFilter, selectedProvider } = this.props;
+    const isViewAllSelected = selectedFilter === 'deskStaff' && selectedProvider === 'all';
+    const isSelected = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && get(selectedProvider, 'id', null) === item.id;
+    const onPress = () => this.props.handleSelect(item);
+    return (
+      <SalonTouchableOpacity
+        key={item.id}
+        style={styles.itemRow}
+        onPress={onPress}
+      >
+        <View style={styles.inputRow}>
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={30}
+            borderWidth={1}
+            borderColor="transparent"
+            image={getEmployeePhotoSource(item)}
+            defaultComponent={(
+              <DefaultAvatar
+                provider={item}
+              />
+            )}
+          />
+          <WordHighlighter
+            highlight={this.props.searchText}
+            highlightStyle={styles.greenColor}
+            style={isSelected || isViewAllSelected ? [styles.providerName, styles.boldText] : styles.providerName}
+          >
+            {item.fullName}
+          </WordHighlighter>
+        </View>
+        <View style={styles.centered}>
+          {
+            isSelected &&
+            <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome>
+          }
+        </View>
+      </SalonTouchableOpacity>
+    );
+  };
 
   render() {
+    const { selectedFilter, selectedProvider } = this.props;
+    const loadingStyle = { flex: 1, alignItems: 'center', justifyContent: 'center' };
+    const isViewAllSelected = selectedFilter === 'deskStaff';
+    const icon = isViewAllSelected && selectedProvider === 'all' ? <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
+    const changeFilter = () => this.props.handleSelect('all');
     return (
       <View style={styles.container}>
-        <SalonTouchableOpacity
-          style={styles.row}
-          onPress={() => this.props.handleSelect('all')}
-        >
-          <Text style={styles.rowText}>View All Desk Staff</Text>
-        </SalonTouchableOpacity>
-        {this.props.isLoading
-          ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator />
-            </View>
-          ) : (
-            <FlatList
-              data={this.props.data}
-              ItemSeparatorComponent={this.renderSeparator}
-              renderItem={this.renderItem}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.props.onRefresh}
-                />
-              }
-            />
-          )
+        <ViewAllProviders
+          icon={icon}
+          isSelected={isViewAllSelected}
+          separator={this.renderSeparator()}
+          onPress={changeFilter}
+        />
+        {
+          this.props.isLoading
+            ? (
+              <View style={loadingStyle}>
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <FlatList
+                data={this.props.data}
+                ItemSeparatorComponent={this.renderSeparator}
+                renderItem={this.renderItem}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.props.onRefresh}
+                  />
+                }
+              />
+            )
         }
       </View>
     );

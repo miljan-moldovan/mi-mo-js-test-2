@@ -62,6 +62,7 @@ const SalonTimePicker = (props) => {
             date={dateObject}
             mode={props.mode || 'time'}
             onDateChange={(date) => { props.onChange(convertLocalDateToUTCDate(date, true)); }}
+            minimumDate={props.minimumDate || null}
           />
         </View>
       )}
