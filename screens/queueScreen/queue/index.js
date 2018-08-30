@@ -110,12 +110,13 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 
       const employee = service.isFirstAvailable ?
         {
-          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+          id: 0, isFirstAvailable: true, fullName: 'First Available',
         } : service.employee;
 
       const fullNameProvider = `${employee.name || ''} ${employee.lastName || ''}`;
 
       if (fullNameProvider.toLowerCase().match(text)) { return true; }
+      if (service.serviceName.toLowerCase().match(text)) { return true; }
     }
     //  }
     return false;
@@ -337,7 +338,6 @@ checkHasProvider = () => {
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
 
 
-
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
@@ -447,13 +447,14 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 
       const employee = service.isFirstAvailable ?
         {
-          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+          id: 0, isFirstAvailable: true, fullName: 'First Available',
         } : service.employee;
 
       const fullNameProvider = `${employee.fullName || ''}`;
 
       // if this provider is a match, we don't need to check other providers
       if (fullNameProvider.toLowerCase().match(text)) { return true; }
+      if (service.serviceName.toLowerCase().match(text)) { return true; }
     }
 
     return false;
