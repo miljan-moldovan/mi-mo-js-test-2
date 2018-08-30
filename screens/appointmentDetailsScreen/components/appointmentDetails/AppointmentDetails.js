@@ -18,7 +18,7 @@ import SalonCard from '../../../../components/SalonCard';
 import { InputButton, SectionDivider } from '../../../../components/formHelpers';
 import SalonAvatar from '../../../../components/SalonAvatar';
 import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
-import { getEmployeePhoto } from '../../../../utilities/apiWrapper';
+import getEmployeePhotoSource from '../../../../utilities/helpers/getEmployeePhotoSource';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../../../queueScreen/queueTimeNote';
 import Icon from '../../../../components/UI/Icon';
@@ -237,7 +237,7 @@ const caretRight = (
 const ServiceCard = (props) => {
   const name = 'name' in props.service ? props.service.name : props.service.serviceName;
   const providerName = !props.service.isFirstAvailable ? `${props.service.employee.name} ${props.service.employee.lastName}` : 'First Available';
-
+  const { employee = null } = props.service;
   return (
     <SalonCard
       backgroundColor="white"
@@ -285,7 +285,7 @@ const ServiceCard = (props) => {
                   >{Icons.lock}
                   </FontAwesome>
               }
-                image={{ uri: getEmployeePhoto(!props.service.isFirstAvailable ? props.service.employeeId : 0) }}
+                image={getEmployeePhotoSource(employee)}
 
               />
               <Text style={[styles.employeeText, { marginLeft: 8 }]}>{providerName}</Text>

@@ -51,9 +51,11 @@ export default class RecommendedServicesScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    const params = props.navigation.state.params || {};
+    const selected = params.selectedIds || [];
     props.navigation.setParams({ handleSave: this.handleSave });
     this.state = {
-      selected: [],
+      selected,
     };
   }
 

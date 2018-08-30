@@ -10,7 +10,9 @@ import {
   Text,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get } from 'lodash';
+import { get, isNull } from 'lodash';
+
+import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -111,9 +113,6 @@ const FirstAvailableRow = props => (
       />
       <Text style={styles.providerName}>First Available</Text>
     </View>
-    <View style={{ flex: 1, alignItems: 'flex-end' }}>
-      <Text style={[styles.timeLeftText]}>21m</Text>
-    </View>
     <View style={{ flex: 1, alignItems: 'center' }} />
   </SalonTouchableOpacity>
 );
@@ -123,7 +122,7 @@ class ProviderScreen extends React.Component {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
       title: 'Providers',
       subTitle: null,
-      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButtonOnPress: navigation.goBack,
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
     };
 
@@ -209,7 +208,7 @@ class ProviderScreen extends React.Component {
       filterByService,
       selectedProvider,
       showFirstAvailable,
-      showEstimatedTime,
+      showEstimatedTime: false,
       refreshing: false,
       headerProps: {
         title: 'Providers',
@@ -276,8 +275,8 @@ class ProviderScreen extends React.Component {
   }
 
   filterByLetter = (letter) => {
-    const filtered = this.props.providersState.providers.filter(item => item.name.indexOf(letter) === 0);
-
+    const filtered = this.props.providersState.providers
+      .filter(item => item.name.indexOf(letter) === 0);
     this.props.providersActions.setFilteredProviders(filtered);
     this.setState({ providers: this.props.providersState.filtered });
   }
@@ -296,45 +295,48 @@ class ProviderScreen extends React.Component {
     );
   }
 
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this.handleOnChangeProvider(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={{ uri: item.imagePath }}
-          defaultComponent={(
-            <DefaultAvatar
-              size={22}
-              fontSize={9}
-              provider={item}
-            />
+  renderItem = ({ item, index }) => {
+    const image = getEmployeePhotoSource(item);
+    return (
+      <SalonTouchableOpacity
+        style={styles.itemRow}
+        onPress={() => this.handleOnChangeProvider(item)}
+        key={index}
+      >
+        <View style={styles.inputRow}>
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={22}
+            borderWidth={1}
+            borderColor="transparent"
+            image={image}
+            defaultComponent={(
+              <DefaultAvatar
+                size={22}
+                fontSize={9}
+                provider={item}
+              />
+            )}
+          />
+          <WordHighlighter
+            highlight={this.state.searchText}
+            style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+            highlightStyle={{ color: '#1DBF12' }}
+          >
+            {item.fullName}
+          </WordHighlighter>
+        </View>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          {this.state.selectedProvider === item.id && (
+            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
           )}
-        />
-        <WordHighlighter
-          highlight={this.state.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-          <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+        </View>
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderSeparator = () => (
     <View
