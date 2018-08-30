@@ -257,43 +257,6 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ChangeClient: {
       screen: ClientsScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: 'Clients',
-        headerLeft: HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon
-                name="angleLeft"
-                type="regular"
-                size={22}
-                color="white"
-              />
-            </View>
-          ),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-            searchBar={searchProps => (
-              <SalonSearchBar
-                {...searchProps}
-                placeholder="Search by name, phone or email"
-                searchIconPosition="right"
-              />)}
-          />),
-      }),
     },
     CancelAppointmentScreen: {
       screen: CancelAppointmentScreen,
