@@ -88,10 +88,15 @@ class NewApptSlide extends React.Component {
       hasViewedAddons: false,
       hasViewedRecommended: false,
     }, () => {
-      const { service, itemId } = this.getService();
-      this.showAddons(service)
+      const {
+        service,
+        itemId,
+        addons,
+        recommended,
+      } = this.getService(true);
+      this.showAddons(service, addons.map(itm => itm.id))
         .then(addons => this.setState({ selectedAddons: addons }, () => {
-          this.showRecommended(service)
+          this.showRecommended(service, recommended.map(itm => itm.id))
             .then(recommended => this.setState({ selectedRecommended: recommended }, () => {
               const { selectedAddons, selectedRecommended } = this.state;
               const { newApptActions: { addServiceItemExtras } } = this.props;
@@ -116,10 +121,10 @@ class NewApptSlide extends React.Component {
   }
 
   onPressRequired = () => {
-    const { service, itemId } = this.getService();
+    const { service, itemId, required } = this.getService(true);
     const { newApptActions: { addServiceItemExtras } } = this.props;
-    this.showRequired(service)
-      .then(required => this.setState({ selectedRequired: required }, () => {
+    this.showRequired(service, [get(required, 'id', null)])
+      .then(selectedRequired => this.setState({ selectedRequired }, () => {
         addServiceItemExtras(
           itemId,
           'required',
@@ -234,6 +239,7 @@ class NewApptSlide extends React.Component {
         addons,
         recommended,
         required,
+        itemId: mainItemId,
       };
     }
     return { service, itemId: mainItemId };
@@ -259,7 +265,7 @@ class NewApptSlide extends React.Component {
 
   hideToast = () => this.setState({ toast: null })
 
-  showRequired = service => new Promise((resolve) => {
+  showRequired = (service, selectedIds = []) => new Promise((resolve) => {
     try {
       const {
         navigation: { navigate },
@@ -271,6 +277,7 @@ class NewApptSlide extends React.Component {
             .then(res => resolve({ name: res.description, ...res }));
         } else {
           const navigateCallback = () => navigate('RequiredServices', {
+            selectedIds,
             showCancelButton,
             services: service.requiredServices,
             serviceTitle: service.name,
@@ -288,7 +295,7 @@ class NewApptSlide extends React.Component {
     }
   })
 
-  showAddons = service => new Promise((resolve) => {
+  showAddons = (service, selectedIds = []) => new Promise((resolve) => {
     try {
       const {
         navigation: { navigate },
@@ -296,6 +303,7 @@ class NewApptSlide extends React.Component {
       const { hasViewedAddons: showCancelButton } = this.state;
       if (service && service.addons.length > 0) {
         const navigateCallback = () => navigate('AddonServices', {
+          selectedIds,
           showCancelButton,
           services: service.addons,
           serviceTitle: service.name,
@@ -312,7 +320,7 @@ class NewApptSlide extends React.Component {
     }
   })
 
-  showRecommended = service => new Promise((resolve) => {
+  showRecommended = (service, selectedIds = []) => new Promise((resolve) => {
     try {
       const {
         navigation: { navigate },
@@ -320,6 +328,7 @@ class NewApptSlide extends React.Component {
       const { hasViewedRecommended: showCancelButton } = this.state;
       if (service && service.recommendedServices.length > 0) {
         const navigateCallback = () => navigate('RecommendedServices', {
+          selectedIds,
           showCancelButton,
           services: service.recommendedServices,
           serviceTitle: service.name,
@@ -543,7 +552,7 @@ class NewApptSlide extends React.Component {
         onPress={() => {
           this.hidePanel();
           const {
-           date, mainEmployee: employee, startTime, bookedByEmployee,
+            date, mainEmployee: employee, startTime, bookedByEmployee,
           } = this.props.newApptState;
           this.props.navigation.navigate(
             'BlockTime',
@@ -615,12 +624,9 @@ class NewApptSlide extends React.Component {
         onPress={() => {
           this.hidePanel();
           const { date, mainEmployee: employee, startTime } = this.props.newApptState;
-          this.props.navigation.navigate(
-            'TurnAway',
-            {
- date, employee, fromTime: startTime, apptBook: true,
-},
-          );
+          this.props.navigation.navigate('TurnAway', {
+            date, employee, fromTime: startTime, apptBook: true,
+          });
         }}
         label="Turn Away"
       >

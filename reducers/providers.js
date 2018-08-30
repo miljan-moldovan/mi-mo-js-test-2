@@ -50,7 +50,7 @@ const providersReducer = (state = initialState, action) => {
       return {
         ...state,
         error: data.error,
-        isLoading: true,
+        isLoading: false,
         providers: [],
         deskStaff: [],
       };

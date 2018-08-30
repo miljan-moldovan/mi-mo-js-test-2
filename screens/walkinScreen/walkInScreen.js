@@ -249,9 +249,10 @@ class WalkInScreen extends Component {
             </View>
         ) : (
           <View style={styles.container}>
-            <SectionTitle value="CLIENT" />
-            <InputGroup>
+            <SectionTitle value="CLIENT" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
+            <InputGroup style={styles.inputGroupStyle}>
               <ClientInput
+                style={styles.rootStyle}
                 navigate={this.props.navigation.navigate}
                 label={this.state.client === null ? 'Client' : 'Client'}
                 headerProps={{
@@ -266,11 +267,11 @@ class WalkInScreen extends Component {
                 extraComponents={this.state.client !== null && this.renderExtraClientButtons()}
               />
               <InputDivider />
-              <InputLabel label="Email" value={email} />
+              <InputLabel style={styles.rootStyle} label="Email" value={email} />
               <InputDivider />
-              <InputLabel label="Phone" value={phones} />
+              <InputLabel style={styles.rootStyle} label="Phone" value={phones} />
             </InputGroup>
-            <SectionTitle value="SERVICE AND PROVIDER" />
+            <SectionTitle value="SERVICE AND PROVIDER" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
             <ServiceSection
               services={this.state.services}
               onAdd={this.handleAddService}

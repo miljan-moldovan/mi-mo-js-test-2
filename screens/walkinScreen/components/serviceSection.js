@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './stylesServiceSection';
@@ -38,14 +38,13 @@ class ServiceSection extends Component {
 
   renderProvider = (provider) => {
     const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
-    const providerPhoto = provider ? (getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0)) : '';
 
     if (provider) {
       return (
         <View style={styles.providerContainer}>
           <SalonAvatar
             width={26}
-            image={{ uri: providerPhoto }}
+            image={getEmployeePhotoSource(provider)}
           />
           <Text style={styles.textData}>{providerName}</Text>
         </View>
