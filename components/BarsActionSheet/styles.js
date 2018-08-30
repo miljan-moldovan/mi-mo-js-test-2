@@ -7,13 +7,13 @@ export default StyleSheet.create({
   },
   loginIconStyle: {
     color: '#115ECD',
-    fontSize: 20,
+    fontSize: 16,
   },
   actionItemContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    flex: 1,
-    height: 55,
+    alignItems: 'center',
+    height: 60,
     width: '90%',
   },
   actionItemLeft: {
@@ -29,8 +29,11 @@ export default StyleSheet.create({
   },
   actionItemRight: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
+    height: 35,
+    width: 35,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
 });
