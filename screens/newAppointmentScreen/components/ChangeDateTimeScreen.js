@@ -12,8 +12,10 @@ import {
   InputGroup,
   InputDivider,
   SalonTimePicker,
+  SchedulePicker,
 } from '../../../components/formHelpers';
 import newAppointmentActions from '../../../actions/newAppointment';
+import { appointmentCalendarActions } from '../../../actions/appointmentBook';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
@@ -72,10 +74,14 @@ class ChangeDateTimeScreen extends React.Component {
 
   handleSave = () => {
     const { date, startTime } = this.state;
-    this.props.newApptActions.setDate(moment(date));
-    this.props.newApptActions.setStartTime(moment(startTime, 'hh:mm A'));
-    this.props.newApptActions.getConflicts();
-    this.props.navigation.goBack();
+    this.props.apptBookActions.setProviderScheduleDates(date, date);
+    this.props.apptBookActions.setGridView();
+    setTimeout(() => {
+      this.props.newApptActions.setDate(moment(date));
+      this.props.newApptActions.setStartTime(moment(startTime, 'hh:mm A'));
+      this.props.newApptActions.getConflicts();
+      this.props.navigation.goBack();
+    });
   }
 
   render() {
@@ -96,12 +102,12 @@ class ChangeDateTimeScreen extends React.Component {
             isOpen={isOpenDatePicker}
             toggle={this.toggleDatePicker}
             onChange={this.onChangeDate}
+            minimumDate={moment().toDate()}
           />
           <InputDivider />
-          <SalonTimePicker
-            mode="time"
+          <SchedulePicker
             label="Time"
-            format="hh:mm A"
+            date={date}
             value={startTime}
             isOpen={isOpenTimePicker}
             toggle={this.toggleTimePicker}
@@ -116,6 +122,7 @@ const mapStateToProps = state => ({
   newApptState: state.newAppointmentReducer,
 });
 const mapActionToProps = dispatch => ({
+  apptBookActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
   newApptActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionToProps)(ChangeDateTimeScreen);

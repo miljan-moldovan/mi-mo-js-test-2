@@ -64,6 +64,8 @@ componentWillMount() {
 
   const sortedItems = this.sortItems(this.state.sortItemsBy, data);
 
+  this.props.settingsActions.getSettingsByName('AutoAssignFirstAvailableProvider');
+
   this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
 }
@@ -319,18 +321,29 @@ cancelButton = () => ({
 checkHasProvider = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
-  if (service.employee) {
+
+  const { settings } = this.props.settings;
+
+  // const autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+
+  const autoAssignFirstAvailableProvider = false;
+
+  if (service.employee || autoAssignFirstAvailableProvider) {
     this.handleStartService();
     this.props.navigation.navigate('Main');
   } else {
     this.hideDialog();
 
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
+
+
+
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
-      filterByService: true,
+      filterByService: false,
       showFirstAvailable: false,
+      checkProviderStatus: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
@@ -365,7 +378,7 @@ handleProviderSelection = (provider) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
   service.employee = provider;
-  this.handleStartService();
+  // this.handleStartService();
   this.props.navigation.navigate('Main');
 }
 
@@ -374,15 +387,17 @@ handleStartService = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
 
+  const serviceEmployees = service.employee ? [
+    {
+      serviceEmployeeId: service.id,
+      serviceId: service.serviceId,
+      employeeId: service.employee.id,
+      isRequested: true,
+    },
+  ] : [];
+
   const serviceData = {
-    serviceEmployees: [
-      {
-        serviceEmployeeId: service.id,
-        serviceId: service.serviceId,
-        employeeId: service.employee.id,
-        isRequested: true,
-      },
-    ],
+    serviceEmployees,
     deletedServiceEmployeeIds: [],
   };
 
@@ -642,7 +657,11 @@ Queue.propTypes = {
   serviceActions: PropTypes.shape({
     setSelectedService: PropTypes.func.isRequired,
   }).isRequired,
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
+  }).isRequired,
   data: PropTypes.any.isRequired,
+  settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
   searchProvider: PropTypes.any.isRequired,
   filterText: PropTypes.any.isRequired,

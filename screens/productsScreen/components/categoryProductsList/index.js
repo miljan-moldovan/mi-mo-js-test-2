@@ -1,10 +1,12 @@
 // @flow
 import React from 'react';
-import { View,
+import {
+  View,
   StyleSheet,
   Text,
   RefreshControl,
-  FlatList } from 'react-native';
+  FlatList
+} from 'react-native';
 import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
@@ -54,7 +56,6 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     height: 44,
-    width: 110,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -80,31 +81,35 @@ class CategoryProductsList extends React.Component {
 
   renderItem = elem => (
     <InputGroup style={{
-        flexDirection: 'row',
-        height: 44,
-        borderBottomWidth: 1 / 3,
-        borderTopWidth: 0,
-      }}
+      flexDirection: 'row',
+      height: 44,
+      borderBottomWidth: 1 / 3,
+      borderTopWidth: 0,
+    }}
     >
-      {[<InputButton
+      <InputButton
         noIcon
         key={Math.random().toString()}
         style={{ flex: 1 }}
-        labelStyle={{ color: '#110A24' }}
-        onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(elem.item); this.props.onChangeProduct(elem.item); } : () => {}}
-        label={elem.item.name}
-        children={
-          <View style={styles.inputRow}>
-            <Text style={styles.sizeLabelText}>{elem.item.size}</Text>
-            <Text style={styles.priceLabelText}>{elem.item.price}</Text>
-            {elem.item === this.props.productsState.selectedProduct &&
-              <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
-              </FontAwesome>
-            }
+        childrenContainerStyle={{ flex: 0 }}
+        onPress={this.props.onChangeProduct ? () => { this.props.productsActions.setSelectedProduct(elem.item); this.props.onChangeProduct(elem.item); } : () => { }}
+        label={(
+          <View style={{ flex: 1 }}>
+            <Text numberOfLines={1} style={{ color: '#110A24', fontSize: 14, lineHeight: 22 }}>
+              {elem.item.name}
+            </Text>
           </View>
-
+        )}
+      >
+        <View style={styles.inputRow}>
+          <Text style={styles.sizeLabelText}>{elem.item.size}</Text>
+          <Text style={styles.priceLabelText}>{elem.item.price}</Text>
+          {elem.item === this.props.productsState.selectedProduct &&
+            <FontAwesome style={styles.checkIcon}>{Icons.checkCircle}
+            </FontAwesome>
           }
-      />]}
+        </View>
+      </InputButton>
     </InputGroup>
   )
 
@@ -121,9 +126,9 @@ class CategoryProductsList extends React.Component {
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={() => {
-                  this.setState({ refreshing: true });
-                  this.props.onRefresh(this.onRefreshFinish);
-                }
+                this.setState({ refreshing: true });
+                this.props.onRefresh(this.onRefreshFinish);
+              }
               }
             />
           }
