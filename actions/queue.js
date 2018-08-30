@@ -1,7 +1,6 @@
 import { QueueStatus, Queue } from '../utilities/apiWrapper';
 import { showErrorAlert } from './utils';
 
-
 export const QUEUE = 'queue/QUEUE';
 export const QUEUE_RECEIVED = 'queue/QUEUE_RECEIVED';
 export const QUEUE_FAILED = 'queue/QUEUE_FAILED';

@@ -77,17 +77,6 @@ class ServiceSection extends Component {
         </SalonTouchableOpacity>
       </View>
       <View style={styles.serviceDataContainer}>
-        <ProviderInput
-          noLabel
-          filterByService
-          rootStyle={styles.providerRootStyle}
-          selectedProvider={service.provider}
-          placeholder="Provider"
-          navigate={this.props.navigate}
-          headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
-          onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
-        />
-        <InputDivider style={styles.middleSectionDivider} />
         <ServiceInput
           noPlaceholder
           rootStyle={styles.providerRootStyle}
@@ -97,6 +86,17 @@ class ServiceSection extends Component {
           selectedService={service.service}
           headerProps={{ title: 'Services', ...this.props.cancelButton() }}
           onChange={(selectedService) => { this.handleServiceSelection(selectedService, service, index); }}
+        />
+        <InputDivider style={styles.middleSectionDivider} />
+        <ProviderInput
+          noLabel
+          filterByService
+          rootStyle={styles.providerRootStyle}
+          selectedProvider={service.provider}
+          placeholder="Provider"
+          navigate={this.props.navigate}
+          headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
+          onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
         />
         {service.provider && !service.provider.isFirstAvailable && <InputDivider style={styles.middleSectionDivider} />}
         {service.provider && !service.provider.isFirstAvailable && <InputSwitch
