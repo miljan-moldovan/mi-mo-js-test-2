@@ -504,11 +504,11 @@ class NewApptSlide extends React.Component {
   })
 
   showToast = (result) => {
-    if (result) {
-      alert('Messages has been successfully sent.');
-    } else {
-      alert('An error occurred while sending the message.');
-    }
+    // if (result) {
+    //   alert('Messages has been successfully sent.');
+    // } else {
+    //   alert('An error occurred while sending the message.');
+    // }
   }
 
   messageProvidersClients = (message) => {
