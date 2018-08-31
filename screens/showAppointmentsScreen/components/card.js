@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
 import { DefaultAvatar } from '../../../components/formHelpers';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import colors from '../../../constants/appointmentColors';
 import styles from './styles';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -41,7 +42,7 @@ class Card extends React.PureComponent {
                 width={26}
                 borderWidth={3}
                 borderColor={borderColor}
-                image={{ uri: '' }}
+                image={getEmployeePhotoSource(provider)}
                 defaultComponent={(
                   <DefaultAvatar
                     size={26}

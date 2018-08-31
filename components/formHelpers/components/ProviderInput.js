@@ -5,10 +5,13 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get, isFunction } from 'lodash';
+import { StyleProvider } from 'native-base';
+import { get, isNull, isFunction } from 'lodash';
+
 import SalonAvatar from '../../SalonAvatar';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles, DefaultAvatar } from '../index';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 
 export default class ProviderInput extends React.Component {
   handleProviderSelection = (provider) => {
@@ -55,7 +58,6 @@ export default class ProviderInput extends React.Component {
         value = 'First Available';
       }
     }
-    const employeePhoto = get(selectedProvider, 'imagePath', null);
     return (
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
@@ -88,7 +90,7 @@ export default class ProviderInput extends React.Component {
                     >{Icons.lock}
                     </FontAwesome>
                   )}
-                  image={{ uri: employeePhoto }}
+                  image={getEmployeePhotoSource(selectedProvider)}
                   defaultComponent={(
                     <DefaultAvatar
                       size={22}

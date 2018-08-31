@@ -14,11 +14,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-start',
   },
+  subTitleTextContainer: {
+    flex: 1,
+  },
   subTitleText: {
     fontSize: 14,
     lineHeight: 18,
     fontFamily: 'Roboto-Bold',
     color: Colors.defaultGrey,
+  },
+  guestSubTitle: {
+    paddingBottom: 5,
   },
   timeCaretIcon: {
     fontSize: 12,
@@ -55,7 +61,8 @@ const styles = StyleSheet.create({
   removeGuestContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginHorizontal: 12,
+    // marginHorizontal: 12,
+    alignSelf: 'flex-end',
   },
   removeGuestText: {
     color: Colors.defaultRed,

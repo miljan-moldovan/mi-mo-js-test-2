@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
 import { filter } from 'lodash';
 
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -15,6 +16,7 @@ import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 import SalonAlert from '../../../components/SalonAlert';
+import BarsActionSheet from '../../../components/BarsActionSheet';
 
 import styles from './styles';
 
@@ -41,11 +43,10 @@ class AppointmentScreen extends Component {
       }
     }
     let title = (
-      <Text style={styles.titleText}
-      >{currentFilter}
-      </Text>);
+      <Text style={styles.titleText}>{currentFilter}</Text>);
 
     if (params && 'filterProvider' in params && params.filterProvider !== null) {
+      const image = getEmployeePhotoSource(params.filterProvider);
       title = (
         <View style={styles.salonAvatarWrapperContainer}>
           <SalonAvatar
@@ -53,15 +54,14 @@ class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: params.filterProvider.imagePath }}
+            image={image}
             defaultComponent={(<DefaultAvatar
               size={20}
               provider={params.filterProvider}
               fontSize={8}
             />)}
           />
-          <Text style={styles.titleText}
-          >{params.filterProvider.fullName}
+          <Text style={styles.titleText}>{params.filterProvider.fullName}
           </Text>
         </View>
       );
@@ -109,11 +109,9 @@ class AppointmentScreen extends Component {
   }
 
   onPressMenu = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    if (this.BarsActionSheet) {
+      this.BarsActionSheet.show();
+    }
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
@@ -197,16 +195,15 @@ class AppointmentScreen extends Component {
     if (this.state.bookAnotherEnabled) {
       newAppointmentActions.setClient(client);
     }
-    if (selectedFilter === 'providers') {
+    if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
       if (selectedProvider === 'all') {
         newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
-        if (colData.isFirstAvailable) {
-          this.props.newAppointmentActions.setQuickApptRequested(false);
-        }
+        newAppointmentActions.setQuickApptRequested(!colData.isFirstAvailable);
       } else {
         newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);
+        newAppointmentActions.setQuickApptRequested(true);
       }
     } else {
       newAppointmentActions.setMainEmployee(null);
@@ -277,6 +274,7 @@ class AppointmentScreen extends Component {
     newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
     navigate('NewAppointment');
   }
+
   manageBuffer = (bufferVisible) => {
     if (this.state.bufferVisible !== bufferVisible) {
       this.setState({ bufferVisible });
@@ -457,9 +455,11 @@ class AppointmentScreen extends Component {
       resourceAppointments,
       storeSchedule,
     } = this.props.appointmentScreenState;
-    const { storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings } = this.props;
     const {
-      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId, alert
+      storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings,
+    } = this.props;
+    const {
+      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId, alert,
     } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
@@ -488,11 +488,17 @@ class AppointmentScreen extends Component {
       default:
         break;
     }
+
     return (
       <View
         style={styles.mainContainer}
         onLayout={this.handleLayout}
       >
+        <BarsActionSheet
+          ref={item => this.BarsActionSheet = item}
+          onLogout={this.props.auth.logout}
+          navigation={this.props.navigation}
+        />
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={pickerMode}

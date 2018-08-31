@@ -8,9 +8,12 @@ import {
   FlatList,
   RefreshControl,
   Text,
+  Alert,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get } from 'lodash';
+import { get, isNull } from 'lodash';
+
+import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -111,9 +114,6 @@ const FirstAvailableRow = props => (
       />
       <Text style={styles.providerName}>First Available</Text>
     </View>
-    <View style={{ flex: 1, alignItems: 'flex-end' }}>
-      <Text style={[styles.timeLeftText]}>21m</Text>
-    </View>
     <View style={{ flex: 1, alignItems: 'center' }} />
   </SalonTouchableOpacity>
 );
@@ -123,7 +123,7 @@ class ProviderScreen extends React.Component {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
       title: 'Providers',
       subTitle: null,
-      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButtonOnPress: navigation.goBack,
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
     };
 
@@ -200,16 +200,19 @@ class ProviderScreen extends React.Component {
     const { navigation: { state, goBack } } = props;
     const params = state.params || {};
     const showFirstAvailable = get(params, 'showFirstAvailable', true);
+    const checkProviderStatus = get(params, 'checkProviderStatus', false);
     const showEstimatedTime = get(params, 'showEstimatedTime', true);
     const filterList = get(params, 'filterList', false);
     const filterByService = get(params, 'filterByService', false);
     const selectedProvider = get(params, 'selectedProvider', null);
+
+
     this.state = {
       filterList,
       filterByService,
       selectedProvider,
       showFirstAvailable,
-      showEstimatedTime,
+      showEstimatedTime: false,
       refreshing: false,
       headerProps: {
         title: 'Providers',
@@ -245,11 +248,43 @@ class ProviderScreen extends React.Component {
       return;
     }
 
-    this.props.providersActions.setSelectedProvider(provider);
 
-    const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
+    if (this.state.checkProviderStatus) {
+      this.props.providersActions.getProviderStatus(provider.id, (result) => {
+        if (result) {
+          console.log('providerStatus: ', this.props.providersState.providerStatus);
+
+          if (!this.props.providersState.providerStatus.isWorking ||
+          this.props.providersState.providerStatus.isOnBreak) {
+            const message = `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
+
+            Alert.alert(
+              'Provider not available',
+              message,
+              [
+                {
+                  text: 'Ok, got it',
+                  onPress: () => {},
+                },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            this.props.providersActions.setSelectedProvider(provider);
+
+            const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
+            if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
+            if (dismissOnSelect) { this.props.navigation.goBack(); }
+          }
+        }
+      });
+    } else {
+      this.props.providersActions.setSelectedProvider(provider);
+
+      const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
+      if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
+      if (dismissOnSelect) { this.props.navigation.goBack(); }
+    }
   }
 
   filterProviders = (searchText) => {
@@ -276,8 +311,8 @@ class ProviderScreen extends React.Component {
   }
 
   filterByLetter = (letter) => {
-    const filtered = this.props.providersState.providers.filter(item => item.name.indexOf(letter) === 0);
-
+    const filtered = this.props.providersState.providers
+      .filter(item => item.name.indexOf(letter) === 0);
     this.props.providersActions.setFilteredProviders(filtered);
     this.setState({ providers: this.props.providersState.filtered });
   }
@@ -296,45 +331,48 @@ class ProviderScreen extends React.Component {
     );
   }
 
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this.handleOnChangeProvider(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={{ uri: item.imagePath }}
-          defaultComponent={(
-            <DefaultAvatar
-              size={22}
-              fontSize={9}
-              provider={item}
-            />
+  renderItem = ({ item, index }) => {
+    const image = getEmployeePhotoSource(item);
+    return (
+      <SalonTouchableOpacity
+        style={styles.itemRow}
+        onPress={() => this.handleOnChangeProvider(item)}
+        key={index}
+      >
+        <View style={styles.inputRow}>
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={22}
+            borderWidth={1}
+            borderColor="transparent"
+            image={image}
+            defaultComponent={(
+              <DefaultAvatar
+                size={22}
+                fontSize={9}
+                provider={item}
+              />
+            )}
+          />
+          <WordHighlighter
+            highlight={this.state.searchText}
+            style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+            highlightStyle={{ color: '#1DBF12' }}
+          >
+            {item.fullName}
+          </WordHighlighter>
+        </View>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          {this.state.selectedProvider === item.id && (
+            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
           )}
-        />
-        <WordHighlighter
-          highlight={this.state.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-          <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+        </View>
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderSeparator = () => (
     <View

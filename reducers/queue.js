@@ -81,7 +81,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         error: null,
-        queueLength: 0,
         loading: true,
       };
     case QUEUE_RECEIVED:
@@ -146,7 +145,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        queueLength: 0,
         error,
       };
     case QUEUE_DELETE_ITEM:

@@ -7,6 +7,7 @@ import moment from 'moment';
 import { get } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import {
   ConflictBox,
 } from '../../../components/slidePanels/SalonNewAppointmentSlide';
@@ -19,9 +20,10 @@ import Colors from '../../../constants/Colors';
 import styles from '../styles';
 
 const SetExtras = ({ onPress }) => {
+  const marginRight = { marginRight: 12 };
   const textColor = { color: Colors.defaultBlue };
   return (
-    <View style={styles.removeGuestContainer}>
+    <View style={[styles.removeGuestContainer, marginRight]}>
       <SalonTouchableOpacity
         style={styles.flexRow}
         onPress={onPress}
@@ -73,7 +75,6 @@ const ServiceCard = (props) => {
   const { data } = props;
   const employee = get(data, 'employee', null);
   const isFirstAvailable = get(employee, 'isFirstAvailable', false);
-  const employeePhoto = get(employee, 'imagePath', null);
   const serviceName = data.service.name || data.service.description;
   const showSelectExtras = (
     !props.isAddon &&
@@ -169,7 +170,7 @@ const ServiceCard = (props) => {
                     >{Icons.lock}
                     </FontAwesome>
                   }
-                  image={{ uri: employeePhoto }}
+                  image={getEmployeePhotoSource(employee)}
                   defaultComponent={(
                     <DefaultAvatar
                       size={24}

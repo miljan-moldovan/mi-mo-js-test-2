@@ -64,6 +64,8 @@ componentWillMount() {
 
   const sortedItems = this.sortItems(this.state.sortItemsBy, data);
 
+  this.props.settingsActions.getSettingsByName('AutoAssignFirstAvailableProvider');
+
   this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
 }
@@ -108,12 +110,13 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 
       const employee = service.isFirstAvailable ?
         {
-          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+          id: 0, isFirstAvailable: true, fullName: 'First Available',
         } : service.employee;
 
       const fullNameProvider = `${employee.name || ''} ${employee.lastName || ''}`;
 
       if (fullNameProvider.toLowerCase().match(text)) { return true; }
+      if (service.serviceName.toLowerCase().match(text)) { return true; }
     }
     //  }
     return false;
@@ -150,6 +153,26 @@ getGroupLeaderName = (item: QueueItem) => {
   return null;
 }
 
+getprocessMinutes = (item) => {
+  const processTime = moment(item.processTime, 'hh:mm:ss');
+  const processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+    ? processTime.minutes() + processTime.hours() * 60
+    : 0;
+
+  return processMinutes;
+}
+
+
+getprogressMaxMinutes = (item) => {
+  const progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss');
+
+  const progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+    ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+    : 0;
+
+  return progressMaxMinutes;
+}
+
 getLabelForItem = (item) => {
   switch (item.status) {
     case QUEUE_ITEM_FINISHED:
@@ -158,12 +181,8 @@ getLabelForItem = (item) => {
 
           <View style={styles.finishedTime}>
             <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-            <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
-              ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
-              : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-                ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
-                : 0)}min est.
-              </Text>
+            <Text style={styles.finishedTimeText}>{this.getprocessMinutes(item)}min /
+              <Text style={{ fontFamily: 'Roboto-Regular' }}>{this.getprogressMaxMinutes(item)}min est. </Text>
             </Text>
           </View>
 
@@ -316,21 +335,31 @@ cancelButton = () => ({
   },
 })
 
-checkHasProvider = () => {
+checkHasProvider = (ignoreAutoAssign) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
-  if (service.employee) {
+
+  const { settings } = this.props.settings;
+
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
+
+
+  if (service.employee || autoAssignFirstAvailableProvider) {
     this.handleStartService();
     this.props.navigation.navigate('Main');
   } else {
     this.hideDialog();
 
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
+
+
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
-      filterByService: true,
+      filterByService: false,
       showFirstAvailable: false,
+      checkProviderStatus: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
@@ -345,13 +374,13 @@ checkShouldMerge = () => {
     if (response) {
       const { mergeableClients } = this.props.clientsState;
       if (mergeableClients.length === 0) {
-        this.checkHasProvider();
+        this.checkHasProvider(false);
       } else {
         this.hideDialog();
         this.props.navigation.navigate('ClientMerge', {
           clientId: client.id,
-          onPressBack: () => { this.checkHasProvider(); },
-          onDismiss: () => { this.checkHasProvider(); },
+          onPressBack: () => { this.checkHasProvider(false); },
+          onDismiss: () => { this.checkHasProvider(false); },
         });
       }
     } else {
@@ -374,20 +403,27 @@ handleStartService = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
 
+  const serviceEmployees = service.employee ? [
+    {
+      serviceEmployeeId: service.id,
+      serviceId: service.serviceId,
+      employeeId: service.employee.id,
+      isRequested: true,
+    },
+  ] : [];
+
   const serviceData = {
-    serviceEmployees: [
-      {
-        serviceEmployeeId: service.id,
-        serviceId: service.serviceId,
-        employeeId: service.employee.id,
-        isRequested: true,
-      },
-    ],
+    serviceEmployees,
     deletedServiceEmployeeIds: [],
   };
 
 
-  this.props.startService(appointment.id, serviceData);
+  this.props.startService(appointment.id, serviceData, (response) => {
+    if (!response) {
+      this.checkHasProvider(true);
+    }
+  });
+
   this.hideDialog();
 }
 
@@ -432,13 +468,14 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 
       const employee = service.isFirstAvailable ?
         {
-          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+          id: 0, isFirstAvailable: true, fullName: 'First Available',
         } : service.employee;
 
       const fullNameProvider = `${employee.fullName || ''}`;
 
       // if this provider is a match, we don't need to check other providers
       if (fullNameProvider.toLowerCase().match(text)) { return true; }
+      if (service.serviceName.toLowerCase().match(text)) { return true; }
     }
 
     return false;
@@ -642,7 +679,11 @@ Queue.propTypes = {
   serviceActions: PropTypes.shape({
     setSelectedService: PropTypes.func.isRequired,
   }).isRequired,
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
+  }).isRequired,
   data: PropTypes.any.isRequired,
+  settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
   searchProvider: PropTypes.any.isRequired,
   filterText: PropTypes.any.isRequired,

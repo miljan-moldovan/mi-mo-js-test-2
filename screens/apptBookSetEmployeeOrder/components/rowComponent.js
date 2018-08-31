@@ -3,7 +3,8 @@ import { Animated, Platform, Text, StyleSheet, Easing } from 'react-native';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
+import { DefaultAvatar } from '../../../components/formHelpers';
 
 const styles = StyleSheet.create({
   row: {
@@ -70,7 +71,7 @@ export default class Row extends React.PureComponent {
             outputRange: [2, 6],
           }),
         },
-      })
+      }),
     };
   }
 
@@ -94,6 +95,7 @@ export default class Row extends React.PureComponent {
       styles.row,
       this._style,
     ];
+    const image = getEmployeePhotoSource(data);
     return (
       <Animated.View style={containerStyles}>
         {/* <Image source={{ uri: data.image }} style={styles.image} /> */}
@@ -102,7 +104,12 @@ export default class Row extends React.PureComponent {
           width={30}
           borderWidth={1}
           borderColor="transparent"
-          image={{ uri: getEmployeePhoto(data.id) }}
+          image={image}
+          defaultComponent={(
+            <DefaultAvatar
+              provider={data}
+            />
+          )}
         />
         <Text style={styles.text}>{data.fullName}</Text>
         <Icon name="bars" size={14} color="#C0C1C6" type="regular" />

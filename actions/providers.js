@@ -14,6 +14,11 @@ export const SET_FILTERED_PROVIDERS = 'providers/SET_FILTERED_PROVIDERS';
 export const SELECTED_FILTER_TYPES = 'providers/SELECTED_FILTER_TYPES';
 export const SET_SELECTED_PROVIDER = 'providers/SET_SELECTED_PROVIDER';
 
+export const GET_PROVIDER_STATUS = 'providers/GET_PROVIDER_STATUS';
+export const GET_PROVIDER_STATUS_SUCCESS = 'providers/GET_PROVIDER_STATUS_SUCCESS';
+export const GET_PROVIDER_STATUS_FAILED = 'providers/GET_PROVIDER_STATUS_FAILED';
+
+
 const setSelectedProvider = selectedProvider => ({
   type: SET_SELECTED_PROVIDER,
   data: { selectedProvider },
@@ -41,7 +46,7 @@ const getProviders = (params, filterByService = false, filterList = false) =>
   (dispatch, getState) => {
     dispatch({ type: GET_PROVIDERS });
     const { selectedService } = getState().serviceReducer;
-    
+
     const serviceId = get(selectedService || {}, 'id', false);
     if (serviceId && filterByService) {
       return Services.getEmployeesByService(serviceId, params)
@@ -74,12 +79,33 @@ const setFilteredProviders = (filtered) => {
   };
 };
 
+
+const getProviderStatusSuccess = response => ({
+  type: GET_PROVIDER_STATUS_SUCCESS,
+  data: { response },
+});
+
+const getProviderStatusFailed = error => ({
+  type: GET_PROVIDER_STATUS_FAILED,
+  data: { error },
+});
+
+
+const getProviderStatus = (employeeId, callback) => (dispatch) => {
+  dispatch({ type: GET_PROVIDER_STATUS });
+
+  return Employees.getEmployeeStatus(employeeId)
+    .then((response) => { dispatch(getProviderStatusSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(getProviderStatusFailed(error)); callback(false); });
+};
+
 const providersActions = {
   getProviders,
   getProvidersSuccess,
   getProvidersError,
   setFilteredProviders,
   setSelectedProvider,
+  getProviderStatus,
 };
 
 export default providersActions;
