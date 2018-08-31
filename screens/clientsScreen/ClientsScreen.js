@@ -65,6 +65,7 @@ class ClientsScreen extends React.Component {
     return {
       header: props => (
         <SalonSearchHeader
+          clearSearch={clearSearch}
           title={title}
           subTitle={subTitle}
           leftButton={leftButton}
