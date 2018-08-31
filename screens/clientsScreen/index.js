@@ -4,6 +4,7 @@ import clientsActions from '../../actions/clients';
 import ClientsScreen from './ClientsScreen';
 import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
 import clientsSectionSelector from '../../redux/selectors/clientsSelector';
+import * as LoginActions from '../../actions/login';
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
@@ -15,6 +16,7 @@ const mapStateToProps = state => ({
 const mapActionsToProps = dispatch => ({
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
   salonSearchHeaderActions: bindActionCreators({ ...salonSearchHeaderActions }, dispatch),
+  auth: bindActionCreators({ ...LoginActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(ClientsScreen);

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import Icon from '../../../components/UI/Icon';
 
-export default ApptCalendarHeader = props => (
+const ApptCalendarHeader = props => (
   <View style={{
       height: 63,
       paddingBottom: 10,
@@ -100,3 +100,5 @@ export default ApptCalendarHeader = props => (
     </View>
   </View>
 );
+
+export default ApptCalendarHeader;

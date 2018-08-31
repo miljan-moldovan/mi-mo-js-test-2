@@ -7,11 +7,16 @@ import {
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { SafeAreaView } from 'react-navigation';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import Icon from '../../../components/UI/Icon';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonActionSheet from '../../../components/SalonActionSheet';
 import styles from './styles';
 import QueueNavButton from './queueNavButton';
+import BarsActionSheet from '../../../components/BarsActionSheet';
+import * as actions from '../../../actions/login';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 2;
@@ -44,7 +49,6 @@ const options = [
       />
     </View>
   </View>,
-
 
   /*  <View style={styles.actionItemContainer}>
     <View style={styles.actionItemLeft}>
@@ -82,9 +86,6 @@ class QueueHeader extends React.Component {
       case 1:
         navigation.navigate('QueueCombine');
         break;
-      case 2:
-        navigation.navigate('ClientMerge');
-        break;
       default:
         break;
     }
@@ -104,7 +105,17 @@ class QueueHeader extends React.Component {
     this.SalonActionSheet.show();
   };
 
+  showBarsActionSheet = () => {
+    this.BarsActionSheet.show();
+  }
 
+  onLogoutPressed = () => {
+    this.props.auth.logout();
+  }
+
+  assignBarsActionSheet = (item) => {
+    this.BarsActionSheet = item;
+  }
   render() {
     return this.props.searchMode ? (
       <SafeAreaView style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
@@ -131,16 +142,19 @@ class QueueHeader extends React.Component {
           wrapperStyle={{ paddingBottom: 11 }}
         />
 
+        <BarsActionSheet
+          ref={this.assignBarsActionSheet}
+          onLogout={this.onLogoutPressed}
+          navigation={this.props.navigation}
+        />
+
         <QueueNavButton
           type="solid"
           icon="bars"
           style={{
            alignItems: 'flex-start', flex: 1, paddingLeft: 8, paddingTop: 5,
           }}
-          onPress={() => {
-            const { navigation } = this.props;
-            navigation.navigate('Settings');
-          }}
+          onPress={this.showBarsActionSheet}
         />
         <View style={{
          justifyContent: 'flex-end', alignItems: 'center', flex: 1, paddingRight: 6,
@@ -163,15 +177,20 @@ class QueueHeader extends React.Component {
 }
 
 
-QueueHeader.defaultProps = {
-
-};
+QueueHeader.defaultProps = {};
 
 QueueHeader.propTypes = {
   searchText: PropTypes.any.isRequired,
   searchMode: PropTypes.any.isRequired,
   onChangeSearchMode: PropTypes.any.isRequired,
   onChangeSearchText: PropTypes.any.isRequired,
+  auth: PropTypes.shape({
+    logout: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
-export default QueueHeader;
+const mapActionToProps = dispatch => ({
+  auth: bindActionCreators({ ...actions }, dispatch),
+});
+
+export default connect(null, mapActionToProps)(QueueHeader);
