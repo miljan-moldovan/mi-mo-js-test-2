@@ -15,6 +15,9 @@ import PropTypes from 'prop-types';
 
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
+import SalonInputModal from '../../../components/SalonInputModal';
+import { Client } from '../../../utilities/apiWrapper';
+import regexs from '../../../constants/Regexs';
 
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -55,6 +58,8 @@ state = {
   client: null,
   services: null,
   data: [],
+  isEmailVisible: false,
+  email: '',
   sortItemsBy: { value: 'FIRST_ARRIVED', label: 'First Arrived' },
 }
 componentWillMount() {
@@ -64,7 +69,7 @@ componentWillMount() {
 
   const sortedItems = this.sortItems(this.state.sortItemsBy, data);
 
-  this.props.settingsActions.getSettingsByName('AutoAssignFirstAvailableProvider');
+  // this.props.settingsActions.getSettingsByName('AutoAssignFirstAvailableProvider');
 
   this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
@@ -135,7 +140,7 @@ handlePressSummary = {
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
   returning: returned => this.handleReturning(returned),
-  toService: () => this.checkShouldMerge(),
+  toService: () => this.checkHasEmail(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
 }
@@ -362,6 +367,24 @@ checkHasProvider = (ignoreAutoAssign) => {
       checkProviderStatus: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
+  }
+}
+
+
+checkHasEmail = () => {
+  const { appointment } = this.state;
+
+  const { client } = appointment;
+
+  const { settings } = this.props.settings;
+
+  this.setState({ email: '' });
+  const forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' }).settingValue;
+  if (forceMissingQueueEmail && (!client.email || !client.email.trim())) {
+    this.hideDialog();
+    setTimeout(this.showEmailModal, 500);
+  } else {
+    this.checkShouldMerge();
   }
 }
 
@@ -615,10 +638,41 @@ renderNotification = () => {
 }
 _keyExtractor = (item, index) => item.id;
 
+showEmailModal = () => {
+  this.setState({ isEmailVisible: true });
+}
+
+hideEmailModal = () => {
+  this.setState({ isEmailVisible: false, email: '' });
+  this.checkShouldMerge();
+}
+
+handleOk = (email) => {
+  const isValidEmail = regexs.email.test(email);
+  if (isValidEmail) {
+    if (this.state.client.email === email) {
+      this.checkShouldMerge();
+    } else {
+      const client = { ...this.state.client, email };
+      Client.putClientEmail(client.id, email)
+        .then(() => this.setState({ client }, this.hideEmailModal()))
+        .catch(ex => alert(ex));
+    }
+  } else {
+    alert('Please enter a valid Email');
+  }
+}
+
 render() {
 //
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
+
+
+  const { appointment } = this.state;
+  const { client } = appointment || { email: '' };
+  const fullName = client ? `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}` : '';
+
 
   const header = headerTitle ? (
     <View style={styles.header}>
@@ -628,6 +682,18 @@ render() {
   ) : null;
   return (
     <View style={styles.container}>
+
+      <SalonInputModal
+        visible={this.state.isEmailVisible}
+        title="Client Email"
+        description={`Provide the email address for ${fullName} in order to email Upcoming Appointments`}
+        onPressCancel={this.hideEmailModal}
+        onPressOk={this.handleOk}
+        value={this.state.email}
+        isTextArea={false}
+        placeholder="client@email.com"
+      />
+
       {/* this.props.loading ? (
         <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
