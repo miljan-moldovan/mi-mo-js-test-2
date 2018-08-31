@@ -17,7 +17,6 @@ import * as LoginActions from '../../actions/login';
 const mapStateToProps = state => ({
   appointmentScreenState: {
     ...state.appointmentBookReducer,
-    providers: filteredProviders(state),
   },
   appointmentState: state.appointmentReducer,
   providersState: state.providersReducer,

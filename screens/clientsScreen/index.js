@@ -11,6 +11,9 @@ const mapStateToProps = state => ({
   clientsState: state.clientsReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
   clientsSectionDataSource: clientsSectionSelector(state),
+  total: state.clientsReducer.total,
+  showing: state.clientsReducer.clients.length,
+  isLoadingMore: state.clientsReducer.isLoadingMore,
 });
 
 const mapActionsToProps = dispatch => ({

@@ -349,7 +349,7 @@ class Card extends Component {
   );
 
   renderBadges = () => {
-    const { appointment } = this.props;
+    const { appointment, hiddenAddonsLength } = this.props;
     const { badgeData, client: { name, lastName } } = appointment;
     const initials = `${name[0]}${lastName[0]}`;
     const users = appointment.isMultipleProviders ? (
@@ -372,9 +372,11 @@ class Card extends Component {
     const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
     const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    const badgeAddons = hiddenAddonsLength > 0 ? <Badge text={`+${hiddenAddonsLength}`} /> : null;
     const badgeParty = badgeData.isParty ? <GroupBadge text={initials} /> : null;
     return (
       <View style={styles.badgesContainer}>
+        {badgeAddons}
         {badgeParty}
         { users }
         { star }

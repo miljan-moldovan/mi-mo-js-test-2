@@ -2,7 +2,8 @@ import React from 'react';
 import { View,
   Text,
   SectionList,
-  StyleSheet } from 'react-native';
+  StyleSheet,
+  ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import ClientListItem from './clientListItem';
 import ClientListHeader from './clientListHeader';
@@ -161,11 +162,18 @@ class ClientList extends React.Component {
         return (letterGuide);
       }
 
+      renderMoreLoading = () => this.props.isLoadingMore && (
+        <View style={styles.container}>
+          <ActivityIndicator size="small" />
+        </View>
+      );
+
       render() {
         return (
           <View style={styles.container}>
 
             <SectionList
+              onEndReached={this.props.fetchMore}
               enableEmptySections
               keyboardShouldPersistTaps="always"
               initialNumToRender={this.props.clients.length}
@@ -183,6 +191,7 @@ class ClientList extends React.Component {
                 navigate={this.props.navigate}
               />}
               refreshing={this.props.refreshing}
+              ListFooterComponent={this.renderMoreLoading}
             />
 
             {this.props.clients.length > 0 ? <ListLetterFilter
