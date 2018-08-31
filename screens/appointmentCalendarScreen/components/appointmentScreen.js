@@ -16,6 +16,7 @@ import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 import SalonAlert from '../../../components/SalonAlert';
+import BarsActionSheet from '../../../components/BarsActionSheet';
 
 import styles from './styles';
 
@@ -42,8 +43,7 @@ class AppointmentScreen extends Component {
       }
     }
     let title = (
-      <Text style={styles.titleText}>{currentFilter}
-      </Text>);
+      <Text style={styles.titleText}>{currentFilter}</Text>);
 
     if (params && 'filterProvider' in params && params.filterProvider !== null) {
       const image = getEmployeePhotoSource(params.filterProvider);
@@ -109,11 +109,9 @@ class AppointmentScreen extends Component {
   }
 
   onPressMenu = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    if (this.BarsActionSheet) {
+      this.BarsActionSheet.show();
+    }
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
@@ -470,11 +468,17 @@ class AppointmentScreen extends Component {
       default:
         break;
     }
+
     return (
       <View
         style={styles.mainContainer}
         onLayout={this.handleLayout}
       >
+        <BarsActionSheet
+          ref={item => this.BarsActionSheet = item}
+          onLogout={this.props.auth.logout}
+          navigation={this.props.navigation}
+        />
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={pickerMode}
