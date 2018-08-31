@@ -41,7 +41,7 @@ export default StyleSheet.create({
   },
   serviceTimeLeft: {
     flexDirection: 'row',
-    minWidth: 50,
+    // minWidth: 150,
     minHeight: 15,
   },
   underline: {

@@ -12,6 +12,7 @@ import {
   primaryClientForSelectedAppt,
   getBookedByEmployee,
 } from '../redux/selectors/newAppt';
+import { showErrorAlert } from './utils';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
 export const POPULATE_STATE_FROM_APPT = 'newAppointment/POPULATE_STATE_FROM_APPT';
@@ -610,7 +611,7 @@ const messageAllClients = (date, messageText, callback) => (dispatch) => {
   dispatch({ type: MESSAGE_ALL_CLIENTS });
   return AppointmentBook.postMessageAllClients(date, messageText)
     .then((response) => { dispatch(messageAllClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(messageAllClientsFailed(error)); callback(false); });
+    .catch((error) => { dispatch(messageAllClientsFailed(error)); showErrorAlert(error); callback(false); });
 };
 
 
@@ -628,7 +629,7 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
   dispatch({ type: MESSAGE_PROVIDERS_CLIENTS });
   return AppointmentBook.postMessageProvidersClients(date, employeeId, messageText)
     .then((response) => { dispatch(messageProvidersClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
+    .catch((error) => { dispatch(messageProvidersClientsFailed(error)); showErrorAlert(error); callback(false); });
 };
 
 const modifyAppt = (

@@ -153,6 +153,26 @@ getGroupLeaderName = (item: QueueItem) => {
   return null;
 }
 
+getprocessMinutes = (item) => {
+  const processTime = moment(item.processTime, 'hh:mm:ss');
+  const processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+    ? processTime.minutes() + processTime.hours() * 60
+    : 0;
+
+  return processMinutes;
+}
+
+
+getprogressMaxMinutes = (item) => {
+  const progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss');
+
+  const progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+    ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+    : 0;
+
+  return progressMaxMinutes;
+}
+
 getLabelForItem = (item) => {
   switch (item.status) {
     case QUEUE_ITEM_FINISHED:
@@ -161,12 +181,8 @@ getLabelForItem = (item) => {
 
           <View style={styles.finishedTime}>
             <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-            <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
-              ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
-              : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-                ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
-                : 0)}min est.
-              </Text>
+            <Text style={styles.finishedTimeText}>{this.getprocessMinutes(item)}min /
+              <Text style={{ fontFamily: 'Roboto-Regular' }}>{this.getprogressMaxMinutes(item)}min est. </Text>
             </Text>
           </View>
 
@@ -319,13 +335,15 @@ cancelButton = () => ({
   },
 })
 
-checkHasProvider = () => {
+checkHasProvider = (ignoreAutoAssign) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
 
   const { settings } = this.props.settings;
 
-  const autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
+
 
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.handleStartService();
@@ -356,13 +374,13 @@ checkShouldMerge = () => {
     if (response) {
       const { mergeableClients } = this.props.clientsState;
       if (mergeableClients.length === 0) {
-        this.checkHasProvider();
+        this.checkHasProvider(false);
       } else {
         this.hideDialog();
         this.props.navigation.navigate('ClientMerge', {
           clientId: client.id,
-          onPressBack: () => { this.checkHasProvider(); },
-          onDismiss: () => { this.checkHasProvider(); },
+          onPressBack: () => { this.checkHasProvider(false); },
+          onDismiss: () => { this.checkHasProvider(false); },
         });
       }
     } else {
@@ -400,7 +418,12 @@ handleStartService = () => {
   };
 
 
-  this.props.startService(appointment.id, serviceData);
+  this.props.startService(appointment.id, serviceData, (response) => {
+    if (!response) {
+      this.checkHasProvider(true);
+    }
+  });
+
   this.hideDialog();
 }
 
