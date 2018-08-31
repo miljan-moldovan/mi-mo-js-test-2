@@ -10,6 +10,7 @@ import getEmployeeScheduleException from './getEmployeeScheduleException';
 import putEmployeeScheduleException from './putEmployeeScheduleException';
 import getEmployee from './getEmployee';
 import getEmployeeStatus from './getEmployeeStatus';
+import getEmployeesScheduleDates from './getEmployeesScheduleDates';
 
 export {
   getEmployeeAppointments,
@@ -20,6 +21,7 @@ export {
   getEmployees,
   getEmployeeSchedule,
   getEmployeeScheduleRange,
+  getEmployeesScheduleDates,
   getRoomAssignments,
   putRoomAssignments,
   getEmployeeScheduleException,

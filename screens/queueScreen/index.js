@@ -55,6 +55,7 @@ class QueueScreen extends React.Component {
           searchText={searchText}
         />
       ),
+      tabBarVisible: true,
     };
   };
 
