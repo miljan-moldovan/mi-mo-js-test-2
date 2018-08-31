@@ -187,6 +187,13 @@ class QueueScreen extends React.Component {
     </Text>
   </View>,
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
+      rightButton:
+      <View style={styles.rightContainer}>
+        <Text style={styles.leftButtonText}>
+                  Cancel
+        </Text>
+      </View>,
+      rightButtonOnPress: (navigation) => {navigation.navigate('Main')},
       },
     });
   }
