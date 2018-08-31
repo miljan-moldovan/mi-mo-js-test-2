@@ -98,6 +98,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const query = {
+  fromAllStores: false,
+  'nameFilter.FilterRule': 3,
+  'nameFilter.SortOrder': 1,
+};
+
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
@@ -240,11 +246,9 @@ class ClientsScreen extends React.Component {
   filterClients = (searchText) => {
     if (searchText && searchText.length > 0) {
       const params = {
-        fromAllStores: false,
-        'nameFilter.FilterRule': 3,
+        ...query,
         'nameFilter.FilterValue': searchText,
-        'nameFilter.SortOrder': 1,
-      };
+      }
       this.props.clientsActions.getClients(params);
     }
   };
@@ -280,6 +284,24 @@ class ClientsScreen extends React.Component {
     }
   };
 
+  fetchMore = () => {
+    const {
+      total,
+      showing,
+      salonSearchHeaderState: {
+        searchText,
+      },
+    } = this.props;
+    if (total > showing && searchText && searchText.length > 0) {
+      const params = {
+        ...query,
+        'nameFilter.FilterValue': searchText,
+        'nameFilter.Skip': showing,
+      };
+      this.props.clientsActions.getMoreClients(params);
+    }
+  }
+
   render() {
     let onChangeClient = null;
     const { state } = this.props.navigation;
@@ -292,6 +314,8 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.clientsList}>
           <ClientList
+            isLoadingMore={this.props.isLoadingMore}
+            fetchMore={this.fetchMore}
             navigate={this.props.navigation.navigate}
             boldWords={this.props.salonSearchHeaderState.searchText}
             style={styles.clientListContainer}
@@ -306,6 +330,13 @@ class ClientsScreen extends React.Component {
 }
 
 ClientsScreen.propTypes = {
+  isLoadingMore: PropTypes.bool.isRequired,
+  total: PropTypes.number.isRequired,
+  showing: PropTypes.number.isRequired,
+  clientsActions: PropTypes.shape({
+    getClients: PropTypes.func,
+    getMoreClients: PropTypes.func,
+  }).isRequired,
   navigation: PropTypes.shape({
     goBack: PropTypes.func,
     state: PropTypes.shape({

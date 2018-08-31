@@ -181,8 +181,8 @@ class ShowApptScreen extends React.Component {
           renderSectionHeader={this.renderSectionHeader}
           sections={appointments}
           onEndReached={this.fetchMore}
-          renderFooter={this.renderMoreLoading()}
-          ListEmptyComponent={this.renderEmptyLoading()}
+          ListFooterComponent={this.renderMoreLoading}
+          ListEmptyComponent={this.renderEmptyLoading}
         />
         <SalonInputModal
           visible={isEmailVisible}

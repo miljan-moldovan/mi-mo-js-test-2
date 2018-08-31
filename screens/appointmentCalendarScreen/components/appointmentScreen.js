@@ -330,10 +330,13 @@ class AppointmentScreen extends Component {
   }
 
   goToCancelAppt = (appointment) => {
-    const { client, date } = appointment;
+    const { client, date, service: { isAddon } } = appointment;
     const dateMoment = moment(date, 'YYYY-MM-DD');
     const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
       && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
+    const hiddenAddonsLenght = appointments.filter(appt => ((isAddon &&
+        appointment.primaryAppointmentId === appt.id) ||
+        (!isAddon && appt.primaryAppointmentId === appointment.id)));
     const onPressRight = () => {
       this.setState(
         { visibleAppointment: false },
@@ -358,7 +361,7 @@ class AppointmentScreen extends Component {
         },
       );
     };
-    if (appointments.length > 1) {
+    if (appointments.length - hiddenAddonsLenght.length > 1) {
       const alert = {
         title: 'Question',
         description: 'The client has other appointments scheduled today, would you like to cancel them all?',
