@@ -87,10 +87,11 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.props.actions.getQueueState();
-    this.props.actions.receiveQueue();
-    setInterval(this.props.actions.receiveQueue, 15000);
-    setInterval(this.props.actions.getQueueState, 5000);
+    // this.props.actions.getQueueState();
+    // this.props.actions.receiveQueue();
+    // setInterval(this.props.actions.receiveQueue, 15000);
+    // setInterval(this.props.actions.getQueueState, 5000);
+    this.loadQueueData();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
@@ -115,8 +116,10 @@ class QueueScreen extends React.Component {
     this.setState({ index: route.key }, this.animateText);
   }
 
-  onRefresh = () => {
-
+  loadQueueData = () => {
+    
+    this.props.actions.getQueueState();
+    this.props.actions.receiveQueue();
   }
 
   refreshData = () => {
@@ -202,7 +205,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('WalkIn', { newAppointment });
+    this.props.navigation.navigate('WalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {
@@ -347,6 +350,7 @@ class QueueScreen extends React.Component {
                 navigation={navigation}
                 loading={loading}
                 isWaiting
+                loadQueueData={this.loadQueueData}
               />
             );
           case SERVICED:
@@ -357,6 +361,7 @@ class QueueScreen extends React.Component {
                 groups={groups}
                 navigation={navigation}
                 loading={loading}
+                loadQueueData={this.loadQueueData}
               />
             );
           default:
@@ -400,6 +405,7 @@ class QueueScreen extends React.Component {
               <Queue
                 isWaiting
                 {...this.props}
+                loadQueueData={this.loadQueueData}
                 onChangeFilterResultCount={this.updateSearchWaitingCount}
                 data={waitingQueue}
                 headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
@@ -407,6 +413,7 @@ class QueueScreen extends React.Component {
               />
               <Queue
                 {...this.props}
+                loadQueueData={this.loadQueueData}
                 onChangeFilterResultCount={this.updateSearchServiceCount}
                 data={serviceQueue}
                 headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}

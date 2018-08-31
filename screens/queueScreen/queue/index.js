@@ -6,6 +6,7 @@ import {
   FlatList,
   RefreshControl,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -146,10 +147,11 @@ handlePressSummary = {
 }
 
 _onRefresh = () => {
-  this.setState({ refreshing: true });
-  // FIXME this._refreshData();
-  // emulate refresh call
-  setTimeout(() => this.setState({ refreshing: false }), 500);
+  // this.setState({ refreshing: true });
+  // // FIXME this._refreshData();
+  // // emulate refresh call
+  // setTimeout(() => this.setState({ refreshing: false }), 500);
+  this.props.loadQueueData();
 }
 
 getGroupLeaderName = (item: QueueItem) => {
@@ -276,9 +278,9 @@ handlePressRebook = () => {
 handlePressCheckIn = (isActiveCheckin) => {
   const { appointment } = this.state;
   if (isActiveCheckin) {
-    this.props.checkInClient(appointment.id);
+    this.props.checkInClient(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.uncheckInClient(appointment.id);
+    this.props.uncheckInClient(appointment.id, this.props.loadQueueData);
   }
 
   this.hideDialog();
@@ -288,8 +290,6 @@ handlePressWalkOut = (isActiveWalkOut) => {
   const { appointment } = this.state;
 
   if (isActiveWalkOut) {
-    // this.props.walkOut(appointment.id);
-
     if (appointment !== null) {
       this.props.navigation.navigate('Walkout', {
         appointment,
@@ -311,7 +311,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
         {
           text: 'Yes, I’m sure',
           onPress: () => {
-            this.props.noShow(appointment.id);
+            this.props.noShow(appointment.id, this.props.loadQueueData);
             this.hideDialog();
           },
         },
@@ -325,9 +325,9 @@ handleReturning = (returned) => {
   const { appointment } = this.state;
 
   if (returned) {
-    this.props.returned(appointment.id);
+    this.props.returned(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.returnLater(appointment.id);
+    this.props.returnLater(appointment.id, this.props.loadQueueData);
   }
 
   this.hideDialog();
@@ -444,6 +444,8 @@ handleStartService = () => {
   this.props.startService(appointment.id, serviceData, (response) => {
     if (!response) {
       this.checkHasProvider(true);
+    } else {
+      this.props.loadQueueData();
     }
   });
 
@@ -452,7 +454,8 @@ handleStartService = () => {
 
 handleToWaiting = () => {
   const { appointment } = this.state;
-  this.props.toWaiting(appointment.id);
+
+  this.props.toWaiting(appointment.id, this.props.loadQueueData);
   this.hideDialog();
 }
 
@@ -460,9 +463,9 @@ handlePressFinish = (finish) => {
   const { appointment } = this.state;
 
   if (!finish) {
-    this.props.undoFinishService(appointment.id);
+    this.props.undoFinishService(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.finishService(appointment.id);
+    this.props.finishService(appointment.id, this.props.loadQueueData);
   }
 
   this.hideDialog();
@@ -694,24 +697,25 @@ render() {
         placeholder="client@email.com"
       />
 
-      {/* this.props.loading ? (
+      { this.props.loading ? (
         <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>
-) : null */}
-      <FlatList
-        style={{ marginTop: 5 }}
-        renderItem={this.renderItem}
-        data={this.state.data}
-        keyExtractor={this._keyExtractor}
-        ListHeaderComponent={header}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />
-}
-      />
+      ) :
+        <FlatList
+          style={{ marginTop: 5 }}
+          renderItem={this.renderItem}
+          data={this.state.data}
+          keyExtractor={this._keyExtractor}
+          ListHeaderComponent={header}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+        }
+        />
+      }
       <QueueItemSummary
         {...this.props}
         isVisible={this.state.isVisible}
@@ -748,6 +752,16 @@ Queue.propTypes = {
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
+  loadQueueData: PropTypes.func.isRequired,
+  checkInClient: PropTypes.func.isRequired,
+  uncheckInClient: PropTypes.func.isRequired,
+  noShow: PropTypes.func.isRequired,
+  returned: PropTypes.func.isRequired,
+  returnLater: PropTypes.func.isRequired,
+  startService: PropTypes.func.isRequired,
+  toWaiting: PropTypes.func.isRequired,
+  undoFinishService: PropTypes.func.isRequired,
+  finishService: PropTypes.func.isRequired,
   data: PropTypes.any.isRequired,
   settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,

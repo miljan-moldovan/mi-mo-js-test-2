@@ -217,7 +217,7 @@ class TurnAwayScreen extends Component {
     const { navigate } = this.props.navigation;
     const params = this.props.navigation.state.params || {};
     const { apptBook } = params;
-    debugger //eslint-disable-line
+    
     const { selectedReasonCode } = this.state;
 
     return (

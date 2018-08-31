@@ -32,11 +32,13 @@ const putWalkout = (clientQueueItemId, params, callback) => (dispatch) => {
   dispatch({ type: PUT_WALKOUT });
   return QueueStatus.putWalkOut(clientQueueItemId, params)
     .then((response) => {
+      debugger //eslint-disable-line
       dispatch(purgeForm('WalkoutScreen', clientQueueItemId.toString()));
       callback(true);
       return dispatch(putWalkoutSuccess(response));
     })
     .catch((error) => {
+      debugger //eslint-disable-line
       if (error.responseCode === 99) {
         dispatch(storeForm('WalkoutScreen', clientQueueItemId.toString(), params));
       }
