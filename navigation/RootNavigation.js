@@ -61,7 +61,7 @@ const RootDrawerNavigator = TabNavigator(
         }
         jumpToIndex(scene.index);
       },
-      tabBarVisible: screenProps.drawerOptions.showTabBar,
+      tabBarVisible: true///screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',
