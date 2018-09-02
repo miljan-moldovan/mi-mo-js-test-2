@@ -16,6 +16,7 @@ import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 import SalonAlert from '../../../components/SalonAlert';
+import BarsActionSheet from '../../../components/BarsActionSheet';
 
 import styles from './styles';
 
@@ -42,8 +43,7 @@ class AppointmentScreen extends Component {
       }
     }
     let title = (
-      <Text style={styles.titleText}>{currentFilter}
-      </Text>);
+      <Text style={styles.titleText}>{currentFilter}</Text>);
 
     if (params && 'filterProvider' in params && params.filterProvider !== null) {
       const image = getEmployeePhotoSource(params.filterProvider);
@@ -71,10 +71,10 @@ class AppointmentScreen extends Component {
       header: (
         <ApptCalendarHeader
           title={title}
-          onPressMenu={() => navigation.state.params.onPressMenu()}
-          onPressTitle={() => navigation.state.params.onPressTitle()}
-          onPressEllipsis={() => navigation.state.params.onPressEllipsis()}
-          onPressCalendar={() => navigation.state.params.onPressCalendar()}
+          onPressMenu={params ? params.onPressMenu : null}
+          onPressTitle={params ? params.onPressTitle : null}
+          onPressEllipsis={params ? params.onPressEllipsis : null}
+          onPressCalendar={params ? params.onPressCalendar : null}
         />
       ),
       tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
@@ -109,21 +109,36 @@ class AppointmentScreen extends Component {
   }
 
   onPressMenu = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    if (this.BarsActionSheet) {
+      this.BarsActionSheet.show();
+    }
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
+  onChangeClient = (client) => {
+    this.goToShowAppt(client);
+  }
+
+  handleClientScreenGoBack = (navigation) => {
+    navigation.goBack();
+  }
+
+  handleClientScreenNewClient = (navigation) => {
+    navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient });
+  }
+
   onPressCalendar = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    const headerProps = {
+      title: 'Appointment List',
+      subTitle: null,
+      leftButtonOnPress: this.handleClientScreenGoBack,
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+      rightButtonOnPress: this.handleClientScreenNewClient,
+    };
+
+    this.props.navigation.navigate('ApptBookClient', { onChangeClient: this.onChangeClient, headerProps });
   };
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
@@ -313,10 +328,13 @@ class AppointmentScreen extends Component {
   }
 
   goToCancelAppt = (appointment) => {
-    const { client, date } = appointment;
+    const { client, date, service: { isAddon } } = appointment;
     const dateMoment = moment(date, 'YYYY-MM-DD');
     const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
       && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
+    const hiddenAddonsLenght = appointments.filter(appt => ((isAddon &&
+        appointment.primaryAppointmentId === appt.id) ||
+        (!isAddon && appt.primaryAppointmentId === appointment.id)));
     const onPressRight = () => {
       this.setState(
         { visibleAppointment: false },
@@ -341,7 +359,7 @@ class AppointmentScreen extends Component {
         },
       );
     };
-    if (appointments.length > 1) {
+    if (appointments.length - hiddenAddonsLenght.length > 1) {
       const alert = {
         title: 'Question',
         description: 'The client has other appointments scheduled today, would you like to cancel them all?',
@@ -470,11 +488,17 @@ class AppointmentScreen extends Component {
       default:
         break;
     }
+
     return (
       <View
         style={styles.mainContainer}
         onLayout={this.handleLayout}
       >
+        <BarsActionSheet
+          ref={item => this.BarsActionSheet = item}
+          onLogout={this.props.auth.logout}
+          navigation={this.props.navigation}
+        />
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={pickerMode}

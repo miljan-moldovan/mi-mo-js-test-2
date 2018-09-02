@@ -6,30 +6,40 @@ export default StyleSheet.create({
     backgroundColor: '#333',
     flexDirection: 'column',
   },
-  serviceListContainer: {
+  clientListContainer: {
     flex: 1,
     backgroundColor: '#333',
     flexDirection: 'column',
   },
-  servicesList: {
-    flex: 9,
-    backgroundColor: 'white',
+  title: {
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'Roboto',
+    padding: 20,
+    marginTop: 20,
+    alignSelf: 'center',
+    backgroundColor: 'transparent',
   },
-  backIcon: {
-    fontSize: 30,
-    marginRight: 8,
-    textAlign: 'left',
-    color: '#FFFFFF',
+  clientsHeader: {
+    flex: 1.6,
+    backgroundColor: 'rgba(0, 0, 0, 0.30)',
+    flexDirection: 'column',
+  },
+  clientsList: {
+    flex: 9,
+    backgroundColor: '#F8F8F8',
   },
   leftButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   rightButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
   },
   leftButtonText: {
     color: '#FFFFFF',
@@ -42,7 +52,7 @@ export default StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-    textAlign: 'center',
+    textAlign: 'right',
   },
   rightButtonContainer: {
     flexDirection: 'row',
@@ -54,22 +64,30 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
+  searchClients: {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  searchClientsTitle: {
+    color: '#727A8F',
+    fontSize: 13,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  searchClientsText: {
+    color: '#727A8F',
+    fontSize: 11,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  searchIconContainer: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    paddingTop: 5,
+    paddingRight: 0,
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
   },
 });

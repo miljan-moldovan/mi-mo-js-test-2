@@ -107,10 +107,10 @@ class ShowApptScreen extends React.Component {
 
   handleOnPress = (item) => {
     const {
-      navigation: { goBack, state: { params: { goToAppt } } },
+      navigation: { popToTop, state: { params: { goToAppt } } },
     } = this.props;
     goToAppt({ date: item.date, endDate: item.date, appointmentId: item.id });
-    goBack();
+    popToTop();
   }
 
   putClientSuccess = () => {
@@ -181,8 +181,8 @@ class ShowApptScreen extends React.Component {
           renderSectionHeader={this.renderSectionHeader}
           sections={appointments}
           onEndReached={this.fetchMore}
-          renderFooter={this.renderMoreLoading()}
-          ListEmptyComponent={this.renderEmptyLoading()}
+          ListFooterComponent={this.renderMoreLoading}
+          ListEmptyComponent={this.renderEmptyLoading}
         />
         <SalonInputModal
           visible={isEmailVisible}

@@ -219,7 +219,6 @@ class ClientFormula extends React.Component {
               <InputGroup>
                 <ProviderInput
                   showFirstAvailable={false}
-                  apptBook
                   noPlaceholder
                   style={styles.innerRow}
                   selectedProvider={this.state.formula.enteredBy}
@@ -265,7 +264,6 @@ class ClientFormula extends React.Component {
                 <InputDivider />
                 <ProviderInput
                   showFirstAvailable={false}
-                  apptBook
                   noPlaceholder
                   style={styles.innerRow}
                   selectedProvider={this.state.formula.provider}

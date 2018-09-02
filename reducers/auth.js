@@ -34,8 +34,6 @@ function auth(state = initialState, action) {
       return {
         loggedIn: false,
       };
-    case AT.LOGOUT:
-      return {};
     case AT.FINGERPRINT_ENABLE:
       return {
         ...state,

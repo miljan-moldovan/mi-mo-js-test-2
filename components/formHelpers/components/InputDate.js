@@ -55,6 +55,8 @@ export default class InputDate extends React.Component {
     return (
       <View style={{ flexDirection: 'row', flex: 1 }}>
         <SalonDatePicker
+          minDate={this.props.minDate}
+          maxDate={this.props.maxDate}
           isVisible={this.state.showModal}
           onPress={this.onPressDatePicker}
           selectedDate={this.props.selectedDate}
