@@ -282,7 +282,7 @@ class ProviderScreen extends React.Component {
     this.flatListRef.scrollToIndex({ animated: true, index });
   }
 
-  handleOnChangeProvider = async (provider) => {
+  handleOnChangeProvider = (provider) => {
     const {
       queueList,
       dismissOnSelect,
@@ -294,9 +294,9 @@ class ProviderScreen extends React.Component {
       providersActions,
       navigation: { goBack },
     } = this.props;
-    const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
-    const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
-    if (checkProviderStatus || showOnlyAvailable) {
+    // const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
+    // const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
+    if (checkProviderStatus) {
       providersActions.getProviderStatus(provider.id, (result) => {
         if (result) {
           if (
