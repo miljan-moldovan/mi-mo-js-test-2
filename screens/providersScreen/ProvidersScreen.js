@@ -13,12 +13,14 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get, isNull } from 'lodash';
 
+import { Settings } from '../../utilities/apiWrapper';
 import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { DefaultAvatar } from '../../components/formHelpers';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -197,28 +199,15 @@ class ProviderScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const { navigation: { state, goBack } } = props;
-    const params = state.params || {};
-    const showFirstAvailable = get(params, 'showFirstAvailable', true);
-    const checkProviderStatus = get(params, 'checkProviderStatus', false);
-    const showEstimatedTime = get(params, 'showEstimatedTime', true);
-    const filterList = get(params, 'filterList', false);
-    const filterByService = get(params, 'filterByService', false);
-    const selectedProvider = get(params, 'selectedProvider', null);
-
 
     this.state = {
-      filterList,
-      filterByService,
-      selectedProvider,
-      showFirstAvailable,
       showEstimatedTime: false,
       refreshing: false,
       headerProps: {
         title: 'Providers',
         subTitle: null,
         leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-        leftButtonOnPress: () => goBack(),
+        leftButtonOnPress: props.navigation.goBack,
       },
     };
   }
@@ -228,6 +217,57 @@ class ProviderScreen extends React.Component {
     this.onRefresh();
   }
 
+  onRefresh = () => {
+    const { filterList, selectedService } = this.params;
+    this.props.providersActions.getProviders(
+      {
+        filterRule: 3,
+        maxCount: 100,
+        sortOrder: 1,
+        sortField: 'FirstName,LastName',
+      },
+      selectedService,
+      filterList,
+    );
+  }
+
+  get currentData() {
+    const { queueList } = this.params;
+    // if (queueList) {
+    //   return this.props.queueList;
+    // }
+    return this.props.providersState.currentData;
+  }
+
+  get params() {
+    const { navigation: { state } } = this.props;
+    const params = state.params || {};
+    const showFirstAvailable = get(params, 'showFirstAvailable', true);
+    const checkProviderStatus = get(params, 'checkProviderStatus', false);
+    const showEstimatedTime = get(params, 'showEstimatedTime', true);
+    const selectedService = get(params, 'selectedService', null);
+    const filterList = get(params, 'filterList', false);
+    const selectedProvider = get(params, 'selectedProvider', null);
+    const onChangeProvider = get(params, 'onChangeProvider', null);
+    const dismissOnSelect = get(params, 'dismissOnSelect', null);
+    const queueList = get(params, 'queueList', false);
+    return {
+      queueList,
+      filterList,
+      dismissOnSelect,
+      selectedService,
+      onChangeProvider,
+      selectedProvider,
+      showEstimatedTime,
+      showFirstAvailable,
+      checkProviderStatus,
+    };
+  }
+
+  getItemLayout = (data, index) => (
+    { length: 43, offset: (43 + StyleSheet.hairlineWidth) * index, index }
+  )
+
   getFirstItemForLetter = (letter) => {
     const { currentData } = this.props.providersState;
     for (let i = 0; i < currentData.length; i += 1) {
@@ -235,7 +275,6 @@ class ProviderScreen extends React.Component {
         return i;
       }
     }
-
     return false;
   }
 
@@ -243,20 +282,29 @@ class ProviderScreen extends React.Component {
     this.flatListRef.scrollToIndex({ animated: true, index });
   }
 
-  handleOnChangeProvider = (provider) => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
-    }
-
-
-    if (this.state.checkProviderStatus) {
-      this.props.providersActions.getProviderStatus(provider.id, (result) => {
+  handleOnChangeProvider = async (provider) => {
+    const {
+      queueList,
+      dismissOnSelect,
+      onChangeProvider,
+      checkProviderStatus,
+    } = this.params;
+    const {
+      providersState,
+      providersActions,
+      navigation: { goBack },
+    } = this.props;
+    const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
+    const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
+    if (checkProviderStatus || showOnlyAvailable) {
+      providersActions.getProviderStatus(provider.id, (result) => {
         if (result) {
-          console.log('providerStatus: ', this.props.providersState.providerStatus);
-
-          if (!this.props.providersState.providerStatus.isWorking ||
-          this.props.providersState.providerStatus.isOnBreak) {
-            const message = `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
+          if (
+            !providersState.providerStatus.isWorking ||
+            providersState.providerStatus.isOnBreak
+          ) {
+            const message =
+              `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
 
             Alert.alert(
               'Provider not available',
@@ -264,26 +312,23 @@ class ProviderScreen extends React.Component {
               [
                 {
                   text: 'Ok, got it',
-                  onPress: () => {},
+                  onPress: () => { },
                 },
               ],
               { cancelable: false },
             );
           } else {
-            this.props.providersActions.setSelectedProvider(provider);
+            providersActions.setSelectedProvider(provider);
 
-            const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
-            if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
-            if (dismissOnSelect) { this.props.navigation.goBack(); }
+            onChangeProvider(provider);
+            if (dismissOnSelect) { goBack(); }
           }
         }
       });
     } else {
-      this.props.providersActions.setSelectedProvider(provider);
-
-      const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
-      if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
-      if (dismissOnSelect) { this.props.navigation.goBack(); }
+      providersActions.setSelectedProvider(provider);
+      onChangeProvider(provider);
+      if (dismissOnSelect) { goBack(); }
     }
   }
 
@@ -317,21 +362,10 @@ class ProviderScreen extends React.Component {
     this.setState({ providers: this.props.providersState.filtered });
   }
 
-  onRefresh = () => {
-    const { filterByService, filterList } = this.state;
-    this.props.providersActions.getProviders(
-      {
-        filterRule: 3,
-        maxCount: 100,
-        sortOrder: 1,
-        sortField: 'FirstName,LastName',
-      },
-      filterByService,
-      filterList,
-    );
-  }
-
   renderItem = ({ item, index }) => {
+    const {
+      selectedProvider,
+    } = this.params;
     const image = getEmployeePhotoSource(item);
     return (
       <SalonTouchableOpacity
@@ -356,7 +390,7 @@ class ProviderScreen extends React.Component {
           />
           <WordHighlighter
             highlight={this.state.searchText}
-            style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+            style={selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
             highlightStyle={{ color: '#1DBF12' }}
           >
             {item.fullName}
@@ -366,7 +400,7 @@ class ProviderScreen extends React.Component {
           {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          {this.state.selectedProvider === item.id && (
+          {selectedProvider === item.id && (
             <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
           )}
         </View>
@@ -385,16 +419,13 @@ class ProviderScreen extends React.Component {
   );
 
   render() {
-    const { state } = this.props.navigation;
-
-    let onChangeProvider = null;
-    // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeProvider) {
-      onChangeProvider = this.handleOnChangeProvider;
-    }
-
+    const { showFirstAvailable } = this.params;
     return (
       <View style={styles.container}>
+        {
+          this.props.providersState.isLoading &&
+          <LoadingOverlay />
+        }
         <SalonSearchBar
           backgroundColor="#d9d9da"
           fontColor="#727A8F"
@@ -414,37 +445,28 @@ class ProviderScreen extends React.Component {
 
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
-            {this.state.showFirstAvailable && (
+            {
+              showFirstAvailable &&
               <React.Fragment>
                 <FirstAvailableRow onPress={this.handleOnChangeProvider} />
                 {this.renderSeparator()}
               </React.Fragment>
-            )}
-            {this.props.providersState.isLoading ?
-              (
-                <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
-                  <ActivityIndicator />
-                </View>
-              )
-              : (
-                <FlatList
-                  style={{ backgroundColor: 'white' }}
-                  data={this.props.providersState.currentData}
-                  renderItem={this.renderItem}
-                  ItemSeparatorComponent={this.renderSeparator}
-                  ref={(ref) => { this.flatListRef = ref; }}
-                  getItemLayout={(data, index) => (
-                    { length: 43, offset: (43 + StyleSheet.hairlineWidth) * index, index }
-                  )}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.onRefresh}
-                    />
-                  }
-                />
-              )
             }
+            <FlatList
+              style={{ backgroundColor: 'white' }}
+              data={this.currentData}
+              renderItem={this.renderItem}
+              ItemSeparatorComponent={this.renderSeparator}
+              ref={(ref) => { this.flatListRef = ref; }}
+              getItemLayout={this.getItemLayout}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+            />
+
           </View>
           {/* <View style={styles.letterListContainer}>
             {letters.map(item => (

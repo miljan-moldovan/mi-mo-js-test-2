@@ -103,13 +103,14 @@ class SchedulePicker extends React.Component {
     const {
       label,
       toggle,
+      inline,
       isOpen,
       schedule,
       placeholder,
       ...props
     } = this.props;
     const valueStyle = isOpen ? { color: Colors.secondaryLightBlue } : null;
-    return (
+    return inline ? this.renderPicker() : (
       <React.Fragment>
         <InputButton
           {...props}
@@ -121,7 +122,7 @@ class SchedulePicker extends React.Component {
           style={styles.noPadding}
         />
         {isOpen ? this.renderPicker() : null}
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 }
@@ -129,6 +130,7 @@ SchedulePicker.propTypes = {
   value: PropTypes.string.isRequired,
   date: PropTypes.any,
   format: PropTypes.string,
+  inline: PropTypes.bool,
   storeState: PropTypes.shape({
     isLoading: PropTypes.bool,
   }).isRequired,
@@ -143,6 +145,7 @@ SchedulePicker.propTypes = {
 };
 SchedulePicker.defaultProps = {
   date: moment(),
+  inline: false,
   label: '',
   format: 'hh:mm A',
   placeholder: '',

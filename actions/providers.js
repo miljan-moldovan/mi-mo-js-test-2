@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isFunction } from 'lodash';
 import { Services, Employees } from '../utilities/apiWrapper';
 
 const alphabeticFilter = (a, b) => {
@@ -28,8 +28,12 @@ const getProvidersSuccess = (providerList, filterList = false) => {
   let providers = providerList;
   const deskStaff = providers.filter(item => item.isReceptionist);
   if (filterList) {
-    const filterProviderIds = filterList.map(item => item.id);
-    providers = providers.filter(item => filterProviderIds.includes(item.id));
+    if (isFunction(filterList)) {
+      providers = filterList(providers);
+    } else {
+      const filterProviderIds = filterList.slice().sort(alphabeticFilter).map(item => item.id);
+      providers = providers.filter(item => filterProviderIds.includes(item.id));
+    }
   }
   return {
     type: GET_PROVIDERS_SUCCESS,
@@ -42,13 +46,11 @@ const getProvidersError = error => ({
   data: { error },
 });
 
-const getProviders = (params, filterByService = false, filterList = false) =>
-  (dispatch, getState) => {
+const getProviders = (params, selectedService = null, filterList = false) =>
+  (dispatch) => {
     dispatch({ type: GET_PROVIDERS });
-    const { selectedService } = getState().serviceReducer;
-
-    const serviceId = get(selectedService || {}, 'id', false);
-    if (serviceId && filterByService) {
+    const serviceId = get(selectedService, 'id', false);
+    if (serviceId) {
       return Services.getEmployeesByService(serviceId, params)
         .then((providers) => {
           dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
@@ -57,7 +59,6 @@ const getProviders = (params, filterByService = false, filterList = false) =>
           dispatch(getProvidersError(err));
         });
     }
-
     if (!filterList) {
       return Employees.getEmployees(params)
         .then((providers) => {
@@ -67,8 +68,7 @@ const getProviders = (params, filterByService = false, filterList = false) =>
           dispatch(getProvidersError(err));
         });
     }
-
-    return dispatch(getProvidersSuccess(filterList.slice().sort(alphabeticFilter), filterList));
+    return dispatch(getProvidersSuccess(filterList, filterList));
   };
 
 const setFilteredProviders = (filtered) => {

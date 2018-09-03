@@ -25,20 +25,24 @@ export default class ProviderInput extends React.Component {
       onPress = false,
       apptBook = false,
       headerProps = {},
+      queueList = false,
       filterList = false,
       selectedService = null,
       selectedProvider = null,
       showFirstAvailable = true,
       showEstimatedTime = true,
+      checkProviderStatus = false,
     } = this.props;
     if (isFunction(onPress)) { onPress(); }
     navigate(apptBook ? 'ApptBookProvider' : 'Providers', {
+      queueList,
       filterList,
       headerProps,
       selectedService,
       selectedProvider,
       showFirstAvailable,
       showEstimatedTime,
+      checkProviderStatus,
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
