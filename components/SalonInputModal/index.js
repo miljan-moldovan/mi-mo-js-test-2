@@ -21,10 +21,11 @@ class SalonInputModal extends React.Component {
     if (!this.state.visible && newProps.visible) {
       this.state = { ...this.state, visible: true };
     } else if (this.state.visible && !newProps.visible) {
-      this.state = { ...this.state, visible: false };
+      this.state = { ...this.state, visible: false, value: '' };
     }
+
     if (newProps.value) {
-      this.state = { ...this.state, value: newProps.value };
+      this.setState({ value: newProps.value });
     }
   }
 

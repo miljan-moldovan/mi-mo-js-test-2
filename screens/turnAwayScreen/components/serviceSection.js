@@ -13,6 +13,8 @@ import {
   ProviderInput,
   InputDivider,
   ServiceInput,
+  DefaultAvatar,
+  SchedulePicker,
 } from '../../../components/formHelpers';
 
 
@@ -29,11 +31,11 @@ class ServiceSection extends Component {
     };
   }
 
-  hideDateTimePicker =() => {
+  hideDateTimePicker = () => {
     this.setState({ isDateTimePickerVisible: false });
   }
 
-  showDateTimePicker =(date, service, index, type) => {
+  showDateTimePicker = (date, service, index, type) => {
     this.setState({
       isDateTimePickerVisible: true,
       date: date.toDate(),
@@ -43,7 +45,7 @@ class ServiceSection extends Component {
     });
   }
 
-  handleDateSelection=(date) => {
+  handleDateSelection = (date) => {
     const newService = this.state.service;
     newService[this.state.type] = moment(date.getTime());
     this.props.onUpdate(this.state.index, newService);
@@ -67,38 +69,6 @@ class ServiceSection extends Component {
     this.props.onUpdate(index, newService);
   }
 
-  renderProvider = (provider) => {
-    const providerName = provider ? (!provider.isFirstAvailable ? ((`${provider.name} ${provider.lastName}`)) : 'First Available') : '';
-
-    if (provider) {
-      return (<View style={styles.providerContainer}>
-        <SalonAvatar
-          width={26}
-          image={getEmployeePhotoSource(provider)}
-        />
-        <Text style={styles.textData}>{providerName}</Text>
-              </View>
-
-      );
-    }
-    return (
-      <Text style={styles.label}>Provider</Text>
-    );
-  }
-
-  renderServiceInfo = (serviceContainer, service) => {
-    if (service) {
-      const durationInMinutes = moment.duration(service.minDuration).asMinutes();
-      serviceContainer.toTime = moment(serviceContainer.fromTime, 'HH:mm:ss').add(durationInMinutes, 'minutes');
-      return (
-        <Text style={[styles.textData, { marginLeft: 0 }]}>{service.name}</Text>
-      );
-    }
-    return (
-      <Text style={styles.label}>Service</Text>
-    );
-  }
-
   showDateTimePickerToTime = (service, index) => {
     this.showDateTimePicker(service.toTime, service, index, 'toTime');
   }
@@ -119,38 +89,31 @@ class ServiceSection extends Component {
       </View>
       <View style={styles.serviceDataContainer}>
         <ProviderInput
-          apptBook={this.props.apptBook}
           noLabel
+          queueList
           filterByService
-          rootStyle={styles.providerRootStyle}
-          selectedProvider={service.provider}
-          placeholder="Provider"
+          placeholder={false}
+          apptBook={this.props.apptBook}
           navigate={this.props.navigate}
+          selectedService={service.service}
+          selectedProvider={service.provider}
+          rootStyle={styles.providerRootStyle}
           headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
-          onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
+          onChange={provider => this.handleProviderSelection(provider, service, index)}
         />
         <InputDivider style={styles.middleSectionDivider} />
-
         <ServiceInput
-          apptBook={this.props.apptBook}
           noPlaceholder
+          apptBook={this.props.apptBook}
           rootStyle={styles.providerRootStyle}
           nameKey={service.service && service.service.description ? 'description' : 'name'}
-          selectedProvider={service.provider}
           navigate={this.props.navigate}
+          selectedProvider={service.provider}
           selectedService={service.service}
           headerProps={{ title: 'Services', ...this.props.cancelButton() }}
           onChange={(selectedService) => { this.handleServiceSelection(selectedService, service, index); }}
         />
         <InputDivider style={styles.middleSectionDivider} />
-        {/*  <SalonTouchableOpacity onPress={() => this.handlePressService(service, index)}>
-          <View style={styles.innerRow}>
-            {this.renderServiceInfo(service, service.service)}
-            <View style={styles.dataContainer}>
-              <FontAwesome style={styles.carretIcon}>{Icons.angleRight}</FontAwesome>
-            </View>
-          </View>
-        </SalonTouchableOpacity> */}
         <SalonTouchableOpacity onPress={() => this.showDateTimePickerFromTime(service, index)}>
           <View style={styles.innerRow}>
             <Text style={styles.label}>Start</Text>
@@ -182,12 +145,15 @@ class ServiceSection extends Component {
           </View>
         </SalonTouchableOpacity>
         <DateTimePicker
+          titleIOS="Pick Time"
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this.handleDateSelection}
           onCancel={this.hideDateTimePicker}
           mode="time"
-          minuteInterval={this.state.minuteInterval}
+          minuteInterval={this.props.minuteInterval}
           date={this.state.date}
+          minimumDate={moment('7:00:00', 'hh:mm:ss').toDate()}
+          maximumDate={moment('23:45:00', 'hh:mm:ss').toDate()}
         />
       </View>
     );
@@ -197,9 +163,12 @@ class ServiceSection extends Component {
 ServiceSection.propTypes = {
   services: PropTypes.arrayOf(PropTypes.object).isRequired,
   onAdd: PropTypes.func.isRequired,
+  minuteInterval: PropTypes.number,
   onRemove: PropTypes.func.isRequired,
   onUpdate: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
 };
-
+ServiceSection.defaultProps = {
+  minuteInterval: 1,
+};
 export default ServiceSection;

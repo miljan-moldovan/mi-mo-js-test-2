@@ -86,9 +86,6 @@ const QueueTimeNote = (props) => {
 
   const serviceTimeRightStyle = { marginLeft: 0 };
 
-  console.log(item);
-  console.log(moment(item.enteredTime, 'hh:mm:ss').format('LT'));
-
 
   // todo: (Malakhov) Temp fix for demo need check with Back
   // const enteredTime = moment(getTypeTime(item), 'hh:mm:ss').format('LT');
