@@ -25,7 +25,7 @@ const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
 const options = [
   'Edit Note',
-  'Delete Note',
+  'Delete/Undelete Note',
   'Cancel',
 ];
 
@@ -83,6 +83,7 @@ class ClientNotesScreen extends Component {
       refreshing: false,
       showDeleted: false,
       forAppointment,
+      searchText: '',
     };
 
     this.getNotes();
@@ -105,21 +106,18 @@ class ClientNotesScreen extends Component {
   // }
 
   onPressSalonBtnAppointment = () => {
-
     this.setState({ forAppointment: !this.state.forAppointment });
-    this.filterNotes(null, this.state.showDeleted, this.state.forSales, !this.state.forAppointment, this.state.forQueue);
+    this.filterNotes(this.state.searchText, this.state.showDeleted, this.state.forSales, !this.state.forAppointment, this.state.forQueue);
   }
 
   onPressSalonBtnSales = () => {
-
     this.setState({ forSales: !this.state.forSales });
-    this.filterNotes(null, this.state.showDeleted, !this.state.forSales, this.state.forAppointment, this.state.forQueue);
+    this.filterNotes(this.state.searchText, this.state.showDeleted, !this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   onPressSalonBtnQueue = () => {
-
     this.setState({ forQueue: !this.state.forQueue });
-    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, !this.state.forQueue);
+    this.filterNotes(this.state.searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, !this.state.forQueue);
   }
 
   setNoteTags = (note) => {
@@ -231,7 +229,7 @@ class ClientNotesScreen extends Component {
         this.props.clientNotesActions.setFilteredNotes(notes);
         this.props.clientNotesActions.setNotes(notes);
 
-        this.filterNotes(null, false, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+        this.filterNotes(this.state.searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
 
         this.setState({ refreshing: false });
       }
@@ -241,16 +239,18 @@ class ClientNotesScreen extends Component {
 
   deleteNoteAlert(note) {
     let deleteMessage = 'Delete Note';
+    let deleteSubMessage = 'Are you sure you want to delete this note?';
     let deleteFunction = () => this.deleteNote(note);
 
     if (note.isDeleted) {
       deleteMessage = 'Undelete Note';
+      deleteSubMessage = 'Are you sure you want to undelete this note?';
       deleteFunction = () => this.undeleteNote(note);
     }
 
     Alert.alert(
       deleteMessage,
-      'Are you sure you want to delete this note?',
+      deleteSubMessage,
       [
         { text: 'Cancel', onPress: () => null, style: 'cancel' },
         { text: 'OK', onPress: deleteFunction },
@@ -277,6 +277,9 @@ class ClientNotesScreen extends Component {
   }
 
   editNote(note) {
+    const params = this.props.navigation.state.params || {};
+    const { apptBook = false } = params;
+
     this.props.clientNotesActions.setOnEditionNote(note);
     const { navigate } = this.props.navigation;
     const { item } = this.props.navigation.state.params;
@@ -286,12 +289,13 @@ class ClientNotesScreen extends Component {
       note,
       client: this.props.client,
       onNavigateBack: this.getNotes,
+      apptBook,
       ...this.props,
     });
   }
 
   reloadAfterChange = () => {
-    this.filterNotes(null, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+    this.filterNotes(this.state.searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   showActionSheet = (note) => {
@@ -321,11 +325,12 @@ class ClientNotesScreen extends Component {
   }
 
   filterNotes(searchText, showDeleted, forSales, forAppointment, forQueue) {
-
     const baseNotes = showDeleted ?
       this.props.clientNotesState.notes : this.props.clientNotesState.notes.filter(el => !el.isDeleted);
 
     if (searchText && searchText.length > 0) {
+      this.setState({ searchText });
+
       const criteria = [
         { Field: 'enteredBy', Values: [searchText.toLowerCase()] },
         { Field: 'text', Values: [searchText.toLowerCase()] },
@@ -383,10 +388,13 @@ class ClientNotesScreen extends Component {
 
   onPressDelete = () => {
     this.setState({ showDeleted: !this.state.showDeleted });
-    this.filterNotes(null, !this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
+    this.filterNotes(this.state.searchText, !this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
   render() {
+    const params = this.props.navigation.state.params || {};
+    const { apptBook = false } = params;
+
     return (
       <View style={styles.container}>
         <SalonActionSheet
@@ -524,6 +532,7 @@ class ClientNotesScreen extends Component {
              mode: 'modal',
             actionType: 'new',
             ...this.props,
+            apptBook,
             client: this.props.client,
              onNavigateBack: this.getNotes,
             });

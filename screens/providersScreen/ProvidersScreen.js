@@ -297,12 +297,17 @@ class ProviderScreen extends React.Component {
     const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
     const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
     if (checkProviderStatus || showOnlyAvailable) {
-      providersActions.getProviderStatus(provider.id, (result) => {
-        if (result) {
+      providersActions.getProviderStatus(provider.id, (providerStatus) => {
+        if (providerStatus) {
+          
+
+
           if (
-            !providersState.providerStatus.isWorking ||
-            providersState.providerStatus.isOnBreak
+            !providerStatus.isWorking ||
+            providerStatus.isOnBreak
           ) {
+
+
             const message =
               `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
 

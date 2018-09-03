@@ -88,10 +88,9 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.props.actions.getQueueState();
-    this.props.actions.receiveQueue();
     // setInterval(this.props.actions.receiveQueue, 15000);
     // setInterval(this.props.actions.getQueueState, 5000);
+    this.loadQueueData();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
@@ -116,8 +115,9 @@ class QueueScreen extends React.Component {
     this.setState({ index: route.key }, this.animateText);
   }
 
-  onRefresh = () => {
-
+  loadQueueData = () => {
+    this.props.actions.getQueueState();
+    this.props.actions.receiveQueue();
   }
 
   refreshData = () => {
@@ -203,7 +203,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('WalkIn', { newAppointment });
+    this.props.navigation.navigate('WalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {
@@ -337,6 +337,7 @@ class QueueScreen extends React.Component {
             navigation={navigation}
             loading={loading}
             isWaiting
+            loadQueueData={this.loadQueueData}
           />
         );
       case SERVICED:
@@ -394,6 +395,7 @@ class QueueScreen extends React.Component {
             {...this.props}
             onChangeFilterResultCount={this.updateSearchWaitingCount}
             data={waitingQueue}
+            loadQueueData={this.loadQueueData}
             headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
             {...p}
           />
@@ -401,6 +403,7 @@ class QueueScreen extends React.Component {
             {...this.props}
             onChangeFilterResultCount={this.updateSearchServiceCount}
             data={serviceQueue}
+            loadQueueData={this.loadQueueData}
             headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
             {...p}
           />

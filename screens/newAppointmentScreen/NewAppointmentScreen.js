@@ -696,7 +696,7 @@ export default class NewAppointmentScreen extends React.Component {
 
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.props.newAppointmentState.client });
+    this.props.navigation.navigate('ClientInfo', { client: this.props.newAppointmentState.client, apptBook: true });
   }
 
   renderExtraClientButtons = isDisabled => ([

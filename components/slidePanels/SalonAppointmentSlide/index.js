@@ -111,7 +111,7 @@ class SalonAppointmentSlide extends React.Component {
   keyExtractor = item => item.id;
 
   goToClientInfo = (client) => {
-    this.props.navigation.navigate('ClientInfo', { client });
+    this.props.navigation.navigate('ClientInfo', { client, apptBook: true });
     this.hidePanel();
   }
 

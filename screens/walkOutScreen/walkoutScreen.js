@@ -79,6 +79,7 @@ class WalkoutScreen extends Component {
   }
 
   componentWillMount() {
+
     const { appointment } = this.props.navigation.state.params;
     const service = appointment.services[0];
     const provider = service.isFirstAvailable ?
@@ -120,7 +121,10 @@ class WalkoutScreen extends Component {
   }
 
   goBack = (result) => {
+
     if (result) {
+      const { loadQueueData } = this.props.navigation.state.params;
+      loadQueueData();
       this.props.navigation.goBack();
     } else {
       alert('An error ocurred');
@@ -211,6 +215,7 @@ WalkoutScreen.propTypes = {
   walkoutState: PropTypes.any.isRequired,
   navigate: PropTypes.any.isRequired,
   formCache: PropTypes.any.isRequired,
+  loadQueueData: PropTypes.func.isRequired,
 };
 
 export default WalkoutScreen;
