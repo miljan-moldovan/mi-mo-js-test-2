@@ -95,8 +95,12 @@ const getProviderStatus = (employeeId, callback) => (dispatch) => {
   dispatch({ type: GET_PROVIDER_STATUS });
 
   return Employees.getEmployeeStatus(employeeId)
-    .then((response) => { dispatch(getProviderStatusSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(getProviderStatusFailed(error)); callback(false); });
+    .then((response) => {
+      dispatch(getProviderStatusSuccess(response)); callback(response);
+    })
+    .catch((error) => {
+      dispatch(getProviderStatusFailed(error)); callback(false);
+    });
 };
 
 const providersActions = {

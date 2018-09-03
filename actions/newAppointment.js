@@ -610,8 +610,15 @@ const messageAllClientsFailed = error => ({
 const messageAllClients = (date, messageText, callback) => (dispatch) => {
   dispatch({ type: MESSAGE_ALL_CLIENTS });
   return AppointmentBook.postMessageAllClients(date, messageText)
-    .then((response) => { dispatch(messageAllClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(messageAllClientsFailed(error)); showErrorAlert(error); callback(false); });
+    .then((response) => {
+
+      dispatch(messageAllClientsSuccess(response)); callback(true);
+    })
+    .catch((error) => {
+
+
+      dispatch(messageAllClientsFailed(error)); showErrorAlert(error); callback(false);
+    });
 };
 
 
@@ -628,8 +635,14 @@ const messageProvidersClientsFailed = error => ({
 const messageProvidersClients = (date, employeeId, messageText, callback) => (dispatch) => {
   dispatch({ type: MESSAGE_PROVIDERS_CLIENTS });
   return AppointmentBook.postMessageProvidersClients(date, employeeId, messageText)
-    .then((response) => { dispatch(messageProvidersClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(messageProvidersClientsFailed(error)); showErrorAlert(error); callback(false); });
+    .then((response) => {
+
+      dispatch(messageProvidersClientsSuccess(response)); callback(true);
+    })
+    .catch((error) => {
+
+      dispatch(messageProvidersClientsFailed(error)); showErrorAlert(error); callback(false);
+    });
 };
 
 const modifyAppt = (

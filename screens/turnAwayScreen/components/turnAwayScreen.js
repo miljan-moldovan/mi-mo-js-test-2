@@ -150,7 +150,7 @@ class TurnAwayScreen extends Component {
   }
 
   handleDone = () => {
-    debugger //eslint-disable-line
+
     const services = [];
 
     const selectedServices = JSON.parse(JSON.stringify(this.state.services));

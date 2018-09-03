@@ -174,7 +174,7 @@ export default class AppointmentDetailsScreen extends React.Component {
 
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.state.client });
+    this.props.navigation.navigate('ClientInfo', { client: this.state.client, apptBook: false });
   };
 
 
