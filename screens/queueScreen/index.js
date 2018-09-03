@@ -341,40 +341,15 @@ class QueueScreen extends React.Component {
         );
       case SERVICED:
         return (
-          <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-            <KeyboardAwareScrollView>
-              {!searchWaitingCount && !searchServiceCount ? (
-                <View style={styles.searchEmpty}>
-                  <View style={styles.searchEmptyIconContainer}>
-                    <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
-                  </View>
-                  <Text style={styles.searchEmptyText}>
-                    Results matching
-                    <Text style={styles.notFoundText}>“{filterText}”</Text> were not found.
-                  </Text>
-                  <Text style={styles.searchEmptyTextSmall}>
-                    Check your spelling and try again or tap on one of the suggestions below
-                  </Text>
-                </View>
-              ) : null}
-              <Queue
-                isWaiting
-                {...this.props}
-                onChangeFilterResultCount={this.updateSearchWaitingCount}
-                data={waitingQueue}
-                headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
-                {...p}
-              />
-              <Queue
-                {...this.props}
-                onChangeFilterResultCount={this.updateSearchServiceCount}
-                data={serviceQueue}
-                headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
-                {...p}
-              />
+          <Queue
+            {...this.props}
+            data={serviceQueue}
+            groups={groups}
+            navigation={navigation}
+            loading={loading}
+            loadQueueData={this.loadQueueData}
+          />
 
-            </KeyboardAwareScrollView>
-          </View>
         );
       default:
         return route;
