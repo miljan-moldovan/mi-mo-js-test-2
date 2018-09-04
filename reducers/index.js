@@ -10,7 +10,7 @@ import appointmentNotesReducer from './appointmentNotes';
 import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
 import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
-import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
+import { salonSearchHeaderReducer } from './searchHeader';
 import userInfoReducer from './userInfo';
 import appointmentBookReducer from './appointmentBook';
 import checkinReducer from './checkin';

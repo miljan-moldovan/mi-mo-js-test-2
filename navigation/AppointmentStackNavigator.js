@@ -260,6 +260,7 @@ const AppointmentStackNavigator = StackNavigator(
     },
     CancelAppointmentScreen: {
       screen: CancelAppointmentScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ShowApptScreen: {
       screen: ShowApptScreen,

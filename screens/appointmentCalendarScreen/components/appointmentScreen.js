@@ -174,7 +174,8 @@ class AppointmentScreen extends Component {
 
   onCardPressed = (appointment) => {
     this.props.modifyApptActions.setSelectedAppt(appointment);
-    this.props.rootDrawerNavigatorAction.changeShowTabBar(false);
+    // this.props.rootDrawerNavigatorAction.changeShowTabBar(false);
+    this.props.navigation.setParams({ tabBarVisible: false });
     this.setState({
       selectedAppointment: appointment,
       visibleAppointment: true,
@@ -269,7 +270,8 @@ class AppointmentScreen extends Component {
     const { appointments, newAppointmentActions, navigation: { navigate } } = this.props;
     const groupData = appointments.filter(appt => appt.appointmentGroupId === appointmentGroupId);
     this.setState({ visibleAppointment: false }, () => {
-      this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      this.props.navigation.setParams({ tabBarVisible: true });
     });
     newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
     navigate('NewAppointment');
@@ -328,18 +330,18 @@ class AppointmentScreen extends Component {
   }
 
   goToCancelAppt = (appointment) => {
-    const { client, date, service: { isAddon } } = appointment;
+    const { client, date } = appointment;
     const dateMoment = moment(date, 'YYYY-MM-DD');
     const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
       && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
-    const hiddenAddonsLenght = appointments.filter(appt => ((isAddon &&
-        appointment.primaryAppointmentId === appt.id) ||
-        (!isAddon && appt.primaryAppointmentId === appointment.id)));
+    const hiddenAddonsLenght = appointments.filter(appt => (appt.id !== appointment.id
+      && appt.appointmentGroupId === appointment.appointmentGroupId));
     const onPressRight = () => {
       this.setState(
         { visibleAppointment: false },
         () => {
-          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.setParams({ tabBarVisible: true });
+          // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
           this.props.navigation.navigate('CancelAppointmentScreen', { appointments });
           if (appointments.length > 1) {
             this.hideAlert();
@@ -351,7 +353,8 @@ class AppointmentScreen extends Component {
       this.setState(
         { visibleAppointment: false },
         () => {
-          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.setParams({ tabBarVisible: true });
+          // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
           this.props.navigation.navigate('CancelAppointmentScreen', { appointments: [appointment] });
           if (appointments.length > 1) {
             this.hideAlert();
@@ -379,7 +382,8 @@ class AppointmentScreen extends Component {
     this.setState(
       { visibleAppointment: false },
       () => {
-        this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+        // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+        this.props.navigation.setParams({ tabBarVisible: true });
         this.props.navigation.navigate('ShowApptScreen', {
           goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
         });
@@ -396,7 +400,8 @@ class AppointmentScreen extends Component {
 
   hideApptSlide = () => {
     this.setState({ visibleAppointment: false }, () => {
-      this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      this.props.navigation.setParams({ tabBarVisible: true });
     });
   }
 

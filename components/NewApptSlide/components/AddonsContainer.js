@@ -82,7 +82,7 @@ const AddonsContainer = (props) => {
               icon="times"
               title={props.required.name}
               onPressIcon={props.onRemoveRequired}
-              length={`${moment.duration(props.required.maxDuration).asMinutes()} min`}
+              length={`${moment.duration(props.required.maxDuration || props.required.duration).asMinutes()} min`}
               onPress={props.onPressRequired}
             />
           )}

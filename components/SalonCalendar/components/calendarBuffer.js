@@ -130,6 +130,7 @@ export default class calendarBuffer extends React.Component {
           height={46}
           left={0}
           top={0}
+          onPress={null}
           onDrop={() => {}}
           onDrag={this.props.onBlockLongPress}
         />
@@ -137,6 +138,7 @@ export default class calendarBuffer extends React.Component {
     }
     return (
       <Card
+        onPress={null}
         startDate={startDate}
         isBufferCard
         isActive={isActive}
