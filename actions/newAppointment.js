@@ -226,7 +226,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
       return null;
     }
     const length = appointmentLength(getState());
-    const serviceLength = moment.duration(service.maxDuration);
+    const serviceLength = moment.duration(service.maxDuration || service.duration);
     const fromTime = moment(startTime).add(moment.duration(length));
     const toTime = moment(fromTime).add(serviceLength);
     const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId)[0], 'client', null) : client;

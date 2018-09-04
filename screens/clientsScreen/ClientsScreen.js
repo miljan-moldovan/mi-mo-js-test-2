@@ -128,13 +128,6 @@ class ClientsScreen extends React.Component {
 
     this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
   }
-  /* eslint-disable */
-  handleLeftButton = () => {
-    if (this.BarsActionSheet) {
-      this.BarsActionSheet.show();
-    }
-  }
-  /* eslint-enable */
 
   state = {
     headerProps: {
@@ -145,11 +138,22 @@ class ClientsScreen extends React.Component {
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
       rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
     },
-  };
+  }
 
-  clearSearch = () => {
-    this.props.clientsActions.setClients([]);
-  };
+  componentDidUpdate(prevProps) {
+    const { salonSearchHeaderState } = prevProps;
+    if (this.props.salonSearchHeaderState.selectedFilter !==
+      salonSearchHeaderState.selectedFilter) {
+      if (salonSearchHeaderState.searchText && salonSearchHeaderState.searchText.length > 0) {
+        const params = {
+          ...query,
+          'nameFilter.FilterValue': salonSearchHeaderState.searchText,
+          fromAllStores: !!salonSearchHeaderState.selectedFilter,
+        };
+        this.props.clientsActions.getClients(params);
+      }
+    }
+  }
 
   getSuggestionsList = (clients) => {
     let suggestions = [];
@@ -170,6 +174,16 @@ class ClientsScreen extends React.Component {
     });
 
     return suggestions;
+  }
+
+  handleLeftButton = () => {
+    if (this.BarsActionSheet) {
+      this.BarsActionSheet.show();
+    }
+  }
+
+  clearSearch = () => {
+    this.props.clientsActions.setClients([]);
   };
 
   _handleOnChangeClient = (client) => {
@@ -192,15 +206,10 @@ class ClientsScreen extends React.Component {
       const params = {
         ...query,
         'nameFilter.FilterValue': searchText,
-      }
+        fromAllStores: !!this.props.salonSearchHeaderState.selectedFilter,
+      };
       this.props.clientsActions.getClients(params);
     }
-  };
-
-  onPressItem = (item) => {
-    this.props.salonSearchHeaderActions.setSearchText(item);
-    this.filterClients(item);
-    this.props.salonSearchHeaderActions.setShowFilter(false);
   };
 
   filterSuggestions = (searchText) => {
@@ -241,6 +250,7 @@ class ClientsScreen extends React.Component {
         ...query,
         'nameFilter.FilterValue': searchText,
         'nameFilter.Skip': showing,
+        fromAllStores: !!this.props.salonSearchHeaderState.selectedFilter,
       };
       this.props.clientsActions.getMoreClients(params);
     }
@@ -271,6 +281,7 @@ class ClientsScreen extends React.Component {
             clients={this.props.clientsSectionDataSource}
             onChangeClient={onChangeClient}
             refreshing={this.props.salonSearchHeaderState.isLoading}
+            isLoading={this.props.clientsState.isLoading}
           />
         </View>
       </View>
