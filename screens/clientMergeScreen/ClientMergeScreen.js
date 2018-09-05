@@ -95,14 +95,14 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
 
     this.props.clientsActions.mergeClients(mainClient, mergedClients, (success) => {
       if (success) {
-        Alert.alert('Success', 'Clients were successfully merged.');
+        // Alert.alert('Success', 'Clients were successfully merged.');
         if (onDismiss) {
           onDismiss();
         } else {
           this.props.navigation.goBack();
         }
       } else {
-        Alert.alert('Error', 'Error merging clients. Please try again.');
+      //  Alert.alert('Error', 'Error merging clients. Please try again.');
       }
     });
   }
