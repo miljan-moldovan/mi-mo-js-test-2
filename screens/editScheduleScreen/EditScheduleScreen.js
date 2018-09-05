@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
-import { get, filter } from 'lodash';
+import { get, filter, orderBy } from 'lodash';
 import PropTypes from 'prop-types';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import {
@@ -126,7 +126,7 @@ class EditScheduleScreen extends React.Component {
 
     if (isException) {
       let employeeSchedules = this.props.employeeScheduleState.employeeScheduleException || false;
-      employeeSchedules = employeeSchedules[employeeSchedules.length - 1];
+      employeeSchedules = orderBy(employeeSchedules, 'id', 'desc')[0];
       employeeScheduleOne = { start: employeeSchedules.start1, end: employeeSchedules.end1, comment: employeeSchedules.comments };
       employeeScheduleTwo = { start: employeeSchedules.start2, end: employeeSchedules.end2 };
     } else {
