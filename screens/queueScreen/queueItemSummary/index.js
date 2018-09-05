@@ -301,9 +301,7 @@ render() {
 
 
 QueueItemSummary.defaultProps = {
-
 };
-
 QueueItemSummary.propTypes = {
   isVisible: PropTypes.any.isRequired,
   onDonePress: PropTypes.any.isRequired,

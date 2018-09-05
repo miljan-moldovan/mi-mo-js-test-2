@@ -153,15 +153,12 @@ class QueueScreen extends React.Component {
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 1 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Cancel
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </View>
+        ),
         leftButtonOnPress: (navigation) => {
           navigation.goBack();
         },
@@ -178,22 +175,18 @@ class QueueScreen extends React.Component {
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 2 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Back
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Back</Text>
+          </View>
+        ),
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
-        rightButton:
-  <View style={styles.rightContainer}>
-    <Text style={styles.leftButtonText}>
-                  Cancel
-    </Text>
-  </View>,
+        rightButton: (
+          <View style={styles.rightContainer}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </View>
+        ),
         rightButtonOnPress: (navigation) => { navigation.navigate('Main'); },
       },
     });
@@ -214,7 +207,9 @@ class QueueScreen extends React.Component {
     this.props.serviceActions.setSelectedService({ id: service.id });
 
     this.props.navigation.navigate('ModalProviders', {
-      filterByService: true,
+      queueList: true,
+      selectedService: service,
+      checkProviderStatus: true,
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',
@@ -485,7 +480,6 @@ QueueScreen.propTypes = {
     receiveQueue: PropTypes.any.isRequired,
     getQueueState: PropTypes.any.isRequired,
   }).isRequired,
-
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
