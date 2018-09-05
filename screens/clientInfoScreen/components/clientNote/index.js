@@ -126,6 +126,7 @@ class ClientNote extends Component {
     }
 
     dismissOnSelect() {
+
       const { navigate } = this.props.navigation;
       this.setState({ isVisible: true });
       navigate('ClientNote', { ...this.props });
@@ -177,6 +178,7 @@ class ClientNote extends Component {
           actionType: 'update',
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
+          onChangeProvider: this.onChangeProvider,
           ...this.props,
         });
       } else {
@@ -184,6 +186,7 @@ class ClientNote extends Component {
           actionType: 'new',
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
+          onChangeProvider: this.onChangeProvider,
           ...this.props,
         });
       }
@@ -192,6 +195,7 @@ class ClientNote extends Component {
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
+      this.setState({ isVisible: true });
       navigation.goBack();
     },
   });
