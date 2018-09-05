@@ -79,7 +79,6 @@ class WalkoutScreen extends Component {
   }
 
   componentWillMount() {
-
     const { appointment } = this.props.navigation.state.params;
     const service = appointment.services[0];
     const provider = service.isFirstAvailable ?
@@ -121,7 +120,6 @@ class WalkoutScreen extends Component {
   }
 
   goBack = (result) => {
-
     if (result) {
       const { loadQueueData } = this.props.navigation.state.params;
       loadQueueData();
