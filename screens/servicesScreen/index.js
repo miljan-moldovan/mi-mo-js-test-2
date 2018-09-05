@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import servicesActions from '../../actions/service';
 import ServicesScreen from './ServicesScreen';
 import { flatServicesSelector } from '../../redux/selectors/services';
-import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
+import salonSearchHeaderActions from '../../reducers/searchHeader';
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,

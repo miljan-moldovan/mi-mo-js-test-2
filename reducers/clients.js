@@ -14,8 +14,9 @@ import {
   MERGE_CLIENTS,
   MERGE_CLIENTS_SUCCESS,
   MERGE_CLIENTS_FAILED,
-  GET_MORE_APPOINTMETNS_SUCCESS,
+  GET_MORE_CLIENTS_SUCCESS,
   GET_MORE_CLIENTS,
+  GET_CLIENTS_MORE_FAILED,
 } from '../actions/clients';
 
 const initialState = {
@@ -50,7 +51,7 @@ export default function clientsReducer(state = initialState, action) {
         clients: data.clients,
         error: null,
       };
-    case GET_MORE_APPOINTMETNS_SUCCESS:
+    case GET_MORE_CLIENTS_SUCCESS:
       return {
         ...state,
         clients: concat(state.clients, data.clients),
@@ -65,6 +66,13 @@ export default function clientsReducer(state = initialState, action) {
         isLoadingMore: false,
         error: data.error,
         clients: [],
+      };
+    case GET_CLIENTS_MORE_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingMore: false,
+        error: data.error,
       };
     case SET_CLIENTS:
       return {

@@ -301,7 +301,7 @@ export default class ModifyAppointmentScreen extends React.Component {
   }
 
   goToClientInfo = (client) => {
-    this.props.navigation.navigate('ClientInfo', { client });
+    this.props.navigation.navigate('ClientInfo', { client, apptBook: true });
   }
 
   shouldUpdateClientInfo = async () => {

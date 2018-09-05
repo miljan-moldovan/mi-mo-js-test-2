@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import clientsActions from '../../actions/clients';
 import ClientsScreen from './ClientsScreen';
-import salonSearchHeaderActions from '../../components/SalonSearchHeader/redux';
+import salonSearchHeaderActions from '../../reducers/searchHeader';
 import clientsSectionSelector from '../../redux/selectors/clientsSelector';
 import * as LoginActions from '../../actions/login';
 

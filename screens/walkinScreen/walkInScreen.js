@@ -157,6 +157,8 @@ class WalkInScreen extends Component {
       };
       this.props.walkInActions.postWalkinClient(params).then(() => {
         this.saving = false;
+        const params = this.props.navigation.state.params || {};
+        params.loadQueueData();
         this.props.navigation.navigate('Main');
       });
     }
@@ -173,7 +175,7 @@ class WalkInScreen extends Component {
   }
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.state.client });
+    this.props.navigation.navigate('ClientInfo', { client: this.state.client, apptBook: false });
   }
 
 

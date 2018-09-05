@@ -530,7 +530,9 @@ class Card extends Component {
                     this.renderStripes({ height, width, backgroundColor }) : null}
                   <TouchableOpacity
                     onPress={() => {
-                      this.props.onPress(this.props.appointment)
+                      if (this.props.onPress) {
+                        this.props.onPress(this.props.appointment);
+                      }
                     }}
                     onLongPress={() => this.handleOnLongPress({ left, verticalPositions, width })}
                     disabled={activeCard || isActive || isInBuffer}

@@ -282,7 +282,7 @@ class ProviderScreen extends React.Component {
     this.flatListRef.scrollToIndex({ animated: true, index });
   }
 
-  handleOnChangeProvider = (provider) => {
+  handleOnChangeProvider = async (provider) => {
     const {
       queueList,
       dismissOnSelect,
@@ -294,14 +294,14 @@ class ProviderScreen extends React.Component {
       providersActions,
       navigation: { goBack },
     } = this.props;
-    // const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
-    // const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
-    if (checkProviderStatus) {
-      providersActions.getProviderStatus(provider.id, (result) => {
-        if (result) {
+    const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
+    const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
+    if (!provider.isFirstAvailable && (checkProviderStatus || showOnlyAvailable)) {
+      providersActions.getProviderStatus(provider.id, (providerStatus) => {
+        if (providerStatus) {
           if (
-            !providersState.providerStatus.isWorking ||
-            providersState.providerStatus.isOnBreak
+            !providerStatus.isWorking ||
+            providerStatus.isOnBreak
           ) {
             const message =
               `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
