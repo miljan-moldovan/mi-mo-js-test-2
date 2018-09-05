@@ -436,12 +436,14 @@ handleStartService = () => {
   };
 
 
-  this.props.startService(appointment.id, serviceData, (response) => {
-    if (!response) {
-      this.checkHasProvider(true);
-    } else {
+  this.props.startService(appointment.id, serviceData, (response, error) => {
+    if (response) {
       this.props.loadQueueData();
     }
+    // else {
+    //   this.checkHasProvider(true);
+    // }
+    //
   });
 
   this.hideDialog();

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Client } from '../utilities/apiWrapper';
+import { showErrorAlert } from './utils';
 
 export const SET_CLIENTS = 'clients/SET_CLIENTS';
 export const SET_FILTERED_CLIENTS = 'clients/SET_FILTERED_CLIENTS';
@@ -144,7 +145,7 @@ const mergeClients = (mainClientId: string, mergeClientsId: Array<String>, callb
 
   return Client.postMergeClients(mainClientId, mergeClientsId)
     .then((response) => { dispatch(mergeClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(mergeClientsFailed(error)); callback(false); });
+    .catch((error) => { dispatch(mergeClientsFailed(error)); showErrorAlert(error); callback(false); });
 };
 
 

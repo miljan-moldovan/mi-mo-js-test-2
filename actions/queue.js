@@ -72,7 +72,6 @@ export const startService = (id, serviceData, callback) => (dispatch) => {
       dispatch(startServiceSuccess(resp)); callback(true);
     })
     .catch((error) => {
-
       showErrorAlert(error);
       dispatch(startServiceFailed(error)); callback(false, error);
     });
@@ -85,6 +84,7 @@ export const receiveQueue = () => async (dispatch: Object => void) => {
     const data = await Queue.getQueue();
     dispatch({ type: QUEUE_RECEIVED, data });
   } catch (error) {
+    showErrorAlert(error);
     dispatch({ type: QUEUE_FAILED, error });
   }
 };
