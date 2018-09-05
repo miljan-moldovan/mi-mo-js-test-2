@@ -70,6 +70,11 @@ export default StyleSheet.create({
     fontSize: 14,
     marginLeft: 5,
   },
+  iconStyle: {
+    fontSize: 20,
+    color: '#727A8F',
+    marginLeft: 10,
+  },
   deleteText: { color: '#D1242A', fontFamily: 'Roboto-Medium' },
   deleteButton: {
     justifyContent: 'center', alignItems: 'center',
