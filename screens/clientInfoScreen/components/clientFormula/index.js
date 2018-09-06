@@ -105,12 +105,12 @@ class ClientFormula extends React.Component {
     this.setState({ formula: newFormula }, this.checkCanSave);
   }
 
-    cancelButton = () => ({
-      leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
-      leftButtonOnPress: () => {
-        this.dismissOnSelect();
-      },
-    });
+  cancelButton = () => ({
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: () => {
+      this.dismissOnSelect();
+    },
+  });
 
     handleOnNavigateBack = () => {
       this.setState({ isVisible: true });
@@ -120,7 +120,7 @@ class ClientFormula extends React.Component {
       this.setState({ isVisible: true });
     }
 
-    handlePressProvider = () => {
+    handlePressProvider = (onChangeProvider) => {
       const { navigate } = this.props.navigation;
 
       this.setState({ isVisible: false });
@@ -130,6 +130,8 @@ class ClientFormula extends React.Component {
         actionType: 'update',
         dismissOnSelect: this.dismissOnSelect,
         onNavigateBack: this.handleOnNavigateBack,
+        onChangeProvider,
+        headerProps: { title: 'Providers', ...this.cancelButton() },
         ...this.props,
       });
     }
@@ -241,9 +243,7 @@ class ClientFormula extends React.Component {
                   iconStyle={styles.carretIcon}
                   avatarSize={20}
                   navigate={this.props.navigation.navigate}
-                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                  onChange={this.onChangeEnteredBy}
-                  onPress={this.handlePressProvider}
+                  onPress={() => { this.handlePressProvider(this.onChangeEnteredBy); }}
                 />
                 <InputDivider />
                 <InputPicker
@@ -286,9 +286,7 @@ class ClientFormula extends React.Component {
                   iconStyle={styles.carretIcon}
                   avatarSize={20}
                   navigate={this.props.navigation.navigate}
-                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                  onChange={this.onChangeProvider}
-                  onPress={this.handlePressProvider}
+                  onPress={() => { this.handlePressProvider(this.onChangeProvider); }}
                 />
               </InputGroup>
               <SectionDivider />

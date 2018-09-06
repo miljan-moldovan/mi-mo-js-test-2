@@ -147,6 +147,14 @@ class ServicesScreen extends React.Component {
     this.setState({ headerProps: props });
   }
 
+  get services() {
+    const { servicesState } = this.props;
+    return servicesState.filtered.map(cat => ({
+      ...cat,
+      services: cat.services.filter(itm => !itm.isAddon),
+    }));
+  }
+
   getServices = () => {
     this.props.servicesActions.setShowCategoryServices(false);
     const params = this.props.navigation.state.params || {};
@@ -264,6 +272,7 @@ class ServicesScreen extends React.Component {
       rightButton: walkInRoute ? navigation.state.params.headerProps.rightButton : null,
       rightButtonOnPress: walkInRoute ? navigation.state.params.headerProps.rightButtonOnPress : null,
     }, true);
+
     this.props.servicesActions.setShowCategoryServices(true);
     this.props.servicesActions.setCategoryServices(item.services);
   }
@@ -284,30 +293,30 @@ class ServicesScreen extends React.Component {
         <View style={styles.servicesList}>
           {(!servicesState.showCategoryServices
             && !this.props.salonSearchHeaderState.showFilter
-            && servicesState.filtered.length > 0) &&
+            && this.services.length > 0) &&
             <ServiceCategoryList
               onRefresh={this.getServices}
               handlePressServiceCategory={this.handlePressServiceCategory}
-              serviceCategories={servicesState.filtered}
-              serviceCategoriesLength={servicesState.filtered.length}
+              serviceCategories={this.services}
+              serviceCategoriesLength={this.services.length}
             />
           }
 
           {(!servicesState.showCategoryServices
             && this.props.salonSearchHeaderState.showFilter
-            && servicesState.filtered.length > 0) &&
+            && this.services.length > 0) &&
             <ServiceList
               {...this.props}
               onRefresh={this.getServices}
               boldWords={this.props.salonSearchHeaderState.searchText}
               style={styles.serviceListContainer}
-              services={servicesState.filtered}
+              services={this.services}
               onChangeService={this.handleOnChangeService}
             />
           }
 
           {(servicesState.showCategoryServices
-            && servicesState.filtered.length > 0) &&
+            && this.services.length > 0) &&
             <CategoryServicesList
               {...this.props}
               onRefresh={this.getServices}
