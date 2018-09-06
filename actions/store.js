@@ -35,8 +35,10 @@ const setStore = (storeId, callback) => async (dispatch) => {
     // console.log('blabla', 'setStore', data);
   } else {
     // TODO: Add proper saving for new JWT key
+    AsyncStorage.setItem(JWTKEY, data.response);
     dispatch({
       type: SET_MAIN_STORE_SUCCESS,
+      data: { storeId },
     });
   }
 };

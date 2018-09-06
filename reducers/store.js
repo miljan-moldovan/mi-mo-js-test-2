@@ -1,7 +1,7 @@
 // @flow
 import {
   LOAD_STORE_INFO_SUCCESS,
-  LOAD_SCHEDULE_EXCEPTIONS_SUCCESS,
+  LOAD_SCHEDULE_EXCEPTIONS_SUCCESS, SET_MAIN_STORE_SUCCESS,
 } from '../actions/store';
 
 const initialState = {
@@ -23,6 +23,12 @@ export default function storeReducer(state = initialState, action) {
       return {
         ...state,
         scheduleExceptions: data.scheduleExceptions,
+      };
+    case SET_MAIN_STORE_SUCCESS:
+      return {
+        ...state,
+        hasStore: true,
+        storeId: data.storeId,
       };
     default:
       return state;

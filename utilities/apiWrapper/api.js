@@ -187,7 +187,7 @@ let headers = {
 
 let axiosInstance = null;
 
-const getApiInstance = async () => {
+const getApiInstance = async (updateInstance) => {
   if (!axiosInstance) {
     try {
       const apiURL = await AsyncStorage.getItem(URLKEY);
@@ -196,7 +196,7 @@ const getApiInstance = async () => {
       if (apiURL !== null) {
         BASEURL = apiURL;
       } else {
-        BASEURL = 'http://zenithnew-mob.dev.cicd.salondev.net/api/v1';
+        BASEURL = 'https://zenithpos.dev.cicd.salondev.net/api/v1';
       }
 
       if (store !== null) {
@@ -219,6 +219,10 @@ const getApiInstance = async () => {
   return axiosInstance;
 };
 
+const resetApiInstance = () => {
+  axiosInstance = null;
+};
+
 const getEmployeePhoto = employeeId => `${BASEURL}Employees/${employeeId}/Photo`;
 
-export { getApiInstance, getEmployeePhoto };
+export { getApiInstance, getEmployeePhoto, resetApiInstance };

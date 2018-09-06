@@ -49,6 +49,7 @@ export const login = (
         errObj.response.data.urlError = urlError;
       }
 
+      await AsyncStorage.removeItem(JWTKEY);
       const data = await Login.signIn(username, password);
 
       if (data.result !== 1) {
