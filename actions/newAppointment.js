@@ -1,5 +1,5 @@
 import moment, { isDuration } from 'moment';
-import { get, isNil, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
+import { get, isNil, cloneDeep, isFunction, isArray, isNull, isNumber, chain, groupBy, reject } from 'lodash';
 import uuid from 'uuid/v4';
 
 import { Settings, Client, AppointmentBook, Appointment } from '../utilities/apiWrapper';
@@ -12,6 +12,7 @@ import {
   primaryClientForSelectedAppt,
   getBookedByEmployee,
 } from '../redux/selectors/newAppt';
+import { showErrorAlert } from './utils';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
 export const POPULATE_STATE_FROM_APPT = 'newAppointment/POPULATE_STATE_FROM_APPT';
@@ -225,7 +226,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
       return null;
     }
     const length = appointmentLength(getState());
-    const serviceLength = moment.duration(service.maxDuration);
+    const serviceLength = moment.duration(service.maxDuration || service.duration);
     const fromTime = moment(startTime).add(moment.duration(length));
     const toTime = moment(fromTime).add(serviceLength);
     const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId)[0], 'client', null) : client;
@@ -275,7 +276,7 @@ const addServiceItemExtras = (parentId, type, services) => (dispatch, getState) 
 };
 
 const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, getState) => {
-  const newServiceItems = getState().newAppointmentReducer.serviceItems;
+  const newServiceItems = cloneDeep(getState().newAppointmentReducer.serviceItems);
   const serviceIndex = newServiceItems.findIndex(item => item.itemId === serviceId);
   const serviceItemToUpdate = newServiceItems[serviceIndex];
   const serviceItem = {
@@ -286,7 +287,7 @@ const updateServiceItem = (serviceId, updatedService, guestId) => (dispatch, get
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
-    serviceItemToUpdate.service.fromTime,
+    updatedService.fromTime,
   );
   return dispatch({
     type: UPDATE_SERVICE_ITEM,
@@ -475,13 +476,13 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
         type: ADD_APPOINTMENT,
         data: { appointment: res },
       });
-      return dispatch(bookNewApptSuccess(successCallback));
+      dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
       if (isFunction(errorCallback)) {
         errorCallback(err);
       }
-      return dispatch({
+      dispatch({
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },
       });
@@ -609,8 +610,15 @@ const messageAllClientsFailed = error => ({
 const messageAllClients = (date, messageText, callback) => (dispatch) => {
   dispatch({ type: MESSAGE_ALL_CLIENTS });
   return AppointmentBook.postMessageAllClients(date, messageText)
-    .then((response) => { dispatch(messageAllClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(messageAllClientsFailed(error)); callback(false); });
+    .then((response) => {
+
+      dispatch(messageAllClientsSuccess(response)); callback(true);
+    })
+    .catch((error) => {
+
+
+      dispatch(messageAllClientsFailed(error)); showErrorAlert(error); callback(false);
+    });
 };
 
 
@@ -627,8 +635,14 @@ const messageProvidersClientsFailed = error => ({
 const messageProvidersClients = (date, employeeId, messageText, callback) => (dispatch) => {
   dispatch({ type: MESSAGE_PROVIDERS_CLIENTS });
   return AppointmentBook.postMessageProvidersClients(date, employeeId, messageText)
-    .then((response) => { dispatch(messageProvidersClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(messageProvidersClientsFailed(error)); callback(false); });
+    .then((response) => {
+
+      dispatch(messageProvidersClientsSuccess(response)); callback(true);
+    })
+    .catch((error) => {
+
+      dispatch(messageProvidersClientsFailed(error)); showErrorAlert(error); callback(false);
+    });
 };
 
 const modifyAppt = (

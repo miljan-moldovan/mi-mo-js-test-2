@@ -4,8 +4,6 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
-
-import ScorecardScreen from './../screens/ScorecardScreen';
 import Icon from './../components/UI/Icon';
 
 import { isValidAppointment } from '../redux/selectors/newAppt';
@@ -13,7 +11,7 @@ import userActions from '../actions/user';
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
 import appointmentNoteActions from '../actions/appointmentNotes';
-import salonSearchHeaderActions from './../components/SalonSearchHeader/redux';
+import salonSearchHeaderActions from './../reducers/searchHeader';
 
 import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
@@ -26,7 +24,6 @@ const RootDrawerNavigator = TabNavigator(
     Queue: { screen: QueueStackNavigator },
     ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
     Clients: { screen: ClientsStackNavigator },
-    Scorecard: { screen: ScorecardScreen },
     //  Settings: { screen: SettingsScreen },
   },
   {
@@ -47,8 +44,6 @@ const RootDrawerNavigator = TabNavigator(
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {
           iconName = 'calendar';
-        } else if (routeName === 'Scorecard') {
-          iconName = 'clipboard';
         }
 
         // You can return any component that you like here! We usually use an
@@ -67,7 +62,7 @@ const RootDrawerNavigator = TabNavigator(
         }
         jumpToIndex(scene.index);
       },
-      tabBarVisible: screenProps.drawerOptions.showTabBar,
+      //tabBarVisible: true//screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',

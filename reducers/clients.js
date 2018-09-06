@@ -1,5 +1,6 @@
 // @flow
-import clientsActions, {
+import { concat } from 'lodash';
+import {
   SET_CLIENTS,
   SET_FILTERED_CLIENTS,
   SET_SUGGESTIONS_LIST,
@@ -13,6 +14,9 @@ import clientsActions, {
   MERGE_CLIENTS,
   MERGE_CLIENTS_SUCCESS,
   MERGE_CLIENTS_FAILED,
+  GET_MORE_CLIENTS_SUCCESS,
+  GET_MORE_CLIENTS,
+  GET_CLIENTS_MORE_FAILED,
 } from '../actions/clients';
 
 const initialState = {
@@ -22,6 +26,8 @@ const initialState = {
   suggestionsList: [],
   filteredSuggestions: [],
   isLoading: false,
+  total: 0,
+  isLoadingMore: false,
 };
 
 export default function clientsReducer(state = initialState, action) {
@@ -32,19 +38,41 @@ export default function clientsReducer(state = initialState, action) {
         ...state,
         isLoading: true,
       };
+    case GET_MORE_CLIENTS:
+      return {
+        ...state,
+        isLoadingMore: true,
+      };
     case GET_CLIENTS_SUCCESS:
       return {
         ...state,
+        total: data.total,
         isLoading: false,
         clients: data.clients,
+        error: null,
+      };
+    case GET_MORE_CLIENTS_SUCCESS:
+      return {
+        ...state,
+        clients: concat(state.clients, data.clients),
+        total: data.total,
+        isLoadingMore: false,
         error: null,
       };
     case GET_CLIENTS_FAILED:
       return {
         ...state,
         isLoading: false,
+        isLoadingMore: false,
         error: data.error,
         clients: [],
+      };
+    case GET_CLIENTS_MORE_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingMore: false,
+        error: data.error,
       };
     case SET_CLIENTS:
       return {

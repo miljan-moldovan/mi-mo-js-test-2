@@ -29,6 +29,9 @@ class WalkInScreen extends Component {
     const waitTime = navigation.state.params &&
     navigation.state.params.waitTime ?
       navigation.state.params.waitTime : 0;
+
+    const canSave = navigation.state.params.canSave || false;
+
     return ({
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -49,11 +52,9 @@ class WalkInScreen extends Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity style={styles.rightButton} onPress={handlePress}>
+        <SalonTouchableOpacity disabled={!canSave} style={styles.rightButton} onPress={handlePress}>
           <View style={styles.rightButtonContainer}>
-            <Text style={styles.rightButtonText}>
-              Done
-            </Text>
+            <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
           </View>
         </SalonTouchableOpacity>
       ),
@@ -81,7 +82,7 @@ class WalkInScreen extends Component {
         isProviderRequested: !provider.isFirstAvailable,
       }];
 
-      this.setState({ client, services });
+      this.setState({ client, services }, this.checkCanSave);
     }
     const { navigation } = this.props;
     // We can only set the function after the component has been initialized
@@ -157,23 +158,25 @@ class WalkInScreen extends Component {
       };
       this.props.walkInActions.postWalkinClient(params).then(() => {
         this.saving = false;
+        const params = this.props.navigation.state.params || {};
+        params.loadQueueData();
         this.props.navigation.navigate('Main');
       });
     }
   }
 
   handleUpdateClient= (client) => {
-    this.setState({ client });
+    this.setState({ client }, this.checkCanSave);
   }
 
   onChangeClient = (client) => {
     this.setState({
       client,
-    });
+    }, this.checkCanSave);
   }
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.state.client });
+    this.props.navigation.navigate('ClientInfo', { client: this.state.client, apptBook: false });
   }
 
 
@@ -198,7 +201,7 @@ class WalkInScreen extends Component {
     handleRemoveService= (index) => {
       const { services } = this.state;
       services.splice(index, 1);
-      this.setState({ services });
+      this.setState({ services }, this.checkCanSave);
     }
 
     handleUpdateService= (index, service) => {
@@ -208,7 +211,18 @@ class WalkInScreen extends Component {
     }
 
     checkCanSave = () => {
+      const {
+        services,
+      } = this.state;
 
+      let canSave = true;
+
+      for (let i = 0; i < services.length; i += 1) {
+        const serviceBlock = services[i];
+        canSave = serviceBlock.service !== null && serviceBlock.provider !== undefined;
+      }
+
+      this.props.navigation.setParams({ canSave });
     }
 
     handleAddService= () => {
@@ -226,7 +240,7 @@ class WalkInScreen extends Component {
 
       const { services } = this.state;
       services.push(service);
-      this.setState({ services });
+      this.setState({ services }, this.checkCanSave);
     }
 
 
@@ -238,9 +252,8 @@ class WalkInScreen extends Component {
     })
 
     render() {
-      const fullName = this.getFullName();
       const email = this.state.client && this.state.client.email ? this.state.client.email : '';
-      const phones = this.state.client && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
+      const phones = this.state.client && this.state.client.phones && this.state.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
       return (
         <ScrollView style={styles.container}>
 
@@ -250,9 +263,10 @@ class WalkInScreen extends Component {
             </View>
         ) : (
           <View style={styles.container}>
-            <SectionTitle value="CLIENT" />
-            <InputGroup>
+            <SectionTitle value="CLIENT" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
+            <InputGroup style={styles.inputGroupStyle}>
               <ClientInput
+                style={styles.rootStyle}
                 navigate={this.props.navigation.navigate}
                 label={this.state.client === null ? 'Client' : 'Client'}
                 headerProps={{
@@ -267,11 +281,11 @@ class WalkInScreen extends Component {
                 extraComponents={this.state.client !== null && this.renderExtraClientButtons()}
               />
               <InputDivider />
-              <InputLabel label="Email" value={email} />
+              <InputLabel style={styles.rootStyle} label="Email" value={email} />
               <InputDivider />
-              <InputLabel label="Phone" value={phones} />
+              <InputLabel style={styles.rootStyle} label="Phone" value={phones} />
             </InputGroup>
-            <SectionTitle value="SERVICE AND PROVIDER" />
+            <SectionTitle value="SERVICE AND PROVIDER" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
             <ServiceSection
               services={this.state.services}
               onAdd={this.handleAddService}

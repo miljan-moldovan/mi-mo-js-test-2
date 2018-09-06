@@ -664,7 +664,7 @@ export default class Calendar extends Component {
       btnRightText: 'Yes',
       onPressRight: () => {
         this.props.manageBuffer(false);
-        this.setState({ buffer: [], alert: null });
+        this.setState({ buffer: [], alert: null, activeCard: null, activeBlock: null, isResizeing: false });
         this.isBufferCollapsed = false;
       },
     } : null;
@@ -672,7 +672,7 @@ export default class Calendar extends Component {
     if (!alert) {
       this.props.manageBuffer(false);
       this.isBufferCollapsed = false;
-      this.setState({ buffer: [] });
+      this.setState({ buffer: [], activeCard: null, activeBlock: null, isResizeing: false });
     } else {
       this.createAlert(alert);
     }
@@ -747,6 +747,15 @@ export default class Calendar extends Component {
     }
     this.processedCardsIds[id] = numberOfOverlaps;
     return numberOfOverlaps;
+  }
+
+  getHiddenAddonsLength = (currentAppt) => {
+    const { appointments } = this.props;
+    return appointments.filter((appt) => {
+      const { toTime, fromTime } = appt;
+      const duration = moment(toTime, 'HH:mm').diff(moment(fromTime, 'HH:mm'), 'minutes');
+      return appt.primaryAppointmentId === currentAppt.id && appt.service.isAddon && duration === 0;
+    }).length;
   }
 
   renderCards = () => {
@@ -931,6 +940,7 @@ export default class Calendar extends Component {
   }
 
   renderCard = (appointment) => {
+    const { toTime, fromTime } = appointment;
     const {
       apptGridSettings, headerData, selectedProvider, selectedFilter,
       displayMode, appointments, providerSchedule, isLoading, filterOptions, providers,
@@ -947,6 +957,10 @@ export default class Calendar extends Component {
         return null;
       }
     }
+    const duration = moment(toTime, 'HH:mm').diff(moment(fromTime, 'HH:mm'), 'minutes')
+    if (duration === 0) {
+      return null;
+    }
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeCard && activeCard.data.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
@@ -954,9 +968,11 @@ export default class Calendar extends Component {
       activeCard.data.id !== appointment.id) || isInBuffer
       || activeBlock ? null : this.panResponder;
     if (appointment.employee) {
+      const hiddenAddonsLength = this.getHiddenAddonsLength(appointment);
       const numberOfOverlaps = this.getOverlapingCards(appointment);
       return (
         <Card
+          hiddenAddonsLength={hiddenAddonsLength}
           setGoToPositon={this.setGoToPositon}
           goToAppointmentId={goToAppointmentId}
           provider={provider}
@@ -1002,28 +1018,34 @@ export default class Calendar extends Component {
       filterOptions, startDate
     } = this.props;
     const { activeCard, calendarMeasure, isResizeing, pan, pan2 } = this.state;
-    return activeCard ? (
-      <Card
-        pan={pan}
-        pan2={pan2}
-        activeCard={activeCard}
-        panResponder={this.panResponder}
-        appointment={activeCard.data}
-        apptGridSettings={apptGridSettings}
-        onScrollY={this.scrollToY}
-        calendarMeasure={calendarMeasure}
-        calendarOffset={this.offset}
-        onResize={this.handleOnResize}
-        cardWidth={activeCard.cardWidth}
-        height={activeCard.height}
-        onDrop={this.handleCardDrop}
-        isActive
-        opacity={isResizeing ? 0 : 1}
-        isResizeing={this.state.isResizeing}
-        isMultiBlock={filterOptions.showMultiBlock}
-        showAssistant={filterOptions.showAssistantAssignments}
-        startDate={startDate}
-      />) : null;
+    if (activeCard) {
+      const hiddenAddonsLength = this.getHiddenAddonsLength(activeCard.data);
+      return (
+        <Card
+          hiddenAddonsLength={hiddenAddonsLength}
+          pan={pan}
+          pan2={pan2}
+          activeCard={activeCard}
+          panResponder={this.panResponder}
+          appointment={activeCard.data}
+          apptGridSettings={apptGridSettings}
+          onScrollY={this.scrollToY}
+          calendarMeasure={calendarMeasure}
+          calendarOffset={this.offset}
+          onResize={this.handleOnResize}
+          cardWidth={activeCard.cardWidth}
+          height={activeCard.height}
+          onDrop={this.handleCardDrop}
+          isActive
+          opacity={isResizeing ? 0 : 1}
+          isResizeing={this.state.isResizeing}
+          isMultiBlock={filterOptions.showMultiBlock}
+          showAssistant={filterOptions.showAssistantAssignments}
+          startDate={startDate}
+        />
+      );
+    }
+    return null;
   }
 
   renderResizeCard =() => {
@@ -1039,9 +1061,11 @@ export default class Calendar extends Component {
     const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     if (provider && isResizeing && activeCard) {
       const numberOfOverlaps = this.getOverlapingCards(activeCard.data);
+      const hiddenAddonsLength = this.getHiddenAddonsLength(activeCard.data);
     return (
       <Card
         ref={(card) => { this.resizeCard = card; }}
+        hiddenAddonsLength={hiddenAddonsLength}
         numberOfOverlaps={numberOfOverlaps}
         panResponder={this.panResponder}
         appointment={activeCard.data}

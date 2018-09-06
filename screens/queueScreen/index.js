@@ -55,6 +55,7 @@ class QueueScreen extends React.Component {
           searchText={searchText}
         />
       ),
+      tabBarVisible: true,
     };
   };
 
@@ -87,10 +88,9 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.props.actions.getQueueState();
-    this.props.actions.receiveQueue();
-    setInterval(this.props.actions.receiveQueue, 15000);
-    setInterval(this.props.actions.getQueueState, 5000);
+    // setInterval(this.props.actions.receiveQueue, 15000);
+    // setInterval(this.props.actions.getQueueState, 5000);
+    this.loadQueueData();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
@@ -115,8 +115,9 @@ class QueueScreen extends React.Component {
     this.setState({ index: route.key }, this.animateText);
   }
 
-  onRefresh = () => {
-
+  loadQueueData = () => {
+    this.props.actions.getQueueState();
+    this.props.actions.receiveQueue();
   }
 
   refreshData = () => {
@@ -152,15 +153,12 @@ class QueueScreen extends React.Component {
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 1 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Cancel
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </View>
+        ),
         leftButtonOnPress: (navigation) => {
           navigation.goBack();
         },
@@ -177,16 +175,19 @@ class QueueScreen extends React.Component {
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 2 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Back
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Back</Text>
+          </View>
+        ),
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
+        rightButton: (
+          <View style={styles.rightContainer}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </View>
+        ),
+        rightButtonOnPress: (navigation) => { navigation.navigate('Main'); },
       },
     });
   }
@@ -195,7 +196,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('WalkIn', { newAppointment });
+    this.props.navigation.navigate('WalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {
@@ -206,20 +207,20 @@ class QueueScreen extends React.Component {
     this.props.serviceActions.setSelectedService({ id: service.id });
 
     this.props.navigation.navigate('ModalProviders', {
-      filterByService: true,
+      queueList: true,
+      selectedService: service,
+      checkProviderStatus: true,
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 3 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Back
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Back</Text>
+          </View>
+        ),
+        leftButtonOnPress: (navigation) => { navigation.goBack(); },
       },
     });
   }
@@ -265,20 +266,16 @@ class QueueScreen extends React.Component {
       inputRange: [0, 200],
       outputRange: ['#1963CE', '#FFFFFF'],
     });
-
+    const colorStyle = { color: focused ? interpolateColorActive : interpolateColorInactive };
     return (
       <View style={styles.tabLabelContainer}>
         <View style={[styles.tabQueueCounter, focused ? null : { backgroundColor: '#0C4699' }]}>
-          <Animated.Text style={[styles.tabQueueCounterText,
-            { color: focused ? interpolateColorActive : interpolateColorInactive }]}
-          >
+          <Animated.Text style={[styles.tabQueueCounterText, colorStyle]}>
             {route.key === WAITING ?
               this.props.waitingQueue.length : this.props.serviceQueue.length}
           </Animated.Text>
         </View>
-        <Animated.Text style={[styles.animatedText,
-          { color: focused ? interpolateColorActive : interpolateColorInactive }]}
-        >
+        <Animated.Text style={[styles.animatedText, colorStyle]}>
           {route.title}
         </Animated.Text>
       </View>
@@ -286,143 +283,144 @@ class QueueScreen extends React.Component {
   };
 
 
-      renderBar = (props) => {
-        const { guestWaitMins } = this.props.queueState ? this.props.queueState : {};
-        let waitTime = '-';
-        if (guestWaitMins > 0) {
-          waitTime = `${guestWaitMins}`;
-        } else if (guestWaitMins === 0) {
-          waitTime = '0';
-        }
+  renderBar = (props) => {
+    const { guestWaitMins } = this.props.queueState ? this.props.queueState : {};
+    let waitTime = '-';
+    if (guestWaitMins > 0) {
+      waitTime = `${guestWaitMins}`;
+    } else if (guestWaitMins === 0) {
+      waitTime = '0';
+    }
+    const containerStyle = {
+      width: initialLayout.width === 320 ? 200 : 240,
+      marginLeft: initialLayout.width === 320 ? 10 : 12,
+    };
+    const tabStyle = { width: initialLayout.width === 320 ? 100 : 120 };
+    return (
+      <View>
+        <TabBar
+          {...props}
+          tabStyle={[styles.tab, tabStyle]}
+          style={[styles.tabContainer, containerStyle]}
+          renderLabel={this.renderLabel(props)}
+          indicatorStyle={styles.indicator}
+          onTabPress={this.onTabPress}
+        />
+        <View style={styles.summaryBar}>
+          <Text style={styles.summaryBarTextLeft}>
+            <Text style={styles.summaryBarTextLeftEm}>{this.props.queueLength}</Text> CLIENTS TODAY
+          </Text>
+          <Text style={styles.summaryBarTextRight}>
+            <Text style={styles.summaryBarTextRightEm}>{`${waitTime}m`}</Text> Est. Wait
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
+  renderScene = ({ route }) => {
+    const {
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
+    switch (route.key) {
+      case WAITING:
         return (
-          <View>
-            <TabBar
-              {...props}
-              tabStyle={[styles.tab, { width: initialLayout.width === 320 ? 100 : 120 }]}
-              style={[styles.tabContainer,
-                {
-                  width: initialLayout.width === 320 ? 200 : 240,
-                  marginLeft: initialLayout.width === 320 ? 10 : 12,
-                }]}
-              renderLabel={this.renderLabel(props)}
-              indicatorStyle={styles.indicator}
-              onTabPress={this.onTabPress}
-            />
-            <View style={styles.summaryBar}>
-              <Text style={styles.summaryBarTextLeft}>
-                <Text style={styles.summaryBarTextLeftEm}>
-                  {this.props.queueLength}
-                </Text> CLIENTS TODAY
+          <Queue
+            {...this.props}
+            data={waitingQueue}
+            groups={groups}
+            navigation={navigation}
+            loading={loading}
+            isWaiting
+            loadQueueData={this.loadQueueData}
+          />
+        );
+      case SERVICED:
+        return (
+          <Queue
+            {...this.props}
+            data={serviceQueue}
+            groups={groups}
+            navigation={navigation}
+            loading={loading}
+            loadQueueData={this.loadQueueData}
+          />
+
+        );
+      default:
+        return route;
+    }
+  }
+
+  renderSearchResults = () => {
+    const {
+      navigation, waitingQueue, serviceQueue, groups, loading,
+    } = this.props;
+    const {
+      searchType, searchWaitingCount, searchServiceCount, searchText: filterText,
+    } = this.state;
+    const p = {
+      groups,
+      navigation,
+      loading,
+      filterText,
+      searchClient: searchType === SEARCH_CLIENTS,
+      searchProvider: searchType === SEARCH_PROVIDERS,
+    };
+
+    return (
+      <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
+        <KeyboardAwareScrollView>
+          {!searchWaitingCount && !searchServiceCount ? (
+            <View style={styles.searchEmpty}>
+              <View style={styles.searchEmptyIconContainer}>
+                <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
+              </View>
+              <Text style={styles.searchEmptyText}>
+                Results matching
+                <Text style={styles.notFoundText}>“{filterText}”</Text> were not found.
               </Text>
-              <Text style={styles.summaryBarTextRight}>
-                <Text style={styles.summaryBarTextRightEm}>
-                  {waitTime}m
-                </Text> Est. Wait
+              <Text style={styles.searchEmptyTextSmall}>
+                Check your spelling and try again or tap on one of the suggestions below
               </Text>
             </View>
-          </View>
-        );
-      }
+          ) : null}
+          <Queue
+            isWaiting
+            {...this.props}
+            onChangeFilterResultCount={this.updateSearchWaitingCount}
+            data={waitingQueue}
+            loadQueueData={this.loadQueueData}
+            headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
+            {...p}
+          />
+          <Queue
+            {...this.props}
+            onChangeFilterResultCount={this.updateSearchServiceCount}
+            data={serviceQueue}
+            loadQueueData={this.loadQueueData}
+            headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
+            {...p}
+          />
+        </KeyboardAwareScrollView>
+      </View>
+    );
+  }
 
-      renderScene = ({ route }) => {
-        const {
-          navigation, waitingQueue, serviceQueue, groups, loading,
-        } = this.props;
-        switch (route.key) {
-          case WAITING:
-            return (
-              <Queue
-                {...this.props}
-                data={waitingQueue}
-                groups={groups}
-                navigation={navigation}
-                loading={loading}
-                isWaiting
-              />
-            );
-          case SERVICED:
-            return (
-              <Queue
-                {...this.props}
-                data={serviceQueue}
-                groups={groups}
-                navigation={navigation}
-                loading={loading}
-              />
-            );
-          default:
-            return route;
-        }
-      }
+  render() {
+    if (this.state.searchMode) { return this.renderSearchResults(); }
 
-      renderSearchResults = () => {
-        const {
-          navigation, waitingQueue, serviceQueue, groups, loading,
-        } = this.props;
-        const {
-          searchType, searchWaitingCount, searchServiceCount, searchText: filterText,
-        } = this.state;
-        const p = {
-          groups,
-          navigation,
-          loading,
-          filterText,
-          searchClient: searchType === SEARCH_CLIENTS,
-          searchProvider: searchType === SEARCH_PROVIDERS,
-        };
-
-        return (
-          <View style={[styles.container, { backgroundColor: '#f1f1f1' }]}>
-            <KeyboardAwareScrollView>
-              {!searchWaitingCount && !searchServiceCount ? (
-                <View style={styles.searchEmpty}>
-                  <View style={styles.searchEmptyIconContainer}>
-                    <Icon name="search" style={styles.searchEmptyIcon} color="#E3E4E5" />
-                  </View>
-                  <Text style={styles.searchEmptyText}>
-                    Results matching
-                    <Text style={styles.notFoundText}>“{filterText}”</Text> were not found.
-                  </Text>
-                  <Text style={styles.searchEmptyTextSmall}>
-                    Check your spelling and try again or tap on one of the suggestions below
-                  </Text>
-                </View>
-              ) : null}
-              <Queue
-                isWaiting
-                {...this.props}
-                onChangeFilterResultCount={this.updateSearchWaitingCount}
-                data={waitingQueue}
-                headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
-                {...p}
-              />
-              <Queue
-                {...this.props}
-                onChangeFilterResultCount={this.updateSearchServiceCount}
-                data={serviceQueue}
-                headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
-                {...p}
-              />
-            </KeyboardAwareScrollView>
-          </View>
-        );
-      }
-
-      render() {
-        if (this.state.searchMode) { return this.renderSearchResults(); }
-
-        return (
-          <View style={styles.container}>
-            <TabView
-              style={styles.tabViewStyle}
-              navigationState={this.state}
-              renderScene={this.renderScene}
-              renderTabBar={this.renderBar}
-              onIndexChange={this.handleIndexChange}
-              initialLayout={initialLayout}
-            />
-            {
+    return (
+      <View style={styles.container}>
+        <TabView
+          style={styles.tabViewStyle}
+          navigationState={this.state}
+          renderScene={this.renderScene}
+          renderTabBar={this.renderBar}
+          onIndexChange={this.handleIndexChange}
+          initialLayout={initialLayout}
+        />
+        {
           this.props.settings.data.SupressServiceForWalkIn ? null : (
             <SalonTouchableOpacity onPress={this.handleWalkInPress} style={styles.walkinButton}>
               <Text style={styles.walkinButtonText}>Walk-in</Text>
@@ -430,46 +428,46 @@ class QueueScreen extends React.Component {
             </SalonTouchableOpacity>
           )
         }
-            <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this.closeWalkOut}>
-              {[
-                <View key={Math.random().toString()} style={styles.walkoutContainer}>
-                  <View style={styles.walkoutImageContainer}>
-                    <Image style={styles.walkoutImage} source={walkoutImage} />
-                  </View>
-                  <Text style={styles.walkoutText}>Walk-out reason:
-                    <Text style={styles.walkoutTextBold}>Other</Text>
-                  </Text>
-                  <View style={styles.walkoutTextContainer}>
-                    <SalonTextInput
-                      multiline
-                      placeholder="Please insert other reasons"
-                      placeholderColor="#0A274A"
-                      style={styles.walkoutInput}
-                      placeholderStyle={styles.walkoutPlaceholder}
-                      text={this.state.walkoutText}
-                      onChange={this.handleWalkOutTextChange}
-                    />
-                  </View>
-                  <View style={styles.walkoutButtonContainer}>
-                    <SalonTouchableOpacity
-                      onPress={this.closeWalkOut}
-                      style={styles.walkoutButtonCancel}
-                    >
-                      <Text style={styles.walkoutTextCancel}>Cancel</Text>
-                    </SalonTouchableOpacity>
-                    <SalonTouchableOpacity
-                      onPress={this.closeWalkOut}
-                      style={styles.walkoutButtonOk}
-                    >
-                      <Text style={styles.walkoutTextOk}>Ok</Text>
-                    </SalonTouchableOpacity>
-                  </View>
-                </View>,
+        <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this.closeWalkOut}>
+          {[
+            <View key={Math.random().toString()} style={styles.walkoutContainer}>
+              <View style={styles.walkoutImageContainer}>
+                <Image style={styles.walkoutImage} source={walkoutImage} />
+              </View>
+              <Text style={styles.walkoutText}>Walk-out reason:
+                <Text style={styles.walkoutTextBold}>Other</Text>
+              </Text>
+              <View style={styles.walkoutTextContainer}>
+                <SalonTextInput
+                  multiline
+                  placeholder="Please insert other reasons"
+                  placeholderColor="#0A274A"
+                  style={styles.walkoutInput}
+                  placeholderStyle={styles.walkoutPlaceholder}
+                  text={this.state.walkoutText}
+                  onChange={this.handleWalkOutTextChange}
+                />
+              </View>
+              <View style={styles.walkoutButtonContainer}>
+                <SalonTouchableOpacity
+                  onPress={this.closeWalkOut}
+                  style={styles.walkoutButtonCancel}
+                >
+                  <Text style={styles.walkoutTextCancel}>Cancel</Text>
+                </SalonTouchableOpacity>
+                <SalonTouchableOpacity
+                  onPress={this.closeWalkOut}
+                  style={styles.walkoutButtonOk}
+                >
+                  <Text style={styles.walkoutTextOk}>Ok</Text>
+                </SalonTouchableOpacity>
+              </View>
+            </View>,
           ]}
-            </SalonModal>
-          </View>
-        );
-      }
+        </SalonModal>
+      </View>
+    );
+  }
 }
 
 QueueScreen.defaultProps = {
@@ -482,7 +480,6 @@ QueueScreen.propTypes = {
     receiveQueue: PropTypes.any.isRequired,
     getQueueState: PropTypes.any.isRequired,
   }).isRequired,
-
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,

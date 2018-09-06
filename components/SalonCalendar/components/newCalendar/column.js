@@ -152,7 +152,6 @@ export default class Column extends Component {
     const {
       colData, apptGridSettings, selectedFilter,
     } = this.props;
-
     if (selectedFilter !== 'providers' || !colData || !colData.roomAssignments || !colData.roomAssignments.length) {
       return null;
     }

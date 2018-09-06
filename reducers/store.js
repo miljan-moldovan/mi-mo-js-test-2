@@ -1,14 +1,22 @@
-// @flow
+import moment from 'moment';
+
 import {
   LOAD_STORE_INFO_SUCCESS,
-  LOAD_SCHEDULE_EXCEPTIONS_SUCCESS, SET_MAIN_STORE_SUCCESS,
+  LOAD_SCHEDULE_EXCEPTIONS_SUCCESS,
+  SET_MAIN_STORE_SUCCESS,
+  GET_SCHEDULE_FOR_DATE,
+  GET_SCHEDULE_FOR_DATE_FAILED,
+  GET_SCHEDULE_FOR_DATE_SUCCESS,
 } from '../actions/store';
 
 const initialState = {
+  isLoading: false,
   hasStore: false,
   storeId: null,
   storeInfo: null,
   scheduleExceptions: [],
+  selectedDate: moment(),
+  selectedDateScheduledIntervals: [],
 };
 
 export default function storeReducer(state = initialState, action) {
@@ -29,6 +37,22 @@ export default function storeReducer(state = initialState, action) {
         ...state,
         hasStore: true,
         storeId: data.storeId,
+      };
+    case GET_SCHEDULE_FOR_DATE:
+      return {
+        ...state,
+        isLoading: true,
+        selectedDate: data.date,
+      };
+    case GET_SCHEDULE_FOR_DATE_FAILED:
+      return {
+        isLoading: false,
+      };
+    case GET_SCHEDULE_FOR_DATE_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        selectedDateScheduledIntervals: data.schedule,
       };
     default:
       return state;

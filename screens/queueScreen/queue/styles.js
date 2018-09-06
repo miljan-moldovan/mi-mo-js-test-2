@@ -2,6 +2,8 @@ import {
   StyleSheet, Dimensions,
 } from 'react-native';
 
+const smallDevice = Dimensions.get('window').width === 320;
+
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -9,7 +11,7 @@ export default StyleSheet.create({
   },
   itemContainer: {
     // width: '100%',
-    height: Dimensions.get('window').width === 320 ? 110 : 94,
+    height: smallDevice ? 110 : 94,
     // borderBottomWidth: 1,
     // borderBottomColor: 'rgba(29,29,38,1)',
     borderRadius: 4,
@@ -32,14 +34,14 @@ export default StyleSheet.create({
     marginLeft: 10,
     marginRight: 'auto',
     paddingRight: 10,
-    height: Dimensions.get('window').width === 320 ? 96 : 90,
-    flex: Dimensions.get('window').width === 320 ? 3 : 3.5,
+    height: smallDevice ? 96 : 90,
+    flex: smallDevice ? 3 : 3.5,
     justifyContent: 'flex-end',
   },
   itemIcons: {
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
-    height: Dimensions.get('window').width === 320 ? 96 : 90,
+    height: smallDevice ? 96 : 90,
     flex: 1,
     paddingTop: 11,
   },
@@ -119,7 +121,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     zIndex: 99999,
-    right: Dimensions.get('window').width === 320 ? 0 : 15,
+    right: 15,
     bottom: 0,
   },
   returningContainer: {
@@ -129,7 +131,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     zIndex: 99999,
-    right: Dimensions.get('window').width === 320 ? 0 : 10,
+    right: 10,
     bottom: 0,
   },
   finishedContainer: {

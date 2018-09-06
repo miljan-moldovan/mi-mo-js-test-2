@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 const SalonTimePicker = (props) => {
   const format = props.format || 'HH:mm A';
   const value = moment(props.value).isValid() ? moment(props.value).format(format) : props.placeholder || '-';
-  const dateObject = moment(props.value).isValid() ? moment(props.value).toDate() : new Date();
+  const date = moment(props.value).isValid() ? moment(props.value).toDate() : new Date().toString();
   const valueStyle = props.isOpen ? { color: '#1B65CF' } : null;
   return (
     <React.Fragment>
@@ -42,9 +42,10 @@ const SalonTimePicker = (props) => {
           <DatePicker
             style={styles.container}
             itemStyle={styles.whiteBg}
-            date={dateObject}
+            date={date}
             mode={props.mode || 'time'}
-            onDateChange={props.onChange}
+            onDateChange={(date) => { props.onChange(date); }}
+            minimumDate={props.minimumDate || null}
           />
         </View>
       )}

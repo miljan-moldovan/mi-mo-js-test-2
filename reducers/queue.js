@@ -81,7 +81,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         error: null,
-        queueLength: 0,
         loading: true,
       };
     case QUEUE_RECEIVED:
@@ -146,7 +145,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        queueLength: 0,
         error,
       };
     case QUEUE_DELETE_ITEM:
@@ -186,247 +184,161 @@ export default (state = initialState, action) => {
         expandedRow: state.expandedRow === data.id ? null : data.id,
       };
     case CLIENT_CHECKED_IN:
-      const itemsCheckedIn = state.waitingQueue.map((item) => {
-        if (item.id === data.id) {
-          item.status = 0;
-          item.checked_in = true;
-          item.enteredTime = helpers.getSecondsPassedSinceMidnight();
-          item.background = helpers.getLabelColor(item);
-          item.processTime = helpers.getWaitTime(item);
-          item = { ...item };
-        }
-        return item;
-      });
-
+    
       return {
         ...state,
-        waitingQueue: itemsCheckedIn,
+        loading: true,
       };
     case CLIENT_CHECKED_IN_RECEIVED:
+    
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_CHECKED_IN_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_UNCHECKED_IN:
-      const itemsUnCheckedIn = state.waitingQueue.map((item) => {
-        if (item.id === data.id) {
-          item.status = 1;
-          item.checked_in = false;
-          item.enteredTime = helpers.getSecondsPassedSinceMidnight();
-          item.background = helpers.getLabelColor(item);
-          item.processTime = helpers.getWaitTime(item);
-          item = { ...item };
-        }
-        return item;
-      });
-
       return {
         ...state,
-        waitingQueue: itemsUnCheckedIn,
+        loading: true,
       };
     case CLIENT_UNCHECKED_IN_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_UNCHECKED_IN_FAILED:
       return {
         ...state,
+        loading: false,
       };
 
     case CLIENT_RETURNED_LATER:
-      const itemsReturnLater = state.waitingQueue.map((item) => {
-        if (item.id === data.id) {
-          item.status = item.status === 0 ? 5 : 0;
-          item = { ...item };
-        }
-        return item;
-      });
-
       return {
         ...state,
-        waitingQueue: itemsReturnLater,
+        loading: true,
       };
 
     case CLIENT_RETURNED_LATER_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_RETURNED_LATER_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_RETURNED:
-      const itemsReturned = state.waitingQueue.map((item) => {
-        if (item.id === data.id) {
-          item.status = item.status === 0 ? 5 : 0;
-          item = { ...item };
-        }
-        return item;
-      });
-
       return {
         ...state,
-        waitingQueue: itemsReturned,
+        loading: true,
       };
 
     case CLIENT_RETURNED_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_RETURNED_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_WALKED_OUT:
-      const itemsWalkOut = state.waitingQueue.filter(item => item.id !== data.id);
-
       return {
         ...state,
-        expandedRow: null,
-        waitingQueue: itemsWalkOut,
+        loading: true,
       };
     case CLIENT_WALKED_OUT_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_WALKED_OUT_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_NO_SHOW:
-      const itemsNoShow = state.waitingQueue.filter(item => item.id !== data.id);
       return {
         ...state,
-        expandedRow: null,
-        waitingQueue: itemsNoShow,
+        loading: true,
       };
     case CLIENT_NO_SHOW_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_NO_SHOW_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_START_SERVICE:
-      const newServicedItem = state.waitingQueue.find(item => item.id === data.id);
-
-      // /eslint-disable-line
-
-      newServicedItem.servicedTime = helpers.getSecondsPassedSinceMidnight();
-      newServicedItem.startTime = helpers.formatServiceStartTime(newServicedItem.servicedTime);
-      newServicedItem.checked_in = false;
-      newServicedItem.serviced = true;
-      newServicedItem.status = 6;
-      newServicedItem.background = helpers.getLabelColor(newServicedItem);
-      newServicedItem.processTime = helpers.getWorkingTime(newServicedItem);
-      newServicedItem.estimatedTime = helpers.getEstimatedServiceTime(newServicedItem);
-      newServicedItem.completed = helpers.getProcentCompleted(newServicedItem);
-
-      const waitingItemsStartService = state.waitingQueue.filter(item => item.id !== data.id);
-      const serviceItemsStartService = state.serviceQueue.concat(newServicedItem);
-
       return {
         ...state,
         expandedRow: null,
-        waitingQueue: waitingItemsStartService,
-        serviceQueue: serviceItemsStartService,
+        loading: true,
       };
     case CLIENT_START_SERVICE_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_START_SERVICE_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_FINISH_SERVICE:
-      const itemsFinishService = state.serviceQueue.map((item) => {
-        if (item.id === data.id) {
-          if (item.status === 6) {
-            item.status = 7;
-            item.finishService = helpers.getSecondsPassedSinceMidnight();
-            item = { ...item };
-          } else {
-            item.status = 6;
-            item.finishService = null;
-            item = { ...item };
-          }
-        }
-        return item;
-      });
-
       return {
         ...state,
-        serviceQueue: itemsFinishService,
+        loading: true,
       };
     case CLIENT_FINISH_SERVICE_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_FINISH_SERVICE_FAILED:
       return {
         ...state,
+        loading: false,
       };
 
     case CLIENT_UNDOFINISH_SERVICE:
-      const itemsUndoFinishService = state.serviceQueue.map((item) => {
-        if (item.id === data.id) {
-          if (item.status === 6) {
-            item.status = 7;
-            item.finishService = helpers.getSecondsPassedSinceMidnight();
-            item = { ...item };
-          } else {
-            item.status = 6;
-            item.finishService = null;
-            item = { ...item };
-          }
-        }
-        return item;
-      });
-
       return {
         ...state,
-        serviceQueue: itemsUndoFinishService,
+        loading: true,
       };
     case CLIENT_UNDOFINISH_SERVICE_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_UNDOFINISH_SERVICE_FAILED:
       return {
         ...state,
+        loading: false,
       };
 
     case CLIENT_TO_WAITING:
-      const newWaitingItem = state.serviceQueue.find(item => item.id === data.id);
-
-      newWaitingItem.checked_in = true;
-      newWaitingItem.serviced = false;
-      newWaitingItem.status = 0;
-      newWaitingItem.background = helpers.getLabelColor(newWaitingItem);
-      newWaitingItem.processTime = helpers.getWaitTime(newWaitingItem);
-      //  newWaitingItem.estimatedTime = helpers.getEstimatedWaitTime(newWaitingItem);
-      //    newWaitingItem.expectedStartTime = helpers.getExpectedStartTime(newWaitingItem);
-
-      const serviceItemsToWaiting = state.serviceQueue.filter(item => item.id !== data.id);
-      const waitingItemsToWaiting = state.waitingQueue.concat(newWaitingItem);
-
       return {
         ...state,
-        waitingQueue: waitingItemsToWaiting,
-        serviceQueue: serviceItemsToWaiting,
       };
     case CLIENT_TO_WAITING_RECEIVED:
       return {
         ...state,
+        loading: false,
       };
     case CLIENT_TO_WAITING_FAILED:
       return {
         ...state,
+        loading: false,
       };
     case START_COMBINE:
       return {
@@ -626,36 +538,36 @@ export default (state = initialState, action) => {
     case PUT_QUEUE:
       return {
         ...state,
-        isLoading: true,
+        loading: true,
       };
     case PUT_QUEUE_SUCCESS:
       return {
         ...state,
-        isLoading: false,
+        loading: false,
         error: null,
       };
     case PUT_QUEUE_FAILED:
       return {
         ...state,
-        isLoading: false,
+        loading: false,
         error: data.error,
       };
     case GET_QUEUE_STATE:
       return {
         ...state,
-        isLoading: true,
+        loading: true,
       };
     case GET_QUEUE_STATE_SUCCESS:
       return {
         ...state,
-        isLoading: false,
+        loading: false,
         queueState: data.response,
         error: null,
       };
     case GET_QUEUE_STATE_FAILED:
       return {
         ...state,
-        isLoading: false,
+        loading: false,
         queueState: null,
         error: data.error,
       };

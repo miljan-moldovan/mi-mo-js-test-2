@@ -1,4 +1,6 @@
+import axios from 'axios';
 import { Client } from '../utilities/apiWrapper';
+import { showErrorAlert } from './utils';
 
 export const SET_CLIENTS = 'clients/SET_CLIENTS';
 export const SET_FILTERED_CLIENTS = 'clients/SET_FILTERED_CLIENTS';
@@ -15,14 +17,27 @@ export const GET_MERGEABLE_CLIENTS_FAILED = 'clients/GET_MERGEABLE_CLIENTS_FAILE
 export const MERGE_CLIENTS = 'clients/MERGE_CLIENTS';
 export const MERGE_CLIENTS_SUCCESS = 'clients/MERGE_CLIENTS_SUCCESS';
 export const MERGE_CLIENTS_FAILED = 'clients/MERGE_CLIENTS_FAILED';
+export const GET_MORE_CLIENTS_SUCCESS = 'clients/GET_MORE_CLIENTS_SUCCESS';
+export const GET_MORE_CLIENTS = 'clients/GET_MORE_CLIENTS';
+export const GET_CLIENTS_MORE_FAILED = 'clients/GET_CLIENTS_MORE_FAILED';
 
-const getClientsSuccess = clients => ({
+const getClientsSuccess = ({ response, total }) => ({
   type: GET_CLIENTS_SUCCESS,
-  data: { clients },
+  data: { clients: response, total },
+});
+
+const getMoreCliensSuccess = ({ response, total }) => ({
+  type: GET_MORE_CLIENTS_SUCCESS,
+  data: { clients: response, total },
 });
 
 const getClientsFailed = error => ({
   type: GET_CLIENTS_FAILED,
+  data: { error },
+});
+
+const getMoreClientsFailed = error => ({
+  type: GET_CLIENTS_MORE_FAILED,
   data: { error },
 });
 
@@ -41,6 +56,23 @@ const getClients = (params = {
   return Client.getClients(newParams)
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));
+};
+
+const getMoreClients = (params = {
+  fromAllStores: false,
+  'nameFilter.FilterRule': 3,
+  'NameFilter.SortOrder': 1,
+  'NameFilter.SortField': 'FirstName,LastName',
+}) => (dispatch) => {
+  dispatch({ type: GET_MORE_CLIENTS });
+  const newParams = {
+    ...params,
+    'NameFilter.SortOrder': 1,
+    'NameFilter.SortField': 'FirstName,LastName',
+  };
+  return Client.getClients(newParams)
+    .then(response => dispatch(getMoreCliensSuccess(response)))
+    .catch(error => !axios.isCancel(error) && dispatch(getMoreClientsFailed(error)));
 };
 
 function setClients(clients) {
@@ -113,18 +145,19 @@ const mergeClients = (mainClientId: string, mergeClientsId: Array<String>, callb
 
   return Client.postMergeClients(mainClientId, mergeClientsId)
     .then((response) => { dispatch(mergeClientsSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(mergeClientsFailed(error)); callback(false); });
+    .catch((error) => { dispatch(mergeClientsFailed(error)); showErrorAlert(error); callback(false); });
 };
 
 
 const clientsActions = {
+  mergeClients,
   setClients,
   setFilteredClients,
   setSuggestionsList,
   setFilteredSuggestions,
   getClients,
   getMergeableClients,
-  mergeClients,
+  getMoreClients,
 };
 
 export default clientsActions;

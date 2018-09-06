@@ -126,6 +126,7 @@ class ClientNote extends Component {
     }
 
     dismissOnSelect() {
+
       const { navigate } = this.props.navigation;
       this.setState({ isVisible: true });
       navigate('ClientNote', { ...this.props });
@@ -177,6 +178,7 @@ class ClientNote extends Component {
           actionType: 'update',
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
+          onChangeProvider: this.onChangeProvider,
           ...this.props,
         });
       } else {
@@ -184,6 +186,7 @@ class ClientNote extends Component {
           actionType: 'new',
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
+          onChangeProvider: this.onChangeProvider,
           ...this.props,
         });
       }
@@ -192,6 +195,7 @@ class ClientNote extends Component {
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
+      this.setState({ isVisible: true });
       navigation.goBack();
     },
   });
@@ -212,6 +216,7 @@ class ClientNote extends Component {
     }
 
     saveNote() {
+      this.props.navigation.setParams({ canSave: false });
       const { client } = this.props.navigation.state.params;
 
       const note = Object.assign({}, this.state.note);
@@ -258,6 +263,9 @@ class ClientNote extends Component {
   shouldSave = false
 
   render() {
+    const params = this.props.navigation.state.params || {};
+    const { apptBook = false } = params;
+
     return (
       <Modal
         isVisible={this.state.isVisible}
@@ -276,13 +284,13 @@ class ClientNote extends Component {
                 <View style={styles.topSeparator} />
                 <InputGroup style={styles.providerInputGroup}>
                   <ProviderInput
-                    apptBook
-                    noPlaceholder
+                    apptBook={apptBook}
+                    placeholder={false}
                     showFirstAvailable={false}
                     filterByService
                     style={styles.innerRow}
                     selectedProvider={this.props.clientNotesState.selectedProvider}
-                    labelText="Added By"
+                    label="Added By"
                     iconStyle={styles.carretIcon}
                     avatarSize={20}
                     navigate={this.props.navigation.navigate}

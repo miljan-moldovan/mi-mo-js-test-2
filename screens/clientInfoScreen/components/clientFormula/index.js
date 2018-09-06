@@ -9,7 +9,10 @@ import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { find } from 'lodash';
 import clientFormulasActions from '../../../../actions/clientFormulas';
+import settingsActions from '../../../../actions/settings';
+
 import {
   InputDate,
   InputText,
@@ -49,13 +52,25 @@ class ClientFormula extends React.Component {
         enteredBy: {},
         text: '',
       },
+      defaultFormulaType: formulaTypes[0],
       isVisible: true,
     };
   }
 
   componentWillMount() {
+    const { settings } = this.props.settingsState;
+
+    let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
+    defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
+      defaultFormulaTypeSetting.settingValue : null;
+
+    const defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
+
     const { formula } = this.state;
-    // const { client } = this.props.navigation.state.params;
+
+    formula.formulaType = defaultFormulaType;
+
+    this.setState({ defaultFormulaType, formula });
 
     this.props.navigation.setParams({
       handlePress: () => this.saveFormula(),
@@ -153,9 +168,7 @@ class ClientFormula extends React.Component {
 
       if (formula.text &&
         formula.text.length > 0 &&
-        formula.formulaType &&
-        formula.date &&
-        formula.enteredBy
+        formula.formulaType
       ) {
         this.props.navigation.setParams({ canSave: true });
       } else {
@@ -183,10 +196,12 @@ class ClientFormula extends React.Component {
       if (this.props.navigation.state.params.actionType === 'new') {
         const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
-        formula.stylistName = formula.enteredBy.fullName;
+        // formula.stylistName = formula.enteredBy.fullName;
         formula.formulaType = formula.formulaType.key;
         delete formula.provider;
         delete formula.enteredBy;
+
+        delete formula.date;
 
         this.props.clientFormulasActions.postClientFormulas(client.id, formula)
           .then((response) => {
@@ -219,7 +234,6 @@ class ClientFormula extends React.Component {
               <InputGroup>
                 <ProviderInput
                   showFirstAvailable={false}
-                  apptBook
                   noPlaceholder
                   style={styles.innerRow}
                   selectedProvider={this.state.formula.enteredBy}
@@ -234,9 +248,9 @@ class ClientFormula extends React.Component {
                 <InputDivider />
                 <InputPicker
                   label="Type"
-                  value={this.state.formula ? this.state.formula.formulaType : null}
+                  value={this.state.formula ? this.state.formula.formulaType : this.state.defaultFormulaType}
                   onChange={this.onChangeType}
-                  defaultOption={formulaTypes[0]}
+                  defaultOption={this.state.defaultFormulaType}
                   options={formulaTypes}
                 />
                 <InputDivider />
@@ -265,7 +279,6 @@ class ClientFormula extends React.Component {
                 <InputDivider />
                 <ProviderInput
                   showFirstAvailable={false}
-                  apptBook
                   noPlaceholder
                   style={styles.innerRow}
                   selectedProvider={this.state.formula.provider}
@@ -296,9 +309,11 @@ class ClientFormula extends React.Component {
 
 const mapStateToProps = state => ({
   clientFormulasState: state.clientFormulasReducer,
+  settingsState: state.settingsReducer,
 });
 
 const mapActionsToProps = dispatch => ({
+  settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
   clientFormulasActions: bindActionCreators({ ...clientFormulasActions }, dispatch),
 });
 
@@ -307,8 +322,10 @@ ClientFormula.defaultProps = {
 };
 
 ClientFormula.propTypes = {
+  settingsState: PropTypes.any.isRequired,
   clientFormulasActions: PropTypes.shape({
     postClientFormulas: PropTypes.func.isRequired,
+    putClientFormulas: PropTypes.func.isRequired,
   }).isRequired,
   clientFormulasState: PropTypes.any.isRequired,
   client: PropTypes.any.isRequired,

@@ -1,6 +1,12 @@
 import { Dimensions } from 'react-native';
 
 const { height } = Dimensions.get('window');
+let bottomCofficient = 1;
+
+if (height < 600) {
+  bottomCofficient = 1.2;
+}
+
 const onePercent = (height / 100);
 const fortyTwoPercent = onePercent * 42;
 const sixtyPercent = onePercent * 60;
@@ -18,11 +24,11 @@ function getHeightPointFromDragHeight(afterDraggHeight) {
   }
 
 
-  return fortyTwoPercent;
+  return fortyTwoPercent * bottomCofficient;
 }
 
 function setPositionToMinimalOption() {
-  return fortyTwoPercent;
+  return fortyTwoPercent * bottomCofficient;
 }
 
 export default {

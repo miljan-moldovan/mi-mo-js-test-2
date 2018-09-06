@@ -35,7 +35,7 @@ onPressModify = () => {
 onPressReturn = returned => this.props.onPressSummary.returning(returned)
 
 goToClientInfo = () => {
-  this.props.navigation.navigate('ClientInfo', { client: this.props.client });
+  this.props.navigation.navigate('ClientInfo', { client: this.props.client, apptBook: false });
   this.props.onDonePress();
 };
 
@@ -301,9 +301,7 @@ render() {
 
 
 QueueItemSummary.defaultProps = {
-
 };
-
 QueueItemSummary.propTypes = {
   isVisible: PropTypes.any.isRequired,
   onDonePress: PropTypes.any.isRequired,

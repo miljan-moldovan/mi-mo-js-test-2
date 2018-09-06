@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import moment from 'moment';
-import { filter, minBy, maxBy, times } from 'lodash';
+import { get, filter, minBy, maxBy, times } from 'lodash';
 
 import { storeInfoSelector, storeScheduleExceptionsSelector } from './storeSelector';
 
@@ -49,31 +49,37 @@ export const apptGridSettingsSelector = createSelector(
     let minScheduleTime;
     let minAppointmentTime;
     let minBlokTimeTime;
-    let minStartTimeMoment;
+    let minStartTimeMoment = null;
     let morningEndTime;
     let maxScheduleTime;
     let maxAppointmentTime;
     let maxBlockTimeTime;
-    let maxEndTimeMoment;
+    let maxEndTimeMoment = null;
     while (currentDay.isSameOrBefore(newEndDate)) {
       storeTodaySchedule = storeInfo ?
         storeInfo.weeklySchedules[currentDay.isoWeekday() - 1] : null;
-      exception = scheduleExceptions.length > 0 ?
+      exception = get(scheduleExceptions, 'length', 0) > 0 ?
         filter(scheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(currentDay, 'day'))[0] : null;
       storeTodaySchedule = exception || storeTodaySchedule;
       // min startTime
-      minStartTimeMoment = storeTodaySchedule && storeTodaySchedule.start1 ? moment(storeTodaySchedule.start1, 'HH:mm') : moment('05:00', 'HH:mm');
-      minAppointmentTime = filteredAppts.length > 0 ? moment(minBy(filteredAppts, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minStartTimeMoment;
+      minScheduleTime = storeTodaySchedule && storeTodaySchedule.start1 ? moment(storeTodaySchedule.start1, 'HH:mm') : moment('05:00', 'HH:mm');
+      if (!minStartTimeMoment) {
+        minStartTimeMoment = minScheduleTime;
+      }
+      minAppointmentTime = filteredAppts.length > 0 ? moment(minBy(filteredAppts, item => moment(get(item, 'fromTime', ''), 'HH:mm').unix()).fromTime, 'HH:mm') : minStartTimeMoment;
       minBlokTimeTime = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && blockTimes.length > 0 ? moment(minBy(blockTimes, item => moment(item.fromTime, 'HH:mm').unix()).fromTime, 'HH:mm') : minStartTimeMoment;
       minStartTimeMoment =
-        moment.min(minStartTimeMoment, minAppointmentTime, minBlokTimeTime);
+        moment.min(minStartTimeMoment, minScheduleTime, minAppointmentTime, minBlokTimeTime);
       // max endTime
       morningEndTime = storeTodaySchedule && storeTodaySchedule.end1 ? moment(storeTodaySchedule.end1, 'HH:mm') : moment('23:00', 'HH:mm');
-      maxEndTimeMoment = storeTodaySchedule && storeTodaySchedule.end2 ? moment(storeTodaySchedule.end2, 'HH:mm') : morningEndTime;
-      maxAppointmentTime = filteredAppts.length > 0 ? moment(maxBy(filteredAppts, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxEndTimeMoment;
+      maxScheduleTime = storeTodaySchedule && storeTodaySchedule.end2 ? moment(storeTodaySchedule.end2, 'HH:mm') : morningEndTime;
+      if (!maxEndTimeMoment) {
+        maxEndTimeMoment = maxScheduleTime;
+      }
+      maxAppointmentTime = filteredAppts.length > 0 ? moment(maxBy(filteredAppts, item => moment(get(item, 'toTime', ''), 'HH:mm').unix()).toTime, 'HH:mm') : maxEndTimeMoment;
       maxBlockTimeTime = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && blockTimes.length > 0 ? moment(maxBy(blockTimes, item => moment(item.toTime, 'HH:mm').unix()).toTime, 'HH:mm') : maxEndTimeMoment;
       maxEndTimeMoment =
-        moment.max(maxEndTimeMoment, maxAppointmentTime, maxBlockTimeTime);
+        moment.max(maxEndTimeMoment, maxScheduleTime, maxAppointmentTime, maxBlockTimeTime);
       currentDay.add(1, 'd');
     }
     const minStartTime = minStartTimeMoment.format('HH:mm');

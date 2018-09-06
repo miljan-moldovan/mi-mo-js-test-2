@@ -50,6 +50,13 @@ const confirmByTypes = [
   { key: confirmByTypesEnum.EmailandSms, value: 'Email and Sms' },
   { key: confirmByTypesEnum.None, value: 'None' },
 ];
+
+const SelectedReferredClientEnum = {
+  NotAssigned: 1,
+  Other: 2,
+  Client: 3,
+};
+
 const defaultClient = {
   name: '',
   middleName: '',
@@ -69,7 +76,7 @@ const defaultClient = {
   city: '',
   state: null,
   zipCode: null,
-  selectedReferredClient: null,
+  selectedReferredClient: SelectedReferredClientEnum.NotAssigned,
   selectedClient: null,
   clientReferralType: null,
 };
@@ -81,7 +88,7 @@ class ClientDetails extends Component {
       client: null,
       loadingClient: true,
       selectedClient: null,
-      selectedReferredClient: true,
+      selectedReferredClient: SelectedReferredClientEnum.NotAssigned,
       requireCard: false,
       hasChanged: false,
       isValidEmail: false,
@@ -116,10 +123,11 @@ class ClientDetails extends Component {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       } else if (this.props.actionType === 'new') {
         this.setState({
-          client: Object.assign({}, defaultClient),
+          client: JSON.parse(JSON.stringify(defaultClient)),
           loadingClient: false,
         });
         this.props.setHandleDone(this.handleDone);
+        this.props.setHandleBack(this.handleBack);
       }
     });
   }
@@ -194,7 +202,7 @@ class ClientDetails extends Component {
   }
 
   onChangeClientReferralTypes = (option) => {
-    this.selectReferredOption(false);
+    this.setReferredOptionOther();
     this.onChangeClientField('clientReferralType', option);
   }
 
@@ -307,12 +315,12 @@ class ClientDetails extends Component {
     this.props.clientInfoActions.deleteClientInfo(this.state.client.id, this.handleDeleteClient);
   }
 
-  setReferredOptionTrue =() => {
-    this.selectReferredOption(true);
+  setReferredOptionOther =() => {
+    this.selectReferredOption(SelectedReferredClientEnum.Other);
   }
 
-  setReferredOptionFalse =() => {
-    this.selectReferredOption(false);
+  setReferredOptionClient =(navigateToClients) => {
+    this.selectReferredOption(SelectedReferredClientEnum.Client, navigateToClients);
   }
 
   calculateRequiredFields = (result) => {
@@ -381,12 +389,15 @@ class ClientDetails extends Component {
   }
 
 
-  selectReferredOption = (selectedReferredClient) => {
-    if (selectedReferredClient) {
+  selectReferredOption = (selectedReferredClient, navigateToClients) => {
+    if (selectedReferredClient === SelectedReferredClientEnum.Client) {
       const newClient = this.state.client;
       newClient.clientReferralType = null;
       this.setState({ selectedReferredClient, client: newClient });
-      this.handlePressClient();
+
+      if (navigateToClients) {
+        this.handlePressClient();
+      }
     } else {
       this.setState({ selectedClient: null, selectedReferredClient });
     }
@@ -395,12 +406,19 @@ class ClientDetails extends Component {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
-    navigate('ApptBookClient', {
+    navigate('ChangeClient', {
       selectedClient: this.state.selectedClient,
       actionType: 'update',
       dismissOnSelect: true,
       headerProps: { title: 'Clients', ...this.cancelButton() },
       onChangeClient: client => this.handleClientSelection(client),
+    });
+  }
+
+  handleBack = () => {
+    this.setState({
+      client: JSON.parse(JSON.stringify(defaultClient)),
+      loadingClient: false,
     });
   }
 
@@ -439,7 +457,7 @@ class ClientDetails extends Component {
       this.props.clientInfoActions.postClientInfo(client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: Object.assign({}, defaultClient),
+            client: JSON.parse(JSON.stringify(defaultClient)),
             loadingClient: false,
           });
 
@@ -456,7 +474,7 @@ class ClientDetails extends Component {
       this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: Object.assign({}, defaultClient),
+            client: JSON.parse(JSON.stringify(defaultClient)),
             loadingClient: false,
           });
 
@@ -476,6 +494,7 @@ class ClientDetails extends Component {
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
+      this.selectReferredOption(SelectedReferredClientEnum.NotAssigned);
       navigation.goBack();
     },
   })
@@ -531,12 +550,13 @@ class ClientDetails extends Component {
 
       this.props.setCanSave(false);
       this.props.setHandleDone(this.handleDone);
+      this.props.setHandleBack(this.handleBack);
 
       const clientReferralType = find(this.props.clientInfoState.clientReferralTypes, { key: client.clientReferralTypeId });
       client.clientReferralType = clientReferralType;
 
       if (client.clientReferralType) {
-        this.selectReferredOption(false);
+        this.setReferredOptionOther();
       }
 
       this.setState({
@@ -582,7 +602,7 @@ class ClientDetails extends Component {
             </View>
           ) : (
 
-            <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+            <KeyboardAwareScrollView extraHeight={300}>
               <View pointerEvents={this.state.pointerEvents}>
                 <SectionTitle value="NAME" style={styles.sectionTitle} />
                 <InputGroup>
@@ -790,20 +810,19 @@ class ClientDetails extends Component {
                 <SectionTitle value="REFERRED BY" style={styles.sectionTitle} />
                 <InputGroup>
                   <View style={styles.referredClientView}>
-                    <SalonTouchableOpacity onPress={this.setReferredOptionTrue}>
-                      <FontAwesome style={this.state.selectedReferredClient ? styles.selectedCheck : styles.unselectedCheck}>
-                        {this.state.selectedReferredClient ? Icons.checkCircle : Icons.circle}
+                    <SalonTouchableOpacity onPress={() => { this.setReferredOptionClient(true); }}>
+                      <FontAwesome style={this.state.selectedReferredClient === SelectedReferredClientEnum.Client ? styles.selectedCheck : styles.unselectedCheck}>
+                        {this.state.selectedReferredClient === SelectedReferredClientEnum.Client ? Icons.checkCircle : Icons.circle}
                       </FontAwesome>
                     </SalonTouchableOpacity>
 
                     <ClientInput
-                      apptBook
                       label="Select Client"
                       selectedClient={this.state.selectedClient}
                       style={styles.clientInput}
                       extraComponents={this.state.selectedClient === null ?
                         <Text style={styles.optionaLabel}>Select</Text> : null}
-                      onPress={this.setReferredOptionTrue}
+                      onPress={this.setReferredOptionClient}
                       navigate={this.props.navigation.navigate}
                       headerProps={{ title: 'Clients', ...this.cancelButton() }}
                       onChange={this.handleClientSelection}
@@ -811,9 +830,9 @@ class ClientDetails extends Component {
                   </View>
                   <InputDivider />
                   <View style={styles.clientReferralTypeContainer}>
-                    <SalonTouchableOpacity onPress={this.setReferredOptionFalse}>
-                      <FontAwesome style={this.state.selectedReferredClient ? styles.unselectedCheck : styles.selectedCheck}>
-                        {this.state.selectedReferredClient ? Icons.circle : Icons.checkCircle}
+                    <SalonTouchableOpacity onPress={this.setReferredOptionOther}>
+                      <FontAwesome style={this.state.selectedReferredClient === SelectedReferredClientEnum.Other ? styles.selectedCheck : styles.unselectedCheck}>
+                        {this.state.selectedReferredClient === SelectedReferredClientEnum.Other ? Icons.checkCircle : Icons.circle}
                       </FontAwesome>
                     </SalonTouchableOpacity>
 
@@ -865,6 +884,7 @@ ClientDetails.propTypes = {
   navigation: PropTypes.any.isRequired,
   setCanSave: PropTypes.func.isRequired,
   setHandleDone: PropTypes.func.isRequired,
+  setHandleBack: PropTypes.func.isRequired,
   editionMode: PropTypes.bool,
   settingsState: PropTypes.any.isRequired,
   clientInfoState: PropTypes.any.isRequired,

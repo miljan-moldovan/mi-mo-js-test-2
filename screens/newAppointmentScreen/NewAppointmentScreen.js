@@ -43,13 +43,20 @@ import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
 
-const SubTitle = props => (
-  <View style={styles.subTitleContainer}>
-    <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
+export const SubTitle = props => (
+  <View style={[styles.subTitleContainer, props.style || {}]}>
+    <View style={styles.subTitleTextContainer}>
+      <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
+    </View>
+    {props.children}
   </View>
 );
 SubTitle.propTypes = {
   title: PropTypes.string.isRequired,
+  children: PropTypes.node,
+};
+SubTitle.defaultProps = {
+  children: [],
 };
 
 export default class NewAppointmentScreen extends React.Component {
@@ -184,43 +191,66 @@ export default class NewAppointmentScreen extends React.Component {
     ];
   }
 
+  selectMainEmployee = () => new Promise((resolve) => {
+    const { appointmentScreenState: { providers: filterList = false } } = this.props;
+    this.props.navigation.navigate('ApptBookProvider', {
+      filterList,
+      headerProps: {
+        title: 'Providers',
+        leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+        leftButtonOnPress: navigation => navigation.goBack,
+      },
+      showFirstAvailable: true,
+      showEstimatedTime: true,
+      dismissOnSelect: true,
+      onChangeProvider: provider => resolve(provider),
+    });
+  });
+
   selectExtraServices = (serviceItem) => {
     const { service: { service = null }, itemId } = serviceItem;
+    const extras = this.getAddonsForService(itemId);
+    const addonIds = extras.filter(itm => itm.type === 'addon').map(itm => itm.service.service.id);
+    const recommendedIds = extras.filter(itm => itm.type === 'recommended').map(itm => itm.service.service.id);
+    const requiredIds = extras.filter(itm => itm.type === 'required').map(itm => itm.service.service.id);
     this.props.servicesActions.setSelectingExtras(true);
-    this.showAddons(service).then(selectedAddons => this.setState({ selectedAddons }, () => {
-      this.showRecommended(service).then(selectedRecommended => this.setState({ selectedRecommended }, () => {
-        this.showRequired(service).then(selectedRequired => this.setState({ selectedRequired }, () => {
-          const {
-            selectedAddons: addons,
-            selectedRequired: required,
-            selectedRecommended: recommended,
-          } = this.state;
-          this.props.newAppointmentActions.addServiceItemExtras(
-            itemId, // parentId
-            'addon', // extraService type
-            addons,
-          );
-          this.props.newAppointmentActions.addServiceItemExtras(
-            itemId, // parentId
-            'recommended', // extraService type
-            recommended,
-          );
-          this.props.newAppointmentActions.addServiceItemExtras(
-            itemId, // parentId
-            'required', // extraService type
-            required,
-          );
-          this.props.servicesActions.setSelectingExtras(false);
-          return this.checkConflicts();
-        }))
-          .catch(() => {
-            this.props.servicesActions.setSelectingExtras(false);
-          });
+    this.showAddons(service, addonIds)
+      .then(selectedAddons => this.setState({ selectedAddons }, () => {
+        this.showRecommended(service, recommendedIds)
+          .then(selectedRecommended => this.setState({ selectedRecommended }, () => {
+            this.showRequired(service, requiredIds)
+              .then(selectedRequired => this.setState({ selectedRequired }, () => {
+                const {
+                  selectedAddons: addons,
+                  selectedRequired: required,
+                  selectedRecommended: recommended,
+                } = this.state;
+                this.props.newAppointmentActions.addServiceItemExtras(
+                  itemId, // parentId
+                  'addon', // extraService type
+                  addons,
+                );
+                this.props.newAppointmentActions.addServiceItemExtras(
+                  itemId, // parentId
+                  'recommended', // extraService type
+                  recommended,
+                );
+                this.props.newAppointmentActions.addServiceItemExtras(
+                  itemId, // parentId
+                  'required', // extraService type
+                  required,
+                );
+                this.props.servicesActions.setSelectingExtras(false);
+                return this.checkConflicts();
+              }))
+              .catch(() => {
+                this.props.servicesActions.setSelectingExtras(false);
+              });
+          }));
       }));
-    }));
   }
 
-  showRequired = service => new Promise((resolve) => {
+  showRequired = (service, selectedIds = []) => new Promise((resolve) => {
     try {
       const {
         navigation: { navigate },
@@ -231,6 +261,7 @@ export default class NewAppointmentScreen extends React.Component {
             .then(res => resolve({ name: res.description, ...res }));
         } else {
           navigate('RequiredServices', {
+            selectedIds,
             showCancelButton: false,
             services: service.requiredServices,
             serviceTitle: service.name,
@@ -247,13 +278,14 @@ export default class NewAppointmentScreen extends React.Component {
     }
   });
 
-  showAddons = service => new Promise((resolve) => {
+  showAddons = (service, selectedIds = []) => new Promise((resolve) => {
     try {
       const {
         navigation: { navigate },
       } = this.props;
       if (service && service.addons.length > 0) {
         navigate('AddonServices', {
+          selectedIds,
           showCancelButton: false,
           services: service.addons,
           serviceTitle: service.name,
@@ -269,13 +301,14 @@ export default class NewAppointmentScreen extends React.Component {
     }
   });
 
-  showRecommended = service => new Promise((resolve) => {
+  showRecommended = (service, selectedIds = []) => new Promise((resolve) => {
     try {
       const {
         navigation: { navigate },
       } = this.props;
       if (service && service.recommendedServices.length > 0) {
         navigate('RecommendedServices', {
+          selectedIds,
           showCancelButton: false,
           services: service.recommendedServices,
           serviceTitle: service.name,
@@ -406,11 +439,14 @@ export default class NewAppointmentScreen extends React.Component {
       .catch(err => reject(err));
   })
 
-  getMainServices = () => this.props.newAppointmentState.serviceItems.filter(item => !item.guestId && !item.parentId)
+  getMainServices = () => this.props.newAppointmentState
+    .serviceItems.filter(item => !item.guestId && !item.parentId)
 
-  getAddonsForService = serviceId => this.props.newAppointmentState.serviceItems.filter(item => item.parentId === serviceId)
+  getAddonsForService = serviceId => this.props.newAppointmentState
+    .serviceItems.filter(item => item.parentId === serviceId)
 
-  getConflictsForService = serviceId => this.props.newAppointmentState.conflicts.filter(conf => conf.associativeKey === serviceId)
+  getConflictsForService = serviceId => this.props.newAppointmentState
+    .conflicts.filter(conf => conf.associativeKey === serviceId)
 
   hideToast = () => this.setState({ toast: null })
 
@@ -482,23 +518,34 @@ export default class NewAppointmentScreen extends React.Component {
 
   handleAddMainService = () => {
     const { client, mainEmployee } = this.props.newAppointmentState;
-    if (client !== null) {
-      return this.props.navigation.navigate('ApptBookService', {
+    const selectServiceCallback = employee => this.props.navigation.navigate(
+      'ApptBookService',
+      {
         dismissOnSelect: true,
         selectExtraServices: true,
         filterByProvider: true,
         clientId: client.id,
-        employeeId: mainEmployee.id,
+        employeeId: employee.id,
         onChangeService: this.addService,
+      },
+    );
+    if (isNull(client)) {
+      return this.setState({
+        toast: {
+          text: 'Select a client first',
+          type: 'warning',
+          btnRightText: 'DISMISS',
+        },
       });
     }
-    return this.setState({
-      toast: {
-        text: 'Select a client first',
-        type: 'warning',
-        btnRightText: 'DISMISS',
-      },
-    });
+    if (isNull(mainEmployee)) {
+      return this.selectMainEmployee()
+        .then((employee) => {
+          this.props.newAppointmentActions.setMainEmployee(employee);
+          return selectServiceCallback(employee);
+        });
+    }
+    return selectServiceCallback(mainEmployee);
   }
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime')
@@ -649,7 +696,7 @@ export default class NewAppointmentScreen extends React.Component {
 
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.props.newAppointmentState.client });
+    this.props.navigation.navigate('ClientInfo', { client: this.props.newAppointmentState.client, apptBook: true });
   }
 
   renderExtraClientButtons = isDisabled => ([
@@ -657,7 +704,6 @@ export default class NewAppointmentScreen extends React.Component {
       disabled={isDisabled}
       key={Math.random().toString()}
       onPress={() => {
-
         // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
         // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
         this.props.navigation.navigate(
@@ -850,12 +896,11 @@ export default class NewAppointmentScreen extends React.Component {
           </View>
           {guests.length > 0 && (
             <View>
-              <SubTitle title={guestsLabel} />
               {
                 guests.map((guest, guestIndex) => (
                   <View>
                     <Guest
-                      index={guest.guestId}
+                      index={guestIndex}
                       navigate={this.props.navigation.navigate}
                       selectedClient={guest.client || null}
                       onRemove={() => this.removeGuest(guest.guestId)}

@@ -244,18 +244,25 @@ class ServicesScreen extends React.Component {
   }
 
   handlePressServiceCategory = (item) => {
+    const { navigation } = this.props;
+    const walkInRoute = navigation.state.routeName === 'ModalServices';
     this.setHeaderData({
-      title: item.name,
-      subTitle: null,
+      title: walkInRoute ? 'Walk-in' : item.name,
+      subTitle: walkInRoute ? 'step 2 of 3' : null,
       leftButton: (
         <SalonTouchableOpacity style={styles.leftButton} onPress={this.goBack}>
           <View style={styles.leftButtonContainer}>
+            <FontAwesome style={styles.backIcon}>
+              {Icons.angleLeft}
+            </FontAwesome>
             <Text style={styles.leftButtonText}>
-              <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+              {walkInRoute && item.name}
             </Text>
           </View>
         </SalonTouchableOpacity>
       ),
+      rightButton: walkInRoute ? navigation.state.params.headerProps.rightButton : null,
+      rightButtonOnPress: walkInRoute ? navigation.state.params.headerProps.rightButtonOnPress : null,
     }, true);
     this.props.servicesActions.setShowCategoryServices(true);
     this.props.servicesActions.setCategoryServices(item.services);

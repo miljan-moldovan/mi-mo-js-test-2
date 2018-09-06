@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
 import { filter } from 'lodash';
 
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
@@ -15,6 +16,7 @@ import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
 import SalonAlert from '../../../components/SalonAlert';
+import BarsActionSheet from '../../../components/BarsActionSheet';
 
 import styles from './styles';
 
@@ -41,11 +43,10 @@ class AppointmentScreen extends Component {
       }
     }
     let title = (
-      <Text style={styles.titleText}
-      >{currentFilter}
-      </Text>);
+      <Text style={styles.titleText}>{currentFilter}</Text>);
 
     if (params && 'filterProvider' in params && params.filterProvider !== null) {
+      const image = getEmployeePhotoSource(params.filterProvider);
       title = (
         <View style={styles.salonAvatarWrapperContainer}>
           <SalonAvatar
@@ -53,15 +54,14 @@ class AppointmentScreen extends Component {
             width={20}
             borderWidth={3}
             borderColor="white"
-            image={{ uri: params.filterProvider.imagePath }}
+            image={image}
             defaultComponent={(<DefaultAvatar
               size={20}
               provider={params.filterProvider}
               fontSize={8}
             />)}
           />
-          <Text style={styles.titleText}
-          >{params.filterProvider.fullName}
+          <Text style={styles.titleText}>{params.filterProvider.fullName}
           </Text>
         </View>
       );
@@ -71,10 +71,10 @@ class AppointmentScreen extends Component {
       header: (
         <ApptCalendarHeader
           title={title}
-          onPressMenu={() => navigation.state.params.onPressMenu()}
-          onPressTitle={() => navigation.state.params.onPressTitle()}
-          onPressEllipsis={() => navigation.state.params.onPressEllipsis()}
-          onPressCalendar={() => navigation.state.params.onPressCalendar()}
+          onPressMenu={params ? params.onPressMenu : null}
+          onPressTitle={params ? params.onPressTitle : null}
+          onPressEllipsis={params ? params.onPressEllipsis : null}
+          onPressCalendar={params ? params.onPressCalendar : null}
         />
       ),
       tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
@@ -109,21 +109,36 @@ class AppointmentScreen extends Component {
   }
 
   onPressMenu = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    if (this.BarsActionSheet) {
+      this.BarsActionSheet.show();
+    }
   };
 
   onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
 
+  onChangeClient = (client) => {
+    this.goToShowAppt(client);
+  }
+
+  handleClientScreenGoBack = (navigation) => {
+    navigation.goBack();
+  }
+
+  handleClientScreenNewClient = (navigation) => {
+    navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient });
+  }
+
   onPressCalendar = () => {
-    this.props.appointmentCalendarActions.setToast({
-      description: 'Not Implemented',
-      type: 'warning',
-      btnRightText: 'DISMISS',
-    });
+    const headerProps = {
+      title: 'Appointment List',
+      subTitle: null,
+      leftButtonOnPress: this.handleClientScreenGoBack,
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
+      rightButtonOnPress: this.handleClientScreenNewClient,
+    };
+
+    this.props.navigation.navigate('ApptBookClient', { onChangeClient: this.onChangeClient, headerProps });
   };
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
@@ -159,7 +174,8 @@ class AppointmentScreen extends Component {
 
   onCardPressed = (appointment) => {
     this.props.modifyApptActions.setSelectedAppt(appointment);
-    this.props.rootDrawerNavigatorAction.changeShowTabBar(false);
+    // this.props.rootDrawerNavigatorAction.changeShowTabBar(false);
+    this.props.navigation.setParams({ tabBarVisible: false });
     this.setState({
       selectedAppointment: appointment,
       visibleAppointment: true,
@@ -180,16 +196,15 @@ class AppointmentScreen extends Component {
     if (this.state.bookAnotherEnabled) {
       newAppointmentActions.setClient(client);
     }
-    if (selectedFilter === 'providers') {
+    if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
       if (selectedProvider === 'all') {
         newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
-        if (colData.isFirstAvailable) {
-          this.props.newAppointmentActions.setQuickApptRequested(false);
-        }
+        newAppointmentActions.setQuickApptRequested(!colData.isFirstAvailable);
       } else {
         newAppointmentActions.setMainEmployee(selectedProvider);
         newAppointmentActions.setDate(colData);
+        newAppointmentActions.setQuickApptRequested(true);
       }
     } else {
       newAppointmentActions.setMainEmployee(null);
@@ -255,11 +270,13 @@ class AppointmentScreen extends Component {
     const { appointments, newAppointmentActions, navigation: { navigate } } = this.props;
     const groupData = appointments.filter(appt => appt.appointmentGroupId === appointmentGroupId);
     this.setState({ visibleAppointment: false }, () => {
-      this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      this.props.navigation.setParams({ tabBarVisible: true });
     });
     newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
     navigate('NewAppointment');
   }
+
   manageBuffer = (bufferVisible) => {
     if (this.state.bufferVisible !== bufferVisible) {
       this.setState({ bufferVisible });
@@ -317,11 +334,14 @@ class AppointmentScreen extends Component {
     const dateMoment = moment(date, 'YYYY-MM-DD');
     const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
       && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
+    const hiddenAddonsLenght = appointments.filter(appt => (appt.id !== appointment.id
+      && appt.appointmentGroupId === appointment.appointmentGroupId));
     const onPressRight = () => {
       this.setState(
         { visibleAppointment: false },
         () => {
-          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.setParams({ tabBarVisible: true });
+          // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
           this.props.navigation.navigate('CancelAppointmentScreen', { appointments });
           if (appointments.length > 1) {
             this.hideAlert();
@@ -333,7 +353,8 @@ class AppointmentScreen extends Component {
       this.setState(
         { visibleAppointment: false },
         () => {
-          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.setParams({ tabBarVisible: true });
+          // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
           this.props.navigation.navigate('CancelAppointmentScreen', { appointments: [appointment] });
           if (appointments.length > 1) {
             this.hideAlert();
@@ -341,7 +362,7 @@ class AppointmentScreen extends Component {
         },
       );
     };
-    if (appointments.length > 1) {
+    if (appointments.length - hiddenAddonsLenght.length > 1) {
       const alert = {
         title: 'Question',
         description: 'The client has other appointments scheduled today, would you like to cancel them all?',
@@ -361,7 +382,8 @@ class AppointmentScreen extends Component {
     this.setState(
       { visibleAppointment: false },
       () => {
-        this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+        // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+        this.props.navigation.setParams({ tabBarVisible: true });
         this.props.navigation.navigate('ShowApptScreen', {
           goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
         });
@@ -378,7 +400,8 @@ class AppointmentScreen extends Component {
 
   hideApptSlide = () => {
     this.setState({ visibleAppointment: false }, () => {
-      this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      this.props.navigation.setParams({ tabBarVisible: true });
     });
   }
 
@@ -437,9 +460,11 @@ class AppointmentScreen extends Component {
       resourceAppointments,
       storeSchedule,
     } = this.props.appointmentScreenState;
-    const { storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings } = this.props;
     const {
-      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId, alert
+      storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings,
+    } = this.props;
+    const {
+      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId, alert,
     } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
@@ -468,11 +493,17 @@ class AppointmentScreen extends Component {
       default:
         break;
     }
+
     return (
       <View
         style={styles.mainContainer}
         onLayout={this.handleLayout}
       >
+        <BarsActionSheet
+          ref={item => this.BarsActionSheet = item}
+          onLogout={this.props.auth.logout}
+          navigation={this.props.navigation}
+        />
         <SalonDatePickerBar
           calendarColor="#FFFFFF"
           mode={pickerMode}

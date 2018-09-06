@@ -8,14 +8,19 @@ import {
   FlatList,
   RefreshControl,
   Text,
+  Alert,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get } from 'lodash';
+import { get, isNull } from 'lodash';
+
+import { Settings } from '../../utilities/apiWrapper';
+import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { DefaultAvatar } from '../../components/formHelpers';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -111,9 +116,6 @@ const FirstAvailableRow = props => (
       />
       <Text style={styles.providerName}>First Available</Text>
     </View>
-    <View style={{ flex: 1, alignItems: 'flex-end' }}>
-      <Text style={[styles.timeLeftText]}>21m</Text>
-    </View>
     <View style={{ flex: 1, alignItems: 'center' }} />
   </SalonTouchableOpacity>
 );
@@ -123,7 +125,7 @@ class ProviderScreen extends React.Component {
     const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
       title: 'Providers',
       subTitle: null,
-      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButtonOnPress: navigation.goBack,
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
     };
 
@@ -197,25 +199,15 @@ class ProviderScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const { navigation: { state, goBack } } = props;
-    const params = state.params || {};
-    const showFirstAvailable = get(params, 'showFirstAvailable', true);
-    const showEstimatedTime = get(params, 'showEstimatedTime', true);
-    const filterList = get(params, 'filterList', false);
-    const filterByService = get(params, 'filterByService', false);
-    const selectedProvider = get(params, 'selectedProvider', null);
+
     this.state = {
-      filterList,
-      filterByService,
-      selectedProvider,
-      showFirstAvailable,
-      showEstimatedTime,
+      showEstimatedTime: false,
       refreshing: false,
       headerProps: {
         title: 'Providers',
         subTitle: null,
         leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-        leftButtonOnPress: () => goBack(),
+        leftButtonOnPress: props.navigation.goBack,
       },
     };
   }
@@ -225,6 +217,57 @@ class ProviderScreen extends React.Component {
     this.onRefresh();
   }
 
+  onRefresh = () => {
+    const { filterList, selectedService } = this.params;
+    this.props.providersActions.getProviders(
+      {
+        filterRule: 3,
+        maxCount: 100,
+        sortOrder: 1,
+        sortField: 'FirstName,LastName',
+      },
+      selectedService,
+      filterList,
+    );
+  }
+
+  get currentData() {
+    const { queueList } = this.params;
+    // if (queueList) {
+    //   return this.props.queueList;
+    // }
+    return this.props.providersState.currentData;
+  }
+
+  get params() {
+    const { navigation: { state } } = this.props;
+    const params = state.params || {};
+    const showFirstAvailable = get(params, 'showFirstAvailable', true);
+    const checkProviderStatus = get(params, 'checkProviderStatus', false);
+    const showEstimatedTime = get(params, 'showEstimatedTime', true);
+    const selectedService = get(params, 'selectedService', null);
+    const filterList = get(params, 'filterList', false);
+    const selectedProvider = get(params, 'selectedProvider', null);
+    const onChangeProvider = get(params, 'onChangeProvider', null);
+    const dismissOnSelect = get(params, 'dismissOnSelect', null);
+    const queueList = get(params, 'queueList', false);
+    return {
+      queueList,
+      filterList,
+      dismissOnSelect,
+      selectedService,
+      onChangeProvider,
+      selectedProvider,
+      showEstimatedTime,
+      showFirstAvailable,
+      checkProviderStatus,
+    };
+  }
+
+  getItemLayout = (data, index) => (
+    { length: 43, offset: (43 + StyleSheet.hairlineWidth) * index, index }
+  )
+
   getFirstItemForLetter = (letter) => {
     const { currentData } = this.props.providersState;
     for (let i = 0; i < currentData.length; i += 1) {
@@ -232,7 +275,6 @@ class ProviderScreen extends React.Component {
         return i;
       }
     }
-
     return false;
   }
 
@@ -240,16 +282,54 @@ class ProviderScreen extends React.Component {
     this.flatListRef.scrollToIndex({ animated: true, index });
   }
 
-  handleOnChangeProvider = (provider) => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
+  handleOnChangeProvider = async (provider) => {
+    const {
+      queueList,
+      dismissOnSelect,
+      onChangeProvider,
+      checkProviderStatus,
+    } = this.params;
+    const {
+      providersState,
+      providersActions,
+      navigation: { goBack },
+    } = this.props;
+    const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
+    const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
+    if (!provider.isFirstAvailable && (checkProviderStatus || showOnlyAvailable)) {
+      providersActions.getProviderStatus(provider.id, (providerStatus) => {
+        if (providerStatus) {
+          if (
+            !providerStatus.isWorking ||
+            providerStatus.isOnBreak
+          ) {
+            const message =
+              `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
+
+            Alert.alert(
+              'Provider not available',
+              message,
+              [
+                {
+                  text: 'Ok, got it',
+                  onPress: () => { },
+                },
+              ],
+              { cancelable: false },
+            );
+          } else {
+            providersActions.setSelectedProvider(provider);
+
+            onChangeProvider(provider);
+            if (dismissOnSelect) { goBack(); }
+          }
+        }
+      });
+    } else {
+      providersActions.setSelectedProvider(provider);
+      onChangeProvider(provider);
+      if (dismissOnSelect) { goBack(); }
     }
-
-    this.props.providersActions.setSelectedProvider(provider);
-
-    const { onChangeProvider, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeProvider) { onChangeProvider(provider); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   filterProviders = (searchText) => {
@@ -276,65 +356,57 @@ class ProviderScreen extends React.Component {
   }
 
   filterByLetter = (letter) => {
-    const filtered = this.props.providersState.providers.filter(item => item.name.indexOf(letter) === 0);
-
+    const filtered = this.props.providersState.providers
+      .filter(item => item.name.indexOf(letter) === 0);
     this.props.providersActions.setFilteredProviders(filtered);
     this.setState({ providers: this.props.providersState.filtered });
   }
 
-  onRefresh = () => {
-    const { filterByService, filterList } = this.state;
-    this.props.providersActions.getProviders(
-      {
-        filterRule: 3,
-        maxCount: 100,
-        sortOrder: 1,
-        sortField: 'FirstName,LastName',
-      },
-      filterByService,
-      filterList,
-    );
-  }
-
-  renderItem = ({ item, index }) => (
-    <SalonTouchableOpacity
-      style={styles.itemRow}
-      onPress={() => this.handleOnChangeProvider(item)}
-      key={index}
-    >
-      <View style={styles.inputRow}>
-        <SalonAvatar
-          wrapperStyle={styles.providerRound}
-          width={30}
-          borderWidth={1}
-          borderColor="transparent"
-          image={{ uri: item.imagePath }}
-          defaultComponent={(
-            <DefaultAvatar
-              size={22}
-              fontSize={9}
-              provider={item}
-            />
+  renderItem = ({ item, index }) => {
+    const {
+      selectedProvider,
+    } = this.params;
+    const image = getEmployeePhotoSource(item);
+    return (
+      <SalonTouchableOpacity
+        style={styles.itemRow}
+        onPress={() => this.handleOnChangeProvider(item)}
+        key={index}
+      >
+        <View style={styles.inputRow}>
+          <SalonAvatar
+            wrapperStyle={styles.providerRound}
+            width={22}
+            borderWidth={1}
+            borderColor="transparent"
+            image={image}
+            defaultComponent={(
+              <DefaultAvatar
+                size={22}
+                fontSize={9}
+                provider={item}
+              />
+            )}
+          />
+          <WordHighlighter
+            highlight={this.state.searchText}
+            style={selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
+            highlightStyle={{ color: '#1DBF12' }}
+          >
+            {item.fullName}
+          </WordHighlighter>
+        </View>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          {selectedProvider === item.id && (
+            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
           )}
-        />
-        <WordHighlighter
-          highlight={this.state.searchText}
-          style={this.state.selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-          highlightStyle={{ color: '#1DBF12' }}
-        >
-          {item.fullName}
-        </WordHighlighter>
-      </View>
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
-      </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        {this.state.selectedProvider === item.id && (
-          <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-        )}
-      </View>
-    </SalonTouchableOpacity>
-  );
+        </View>
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderSeparator = () => (
     <View
@@ -347,16 +419,13 @@ class ProviderScreen extends React.Component {
   );
 
   render() {
-    const { state } = this.props.navigation;
-
-    let onChangeProvider = null;
-    // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeProvider) {
-      onChangeProvider = this.handleOnChangeProvider;
-    }
-
+    const { showFirstAvailable } = this.params;
     return (
       <View style={styles.container}>
+        {
+          this.props.providersState.isLoading &&
+          <LoadingOverlay />
+        }
         <SalonSearchBar
           backgroundColor="#d9d9da"
           fontColor="#727A8F"
@@ -376,37 +445,28 @@ class ProviderScreen extends React.Component {
 
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flexDirection: 'column', flex: 1 }}>
-            {this.state.showFirstAvailable && (
+            {
+              showFirstAvailable &&
               <React.Fragment>
                 <FirstAvailableRow onPress={this.handleOnChangeProvider} />
                 {this.renderSeparator()}
               </React.Fragment>
-            )}
-            {this.props.providersState.isLoading ?
-              (
-                <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
-                  <ActivityIndicator />
-                </View>
-              )
-              : (
-                <FlatList
-                  style={{ backgroundColor: 'white' }}
-                  data={this.props.providersState.currentData}
-                  renderItem={this.renderItem}
-                  ItemSeparatorComponent={this.renderSeparator}
-                  ref={(ref) => { this.flatListRef = ref; }}
-                  getItemLayout={(data, index) => (
-                    { length: 43, offset: (43 + StyleSheet.hairlineWidth) * index, index }
-                  )}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.onRefresh}
-                    />
-                  }
-                />
-              )
             }
+            <FlatList
+              style={{ backgroundColor: 'white' }}
+              data={this.currentData}
+              renderItem={this.renderItem}
+              ItemSeparatorComponent={this.renderSeparator}
+              ref={(ref) => { this.flatListRef = ref; }}
+              getItemLayout={this.getItemLayout}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+            />
+
           </View>
           {/* <View style={styles.letterListContainer}>
             {letters.map(item => (
