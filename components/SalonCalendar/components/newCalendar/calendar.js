@@ -664,7 +664,7 @@ export default class Calendar extends Component {
       btnRightText: 'Yes',
       onPressRight: () => {
         this.props.manageBuffer(false);
-        this.setState({ buffer: [], alert: null });
+        this.setState({ buffer: [], alert: null, activeCard: null, activeBlock: null, isResizeing: false });
         this.isBufferCollapsed = false;
       },
     } : null;
@@ -672,7 +672,7 @@ export default class Calendar extends Component {
     if (!alert) {
       this.props.manageBuffer(false);
       this.isBufferCollapsed = false;
-      this.setState({ buffer: [] });
+      this.setState({ buffer: [], activeCard: null, activeBlock: null, isResizeing: false });
     } else {
       this.createAlert(alert);
     }

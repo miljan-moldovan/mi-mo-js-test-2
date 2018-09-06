@@ -5,7 +5,7 @@ import ProvidersScreen from './ProvidersScreen';
 import queueListSelector from '../../redux/selectors/providers/queueListSelector';
 
 const mapStateToProps = state => ({
-  queueList: queueListSelector(state),
+  // queueList: queueListSelector(state),
   providersState: state.providersReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
 });

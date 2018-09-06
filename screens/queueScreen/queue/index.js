@@ -6,12 +6,15 @@ import {
   FlatList,
   RefreshControl,
   Alert,
+//  ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
 
 import moment from 'moment';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+
+import LoadingOverlay from '../../../components/LoadingOverlay';
 
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
@@ -68,9 +71,6 @@ componentWillMount() {
   } = this.props;
 
   const sortedItems = this.sortItems(this.state.sortItemsBy, data);
-
-  // this.props.settingsActions.getSettingsByName('AutoAssignFirstAvailableProvider');
-
   this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
 }
@@ -146,10 +146,7 @@ handlePressSummary = {
 }
 
 _onRefresh = () => {
-  this.setState({ refreshing: true });
-  // FIXME this._refreshData();
-  // emulate refresh call
-  setTimeout(() => this.setState({ refreshing: false }), 500);
+  this.props.loadQueueData();
 }
 
 getGroupLeaderName = (item: QueueItem) => {
@@ -276,9 +273,9 @@ handlePressRebook = () => {
 handlePressCheckIn = (isActiveCheckin) => {
   const { appointment } = this.state;
   if (isActiveCheckin) {
-    this.props.checkInClient(appointment.id);
+    this.props.checkInClient(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.uncheckInClient(appointment.id);
+    this.props.uncheckInClient(appointment.id, this.props.loadQueueData);
   }
 
   this.hideDialog();
@@ -288,8 +285,6 @@ handlePressWalkOut = (isActiveWalkOut) => {
   const { appointment } = this.state;
 
   if (isActiveWalkOut) {
-    // this.props.walkOut(appointment.id);
-
     if (appointment !== null) {
       this.props.navigation.navigate('Walkout', {
         appointment,
@@ -311,7 +306,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
         {
           text: 'Yes, I’m sure',
           onPress: () => {
-            this.props.noShow(appointment.id);
+            this.props.noShow(appointment.id, this.props.loadQueueData);
             this.hideDialog();
           },
         },
@@ -325,9 +320,9 @@ handleReturning = (returned) => {
   const { appointment } = this.state;
 
   if (returned) {
-    this.props.returned(appointment.id);
+    this.props.returned(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.returnLater(appointment.id);
+    this.props.returnLater(appointment.id, this.props.loadQueueData);
   }
 
   this.hideDialog();
@@ -441,10 +436,14 @@ handleStartService = () => {
   };
 
 
-  this.props.startService(appointment.id, serviceData, (response) => {
-    if (!response) {
-      this.checkHasProvider(true);
+  this.props.startService(appointment.id, serviceData, (response, error) => {
+    if (response) {
+      this.props.loadQueueData();
     }
+    // else {
+    //   this.checkHasProvider(true);
+    // }
+    //
   });
 
   this.hideDialog();
@@ -452,7 +451,8 @@ handleStartService = () => {
 
 handleToWaiting = () => {
   const { appointment } = this.state;
-  this.props.toWaiting(appointment.id);
+
+  this.props.toWaiting(appointment.id, this.props.loadQueueData);
   this.hideDialog();
 }
 
@@ -460,9 +460,9 @@ handlePressFinish = (finish) => {
   const { appointment } = this.state;
 
   if (!finish) {
-    this.props.undoFinishService(appointment.id);
+    this.props.undoFinishService(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.finishService(appointment.id);
+    this.props.finishService(appointment.id, this.props.loadQueueData);
   }
 
   this.hideDialog();
@@ -694,11 +694,9 @@ render() {
         placeholder="client@email.com"
       />
 
-      {/* this.props.loading ? (
-        <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator />
-        </View>
-) : null */}
+      { this.props.loading &&
+        <LoadingOverlay />
+      }
       <FlatList
         style={{ marginTop: 5 }}
         renderItem={this.renderItem}
@@ -712,6 +710,7 @@ render() {
           />
 }
       />
+
       <QueueItemSummary
         {...this.props}
         isVisible={this.state.isVisible}
@@ -748,6 +747,16 @@ Queue.propTypes = {
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
+  loadQueueData: PropTypes.func.isRequired,
+  checkInClient: PropTypes.func.isRequired,
+  uncheckInClient: PropTypes.func.isRequired,
+  noShow: PropTypes.func.isRequired,
+  returned: PropTypes.func.isRequired,
+  returnLater: PropTypes.func.isRequired,
+  startService: PropTypes.func.isRequired,
+  toWaiting: PropTypes.func.isRequired,
+  undoFinishService: PropTypes.func.isRequired,
+  finishService: PropTypes.func.isRequired,
   data: PropTypes.any.isRequired,
   settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,

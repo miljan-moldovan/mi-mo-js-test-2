@@ -15,7 +15,6 @@ const initialState = {
   providers: [],
   currentData: [],
   deskStaff: [],
-  providerStatus: null,
   filteredDeskStaff: [],
   currentDeskStaffData: [],
   selectedProvider: null,
@@ -70,18 +69,18 @@ const providersReducer = (state = initialState, action) => {
         isLoading: true,
       };
     case GET_PROVIDER_STATUS_SUCCESS:
+
       return {
         ...state,
         error: null,
         isLoading: false,
-        providerStatus: data.response,
       };
     case GET_PROVIDER_STATUS_FAILED:
+
       return {
         ...state,
         error: data.error,
         isLoading: false,
-        providerStatus: null,
       };
     default:
       return state;

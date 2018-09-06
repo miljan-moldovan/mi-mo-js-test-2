@@ -84,6 +84,7 @@ export const receiveQueue = () => async (dispatch: Object => void) => {
     const data = await Queue.getQueue();
     dispatch({ type: QUEUE_RECEIVED, data });
   } catch (error) {
+    showErrorAlert(error);
     dispatch({ type: QUEUE_FAILED, error });
   }
 };

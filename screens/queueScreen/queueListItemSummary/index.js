@@ -3,12 +3,13 @@ import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import { get } from 'lodash';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import * as actions from '../../../actions/queue';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './styles';
+import { DefaultAvatar } from '../../../components/formHelpers';
 
 
 class queueListItemSummary extends Component {
@@ -17,20 +18,24 @@ class queueListItemSummary extends Component {
 
     for (let i = 0; i < this.props.services.length; i += 1) {
       const oldService = this.props.services[i];
+      const employee = get(oldService, 'employee', null);
 
       let newService = {
-        serviceId: oldService.serviceId,
-        employeeId: oldService.employeeId,
-        promotionCode: oldService.promoCode,
+        serviceId: get(oldService, 'serviceId', null),
+        employeeId: get(employee, 'id', null),
+        promotionCode: get(oldService, 'promo', null),
         isProviderRequested: oldService.isProviderRequested,
         priceEntered: oldService.price,
         isFirstAvailable: oldService.isFirstAvailable,
       };
 
       if (oldService.id === this.props.service.id) {
+        const serviceId = get(service, 'id', null);
+        const serviceProvider = get(oldService, 'employee', null);
+        const employeeId = get(serviceProvider, 'id', null);
         newService = {
-          serviceId: service.id,
-          employeeId: this.props.service.employeeId,
+          serviceId,
+          employeeId,
           promotionCode: service.promoCode,
           isProviderRequested: this.props.service.isProviderRequested,
           priceEntered: service.price,
@@ -47,6 +52,8 @@ class queueListItemSummary extends Component {
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
     });
+
+    this.props.loadQueueData();
   }
 
   saveQueueProvider = (provider) => {
@@ -57,7 +64,7 @@ class queueListItemSummary extends Component {
 
       let newService = {
         serviceId: service.serviceId,
-        employeeId: service.employeeId,
+        employeeId: get(service.employee, 'id', null),
         promotionCode: service.promoCode,
         isProviderRequested: service.isProviderRequested,
         priceEntered: service.price,
@@ -66,12 +73,12 @@ class queueListItemSummary extends Component {
 
       if (service.id === this.props.service.id) {
         newService = {
-          serviceId: this.props.service.serviceId,
-          employeeId: 'isFirstAvailable' in provider ? 0 : provider.id,
+          serviceId: service.serviceId,
+          employeeId: 'isFirstAvailable' in provider ? null : provider.id,
           promotionCode: this.props.service.promoCode,
           isProviderRequested: this.props.service.isProviderRequested,
           priceEntered: this.props.service.price,
-          isFirstAvailable: 'isFirstAvailable' in provider,
+          isFirstAvailable: get(provider, 'isFirstAvailable', false),
         };
       }
 
@@ -84,6 +91,8 @@ class queueListItemSummary extends Component {
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
     });
+
+    this.props.loadQueueData();
   }
 
   handlePressService = (service) => {
@@ -94,6 +103,12 @@ class queueListItemSummary extends Component {
       employeeId: service.employeeId,
       dismissOnSelect: true,
       onChangeService: data => this.saveQueueService(data),
+      headerProps: {
+        title: 'Services',
+        rightButton: null,
+        rightButtonOnPress: navigation => null,
+        ...this.cancelButton(),
+      },
     });
     this.props.onDonePress();
   };
@@ -108,13 +123,19 @@ class queueListItemSummary extends Component {
 
 
   handlePressProvider = () => {
-    this.props.navigation.navigate('Providers', {
+    const {
+      navigation: { navigate },
+      service: { employee = null, ...service },
+    } = this.props;
+
+    navigate('ModalProviders', {
+      selectedService: { id: service.serviceId },
       dismissOnSelect: true,
+      selectedProvider: employee,
+      checkProviderStatus: true,
       headerProps: { title: 'Providers', ...this.cancelButton() },
-      client: this.props.appointment.client,
       onChangeProvider: data => this.saveQueueProvider(data),
     });
-
     this.props.onDonePress();
   };
 
@@ -142,14 +163,11 @@ class queueListItemSummary extends Component {
                 width={26}
                 image={image}
                 hasBadge
-                badgeComponent={
-                  <FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>
-                    {Icons.lock}
-                  </FontAwesome>}
+                badgeComponent={<FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>{Icons.lock}</FontAwesome>}
                 defaultComponent={
-                  <View style={styles.avatarDefaultComponent}>
-                    <Text style={styles.avatarDefaultComponentText}>{!this.props.service.isFirstAvailable ? employeeInitials : 'FA'}</Text>
-                  </View>
+                  <DefaultAvatar
+                    provider={employee}
+                  />
                 }
               />
               <Text style={styles.textNormal}>{!this.props.service.isFirstAvailable && this.props.service.employee.fullName ? `${this.props.service.employee.fullName}` : 'First Available'}</Text>

@@ -11,7 +11,7 @@ import userActions from '../actions/user';
 import walkInActions from '../actions/walkIn';
 import clientsActions from '../actions/clients';
 import appointmentNoteActions from '../actions/appointmentNotes';
-import salonSearchHeaderActions from './../components/SalonSearchHeader/redux';
+import salonSearchHeaderActions from './../reducers/searchHeader';
 
 import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
@@ -61,7 +61,7 @@ const RootDrawerNavigator = TabNavigator(
         }
         jumpToIndex(scene.index);
       },
-      tabBarVisible: true///screenProps.drawerOptions.showTabBar,
+      //tabBarVisible: true//screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',

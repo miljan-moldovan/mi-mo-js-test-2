@@ -39,7 +39,7 @@ class ShowApptScreen extends React.Component {
       headerRight: (
         <View style={styles.rightBtnContainer}>
           <SalonTouchableOpacity
-            onPress={() => navigation.navigate('ClientInfo', { client })}
+            onPress={() => navigation.navigate('ClientInfo', { client, apptBook: true })}
             style={styles.leftButton}
           >
             <Icon name="infoCircle" style={styles.infoIcon} type="regular" />

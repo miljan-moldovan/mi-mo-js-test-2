@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import salonSearchHeaderActions from './redux';
+import salonSearchHeaderActions from '../../reducers/searchHeader';
 import SalonSearchHeader from './SalonSearchHeader';
 
 const mapStateToProps = state => ({

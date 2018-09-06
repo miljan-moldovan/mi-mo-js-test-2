@@ -88,10 +88,9 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.props.actions.getQueueState();
-    this.props.actions.receiveQueue();
     // setInterval(this.props.actions.receiveQueue, 15000);
     // setInterval(this.props.actions.getQueueState, 5000);
+    this.loadQueueData();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
@@ -116,8 +115,9 @@ class QueueScreen extends React.Component {
     this.setState({ index: route.key }, this.animateText);
   }
 
-  onRefresh = () => {
-
+  loadQueueData = () => {
+    this.props.actions.getQueueState();
+    this.props.actions.receiveQueue();
   }
 
   refreshData = () => {
@@ -153,15 +153,12 @@ class QueueScreen extends React.Component {
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 1 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Cancel
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </View>
+        ),
         leftButtonOnPress: (navigation) => {
           navigation.goBack();
         },
@@ -178,22 +175,18 @@ class QueueScreen extends React.Component {
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 2 of 3',
-        leftButton:
-  <View style={styles.backContainer}>
-    <FontAwesome style={styles.backIcon}>
-      {Icons.angleLeft}
-    </FontAwesome>
-    <Text style={styles.leftButtonText}>
-              Back
-    </Text>
-  </View>,
+        leftButton: (
+          <View style={styles.backContainer}>
+            <FontAwesome style={styles.backIcon}>{Icons.angleLeft}</FontAwesome>
+            <Text style={styles.leftButtonText}>Back</Text>
+          </View>
+        ),
         leftButtonOnPress: (navigation) => { navigation.goBack(); },
-        rightButton:
-  <View style={styles.rightContainer}>
-    <Text style={styles.leftButtonText}>
-                  Cancel
-    </Text>
-  </View>,
+        rightButton: (
+          <View style={styles.rightContainer}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </View>
+        ),
         rightButtonOnPress: (navigation) => { navigation.navigate('Main'); },
       },
     });
@@ -203,7 +196,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('WalkIn', { newAppointment });
+    this.props.navigation.navigate('WalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {
@@ -214,7 +207,9 @@ class QueueScreen extends React.Component {
     this.props.serviceActions.setSelectedService({ id: service.id });
 
     this.props.navigation.navigate('ModalProviders', {
-      filterByService: true,
+      queueList: true,
+      selectedService: service,
+      checkProviderStatus: true,
       onChangeProvider: this.handleChangeProvider,
       headerProps: {
         title: 'Walk-in',
@@ -337,6 +332,7 @@ class QueueScreen extends React.Component {
             navigation={navigation}
             loading={loading}
             isWaiting
+            loadQueueData={this.loadQueueData}
           />
         );
       case SERVICED:
@@ -394,6 +390,7 @@ class QueueScreen extends React.Component {
             {...this.props}
             onChangeFilterResultCount={this.updateSearchWaitingCount}
             data={waitingQueue}
+            loadQueueData={this.loadQueueData}
             headerTitle={searchWaitingCount || searchServiceCount ? 'Waiting' : undefined}
             {...p}
           />
@@ -401,6 +398,7 @@ class QueueScreen extends React.Component {
             {...this.props}
             onChangeFilterResultCount={this.updateSearchServiceCount}
             data={serviceQueue}
+            loadQueueData={this.loadQueueData}
             headerTitle={searchWaitingCount || searchServiceCount ? 'In Service' : undefined}
             {...p}
           />
@@ -482,7 +480,6 @@ QueueScreen.propTypes = {
     receiveQueue: PropTypes.any.isRequired,
     getQueueState: PropTypes.any.isRequired,
   }).isRequired,
-
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,

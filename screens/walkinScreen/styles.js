@@ -35,7 +35,6 @@ export default StyleSheet.create({
     backgroundColor: 'transparent',
   },
   rightButtonText: {
-    color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
