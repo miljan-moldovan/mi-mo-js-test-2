@@ -123,9 +123,12 @@ const styles = StyleSheet.create({
     height: 39,
     flexDirection: 'row',
     paddingLeft: 11,
-    paddingRight: 16,
+    paddingRight: 6,
   },
   addonInputInner: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  addonIconButton: {
+    padding: 10,
+  },
   addonIcon: {
     marginRight: 10,
     transform: [{ rotate: '90deg' }],
