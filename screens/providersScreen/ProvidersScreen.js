@@ -236,7 +236,16 @@ class ProviderScreen extends React.Component {
     // if (queueList) {
     //   return this.props.queueList;
     // }
-    return this.props.providersState.currentData;
+    if (this.props.navigation.state.routeName !== "ModalProviders") {
+      return this.props.providersState.currentData;
+    }
+    let data = [];
+    this.props.providersState.currentData.forEach(item => {
+      if(item.inAppointmentBook){
+        data = [...data, item];
+      }
+    });
+    return data;
   }
 
   get params() {
