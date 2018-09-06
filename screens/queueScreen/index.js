@@ -206,7 +206,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('WalkIn', { newAppointment, loadQueueData: this.loadQueueData });
+    this.props.navigation.navigate('ModalWalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {
