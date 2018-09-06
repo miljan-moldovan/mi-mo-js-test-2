@@ -88,7 +88,9 @@ class ClientList extends React.Component {
   }
 
   goToClientInfo = (client) => {
-    this.props.navigate('ClientInfo', { client, apptBook: false });
+    if (client.id > 1) {
+      this.props.navigate('ClientInfo', { client, apptBook: false });
+    }
   }
 
 
