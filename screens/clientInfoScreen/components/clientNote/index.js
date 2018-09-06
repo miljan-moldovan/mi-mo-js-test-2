@@ -177,6 +177,8 @@ class ClientNote extends Component {
           actionType: 'update',
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
+          onChangeProvider: this.onChangeProvider,
+          headerProps: { title: 'Providers', ...this.cancelButton() },
           ...this.props,
         });
       } else {
@@ -184,6 +186,8 @@ class ClientNote extends Component {
           actionType: 'new',
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
+          onChangeProvider: this.onChangeProvider,
+          headerProps: { title: 'Providers', ...this.cancelButton() },
           ...this.props,
         });
       }
@@ -192,6 +196,7 @@ class ClientNote extends Component {
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
+      this.setState({ isVisible: true });
       navigation.goBack();
     },
   });
@@ -290,7 +295,6 @@ class ClientNote extends Component {
                     iconStyle={styles.carretIcon}
                     avatarSize={20}
                     navigate={this.props.navigation.navigate}
-                    headerProps={{ title: 'Providers', ...this.cancelButton() }}
                     onChange={this.onChangeProvider}
                     onPress={this.handlePressProvider}
                   />
