@@ -9,6 +9,7 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import Icon from '../../../components/UI/Icon';
 import { Navigation } from '../../../models/propTypes';
 import { Client, AppointmentBook } from '../../../utilities/apiWrapper';
+import ClientInfoButton from '../../../components/ClientInfoButton';
 
 const query = {
   SortOrder: 1,
@@ -38,12 +39,14 @@ class ShowApptScreen extends React.Component {
         </View>),
       headerRight: (
         <View style={styles.rightBtnContainer}>
-          <SalonTouchableOpacity
-            onPress={() => navigation.navigate('ClientInfo', { client })}
+          <ClientInfoButton
+            client={client}
+            navigation={navigation}
+            onDonePress={() => {}}
+            apptBook
             style={styles.leftButton}
-          >
-            <Icon name="infoCircle" style={styles.infoIcon} type="regular" />
-          </SalonTouchableOpacity>
+            iconStyle={styles.infoIcon}
+          />
           <SalonTouchableOpacity
             onPress={sendEmail}
             style={styles.leftButton}
@@ -107,10 +110,10 @@ class ShowApptScreen extends React.Component {
 
   handleOnPress = (item) => {
     const {
-      navigation: { goBack, state: { params: { goToAppt } } },
+      navigation: { popToTop, state: { params: { goToAppt } } },
     } = this.props;
     goToAppt({ date: item.date, endDate: item.date, appointmentId: item.id });
-    goBack();
+    popToTop();
   }
 
   putClientSuccess = () => {
@@ -181,8 +184,8 @@ class ShowApptScreen extends React.Component {
           renderSectionHeader={this.renderSectionHeader}
           sections={appointments}
           onEndReached={this.fetchMore}
-          renderFooter={this.renderMoreLoading()}
-          ListEmptyComponent={this.renderEmptyLoading()}
+          ListFooterComponent={this.renderMoreLoading}
+          ListEmptyComponent={this.renderEmptyLoading}
         />
         <SalonInputModal
           visible={isEmailVisible}

@@ -14,7 +14,7 @@ import {
   SectionTitle,
 } from '../../../components/formHelpers';
 import ListLetterFilter from '../../../components/listLetterFilter';
-import { getEmployeePhoto } from '../../../utilities/apiWrapper';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 
 
 const styles = StyleSheet.create({
@@ -209,7 +209,7 @@ class ProviderList extends React.Component {
           width={32}
           borderWidth={1}
           borderColor={isSelected ? '#66D7A2' : 'transparent'}
-          image={{ uri: getEmployeePhoto(!provider.isFirstAvailable ? provider.id : 0) }}
+          image={getEmployeePhotoSource(provider)}
 
         />
         <Text style={isSelected ? styles.selectedProviderName : styles.providerName}>

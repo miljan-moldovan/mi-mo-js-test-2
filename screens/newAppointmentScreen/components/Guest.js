@@ -4,6 +4,7 @@ import {
   Text,
 } from 'react-native';
 
+import { SubTitle } from '../NewAppointmentScreen';
 import Icon from '../../../components/UI/Icon';
 import SalonCard from '../../../components/SalonCard';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -29,7 +30,9 @@ const RemoveGuest = ({ onPress }) => (
 
 const Guest = props => (
   <View style={styles.flexColumn}>
-    <RemoveGuest onPress={() => props.onRemove()} />
+    <SubTitle style={styles.guestSubTitle} title={`Guest ${props.index + 1}`}>
+      <RemoveGuest onPress={() => props.onRemove()} />
+    </SubTitle>
     <SalonCard
       bodyStyles={styles.cardPadding}
       bodyChildren={(

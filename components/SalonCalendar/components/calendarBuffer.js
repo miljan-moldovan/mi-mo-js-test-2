@@ -120,16 +120,18 @@ export default class calendarBuffer extends React.Component {
     if (item.isBlockTime) {
       return (
         <BlockCard
+          left={0}
+          width={85}
           startDate={startDate}
           isBufferBlock
           isActive={isActive}
           panResponder={hasPanResponder}
           key={item.id}
           block={item}
-          cardWidth={85}
           height={46}
           left={0}
           top={0}
+          onPress={null}
           onDrop={() => {}}
           onDrag={this.props.onBlockLongPress}
         />
@@ -137,13 +139,15 @@ export default class calendarBuffer extends React.Component {
     }
     return (
       <Card
+        left={0}
+        width={85}
+        onPress={null}
         startDate={startDate}
         isBufferCard
         isActive={isActive}
         panResponder={hasPanResponder}
         key={item.id}
         appointment={item}
-        cardWidth={85}
         height={46}
         left={0}
         top={0}

@@ -23,6 +23,11 @@ export default class NewClientScreen extends React.Component {
       params.handleDone :
       () => { alert('Not Implemented'); };
 
+
+    const handleBack = params.handleBack ?
+      () => { params.handleBack(); navigation.goBack(); } :
+      navigation.goBack;
+
     return ({
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -30,7 +35,7 @@ export default class NewClientScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity style={styles.sideButton} onPress={() => { navigation.goBack(); }}>
+        <SalonTouchableOpacity style={styles.sideButton} onPress={handleBack}>
           <View style={styles.backContainer}>
             <Text style={styles.leftButtonText}>
               Cancel
@@ -68,6 +73,10 @@ export default class NewClientScreen extends React.Component {
     this.props.navigation.setParams({ handleDone });
   }
 
+  setHandleBack = (handleBack) => {
+    this.props.navigation.setParams({ handleBack });
+  }
+
   onClientCreated = (client) => {
     const { onChangeClient } = this.props.navigation.state.params;
 
@@ -82,6 +91,7 @@ export default class NewClientScreen extends React.Component {
       <View style={styles.container}>
         <ClientDetails
           setHandleDone={this.setHandleDone}
+          setHandleBack={this.setHandleBack}
           setCanSave={this.setCanSave}
           editionMode
           actionType="new"

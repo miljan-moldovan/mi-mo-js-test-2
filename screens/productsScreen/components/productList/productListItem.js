@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  productNameContainer: {
+    flex: 1,
+    overflow: 'hidden',
+  },
   productName: {
     color: '#110A24',
     fontSize: 14,
@@ -95,21 +99,23 @@ class ProductListItem extends React.PureComponent {
         borderTopWidth: 0,
       }}
       >
-        {[<SalonTouchableHighlight
+        <SalonTouchableHighlight
           key={Math.random().toString()}
           style={styles.container}
           underlayColor="transparent"
           onPress={() => { this.props.onPress(this.props.product); }}
         >
-          <View style={styles.inputRow}>
-            <WordHighlighter
-              highlight={this.props.boldWords}
-              highlightStyle={styles.highlightStyle}
-              style={styles.productName}
-            >
-              {this.state.name}
-            </WordHighlighter>
-
+          <View style={[styles.inputRow, { flex: 1 }]}>
+            <View style={styles.productNameContainer}>
+              <WordHighlighter
+                numberOfLines={1}
+                highlight={this.props.boldWords}
+                highlightStyle={styles.highlightStyle}
+                style={styles.productName}
+              >
+                {this.state.name}
+              </WordHighlighter>
+            </View>
             <View style={styles.inputRow}>
               <Text style={[styles.sizeLabelText]}>{this.state.product.size}</Text>
               <Text style={[styles.priceLabelText]}>{this.state.product.price}</Text>
@@ -119,8 +125,7 @@ class ProductListItem extends React.PureComponent {
               }
             </View>
           </View>
-          </SalonTouchableHighlight>,
-      ]}
+        </SalonTouchableHighlight>
       </InputGroup>
     );
   }

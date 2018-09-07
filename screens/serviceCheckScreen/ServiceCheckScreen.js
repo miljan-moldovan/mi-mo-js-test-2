@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
+  navButton: {
+    fontSize: 14,
+    color: 'white',
+  },
   searchBarContainer: {
     backgroundColor: '#F1F1F1',
   },
@@ -71,37 +75,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
+  headerButton: { fontSize: 14, color: 'white', fontFamily: 'Roboto' },
+  robotoMedium: { fontFamily: 'Roboto-Medium' },
 });
 
 export default class ServiceCheckScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: 'Service Check',
-    headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.onNavigateBack()}>
-        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
-          Cancel
-        </Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.handleCheck()}>
-        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto-Medium' }}>
-          Check
-        </Text>
-      </SalonTouchableOpacity>
-    ),
-  });
+  static navigationOptions = ({ navigation }) => {
+    const goBack = () => navigation.state.params.onNavigateBack();
+    const checkFunc = () => navigation.state.params.handleCheck();
+    return ({
+      title: 'Service Check',
+      headerLeft: (
+        <SalonTouchableOpacity wait={3000} onPress={goBack}>
+          <Text style={styles.headerButton}>
+            Cancel
+          </Text>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity wait={3000} onPress={checkFunc}>
+          <Text style={[styles.headerButton, styles.robotoMedium]}>
+            Check
+          </Text>
+        </SalonTouchableOpacity>
+      ),
+    });
+  };
 
   constructor(props) {
     super(props);
 
     this.props.navigation.setParams({ handleCheck: this.handleCheck });
     this.state = {
-      isLoading: false,
       selectedProvider: null,
       selectedService: null,
     };
   }
+
+  onChangeProvider = provider => this.setState({ selectedProvider: provider })
+
+  onChangeService = service => this.setState({ selectedService: service })
 
   handleCheck = () => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
@@ -118,24 +131,36 @@ export default class ServiceCheckScreen extends React.Component {
     });
   }
 
+  cancelButton = () => ({
+    leftButton: <Text style={styles.navButton}>Cancel</Text>,
+    leftButtonOnPress: navigation => navigation.goBack(),
+  })
+
   render() {
     const { navigate } = this.props.navigation;
+    const { selectedProvider, selectedService } = this.state;
     return (
       <View style={styles.container}>
         <InputGroup style={{ marginTop: 17 }}>
           <ProviderInput
+            apptBook
             noPlaceholder
             filterByService
             navigate={navigate}
-            selectedProvider={this.state.selectedProvider}
-            onChange={selectedProvider => this.setState({ selectedProvider })}
+            selectedService={selectedService}
+            selectedProvider={selectedProvider}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            onChange={this.onChangeProvider}
           />
           <InputDivider />
           <ServiceInput
+            apptBook
             filterByProvider
             navigate={navigate}
-            selectedService={this.state.selectedService}
-            onChange={selectedService => this.setState({ selectedService })}
+            selectedService={selectedService}
+            selectedProvider={selectedProvider}
+            headerProps={{ title: 'Services', ...this.cancelButton() }}
+            onChange={this.onChangeService}
           />
         </InputGroup>
       </View>

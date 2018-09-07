@@ -6,6 +6,7 @@ import {
   FlatList,
   RefreshControl,
   Alert,
+//  ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -13,8 +14,13 @@ import moment from 'moment';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
+import LoadingOverlay from '../../../components/LoadingOverlay';
+
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
+import SalonInputModal from '../../../components/SalonInputModal';
+import { Client } from '../../../utilities/apiWrapper';
+import regexs from '../../../constants/Regexs';
 
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -55,6 +61,8 @@ state = {
   client: null,
   services: null,
   data: [],
+  isEmailVisible: false,
+  email: '',
   sortItemsBy: { value: 'FIRST_ARRIVED', label: 'First Arrived' },
 }
 componentWillMount() {
@@ -63,7 +71,6 @@ componentWillMount() {
   } = this.props;
 
   const sortedItems = this.sortItems(this.state.sortItemsBy, data);
-
   this.setState({ data: sortedItems });
   if (searchClient || searchProvider) { this.searchText(filterText, searchClient, searchProvider); }
 }
@@ -88,6 +95,7 @@ onChangeFilterResultCount = () => {
   }
 }
 
+
 searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
   const { data } = this.props;
   const prevCount = this.state.data.length;
@@ -108,12 +116,13 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 
       const employee = service.isFirstAvailable ?
         {
-          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+          id: 0, isFirstAvailable: true, fullName: 'First Available',
         } : service.employee;
 
       const fullNameProvider = `${employee.name || ''} ${employee.lastName || ''}`;
 
       if (fullNameProvider.toLowerCase().match(text)) { return true; }
+      if (service.serviceName.toLowerCase().match(text)) { return true; }
     }
     //  }
     return false;
@@ -132,22 +141,39 @@ handlePressSummary = {
   walkOut: isActiveWalkOut => this.handlePressWalkOut(isActiveWalkOut),
   modify: (isWaiting, onPressSummary) => this.handlePressModify(isWaiting, onPressSummary),
   returning: returned => this.handleReturning(returned),
-  toService: () => this.checkShouldMerge(),
+  toService: () => this.checkHasEmail(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
 }
 
 _onRefresh = () => {
-  this.setState({ refreshing: true });
-  // FIXME this._refreshData();
-  // emulate refresh call
-  setTimeout(() => this.setState({ refreshing: false }), 500);
+  this.props.loadQueueData();
 }
 
 getGroupLeaderName = (item: QueueItem) => {
   const { groups } = this.props;
   if (groups && groups[item.groupId]) { return groups[item.groupId].groupLeadName; }
   return null;
+}
+
+getprocessMinutes = (item) => {
+  const processTime = moment(item.processTime, 'hh:mm:ss');
+  const processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+    ? processTime.minutes() + processTime.hours() * 60
+    : 0;
+
+  return processMinutes;
+}
+
+
+getprogressMaxMinutes = (item) => {
+  const progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss');
+
+  const progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+    ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+    : 0;
+
+  return progressMaxMinutes;
 }
 
 getLabelForItem = (item) => {
@@ -158,12 +184,8 @@ getLabelForItem = (item) => {
 
           <View style={styles.finishedTime}>
             <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-            <Text style={styles.finishedTimeText}>{(moment(item.processTime, 'hh:mm:ss').isValid()
-              ? moment(item.processTime, 'hh:mm:ss').minutes() + moment(item.processTime, 'hh:mm:ss').hours() * 60
-              : 0)}min / <Text style={{ fontFamily: 'Roboto-Regular' }}>{(moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-                ? moment(item.progressMaxTime, 'hh:mm:ss').minutes() + moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60
-                : 0)}min est.
-              </Text>
+            <Text style={styles.finishedTimeText}>{this.getprocessMinutes(item)}min /
+              <Text style={{ fontFamily: 'Roboto-Regular' }}>{this.getprogressMaxMinutes(item)}min est. </Text>
             </Text>
           </View>
 
@@ -219,6 +241,15 @@ getLabelForItem = (item) => {
   }
 }
 
+
+hideAll = () => {
+  this.props.setLoading(true);
+  setTimeout(() => {
+    this.hideDialog();
+  }, 500);
+};
+
+
 handlePress = (item) => {
   if (!this.state.isVisible) {
     this.setState({
@@ -232,7 +263,7 @@ handlePress = (item) => {
 
 handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
-  this.hideDialog();
+
   if (appointment !== null) {
     setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
   }
@@ -240,7 +271,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
 
 handlePressRebook = () => {
   const { appointment } = this.state;
-  this.hideDialog();
+
   if (appointment !== null) {
     this.props.navigation.navigate('RebookDialog', {
       appointment,
@@ -252,28 +283,25 @@ handlePressRebook = () => {
 handlePressCheckIn = (isActiveCheckin) => {
   const { appointment } = this.state;
   if (isActiveCheckin) {
-    this.props.checkInClient(appointment.id);
+    this.hideAll();
+    this.props.checkInClient(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.uncheckInClient(appointment.id);
+    this.hideAll();
+    this.props.uncheckInClient(appointment.id, this.props.loadQueueData);
   }
-
-  this.hideDialog();
 }
 
 handlePressWalkOut = (isActiveWalkOut) => {
   const { appointment } = this.state;
 
   if (isActiveWalkOut) {
-    // this.props.walkOut(appointment.id);
-
     if (appointment !== null) {
+      this.hideDialog();
       this.props.navigation.navigate('Walkout', {
         appointment,
         ...this.props,
       });
     }
-
-    this.hideDialog();
   } else {
     const { client } = appointment;
 
@@ -283,12 +311,12 @@ handlePressWalkOut = (isActiveWalkOut) => {
       'No show',
       `Are you sure you want to mark ${fullName} as a no show?`,
       [
-        { text: 'No, cancel', onPress: () => { this.hideDialog(); }, style: 'cancel' },
+        { text: 'No, cancel', onPress: () => { }, style: 'cancel' },
         {
-          text: 'Yes, Im sure',
+          text: 'Yes, I’m sure',
           onPress: () => {
-            this.props.noShow(appointment.id);
-            this.hideDialog();
+            this.hideAll();
+            this.props.noShow(appointment.id, this.props.loadQueueData);
           },
         },
       ],
@@ -301,12 +329,12 @@ handleReturning = (returned) => {
   const { appointment } = this.state;
 
   if (returned) {
-    this.props.returned(appointment.id);
+    this.hideAll();
+    this.props.returned(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.returnLater(appointment.id);
+    this.hideAll();
+    this.props.returnLater(appointment.id, this.props.loadQueueData);
   }
-
-  this.hideDialog();
 }
 
 cancelButton = () => ({
@@ -316,42 +344,78 @@ cancelButton = () => ({
   },
 })
 
-checkHasProvider = () => {
+checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
-  if (service.employee) {
+
+  const { settings } = this.props.settings;
+
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
+
+
+  if (service.employee || autoAssignFirstAvailableProvider) {
+    this.hideAll();
     this.handleStartService();
-    this.props.navigation.navigate('Main');
+    if (redirectAfterMerge) {
+      this.props.navigation.navigate('Main');
+    }
   } else {
+    this.props.serviceActions.setSelectedService({ id: service.serviceId });
     this.hideDialog();
 
-    this.props.serviceActions.setSelectedService({ id: service.serviceId });
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
-      filterByService: true,
+      filterByService: false,
       showFirstAvailable: false,
+      checkProviderStatus: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
 }
 
-checkShouldMerge = () => {
+
+checkHasEmail = () => {
   const { appointment } = this.state;
 
+
   const { client } = appointment;
+
+  const { settings } = this.props.settings;
+
+
+  this.setState({ email: '' });
+  const forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' }).settingValue;
+  if (forceMissingQueueEmail && (!client.email || !client.email.trim())) {
+    this.hideDialog();
+    this.props.setLoading(true);
+    setTimeout(this.showEmailModal, 500);
+  } else {
+    this.hideAll();
+    this.checkShouldMerge();
+  }
+}
+
+checkShouldMerge = () => {
+  const { appointment } = this.state;
+  this.props.setLoading(true);
+  const { client } = appointment;
+
 
   this.props.clientsActions.getMergeableClients(client.id, (response) => {
     if (response) {
       const { mergeableClients } = this.props.clientsState;
       if (mergeableClients.length === 0) {
-        this.checkHasProvider();
+        this.checkHasProvider(false);
       } else {
         this.hideDialog();
+
+
         this.props.navigation.navigate('ClientMerge', {
           clientId: client.id,
-          onPressBack: () => { this.checkHasProvider(); },
-          onDismiss: () => { this.checkHasProvider(); },
+          onPressBack: () => { this.checkHasProvider(false, true); },
+          onDismiss: () => { this.checkHasProvider(false, true); },
         });
       }
     } else {
@@ -374,39 +438,45 @@ handleStartService = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
 
+  const serviceEmployees = service.employee ? [
+    {
+      serviceEmployeeId: service.id,
+      serviceId: service.serviceId,
+      employeeId: service.employee.id,
+      isRequested: true,
+    },
+  ] : [];
+
   const serviceData = {
-    serviceEmployees: [
-      {
-        serviceEmployeeId: service.id,
-        serviceId: service.serviceId,
-        employeeId: service.employee.id,
-        isRequested: true,
-      },
-    ],
+    serviceEmployees,
     deletedServiceEmployeeIds: [],
   };
 
-
-  this.props.startService(appointment.id, serviceData);
-  this.hideDialog();
+  this.hideAll();
+  this.props.startService(appointment.id, serviceData, (response, error) => {
+    if (response) {
+      this.hideAll();
+      this.props.loadQueueData();
+    }
+  });
 }
 
 handleToWaiting = () => {
   const { appointment } = this.state;
-  this.props.toWaiting(appointment.id);
-  this.hideDialog();
+  this.hideAll();
+  this.props.toWaiting(appointment.id, this.props.loadQueueData);
 }
 
 handlePressFinish = (finish) => {
   const { appointment } = this.state;
 
   if (!finish) {
-    this.props.undoFinishService(appointment.id);
+    this.hideAll();
+    this.props.undoFinishService(appointment.id, this.props.loadQueueData);
   } else {
-    this.props.finishService(appointment.id);
+    this.hideAll();
+    this.props.finishService(appointment.id, this.props.loadQueueData);
   }
-
-  this.hideDialog();
 }
 
 hideDialog = () => {
@@ -432,13 +502,14 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
 
       const employee = service.isFirstAvailable ?
         {
-          id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
+          id: 0, isFirstAvailable: true, fullName: 'First Available',
         } : service.employee;
 
       const fullNameProvider = `${employee.fullName || ''}`;
 
       // if this provider is a match, we don't need to check other providers
       if (fullNameProvider.toLowerCase().match(text)) { return true; }
+      if (service.serviceName.toLowerCase().match(text)) { return true; }
     }
 
     return false;
@@ -578,10 +649,41 @@ renderNotification = () => {
 }
 _keyExtractor = (item, index) => item.id;
 
+showEmailModal = () => {
+  this.setState({ isEmailVisible: true });
+}
+
+hideEmailModal = () => {
+  this.setState({ isEmailVisible: false, email: '' });
+  this.checkShouldMerge();
+}
+
+handleOk = (email) => {
+  const isValidEmail = regexs.email.test(email);
+  if (isValidEmail) {
+    if (this.state.client.email === email) {
+      this.checkShouldMerge();
+    } else {
+      const client = { ...this.state.client, email };
+      Client.putClientEmail(client.id, email)
+        .then(() => this.setState({ client }, this.hideEmailModal()))
+        .catch(ex => alert(ex));
+    }
+  } else {
+    alert('Please enter a valid Email');
+  }
+}
+
 render() {
 //
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
+
+
+  const { appointment } = this.state;
+  const { client } = appointment || { email: '' };
+  const fullName = client ? `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}` : '';
+
 
   const header = headerTitle ? (
     <View style={styles.header}>
@@ -591,11 +693,21 @@ render() {
   ) : null;
   return (
     <View style={styles.container}>
-      {/* this.props.loading ? (
-        <View style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator />
-        </View>
-) : null */}
+
+      <SalonInputModal
+        visible={this.state.isEmailVisible}
+        title="Client Email"
+        description={`Provide the email address for ${fullName} in order to email Upcoming Appointments`}
+        onPressCancel={this.hideEmailModal}
+        onPressOk={this.handleOk}
+        value={this.state.email}
+        isTextArea={false}
+        placeholder="client@email.com"
+      />
+
+      { this.props.loading &&
+        <LoadingOverlay />
+      }
       <FlatList
         style={{ marginTop: 5 }}
         renderItem={this.renderItem}
@@ -609,6 +721,7 @@ render() {
           />
 }
       />
+
       <QueueItemSummary
         {...this.props}
         isVisible={this.state.isVisible}
@@ -642,7 +755,21 @@ Queue.propTypes = {
   serviceActions: PropTypes.shape({
     setSelectedService: PropTypes.func.isRequired,
   }).isRequired,
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
+  }).isRequired,
+  loadQueueData: PropTypes.func.isRequired,
+  checkInClient: PropTypes.func.isRequired,
+  uncheckInClient: PropTypes.func.isRequired,
+  noShow: PropTypes.func.isRequired,
+  returned: PropTypes.func.isRequired,
+  returnLater: PropTypes.func.isRequired,
+  startService: PropTypes.func.isRequired,
+  toWaiting: PropTypes.func.isRequired,
+  undoFinishService: PropTypes.func.isRequired,
+  finishService: PropTypes.func.isRequired,
   data: PropTypes.any.isRequired,
+  settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
   searchProvider: PropTypes.any.isRequired,
   filterText: PropTypes.any.isRequired,

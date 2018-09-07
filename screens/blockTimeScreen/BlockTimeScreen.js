@@ -251,6 +251,7 @@ class BlockTimeScreen extends React.Component {
               noIcon
               style={{ flex: 1 }}
               placeholder="Date"
+              minDate={moment().toDate()}
               onPress={this.onPressDate}
               selectedDate={this.state.selectedDate ? this.state.selectedDate : false}
             />

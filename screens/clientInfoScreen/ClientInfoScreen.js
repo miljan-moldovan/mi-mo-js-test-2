@@ -95,6 +95,10 @@ export default class ClientInfoScreen extends React.Component {
       navigation.state.params.handleDone :
       () => { alert('Not Implemented'); };
 
+    const handleBack = params.handleBack ?
+      () => { params.handleBack(); navigation.goBack(); } :
+      navigation.goBack;
+
     return ({
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -102,7 +106,7 @@ export default class ClientInfoScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity onPress={() => { navigation.goBack(); }}>
+        <SalonTouchableOpacity onPress={handleBack}>
           <View style={styles.backContainer}>
             <FontAwesome style={styles.backIcon}>
               {Icons.angleLeft}
@@ -170,6 +174,11 @@ export default class ClientInfoScreen extends React.Component {
     this.props.navigation.setParams({ handleDone });
   }
 
+
+  setHandleBack = (handleBack) => {
+    this.props.navigation.setParams({ handleBack });
+  }
+
   renderLabel = ({ position, navigationState }) => ({ route, index }) => (
 
     <Text
@@ -195,7 +204,7 @@ export default class ClientInfoScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <ClientDetails actionType="update" setHandleDone={this.setHandleDone} setCanSave={this.setCanSave} editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
+    0: () => <ClientDetails actionType="update" setHandleDone={this.setHandleDone} setHandleBack={this.setHandleDone} setCanSave={this.setCanSave} editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     2: () => <ClientFormulas editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
   })

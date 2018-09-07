@@ -1,4 +1,5 @@
 import { Client, Store } from '../utilities/apiWrapper';
+import { showErrorAlert } from './utils';
 
 export const GET_CLIENT = 'clientInfo/GET_CLIENT';
 export const GET_CLIENT_SUCCESS = 'clientInfo/GET_CLIENT_SUCCESS';
@@ -34,8 +35,12 @@ const postClientInfoFailed = error => ({
 const postClientInfo = (client, callback) => (dispatch) => {
   dispatch({ type: POST_CLIENT });
   return Client.postClient(client)
-    .then((response) => { dispatch(postClientInfoSuccess(response)); callback(true, response); })
-    .catch((error) => { dispatch(postClientInfoFailed(error)); callback(false, null, error.message); });
+    .then((response) => {
+      dispatch(postClientInfoSuccess(response));
+      const clientResult = { ...client, ...response };
+      callback(true, clientResult);
+    })
+    .catch((error) => { showErrorAlert(error); dispatch(postClientInfoFailed(error)); callback(false, null, error.message); });
 };
 
 const putClientInfoSuccess = client => ({
@@ -51,8 +56,12 @@ const putClientInfoFailed = error => ({
 const putClientInfo = (clientId, client, callback) => (dispatch) => {
   dispatch({ type: PUT_CLIENT });
   return Client.putClient(clientId, client)
-    .then((response) => { dispatch(putClientInfoSuccess(response)); callback(true, response); })
-    .catch((error) => { dispatch(putClientInfoFailed(error)); callback(false, null, error.message); });
+    .then((response) => {
+      dispatch(putClientInfoSuccess(response));
+      const clientResult = { ...client, ...response };
+      callback(true, clientResult);
+    })
+    .catch((error) => { showErrorAlert(error); dispatch(putClientInfoFailed(error)); callback(false, null, error.message); });
 };
 
 const deleteClientInfoSuccess = client => ({
@@ -69,7 +78,7 @@ const deleteClientInfo = (clientId, callback) => (dispatch) => {
   dispatch({ type: DELETE_CLIENT });
   return Client.deleteClient({ clientId })
     .then((response) => { dispatch(deleteClientInfoSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(deleteClientInfoFailed(error)); callback(false, error.message); });
+    .catch((error) => { showErrorAlert(error); dispatch(deleteClientInfoFailed(error)); callback(false, error.message); });
 };
 
 function getClientInfoSuccess(client) {
@@ -88,7 +97,7 @@ const getClientInfo = (clientId, callback) => (dispatch) => {
   dispatch({ type: GET_CLIENT });
   return Client.getClient(clientId)
     .then((response) => { dispatch(getClientInfoSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(getClientInfoFailed(error)); callback(false, error.message); });
+    .catch((error) => { showErrorAlert(error); dispatch(getClientInfoFailed(error)); callback(false, error.message); });
 };
 
 
@@ -108,7 +117,7 @@ const getClientReferralTypes = callback => (dispatch) => {
   dispatch({ type: GET_CLIENT_REFERRAL_TYPES });
   return Store.getClientReferralTypes()
     .then((response) => { dispatch(getClientReferralTypesSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(getClientReferralTypesFailed(error)); callback(false, error.message); });
+    .catch((error) => { showErrorAlert(error); dispatch(getClientReferralTypesFailed(error)); callback(false, error.message); });
 };
 
 

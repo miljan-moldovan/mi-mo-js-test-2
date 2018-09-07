@@ -49,6 +49,7 @@ export const login = (
         errObj.response.data.urlError = urlError;
       }
 
+      await AsyncStorage.removeItem(JWTKEY);
       const data = await Login.signIn(username, password);
 
       if (data.result !== 1) {
@@ -80,7 +81,10 @@ export const login = (
     }
   };
 
-export const logout = () => ({ type: AT.LOGOUT });
+export const logout = () => {
+  AsyncStorage.removeItem(JWTKEY);
+  return { type: AT.LOGOUT };
+};
 export const enableFingerprintLogin = () => ({ type: AT.FINGERPRINT_ENABLE });
 export const disableFingerprintLogin = () => ({ type: AT.FINGERPRINT_DISABLE });
 export const updateFingerprintValidationTime = () => (

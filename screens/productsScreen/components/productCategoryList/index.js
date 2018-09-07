@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     flex: 1,
   },
+  fullSize: { flex: 1 },
   selectedProvider: {
     flexDirection: 'row',
     backgroundColor: '#F6F6F6',
@@ -35,6 +36,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     flexDirection: 'column',
   },
+  itemRow: {
+    flexDirection: 'row',
+    height: 44,
+    borderBottomWidth: 1 / 3,
+    borderTopWidth: 0,
+  },
 });
 
 class ProductCategoryList extends React.Component {
@@ -46,29 +53,25 @@ class ProductCategoryList extends React.Component {
     };
   }
 
-
   _keyExtractor = (item, index) => item.id;
 
-
   renderItem(elem) {
+    const labelColor = { flex: 1 };
     return (
-      <InputGroup style={{
-        flexDirection: 'row',
-
-        height: 44,
-        borderBottomWidth: 1 / 3,
-        borderTopWidth: 0,
-      }}
-      >
-        {[<InputButton
-          key={Math.random().toString()}
-          style={{ flex: 1 }}
-          labelStyle={{ color: '#110A24' }}
-          onPress={() => { this.props.handlePressProductCategory(elem.item); }}
+      <InputGroup style={styles.itemRow}>
+        <InputButton
           label={elem.item.name}
-        />]}
+          style={styles.fullSize}
+          labelStyle={labelColor}
+          onPress={() => this.props.handlePressProductCategory(elem.item)}
+        />
       </InputGroup>
     );
+  }
+
+  refreshControl = () => {
+    this.setState({ refreshing: true });
+    this.props.onRefresh(this.onRefreshFinish);
   }
 
   onRefreshFinish = () => {
@@ -77,17 +80,12 @@ class ProductCategoryList extends React.Component {
 
   render() {
     return (
-
       <View style={styles.productCategoryListContainer}>
         <FlatList
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={() => {
-                this.setState({ refreshing: true });
-                this.props.onRefresh(this.onRefreshFinish);
-              }
-              }
+              onRefresh={this.refreshControl}
             />
           }
           style={styles.productCategoriesList}

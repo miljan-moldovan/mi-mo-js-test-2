@@ -7,6 +7,7 @@ import { View,
 import { connect } from 'react-redux';
 import SalonAvatar from '../SalonAvatar';
 import { Employees } from '../../utilities/apiWrapper';
+import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
@@ -223,7 +224,7 @@ class ProviderList extends React.Component {
               width={44}
               borderWidth={5}
               borderColor={isSelected ? '#66D7A2' : 'transparent'}
-              image={{ uri: '' }}
+              image={getEmployeePhotoSource(provider)}
             />
           </View>
           <View style={styles.providerData}>

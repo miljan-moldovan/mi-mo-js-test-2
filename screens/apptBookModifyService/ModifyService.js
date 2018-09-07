@@ -20,57 +20,41 @@ import {
   InputButton,
   InputDivider,
   RemoveButton,
-  SalonTimePicker,
+  SchedulePicker,
   LabeledTextInput,
 } from '../../components/formHelpers';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { Label } from '../../node_modules/native-base';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingBottom: 60,
-  },
-});
+import styles from './styles';
 
 export default class ModifyApptServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
-
+    const handleSave = params.handleSave || (() => null);
     let title = 'New Service';
     if ('params' in navigation.state && navigation.state.params !== undefined) {
       if ('item' in navigation.state.params) {
         title = navigation.state.params.item.service.name;
       }
     }
+    const buttonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,.3)' };
+    const buttonOnPress = () => (canSave ? handleSave() : null);
     return {
       title,
       headerLeft: (
-        <SalonTouchableOpacity
-          onPress={() => { navigation.goBack(); }}
-        >
-          <Text style={{
-            fontSize: 14,
-            lineHeight: 22,
-            color: 'white',
-          }}
-          >Cancel
-          </Text>
+        <SalonTouchableOpacity onPress={navigation.goBack}>
+          <Text style={styles.headerButton}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <SalonTouchableOpacity
-          onPress={() => (canSave ? navigation.state.params.handleSave() : null)}
+          onPress={buttonOnPress}
+          disabled={!canSave}
         >
-          <Text style={{
-            fontSize: 14,
-            lineHeight: 22,
-            color: canSave ? 'white' : 'rgba(0,0,0,.3)',
-          }}
-          >Done
-          </Text>
+          <Text style={[styles.headerButton, buttonStyle]}>Done</Text>
         </SalonTouchableOpacity>
       ),
     };
@@ -315,6 +299,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       price,
       resource,
       toast,
+      date,
     } = this.state;
     return (
       <ScrollView style={styles.container}>
@@ -354,7 +339,8 @@ export default class ModifyApptServiceScreen extends React.Component {
         </InputGroup>
         <SectionTitle value="Time" />
         <InputGroup>
-          <SalonTimePicker
+          <SchedulePicker
+            date={date}
             label="Start"
             value={startTime}
             isOpen={this.state.startTimePickerOpen}
@@ -362,7 +348,8 @@ export default class ModifyApptServiceScreen extends React.Component {
             toggle={this.toggleStartTimePicker}
           />
           <InputDivider />
-          <SalonTimePicker
+          <SchedulePicker
+            date={date}
             label="Ends"
             value={endTime}
             isOpen={this.state.endTimePickerOpen}

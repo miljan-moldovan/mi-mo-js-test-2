@@ -22,6 +22,7 @@ import { getSelectedAppt } from '../../../redux/selectors/appointmentSelector';
 import styles from './styles';
 import InputModal from '../../../components/SalonInputModal';
 import SuccessModal from './components/SuccessModal';
+import ClientInfoButton from '../../../components/ClientInfoButton';
 
 import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
@@ -36,12 +37,17 @@ class SalonAppointmentSlide extends React.Component {
       showEditRemarks: false,
       showEditRemarksSuccess: false,
       appointmentHasBeenChanged: false,
+      scrollHeight: 0,
+      headerHeight: 0,
+      previousHeight: 0,
+      defaultPosition: 0,
     };
     this.slidingPanel = null;
   }
 
   componentDidMount() {
     this.getAuditInformation();
+    this.getDefaultPosition();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -81,15 +87,7 @@ class SalonAppointmentSlide extends React.Component {
   }
 
   setMinimumPosition = () => {
-    this.slidingPanel.transitionTo(HeightHelper.setPositionToMinimalOption());
-  }
-
-  updateAppointmentState = (appointment) => {
-    if (appointment) {
-      this.setState({ appointment }, () => {
-        this.getAuditInformation();
-      });
-    }
+    this.slidingPanel.transitionTo(this.getDefaultPosition(true));
   }
 
   handleCancel = () => {
@@ -113,10 +111,24 @@ class SalonAppointmentSlide extends React.Component {
 
   keyExtractor = item => item.id;
 
-  goToClientInfo = (client) => {
-    this.props.navigation.navigate('ClientInfo', { client });
-    this.hidePanel();
+  getDefaultPosition = (shouldBeUpdatedForce) => {
+    const forceUpdate = shouldBeUpdatedForce || false;
+    const height = HeightHelper.setPositionToMinimalOption();
+    if (this.state.defaultPosition === height && !forceUpdate) {
+      return this.state.defaultPosition;
+    }
+
+    if (this.state.previousHeight !== height) {
+      this.setState({
+        defaultPosition: height,
+        previousHeight: height,
+      }, () => {
+        this.setScrollHeight(height - this.state.headerHeight);
+      });
+    }
+    return height;
   }
+
   hideShowEditRemarksSuccess = () => {
     this.setState({ showEditRemarksSuccess: false });
   }
@@ -152,17 +164,53 @@ class SalonAppointmentSlide extends React.Component {
     this.props.goToShowAppt(this.props.appointment.client);
   }
 
+  handleHeaderOnLayout = ({ nativeEvent: { layout: { height } } }) => {
+    const previousHeaderHeight = this.state.headerHeight;
+    if (this.state.headerHeight !== height) {
+      this.setState({
+        headerHeight: height,
+      }, () => {
+        if (previousHeaderHeight === 0 && this.state.previousHeight !== 0) {
+          this.setScrollHeight(this.state.previousHeight - height);
+        }
+      });
+    }
+  }
+
+  setScrollHeight = (height) => {
+    requestAnimationFrame(() => {
+      this.setState({
+        scrollHeight: height,
+      });
+    });
+  }
+
+  updateAppointmentState = (appointment) => {
+    if (appointment) {
+      this.setState({ appointment }, () => {
+        this.getAuditInformation();
+      });
+    }
+  }
+
   hanleOnDragEnd = (params) => {
     const nextHeight = HeightHelper.getHeightPointFromDragHeight(params);
     this.slidingPanel.transitionTo(nextHeight);
     if (nextHeight === 0) {
       this.hidePanel();
     }
+
+    if (this.state.previousHeight !== nextHeight) {
+      this.setState({
+        previousHeight: nextHeight,
+      }, () => {
+        this.setScrollHeight(nextHeight - this.state.headerHeight);
+      });
+    }
   }
 
   handleRecommendProductPress = () => {
-    const { client } = this.state.appointment;
-    this.props.navigation.navigate('RecommendProduct', { client });
+    this.props.navigation.navigate('RecommendProduct', { client: this.state.appointment.client });
     this.hidePanel();
   }
 
@@ -174,6 +222,7 @@ class SalonAppointmentSlide extends React.Component {
         {...panHendler}
         key={Math.random()}
         style={[styles.panelTop, { justifyContent: 'flex-start' }]}
+        onLayout={this.handleHeaderOnLayout}
       >
         <SalonTouchableOpacity
           style={styles.panelTopIcon}
@@ -192,11 +241,13 @@ class SalonAppointmentSlide extends React.Component {
         <View key={Math.random()} style={[styles.panelTopLine]}>
           <View style={styles.panelTopLineLeft} key={Math.random()}>
             <Text style={styles.panelTopName}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
-            <SalonTouchableOpacity
-              onPress={() => this.goToClientInfo(appointment.client)}
-            >
-              <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
-            </SalonTouchableOpacity>
+            <ClientInfoButton
+              client={appointment.client}
+              navigation={this.props.navigation}
+              onDonePress={this.hidePanel}
+              iconStyle={{ fontSize: 18, color: '#115ECD', paddingLeft: 5 }}
+              apptBook
+            />
           </View>
           <View key={Math.random()} style={styles.panelTopLineRight}>
             <SalonTouchableOpacity onPress={this.hidePanel}>
@@ -280,214 +331,215 @@ class SalonAppointmentSlide extends React.Component {
           ]}
         >
           <View
-            style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+            style={{
+              height: this.state.scrollHeight,
+              backgroundColor: '#FFFFFF',
+            }}
           >
             <ScrollView>
-              <SalonTouchableOpacity activeOpacity={1}>
-                <View style={styles.panelMiddle}>
-                  <View style={styles.panelIcons}>
-                    <View style={styles.panelIcon}>
-                      <SalonTouchableOpacity
-                        style={isCheckInDisabled ?
-                          styles.panelIconBtnDisabled : styles.panelIconBtn}
-                        onPress={this.handleCheckin}
-                        disabled={isCheckInDisabled}
-                      >
-                        { isCheckingIn ?
-                          <ActivityIndicator />
-                          :
-                          <Icon name="check" size={18} color="#FFFFFF" type="solid" />
-                        }
-                      </SalonTouchableOpacity>
-                      <Text style={styles.panelIconText}>Check-In</Text>
-                    </View>
+              <View style={styles.panelMiddle}>
+                <View style={styles.panelIcons}>
+                  <View style={styles.panelIcon}>
+                    <SalonTouchableOpacity
+                      style={isCheckInDisabled ?
+                        styles.panelIconBtnDisabled : styles.panelIconBtn}
+                      onPress={this.handleCheckin}
+                      disabled={isCheckInDisabled}
+                    >
+                      { isCheckingIn ?
+                        <ActivityIndicator />
+                        :
+                        <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+                      }
+                    </SalonTouchableOpacity>
+                    <Text style={styles.panelIconText}>Check-In</Text>
+                  </View>
 
-                    <View key={Math.random()} style={styles.panelIcon}>
-                      <SalonTouchableOpacity
-                        disabled={isCheckOutDisabled}
-                        style={isCheckOutDisabled ?
-                          styles.panelIconBtnDisabled : styles.panelIconBtn}
-                        onPress={this.handleCheckout}
-                      >
-                        { isCheckingOut ?
-                          <ActivityIndicator />
-                          :
-                          <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
-                        }
-                      </SalonTouchableOpacity>
-                      <Text style={styles.panelIconText}>Check-out</Text>
-                    </View>
-                    <View key={Math.random()} style={styles.panelIcon}>
-                      <SalonTouchableOpacity
-                        style={styles.panelIconBtn}
-                        onPress={this.handleCancel}
-                      >
-                        <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
-                        <View style={[
-                          styles.plusIconContainer,
-                          { top: 19, backgroundColor: '#727A8F' },
-                        ]}
-                        >
-                          <Icon
-                            style={styles.subIcon}
-                            name="times"
-                            size={9}
-                            color="#FFFFFF"
-                            type="solid"
-                          />
-                        </View>
-                      </SalonTouchableOpacity>
-                      <Text style={styles.panelIconText}>Cancel Appt.</Text>
-                    </View>
-                    <View key={Math.random()} style={styles.panelIcon}>
-                      <SalonTouchableOpacity
-                        style={styles.panelIconBtn}
-                        onPress={this.props.handleModify}
-                      >
-                        <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
-                      </SalonTouchableOpacity>
-                      <Text style={styles.panelIconText}>Modifiy</Text>
-                    </View>
+                  <View key={Math.random()} style={styles.panelIcon}>
+                    <SalonTouchableOpacity
+                      disabled={isCheckOutDisabled}
+                      style={isCheckOutDisabled ?
+                        styles.panelIconBtnDisabled : styles.panelIconBtn}
+                      onPress={this.handleCheckout}
+                    >
+                      { isCheckingOut ?
+                        <ActivityIndicator />
+                        :
+                        <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+                      }
+                    </SalonTouchableOpacity>
+                    <Text style={styles.panelIconText}>Check-out</Text>
                   </View>
-                  <View
-                    key={Math.random()}
-                    style={{
-                      flex: 1,
-                      alignSelf: 'stretch',
-                      alignItems: 'center',
-                      // justifyContent: 'center',
-                    }}
-                  >
-                    <AuditInformation
-                      audit={auditAppt}
-                      isLoading={this.state.isLoadingAudits}
-                    />
+                  <View key={Math.random()} style={styles.panelIcon}>
+                    <SalonTouchableOpacity
+                      style={styles.panelIconBtn}
+                      onPress={this.handleCancel}
+                    >
+                      <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+                      <View style={[
+                        styles.plusIconContainer,
+                        { top: 19, backgroundColor: '#727A8F' },
+                      ]}
+                      >
+                        <Icon
+                          style={styles.subIcon}
+                          name="times"
+                          size={9}
+                          color="#FFFFFF"
+                          type="solid"
+                        />
+                      </View>
+                    </SalonTouchableOpacity>
+                    <Text style={styles.panelIconText}>Cancel Appt.</Text>
+                  </View>
+                  <View key={Math.random()} style={styles.panelIcon}>
+                    <SalonTouchableOpacity
+                      style={styles.panelIconBtn}
+                      onPress={this.props.handleModify}
+                    >
+                      <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+                    </SalonTouchableOpacity>
+                    <Text style={styles.panelIconText}>Modifiy</Text>
                   </View>
                 </View>
-                <View key={Math.random()} style={styles.panelBottom}>
-                  <InputGroup
-                    style={styles.otherOptionsGroup}
-                  >
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="New Appointment"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-                        <View style={styles.plusIconContainer}>
-                          <Icon
-                            style={styles.subIcon}
-                            name="plus"
-                            size={9}
-                            color="#115ECD"
-                            type="solid"
-                          />
-                        </View>
-                      </View>
-                    </InputButton>
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Rebook Appointment"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="undo" size={18} color="#115ECD" type="solid" />
-                      </View>
-                    </InputButton>
-                  </InputGroup>
+                <View
+                  key={Math.random()}
+                  style={{
+                    flex: 1,
+                    alignSelf: 'stretch',
+                    alignItems: 'center',
+                    // justifyContent: 'center',
+                  }}
+                >
+                  <AuditInformation
+                    audit={auditAppt}
+                    isLoading={this.state.isLoadingAudits}
+                  />
                 </View>
-                <View key={Math.random()} style={styles.panelBottom}>
-                  <InputGroup
+              </View>
+              <View key={Math.random()} style={styles.panelBottom}>
+                <InputGroup
+                  style={styles.otherOptionsGroup}
+                >
+                  <InputButton
+                    noIcon
                     key={Math.random()}
-                    style={styles.otherOptionsGroup}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="New Appointment"
                   >
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={this.handelOpenEditRemarks}
-                      label="Edit Remarks"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="edit" size={18} color="#115ECD" type="solid" />
+                    <View style={styles.iconContainer}>
+                      <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
+                      <View style={styles.plusIconContainer}>
+                        <Icon
+                          style={styles.subIcon}
+                          name="plus"
+                          size={9}
+                          color="#115ECD"
+                          type="solid"
+                        />
                       </View>
-                    </InputButton>
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={this.handleShowAppt}
-                      label="Show Apps. (today.future)"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-                        <View style={styles.plusIconContainer}>
-                          <Icon
-                            style={styles.subIcon}
-                            name="search"
-                            size={9}
-                            color="#115ECD"
-                            type="solid"
-                          />
-                        </View>
-                      </View>
-                    </InputButton>
-                  </InputGroup>
-                </View>
-                <View key={Math.random()} style={[styles.panelBottom, { height: 201 }]}>
-                  <InputGroup
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    noIcon
                     key={Math.random()}
-                    style={styles.otherOptionsGroup}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Rebook Appointment"
                   >
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Email Client"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="envelope" size={18} color="#115ECD" type="solid" />
+                    <View style={styles.iconContainer}>
+                      <Icon name="undo" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                </InputGroup>
+              </View>
+              <View key={Math.random()} style={styles.panelBottom}>
+                <InputGroup
+                  key={Math.random()}
+                  style={styles.otherOptionsGroup}
+                >
+                  <InputButton
+                    noIcon
+                    key={Math.random()}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={this.handelOpenEditRemarks}
+                    label="Edit Remarks"
+                  >
+                    <View style={styles.iconContainer}>
+                      <Icon name="edit" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    noIcon
+                    key={Math.random()}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={this.handleShowAppt}
+                    label="Show Apps. (today.future)"
+                  >
+                    <View style={styles.iconContainer}>
+                      <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
+                      <View style={styles.plusIconContainer}>
+                        <Icon
+                          style={styles.subIcon}
+                          name="search"
+                          size={9}
+                          color="#115ECD"
+                          type="solid"
+                        />
                       </View>
-                    </InputButton>
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="SMS Client"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="comments" size={18} color="#115ECD" type="solid" />
-                      </View>
-                    </InputButton>
-                    <InputButton
-                      noIcon
-                      key={Math.random()}
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={this.handleRecommendProductPress}
-                      label="Recommended Products"
-                    >
-                      <View style={styles.iconContainer}>
-                        <Icon name="star" size={18} color="#115ECD" type="solid" />
-                      </View>
-                    </InputButton>
-                  </InputGroup>
-                </View>
-                <View key={Math.random()} style={styles.panelDiff} />
-              </SalonTouchableOpacity>
+                    </View>
+                  </InputButton>
+                </InputGroup>
+              </View>
+              <View key={Math.random()} style={[styles.panelBottom, { height: 201 }]}>
+                <InputGroup
+                  key={Math.random()}
+                  style={styles.otherOptionsGroup}
+                >
+                  <InputButton
+                    noIcon
+                    key={Math.random()}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Email Client"
+                  >
+                    <View style={styles.iconContainer}>
+                      <Icon name="envelope" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    noIcon
+                    key={Math.random()}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="SMS Client"
+                  >
+                    <View style={styles.iconContainer}>
+                      <Icon name="comments" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    noIcon
+                    key={Math.random()}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={this.handleRecommendProductPress}
+                    label="Recommended Products"
+                  >
+                    <View style={styles.iconContainer}>
+                      <Icon name="star" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                </InputGroup>
+              </View>
+              <View key={Math.random()} style={styles.panelDiff} />
             </ScrollView>
           </View>
         </View>
@@ -508,7 +560,7 @@ class SalonAppointmentSlide extends React.Component {
         allowMomentum={false}
         renderDraggableHeader={this.renderHeader}
         onDragEnd={this.hanleOnDragEnd}
-        defaultYPosition={HeightHelper.setPositionToMinimalOption()}
+        defaultYPosition={this.state.defaultPosition}
         ref={(slidingPanel) => { this.slidingPanel = slidingPanel; }}
       >
         {appointment && this.renderContent()}

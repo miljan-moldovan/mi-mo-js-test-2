@@ -24,6 +24,7 @@ import ClientFormula from './../screens/clientInfoScreen/components/clientFormul
 import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
 import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
+import NewClientScreen from '../screens/newClientScreen';
 
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -87,7 +88,7 @@ const AppointmentStackNavigator = StackNavigator(
       screen: RecommendProductScreen,
       navigationOptions: rootProps => ({
         headerTitle: <RecommendProductHeader rootProps={rootProps} />,
-        tabBarVisible: false
+        tabBarVisible: false,
       }),
     },
     BlockTime: {
@@ -230,6 +231,10 @@ const AppointmentStackNavigator = StackNavigator(
       screen: ClientDetailsScreen,
       navigationOptions: { tabBarVisible: false },
     },
+    NewClient: {
+      screen: NewClientScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
     Services: {
       screen: ServicesScreen,
       navigationOptions: rootProps => ({
@@ -252,46 +257,10 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ChangeClient: {
       screen: ClientsScreen,
-      navigationOptions: rootProps => ({
-        headerStyle: {
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        },
-        headerTitle: 'Clients',
-        headerLeft: HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon
-                name="angleLeft"
-                type="regular"
-                size={22}
-                color="white"
-              />
-            </View>
-          ),
-        }),
-        header: props => (
-          <ImageHeader
-            {...props}
-            params={rootProps.navigation.state.params}
-            searchBar={searchProps => (
-              <SalonSearchBar
-                {...searchProps}
-                placeholder="Search by name, phone or email"
-                searchIconPosition="right"
-              />)}
-          />),
-      }),
     },
     CancelAppointmentScreen: {
       screen: CancelAppointmentScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ShowApptScreen: {
       screen: ShowApptScreen,

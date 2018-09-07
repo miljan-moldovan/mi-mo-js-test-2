@@ -35,7 +35,7 @@ const Addon = props => (
       {props.length && (
         <Text style={styles.addonLengthText}>{props.length}</Text>
       )}
-      <SalonTouchableOpacity onPress={props.onPressIcon || null}>
+      <SalonTouchableOpacity style={styles.addonIconButton} onPress={props.onPressIcon || null}>
         <Icon
           name={props.required ? 'times' : 'angleRight'}
           type="light"
@@ -82,7 +82,7 @@ const AddonsContainer = (props) => {
               icon="times"
               title={props.required.name}
               onPressIcon={props.onRemoveRequired}
-              length={`${moment.duration(props.required.maxDuration).asMinutes()} min`}
+              length={`${moment.duration(props.required.maxDuration || props.required.duration).asMinutes()} min`}
               onPress={props.onPressRequired}
             />
           )}

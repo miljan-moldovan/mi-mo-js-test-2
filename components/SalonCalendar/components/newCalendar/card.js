@@ -16,6 +16,7 @@ import Icon from '../../../UI/Icon';
 import Badge from '../../../SalonBadge';
 import ResizeButton from '../resizeButtons';
 import GroupBadge from '../../../SalonGroupBadge';
+import { isCardWithGap } from '../../../../utilities/helpers';
 
 const styles = StyleSheet.create({
   clientText: {
@@ -121,20 +122,34 @@ class Card extends Component {
   shouldComponentUpdate(nextProps) {
     return (nextProps.activeCard || (nextProps.isInBuffer !== this.props.isInBuffer
       || nextProps.isActive !== this.props.isActive
-    || nextProps.cellWidth !== this.props.cellWidth ||
+    || nextProps.width !== this.props.width || nextProps.left !== this.props.left ||
       !nextProps.isLoading && this.props.isLoading ||
       (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
       || nextProps.goToAppointmentId === nextProps.appointment.id || nextProps.displayMode !== this.props.displayMode;
   }
 
+  getAfterTimeHeight = () => {
+    const { appointment, apptGridSettings } = this.props;
+
+    return (moment.duration(appointment.afterTime).asMinutes() / apptGridSettings.step) * 30
+  }
+
+  getGapHeight = () => {
+    const { appointment, apptGridSettings } = this.props;
+
+    return (moment.duration(appointment.gapTime).asMinutes() / apptGridSettings.step) * 30;
+  }
+
+  getAfterGapHeight = () => this.props.cardHeight - this.afterTimeHeight - this.gapHeight;
+
   getCardProperties = () => {
-    const { isBufferCard, activeCard, isActive, isResizeCard, isResizeing } = this.props;
+    const { isBufferCard, activeCard, isActive, isResizeCard, isResizeing, left, width } = this.props;
     if (!isResizeCard && activeCard) {
-      const { cardWidth, verticalPositions, left } = activeCard;
+      const { verticalPositions } = activeCard;
       const opacity = isResizeing ? 0 : 1;
       return {
         left,
-        width: cardWidth,
+        width,
         zIndex: 999,
         verticalPositions,
         opacity,
@@ -143,8 +158,8 @@ class Card extends Component {
     }
     if (!activeCard && isBufferCard) {
       return {
-        left: 0,
-        width: 85,
+        left,
+        width,
         zIndex: 1,
         verticalPositions: [{ top: 0, height: 46 }],
         opacity: isActive ? 0.7 : 1,
@@ -168,18 +183,12 @@ class Card extends Component {
         minStartTime,
         weeklySchedule,
       },
-      appointments,
-      cellWidth,
       displayMode,
       provider,
       selectedFilter,
-      headerData,
       isInBuffer,
-      selectedProvider,
       goToAppointmentId,
       setGoToPositon,
-      storeSchedule,
-      numberOfOverlaps,
     } = this.props;
     const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
@@ -187,54 +196,24 @@ class Card extends Component {
     const apptGapTimeMoment = moment(gapTime, 'HH:mm');
     const apptAfterTimeMoment = moment(afterTime, 'HH:mm');
     const startTimeMoment = moment(minStartTime, 'HH:mm');
-    const gap = numberOfOverlaps * 8;
-    // calculate left position
-    const firstCellWidth = selectedFilter === 'providers' && selectedProvider === 'all' ? 130 : 0;
-    let index;
-    switch (selectedFilter) {
-      case 'rooms':
-        index = headerData.findIndex(item => item.id === room.id);
-        break;
-      case 'resources':
-        index = headerData.findIndex(item => item.id === resource.id);
-        break;
-      case 'deskStaff':
-      case 'providers':
-        if (selectedProvider === 'all') {
-          index = headerData.findIndex(item => item.id === employee.id);
-        } else if (displayMode === 'week') {
-          const apptDate = moment(date).format('YYYY-DD-MM');
-          index = headerData.findIndex(item => item.format('YYYY-DD-MM') === apptDate);
-        }
-        break;
-      default:
-        index = 0;
-        break;
-    }
-    const left = (index * cellWidth) + firstCellWidth + gap;
-    // calculate card width
-    const width = cellWidth - gap;
     // calculate height and top
     const verticalPositions = [];
     let height = null;
     let top = null;
-    if (gapTime !== '00:00:00') {
-      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm');
-      height = ((firstBlockDuration / step) * 30) - 1;
+    if (isCardWithGap(this.props.appointment)) {
+      height = this.getAfterTimeHeight() - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'm') / step) * 30;
       verticalPositions.push({ height, top });
-      const gapMinutes = apptGapTimeMoment.diff(dateTime12, 'm');
-      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm');
-      top = (newFromtTime.diff(startTimeMoment, 'm') / step) * 30;
-      height = ((apptToTimeMoment.diff(newFromtTime, 'minutes') / step) * 30) - 1;
+      top += this.getGapHeight();
+      height = this.getAfterGapHeight() - 1;
       verticalPositions.push({ height, top });
     } else {
-      height = ((apptToTimeMoment.diff(apptFromTimeMoment, 'minutes') / step) * 30) - 1;
+      height = this.props.cardHeight - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
       verticalPositions.push({ height, top });
     }
     // calculate zIndex
-    const zIndex = isResizeCard ? 999 : numberOfOverlaps + 1;
+    const zIndex = isResizeCard ? 999 : 1;
     // opacity
     const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
     // is emplyee active in cell time
@@ -349,7 +328,7 @@ class Card extends Component {
   );
 
   renderBadges = () => {
-    const { appointment } = this.props;
+    const { appointment, hiddenAddonsLength } = this.props;
     const { badgeData, client: { name, lastName } } = appointment;
     const initials = `${name[0]}${lastName[0]}`;
     const users = appointment.isMultipleProviders ? (
@@ -372,9 +351,11 @@ class Card extends Component {
     const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
     const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
     const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
+    const badgeAddons = hiddenAddonsLength > 0 ? <Badge text={`+${hiddenAddonsLength}`} /> : null;
     const badgeParty = badgeData.isParty ? <GroupBadge text={initials} /> : null;
     return (
       <View style={styles.badgesContainer}>
+        {badgeAddons}
         {badgeParty}
         { users }
         { star }
@@ -528,7 +509,9 @@ class Card extends Component {
                     this.renderStripes({ height, width, backgroundColor }) : null}
                   <TouchableOpacity
                     onPress={() => {
-                      this.props.onPress(this.props.appointment)
+                      if (this.props.onPress) {
+                        this.props.onPress(this.props.appointment);
+                      }
                     }}
                     onLongPress={() => this.handleOnLongPress({ left, verticalPositions, width })}
                     disabled={activeCard || isActive || isInBuffer}
@@ -572,8 +555,6 @@ class Card extends Component {
                       color={colors[color].dark}
                       position={styles.resizePosition}
                       height={height}
-                      calendarMeasure={this.props.calendarMeasure}
-                      calendarOffset={this.props.calendarOffset}
                       onScrollY={this.props.onScrollY}
                       isDisabled={isResizeing}
                     /> : null }

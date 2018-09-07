@@ -1,29 +1,64 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import PropTypes from 'prop-types';
+
 import Icon from '../../../components/UI/Icon';
 
-export default ApptCalendarHeader = props => (
-  <View style={{
-      height: 63,
-      paddingBottom: 10,
-      backgroundColor: '#115ECD',
-      flexDirection: 'row',
-      alignItems: 'flex-end',
-      justifyContent: 'space-between',
-    }}
-  >
+const styles = StyleSheet.create({
+  container: {
+    height: 63,
+    paddingBottom: 10,
+    backgroundColor: '#115ECD',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  btn: {
+    flex: 1 / 5,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    marginLeft: 16,
+  },
+  btnTitle: {
+    flex: 3 / 5,
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  iconCaretDown: {
+    marginLeft: 5,
+  },
+  rightContainer: {
+    flex: 1 / 5,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 16,
+    flexDirection: 'row',
+  },
+  btnElipsis: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnCalendar: {
+    marginLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconSearch: {
+    position: 'absolute',
+    top: 7.5,
+  },
+});
+
+const ApptCalendarHeader = props => (
+  <View style={styles.container}>
     <TouchableOpacity
-      style={{
-      flex: 1 / 5,
-      alignItems: 'flex-start',
-      justifyContent: 'flex-end',
-      marginLeft: 16,
-    }}
+      style={styles.btn}
       onPress={props.onPressMenu}
     >
       <Icon
@@ -34,18 +69,12 @@ export default ApptCalendarHeader = props => (
       />
     </TouchableOpacity>
     <TouchableOpacity
-      style={{
-      flex: 3 / 5,
-      alignSelf: 'stretch',
-      flexDirection: 'row',
-      alignItems: 'flex-end',
-      justifyContent: 'center',
-    }}
+      style={styles.btnTitle}
       onPress={props.onPressTitle}
     >
       {props.title}
       <Icon
-        style={{ marginLeft: 5 }}
+        style={styles.iconCaretDown}
         name="caretDown"
         type="solid"
         color="white"
@@ -53,20 +82,11 @@ export default ApptCalendarHeader = props => (
       />
     </TouchableOpacity>
     <View
-      style={{
-      flex: 1 / 5,
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      paddingRight: 16,
-      flexDirection: 'row',
-    }}
+      style={styles.rightContainer}
     >
       <TouchableOpacity
         onPress={props.onPressEllipsis}
-        style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+        style={styles.btnElipsis}
       >
         <Icon
           name="ellipsisH"
@@ -77,11 +97,7 @@ export default ApptCalendarHeader = props => (
       </TouchableOpacity>
       <TouchableOpacity
         onPress={props.onPressCalendar}
-        style={{
-        marginLeft: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+        style={styles.btnCalendar}
       >
         <Icon
           name="calendarO"
@@ -94,9 +110,19 @@ export default ApptCalendarHeader = props => (
           type="solid"
           color="white"
           size={8}
-          style={{ position: 'absolute', top: 7.5 }}
+          style={styles.iconSearch}
         />
       </TouchableOpacity>
     </View>
   </View>
 );
+
+ApptCalendarHeader.propTypes = {
+  onPressCalendar: PropTypes.func.isRequired,
+  onPressEllipsis: PropTypes.func.isRequired,
+  onPressTitle: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  onPressMenu: PropTypes.string.isRequired,
+};
+
+export default ApptCalendarHeader;

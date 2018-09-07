@@ -7,6 +7,7 @@ import { appointmentCalendarActions } from '../../actions/appointmentBook';
 
 const mapStateToProps = state => ({
   employeeScheduleState: state.employeeScheduleReducer,
+  storeState: state.storeReducer,
   formCache: state.formCache,
 });
 

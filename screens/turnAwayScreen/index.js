@@ -3,11 +3,13 @@ import { bindActionCreators } from 'redux';
 import turnAwayActions from '../../actions/turnAway';
 import turnAwayReasonsActions from '../../actions/turnAwayReasons';
 import TurnAwayScreen from './components/turnAwayScreen';
+import { apptGridSettingsSelector } from '../../redux/selectors/apptGridSettingsSelector';
 
 const mapStateToProps = state => ({
+  formCache: state.formCache,
   turnAwayState: state.turnAwayReducer,
   turnAwayReasonsState: state.turnAwayReasonsReducer,
-  formCache: state.formCache,
+  apptGridSettings: apptGridSettingsSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({

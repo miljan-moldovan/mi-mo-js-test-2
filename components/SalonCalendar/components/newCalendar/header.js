@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
+import { isNull } from 'lodash';
 
 import SalonAvatar from '../../../SalonAvatar';
 import FirstAvailableBtn from '../firstAvailableBtn';
 import colors from '../../../../constants/appointmentColors';
+import getEmployeePhotoSource from '../../../../utilities/helpers/getEmployeePhotoSource';
 import { DefaultAvatar } from '../../../../components/formHelpers';
 
 const styles = StyleSheet.create({
@@ -86,10 +88,9 @@ export default class Header extends Component {
   }
 
 
-
   renderProvider = (data, index) => {
     const { cellWidth, setSelectedProvider } = this.props;
-    const uri = data.imagePath;
+    const image = getEmployeePhotoSource(data);
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : colors[4].dark;
@@ -101,15 +102,10 @@ export default class Header extends Component {
             width={24}
             borderWidth={3}
             borderColor={borderColor}
-            image={{ uri }}
-            defaultComponent={(<DefaultAvatar
-              size={24}
-              provider={data}
-            />)}
-            // hasBadge
-            // badgeComponent={
-            //   <Icon name="birthdayCake" type="light" size={12} color="#115ECD" />
-            // }
+            image={image}
+            defaultComponent={(
+              <DefaultAvatar size={24} provider={data} />
+            )}
           />
           <Text numberOfLines={1} style={styles.columnTitle}>{`${data.name} ${data.lastName[0]}.`}</Text>
         </View>
@@ -149,12 +145,12 @@ export default class Header extends Component {
     return (
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
-          { selectedFilter === 'providers' && !isDate ? (
+          {selectedFilter === 'providers' && !isDate ? (
             <FirstAvailableBtn />
           ) : null
           }
         </View>
-        { this.props.dataSource.map((data, index) => this.renderColumnLabel(data, index)) }
+        {this.props.dataSource.map((data, index) => this.renderColumnLabel(data, index))}
       </View>
     );
   }

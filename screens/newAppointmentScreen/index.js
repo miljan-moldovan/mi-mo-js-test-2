@@ -11,6 +11,7 @@ import {
   totalPrice,
   isValidAppointment,
 } from '../../redux/selectors/newAppt';
+import { filteredProviders } from '../../redux/selectors/providersSelector';
 
 const mapStateToProps = state => ({
   newAppointmentState: state.newAppointmentReducer,
@@ -21,6 +22,10 @@ const mapStateToProps = state => ({
   totalPrice: totalPrice(state),
   appointmentLength: appointmentLength(state),
   isValidAppointment: isValidAppointment(state),
+  appointmentScreenState: {
+    ...state.appointmentBookReducer,
+    providers: filteredProviders(state),
+  },
 });
 
 const mapActionsToProps = dispatch => ({

@@ -2,7 +2,8 @@ import React from 'react';
 import { View,
   Text,
   SectionList,
-  StyleSheet } from 'react-native';
+  StyleSheet,
+  ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import ClientListItem from './clientListItem';
 import ClientListHeader from './clientListHeader';
@@ -87,7 +88,9 @@ class ClientList extends React.Component {
   }
 
   goToClientInfo = (client) => {
-    this.props.navigate('ClientInfo', { client });
+    if (client.id > 1) {
+      this.props.navigate('ClientInfo', { client, apptBook: false });
+    }
   }
 
 
@@ -161,11 +164,32 @@ class ClientList extends React.Component {
         return (letterGuide);
       }
 
+      renderMoreLoading = () => {
+        if (this.props.isLoadingMore || this.props.isLoading) {
+          return (<View style={styles.container}>
+            <ActivityIndicator size="small" />
+          </View>);
+        }
+        return null;
+      }
+
+      renderEmptyView = () => {
+        const { isLoadingMore, isLoading } = this.props;
+        if (!isLoadingMore && !isLoading) {
+          return (<EmptyList
+            onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
+            navigate={this.props.navigate}
+          />);
+        }
+        return null;
+      }
+
       render() {
         return (
           <View style={styles.container}>
 
             <SectionList
+              onEndReached={this.props.fetchMore}
               enableEmptySections
               keyboardShouldPersistTaps="always"
               initialNumToRender={this.props.clients.length}
@@ -178,11 +202,9 @@ class ClientList extends React.Component {
                 )}
               renderSectionHeader={ClientList.renderSection}
               ItemSeparatorComponent={ClientList.renderSeparator}
-              ListEmptyComponent={<EmptyList
-                onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
-                navigate={this.props.navigate}
-              />}
+              ListEmptyComponent={this.renderEmptyView}
               refreshing={this.props.refreshing}
+              ListFooterComponent={this.renderMoreLoading}
             />
 
             {this.props.clients.length > 0 ? <ListLetterFilter

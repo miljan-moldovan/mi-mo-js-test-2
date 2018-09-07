@@ -219,6 +219,10 @@ const getApiInstance = async () => {
   return axiosInstance;
 };
 
+const resetApiInstance = () => {
+  axiosInstance = null;
+};
+
 const getEmployeePhoto = employeeId => `${BASEURL}Employees/${employeeId}/Photo`;
 
-export { getApiInstance, getEmployeePhoto };
+export { getApiInstance, getEmployeePhoto, resetApiInstance };

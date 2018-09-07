@@ -86,9 +86,8 @@ class ClientListItem extends React.PureComponent {
         style={styles.container}
         underlayColor="black"
         onPress={() => {
-            
            this.props.onPress(this.props.client);
-}}
+        }}
       >
         <View style={styles.container}>
           <View style={styles.dataContainer}>

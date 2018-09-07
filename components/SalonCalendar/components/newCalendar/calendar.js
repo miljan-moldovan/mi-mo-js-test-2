@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, Animated, PanResponder } from 'react-native';
 import ScrollView, { ScrollViewChild } from 'react-native-directed-scrollview';
-import { get, times, groupBy, filter, reverse } from 'lodash';
+import { values, forEach, zipObject, chain, filter, get, uniqBy, keyBy, groupBy, mapValues, reverse, mergeWith } from 'lodash';
 import moment from 'moment';
 
 import Board from './board';
@@ -13,6 +13,18 @@ import Buffer from '../calendarBuffer';
 import SalonAlert from '../../../SalonAlert';
 import BlockTime from './blockCard';
 import EmptyScreen from './EmptyScreen';
+import { sortCardsForBoard, getRangeExtendedMoment, isCardWithGap, areDatesInRange, areDateRangeOverlapped } from '../../../../utilities/helpers';
+import DateTime from '../../../../constants/DateTime';
+import ViewTypes from '../../../../constants/ViewTypes';
+
+const extendedMoment = getRangeExtendedMoment();
+
+const findOverlappingAppointments = (cardId, intermediateResultDict) => {
+  const otherCardsOverlapping = intermediateResultDict[cardId].overlappingCards.reduce((accumulator, item) =>
+    ([...accumulator, ...findOverlappingAppointments(item.id, intermediateResultDict)]), []);
+
+  return uniqBy([...intermediateResultDict[cardId].overlappingCards, ...otherCardsOverlapping], 'id');
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -52,6 +64,8 @@ export default class Calendar extends Component {
     this.offset = { x: 0, y: 0 };
     this.setCellsByColumn(props);
     this.state = {
+      cardsArray: [],
+      overlappingCardsMap: null,
       alert: null,
       calendarMeasure: {
         width: 0,
@@ -109,6 +123,23 @@ export default class Calendar extends Component {
     });
   }
 
+
+  componentDidMount() {
+    const { appointments, blockTimes } = this.props;
+    this.setGroupedAppointments(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {
+      appointments, blockTimes, selectedFilter, selectedProvider, displayMode
+    } = nextProps;
+    if (this.props.selectedFilter !== selectedFilter
+      || this.props.selectedProvider !== selectedProvider || this.props.displayMode !== displayMode
+    || this.props.appointments !== appointments || this.props.blockTimes !== blockTimes) {
+      this.setGroupedAppointments(nextProps);
+    }
+  }
+
   componentWillUpdate(nextProps) {
     if ((!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading)
       || nextProps.displayMode !== this.props.displayMode) {
@@ -135,6 +166,97 @@ export default class Calendar extends Component {
     }
   }
 
+  setGroupedAppointments = ({ blockTimes, appointments, selectedFilter, selectedProvider, displayMode }) => {
+    let groupByCondition = ViewTypes[selectedFilter];
+    if (selectedFilter === 'providers') {
+      if (selectedProvider === 'all') {
+        groupByCondition = groupByCondition[selectedProvider];
+      } else {
+        groupByCondition = groupByCondition[displayMode];
+      }
+    }
+
+    const groupedAppointments = groupBy(appointments, groupByCondition !== 'date' ?
+      groupByCondition : item => moment(item.date).format(DateTime.date));
+    const groupedBlocks = groupBy(blockTimes, groupByCondition !== 'date' ?
+      groupByCondition : item => moment(item.date).format(DateTime.date));
+    const cardsArray = mergeWith({ ...groupedAppointments }, { ...groupedBlocks }, (objValue, srcValue) => objValue.concat(srcValue));
+    const overlappingCardsMap = this.setCardsOverlappingMap(cardsArray);
+    this.setState({ groupedAppointments, groupedBlocks, overlappingCardsMap, cardsArray });
+  }
+
+  setCardsOverlappingMap = (groupedCards = null) => {
+    const processedCardsIds = [];
+    return mapValues(groupedCards, (cards) => {
+      const intermediateResult = sortCardsForBoard(cards)
+        .map((card) => {
+          const sT = moment(card.fromTime, DateTime.timeOld);
+          const eT = moment(card.toTime, DateTime.timeOld);
+          processedCardsIds.push(card.id);
+
+          const overlappingCards = cards.filter((item) => {
+            // filter out itself
+            if (card.id === item.id) {
+              return false;
+            }
+
+            // filter out already processed cards
+            if (processedCardsIds.includes(item.id)) {
+              return false;
+            }
+
+            const itemStartTime = moment(item.fromTime, DateTime.timeOld);
+
+            // do not consider appointments after this one
+            if (!itemStartTime.isSameOrBefore(sT)) {
+              return false;
+            }
+
+            const itemEndTime = moment(item.toTime, DateTime.timeOld);
+            const range1 = extendedMoment.range(itemStartTime, itemEndTime);
+            const range2 = extendedMoment.range(sT, eT);
+            const containsConfig = { excludeStart: true, excludeEnd: true };
+
+            // consider only appointments which are overlapping each other
+            if (
+              !range1.intersect(range2)
+              && !(range1.contains(sT, containsConfig) || range1.contains(eT, containsConfig))
+            ) {
+              return false;
+            }
+
+            // do not take into account appointments with a gap if this one falls with in their gap
+            const itemGapStartTime = itemStartTime.add(moment.duration(item.afterTime));
+            const itemGapEndTime = itemGapStartTime.clone().add(moment.duration(item.gapTime));
+
+            return (isCardWithGap(item) &&
+              !areDatesInRange(itemGapStartTime, itemGapEndTime, sT, eT)) || !isCardWithGap(item);
+          });
+
+          return {
+            cardId: card.id,
+            overlappingCards,
+          };
+        });
+
+
+      const intermediateResultDict = keyBy(intermediateResult, 'cardId');
+
+      const result = intermediateResult.map((item) => {
+        const previousCardsOverlapping =
+          item.overlappingCards.reduce((accumulator, overlappingCard) =>
+            [...accumulator,
+              ...findOverlappingAppointments(overlappingCard.id, intermediateResultDict)], []);
+
+        return {
+          cardId: item.cardId,
+          overlappingCardsLength: uniqBy([...item.overlappingCards, ...previousCardsOverlapping], 'id').length,
+        };
+      });
+      return keyBy(result, 'cardId');
+    });
+  }
+
   setGoToPositon = ({ left, top, highlightCard }) => {
     this.goToPosition = {
       left,
@@ -149,7 +271,6 @@ export default class Calendar extends Component {
       headerData,
       selectedFilter,
       selectedProvider,
-      startDate,
       displayMode,
     } = nextProps;
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
@@ -161,7 +282,6 @@ export default class Calendar extends Component {
             height: apptGridSettings.numOfRow * 30 + headerHeight,
           };
           this.cellWidth = providerWidth;
-          this.groupedProviders = groupBy(headerData, 'id');
         } else if (displayMode === 'week') {
           this.size = {
             width: headerData.length * weekWidth + 36,
@@ -174,7 +294,6 @@ export default class Calendar extends Component {
             height: apptGridSettings.numOfRow * 30,
           };
           this.cellWidth = dayWidth;
-          this.groupedProviders = groupBy(selectedProvider, 'id');
         }
       } else {
         this.size = {
@@ -182,9 +301,62 @@ export default class Calendar extends Component {
           height: apptGridSettings.numOfRow * 30 + headerHeight,
         };
         this.cellWidth = providerWidth;
-        this.groupedProviders = groupBy(headerData, 'id');
       }
     }
+  }
+
+  setBufferCollapsed= (isCollapsed) => {
+    this.isBufferCollapsed = isCollapsed;
+  }
+
+  getOnDragState = (isScrollEnabled, data, left, cardWidth, verticalPositions, isBuffer) => {
+    let newState;
+    this.moveX = null;
+    this.moveY = null;
+    if (!isScrollEnabled) {
+      const offsetY = isBuffer ? -this.calendarPosition.y : 40 - this.offset.y;
+      const offsetX = isBuffer ? 0 : 36 - this.offset.x;
+      this.fixOffsetY = offsetY;
+      const { pan, pan2 } = this.state;
+      const newVerticalPositions = [];
+      for (let i = 0; i < verticalPositions.length; i += 1) {
+        const item = verticalPositions[i];
+        const newItem = { ...item, top: item.top + offsetY };
+        newVerticalPositions.push(newItem);
+      }
+      const newTop = newVerticalPositions[0].top;
+      const newLeft = left + offsetX;
+      this.state.pan.setOffset({ x: newLeft, y: newTop });
+      this.state.pan.setValue({ x: 0, y: 0 });
+      if (verticalPositions.length > 1) {
+        let newTop = newVerticalPositions[1].top;
+        this.state.pan2.setOffset({ x: newLeft, y: newTop });
+        this.state.pan2.setValue({ x: 0, y: 0 });
+      }
+      let { height } = verticalPositions[0];
+      if (verticalPositions.length > 1) {
+        const reversePosition = reverse(verticalPositions);
+        height = 0;
+        for (let i = 0; i < reversePosition.length; i += 1) {
+          const item = reversePosition[i];
+          if (i === 0) {
+            height = item.top + item.height;
+          } else {
+            height -= item.top;
+          }
+        }
+      }
+
+      return {
+        data,
+        left: isBuffer ? 0 : left,
+        cardWidth,
+        verticalPositions: newVerticalPositions,
+        isBuffer,
+        height,
+      };
+    }
+    return null;
   }
 
   measureScrollView = ({ nativeEvent: { layout: { width, height } } }) => {
@@ -325,56 +497,6 @@ export default class Calendar extends Component {
       }
       requestAnimationFrame(this.scrollAnimationResize);
     }
-  }
-
-  getOnDragState = (isScrollEnabled, data, left, cardWidth, verticalPositions, isBuffer) => {
-    let newState;
-    this.moveX = null;
-    this.moveY = null;
-    if (!isScrollEnabled) {
-      const offsetY = isBuffer ? -this.calendarPosition.y : 40 - this.offset.y;
-      const offsetX = isBuffer ? 0 : 36 - this.offset.x;
-      this.fixOffsetY = offsetY;
-      const { pan, pan2 } = this.state;
-      const newVerticalPositions = [];
-      for (let i = 0; i < verticalPositions.length; i += 1) {
-        const item = verticalPositions[i];
-        const newItem = { ...item, top: item.top + offsetY };
-        newVerticalPositions.push(newItem);
-      }
-      const newTop = newVerticalPositions[0].top;
-      const newLeft = left + offsetX;
-      this.state.pan.setOffset({ x: newLeft, y: newTop });
-      this.state.pan.setValue({ x: 0, y: 0 });
-      if (verticalPositions.length > 1) {
-        let newTop = newVerticalPositions[1].top;
-        this.state.pan2.setOffset({ x: newLeft, y: newTop });
-        this.state.pan2.setValue({ x: 0, y: 0 });
-      }
-      let { height } = verticalPositions[0];
-      if (verticalPositions.length > 1) {
-        const reversePosition = reverse(verticalPositions);
-        height = 0;
-        for (let i = 0; i < reversePosition.length; i += 1) {
-          const item = reversePosition[i];
-          if (i === 0) {
-            height = item.top + item.height;
-          } else {
-            height -= item.top;
-          }
-        }
-      }
-
-      return {
-        data,
-        left: isBuffer ? 0 : left,
-        cardWidth,
-        verticalPositions: newVerticalPositions,
-        isBuffer,
-        height,
-      };
-    }
-    return null;
   }
 
   handleOnDrag = (isScrollEnabled, appointment, left, cardWidth, verticalPositions, isBuffer) => {
@@ -664,7 +786,7 @@ export default class Calendar extends Component {
       btnRightText: 'Yes',
       onPressRight: () => {
         this.props.manageBuffer(false);
-        this.setState({ buffer: [], alert: null });
+        this.setState({ buffer: [], alert: null, activeCard: null, activeBlock: null, isResizeing: false });
         this.isBufferCollapsed = false;
       },
     } : null;
@@ -672,14 +794,10 @@ export default class Calendar extends Component {
     if (!alert) {
       this.props.manageBuffer(false);
       this.isBufferCollapsed = false;
-      this.setState({ buffer: [] });
+      this.setState({ buffer: [], activeCard: null, activeBlock: null, isResizeing: false });
     } else {
       this.createAlert(alert);
     }
-  }
-
-  setBufferCollapsed= (isCollapsed) => {
-    this.isBufferCollapsed = isCollapsed;
   }
 
   clearActive = () => {
@@ -704,112 +822,31 @@ export default class Calendar extends Component {
     this.props.onCellPressed(startTime, firstAvailableProvider);
   }
 
-  getOverlapingCards = (appointment) => {
-    const { appointments } = this.props;
-    const { id, fromTime, toTime, employee, date } = appointment;
-    let currentAppt = null;
-    let currentDate = null;
-    let numberOfOverlaps = 0;
-    const formatedDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
-    const apptFromTimeMoment = moment(fromTime, 'HH:mm');
-    const apptToTimeMoment = moment(toTime, 'HH:mm');
-    for (let i = 0; i < appointments.length; i += 1) {
-      currentAppt = appointments[i];
-      if (currentAppt.id !== id) {
-        currentDate = moment(currentAppt.date).format('YYYY-MM-DD');
-        if (formatedDate === currentDate && get(currentAppt.employee, 'id', -1) === get(employee, 'id', -2)) {
-          const currentStartTime = moment(currentAppt.fromTime, 'HH:mm');
-          const currentEndTime = moment(currentAppt.toTime, 'HH:mm');
-          if(apptFromTimeMoment.isSame(currentStartTime)
-          && apptToTimeMoment.isSame(currentEndTime)) {
-            numberOfOverlaps += this.processedCardsIds[currentAppt.id] ? 0 : 1;
-          } else if (apptFromTimeMoment.isSameOrAfter(currentStartTime)
-          && apptToTimeMoment.isSameOrBefore(currentEndTime)) {
-            let aux = this.processedCardsIds[currentAppt.id];
-            if (aux) {
-              numberOfOverlaps = aux + 1;
-            } else {
-              numberOfOverlaps += 1;
-            }
-          } else {
-            if (apptFromTimeMoment.isSameOrAfter(currentStartTime)
-            && apptFromTimeMoment.isBefore(currentEndTime)) {
-              let aux = this.processedCardsIds[currentAppt.id];
-              if (aux) {
-                numberOfOverlaps = aux + 1;
-              } else {
-                numberOfOverlaps += 1;
-              }
-            }
-          }
-        }
-      }
-    }
-    this.processedCardsIds[id] = numberOfOverlaps;
-    return numberOfOverlaps;
-  }
+  convertFromTimeToMoment = time => moment(time, DateTime.timeOld);
 
-  renderCards = () => {
+  renderCards = (cards, headerIndex, headerId) => {
     const {
-      appointments, rooms, selectedFilter,
+      selectedFilter,
       selectedProvider, displayMode, startDate,
     } = this.props;
-    this.processedCardsIds = [];
-    if (appointments) {
-      const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
-      const isRoom = selectedFilter === 'rooms';
-      const isResource = selectedFilter === 'resources';
-      if (isRoom) {
-        const filteredAppointments = filter(appointments, appt => appt.room !== null);
-        return filteredAppointments.map(this.renderCard);
-      }
-      if (isResource) {
-        const filteredAppointments = filter(appointments, appt => appt.resource !== null);
-        return filteredAppointments.map(this.renderCard);
-      }
-      if (!isAllProviderView && displayMode === 'day') {
-        const filteredAppointments = filter(appointments, appt => startDate.format('YYYY-MM-DD')
-        === moment(appt.date).format('YYYY-MM-DD'));
-        return filteredAppointments.map(this.renderCard);
-      }
-      return appointments.map(this.renderCard);
+    if (cards) {
+      return cards.map(card =>
+        (card.isBlockTime ? this.renderBlock(card, headerIndex, headerId)
+          : this.renderCard(card, headerIndex, headerId)));
     }
     return null;
   }
 
-  renderBlockTimes = () => {
+  renderBlock = (blockTime, headerIndex, headerId) => {
     const {
-      blockTimes, rooms, selectedFilter,
-      selectedProvider, displayMode, startDate,
-    } = this.props;
-    const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
-    const isRoom = selectedFilter === 'rooms';
-    const isResource = selectedFilter === 'resources';
-    if (blockTimes) {
-      if (isRoom || isResource) {
-        return null;
-      }
-      if (!isAllProviderView && displayMode === 'day') {
-        const filteredBlocks = filter(blockTimes, block => startDate.format('YYYY-MM-DD')
-        === moment(block.date).format('YYYY-MM-DD'));
-        return filteredBlocks.map(this.renderBlock);
-      }
-      return blockTimes.map(this.renderBlock);
-    }
-    return null;
-  }
-
-  renderBlock = (blockTime) => {
-    const {
-      apptGridSettings, headerData, selectedProvider, selectedFilter,
-      displayMode, appointments, providerSchedule, isLoading, filterOptions,
+      apptGridSettings, selectedProvider, selectedFilter,
+      displayMode, isLoading,
       providers, startDate
     } = this.props;
     const {
-      calendarMeasure, calendarOffset, activeBlock, activeCard, buffer,
+      calendarOffset, activeBlock, activeCard, buffer, overlappingCardsMap
     } = this.state;
     const isInBuffer = buffer.findIndex(bck => bck.id === blockTime.id) > -1;
-    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     const isActive = activeBlock && activeBlock.data.id === blockTime.id;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const provider = isAllProviderView ?
@@ -823,28 +860,33 @@ export default class Calendar extends Component {
       const panResponder = (activeBlock &&
         activeBlock.data.id !== blockTime.id) || isInBuffer
         || activeCard ? null : this.panResponder;
+      const firstCellWidth = isAllProviderView ? 130 : 0;
+
+      const gap = get(overlappingCardsMap, [headerId, blockTime.id, 'overlappingCardsLength'], 0) * 8;
+
+      const delta = (headerIndex * this.cellWidth) + firstCellWidth + gap;
+
+      const overlap = {
+        left: delta,
+        width: this.cellWidth - gap,
+      };
       return (
         <BlockTime
+          left={overlap.left}
+          width={overlap.width}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
           isActive={isActive}
           key={blockTime.id}
-          headerData={headerData}
           block={blockTime}
           apptGridSettings={apptGridSettings}
           onDrag={this.handleOnDragBlock}
           calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleOnResize}
-          cellWidth={this.cellWidth}
-          startTime={startTime}
-          groupedProviders={this.groupedProviders}
           isLoading={isLoading}
-          providerSchedule={providerSchedule}
-          selectedProvider={selectedProvider}
           displayMode={displayMode}
           selectedFilter={selectedFilter}
-          numberOfOverlaps={0}
           startDate={startDate}
           panResponder={panResponder}
         />
@@ -862,16 +904,16 @@ export default class Calendar extends Component {
     if (activeBlock) {
       return (
         <BlockTime
+          left={activeBlock.left}
+          width={activeBlock.cardWidth}
           pan={pan}
           activeBlock={activeBlock}
           panResponder={this.panResponder}
           block={activeBlock.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarMeasure={calendarMeasure}
           calendarOffset={this.offset}
           onResize={this.handleOnResize}
-          cardWidth={activeBlock.cardWidth}
           height={activeBlock.height}
           onDrop={this.handleCardDrop}
           isActive
@@ -886,28 +928,25 @@ export default class Calendar extends Component {
 
   renderResizeBlock =() => {
     const {
-      apptGridSettings, headerData, selectedProvider, displayMode,
-      appointments, providerSchedule, filterOptions,
+      apptGridSettings, selectedProvider, displayMode,
       providers, selectedFilter
     } = this.props;
-    const { activeBlock, calendarMeasure, isResizeing } = this.state;
+    const { activeBlock, isResizeing } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const provider = activeBlock && isAllProviderView ?
       providers.find(item => item.id === get(activeBlock.data.employee, 'id', false)) : selectedProvider;
     if (provider && isResizeing && activeBlock) {
-    //const numberOfOverlaps = this.getOverlapingCards(activeBlock.data);
     return (
       <BlockTime
+        left={activeBlock.left}
+        width={activeBlock.left}
         ref={(block) => { this.resizeBlock = block; }}
-        numberOfOverlaps={0}
         panResponder={this.panResponder}
         block={activeBlock.data}
         apptGridSettings={apptGridSettings}
         onScrollY={this.scrollToY}
-        calendarMeasure={calendarMeasure}
         calendarOffset={this.offset}
         onResize={this.handleOnResize}
-        cardWidth={activeBlock.cardWidth}
         height={activeBlock.height}
         onDrop={this.handleCardDrop}
         opacity={isResizeing ? 1 : 0}
@@ -915,13 +954,10 @@ export default class Calendar extends Component {
         isResizeing={this.state.isResizeing}
         isBufferBlock={activeBlock.isBuffer}
         top={activeBlock.top}
-        left={activeBlock.left}
         pan={this.state.pan}
         pan2={this.state.pan2}
         isResizeBlock
         activeBlock={activeBlock}
-        headerData={headerData}
-        cellWidth={this.cellWidth}
         selectedFilter={selectedFilter}
         displayMode={displayMode}
         selectedProvider={selectedProvider}
@@ -930,14 +966,15 @@ export default class Calendar extends Component {
     return null;
   }
 
-  renderCard = (appointment) => {
+  renderCard = (appointment, headerIndex, headerId) => {
+    const { toTime, fromTime } = appointment;
     const {
-      apptGridSettings, headerData, selectedProvider, selectedFilter,
-      displayMode, appointments, providerSchedule, isLoading, filterOptions, providers,
-      goToAppointmentId, storeSchedule, startDate
+      apptGridSettings, selectedProvider, selectedFilter,
+      displayMode, appointments, isLoading, filterOptions, providers,
+      goToAppointmentId, startDate,
     } = this.props;
     const {
-      calendarMeasure, calendarOffset, activeCard, buffer, activeBlock,
+      calendarOffset, activeCard, buffer, activeBlock, overlappingCardsMap
     } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const provider = isAllProviderView ?
@@ -947,20 +984,39 @@ export default class Calendar extends Component {
         return null;
       }
     }
-    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
+    const duration = moment(toTime, 'HH:mm').diff(moment(fromTime, 'HH:mm'), 'minutes');
+    if (duration === 0) {
+      return null;
+    }
     const isActive = activeCard && activeCard.data.id === appointment.id;
     const isInBuffer = buffer.findIndex(appt => appt.id === appointment.id) > -1;
     const panResponder = (activeCard &&
       activeCard.data.id !== appointment.id) || isInBuffer
       || activeBlock ? null : this.panResponder;
     if (appointment.employee) {
-      const numberOfOverlaps = this.getOverlapingCards(appointment);
+      const firstCellWidth = isAllProviderView ? 130 : 0;
+
+      const gap = get(overlappingCardsMap, [headerId, appointment.id, 'overlappingCardsLength'], 0) * 8;
+
+      const delta = (headerIndex * this.cellWidth) + firstCellWidth + gap;
+
+      const overlap = {
+        left: delta,
+        width: this.cellWidth - gap,
+      };
+      const hiddenAddons = appointments.filter(appt =>
+        appt.primaryAppointmentId === appointment.id
+          && appt.service.isAddon && appt.duration === 0);
+      const cardHeight = (appointment.duration / apptGridSettings.step) * 30;
       return (
         <Card
+          cardHeight={cardHeight}
+          left={overlap.left}
+          width={overlap.width}
+          hiddenAddonsLength={hiddenAddons.length}
           setGoToPositon={this.setGoToPositon}
           goToAppointmentId={goToAppointmentId}
           provider={provider}
-          headerData={headerData}
           panResponder={panResponder}
           onPress={this.props.onCardPressed}
           isResizeing={this.state.isResizeing}
@@ -969,11 +1025,9 @@ export default class Calendar extends Component {
           isActive={isActive}
           isInBuffer={isInBuffer}
           key={appointment.id}
-          providers={headerData}
           appointment={appointment}
           apptGridSettings={apptGridSettings}
           onDrag={this.handleOnDrag}
-          calendarMeasure={calendarMeasure}
           onScrollX={this.scrollToX}
           onScrollY={this.scrollToY}
           calendarOffset={calendarOffset}
@@ -983,13 +1037,8 @@ export default class Calendar extends Component {
           selectedFilter={selectedFilter}
           displayMode={displayMode}
           selectedProvider={selectedProvider}
-          startTime={startTime}
-          appointments={appointments}
-          groupedProviders={this.groupedProviders}
           isLoading={isLoading}
-          storeSchedule={storeSchedule}
           startDate={startDate}
-          numberOfOverlaps={numberOfOverlaps}
         />
       );
     }
@@ -998,87 +1047,88 @@ export default class Calendar extends Component {
 
   renderActiveCard =() => {
     const {
-      apptGridSettings, headerData, selectedProvider, displayMode, appointments,
+      apptGridSettings, appointments,
       filterOptions, startDate
     } = this.props;
-    const { activeCard, calendarMeasure, isResizeing, pan, pan2 } = this.state;
-    return activeCard ? (
-      <Card
-        pan={pan}
-        pan2={pan2}
-        activeCard={activeCard}
-        panResponder={this.panResponder}
-        appointment={activeCard.data}
-        apptGridSettings={apptGridSettings}
-        onScrollY={this.scrollToY}
-        calendarMeasure={calendarMeasure}
-        calendarOffset={this.offset}
-        onResize={this.handleOnResize}
-        cardWidth={activeCard.cardWidth}
-        height={activeCard.height}
-        onDrop={this.handleCardDrop}
-        isActive
-        opacity={isResizeing ? 0 : 1}
-        isResizeing={this.state.isResizeing}
-        isMultiBlock={filterOptions.showMultiBlock}
-        showAssistant={filterOptions.showAssistantAssignments}
-        startDate={startDate}
-      />) : null;
+    const { activeCard, isResizeing, pan, pan2 } = this.state;
+    if (activeCard) {
+      const hiddenAddons = appointments.filter(appt =>
+        appt.primaryAppointmentId === activeCard.data.id
+            && appt.service.isAddon && appt.duration === 0);
+      return (
+        <Card
+          left={activeCard.left}
+          width={activeCard.cardWidth}
+          hiddenAddonsLength={hiddenAddons.length}
+          pan={pan}
+          pan2={pan2}
+          activeCard={activeCard}
+          panResponder={this.panResponder}
+          appointment={activeCard.data}
+          apptGridSettings={apptGridSettings}
+          onScrollY={this.scrollToY}
+          calendarOffset={this.offset}
+          onResize={this.handleOnResize}
+          cardWidth={activeCard.cardWidth}
+          height={activeCard.height}
+          onDrop={this.handleCardDrop}
+          isActive
+          opacity={isResizeing ? 0 : 1}
+          isResizeing={this.state.isResizeing}
+          isMultiBlock={filterOptions.showMultiBlock}
+          showAssistant={filterOptions.showAssistantAssignments}
+          startDate={startDate}
+        />
+      );
+    }
+    return null;
   }
 
   renderResizeCard =() => {
     const {
-      apptGridSettings, headerData, selectedProvider, displayMode,
-      appointments, providerSchedule, filterOptions,
+      apptGridSettings, selectedProvider, displayMode,
+      appointments, filterOptions,
       providers, selectedFilter
     } = this.props;
-    const { activeCard, calendarMeasure, isResizeing } = this.state;
+    const { activeCard, isResizeing } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';
     const provider = activeCard && isAllProviderView ?
       providers.find(item => item.id === get(activeCard.data.employee, 'id', false)) : selectedProvider;
-    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
     if (provider && isResizeing && activeCard) {
-      const numberOfOverlaps = this.getOverlapingCards(activeCard.data);
-    return (
-      <Card
-        ref={(card) => { this.resizeCard = card; }}
-        numberOfOverlaps={numberOfOverlaps}
-        panResponder={this.panResponder}
-        appointment={activeCard.data}
-        apptGridSettings={apptGridSettings}
-        onScrollY={this.scrollToY}
-        calendarMeasure={calendarMeasure}
-        calendarOffset={this.offset}
-        onResize={this.handleOnResize}
-        cardWidth={activeCard.cardWidth}
-        height={activeCard.height}
-        onDrop={this.handleCardDrop}
-        opacity={isResizeing ? 1 : 0}
-        isActive
-        isResizeing={this.state.isResizeing}
-        isBufferCard={activeCard.isBuffer}
-        top={activeCard.top}
-        left={activeCard.left}
-        pan={this.state.pan}
-        pan2={this.state.pan2}
-        isResizeCard
-        activeCard={activeCard}
-        provider={provider}
-        headerData={headerData}
-        onPress={this.props.onCardPressed}
-        isMultiBlock={filterOptions.showMultiBlock}
-        showAssistant={filterOptions.showAssistantAssignments}
-        providers={headerData}
-        onDrag={this.handleOnDrag}
-        cellWidth={this.cellWidth}
-        selectedFilter={selectedFilter}
-        displayMode={displayMode}
-        selectedProvider={selectedProvider}
-        startTime={startTime}
-        appointments={appointments}
-        groupedProviders={this.groupedProviders}
-        providerSchedule={providerSchedule}
-      />)
+      const hiddenAddons = appointments.filter(appt =>
+        appt.primaryAppointmentId === activeCard.data.id
+          && appt.service.isAddon && appt.duration === 0);
+      return (
+        <Card
+          ref={(card) => { this.resizeCard = card; }}
+          hiddenAddonsLength={hiddenAddons.length}
+          panResponder={this.panResponder}
+          appointment={activeCard.data}
+          apptGridSettings={apptGridSettings}
+          onScrollY={this.scrollToY}
+          calendarOffset={this.offset}
+          onResize={this.handleOnResize}
+          width={activeCard.cardWidth}
+          height={activeCard.height}
+          onDrop={this.handleCardDrop}
+          opacity={isResizeing ? 1 : 0}
+          isActive
+          isResizeing={this.state.isResizeing}
+          isBufferCard={activeCard.isBuffer}
+          top={activeCard.top}
+          left={activeCard.left}
+          pan={this.state.pan}
+          pan2={this.state.pan2}
+          isResizeCard
+          activeCard={activeCard}
+          provider={provider}
+          onPress={this.props.onCardPressed}
+          isMultiBlock={filterOptions.showMultiBlock}
+          showAssistant={filterOptions.showAssistantAssignments}
+          onDrag={this.handleOnDrag}
+          selectedFilter={selectedFilter}
+          displayMode={displayMode}
+        />);
     }
     return null;
   }
@@ -1087,16 +1137,17 @@ export default class Calendar extends Component {
     const {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
-      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay, storeSchedule,
-      startDate, storeScheduleExceptions
+      isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay,
+      startDate, storeScheduleExceptions,
     } = this.props;
 
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader = displayMode === 'week' || selectedProvider === 'all' || isRoom || isResource;
     const {
-      alert, activeCard, isResizeing, activeBlock,
+      alert, activeCard, activeBlock, overlappingCardsMap, cardsArray
     } = this.state;
-    const startTime = moment(apptGridSettings.minStartTime, 'HH:mm');
+
+    const startTime = moment(apptGridSettings.minStartTime, DateTime.timeOld);
     let size = {
       width: this.size.width,
       height: bufferVisible ? this.size.height + 110 : this.size.height,
@@ -1143,8 +1194,15 @@ export default class Calendar extends Component {
               hideAlert={this.hideAlert}
               storeScheduleExceptions={storeScheduleExceptions}
             />
-            { this.renderCards() }
-            { this.renderBlockTimes() }
+            {
+                headerData.map((item, index) => {
+                  let headerId = item.id;
+                  if (selectedProvider !== 'all') {
+                    headerId = item.format(DateTime.date);
+                  }
+                  return this.renderCards(chain(cardsArray[headerId]).orderBy(card => get(overlappingCardsMap, [headerId, card.id, 'overlappingCardsLength'], 0), 'asc').value(), index, headerId);
+                })
+            }
             {this.renderResizeCard()}
             {this.renderResizeBlock()}
           </ScrollViewChild>

@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 44,
     color: '#110A24',
+  },
+  boldText: {
     fontFamily: 'Roboto-Medium',
   },
   itemRow: {
@@ -62,33 +64,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
+  blackText: { color: '#110A24' },
+  greenColor: { color: '#1DBF12' },
+  viewAllStyle: { paddingHorizontal: 14 },
 });
 
-export default class OthersTab extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-    };
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <InputGroup>
-          <InputButton
-            noIcon
-            label={<Text style={{ color: '#110A24' }}>View all Rooms</Text>}
-            onPress={() => this.props.handleSelect('rooms')}
-          />
-          <InputDivider />
-          <InputButton
-            noIcon
-            label={<Text style={{ color: '#110A24' }}>View all Resources</Text>}
-            onPress={() => this.props.handleSelect('resources')}
-          />
-        </InputGroup>
-      </View>
-    );
-  }
-}
+const OthersTab = ({ handleSelect, selectedFilter }) => {
+  const selectRooms = () => handleSelect('rooms');
+  const selectResources = () => handleSelect('resources');
+  const roomIcon = selectedFilter === 'rooms' ? <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
+  const resourceIcon = selectedFilter === 'resources' ? <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
+  return (
+    <View style={styles.container}>
+      <InputGroup>
+        <InputButton
+          icon={roomIcon}
+          noIcon={!roomIcon}
+          labelStyle={
+            selectedFilter === 'rooms' ?
+              [styles.rowText, styles.boldText] :
+              styles.rowText
+          }
+          label="View all Rooms"
+          onPress={selectRooms}
+        />
+        <InputDivider />
+        <InputButton
+          noIcon={!resourceIcon}
+          icon={resourceIcon}
+          labelStyle={
+            selectedFilter === 'resources' ?
+              [styles.rowText, styles.boldText]
+              : styles.rowText
+          }
+          label="View all Resources"
+          onPress={selectResources}
+        />
+      </InputGroup>
+    </View>
+  );
+};
+export default OthersTab;

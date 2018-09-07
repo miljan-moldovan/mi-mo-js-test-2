@@ -10,7 +10,7 @@ import appointmentNotesReducer from './appointmentNotes';
 import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
 import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
-import { salonSearchHeaderReducer } from '../components/SalonSearchHeader/redux';
+import { salonSearchHeaderReducer } from './searchHeader';
 import userInfoReducer from './userInfo';
 import appointmentBookReducer from './appointmentBook';
 import checkinReducer from './checkin';
@@ -35,8 +35,9 @@ import clientAppointmentsReducer from './clientAppointments';
 import storeReducer from './store';
 import rootDrawerNavigator from './rootDrawerNavigator';
 import rebookReducer from './rebookDialog';
+import { AT } from '../actions/login';
 
-export default combineReducers({
+const appReducer = combineReducers({
   auth,
   settingsReducer,
   queue,
@@ -73,3 +74,14 @@ export default combineReducers({
   rootDrawerNavigator,
   rebookReducer,
 });
+
+const rootReducer = (state, action) => {
+  let newState = state;
+  if (action.type === AT.LOGOUT) {
+    newState = undefined;
+  }
+
+  return appReducer(newState, action);
+};
+
+export default rootReducer;

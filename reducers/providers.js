@@ -4,7 +4,11 @@ import {
   GET_PROVIDERS,
   GET_PROVIDERS_ERROR,
   GET_PROVIDERS_SUCCESS,
+  GET_PROVIDER_STATUS,
+  GET_PROVIDER_STATUS_SUCCESS,
+  GET_PROVIDER_STATUS_FAILED,
 } from '../actions/providers';
+
 const initialState = {
   error: null,
   filtered: [],
@@ -45,7 +49,7 @@ const providersReducer = (state = initialState, action) => {
       return {
         ...state,
         error: data.error,
-        isLoading: true,
+        isLoading: false,
         providers: [],
         deskStaff: [],
       };
@@ -57,6 +61,26 @@ const providersReducer = (state = initialState, action) => {
         currentData: data.filtered,
         filteredDeskStaff: data.filteredDeskStaff,
         currentDeskStaffData: data.filteredDeskStaff,
+      };
+    case GET_PROVIDER_STATUS:
+      return {
+        ...state,
+        error: null,
+        isLoading: true,
+      };
+    case GET_PROVIDER_STATUS_SUCCESS:
+
+      return {
+        ...state,
+        error: null,
+        isLoading: false,
+      };
+    case GET_PROVIDER_STATUS_FAILED:
+
+      return {
+        ...state,
+        error: data.error,
+        isLoading: false,
       };
     default:
       return state;
