@@ -41,7 +41,6 @@ export const apptGridSettingsSelector = createSelector(
         filteredAppts = appointments;
         break;
     }
-
     const newEndDate = selectedProvider !== 'all' && pickerMode === 'week' ? endDate : startDate;
     const currentDay = moment(startDate);
     let storeTodaySchedule;

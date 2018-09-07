@@ -12,7 +12,7 @@ import { POST_APPOINTMENT_RESIZE,
 } from '../actions/appointment';
 import {
   PUT_BLOCKTIME_MOVE, PUT_BLOCKTIME_MOVE_SUCCESS, PUT_BLOCKTIME_MOVE_FAILED, UNDO_MOVE_BLOCK,
-  PUT_BLOCKTIME_RESIZE_SUCCESS, PUT_BLOCKTIME_RESIZE, PUT_BLOCKTIME_RESIZE_FAILED
+  PUT_BLOCKTIME_RESIZE_SUCCESS, PUT_BLOCKTIME_RESIZE, PUT_BLOCKTIME_RESIZE_FAILED,
 } from '../actions/blockTime';
 import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
   SET_FILTER_OPTION_POSITION, SET_FILTER_OPTION_OFF_EMPLOYEES,
@@ -24,6 +24,39 @@ import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
   SET_SELECTED_PROVIDER, SET_SELECTED_FILTER,
   SET_PROVIDER_DATES, HIDE_TOAST,
   SET_TOAST, CHANGE_FIRST_AVAILABLE } from '../actions/appointmentBook';
+
+import DateTime from '../constants/DateTime';
+import { getFullName } from '../utilities/helpers';
+
+const processBlockTime = (item) => {
+  const fromTime = moment(item.fromTime, DateTime.time);
+  const toTime = moment(item.toTime, DateTime.time);
+
+  return {
+    ...item,
+    isBlockTime: true,
+    fromTime: fromTime.format(DateTime.timeOld),
+    toTime: toTime.format(DateTime.timeOld),
+    duration: toTime.diff(fromTime, 'minutes'),
+  };
+};
+
+const processAppointmentFromApi = (item) => {
+  const fromTime = moment(item.fromTime, DateTime.time);
+  const toTime = moment(item.toTime, DateTime.time);
+  return {
+    ...item,
+    clientName: getFullName(item.client.name, item.client.middleName, item.client.lastName),
+    clientId: item.client.id,
+    provider: { ...item.employee },
+    fromTime: fromTime.format(DateTime.timeOld),
+    toTime: toTime.format(DateTime.timeOld),
+    duration: toTime.diff(fromTime, 'minutes'),
+    isBlockTime: false,
+    serviceName: item.service.description,
+  };
+};
+
 
 const initialState = {
   isLoading: false,
@@ -146,7 +179,6 @@ export default function appointmentBookReducer(state = initialState, action) {
         isLoading: true,
       };
     case SET_GRID_ROOM_VIEW_SUCCESS: {
-      //const { scheduledIntervals } = data.schedule;
       return {
         ...state,
         isLoading: false,
@@ -155,7 +187,8 @@ export default function appointmentBookReducer(state = initialState, action) {
           ...state.apptGridSettings, ...data.apptGridSettings,
         },
         rooms: data.rooms,
-        appointments: data.appointments,
+        appointments: data.appointments.map(processAppointmentFromApi),
+        blockTimes: [],
         roomAppointments: data.roomAppointments,
       };
     }
@@ -168,7 +201,8 @@ export default function appointmentBookReducer(state = initialState, action) {
           ...state.apptGridSettings, ...data.apptGridSettings
         },
         resources: data.resources,
-        appointments: data.appointments,
+        appointments: data.appointments.map(processAppointmentFromApi),
+        blockTimes: [],
         resourceAppointments: data.resourceAppointments,
       };
     }
@@ -181,9 +215,9 @@ export default function appointmentBookReducer(state = initialState, action) {
           ...state.apptGridSettings, ...data.apptGridSettings,
         },
         providers: data.employees,
-        appointments: data.appointments,
+        appointments: data.appointments.map(processAppointmentFromApi),
         availability: data.availability,
-        blockTimes: data.blockTimes,
+        blockTimes: data.blockTimes.map(processBlockTime),
         storeSchedule: data.schedule,
       };
     }
@@ -193,9 +227,9 @@ export default function appointmentBookReducer(state = initialState, action) {
         isLoading: false,
         error: null,
         apptGridSettings: { ...state.apptGridSettings, ...data.apptGridSettings },
-        appointments: data.appointments,
+        appointments: data.appointments.map(processAppointmentFromApi),
         providerSchedule: data.providerSchedule,
-        blockTimes: data.blockTimes,
+        blockTimes: data.blockTimes.map(processBlockTime),
       };
     case PUT_BLOCKTIME_MOVE:
     case PUT_BLOCKTIME_RESIZE:
