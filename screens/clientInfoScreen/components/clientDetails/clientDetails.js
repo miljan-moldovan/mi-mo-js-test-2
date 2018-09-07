@@ -275,7 +275,7 @@ class ClientDetails extends Component {
 
     const phone = find(state.client.phones, { type: 2 });
 
-    newState.isValidPhoneCell = phone !== undefined && phone.value.length > 0 ? isValid : true;
+    newState.isValidPhoneCell = phone !== undefined && phone.value && phone.value.length > 0 ? isValid : true;
 
     this.checkValidation();
 

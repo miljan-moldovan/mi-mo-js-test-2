@@ -56,6 +56,7 @@ class ClientsScreen extends React.Component {
     const onChangeClient = navigation.state.params &&
       navigation.state.params.onChangeClient ? navigation.state.params.onChangeClient : null;
 
+
     if (!leftButton) {
       leftButton = (
         <Icon
@@ -133,8 +134,8 @@ class ClientsScreen extends React.Component {
     headerProps: {
       title: 'Clients',
       subTitle: null,
-      defaultLeftButtonOnPress: this.handleLeftButton,
-      leftButtonOnPress: this.props.navigation.goBack,
+      defaultLeftButtonOnPress: () => { this.handleLeftButton(); },
+      leftButtonOnPress: () => { this.props.navigation.goBack(); },
       rightButton: <Text style={styles.rightButtonText}>Add</Text>,
       rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
     },
