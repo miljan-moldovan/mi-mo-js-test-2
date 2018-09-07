@@ -115,7 +115,7 @@ class SelectStoreScreen extends React.Component {
   );
 
   renderContent = () => (
-    <View style={{ flex: 1 }}>
+    <View style={styles.contentWrapper}>
       {this.state.hasError && <ErrorsView error={this.state.errorMessage} />}
       <View style={styles.listWrapper}>
         <FlatList
@@ -136,12 +136,7 @@ class SelectStoreScreen extends React.Component {
     return (
       <View style={styles.mainContainer}>
         {this.state.showLoadingSpinner ? (
-          <View style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          >
+          <View style={styles.spinnerStyles}>
             <ActivityIndicator />
           </View>
         ) : this.renderContent()}

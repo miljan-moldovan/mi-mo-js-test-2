@@ -1,4 +1,4 @@
-import { getApiInstance } from '../../api';
+import { getApiInstance, resetApiInstance } from '../../api';
 
 export default async (username, password) => {
   const apiInstance = await getApiInstance();
@@ -7,7 +7,10 @@ export default async (username, password) => {
     data: { username, password },
     method: 'POST',
   })
-    .then(({ data }) => data)
+    .then(({ data }) => {
+      resetApiInstance();
+      return data;
+    })
     .catch((err) => {
       if (err && err.response) {
         return err.response.data;

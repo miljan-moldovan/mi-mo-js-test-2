@@ -5,7 +5,7 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    backgroundColor: 'rgb(17.85, 94.35, 204)',
+    backgroundColor: 'white',
     height: '100%',
   },
   headerStyle: {
@@ -19,6 +19,7 @@ export default StyleSheet.create({
     marginBottom: '2%',
     letterSpacing: 2,
   },
+  contentWrapper: { flex: 1 },
   listItem: {
     width: '85%',
     fontSize: 14,
@@ -40,4 +41,9 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  spinnerStyles: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
