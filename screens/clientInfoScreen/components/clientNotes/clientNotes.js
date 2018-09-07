@@ -329,7 +329,7 @@ class ClientNotesScreen extends Component {
     const baseNotes = showDeleted ?
       this.props.clientNotesState.notes :
       this.props.clientNotesState.notes.filter(el =>
-        !el.isDeleted && moment(el.expiration).isSameOrAfter(moment().startOf('day')));
+        !el.isDeleted && (el.expiration ? moment(el.expiration).isSameOrAfter(moment().startOf('day')) : true));
 
 
     if (searchText && searchText.length > 0) {
