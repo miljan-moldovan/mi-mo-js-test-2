@@ -81,7 +81,10 @@ export const login = (
     }
   };
 
-export const logout = () => ({ type: AT.LOGOUT });
+export const logout = () => {
+  AsyncStorage.removeItem(JWTKEY);
+  return { type: AT.LOGOUT };
+};
 export const enableFingerprintLogin = () => ({ type: AT.FINGERPRINT_ENABLE });
 export const disableFingerprintLogin = () => ({ type: AT.FINGERPRINT_DISABLE });
 export const updateFingerprintValidationTime = () => (

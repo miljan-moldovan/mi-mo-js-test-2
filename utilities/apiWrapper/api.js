@@ -187,7 +187,7 @@ let headers = {
 
 let axiosInstance = null;
 
-const getApiInstance = async (updateInstance) => {
+const getApiInstance = async () => {
   if (!axiosInstance) {
     try {
       const apiURL = await AsyncStorage.getItem(URLKEY);
