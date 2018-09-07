@@ -35,7 +35,7 @@ const Addon = props => (
       {props.length && (
         <Text style={styles.addonLengthText}>{props.length}</Text>
       )}
-      <SalonTouchableOpacity onPress={props.onPressIcon || null}>
+      <SalonTouchableOpacity style={styles.addonIconButton} onPress={props.onPressIcon || null}>
         <Icon
           name={props.required ? 'times' : 'angleRight'}
           type="light"

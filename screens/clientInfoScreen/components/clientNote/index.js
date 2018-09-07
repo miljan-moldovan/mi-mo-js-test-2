@@ -126,7 +126,6 @@ class ClientNote extends Component {
     }
 
     dismissOnSelect() {
-
       const { navigate } = this.props.navigation;
       this.setState({ isVisible: true });
       navigate('ClientNote', { ...this.props });
@@ -179,6 +178,7 @@ class ClientNote extends Component {
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
           onChangeProvider: this.onChangeProvider,
+          headerProps: { title: 'Providers', ...this.cancelButton() },
           ...this.props,
         });
       } else {
@@ -187,6 +187,7 @@ class ClientNote extends Component {
           dismissOnSelect: this.dismissOnSelect,
           onNavigateBack: this.handleOnNavigateBack,
           onChangeProvider: this.onChangeProvider,
+          headerProps: { title: 'Providers', ...this.cancelButton() },
           ...this.props,
         });
       }
@@ -294,7 +295,6 @@ class ClientNote extends Component {
                     iconStyle={styles.carretIcon}
                     avatarSize={20}
                     navigate={this.props.navigation.navigate}
-                    headerProps={{ title: 'Providers', ...this.cancelButton() }}
                     onChange={this.onChangeProvider}
                     onPress={this.handlePressProvider}
                   />

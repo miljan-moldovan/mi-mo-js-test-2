@@ -22,35 +22,58 @@ const styles = StyleSheet.create({
   whiteBg: { backgroundColor: 'white' },
 });
 
-const SalonTimePicker = (props) => {
-  const format = props.format || 'HH:mm A';
-  const value = moment(props.value).isValid() ? moment(props.value).format(format) : props.placeholder || '-';
-  const date = moment(props.value).isValid() ? moment(props.value).toDate() : new Date().toString();
-  const valueStyle = props.isOpen ? { color: '#1B65CF' } : null;
-  return (
-    <React.Fragment>
-      <InputButton
-        noIcon={props.noIcon}
-        label={props.label}
-        value={value}
-        valueStyle={valueStyle}
-        onPress={props.toggle}
-        style={styles.noPadding}
-      />
-      {props.isOpen && (
+class SalonTimePicker extends React.Component {
+  componentDidMount() {
+    if (this.props.required) {
+      this.validate(this.props.selectedDate, true);
+    }
+  }
+
+  onPressDatePicker = (selectedDate) => {
+    if (this.props.required) {
+      this.validate(selectedDate, false);
+    }
+    this.props.onChange(selectedDate);
+  }
+
+
+  validate = (selectedDate, isFirstValidation = false) => {
+    const isValid = moment(selectedDate).isValid();
+    this.props.onValidated(isValid, isFirstValidation);
+  };
+
+  render() {
+    const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
+    const format = this.props.format || 'HH:mm A';
+    const value = moment(this.props.value).isValid() ? moment(this.props.value).format(format) : this.props.placeholder || '-';
+    const date = moment(this.props.value).isValid() ? moment(this.props.value).toDate() : new Date();
+    const valueStyle = this.props.isOpen ? { color: '#1B65CF' } : this.props.valueStyle || null;
+    return (
+      <React.Fragment>
+        <InputButton
+          labelStyle={labelStyle}
+          icon={this.props.icon}
+          noIcon={this.props.noIcon}
+          label={this.props.label}
+          value={value}
+          valueStyle={valueStyle}
+          onPress={this.props.toggle}
+          style={styles.noPadding}
+        />
+        {this.props.isOpen && (
         <View style={styles.pickerContainer}>
           <DatePicker
             style={styles.container}
             itemStyle={styles.whiteBg}
             date={date}
-            mode={props.mode || 'time'}
-            onDateChange={(date) => { props.onChange(date); }}
-            minimumDate={props.minimumDate || null}
+            mode={this.props.mode || 'time'}
+            onDateChange={this.onPressDatePicker}
+            minimumDate={this.props.minimumDate || null}
           />
         </View>
       )}
-    </React.Fragment>
-  );
-};
-
+      </React.Fragment>
+    );
+  }
+}
 export default SalonTimePicker;

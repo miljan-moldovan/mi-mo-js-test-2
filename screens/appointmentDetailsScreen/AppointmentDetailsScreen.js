@@ -13,7 +13,7 @@ import AppointmentDetails from './components/appointmentDetails';
 
 import ClientFormulas from '../clientInfoScreen/components/clientFormulas';
 import ClientNotes from '../clientInfoScreen/components/clientNotes';
-
+import ClientInfoButton from '../../components/ClientInfoButton';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 
@@ -135,11 +135,14 @@ export default class AppointmentDetailsScreen extends React.Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity style={styles.rightButton} onPress={handleRightClick}>
-          <View style={styles.rightButtonContainer}>
-            <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
-          </View>
-        </SalonTouchableOpacity>
+        <ClientInfoButton
+          client={params.item.client}
+          navigation={navigation}
+          onDonePress={() => {}}
+          buttonStyle={styles.rightButton}
+          apptBook={false}
+          iconStyle={{ fontSize: 18, color: '#115ECD' }}
+        />
       ),
     });
   };
@@ -169,14 +172,8 @@ export default class AppointmentDetailsScreen extends React.Component {
     }, 2000);
 
 
-    this.props.navigation.setParams({ handleRightClick: this.goToClientInfo });
+    this.props.navigation.setParams({ client: this.state.client });
   }
-
-
-  goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.state.client, apptBook: false });
-  };
-
 
   handleIndexChange = index => this.setState({ index });
 

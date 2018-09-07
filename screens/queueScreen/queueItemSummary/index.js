@@ -9,6 +9,7 @@ import QueueTimeNote from '../queueTimeNote';
 import StatusEnum from '../../../constants/Status';
 import QueueTypes from '../../../constants/QueueTypes';
 import styles from './styles';
+import ClientInfoButton from '../../../components/ClientInfoButton';
 
 class QueueItemSummary extends Component {
   constructor(props) {
@@ -35,7 +36,6 @@ onPressModify = () => {
 onPressReturn = returned => this.props.onPressSummary.returning(returned)
 
 goToClientInfo = () => {
-  this.props.navigation.navigate('ClientInfo', { client: this.props.client, apptBook: false });
   this.props.onDonePress();
 };
 
@@ -276,9 +276,16 @@ render() {
                   </View>
                 }
                 <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
-                <SalonTouchableOpacity onPress={this.goToClientInfo}>
-                  <SalonIcon style={styles.clientIcon} icon="iconInfo" size={20} />
-                </SalonTouchableOpacity>
+                <ClientInfoButton
+                  client={this.props.client}
+                  navigation={this.props.navigation}
+                  onDonePress={this.goToClientInfo}
+                  buttonStyle={styles.clientIcon}
+                  iconStyle={{
+                   fontSize: 20, color: '#115ECD', fontWeight: '100', fontFamily: 'FontAwesome5ProLight',
+                  }}
+                  apptBook={false}
+                />
               </View>
               <QueueTimeNote type="long" item={item} />
               <ScrollView style={styles.listContainer}>
@@ -301,9 +308,7 @@ render() {
 
 
 QueueItemSummary.defaultProps = {
-
 };
-
 QueueItemSummary.propTypes = {
   isVisible: PropTypes.any.isRequired,
   onDonePress: PropTypes.any.isRequired,
