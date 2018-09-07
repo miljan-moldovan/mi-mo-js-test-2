@@ -22,6 +22,7 @@ import { getSelectedAppt } from '../../../redux/selectors/appointmentSelector';
 import styles from './styles';
 import InputModal from '../../../components/SalonInputModal';
 import SuccessModal from './components/SuccessModal';
+import ClientInfoButton from '../../../components/ClientInfoButton';
 
 import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
@@ -109,11 +110,6 @@ class SalonAppointmentSlide extends React.Component {
   };
 
   keyExtractor = item => item.id;
-
-  goToClientInfo = (client) => {
-    this.props.navigation.navigate('ClientInfo', { client, apptBook: true });
-    this.hidePanel();
-  }
 
   getDefaultPosition = (shouldBeUpdatedForce) => {
     const forceUpdate = shouldBeUpdatedForce || false;
@@ -245,11 +241,13 @@ class SalonAppointmentSlide extends React.Component {
         <View key={Math.random()} style={[styles.panelTopLine]}>
           <View style={styles.panelTopLineLeft} key={Math.random()}>
             <Text style={styles.panelTopName}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
-            <SalonTouchableOpacity
-              onPress={() => this.goToClientInfo(appointment.client)}
-            >
-              <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
-            </SalonTouchableOpacity>
+            <ClientInfoButton
+              client={appointment.client}
+              navigation={this.props.navigation}
+              onDonePress={this.hidePanel}
+              iconStyle={{ fontSize: 18, color: '#115ECD', paddingLeft: 5 }}
+              apptBook
+            />
           </View>
           <View key={Math.random()} style={styles.panelTopLineRight}>
             <SalonTouchableOpacity onPress={this.hidePanel}>

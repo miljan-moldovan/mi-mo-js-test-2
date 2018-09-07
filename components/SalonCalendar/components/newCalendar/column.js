@@ -77,7 +77,8 @@ export default class Column extends Component {
       storeTodaySchedule = exception ? exception : weeklySchedule[startDate.isoWeekday() - 1];
     } else {
       storeTodaySchedule = apptGridSettings.weeklySchedule[colData.isoWeekday() - 1];
-      exception = filter(storeScheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(colData, 'day'))[0];
+      exception = filter(storeScheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(colData, 'day')
+      || moment(item.endDate, 'YYYY-MM-DD').isSame(colData, 'day'))[0];
       storeTodaySchedule = exception || storeTodaySchedule;
     }
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
