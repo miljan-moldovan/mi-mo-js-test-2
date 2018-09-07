@@ -53,6 +53,7 @@ import {
   GET_QUEUE_STATE,
   GET_QUEUE_STATE_SUCCESS,
   GET_QUEUE_STATE_FAILED,
+  SET_LOADING,
 } from '../actions/queue';
 
 import { POST_WALKIN_CLIENT_SUCCESS } from '../actions/walkIn';
@@ -87,7 +88,7 @@ export default (state = initialState, action) => {
       const waitingQueue = [];
       const serviceQueue = [];
       const initialGroups = {};
-      data.map((item: QueueItem) => {
+      data.resp.map((item: QueueItem) => {
         item.client.fullName = `${item.client.name ?
           item.client.name[0].toUpperCase() + item.client.name.toLowerCase().slice(1, item.client.name.length) : ''} ${
           item.client.lastName ?
@@ -184,16 +185,16 @@ export default (state = initialState, action) => {
         expandedRow: state.expandedRow === data.id ? null : data.id,
       };
     case CLIENT_CHECKED_IN:
-    
+
       return {
         ...state,
         loading: true,
       };
     case CLIENT_CHECKED_IN_RECEIVED:
-    
+
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_CHECKED_IN_FAILED:
       return {
@@ -208,7 +209,7 @@ export default (state = initialState, action) => {
     case CLIENT_UNCHECKED_IN_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_UNCHECKED_IN_FAILED:
       return {
@@ -225,7 +226,7 @@ export default (state = initialState, action) => {
     case CLIENT_RETURNED_LATER_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_RETURNED_LATER_FAILED:
       return {
@@ -241,7 +242,7 @@ export default (state = initialState, action) => {
     case CLIENT_RETURNED_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_RETURNED_FAILED:
       return {
@@ -256,7 +257,7 @@ export default (state = initialState, action) => {
     case CLIENT_WALKED_OUT_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_WALKED_OUT_FAILED:
       return {
@@ -271,7 +272,7 @@ export default (state = initialState, action) => {
     case CLIENT_NO_SHOW_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_NO_SHOW_FAILED:
       return {
@@ -287,7 +288,7 @@ export default (state = initialState, action) => {
     case CLIENT_START_SERVICE_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_START_SERVICE_FAILED:
       return {
@@ -302,7 +303,7 @@ export default (state = initialState, action) => {
     case CLIENT_FINISH_SERVICE_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_FINISH_SERVICE_FAILED:
       return {
@@ -318,7 +319,7 @@ export default (state = initialState, action) => {
     case CLIENT_UNDOFINISH_SERVICE_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_UNDOFINISH_SERVICE_FAILED:
       return {
@@ -333,7 +334,7 @@ export default (state = initialState, action) => {
     case CLIENT_TO_WAITING_RECEIVED:
       return {
         ...state,
-        loading: false,
+        // loading: false,
       };
     case CLIENT_TO_WAITING_FAILED:
       return {
@@ -560,7 +561,7 @@ export default (state = initialState, action) => {
     case GET_QUEUE_STATE_SUCCESS:
       return {
         ...state,
-        loading: false,
+        // loading: false,
         queueState: data.response,
         error: null,
       };
@@ -570,6 +571,11 @@ export default (state = initialState, action) => {
         loading: false,
         queueState: null,
         error: data.error,
+      };
+    case SET_LOADING:
+      return {
+        ...state,
+        loading: data.loading,
       };
     default:
       return state;

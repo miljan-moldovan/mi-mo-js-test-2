@@ -8,6 +8,7 @@ import {
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import Icon from '../../components/UI/Icon';
+import ClientInfoButton from '../../components/ClientInfoButton';
 
 import {
   InputLabel,
@@ -175,26 +176,14 @@ class WalkInScreen extends Component {
     }, this.checkCanSave);
   }
 
-  goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.state.client, apptBook: false });
-  }
-
-
-    renderExtraClientButtons = isDisabled =>
-
-      (<SalonTouchableOpacity
-        onPress={this.goToClientInfo}
-        style={{
-          marginHorizontal: 5,
-        }}
-      >
-        <Icon
-          name="infoCircle"
-          size={20}
-          color="#115ECD"
-          type="regular"
-        />
-       </SalonTouchableOpacity>)
+    renderExtraClientButtons = isDisabled => (<ClientInfoButton
+      client={this.state.client}
+      navigation={this.props.navigation}
+      onDonePress={() => {}}
+      apptBook={false}
+      buttonStyle={{ marginHorizontal: 5 }}
+      iconStyle={{ fontSize: 20, color: '#115ECD' }}
+    />)
     ;
 
 

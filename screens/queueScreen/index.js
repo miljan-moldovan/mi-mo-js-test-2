@@ -85,6 +85,7 @@ class QueueScreen extends React.Component {
     ],
     colorAnimActive: new Animated.Value(0),
     colorAnimInactive: new Animated.Value(0),
+    receiveQueueRetries: 0,
   }
 
   componentWillMount() {
@@ -115,13 +116,22 @@ class QueueScreen extends React.Component {
     this.setState({ index: route.key }, this.animateText);
   }
 
-  loadQueueData = () => {
+  loadQueueData = (showError = false) => {
     this.props.actions.getQueueState();
-    this.props.actions.receiveQueue();
+    this.props.actions.receiveQueue(this.receiveQueueFinished, showError);
   }
 
-  refreshData = () => {
-    this.props.actions.receiveQueue();
+
+  receiveQueueFinished = (result, error) => {
+    if (!result && error) {
+      setTimeout(() => {
+        const showError = this.state.receiveQueueRetries > 1;
+        this.loadQueueData(showError, showError);
+        this.setState({ receiveQueueRetries: this.state.receiveQueueRetries + 1 });
+      }, 300);
+    } else {
+      this.setState({ receiveQueueRetries: 0 });
+    }
   }
 
   handleSearchClients = () => {

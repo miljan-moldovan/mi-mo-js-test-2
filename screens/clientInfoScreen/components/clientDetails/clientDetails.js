@@ -24,6 +24,8 @@ import {
   LabeledTextarea,
   ValidatableInput,
 } from '../../../../components/formHelpers';
+import SalonTimePicker from '../../../../components/formHelpers/components/SalonTimePicker';
+
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import usStates from '../../../../constants/UsStates';
 import gendersEnum from '../../../../constants/Genders';
@@ -93,7 +95,9 @@ class ClientDetails extends Component {
       hasChanged: false,
       isValidEmail: false,
       isValidZipCode: false,
-      isValidPhone: false,
+      isValidPhoneHome: false,
+      isValidPhoneCell: false,
+      isValidPhoneWork: false,
       isValidName: false,
       isValidLastName: false,
       isValidStreet1: false,
@@ -102,6 +106,8 @@ class ClientDetails extends Component {
       isValidState: true,
       isValidGender: true,
       isValidBirth: true,
+      birthdayPickerOpen: false,
+      anniversaryPickerOpen: false,
       requiredFields: {
         age: false,
         address: true,
@@ -111,6 +117,9 @@ class ClientDetails extends Component {
         gender: false,
         zip: true,
         state: true,
+        workPhone: true,
+        homePhone: false,
+        cellPhone: false,
       },
     };
 
@@ -134,6 +143,7 @@ class ClientDetails extends Component {
 
   onChangeClientField = (field, value, type) => {
     const newClient = this.state.client;
+
 
     switch (field) {
       case 'name':
@@ -191,7 +201,12 @@ class ClientDetails extends Component {
         break;
       case 'phone': {
         const phone = find(newClient.phones, { type });
-        phone.value = value;
+        if (phone) {
+          phone.value = value;
+        } else {
+          newClient.phones.push({ type, value });
+        }
+
         break;
       }
       default:
@@ -231,9 +246,36 @@ class ClientDetails extends Component {
   });
 
 
-  onValidatePhone = isValid => this.setState((state) => {
+  onValidatePhoneWork = isValid => this.setState((state) => {
     const newState = state;
-    newState.isValidPhone = state.client.phones !== undefined ? isValid : true;
+
+    const phone = find(state.client.phones, { type: 0 });
+
+    newState.isValidPhoneWork = phone !== undefined ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidatePhoneHome = isValid => this.setState((state) => {
+    const newState = state;
+
+    const phone = find(state.client.phones, { type: 1 });
+
+    newState.isValidPhoneHome = phone !== undefined && phone.value.length > 0 ? isValid : true;
+
+    this.checkValidation();
+
+    return newState;
+  });
+
+  onValidatePhoneCell = isValid => this.setState((state) => {
+    const newState = state;
+
+    const phone = find(state.client.phones, { type: 2 });
+
+    newState.isValidPhoneCell = phone !== undefined && phone.value && phone.value.length > 0 ? isValid : true;
 
     this.checkValidation();
 
@@ -344,6 +386,19 @@ class ClientDetails extends Component {
       required.gender = requireClientGender;
       required.zip = isLargeForm;
       required.state = isLargeForm;
+      required.workPhone = true;
+      required.homePhone = false;
+      required.cellPhone = false;
+
+
+      this.setState({
+        isValidGender: !required.gender,
+        isValidBirth: !required.birthday,
+        isValidAge: !required.age,
+        isValidPhoneWork: !required.workPhone,
+        isValidPhoneHome: !required.homePhone,
+        isValidPhoneCell: !required.cellPhone,
+      });
 
       this.setState({ requiredFields: required });
     }
@@ -361,7 +416,9 @@ class ClientDetails extends Component {
       && this.state.isValidState
       && this.state.isValidGender
       && this.state.isValidBirth
-      && this.state.isValidPhone);
+      && this.state.isValidPhoneHome
+      && this.state.isValidPhoneWork
+      && this.state.isValidPhoneCell);
   }
 
   deleteClient = () => {
@@ -423,6 +480,9 @@ class ClientDetails extends Component {
   }
 
   handleDone = () => {
+    let phones = reject(this.state.client.phones, ['value', null]);
+    phones = reject(phones, ['value', '']);
+
     const client = {
       firstName: this.state.client.name,
       lastName: this.state.client.lastName,
@@ -430,7 +490,7 @@ class ClientDetails extends Component {
       birthday: moment(this.state.client.birthday).isValid() ? moment(this.state.client.birthday).format('YYYY-MM-DD') : null,
       age: this.state.client.age ? this.state.client.age.key : null,
       email: this.state.client.email,
-      phones: reject(this.state.client.phones, ['value', null]),
+      phones,
       address: {
         street1: this.state.client.street1,
         city: this.state.client.city ? this.state.client.city : null,
@@ -568,28 +628,71 @@ class ClientDetails extends Component {
   }
 
 
-  renderPhone = (phone, index) => {
-    const phoneType = phone.type === 2 ? 'Cell' : (phone.type === 1 ? 'Home' : 'Work');
-    const element = phone.value !== null ? (
-      <React.Fragment>
-        <ValidatableInput
-          mask="[000]-[000]-[0000]"
-          keyboardType="phone-pad"
-          validateOnChange
-          validation={this.isValidPhoneRegExp}
-          isValid={this.state.isValidPhone}
-          onValidated={this.onValidatePhone}
-          label={phoneType}
-          value={phone.value}
-          onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
-          placeholder="Enter"
-          inputStyle={phone.value ? {} : styles.inputStyle}
-        />
-        <InputDivider />
-      </React.Fragment>) : null;
-    return (element);
-  }
+  pickerToogleBirthday = () => {
+    if (this.state.birthdayPickerOpen) {
+      if (moment(this.state.client.birthday).isAfter(moment())) {
+        return alert("Birthday can't be greater than today");
+      }
+    }
 
+    this.setState({ birthdayPickerOpen: !this.state.birthdayPickerOpen });
+  };
+
+
+  pickerToogleAnniversary = () => {
+    if (this.state.anniversaryPickerOpen) {
+      if (moment(this.state.client.anniversary).isAfter(moment())) {
+        return alert("Anniversary can't be greater than today");
+      }
+    }
+
+    this.setState({ anniversaryPickerOpen: !this.state.anniversaryPickerOpen });
+  };
+
+  renderPhones = () => {
+    const phoneTypes = [
+      {
+        type: 0, name: 'Work', isValid: this.state.isValidPhoneWork, required: this.state.requiredFields.workPhone, onValidated: this.onValidatePhoneWork,
+      },
+      {
+        type: 1, name: 'Home', isValid: this.state.isValidPhoneHome, required: this.state.requiredFields.homePhone, onValidated: this.onValidatePhoneHome,
+      },
+      {
+        type: 2, name: 'Cell', isValid: this.state.isValidPhoneCell, required: this.state.requiredFields.cellPhone, onValidated: this.onValidatePhoneCell,
+      },
+    ];
+
+    const elements = [];
+
+    for (let i = 0; i < phoneTypes.length; i += 1) {
+      const phoneType = phoneTypes[i];
+      let phone = find(this.state.client.phones, { type: phoneType.type });
+      phone = phone || { type: phoneType.type, value: '' };
+
+      const element = (
+        <React.Fragment>
+          <ValidatableInput
+            mask="[000]-[000]-[0000]"
+            keyboardType="phone-pad"
+            validateOnChange
+            validation={this.isValidPhoneRegExp}
+            isValid={phoneType.isValid}
+            onValidated={phoneType.onValidated}
+            label={phoneType.name}
+            value={phone.value}
+            required={phoneType.required}
+            onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
+            placeholder="Enter"
+            inputStyle={phone.value ? {} : styles.inputStyle}
+          />
+          <InputDivider />
+        </React.Fragment>);
+
+      elements.push(element);
+    }
+
+    return (elements);
+  }
 
   render() {
     return (
@@ -602,7 +705,7 @@ class ClientDetails extends Component {
             </View>
           ) : (
 
-            <KeyboardAwareScrollView extraHeight={300}>
+            <KeyboardAwareScrollView extraHeight={300} enableAutoAutomaticScroll={false}>
               <View pointerEvents={this.state.pointerEvents}>
                 <SectionTitle value="NAME" style={styles.sectionTitle} />
                 <InputGroup>
@@ -649,17 +752,21 @@ class ClientDetails extends Component {
                     inputStyle={this.state.client.loyalty ? {} : styles.inputStyle}
                   />
                   <InputDivider />
-                  <InputDate
-                    // noIcon={!this.state.client.birthday}
-                    placeholder="Birthday"
+
+                  <SalonTimePicker
                     format="D MMM YYYY"
-                    icon={Icons.calendar}
+                    label="Birthday"
+                    mode="date"
+                    placeholder="Select"
+                    icon={<FontAwesome style={[styles.iconStyle]}>{Icons.calendar}</FontAwesome>}
+                    value={this.state.client.birthday}
+                    isOpen={this.state.birthdayPickerOpen}
+                    onChange={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
+                    toggle={this.pickerToogleBirthday}
+                    valueStyle={!this.state.client.birthday ? styles.dateValueStyle : {}}
                     required={this.state.requiredFields.birthday}
                     isValid={this.state.isValidBirth}
                     onValidated={this.onValidateBirth}
-                    onPress={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
-                    selectedDate={this.state.client.birthday ? moment(this.state.client.birthday) : 'Select'}
-                    valueStyle={!this.state.client.birthday ? styles.dateValueStyle : {}}
                   />
                   <InputDivider />
                   <InputPicker
@@ -674,16 +781,20 @@ class ClientDetails extends Component {
                     options={ages}
                   />
                   <InputDivider />
-                  <InputDate
-                    format="D MMM YYYY"
-                    icon={Icons.calendar}
-                    // noIcon={!this.state.client.anniversary}
-                    placeholder="Anniversary"
-                    onPress={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
-                    selectedDate={this.state.client.anniversary ? moment(this.state.client.anniversary) : 'Select'}
-                    valueStyle={!this.state.client.anniversary ? styles.dateValueStyle : {}}
 
+                  <SalonTimePicker
+                    format="D MMM YYYY"
+                    label="Anniversary"
+                    mode="date"
+                    placeholder="Select"
+                    icon={<FontAwesome style={[styles.iconStyle]}>{Icons.calendar}</FontAwesome>}
+                    value={this.state.client.anniversary}
+                    isOpen={this.state.anniversaryPickerOpen}
+                    onChange={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
+                    toggle={this.pickerToogleAnniversary}
+                    valueStyle={!this.state.client.anniversary ? styles.dateValueStyle : {}}
                   />
+
                   <InputDivider />
                   <LabeledTextInput
                     label="Client ID"
@@ -720,14 +831,7 @@ class ClientDetails extends Component {
                     inputStyle={this.state.client.email ? {} : styles.inputStyle}
                   />
                   <InputDivider />
-                  {this.state.client.phones && this.state.client.phones.map((phone, index) => this.renderPhone(phone, index))}
-                  <SalonTouchableOpacity onPress={this.props.onAddContact}>
-                    <View style={styles.addRow}>
-                      <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
-                      <Text style={styles.textData}>add contact</Text>
-                    </View>
-                  </SalonTouchableOpacity>
-
+                  {this.renderPhones()}
                 </InputGroup>
                 <SectionDivider />
                 <InputGroup>

@@ -55,20 +55,20 @@ class BlockCard extends Component {
   shouldComponentUpdate(nextProps) {
     return (nextProps.activeBlock || (nextProps.isInBuffer !== this.props.isInBuffer
       || nextProps.isActive !== this.props.isActive
-    || nextProps.cellWidth !== this.props.cellWidth ||
+    || nextProps.width !== this.props.width || nextProps.left !== this.props.left ||
       !nextProps.isLoading && this.props.isLoading ||
       (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
        || nextProps.displayMode !== this.props.displayMode;
   }
 
   getCardProperties = () => {
-    const { isBufferBlock, activeBlock, isActive, isResizeBlock, isResizeing } = this.props;
+    const { isBufferBlock, activeBlock, isActive, isResizeBlock, isResizeing, left, width } = this.props;
     if (!isResizeBlock && activeBlock) {
-      const { cardWidth, top, left, height } = activeBlock;
+      const { top, height } = activeBlock;
       const opacity = isResizeing ? 0 : 1;
       return {
         left,
-        width: cardWidth,
+        width,
         zIndex: 999,
         top,
         height,
@@ -77,8 +77,8 @@ class BlockCard extends Component {
     }
     if (!activeBlock && isBufferBlock) {
       return {
-        left: 0,
-        width: 85,
+        left,
+        width,
         zIndex: 1,
         top: 0,
         height: 46,
@@ -94,41 +94,20 @@ class BlockCard extends Component {
         minStartTime,
         weeklySchedule,
       },
-      cellWidth,
       displayMode,
       selectedFilter,
-      headerData,
       isInBuffer,
-      selectedProvider,
-      numberOfOverlaps,
     } = this.props;
     const blockFromTimeMoment = moment(fromTime, 'HH:mm');
     const blockToTimeMoment = moment(toTime, 'HH:mm');
     const startTimeMoment = moment(minStartTime, 'HH:mm');
-    const gap = numberOfOverlaps * 8;
-    // calculate left position
-    const firstCellWidth = selectedFilter === 'providers' && selectedProvider === 'all' ? 130 : 0;
-    let index = 0;
-    if (selectedProvider === 'all') {
-      index = headerData.findIndex(item => item.id === employee.id);
-    } else if (displayMode === 'week') {
-      const blockDate = moment(date).format('YYYY-DD-MM');
-      index = headerData.findIndex(item => item.format('YYYY-DD-MM') === blockDate);
-    }
-    const left = (index * cellWidth) + firstCellWidth + gap;
-    // calculate card width
-    const width = cellWidth - gap;
     // calculate height and top
     const height = ((blockToTimeMoment.diff(blockFromTimeMoment, 'minutes') / step) * 30) - 1;
     const top = (blockFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
     // calculate zIndex
-    const zIndex = isResizeBlock ? 999 : numberOfOverlaps + 1;
+    const zIndex = isResizeBlock ? 999 : 1;
     // opacity
     const opacity = (!isActive && !isInBuffer) || isResizeBlock ? 1 : 0.7;
-    // go to selected
-    // if (goToBlockId === id) {
-    //   setGoToPositon({ left, top: verticalPositions[0].top, highlightCard: this.highlightGoTo });
-    // }
     return {
       left,
       width,
@@ -293,8 +272,6 @@ class BlockCard extends Component {
             color={colors[color].dark}
             position={styles.resizePosition}
             height={height}
-            calendarMeasure={this.props.calendarMeasure}
-            calendarOffset={this.props.calendarOffset}
             onScrollY={this.props.onScrollY}
             isDisabled={isResizeing}
           /> : null }
