@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ScrollView,
 } from 'react-native';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SalonActionSheet from '../../../../components/SalonActionSheet';
@@ -326,7 +327,10 @@ class ClientNotesScreen extends Component {
 
   filterNotes(searchText, showDeleted, forSales, forAppointment, forQueue) {
     const baseNotes = showDeleted ?
-      this.props.clientNotesState.notes : this.props.clientNotesState.notes.filter(el => !el.isDeleted);
+      this.props.clientNotesState.notes :
+      this.props.clientNotesState.notes.filter(el =>
+        !el.isDeleted && moment(el.expiration).isSameOrAfter(moment().startOf('day')));
+
 
     if (searchText && searchText.length > 0) {
       this.setState({ searchText });
@@ -513,7 +517,7 @@ class ClientNotesScreen extends Component {
                     style={styles.showDeletedButton}
                     onPress={this.onPressDelete}
                   >
-                    <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
+                    <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted/expired notes' : 'Show Deleted/expired notes'}</Text>
                   </SalonTouchableOpacity> : null
               }
               </View>
