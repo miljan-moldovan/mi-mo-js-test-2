@@ -51,7 +51,13 @@ export const PUT_QUEUE_FAILED = 'queue/PUT_QUEUE_FAILED';
 export const GET_QUEUE_STATE = 'queue/GET_QUEUE_STATE';
 export const GET_QUEUE_STATE_SUCCESS = 'queue/GET_QUEUE_STATE_SUCCESS';
 export const GET_QUEUE_STATE_FAILED = 'queue/GET_QUEUE_STATE_FAILED';
+export const SET_LOADING = 'queue/SET_LOADING';
 
+
+export const setLoading = loading => ({
+  type: SET_LOADING,
+  data: { loading },
+});
 
 const startServiceSuccess = data => ({
   type: CLIENT_START_SERVICE_RECEIVED,
@@ -78,16 +84,32 @@ export const startService = (id, serviceData, callback) => (dispatch) => {
 };
 
 
-export const receiveQueue = () => async (dispatch: Object => void) => {
+const receiveQueueSuccess = resp => ({
+  type: QUEUE_RECEIVED,
+  data: { resp },
+});
+
+const receiveQueueFailed = error => ({
+  type: QUEUE_FAILED,
+  data: { error },
+});
+
+
+export const receiveQueue = (callback, showError) => (dispatch) => {
   dispatch({ type: QUEUE });
-  try {
-    const data = await Queue.getQueue();
-    dispatch({ type: QUEUE_RECEIVED, data });
-  } catch (error) {
-    showErrorAlert(error);
-    dispatch({ type: QUEUE_FAILED, error });
-  }
+
+  return Queue.getQueue()
+    .then((resp) => {
+      dispatch(receiveQueueSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      if (showError) {
+        showErrorAlert(error);
+      }
+      dispatch(receiveQueueFailed(error)); callback(false, error);
+    });
 };
+
 export function deleteQueueItem(id) {
   return {
     type: QUEUE_DELETE_ITEM,
@@ -234,6 +256,7 @@ export const noShow = (id, callback) => (dispatch) => {
       dispatch(noShowSuccess(resp)); callback(true);
     })
     .catch((error) => {
+      // /debugger //eslint-disable-line
       showErrorAlert(error);
       dispatch(noShowFailed(error)); callback(false, error);
     });

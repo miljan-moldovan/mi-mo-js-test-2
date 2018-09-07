@@ -1,5 +1,6 @@
 import { QueueStatus } from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
+import { showErrorAlert } from './utils';
 
 export const GET_REMOVAL_REASON_TYPES = 'walkOut/GET_REMOVAL_REASON_TYPES';
 export const GET_REMOVAL_REASON_TYPES_SUCCESS = 'walkOut/GET_REMOVAL_REASON_TYPES_SUCCESS';
@@ -32,17 +33,16 @@ const putWalkout = (clientQueueItemId, params, callback) => (dispatch) => {
   dispatch({ type: PUT_WALKOUT });
   return QueueStatus.putWalkOut(clientQueueItemId, params)
     .then((response) => {
-
       dispatch(purgeForm('WalkoutScreen', clientQueueItemId.toString()));
       callback(true);
       return dispatch(putWalkoutSuccess(response));
     })
     .catch((error) => {
-
       if (error.responseCode === 99) {
         dispatch(storeForm('WalkoutScreen', clientQueueItemId.toString(), params));
       }
       callback(false);
+      showErrorAlert(error);
       return dispatch(putWalkoutFailed(error));
     });
 };
