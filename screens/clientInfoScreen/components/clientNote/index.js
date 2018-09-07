@@ -337,6 +337,7 @@ class ClientNote extends Component {
 
                 <InputGroup style={styles.inputGroupDate}>
                   <InputDate
+                    minDate={moment().format('DD MMMM YYYY')}
                     style={styles.inputDate}
                     placeholder="Expire Date"
                     noIcon={this.state.note.expiration == null}
