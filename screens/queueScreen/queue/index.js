@@ -350,7 +350,7 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
 
   const { settings } = this.props.settings;
 
-  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
   autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
