@@ -7,7 +7,7 @@ import moment from 'moment';
 import Board from './board';
 import Header from './header';
 import TimeColumn from './timeColumn';
-import Card from './card';
+import Card from './card/index';
 import CurrentTime from '../currentTime';
 import Buffer from '../calendarBuffer';
 import SalonAlert from '../../../SalonAlert';
@@ -971,7 +971,7 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, selectedProvider, selectedFilter,
       displayMode, appointments, isLoading, filterOptions, providers,
-      goToAppointmentId, startDate,
+      goToAppointmentId, startDate, crossedAppointmentAfter,
     } = this.props;
     const {
       calendarOffset, activeCard, buffer, activeBlock, overlappingCardsMap
@@ -1039,6 +1039,7 @@ export default class Calendar extends Component {
           selectedProvider={selectedProvider}
           isLoading={isLoading}
           startDate={startDate}
+          hiddenCard={crossedAppointmentAfter.includes(appointment.id)}
         />
       );
     }
@@ -1048,7 +1049,7 @@ export default class Calendar extends Component {
   renderActiveCard =() => {
     const {
       apptGridSettings, appointments,
-      filterOptions, startDate
+      filterOptions, startDate,
     } = this.props;
     const { activeCard, isResizeing, pan, pan2 } = this.state;
     if (activeCard) {
@@ -1088,7 +1089,7 @@ export default class Calendar extends Component {
     const {
       apptGridSettings, selectedProvider, displayMode,
       appointments, filterOptions,
-      providers, selectedFilter
+      providers, selectedFilter,
     } = this.props;
     const { activeCard, isResizeing } = this.state;
     const isAllProviderView = selectedFilter === 'providers' && selectedProvider === 'all';

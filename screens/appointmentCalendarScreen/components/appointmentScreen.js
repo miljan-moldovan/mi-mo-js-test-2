@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-import { filter } from 'lodash';
+import { filter, map } from 'lodash';
 
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonCalendar from '../../../components/SalonCalendar';
@@ -19,6 +19,7 @@ import SalonAlert from '../../../components/SalonAlert';
 import BarsActionSheet from '../../../components/BarsActionSheet';
 
 import styles from './styles';
+import appointmentOverlapHelper from './appointmentOverlapHelper';
 
 class AppointmentScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -94,6 +95,8 @@ class AppointmentScreen extends Component {
     screenHeight: 0,
     selectedApptId: -1,
     goToAppointmentId: null,
+    crossedAppointments: [],
+    crossedAppointmentsIdAfter: [],
   };
 
   componentDidMount() {
@@ -173,10 +176,16 @@ class AppointmentScreen extends Component {
   }
 
   onCardPressed = (appointment) => {
+    const { allCrossedAppointments, appointmentAfter } = appointmentOverlapHelper(
+      this.props.appointments,
+      appointment,
+    );
     this.props.modifyApptActions.setSelectedAppt(appointment);
     // this.props.rootDrawerNavigatorAction.changeShowTabBar(false);
     this.props.navigation.setParams({ tabBarVisible: false });
     this.setState({
+      crossedAppointments: allCrossedAppointments,
+      crossedAppointmentsIdAfter: map(appointmentAfter, 'id'),
       selectedAppointment: appointment,
       visibleAppointment: true,
       selectedApptId: appointment.id,
@@ -269,8 +278,11 @@ class AppointmentScreen extends Component {
     const { selectedAppointment: { appointmentGroupId, ...selectedAppointment } } = this.state;
     const { appointments, newAppointmentActions, navigation: { navigate } } = this.props;
     const groupData = appointments.filter(appt => appt.appointmentGroupId === appointmentGroupId);
-    this.setState({ visibleAppointment: false }, () => {
-      // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+    this.setState({
+      visibleAppointment: false,
+      crossedAppointments: [],
+      crossedAppointmentsIdAfter: [],
+    }, () => {
       this.props.navigation.setParams({ tabBarVisible: true });
     });
     newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
@@ -338,7 +350,11 @@ class AppointmentScreen extends Component {
       && appt.appointmentGroupId === appointment.appointmentGroupId));
     const onPressRight = () => {
       this.setState(
-        { visibleAppointment: false },
+        {
+          visibleAppointment: false,
+          crossedAppointments: [],
+          crossedAppointmentsIdAfter: [],
+        },
         () => {
           this.props.navigation.setParams({ tabBarVisible: true });
           // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
@@ -351,7 +367,11 @@ class AppointmentScreen extends Component {
     };
     const onPressLeft = () => {
       this.setState(
-        { visibleAppointment: false },
+        {
+          visibleAppointment: false,
+          crossedAppointments: [],
+          crossedAppointmentsIdAfter: [],
+        },
         () => {
           this.props.navigation.setParams({ tabBarVisible: true });
           // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
@@ -380,7 +400,11 @@ class AppointmentScreen extends Component {
   goToShowAppt = (client) => {
     const { startDate } = this.props.appointmentScreenState;
     this.setState(
-      { visibleAppointment: false },
+      {
+        visibleAppointment: false,
+        crossedAppointments: [],
+        crossedAppointmentsIdAfter: [],
+      },
       () => {
         // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
         this.props.navigation.setParams({ tabBarVisible: true });
@@ -399,8 +423,11 @@ class AppointmentScreen extends Component {
   }
 
   hideApptSlide = () => {
-    this.setState({ visibleAppointment: false }, () => {
-      // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+    this.setState({
+      visibleAppointment: false,
+      crossedAppointments: [],
+      crossedAppointmentsIdAfter: [],
+    }, () => {
       this.props.navigation.setParams({ tabBarVisible: true });
     });
   }
@@ -464,7 +491,12 @@ class AppointmentScreen extends Component {
       storeScheduleExceptions, availability, appointments, blockTimes, apptGridSettings,
     } = this.props;
     const {
-      bufferVisible, bookAnotherEnabled, screenHeight, goToAppointmentId, alert,
+      bufferVisible,
+      bookAnotherEnabled,
+      screenHeight,
+      goToAppointmentId,
+      alert,
+      crossedAppointmentsIdAfter,
     } = this.state;
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading = this.props.appointmentScreenState.isLoading
@@ -544,6 +576,7 @@ class AppointmentScreen extends Component {
           storeSchedule={storeSchedule}
           goToAppointmentId={goToAppointmentId}
           clearGoToAppointment={this.clearGoToAppointment}
+          crossedAppointmentAfter={crossedAppointmentsIdAfter}
         />
         {
           isLoading ?
@@ -609,6 +642,9 @@ class AppointmentScreen extends Component {
           handleCheckin={appointmentActions.postAppointmentCheckin}
           handleCheckout={appointmentActions.postAppointmentCheckout}
           updateAppointments={this.props.appointmentCalendarActions.setGridView}
+          crossedAppointments={this.state.crossedAppointments}
+          crossedAppointmentsIdAfter={this.state.crossedAppointmentsIdAfter}
+          changeAppointment={this.onCardPressed}
         />
         {
           toast ? (
