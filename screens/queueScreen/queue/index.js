@@ -351,6 +351,8 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { settings } = this.props.settings;
 
   let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+    autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
 
 
@@ -386,7 +388,8 @@ checkHasEmail = () => {
 
 
   this.setState({ email: '' });
-  const forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' }).settingValue;
+  let forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' });
+  forceMissingQueueEmail = forceMissingQueueEmail ? forceMissingQueueEmail.settingValue : false;
   if (forceMissingQueueEmail && (!client.email || !client.email.trim())) {
     this.hideDialog();
     this.props.setLoading(true);
