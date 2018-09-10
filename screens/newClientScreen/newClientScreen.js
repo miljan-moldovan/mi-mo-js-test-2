@@ -3,7 +3,6 @@ import {
   View,
   Text,
 } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import styles from './styles';
 import ClientDetails from '../clientInfoScreen/components/clientDetails';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';

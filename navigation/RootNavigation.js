@@ -17,6 +17,7 @@ import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
 import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
+import rootDrawerNavigatorAction from '../actions/rootDrawerNavigator';
 
 const RootDrawerNavigator = TabNavigator(
   {
@@ -86,27 +87,32 @@ const RootDrawerNavigator = TabNavigator(
   },
 );
 
-function RootNavigator(props) {
-  const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = props.auth;
-  const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
-  const fingerprintExpireTime = fingerprintAuthenticationTime + (fingerprintTimeout * 1000);
-  // if user is logged in AND fingerprint identification is NOT enabled
-  if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
-    if (!props.userInfo.currentEmployee) {
-      props.userActions.getEmployeeData();
-    }
-    return (
-      <RootDrawerNavigator
-        screenProps={{
-          isNewApptValid: props.isNewApptValid,
-          clientsActions: props.clientsActions,
-          drawerOptions: props.drawerOptions,
-        }}
-      />
-    );
+class RootNavigator extends React.Component {
+  componentDidMount() {
+    this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
   }
-  // else redirect to login screen so the user can authenticate (user/pass or touchID)
-  return <LoginStackNavigator />;
+  render() {
+    const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
+    const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
+    const fingerprintExpireTime = fingerprintAuthenticationTime + (fingerprintTimeout * 1000);
+    // if user is logged in AND fingerprint identification is NOT enabled
+    if (loggedIn && (!useFingerprintId || fingerprintExpireTime > Date.now())) {
+      if (!this.props.userInfo.currentEmployee) {
+        this.props.userActions.getEmployeeData();
+      }
+      return (
+        <RootDrawerNavigator
+          screenProps={{
+            isNewApptValid: this.props.isNewApptValid,
+            clientsActions: this.props.clientsActions,
+            drawerOptions: this.props.drawerOptions,
+          }}
+        />
+      );
+    }
+    // else redirect to login screen so the user can authenticate (user/pass or touchID)
+    return <LoginStackNavigator />;
+  }
 }
 
 RootNavigator.propTypes = {
@@ -128,6 +134,9 @@ RootNavigator.propTypes = {
   drawerOptions: PropTypes.shape({
     showTabBar: PropTypes.bool.isRequired,
   }).isRequired,
+  rootDrawerNavigatorAction: PropTypes.shape({
+    changeShowTabBar: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -146,5 +155,6 @@ const mapActionsToProps = dispatch => ({
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
   salonSearchHeaderActions: bindActionCreators({ ...salonSearchHeaderActions }, dispatch),
+  rootDrawerNavigatorAction: bindActionCreators({ ...rootDrawerNavigatorAction }, dispatch),
 });
 export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);
