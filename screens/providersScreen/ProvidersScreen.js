@@ -233,15 +233,16 @@ class ProviderScreen extends React.Component {
 
   get currentData() {
     const { queueList } = this.params;
-    // if (queueList) {
-    //   return this.props.queueList;
-    // }
-    if (this.props.navigation.state.routeName !== "ModalProviders") {
+
+    if (queueList) {
+      return this.props.queueList;
+    }
+    if (this.props.navigation.state.routeName !== 'ModalProviders') {
       return this.props.providersState.currentData;
     }
     let data = [];
-    this.props.providersState.currentData.forEach(item => {
-      if(item.inAppointmentBook){
+    this.props.providersState.currentData.forEach((item) => {
+      if (item.inAppointmentBook) {
         data = [...data, item];
       }
     });
@@ -293,52 +294,20 @@ class ProviderScreen extends React.Component {
 
   handleOnChangeProvider = async (provider) => {
     const {
-      queueList,
+    //  queueList,
       dismissOnSelect,
       onChangeProvider,
-      checkProviderStatus,
+      // checkProviderStatus,
     } = this.params;
     const {
-      providersState,
+    //  providersState,
       providersActions,
       navigation: { goBack },
     } = this.props;
-    const setting = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
-    const showOnlyAvailable = queueList && get(setting, 'settingValue', false);
-    if (!provider.isFirstAvailable && (checkProviderStatus || showOnlyAvailable)) {
-      providersActions.getProviderStatus(provider.id, (providerStatus) => {
-        if (providerStatus) {
-          if (
-            !providerStatus.isWorking ||
-            providerStatus.isOnBreak
-          ) {
-            const message =
-              `${provider.fullName} is currently not working, please punch in ${provider.fullName} in order to start service`;
 
-            Alert.alert(
-              'Provider not available',
-              message,
-              [
-                {
-                  text: 'Ok, got it',
-                  onPress: () => { },
-                },
-              ],
-              { cancelable: false },
-            );
-          } else {
-            providersActions.setSelectedProvider(provider);
-
-            onChangeProvider(provider);
-            if (dismissOnSelect) { goBack(); }
-          }
-        }
-      });
-    } else {
-      providersActions.setSelectedProvider(provider);
-      onChangeProvider(provider);
-      if (dismissOnSelect) { goBack(); }
-    }
+    providersActions.setSelectedProvider(provider);
+    onChangeProvider(provider);
+    if (dismissOnSelect) { goBack(); }
   }
 
   filterProviders = (searchText) => {

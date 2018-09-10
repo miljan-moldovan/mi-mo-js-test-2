@@ -92,6 +92,8 @@ class QueueScreen extends React.Component {
     // setInterval(this.props.actions.receiveQueue, 15000);
     // setInterval(this.props.actions.getQueueState, 5000);
     this.loadQueueData();
+
+    this.props.actions.getQueueEmployees();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
@@ -489,6 +491,7 @@ QueueScreen.propTypes = {
     getBlockTimesReasons: PropTypes.func.isRequired,
     receiveQueue: PropTypes.any.isRequired,
     getQueueState: PropTypes.any.isRequired,
+    getQueueEmployees: PropTypes.any.isRequired,
   }).isRequired,
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,

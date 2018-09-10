@@ -265,6 +265,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
 
   if (appointment !== null) {
+    this.hideDialog();
     setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
   }
 }
@@ -372,6 +373,7 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
       filterByService: false,
       showFirstAvailable: false,
       checkProviderStatus: true,
+      queueList: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
