@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
+import { TouchableOpacity, View, Text, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -9,105 +9,16 @@ import Svg, {
 } from 'react-native-svg';
 import { get, times } from 'lodash';
 import SvgUri from 'react-native-svg-uri';
+import PropTypes from 'prop-types';
 
-import colors from '../../../../constants/appointmentColors';
-import multiProviderUri from '../../../../assets/svg/multi-provider-icon.svg';
-import Icon from '../../../UI/Icon';
-import Badge from '../../../SalonBadge';
-import ResizeButton from '../resizeButtons';
-import GroupBadge from '../../../SalonGroupBadge';
-import { isCardWithGap } from '../../../../utilities/helpers';
-
-const styles = StyleSheet.create({
-  clientText: {
-    fontFamily: 'Roboto',
-    fontSize: 12,
-    fontWeight: 'bold',
-    paddingHorizontal: 8,
-    color: '#2F3142',
-    flex: 1,
-    flexWrap: 'wrap',
-  },
-  serviceText: {
-    color: '#1D1E29',
-    fontFamily: 'Roboto',
-    fontSize: 11,
-    fontWeight: 'normal',
-    paddingHorizontal: 8,
-  },
-  header: {
-    height: 4,
-    borderRadius: 2,
-    width: '100%',
-  },
-  container: {
-    position: 'absolute',
-    borderRadius: 4,
-    borderWidth: 1,
-  },
-  stripesContainer: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-    borderRadius: 4,
-  },
-  fullSize: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  cardContent: {
-    flexDirection: 'row',
-    paddingHorizontal: 2,
-    marginTop: 2,
-  },
-  clientContainer: {
-    flexDirection: 'row',
-    paddingVertical: 1,
-    flexWrap: 'wrap',
-  },
-  textContainer: {
-    flex: 1,
-  },
-  resizePosition: {
-    left: -13,
-    bottom: -27,
-  },
-  multiProviderFix: {
-    marginTop: 4,
-  },
-  assistantContainer: {
-    position: 'absolute',
-    top: 6,
-    right: 4,
-    width: 15,
-    backgroundColor: 'rgba(47, 49, 66, 0.3)',
-    borderRadius: 2,
-    zIndex: 99,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  assistantText: {
-    fontSize: 10,
-    lineHeight: 10,
-    minHeight: 10,
-    textAlign: 'center',
-    margin: 0,
-    padding: 0,
-    color: '#fff',
-    transform: [{ rotate: '-90deg' }],
-  },
-  requestedStyle: {
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  badgesContainer: {
-    flexDirection: 'row',
-    marginTop: 2,
-  },
-});
+import colors from '../../../../../constants/appointmentColors';
+import multiProviderUri from '../../../../../assets/svg/multi-provider-icon.svg';
+import Icon from '../../../../UI/Icon';
+import Badge from '../../../../SalonBadge/index';
+import ResizeButton from '../../resizeButtons';
+import GroupBadge from '../../../../SalonGroupBadge/index';
+import { isCardWithGap } from '../../../../../utilities/helpers';
+import styles from './styles';
 
 class Card extends Component {
   constructor(props) {
@@ -125,7 +36,9 @@ class Card extends Component {
     || nextProps.width !== this.props.width || nextProps.left !== this.props.left ||
       !nextProps.isLoading && this.props.isLoading ||
       (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
-      || nextProps.goToAppointmentId === nextProps.appointment.id || nextProps.displayMode !== this.props.displayMode;
+      || nextProps.goToAppointmentId === nextProps.appointment.id ||
+      nextProps.displayMode !== this.props.displayMode ||
+      nextProps.hiddenCard !== this.props.hiddenCard;
   }
 
   getAfterTimeHeight = () => {
@@ -143,7 +56,15 @@ class Card extends Component {
   getAfterGapHeight = () => this.props.cardHeight - this.afterTimeHeight - this.gapHeight;
 
   getCardProperties = () => {
-    const { isBufferCard, activeCard, isActive, isResizeCard, isResizeing, left, width } = this.props;
+    const {
+      isBufferCard,
+      activeCard,
+      isActive,
+      isResizeCard,
+      isResizeing,
+      left,
+      width,
+    } = this.props;
     if (!isResizeCard && activeCard) {
       const { verticalPositions } = activeCard;
       const opacity = isResizeing ? 0 : 1;
@@ -176,13 +97,14 @@ class Card extends Component {
         room,
         id,
         gapTime,
-        afterTime
+        afterTime,
       },
       apptGridSettings: {
         step,
         minStartTime,
         weeklySchedule,
       },
+      cellWidth,
       displayMode,
       provider,
       selectedFilter,
@@ -422,7 +344,7 @@ class Card extends Component {
       zIndex,
       verticalPositions,
       opacity,
-      isActiveEmployeeInCellTime
+      isActiveEmployeeInCellTime,
     } = this.getCardProperties();
     const {
         client,
@@ -447,7 +369,8 @@ class Card extends Component {
       isResizeing,
       isResizeCard,
       isMultiBlock,
-      goToAppointmentId
+      goToAppointmentId,
+      hiddenCard,
     } = this.props;
     const lastIndex = verticalPositions.length - 1;
     if (isResizeCard && this.state.height === 0) {
@@ -460,7 +383,7 @@ class Card extends Component {
     const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
     let activeClientTextColor = badgeData.isCashedOut ? '#1DA314' : clientTextColor;
     activeClientTextColor = badgeData.isNoShow ? '#D0021B' : activeClientTextColor;
-    const borderStyle = isFirstAvailable ? 'dashed' : 'solid';
+    const borderStyle = isFirstAvailable || hiddenCard ? 'dashed' : 'solid';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : ['', ''];
@@ -480,6 +403,12 @@ class Card extends Component {
     if (!activeCard && isResizeing) {
       return null;
     }
+
+    let elementOpacity = opacity;
+    if (hiddenCard) {
+      elementOpacity = 0.1;
+    }
+
     return (
       <React.Fragment>
         {
@@ -488,7 +417,7 @@ class Card extends Component {
               return (
                 <Animated.View
                   {...panHandlers}
-                  ref={(view) => { this.cards.push(view);}}
+                  ref={(view) => { this.cards.push(view); }}
                   style={[container,
                     {
                       width,
@@ -499,7 +428,7 @@ class Card extends Component {
                       top,
                       borderStyle,
                       zIndex,
-                      opacity,
+                      opacity: elementOpacity,
                     },
                     positions[index],
                     highlightCard,
@@ -566,5 +495,27 @@ class Card extends Component {
     );
   }
 }
+
+Card.defaultProps = {
+  hiddenCard: false,
+  calendarMeasure: {
+    width: 0,
+    height: 0,
+  },
+  onScrollY: () => {},
+  onPress: () => {},
+  onResize: () => {},
+};
+
+Card.propTypes = {
+  onResize: PropTypes.func,
+  hiddenCard: PropTypes.bool,
+  calendarMeasure: PropTypes.shape({
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+  }),
+  onScrollY: PropTypes.func,
+  onPress: PropTypes.func,
+};
 
 export default Card;

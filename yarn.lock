@@ -4733,12 +4733,6 @@ react-native-svg@6.3.1:
     lodash "^4.16.6"
     pegjs "^0.10.0"
 
-react-native-swipeable@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/react-native-swipeable/-/react-native-swipeable-0.6.0.tgz#0fe551330018b83c754d27f505709a594f554370"
-  dependencies:
-    prop-types "^15.5.10"
-
 react-native-tab-view@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.0.2.tgz#66e0bc6d38a227ed2b212e3a256b7902f6ce02ed"
