@@ -3896,7 +3896,7 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   version "1.0.7"
   resolved "git+https://github.com/aprados/react-native-picker.git#d84771941b8fb4d1e2bd353ec829a8f00225eee7"
 
-moment-range@^4.0.1:
+moment-range@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/moment-range/-/moment-range-4.0.1.tgz#1ae8cf209dded0a5ce5e16603146265b3906a86f"
   dependencies:
@@ -4733,9 +4733,9 @@ react-native-svg@6.3.1:
     lodash "^4.16.6"
     pegjs "^0.10.0"
 
-react-native-swipeable@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/react-native-swipeable/-/react-native-swipeable-0.6.0.tgz#0fe551330018b83c754d27f505709a594f554370"
+react-native-swiper@1.5.13:
+  version "1.5.13"
+  resolved "https://registry.yarnpkg.com/react-native-swiper/-/react-native-swiper-1.5.13.tgz#fa695cd4ab77b9a9df2d2bfee38ea7274dd07a2e"
   dependencies:
     prop-types "^15.5.10"
 

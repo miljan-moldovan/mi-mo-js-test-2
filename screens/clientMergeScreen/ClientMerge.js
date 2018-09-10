@@ -89,6 +89,7 @@ export class ClientMerge extends React.Component {
   }
   componentWillMount() {
     this.setState({ data: this.props.data });
+    this._onPressItem(this.props.mainClient);
   }
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.data !== this.props.data) {

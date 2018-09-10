@@ -271,7 +271,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
 
 handlePressRebook = () => {
   const { appointment } = this.state;
-
+  this.hideAll();
   if (appointment !== null) {
     this.props.navigation.navigate('RebookDialog', {
       appointment,
