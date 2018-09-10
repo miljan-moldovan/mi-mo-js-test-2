@@ -218,6 +218,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     width: '90%',
   },
+  slidePanel: {
+    position: 'absolute',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  slidePanelWrapper: {
+    height: 70,
+    display: 'flex',
+    width: '80%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   panelTopLineLeft: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -231,6 +246,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     flex: 1,
+  },
+  swipablePanelIconRight: {
+    marginBottom: 25,
+  },
+  swipablePanelIconLeft: {
+    marginBottom: 15,
   },
   panelTopTimeText: {
     color: '#000000',
@@ -281,6 +302,33 @@ const styles = StyleSheet.create({
     width: 100,
     position: 'absolute',
     bottom: 12,
+  },
+  headerPanelWithSlider: {
+    flex: 1,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  topBorder: {
+    width: '100%',
+    height: 1,
+    borderTopWidth: 1,
+    borderTopColor: 'rgb(114.75, 122.4, 142.8)',
+    marginTop: 40,
+  },
+  barsIcon: {
+    fontSize: 20,
+    color: 'rgb(114.75, 122.4, 142.8)',
+  },
+  topIcon: {
+    height: 5,
+    width: 36,
+    opacity: 0.2,
+    borderRadius: 5 / 2,
+    backgroundColor: '#000000',
+  },
+  crossedAppointmentSliderItem: {
+    width: '100%',
+    height: 80,
   },
 });
 
