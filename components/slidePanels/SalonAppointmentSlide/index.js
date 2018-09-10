@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import { connect } from 'react-redux';
+import Swiper from 'react-native-swiper';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import Icon from '../../UI/Icon';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
@@ -23,6 +25,7 @@ import styles from './styles';
 import InputModal from '../../../components/SalonInputModal';
 import SuccessModal from './components/SuccessModal';
 import ClientInfoButton from '../../../components/ClientInfoButton';
+import ActionSheet from './components/CrossedAppointmentsActionSheet';
 
 import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
@@ -214,13 +217,114 @@ class SalonAppointmentSlide extends React.Component {
     this.hidePanel();
   }
 
+  assignActionSheet = (item) => {
+    this.actionSheet = item;
+  }
+
+  handleSlideChanged = (index) => {
+    this.props.changeAppointment(this.props.crossedAppointments[index]);
+  }
+
+  handleActionSheet = () => {
+    if (this.actionSheet) {
+      this.actionSheet.show();
+    }
+  }
+
+  renderHeaderWithSlide = (panHendler) => {
+    const { appointment } = this.state;
+    const { crossedAppointments } = this.props;
+    const index = crossedAppointments.indexOf(appointment);
+
+    return (
+      <View
+        style={[styles.panelTop, { justifyContent: 'flex-start' }]}
+        onLayout={this.handleHeaderOnLayout}
+      >
+        <SalonTouchableOpacity
+          style={styles.panelTopIcon}
+          onPress={this.setMinimumPosition}
+        >
+          <View
+            style={styles.topIcon}
+          />
+        </SalonTouchableOpacity>
+        <View style={styles.slidePanel}>
+          <View style={styles.slidePanelWrapper}>
+            <SalonTouchableOpacity
+              style={styles.swipablePanelIconLeft}
+              onPress={this.handleActionSheet}
+            >
+              <FontAwesome style={styles.barsIcon}>{Icons.bars}</FontAwesome>
+            </SalonTouchableOpacity>
+            <Swiper
+              showsPagination
+              index={index}
+              onIndexChanged={this.handleSlideChanged}
+            >
+              {crossedAppointments.map(item => (
+                <View style={styles.crossedAppointmentSliderItem} />
+              ))}
+            </Swiper>
+            <View style={styles.swipablePanelIconRight}>
+              <SalonTouchableOpacity onPress={this.hidePanel}>
+                <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
+              </SalonTouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View style={styles.topBorder} />
+        <View style={styles.headerPanelWithSlider} {...panHendler}>
+          <View style={[styles.panelTopLine]}>
+            <View style={styles.panelTopLineLeft}>
+              <Text style={styles.panelTopName}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
+              <SalonTouchableOpacity
+                onPress={() => this.goToClientInfo(appointment.client)}
+              >
+                <Icon style={{ paddingLeft: 5 }} name="infoCircle" size={18} color="#115ECD" type="regular" />
+              </SalonTouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.panelTopLine}>
+            <View style={styles.panelTopLineLeft}>
+              <Text style={styles.panelTopService}>{appointment.service.description}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.panelTopLine]}>
+            <View style={styles.panelTopLineLeft}>
+              <AppointmentTime startTime={appointment.fromTime} endTime={appointment.toTime} />
+            </View>
+          </View>
+
+          {appointment.remarks !== '' &&
+          <React.Fragment>
+            <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+              <View style={styles.panelTopLineLeft}>
+                <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+              </View>
+            </View>
+            <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
+              <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+                <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+              </View>
+            </View>
+          </React.Fragment>
+          }
+        </View>
+      </View>);
+  }
+
   renderHeader = (panHendler) => {
     const { appointment } = this.state;
+
+    if (this.props.crossedAppointments.length > 0) {
+      return this.renderHeaderWithSlide(panHendler);
+    }
 
     return (
       <View
         {...panHendler}
-        key={Math.random()}
         style={[styles.panelTop, { justifyContent: 'flex-start' }]}
         onLayout={this.handleHeaderOnLayout}
       >
@@ -238,8 +342,8 @@ class SalonAppointmentSlide extends React.Component {
             }}
           />
         </SalonTouchableOpacity>
-        <View key={Math.random()} style={[styles.panelTopLine]}>
-          <View style={styles.panelTopLineLeft} key={Math.random()}>
+        <View style={[styles.panelTopLine]}>
+          <View style={styles.panelTopLineLeft}>
             <Text style={styles.panelTopName}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
             <ClientInfoButton
               client={appointment.client}
@@ -249,32 +353,32 @@ class SalonAppointmentSlide extends React.Component {
               apptBook
             />
           </View>
-          <View key={Math.random()} style={styles.panelTopLineRight}>
+          <View style={styles.panelTopLineRight}>
             <SalonTouchableOpacity onPress={this.hidePanel}>
               <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
             </SalonTouchableOpacity>
           </View>
         </View>
-        <View key={Math.random()} style={[styles.panelTopLine]}>
-          <View key={Math.random()} style={styles.panelTopLineLeft}>
+        <View style={[styles.panelTopLine]}>
+          <View style={styles.panelTopLineLeft}>
             <Text style={styles.panelTopService}>{appointment.service.description}</Text>
           </View>
         </View>
 
-        <View key={Math.random()} style={[styles.panelTopLine]}>
-          <View key={Math.random()} style={styles.panelTopLineLeft}>
+        <View style={[styles.panelTopLine]}>
+          <View style={styles.panelTopLineLeft}>
             <AppointmentTime startTime={appointment.fromTime} endTime={appointment.toTime} />
           </View>
         </View>
 
         {appointment.remarks !== '' &&
         <React.Fragment>
-          <View key={Math.random()} style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+          <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
             <View style={styles.panelTopLineLeft}>
               <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
             </View>
           </View>
-          <View key={Math.random()} style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
+          <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
             <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
               <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
             </View>
@@ -324,7 +428,6 @@ class SalonAppointmentSlide extends React.Component {
           hide={this.hideShowEditRemarksSuccess}
         />
         <View
-          key={Math.random()}
           style={[
             styles.panelContainer,
             { flex: 1 },
@@ -355,7 +458,7 @@ class SalonAppointmentSlide extends React.Component {
                     <Text style={styles.panelIconText}>Check-In</Text>
                   </View>
 
-                  <View key={Math.random()} style={styles.panelIcon}>
+                  <View style={styles.panelIcon}>
                     <SalonTouchableOpacity
                       disabled={isCheckOutDisabled}
                       style={isCheckOutDisabled ?
@@ -370,7 +473,7 @@ class SalonAppointmentSlide extends React.Component {
                     </SalonTouchableOpacity>
                     <Text style={styles.panelIconText}>Check-out</Text>
                   </View>
-                  <View key={Math.random()} style={styles.panelIcon}>
+                  <View style={styles.panelIcon}>
                     <SalonTouchableOpacity
                       style={styles.panelIconBtn}
                       onPress={this.handleCancel}
@@ -392,7 +495,7 @@ class SalonAppointmentSlide extends React.Component {
                     </SalonTouchableOpacity>
                     <Text style={styles.panelIconText}>Cancel Appt.</Text>
                   </View>
-                  <View key={Math.random()} style={styles.panelIcon}>
+                  <View style={styles.panelIcon}>
                     <SalonTouchableOpacity
                       style={styles.panelIconBtn}
                       onPress={this.props.handleModify}
@@ -403,7 +506,6 @@ class SalonAppointmentSlide extends React.Component {
                   </View>
                 </View>
                 <View
-                  key={Math.random()}
                   style={{
                     flex: 1,
                     alignSelf: 'stretch',
@@ -417,13 +519,12 @@ class SalonAppointmentSlide extends React.Component {
                   />
                 </View>
               </View>
-              <View key={Math.random()} style={styles.panelBottom}>
+              <View style={styles.panelBottom}>
                 <InputGroup
                   style={styles.otherOptionsGroup}
                 >
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={() => { alert('Not implemented'); }}
@@ -444,7 +545,6 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={() => { alert('Not implemented'); }}
@@ -456,14 +556,12 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                 </InputGroup>
               </View>
-              <View key={Math.random()} style={styles.panelBottom}>
+              <View style={styles.panelBottom}>
                 <InputGroup
-                  key={Math.random()}
                   style={styles.otherOptionsGroup}
                 >
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={this.handelOpenEditRemarks}
@@ -475,7 +573,6 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={this.handleShowAppt}
@@ -496,14 +593,12 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                 </InputGroup>
               </View>
-              <View key={Math.random()} style={[styles.panelBottom, { height: 201 }]}>
+              <View style={[styles.panelBottom, { height: 201 }]}>
                 <InputGroup
-                  key={Math.random()}
                   style={styles.otherOptionsGroup}
                 >
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={() => { alert('Not implemented'); }}
@@ -515,7 +610,6 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={() => { alert('Not implemented'); }}
@@ -527,7 +621,6 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                   <InputButton
                     noIcon
-                    key={Math.random()}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={this.handleRecommendProductPress}
@@ -539,7 +632,7 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                 </InputGroup>
               </View>
-              <View key={Math.random()} style={styles.panelDiff} />
+              <View style={styles.panelDiff} />
             </ScrollView>
           </View>
         </View>
@@ -564,6 +657,13 @@ class SalonAppointmentSlide extends React.Component {
         ref={(slidingPanel) => { this.slidingPanel = slidingPanel; }}
       >
         {appointment && this.renderContent()}
+        {this.props.crossedAppointments.length > 0 && (
+          <ActionSheet
+            ref={this.assignActionSheet}
+            appointments={this.props.crossedAppointments}
+            handleOnPress={this.props.changeAppointment}
+          />
+        )}
       </SlidingUpPanel>
     );
   }
@@ -578,6 +678,8 @@ const mapStateToProps = (state, props) => ({
 
 SalonAppointmentSlide.defaultProps = {
   appointment: null,
+  crossedAppointments: [],
+  crossedAppointmentsIdAfter: [],
 };
 
 SalonAppointmentSlide.propTypes = {
@@ -596,6 +698,11 @@ SalonAppointmentSlide.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
+  crossedAppointments: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number.isRequired,
+  })),
+  crossedAppointmentsIdAfter: PropTypes.arrayOf(PropTypes.number),
+  changeAppointment: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps)(SalonAppointmentSlide);
