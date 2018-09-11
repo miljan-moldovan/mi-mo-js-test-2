@@ -21,6 +21,7 @@ import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import styles from './stylesClientNotes';
+import LoadingOverlay from '../../../../components/LoadingOverlay';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
@@ -281,7 +282,7 @@ class ClientNotesScreen extends Component {
     const params = this.props.navigation.state.params || {};
     const { apptBook = false } = params;
 
-    this.props.clientNotesActions.setOnEditionNote(note);
+    //  this.props.clientNotesActions.setOnEditionNote(note);
     const { navigate } = this.props.navigation;
     const { item } = this.props.navigation.state.params;
     navigate('ClientNote', {
@@ -401,6 +402,12 @@ class ClientNotesScreen extends Component {
 
     return (
       <View style={styles.container}>
+
+        { this.props.clientNotesState.isLoading &&
+        <LoadingOverlay />
+            }
+
+
         <SalonActionSheet
           ref={o => this.SalonActionSheet = o}
           options={options}

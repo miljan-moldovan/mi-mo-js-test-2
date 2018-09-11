@@ -133,6 +133,7 @@ class queueListItemSummary extends Component {
       dismissOnSelect: true,
       selectedProvider: employee,
       checkProviderStatus: true,
+      queueList: true,
       headerProps: { title: 'Providers', ...this.cancelButton() },
       onChangeProvider: data => this.saveQueueProvider(data),
     });

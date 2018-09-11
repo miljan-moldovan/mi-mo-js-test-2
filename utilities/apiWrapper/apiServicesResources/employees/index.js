@@ -11,6 +11,7 @@ import putEmployeeScheduleException from './putEmployeeScheduleException';
 import getEmployee from './getEmployee';
 import getEmployeeStatus from './getEmployeeStatus';
 import getEmployeesScheduleDates from './getEmployeesScheduleDates';
+import getQueueEmployees from './getQueueEmployees';
 
 export {
   getEmployeeAppointments,
@@ -26,4 +27,5 @@ export {
   putRoomAssignments,
   getEmployeeScheduleException,
   putEmployeeScheduleException,
+  getQueueEmployees,
 };

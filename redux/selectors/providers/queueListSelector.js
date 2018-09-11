@@ -1,16 +1,18 @@
-import { get } from 'lodash';
+import { get, find, filter } from 'lodash';
 import { createSelector } from 'reselect';
 
-import { Settings } from '../../../utilities/apiWrapper';
+const providersSelector = state => state.queue.providers;
+const settings = state => state.settingsReducer.settings;
 
-const providersSelector = state => state.providersReducer.providers;
 
 const queueListSelector = createSelector(
   providersSelector,
-  async (providers) => {
-    const showOnlyAvailable = await Settings.getSettingsByName('ShowOnlyClockedInEmployeesInClientQueue');
+  (providers) => {
+    const showOnlyAvailable = find(settings, { settingName: 'ShowOnlyClockedInEmployeesInClientQueue' });
     if (get(showOnlyAvailable, 'settingValue', false)) {
-      return providers;
+      return filter(providers, item => (
+        item.isClockedIn === true
+      ));
     }
     return providers;
   },

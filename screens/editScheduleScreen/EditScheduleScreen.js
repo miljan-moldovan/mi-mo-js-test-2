@@ -369,6 +369,9 @@ class EditScheduleScreen extends React.Component {
         endTimeScheduleTwo,
       } = this.state;
 
+      const params = this.props.navigation.state.params || {};
+      const date = params.date || moment();
+
       return (
         <View style={styles.container}>
 
@@ -394,7 +397,7 @@ class EditScheduleScreen extends React.Component {
               <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle} />
               <InputGroup>
                 <SchedulePicker
-                  date={this.props.date}
+                  date={date}
                   format="hh:mm A"
                   label="Start"
                   noIcon
@@ -405,7 +408,7 @@ class EditScheduleScreen extends React.Component {
                 />
                 <InputDivider />
                 <SchedulePicker
-                  date={this.props.date}
+                  date={date}
                   format="hh:mm A"
                   label="Ends"
                   noIcon
@@ -418,7 +421,7 @@ class EditScheduleScreen extends React.Component {
               <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle} />
               <InputGroup>
                 <SchedulePicker
-                  date={this.props.date}
+                  date={date}
                   format="hh:mm A"
                   label="Start"
                   noIcon
@@ -429,7 +432,7 @@ class EditScheduleScreen extends React.Component {
                 />
                 <InputDivider />
                 <SchedulePicker
-                  date={this.props.date}
+                  date={date}
                   format="hh:mm A"
                   label="Ends"
                   noIcon
