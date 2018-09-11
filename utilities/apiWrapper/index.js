@@ -13,6 +13,7 @@ import * as Store from './apiServicesResources/store';
 import * as TurnAway from './apiServicesResources/turnAway';
 import * as Formula from './apiServicesResources/formula';
 import * as Session from './apiServicesResources/session';
+import * as Promotions from './apiServicesResources/promotions';
 import { getEmployeePhoto } from './api';
 
 export {
@@ -32,4 +33,5 @@ export {
   getEmployeePhoto,
   Formula,
   Session,
+  Promotions,
 };

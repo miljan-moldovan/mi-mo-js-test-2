@@ -34,7 +34,7 @@ export default class ProviderInput extends React.Component {
       checkProviderStatus = false,
     } = this.props;
     if (isFunction(onPress)) { onPress(); return; }
-    
+
     navigate(apptBook ? 'ApptBookProvider' : 'Providers', {
       queueList,
       filterList,

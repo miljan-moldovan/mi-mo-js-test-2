@@ -26,4 +26,8 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   leftButtonText: { fontSize: 14, color: 'white' },
+  removeButton: { height: 44, alignItems: 'center', justifyContent: 'center' },
+  removeButtonText: {
+    fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
+  },
 });

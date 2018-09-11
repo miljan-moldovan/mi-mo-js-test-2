@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
-import { styles } from '../index';
+import { InputButton, propTypesObj, defaultPropsObj } from '../index';
 
 export default class PromotionInput extends React.Component {
   constructor(props) {
@@ -19,32 +19,49 @@ export default class PromotionInput extends React.Component {
     };
   }
 
-    handlePromoSelection = (promotion) => {
-      this.setState({ selectedPromotion: promotion });
-      this.props.onChange(promotion);
-    }
+  handlePromoSelection = (promotion) => {
+    this.props.onChange(promotion);
+  }
 
-    handlePress = () => {
-      this.props.navigate('Promotions', {
-        actionType: 'update',
-        dismissOnSelect: true,
-        onChangePromotion: promotion => this.handlePromoSelection(promotion),
-      });
-    }
+  handlePress = () => {
+    const {
+      mode,
+      navigate,
+      selectedPromotion,
+    } = this.props;
+    navigate('Promotions', {
+      mode,
+      selectedPromotion,
+      dismissOnSelect: true,
+      onChangePromotion: promotion => this.handlePromoSelection(promotion),
+    });
+  }
 
-    render() {
-      const value = this.state.selectedPromotion ? this.state.selectedPromotion.name : null;
-      return (
-        <SalonTouchableOpacity
-          style={[styles.inputRow, { justifyContent: 'center' }]}
-          onPress={this.handlePress}
-        >
-          <Text style={[styles.labelText]}>Promotion</Text>
-          <View style={{ flex: 1, alignItems: 'flex-end' }}>
-            <Text numberOfLines={1} style={[styles.inputText]}>{value}</Text>
-          </View>
-          <FontAwesome style={styles.iconStyle}>{Icons.angleRight}</FontAwesome>
-        </SalonTouchableOpacity>
-      );
-    }
+  render() {
+    const {
+      label,
+      placeholder,
+      selectedPromotion,
+    } = this.props;
+    const value = selectedPromotion ? selectedPromotion.name : null;
+    return (
+      <InputButton
+        value={value}
+        label={label || 'Product'}
+        onPress={this.handlePress}
+        placeholder={placeholder || 'Select Product'}
+      />
+    );
+  }
 }
+PromotionInput.propTypes = {
+  ...propTypesObj,
+  mode: PropTypes.oneOf(['service', 'product']),
+  navigate: PropTypes.func.isRequired,
+  selectedPromotion: PropTypes.any.isRequired,
+  onChangePromotion: PropTypes.func.isRequired,
+};
+PromotionInput.defaultProps = {
+  ...defaultPropsObj,
+  mode: 'service',
+};

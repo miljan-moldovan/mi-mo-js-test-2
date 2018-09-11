@@ -157,12 +157,12 @@ const InputButton = props => (
       !props.noIcon && props.icon && props.icon
     }
     {
-      !props.noIcon && !props.icon &&
+      !props.noIcon && props.icon === 'default' &&
       <FontAwesome style={[styles.iconStyle, props.iconStyle]}>{Icons.angleRight}</FontAwesome>
     }
   </SalonTouchableOpacity>
 );
-InputButton.propTypes = {
+export const propTypesObj = {
   onPress: PropTypes.func.isRequired,
   style: ViewPropTypes.style,
   labelStyle: Text.propTypes.style,
@@ -174,7 +174,7 @@ InputButton.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, null]),
   iconStyle: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
-InputButton.defaultProps = {
+export const defaultPropsObj = {
   style: {},
   labelStyle: {},
   valueStyle: {},
@@ -185,6 +185,8 @@ InputButton.defaultProps = {
   iconStyle: {},
   icon: null,
 };
+InputButton.propTypes = propTypesObj;
+InputButton.defaultProps = defaultPropsObj;
 
 const InputLabel = props => (
   <View style={[styles.inputRow, { justifyContent: 'center' }, props.style]}>

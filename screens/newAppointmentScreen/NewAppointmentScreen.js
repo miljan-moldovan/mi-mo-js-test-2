@@ -32,7 +32,7 @@ import {
 } from '../../components/formHelpers';
 import {
   AddButton,
-} from '../appointmentDetailsScreen/components/appointmentDetails/AppointmentDetails';
+} from '../appointmentDetailsScreen/components/AppointmentDetails';
 import Icon from '../../components/UI/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';

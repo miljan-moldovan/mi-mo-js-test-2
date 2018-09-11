@@ -8,6 +8,7 @@ import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoS
 import * as actions from '../../../actions/queue';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import Icon from '../../../components/UI/Icon';
 import styles from './styles';
 import { DefaultAvatar } from '../../../components/formHelpers';
 
@@ -140,7 +141,7 @@ class queueListItemSummary extends Component {
   };
 
   render() {
-    const { employee } = this.props.service;
+    const { employee, isProviderRequested } = this.props.service;
     const employeeInitials = employee && employee.fullName ? `${employee.name[0]}${employee.lastName[0]}` : '';
     const image = getEmployeePhotoSource(employee);
     return (
@@ -162,8 +163,16 @@ class queueListItemSummary extends Component {
                 wrapperStyle={styles.providerRound}
                 width={26}
                 image={image}
-                hasBadge
-                badgeComponent={<FontAwesome style={{ color: '#1DBF12', fontSize: 10 }}>{Icons.lock}</FontAwesome>}
+                hasBadge={isProviderRequested}
+                badgeComponent={
+                  isProviderRequested ?
+                    <Icon
+                      name="lock"
+                      type="solid"
+                      size={10}
+                      color="#1DBF12"
+                    /> : null
+                }
                 defaultComponent={
                   <DefaultAvatar
                     provider={employee}

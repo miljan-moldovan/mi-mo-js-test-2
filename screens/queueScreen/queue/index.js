@@ -255,7 +255,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
   this.hideDialog();
   if (appointment !== null) {
-    setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
+    this.props.navigation.navigate('AppointmentDetails', { appointment, isWaiting, onPressSummary });
   }
 }
 

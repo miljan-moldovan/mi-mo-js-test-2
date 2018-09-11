@@ -17,7 +17,7 @@ import ClientsScreen from './../screens/clientsScreen';
 
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/newClientScreen';
-import PromotionsScreen from '../screens/promotionsScreen/index';
+import PromotionsScreen from '../screens/PromotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 import WalkOutScreen from '../screens/walkOutScreen';
@@ -158,8 +158,8 @@ const MainNavigator = StackNavigator(
           ...rootProps,
           handlePress: () => rootProps.navigation.goBack(),
         }),
+        tabBarVisible: false,
       }),
-      navigationOptions: { tabBarVisible: false },
     },
     Providers: {
       screen: ProvidersScreen,
@@ -167,10 +167,6 @@ const MainNavigator = StackNavigator(
     },
     Promotions: {
       screen: PromotionsScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader dataName="selectedPromotion" rootProps={rootProps} />,
-        header: props => <ImageHeader {...props} {...rootProps} />,
-      }),
       navigationOptions: { tabBarVisible: false },
     },
     ChangeClient: {
@@ -252,6 +248,24 @@ export default (QueueStackNavigator = StackNavigator(
     },
   },
   {
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#115ECD',
+        paddingLeft: 10,
+        paddingRight: 10,
+        height: 44,
+        borderWidth: 0,
+        shadowColor: 'transparent',
+        elevation: 0,
+        borderBottomWidth: 0,
+
+      },
+      headerTitleStyle: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 17,
+        color: '#fff',
+      },
+    },
     mode: 'modal', // Remember to set the root navigator to display modally.
     //  headerMode: 'none', // This ensures we don't get two top bars.
   },

@@ -105,60 +105,75 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     AddonServices: {
       screen: AddonServicesScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     RecommendedServices: {
       screen: RecommendedServicesScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     RequiredServices: {
       screen: RequiredServicesScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     RepeatsOn: {
       screen: RepeatsOnScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     FilterOptions: {
       screen: FilterOptionsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     FilterByPosition: {
       screen: FilterByPositionScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     FilterByCompany: {
       screen: FilterByCompanyScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ServiceCheck: {
       screen: ServiceCheckScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ServiceCheckResult: {
       screen: ServiceCheckResultScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Appointments: {
       screen: AppointmentScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
-    },
-    ModifyAppointment: {
-      screen: ModifyAppointmentScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     Conflicts: {
       screen: ConflictsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ChangeNewApptDateTime: {
       screen: ChangeDateTimeScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     RoomAssignment: {
       screen: RoomAssignmentScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ApptBookClient: {
       screen: ClientsScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ApptBookService: {
       screen: ServicesScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     ApptBookProvider: {
       screen: ProvidersScreen,
+      navigationOptions: { tabBarVisible: false },
     },
     SelectRoom: {
       screen: SelectRoomScreen,
@@ -175,7 +190,7 @@ const AppointmentStackNavigator = StackNavigator(
         headerTitle: <View style={styles.titleContainer}>
           <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
           <Text style={styles.subTitleText}>Appointment notes</Text>
-        </View>,
+                     </View>,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (

@@ -89,7 +89,7 @@ class ClientNotesScreen extends Component {
     this.getNotes();
   }
 
-  state:{
+  state: {
     showTagBar: false,
     editionMode: true,
     showDeleted: false,
