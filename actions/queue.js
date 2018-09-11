@@ -77,7 +77,6 @@ export const getQueueEmployees = callback => (dispatch) => {
 
   return Employees.getQueueEmployees()
     .then((resp) => {
-      debugger //eslint-disable-line
       dispatch(getQueueEmployeesSuccess(resp)); callback(true);
     })
     .catch((error) => {
@@ -284,7 +283,6 @@ export const noShow = (id, callback) => (dispatch) => {
       dispatch(noShowSuccess(resp)); callback(true);
     })
     .catch((error) => {
-      // /debugger //eslint-disable-line
       showErrorAlert(error);
       dispatch(noShowFailed(error)); callback(false, error);
     });
