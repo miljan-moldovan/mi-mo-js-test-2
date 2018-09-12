@@ -145,17 +145,6 @@ class ClientFormula extends React.Component {
       const { navigate } = this.props.navigation;
 
       this.setState({ isVisible: false });
-
-
-      navigate('Providers', {
-        actionType: 'update',
-        dismissOnSelect: this.dismissOnSelect,
-        onNavigateBack: this.handleOnNavigateBack,
-        onChangeProvider,
-        showFirstAvailable: false,
-        headerProps: { title: 'Providers', ...this.cancelButton() },
-        ...this.props,
-      });
     }
 
     onChangeEnteredBy = (enteredBy) => {
@@ -271,7 +260,9 @@ class ClientFormula extends React.Component {
                   iconStyle={styles.carretIcon}
                   avatarSize={20}
                   navigate={this.props.navigation.navigate}
-                  onPress={() => { this.handlePressProvider(this.onChangeEnteredBy); }}
+                  onChange={this.onChangeEnteredBy}
+                  onPress={this.handlePressProvider}
+                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
                 />
                 <InputDivider />
                 <InputPicker
@@ -314,7 +305,9 @@ class ClientFormula extends React.Component {
                   iconStyle={styles.carretIcon}
                   avatarSize={20}
                   navigate={this.props.navigation.navigate}
-                  onPress={() => { this.handlePressProvider(this.onChangeProvider); }}
+                  onChange={this.onChangeProvider}
+                  onPress={this.handlePressProvider}
+                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
                 />
               </InputGroup>
               <SectionDivider />
