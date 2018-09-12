@@ -370,7 +370,7 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
-      filterByService: false,
+      selectedService: {id: service.serviceId},
       showFirstAvailable: false,
       checkProviderStatus: true,
       queueList: true,
