@@ -390,7 +390,6 @@ class ClientDetails extends Component {
       required.homePhone = false;
       required.cellPhone = false;
 
-
       this.setState({
         isValidGender: !required.gender,
         isValidBirth: !required.birthday,
