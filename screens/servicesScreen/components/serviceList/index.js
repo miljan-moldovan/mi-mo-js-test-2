@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  SectionList,
-  StyleSheet,
-  RefreshControl,
-} from 'react-native';
+import { View, SectionList, StyleSheet, RefreshControl, Keyboard, Animated } from 'react-native';
 import { connect } from 'react-redux';
 import ServiceListItem from './serviceListItem';
 import ServiceListHeader from './serviceListHeader';
@@ -14,16 +9,37 @@ import ListLetterFilter from '../../../../components/listLetterFilter';
 const ITEM_HEIGHT = 43;
 const HEADER_HEIGHT = 38;
 
-const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-  'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+const abecedary = [
+  '#',
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z',
+];
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    height: '100%',
-  },
   topBar: {
     height: HEADER_HEIGHT,
     flexDirection: 'column',
@@ -31,12 +47,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
+  separator: {
+    height: 1,
+    width: '100%',
+    backgroundColor: '#C0C1C6',
+  },
 });
 
 class ServiceList extends React.Component {
   static compareByName(a, b) {
-    if (a.name < b.name) { return -1; }
-    if (a.name > b.name) { return 1; }
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
     return 0;
   }
 
@@ -50,11 +75,8 @@ class ServiceList extends React.Component {
     return results.length > 0 ? results : null;
   }
 
-
   static services(services) {
     const servicesLetters = [];
-
-    // {data: [...], title: ...},
 
     for (let i = 0; i < services.length; i += 1) {
       const serviceCategory = services[i];
@@ -63,10 +85,7 @@ class ServiceList extends React.Component {
       const isNumber = !isNaN(parseInt(firstLetter, 10));
       firstLetter = isNumber ? '#' : firstLetter;
 
-      const result = ServiceList.getByValue(
-        servicesLetters,
-        serviceCategory.name, 'title',
-      );
+      const result = ServiceList.getByValue(servicesLetters, serviceCategory.name, 'title');
 
       if (result) {
         result[0].data.concat(serviceCategory.services);
@@ -83,29 +102,23 @@ class ServiceList extends React.Component {
   }
 
   static renderSeparator() {
-    return (<View
-      style={{
-        height: 1,
-        width: '100%',
-        backgroundColor: '#C0C1C6',
-      }}
-    />);
+    return <View style={styles.separator} />;
   }
-
 
   static renderSection(item) {
     return (
-      <View key={Math.random().toString()} style={styles.topBar}>
+      <View style={styles.topBar}>
         <ServiceListHeader header={item.section.title} />
       </View>
     );
   }
 
-
   constructor(props) {
     super(props);
 
     const services = props.services.sort(ServiceList.compareByName);
+
+    this.keyboardHeight = new Animated.Value(14);
 
     this.state = {
       dataSource: ServiceList.services(services),
@@ -116,6 +129,9 @@ class ServiceList extends React.Component {
   }
 
   componentDidMount() {
+    this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardWillShow);
+    this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardWillHide);
+
     const wait = new Promise(resolve => setTimeout(resolve, 500)); // Smaller number should work
     wait.then(() => {
       this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: 1 });
@@ -130,6 +146,11 @@ class ServiceList extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    this.keyboardDidShowSub.remove();
+    this.keyboardDidHideSub.remove();
+  }
+
   scrollToIndex = (letter) => {
     let total = 0;
     let found = false;
@@ -137,7 +158,8 @@ class ServiceList extends React.Component {
     for (let i = 0; i < abecedary.length; i += 1) {
       const letterServices = ServiceList.getByValue(
         this.state.dataSource,
-        abecedary[i], 'firstLetter',
+        abecedary[i],
+        'firstLetter',
       );
 
       if (letter.toUpperCase() === abecedary[i]) {
@@ -156,7 +178,12 @@ class ServiceList extends React.Component {
     if (found) {
       this.sectionListRef._wrapperListRef._listRef.scrollToOffset({ offset: total });
     }
-  }
+  };
+
+  refresh = () => {
+    this.setState({ refreshing: true });
+    this.props.onRefresh(this.onRefreshFinish);
+  };
 
   keyExtractor = (item, index) => item.id;
 
@@ -167,52 +194,69 @@ class ServiceList extends React.Component {
       height={ITEM_HEIGHT}
       {...this.props}
       boldWords={this.state.boldWords}
-      onPress={this.props.onChangeService ?
-        () => {
-          this.props.servicesActions.setSelectedService(obj.item);
-          this.props.onChangeService(obj.item);
-        } : () => { }
+      onPress={
+        this.props.onChangeService
+          ? () => {
+              this.props.servicesActions.setSelectedService(obj.item);
+              this.props.onChangeService(obj.item);
+            }
+          : () => {}
       }
-    />)
+    />
+  );
 
   onRefreshFinish = () => {
     this.setState({ refreshing: false });
-  }
+  };
+
+  keyboardWillShow = (event) => {
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: event.endCoordinates.height,
+    }).start();
+  };
+
+  getItemLayout = (data, index) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  });
+
+  keyboardWillHide = (event) => {
+    Animated.timing(this.keyboardHeight, {
+      toValue: 14,
+    }).start();
+  };
 
   render() {
     return (
-      <View style={styles.container}>
-
-        <SectionList
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={() => {
-                this.setState({ refreshing: true });
-                this.props.onRefresh(this.onRefreshFinish);
-              }
-              }
+      <View>
+        <Animated.View style={{ marginBottom: this.keyboardHeight }}>
+          <SectionList
+            refreshControl={
+              <RefreshControl refreshing={this.state.refreshing} onRefresh={this.refresh} />
+            }
+            keyExtractor={this.keyExtractor}
+            enableEmptySections
+            keyboardShouldPersistTaps="always"
+            initialNumToRender={this.state.dataSource.length}
+            ref={(ref) => {
+              this.sectionListRef = ref;
+            }}
+            sections={this.state.dataSource}
+            renderItem={this.renderItem}
+            stickySectionHeadersEnabled
+            getItemLayout={this.getItemLayout}
+            extraData={this.props}
+            renderSectionHeader={item => ServiceList.renderSection(item)}
+            ItemSeparatorComponent={ServiceList.renderSeparator}
+          />
+            <ListLetterFilter
+              onPress={(letter) => {
+              this.scrollToIndex(letter);
+            }}
             />
-          }
-          keyExtractor={this.keyExtractor}
-          key={Math.random().toString()}
-          enableEmptySections
-          keyboardShouldPersistTaps="always"
-          initialNumToRender={this.state.dataSource.length}
-          ref={(ref) => { this.sectionListRef = ref; }}
-          sections={this.state.dataSource}
-          renderItem={this.renderItem}
-          stickySectionHeadersEnabled
-          getItemLayout={(data, index) => (
-            { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
-          )}
-          extraData={this.props}
-          renderSectionHeader={item => ServiceList.renderSection(item)}
-          ItemSeparatorComponent={() => ServiceList.renderSeparator()}
-        />
-        <ListLetterFilter
-          onPress={(letter) => { this.scrollToIndex(letter); }}
-        />
+        </Animated.View>
       </View>
     );
   }

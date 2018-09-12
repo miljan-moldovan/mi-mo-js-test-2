@@ -14,6 +14,7 @@ import * as TurnAway from './apiServicesResources/turnAway';
 import * as Formula from './apiServicesResources/formula';
 import * as Session from './apiServicesResources/session';
 import { getEmployeePhoto } from './api';
+import * as Login from './apiServicesResources/login';
 
 export {
   Appointment,
@@ -32,4 +33,5 @@ export {
   getEmployeePhoto,
   Formula,
   Session,
+  Login,
 };
