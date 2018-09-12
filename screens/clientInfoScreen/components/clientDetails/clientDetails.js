@@ -440,8 +440,6 @@ class ClientDetails extends Component {
   handleDeleteClient = (result, message) => {
     if (result) {
       this.props.navigation.goBack();
-    } else {
-      alert(message);
     }
   }
 
@@ -526,8 +524,6 @@ class ClientDetails extends Component {
           } else {
             this.props.navigation.goBack();
           }
-        } else {
-          alert(message);
         }
       });
     } else if (this.props.actionType === 'update') {
@@ -544,8 +540,6 @@ class ClientDetails extends Component {
             this.props.appointmentCalendarActions.setGridView();
             this.props.navigation.goBack();
           }
-        } else {
-          alert(message);
         }
       });
     }

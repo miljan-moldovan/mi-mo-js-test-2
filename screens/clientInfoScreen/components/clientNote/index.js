@@ -173,25 +173,25 @@ class ClientNote extends Component {
 
       this.setState({ isVisible: false });
 
-      if (selectedProvider) {
-        navigate('Providers', {
-          actionType: 'update',
-          dismissOnSelect: this.dismissOnSelect,
-          onNavigateBack: this.handleOnNavigateBack,
-          onChangeProvider: this.onChangeProvider,
-          headerProps: { title: 'Providers', ...this.cancelButton() },
-          ...this.props,
-        });
-      } else {
-        navigate('Providers', {
-          actionType: 'new',
-          dismissOnSelect: this.dismissOnSelect,
-          onNavigateBack: this.handleOnNavigateBack,
-          onChangeProvider: this.onChangeProvider,
-          headerProps: { title: 'Providers', ...this.cancelButton() },
-          ...this.props,
-        });
-      }
+      // if (selectedProvider) {
+      //   navigate('Providers', {
+      //     actionType: 'update',
+      //     dismissOnSelect: this.dismissOnSelect,
+      //     onNavigateBack: this.handleOnNavigateBack,
+      //     onChangeProvider: this.onChangeProvider,
+      //     headerProps: { title: 'Providers', ...this.cancelButton() },
+      //     ...this.props,
+      //   });
+      // } else {
+      //   navigate('Providers', {
+      //     actionType: 'new',
+      //     dismissOnSelect: this.dismissOnSelect,
+      //     onNavigateBack: this.handleOnNavigateBack,
+      //     onChangeProvider: this.onChangeProvider,
+      //     headerProps: { title: 'Providers', ...this.cancelButton() },
+      //     ...this.props,
+      //   });
+      // }
     }
 
   cancelButton = () => ({
