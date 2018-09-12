@@ -12,6 +12,8 @@ import { bindActionCreators } from 'redux';
 import { find } from 'lodash';
 import clientFormulasActions from '../../../../actions/clientFormulas';
 import settingsActions from '../../../../actions/settings';
+import fetchFormCache from '../../../../utilities/fetchFormCache';
+import LoadingOverlay from '../../../../components/LoadingOverlay';
 
 import {
   InputDate,
@@ -60,15 +62,34 @@ class ClientFormula extends React.Component {
   componentWillMount() {
     const { settings } = this.props.settingsState;
 
+    const onEditionFormula = this.props.navigation.state.params.formula;
+
     let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
     defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
       defaultFormulaTypeSetting.settingValue : null;
 
     const defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
 
-    const { formula } = this.state;
+    let { formula } = this.state;
 
-    formula.formulaType = defaultFormulaType;
+
+    if (this.props.navigation.state.params.actionType === 'update') {
+      formula = Object.assign({}, onEditionFormula);
+
+      const provider = { fullName: formula.stylistName, name: formula.stylistName.split(' ')[0], lastName: formula.stylistName.split(' ')[1] };
+
+      const formulaType = find(formulaTypes, { key: formula.formulaType });
+      formula.formulaType = formulaType;
+      formula.enteredBy = provider;
+
+      const cachedForm = fetchFormCache('ClientFormulaUpdate', onEditionFormula.id, this.props.formCache);
+
+      if (onEditionFormula.id === cachedForm.id) {
+        formula = cachedForm;
+      }
+    } else if (this.props.navigation.state.params.actionType === 'new') {
+      formula.formulaType = defaultFormulaType;
+    }
 
     this.setState({ defaultFormulaType, formula });
 
@@ -124,16 +145,6 @@ class ClientFormula extends React.Component {
       const { navigate } = this.props.navigation;
 
       this.setState({ isVisible: false });
-
-
-      navigate('Providers', {
-        actionType: 'update',
-        dismissOnSelect: this.dismissOnSelect,
-        onNavigateBack: this.handleOnNavigateBack,
-        onChangeProvider,
-        headerProps: { title: 'Providers', ...this.cancelButton() },
-        ...this.props,
-      });
     }
 
     onChangeEnteredBy = (enteredBy) => {
@@ -198,12 +209,10 @@ class ClientFormula extends React.Component {
       if (this.props.navigation.state.params.actionType === 'new') {
         const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
-        // formula.stylistName = formula.enteredBy.fullName;
         formula.formulaType = formula.formulaType.key;
         delete formula.provider;
         delete formula.enteredBy;
-
-        delete formula.date;
+        // delete formula.date;
 
         this.props.clientFormulasActions.postClientFormulas(client.id, formula)
           .then((response) => {
@@ -212,8 +221,13 @@ class ClientFormula extends React.Component {
           }).catch((error) => {
           });
       } else if (this.props.navigation.state.params.actionType === 'update') {
-        const formula = this.state.formula;
+        const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
+        formula.formulaType = formula.formulaType.key;
+        delete formula.provider;
+        delete formula.enteredBy;
+        delete formula.store;
+        // delete formula.date;
         this.props.clientFormulasActions.putClientFormulas(client.id, formula)
           .then((response) => {
             this.goBack();
@@ -230,20 +244,25 @@ class ClientFormula extends React.Component {
           style={styles.modal}
         >
           <View style={styles.container}>
+            { this.props.clientFormulasState.isLoading &&
+            <LoadingOverlay />
+                }
             <ClienteFormulaHeader rootProps={this.props} />
             <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
               <View style={styles.topView} />
               <InputGroup>
                 <ProviderInput
                   showFirstAvailable={false}
-                  noPlaceholder
+                  placeholder={false}
                   style={styles.innerRow}
                   selectedProvider={this.state.formula.enteredBy}
-                  labelText="Entered By"
+                  label="Added By"
                   iconStyle={styles.carretIcon}
                   avatarSize={20}
                   navigate={this.props.navigation.navigate}
-                  onPress={() => { this.handlePressProvider(this.onChangeEnteredBy); }}
+                  onChange={this.onChangeEnteredBy}
+                  onPress={this.handlePressProvider}
+                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
                 />
                 <InputDivider />
                 <InputPicker
@@ -279,14 +298,16 @@ class ClientFormula extends React.Component {
                 <InputDivider />
                 <ProviderInput
                   showFirstAvailable={false}
-                  noPlaceholder
+                  placeholder={false}
                   style={styles.innerRow}
                   selectedProvider={this.state.formula.provider}
-                  labelText="Provider"
+                  label="Provider"
                   iconStyle={styles.carretIcon}
                   avatarSize={20}
                   navigate={this.props.navigation.navigate}
-                  onPress={() => { this.handlePressProvider(this.onChangeProvider); }}
+                  onChange={this.onChangeProvider}
+                  onPress={this.handlePressProvider}
+                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
                 />
               </InputGroup>
               <SectionDivider />
@@ -324,6 +345,7 @@ ClientFormula.propTypes = {
   clientFormulasActions: PropTypes.shape({
     postClientFormulas: PropTypes.func.isRequired,
     putClientFormulas: PropTypes.func.isRequired,
+    selectProvider: PropTypes.func.isRequired,
   }).isRequired,
   clientFormulasState: PropTypes.any.isRequired,
   client: PropTypes.any.isRequired,

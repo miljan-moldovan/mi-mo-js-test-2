@@ -17,6 +17,7 @@ import FloatingButton from '../../../../components/FloatingButton';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import styles from './stylesClientFormulas';
 import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
+import LoadingOverlay from '../../../../components/LoadingOverlay';
 
 const formulaTypes = [
   { id: formulaTypesEnum.Color, name: 'Color' },
@@ -186,9 +187,32 @@ class ClientFormulas extends Component {
     }
   }
 
+
+  editFormula(formula) {
+    const params = this.props.navigation.state.params || {};
+    const { apptBook = false } = params;
+
+    // this.props.clientFormulasActions.setOnEditionFormula(formula);
+    const { navigate } = this.props.navigation;
+
+
+    navigate('ClientFormula', {
+      mode: 'modal',
+      actionType: 'update',
+      formula,
+      client: this.props.client,
+      onNavigateBack: this.getFormulas,
+      apptBook,
+      ...this.props,
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
+        { this.props.clientFormulasState.isLoading &&
+        <LoadingOverlay />
+            }
         <View style={styles.header}>
           <View style={styles.topSearchBar}>
             <SalonSearchBar
@@ -266,7 +290,7 @@ class ClientFormulas extends Component {
                         <Text style={styles.formulaType}>{this.getFormulaTypeName(item.formulaType)}</Text>
                       </View>
                       <SalonTouchableOpacity
-                        onPress={() => alert('Screen Not Implemented')}
+                        onPress={() => this.editFormula(item)}
                         style={{ marginRight: 10 }}
                       >
                         <FontAwesome

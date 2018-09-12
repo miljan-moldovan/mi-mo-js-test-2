@@ -4,13 +4,13 @@ import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import {
   View,
-  ActivityIndicator,
   Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ClientNoteHeader from './clientNoteHeader';
+import LoadingOverlay from '../../../../components/LoadingOverlay';
 
 import clientNotesActions from '../../../../actions/clientNotes';
 
@@ -54,18 +54,19 @@ class ClientNote extends Component {
 
   componentWillMount() {
     let { note } = this.state;
+    const onEditionNote = this.props.navigation.state.params.note;
     const { client } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params.actionType === 'update') {
-      note = Object.assign({}, this.props.clientNotesState.onEditionNote);
+      note = Object.assign({}, onEditionNote);
 
 
       const provider = { fullName: note.enteredBy, name: note.enteredBy.split(' ')[0], lastName: note.enteredBy.split(' ')[1] };
       this.props.clientNotesActions.selectProvider(provider);
 
-      const cachedForm = fetchFormCache('ClientNoteUpdate', this.props.clientNotesState.onEditionNote.id, this.props.formCache);
+      const cachedForm = fetchFormCache('ClientNoteUpdate', onEditionNote.id, this.props.formCache);
 
-      if (this.props.clientNotesState.onEditionNote.id === cachedForm.id) {
+      if (onEditionNote.id === cachedForm.id) {
         note = cachedForm;
       }
     } else if (this.props.navigation.state.params.actionType === 'new') {
@@ -171,27 +172,8 @@ class ClientNote extends Component {
       this.shouldSave = true;
 
       this.setState({ isVisible: false });
-
-      if (selectedProvider) {
-        navigate('Providers', {
-          actionType: 'update',
-          dismissOnSelect: this.dismissOnSelect,
-          onNavigateBack: this.handleOnNavigateBack,
-          onChangeProvider: this.onChangeProvider,
-          headerProps: { title: 'Providers', ...this.cancelButton() },
-          ...this.props,
-        });
-      } else {
-        navigate('Providers', {
-          actionType: 'new',
-          dismissOnSelect: this.dismissOnSelect,
-          onNavigateBack: this.handleOnNavigateBack,
-          onChangeProvider: this.onChangeProvider,
-          headerProps: { title: 'Providers', ...this.cancelButton() },
-          ...this.props,
-        });
-      }
     }
+
 
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
@@ -274,79 +256,77 @@ class ClientNote extends Component {
       >
         <View style={styles.container}>
           <ClientNoteHeader rootProps={this.props} />
+          { this.props.clientNotesState.isLoading &&
+          <LoadingOverlay />
+                }
+          <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+            <View style={styles.topSeparator} />
+            <InputGroup style={styles.providerInputGroup}>
+              <ProviderInput
+                apptBook={apptBook}
+                placeholder={false}
+                showFirstAvailable={false}
+                filterByService
+                style={styles.innerRow}
+                selectedProvider={this.props.clientNotesState.selectedProvider}
+                label="Added By"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                onChange={this.onChangeProvider}
+                onPress={this.handlePressProvider}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+              />
+            </InputGroup>
+            <SectionTitle value="NOTE" style={styles.sectionTitle} />
+            <InputGroup>
+              <InputText
+                placeholder="Write Note"
+                onChangeText={this.onChangeText}
+                value={this.state.note.text}
+              />
+            </InputGroup>
+            <SectionTitle value="TYPES" style={styles.sectionTitle} />
+            <InputGroup >
+              <InputSwitch
+                style={styles.inputSwitchSales}
+                textStyle={styles.inputSwitchTextStyle}
+                onChange={this.inputSwitchSales}
+                value={this.state.forSales}
+                text="Sales"
+              />
+              <InputDivider />
+              <InputSwitch
+                style={styles.inputSwitchAppointment}
+                textStyle={styles.inputSwitchTextStyle}
+                onChange={this.inputSwitchAppointment}
+                value={this.state.forAppointment}
+                text="Appointment"
+              />
+              <InputDivider />
+              <InputSwitch
+                style={styles.inputSwitchQueue}
+                textStyle={styles.inputSwitchTextStyle}
+                onChange={this.inputSwitchQueue}
+                value={this.state.forQueue}
+                text="Queue"
+              />
+            </InputGroup>
+            <SectionDivider style={styles.sectionDivider} />
 
-          {this.props.clientNotesState.isLoading
-            ? (
-              <View style={styles.activityIndicator}>
-                <ActivityIndicator />
-              </View>
-            ) : (
-              <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-                <View style={styles.topSeparator} />
-                <InputGroup style={styles.providerInputGroup}>
-                  <ProviderInput
-                    apptBook={apptBook}
-                    placeholder={false}
-                    showFirstAvailable={false}
-                    filterByService
-                    style={styles.innerRow}
-                    selectedProvider={this.props.clientNotesState.selectedProvider}
-                    label="Added By"
-                    iconStyle={styles.carretIcon}
-                    avatarSize={20}
-                    navigate={this.props.navigation.navigate}
-                    onChange={this.onChangeProvider}
-                    onPress={this.handlePressProvider}
-                  />
-                </InputGroup>
-                <SectionTitle value="NOTE" style={styles.sectionTitle} />
-                <InputGroup>
-                  <InputText
-                    placeholder="Write Note"
-                    onChangeText={this.onChangeText}
-                    value={this.state.note.text}
-                  />
-                </InputGroup>
-                <SectionTitle value="TYPES" style={styles.sectionTitle} />
-                <InputGroup >
-                  <InputSwitch
-                    style={styles.inputSwitchSales}
-                    textStyle={styles.inputSwitchTextStyle}
-                    onChange={this.inputSwitchSales}
-                    value={this.state.forSales}
-                    text="Sales"
-                  />
-                  <InputDivider />
-                  <InputSwitch
-                    style={styles.inputSwitchAppointment}
-                    textStyle={styles.inputSwitchTextStyle}
-                    onChange={this.inputSwitchAppointment}
-                    value={this.state.forAppointment}
-                    text="Appointment"
-                  />
-                  <InputDivider />
-                  <InputSwitch
-                    style={styles.inputSwitchQueue}
-                    textStyle={styles.inputSwitchTextStyle}
-                    onChange={this.inputSwitchQueue}
-                    value={this.state.forQueue}
-                    text="Queue"
-                  />
-                </InputGroup>
-                <SectionDivider style={styles.sectionDivider} />
+            <InputGroup style={styles.inputGroupDate}>
+              <InputDate
+                minDate={moment().format('DD MMMM YYYY')}
+                style={styles.inputDate}
+                placeholder="Expire Date"
+                noIcon={this.state.note.expiration == null}
+                onPress={this.inputDate}
+                valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
+                selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
+              />
+            </InputGroup>
+          </KeyboardAwareScrollView>
 
-                <InputGroup style={styles.inputGroupDate}>
-                  <InputDate
-                    style={styles.inputDate}
-                    placeholder="Expire Date"
-                    noIcon={this.state.note.expiration == null}
-                    onPress={this.inputDate}
-                    valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
-                    selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
-                  />
-                </InputGroup>
-              </KeyboardAwareScrollView>
-        )}
         </View>
       </Modal>
     );
