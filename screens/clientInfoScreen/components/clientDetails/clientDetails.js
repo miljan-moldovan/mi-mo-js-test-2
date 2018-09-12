@@ -947,7 +947,7 @@ class ClientDetails extends Component {
                   </View>
                 </InputGroup>
                 <SectionDivider />
-                {this.props.actionType === 'update' ?
+                {this.props.actionType === 'update' && this.props.canDelete ?
                   <React.Fragment>
                     <InputGroup>
                       <InputButton
@@ -972,6 +972,7 @@ ClientDetails.defaultProps = {
   client: null,
   actionType: 'update',
   onDismiss: null,
+  canDelete: false,
 };
 
 ClientDetails.propTypes = {
@@ -983,6 +984,7 @@ ClientDetails.propTypes = {
   setHandleDone: PropTypes.func.isRequired,
   setHandleBack: PropTypes.func.isRequired,
   editionMode: PropTypes.bool,
+  canDelete: PropTypes.bool,
   settingsState: PropTypes.any.isRequired,
   clientInfoState: PropTypes.any.isRequired,
   client: PropTypes.any,
