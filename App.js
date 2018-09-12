@@ -63,7 +63,6 @@ export default class App extends Component {
           'modifyApptReducer',
           'userInfoReducer',
         ],
-        // whitelist: ['auth']
       },
       () => { this.setState({ storeIsReady: true }); },
     ); // .purge(); use to prevent log in

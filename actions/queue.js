@@ -1,4 +1,4 @@
-import { QueueStatus, Queue } from '../utilities/apiWrapper';
+import { QueueStatus, Queue, Employees } from '../utilities/apiWrapper';
 import { showErrorAlert } from './utils';
 
 export const QUEUE = 'queue/QUEUE';
@@ -52,12 +52,39 @@ export const GET_QUEUE_STATE = 'queue/GET_QUEUE_STATE';
 export const GET_QUEUE_STATE_SUCCESS = 'queue/GET_QUEUE_STATE_SUCCESS';
 export const GET_QUEUE_STATE_FAILED = 'queue/GET_QUEUE_STATE_FAILED';
 export const SET_LOADING = 'queue/SET_LOADING';
-
+export const QUEUE_EMPLOYEES = 'queue/QUEUE_EMPLOYEES';
+export const QUEUE_EMPLOYEES_SUCCESS = 'queue/QUEUE_EMPLOYEES_SUCCESS';
+export const QUEUE_EMPLOYEES_FAILED = 'queue/QUEUE_EMPLOYEES_FAILED';
 
 export const setLoading = loading => ({
   type: SET_LOADING,
   data: { loading },
 });
+
+const getQueueEmployeesSuccess = data => ({
+  type: QUEUE_EMPLOYEES_SUCCESS,
+  data: { data },
+});
+
+const getQueueEmployeesFailed = error => ({
+  type: QUEUE_EMPLOYEES_FAILED,
+  data: { error },
+});
+
+
+export const getQueueEmployees = callback => (dispatch) => {
+  dispatch({ type: QUEUE_EMPLOYEES });
+
+  return Employees.getQueueEmployees()
+    .then((resp) => {
+      dispatch(getQueueEmployeesSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(getQueueEmployeesFailed(error)); callback(false, error);
+    });
+};
+
 
 const startServiceSuccess = data => ({
   type: CLIENT_START_SERVICE_RECEIVED,
@@ -256,7 +283,6 @@ export const noShow = (id, callback) => (dispatch) => {
       dispatch(noShowSuccess(resp)); callback(true);
     })
     .catch((error) => {
-      // /debugger //eslint-disable-line
       showErrorAlert(error);
       dispatch(noShowFailed(error)); callback(false, error);
     });

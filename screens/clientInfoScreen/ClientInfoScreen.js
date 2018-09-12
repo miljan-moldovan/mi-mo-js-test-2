@@ -137,6 +137,7 @@ export default class ClientInfoScreen extends React.Component {
     this.props.navigation.setParams({ handleDone: this.handleDone, canSave: false, showDoneButton: true });
 
     const client = params && params.client ? params.client : null;
+    const canDelete = params && params.canDelete ? params.canDelete : false;
     const isWalkIn = client && client.id === 1;
     let editionMode = params && params.editionMode ? params.editionMode : true;
     editionMode = editionMode && !isWalkIn;
@@ -146,6 +147,7 @@ export default class ClientInfoScreen extends React.Component {
       loading: true,
       editionMode,
       client,
+      canDelete,
       routes: [
         { key: '0', title: 'Details' },
         { key: '1', title: 'Notes' },
@@ -204,7 +206,17 @@ export default class ClientInfoScreen extends React.Component {
   );
 
   renderScene = SceneMap({
-    0: () => <ClientDetails actionType="update" setHandleDone={this.setHandleDone} setHandleBack={this.setHandleDone} setCanSave={this.setCanSave} editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
+    0: () => (<ClientDetails
+      canDelete={this.state.canDelete}
+      actionType="update"
+      setHandleDone={this.setHandleDone}
+      setHandleBack={this.setHandleBack}
+      setCanSave={this.setCanSave}
+      editionMode={this.state.editionMode}
+      client={this.state.client}
+      navigation={this.props.navigation}
+      {...this.props}
+    />),
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
     2: () => <ClientFormulas editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
   })

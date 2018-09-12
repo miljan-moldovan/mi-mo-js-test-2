@@ -265,6 +265,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
 
   if (appointment !== null) {
+    this.hideDialog();
     setTimeout(() => this.props.navigation.navigate('AppointmentDetails', { item: { ...appointment }, isWaiting, onPressSummary }), 500);
   }
 }
@@ -350,7 +351,9 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
 
   const { settings } = this.props.settings;
 
-  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
+  autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+    autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
 
 
@@ -367,9 +370,10 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
-      filterByService: false,
+      selectedService: {id: service.serviceId},
       showFirstAvailable: false,
       checkProviderStatus: true,
+      queueList: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
@@ -386,7 +390,8 @@ checkHasEmail = () => {
 
 
   this.setState({ email: '' });
-  const forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' }).settingValue;
+  let forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' });
+  forceMissingQueueEmail = forceMissingQueueEmail ? forceMissingQueueEmail.settingValue : false;
   if (forceMissingQueueEmail && (!client.email || !client.email.trim())) {
     this.hideDialog();
     this.props.setLoading(true);

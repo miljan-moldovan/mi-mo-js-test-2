@@ -33,7 +33,7 @@ export default class ProviderInput extends React.Component {
       showEstimatedTime = true,
       checkProviderStatus = false,
     } = this.props;
-    if (isFunction(onPress)) { onPress(); return; }
+    if (isFunction(onPress)) { onPress(); }
 
     navigate(apptBook ? 'ApptBookProvider' : 'Providers', {
       queueList,

@@ -1,30 +1,32 @@
-// import axios from 'axios';
-// import cancelRequest from '../../../helpers/cancelRequest';
-// import { getApiInstance } from '../../api';
-//
-// let cancellationToken = null;
+import { getApiInstance } from '../../api';
+
 function delay(timeout) {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
 export default async ({ url, username }) => {
-  await delay(100);
+  const apiInstance = await getApiInstance();
+  let responseObject;
+  try {
+    const { data } = await apiInstance.post('/MobilePos/ResetPassword', { username });
+    responseObject = data;
+  } catch (e) {
+    responseObject = e.response.data;
+  }
+
   const urlError = url !== 'sportclips';
-  const usernameError = username !== 'test';
-  const success = !usernameError && !urlError;
+  let usernameError = false;
 
   const response = {
-    success,
-    errors: {},
     errorMessages: [],
   };
 
-  response.errors.usernameError = usernameError;
-  response.errors.urlError = urlError;
-
-  if (usernameError) {
-    response.errorMessages.push('Username not found');
+  if (responseObject.result !== 1) {
+    usernameError = true;
+    response.errorMessages.push(responseObject.userMessage);
   }
+  response.success = !usernameError && !urlError;
+  response.errors = { usernameError, urlError };
 
   if (urlError) {
     response.errorMessages.push('Url is incorrect');
