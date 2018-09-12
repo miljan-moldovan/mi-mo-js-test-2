@@ -172,27 +172,8 @@ class ClientNote extends Component {
       this.shouldSave = true;
 
       this.setState({ isVisible: false });
-
-      // if (selectedProvider) {
-      //   navigate('Providers', {
-      //     actionType: 'update',
-      //     dismissOnSelect: this.dismissOnSelect,
-      //     onNavigateBack: this.handleOnNavigateBack,
-      //     onChangeProvider: this.onChangeProvider,
-      //     headerProps: { title: 'Providers', ...this.cancelButton() },
-      //     ...this.props,
-      //   });
-      // } else {
-      //   navigate('Providers', {
-      //     actionType: 'new',
-      //     dismissOnSelect: this.dismissOnSelect,
-      //     onNavigateBack: this.handleOnNavigateBack,
-      //     onChangeProvider: this.onChangeProvider,
-      //     headerProps: { title: 'Providers', ...this.cancelButton() },
-      //     ...this.props,
-      //   });
-      // }
     }
+
 
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
@@ -294,6 +275,7 @@ class ClientNote extends Component {
                 navigate={this.props.navigation.navigate}
                 onChange={this.onChangeProvider}
                 onPress={this.handlePressProvider}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
               />
             </InputGroup>
             <SectionTitle value="NOTE" style={styles.sectionTitle} />
