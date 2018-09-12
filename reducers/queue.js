@@ -54,6 +54,9 @@ import {
   GET_QUEUE_STATE_SUCCESS,
   GET_QUEUE_STATE_FAILED,
   SET_LOADING,
+  QUEUE_EMPLOYEES,
+  QUEUE_EMPLOYEES_SUCCESS,
+  QUEUE_EMPLOYEES_FAILED,
 } from '../actions/queue';
 
 import { POST_WALKIN_CLIENT_SUCCESS } from '../actions/walkIn';
@@ -71,6 +74,7 @@ const initialState = {
   lastGroupId: 0,
   updatedGroups: [],
   queueState: null,
+  providers: [],
 };
 
 export default (state = initialState, action) => {
@@ -570,6 +574,24 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
         queueState: null,
+        error: data.error,
+      };
+    case QUEUE_EMPLOYEES:
+      return {
+        ...state,
+        loading: true,
+      };
+    case QUEUE_EMPLOYEES_SUCCESS:
+      return {
+        ...state,
+        providers: data.data.employees,
+        error: null,
+      };
+    case QUEUE_EMPLOYEES_FAILED:
+      return {
+        ...state,
+        loading: false,
+        providers: null,
         error: data.error,
       };
     case SET_LOADING:

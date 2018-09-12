@@ -126,13 +126,16 @@ class queueListItemSummary extends Component {
     const {
       navigation: { navigate },
       service: { employee = null, ...service },
+      item,
     } = this.props;
 
     navigate('ModalProviders', {
       selectedService: { id: service.serviceId },
+      showFirstAvailable: item.status === 0,
       dismissOnSelect: true,
       selectedProvider: employee,
       checkProviderStatus: true,
+      queueList: true,
       headerProps: { title: 'Providers', ...this.cancelButton() },
       onChangeProvider: data => this.saveQueueProvider(data),
     });
