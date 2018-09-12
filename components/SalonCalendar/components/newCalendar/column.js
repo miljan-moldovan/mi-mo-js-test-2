@@ -8,8 +8,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   cellContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
     height: 30,
     borderColor: '#C0C1C6',
     backgroundColor: '#fff',
@@ -17,8 +15,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
   },
   cellContainerDisabled: {
-    justifyContent: 'center',
-    alignItems: 'center',
     height: 30,
     borderColor: '#C0C1C6',
     backgroundColor: 'rgb(221,223,224)',
@@ -30,6 +26,13 @@ const styles = StyleSheet.create({
   },
   dayOff: {
     backgroundColor: 'rgb(129, 136, 152)',
+  },
+  exceptionText: {
+    fontFamily: 'Roboto',
+    fontSize: 12,
+    paddingHorizontal: 8,
+    color: '#2F3142',
+    flex: 1,
   },
 });
 
@@ -72,6 +75,7 @@ export default class Column extends Component {
     let isStoreOff = false;
     let exception;
     let storeTodaySchedule;
+    let isException = '';
     if (!isDate) {
       exception = get(storeScheduleExceptions, ['0'], null);
       storeTodaySchedule = exception ? exception : weeklySchedule[startDate.isoWeekday() - 1];
@@ -118,9 +122,14 @@ export default class Column extends Component {
         default:
           break;
       }
-
       if (schedule) {
         for (let i = 0; i < schedule.length; i += 1) {
+          if (schedule[i].isException && schedule[i].comment) {
+            isException += schedule[i].comment;
+          }
+          if (schedule[i].isOff) {
+            break;
+          }
           if (cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
           cell.isBefore(moment(schedule[i].end, 'HH:mm'))) {
             style = styles.cellContainer;
@@ -134,7 +143,10 @@ export default class Column extends Component {
             disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
             onPress={() => { this.onCellPressed(cell, colData, !isDate ? startDate : colData); }}
-          />
+          >
+            { index === 0 && isException ?
+              <Text style={styles.exceptionText}>{isException}</Text> : null}
+          </TouchableOpacity>
         </View>
       );
     }
@@ -144,7 +156,10 @@ export default class Column extends Component {
           disabled={isCellDisabled}
           style={[styles.cellContainer, styles.dayOff, { width: cellWidth }, styleOclock]}
           onPress={() => { this.onCellPressed(cell, colData, !isDate ? startDate : colData); }}
-        />
+        >
+          { index === 0 && isException ?
+            <Text style={styles.exceptionText}>{isException}</Text> : null}
+        </TouchableOpacity>
       </View>
     );
   }

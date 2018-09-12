@@ -82,7 +82,7 @@ class ClientsScreen extends React.Component {
             }
             leftButtonOnPress(navigation);
           }}
-          rightButton={rightButton}
+          rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
           rightButtonOnPress={() => {
             rightButtonOnPress(navigation);
           }}
@@ -283,6 +283,7 @@ class ClientsScreen extends React.Component {
             onChangeClient={onChangeClient}
             refreshing={this.props.salonSearchHeaderState.isLoading}
             isLoading={this.props.clientsState.isLoading}
+            hideAddButton={this.props.navigation.state.params ? this.props.navigation.state.params.hideAddButton : true}
           />
         </View>
       </View>

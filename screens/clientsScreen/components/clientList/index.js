@@ -179,6 +179,7 @@ class ClientList extends React.Component {
           return (<EmptyList
             onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
             navigate={this.props.navigate}
+            hideAddButton={this.props.hideAddButton}
           />);
         }
         return null;
