@@ -94,8 +94,9 @@ class QueueScreen extends React.Component {
     this.loadQueueData();
 
     this.props.actions.getQueueEmployees();
-    this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
-    this.props.settingsActions.getSettingsByName('PrintToTicket');
+    this.props.settingsActions.getSettings();
+    // this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
+    // this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
 
   componentDidMount() {

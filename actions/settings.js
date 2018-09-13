@@ -19,7 +19,7 @@ const getSettingsFailed = error => ({
   data: { error },
 });
 
-const getSettings = callback => (dispatch, getState) => {
+const getSettings = (callback = () => {}) => (dispatch, getState) => {
   dispatch({ type: SETTINGS });
   return Settings.getSettings()
     .then((response) => { dispatch(getSettingsSuccess(response)); callback(true); })
