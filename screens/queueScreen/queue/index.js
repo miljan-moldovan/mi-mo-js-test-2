@@ -329,7 +329,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
                 text: 'Yes, I’m sure',
                 onPress: () => {
                   this.hideAll();
-                  this.props.walkout(appointment.id, {}, this.goBack);
+                  this.props.walkOut(appointment.id, {}, this.props.loadQueueData);
                 },
               },
             ],
@@ -818,7 +818,7 @@ Queue.propTypes = {
   toWaiting: PropTypes.func.isRequired,
   undoFinishService: PropTypes.func.isRequired,
   finishService: PropTypes.func.isRequired,
-  walkout: PropTypes.func.isRequired,
+  walkOut: PropTypes.func.isRequired,
   data: PropTypes.any.isRequired,
   settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
