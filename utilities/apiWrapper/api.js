@@ -194,7 +194,7 @@ const getApiInstance = async () => {
       const store = await AsyncStorage.getItem(STOREKEY);
       const jwt = await AsyncStorage.getItem(JWTKEY);
       if (apiURL !== null) {
-        BASEURL = apiURL;
+        BASEURL = `https://${apiURL}/api/v1`;
       } else {
         BASEURL = 'https://zenithpos.dev.cicd.salondev.net/api/v1';
       }

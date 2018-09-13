@@ -38,21 +38,19 @@ export const login = (
     try {
       // const url = endpoints.LOGIN;
       // let { data } = await axios.post(url, { email, password });
-      const urlError = url !== 'sportclips';
+      let urlError = false;
       const errObj = {
         response: {
           data: {},
         },
       };
 
-      if (urlError) {
+      const data = await Login.signIn(url, username, password);
+      if (data && data.message === 'Network Error') {
+        urlError = true;
         errObj.response.data.urlError = urlError;
       }
-
-      await AsyncStorage.removeItem(JWTKEY);
-      const data = await Login.signIn(username, password);
-
-      if (data.result !== 1) {
+      if (data.result !== 1 && !urlError) {
         errObj.response.data.message = data.userMessage;
         errObj.response.data.errors = [data.userMessage];
         errObj.response.data.loginError = true;
