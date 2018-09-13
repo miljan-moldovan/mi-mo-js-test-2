@@ -182,7 +182,12 @@ export default class Calendar extends Component {
       groupByCondition : item => moment(item.date).format(DateTime.date));
     const groupedBlocks = groupBy(blockTimes, groupByCondition !== 'date' ?
       groupByCondition : item => moment(item.date).format(DateTime.date));
-    const cardsArray = mergeWith({ ...groupedAppointments }, { ...groupedBlocks }, (objValue, srcValue) => objValue && objValue.concat(srcValue));
+
+    const cardsArray = mergeWith(
+      { ...groupedAppointments }, { ...groupedBlocks },
+      (objValue, srcValue) => (objValue && objValue.concat(srcValue)) || srcValue,
+    );
+
     const overlappingCardsMap = this.setCardsOverlappingMap(cardsArray);
     this.setState({
       groupedAppointments, groupedBlocks, overlappingCardsMap, cardsArray,
