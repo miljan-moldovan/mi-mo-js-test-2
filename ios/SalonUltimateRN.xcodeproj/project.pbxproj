@@ -1012,7 +1012,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = F44N5MSDA3;
+						DevelopmentTeam = FMPG38UD6Y;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1691,7 +1691,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = F44N5MSDA3;
+				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
@@ -1718,7 +1718,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F44N5MSDA3;
+				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
