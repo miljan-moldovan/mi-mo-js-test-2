@@ -14,13 +14,13 @@ import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
 import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 
 import ClientsScreen from './../screens/clientsScreen';
+import RemovalReasonTypesScreen from './../screens/removalReasonTypes';
 
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/newClientScreen';
 import PromotionsScreen from '../screens/promotionsScreen/index';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
-import WalkOutScreen from '../screens/walkOutScreen';
 
 import HeaderLeftText from '../components/HeaderLeftText';
 
@@ -112,9 +112,6 @@ const MainNavigator = StackNavigator(
       screen: ClientDetailsScreen,
       navigationOptions: { tabBarVisible: false },
     },
-    Walkout: {
-      screen: WalkOutScreen,
-    },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
       navigationOptions: { tabBarVisible: false },
@@ -181,6 +178,10 @@ const MainNavigator = StackNavigator(
       navigationOptions: { tabBarVisible: false },
     },
     Settings: { screen: SettingsScreen },
+    RemovalReasonTypes: {
+      screen: RemovalReasonTypesScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
   },
   {
     headerMode: 'none',

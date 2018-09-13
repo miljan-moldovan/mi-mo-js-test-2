@@ -295,34 +295,79 @@ handlePressCheckIn = (isActiveCheckin) => {
 handlePressWalkOut = (isActiveWalkOut) => {
   const { appointment } = this.state;
 
+  const { settings } = this.props.settings;
+
+  let trackQueueRemoval = _.find(settings, { settingName: 'TrackQueueRemoval' });
+  trackQueueRemoval = trackQueueRemoval ?
+    trackQueueRemoval.settingValue : false;
+
+
   if (isActiveWalkOut) {
     if (appointment !== null) {
       this.hideDialog();
-      this.props.navigation.navigate('Walkout', {
+
+
+      if (trackQueueRemoval) {
+        this.props.navigation.navigate('RemovalReasonTypes', {
+          appointment,
+          type: 'walkout',
+          ...this.props,
+        });
+      } else {
+        const { client } = appointment;
+
+        const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+
+
+        setTimeout(() => {
+          Alert.alert(
+            'WALK-OUT',
+            `Are you sure you want to mark ${fullName} as a walk-out?`,
+            [
+              { text: 'No, cancel', onPress: () => { console.log('cancel'); }, style: 'cancel' },
+              {
+                text: 'Yes, I’m sure',
+                onPress: () => {
+                  this.hideAll();
+                  this.props.walkout(appointment.id, {}, this.goBack);
+                },
+              },
+            ],
+            { cancelable: false },
+          );
+        }, 500);
+      }
+    }
+  } else if (appointment !== null) {
+    this.hideDialog();
+
+    if (trackQueueRemoval) {
+      this.props.navigation.navigate('RemovalReasonTypes', {
         appointment,
+        type: 'noshow',
         ...this.props,
       });
-    }
-  } else {
-    const { client } = appointment;
+    } else {
+      const { client } = appointment;
 
-    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
 
-    Alert.alert(
-      'No show',
-      `Are you sure you want to mark ${fullName} as a no show?`,
-      [
-        { text: 'No, cancel', onPress: () => { }, style: 'cancel' },
-        {
-          text: 'Yes, I’m sure',
-          onPress: () => {
-            this.hideAll();
-            this.props.noShow(appointment.id, this.props.loadQueueData);
+      Alert.alert(
+        'No show',
+        `Are you sure you want to mark ${fullName} as a no show?`,
+        [
+          { text: 'No, cancel', onPress: () => { }, style: 'cancel' },
+          {
+            text: 'Yes, I’m sure',
+            onPress: () => {
+              this.hideAll();
+              this.props.noShow(appointment.id, {}, this.props.loadQueueData);
+            },
           },
-        },
-      ],
-      { cancelable: false },
-    );
+        ],
+        { cancelable: false },
+      );
+    }
   }
 }
 
@@ -370,7 +415,7 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
       dismissOnSelect: false,
-      selectedService: {id: service.serviceId},
+      selectedService: { id: service.serviceId },
       showFirstAvailable: false,
       checkProviderStatus: true,
       queueList: true,
@@ -773,6 +818,7 @@ Queue.propTypes = {
   toWaiting: PropTypes.func.isRequired,
   undoFinishService: PropTypes.func.isRequired,
   finishService: PropTypes.func.isRequired,
+  walkout: PropTypes.func.isRequired,
   data: PropTypes.any.isRequired,
   settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
