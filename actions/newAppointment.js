@@ -165,37 +165,6 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
   });
 };
 
-// const addServiceItem = (service, guestId = false) => (dispatch, getState) => {
-//   const {
-//     client,
-//     guests,
-//     startTime,
-//     bookedByEmployee,
-//   } = getState().newAppointmentReducer;
-//   const length = appointmentLength(getState());
-//   const fromTime = moment(startTime).add(moment.duration(length));
-//   const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
-//   const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId), 'client', null) : client;
-//   const newService = {
-//     service,
-//     client: serviceClient,
-//     requested: true,
-//     employee: bookedByEmployee,
-//     fromTime,
-//     toTime,
-//   };
-//   const serviceItem = {
-//     itemId: uuid(),
-//     guestId,
-//     service: newService,
-//   };
-
-//   return dispatch({
-//     type: ADD_SERVICE_ITEM,
-//     data: { serviceItem },
-//   });
-// };
-
 const addServiceItem = serviceItem => (dispatch, getState) => {
   const { startTime } = getState().newAppointmentReducer;
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
@@ -338,14 +307,6 @@ export function serializeNewApptItem(appointment, service) {
     itemData.gapTime = moment().startOf('day').add(service.gapTime, 'minutes').format('HH:mm:ss');
     itemData.afterTime = moment().startOf('day').add(service.afterTime, 'minutes').format('HH:mm:ss');
   }
-
-  // if (srv.room) {
-  //   itemData.roomId = srv.room.id
-  // }
-
-  // if (srv.resource) {
-  //   itemData.resourceId = srv.resource.id
-  // }
 
   return itemData;
 }

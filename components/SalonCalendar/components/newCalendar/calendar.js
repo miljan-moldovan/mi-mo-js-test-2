@@ -16,6 +16,11 @@ import EmptyScreen from './EmptyScreen';
 import { sortCardsForBoard, getRangeExtendedMoment, isCardWithGap, areDatesInRange, areDateRangeOverlapped } from '../../../../utilities/helpers';
 import DateTime from '../../../../constants/DateTime';
 import ViewTypes from '../../../../constants/ViewTypes';
+import {
+  CHECK_APPT_CONFLICTS,
+  CHECK_APPT_CONFLICTS_SUCCESS,
+  CHECK_APPT_CONFLICTS_FAILED,
+} from '../../../../actions/appointment';
 
 const extendedMoment = getRangeExtendedMoment();
 
@@ -104,7 +109,9 @@ export default class Calendar extends Component {
           this.moveY = dy;
           if (this.resizeCard) {
             const lastIndex = this.state.activeCard.verticalPositions.length - 1;
-            this.state.activeCard.verticalPositions[lastIndex].height = this.resizeCard.resizeCard(size);
+            const newHeight = this.resizeCard.resizeCard(size);
+            this.state.activeCard.verticalPositions[lastIndex].height = newHeight;
+            this.state.activeCard.height = newHeight;
           } else if (this.resizeBlock) {
             this.state.activeBlock.height = this.resizeBlock.resize(size);
           }
@@ -593,7 +600,8 @@ export default class Calendar extends Component {
 
     const fromTime = moment(data.fromTime, 'HH:mm').format('h:mma');
     const oldToTime = moment(data.toTime, 'HH:mm').format('h:mma');
-    const newToTime = moment(data.fromTime, 'HH:mm').add(newHeight * apptGridSettings.step, 'm').format('h:mma');
+    const newToTimeMoment = moment(data.fromTime, 'HH:mm').add(newHeight * apptGridSettings.step, 'm');
+    const newToTime = newToTimeMoment.format('h:mma');
     const timeHasChanged = oldToTime !== newToTime;
     if (timeHasChanged) {
       if (activeCard) {
@@ -604,8 +612,15 @@ export default class Calendar extends Component {
           btnLeftText: 'Cancel',
           btnRightText: 'Resize',
           onPressRight: () => {
-            this.props.onResize(data.id, params, data);
-            this.hideAlert();
+            this.handleRresizeConfirmation({
+              id: data.id,
+              date: data.date,
+              fromTime: data.fromTime,
+              toTime: newToTimeMoment.format(DateTime.timeOld),
+              employeeId: data.employee.id,
+              params,
+              oldAppointment: data,
+            });
           },
         };
         this.createAlert(alert);
@@ -616,8 +631,15 @@ export default class Calendar extends Component {
           btnLeftText: 'Cancel',
           btnRightText: 'Resize',
           onPressRight: () => {
-            this.props.onResizeBlock(data.id, params, data);
-            this.hideAlert();
+            this.handleRresizeBlockConfirmation({
+              id: data.id,
+              date: data.date,
+              fromTime: data.fromTime,
+              toTime: newToTimeMoment.format(DateTime.timeOld),
+              employeeId: data.employee.id,
+              params,
+              oldAppointment: data,
+            });
           },
         };
         this.createAlert(alert);
@@ -626,9 +648,82 @@ export default class Calendar extends Component {
       this.setState({
         alert: null,
         activeCard: null,
+        activeBlock: null,
         isResizeing: false,
       });
     }
+  }
+
+  handleRresizeConfirmation = ({
+    id, date, fromTime, toTime, employeeId, params, oldAppointment,
+  }) => {
+    const conflictData = {
+      actionName: CHECK_APPT_CONFLICTS,
+      actionNameSuccess: CHECK_APPT_CONFLICTS_SUCCESS,
+      actionNameFailed: CHECK_APPT_CONFLICTS_FAILED,
+      conflictData: {
+        date,
+        items: [{
+          fromTime,
+          toTime,
+          appointmentId: id,
+          employeeId,
+        }],
+      }
+    };
+    this.props.checkConflicts(conflictData).then(({ data: { conflicts } }) => {
+      if (conflicts && conflicts.length > 0) {
+        const navParams = {
+          date,
+          startTime: fromTime,
+          endTime: toTime,
+          conflicts,
+          handleGoBack: () => this.props.onResize(id, params, oldAppointment),
+          headerProps: {
+            btnRightText: 'Resize anyway',
+          },
+        };
+        this.props.navigation.navigate('Conflicts', navParams);
+      } else {
+        this.props.onResize(id, params, oldAppointment);
+      }
+    });
+    this.hideAlert();
+  }
+
+  handleRresizeBlockConfirmation = ({
+    id, date, fromTime, toTime, employeeId, params, oldAppointment,
+  }) => {
+    const conflictData = {
+      actionName: CHECK_APPT_CONFLICTS,
+      actionNameSuccess: CHECK_APPT_CONFLICTS_SUCCESS,
+      actionNameFailed: CHECK_APPT_CONFLICTS_FAILED,
+      conflictData: {
+        scheduleBlockId: id,
+        date,
+        fromTime,
+        toTime,
+        employeeId,
+      }
+    };
+    this.props.checkConflictsBlock(conflictData).then(({ data: { conflicts } }) => {
+      if (conflicts && conflicts.length > 0) {
+        const navParams = {
+          date,
+          startTime: fromTime,
+          endTime: toTime,
+          conflicts,
+          handleGoBack: () => this.props.onResizeBlock(id, params, oldAppointment),
+          headerProps: {
+            btnRightText: 'Resize anyway',
+          },
+        };
+        this.props.navigation.navigate('Conflicts', navParams);
+      } else {
+        this.props.onResizeBlock(id, params, oldAppointment);
+      }
+    });
+    this.hideAlert();
   }
 
   handleCardDrop = () => {
@@ -656,7 +751,7 @@ export default class Calendar extends Component {
   }
 
   handleMove = ({
-    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null,
+    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null, newToTime
   }) => {
     const { onDrop, appointments } = this.props;
     const { buffer } = this.state;
@@ -671,24 +766,71 @@ export default class Calendar extends Component {
     } else {
       oldAppointment = appointments.find(item => item.id === id);
     }
-    onDrop(
-      id,
-      {
+    const conflictData = {
+      actionName: CHECK_APPT_CONFLICTS,
+      actionNameSuccess: CHECK_APPT_CONFLICTS_SUCCESS,
+      actionNameFailed: CHECK_APPT_CONFLICTS_FAILED,
+      conflictData: {
         date,
-        newTime,
-        employeeId,
-        resourceId,
-        resourceOrdinal,
-        roomId,
-        roomOrdinal,
+        items: [{
+          resourceId,
+          resourceOrdinal,
+          roomId,
+          roomOrdinal,
+          employeeId,
+          fromTime: newTime,
+          toTime: newToTime,
+          appointmentId: oldAppointment.id,
+        }],
       },
-      oldAppointment,
-    );
+    };
+
+    this.props.checkConflicts(conflictData).then(({ data: { conflicts } }) => {
+      if (conflicts && conflicts.length > 0) {
+        const params = {
+          date,
+          startTime: newTime,
+          endTime: newToTime,
+          conflicts,
+          handleGoBack: () => onDrop(
+            id,
+            {
+              date,
+              newTime,
+              employeeId,
+              resourceId,
+              resourceOrdinal,
+              roomId,
+              roomOrdinal,
+            },
+            oldAppointment,
+          ),
+          headerProps: {
+            btnRightText: 'Move anyway',
+          },
+        };
+        this.props.navigation.navigate('Conflicts', params);
+      } else {
+        onDrop(
+          id,
+          {
+            date,
+            newTime,
+            employeeId,
+            resourceId,
+            resourceOrdinal,
+            roomId,
+            roomOrdinal,
+          },
+          oldAppointment,
+        );
+      }
+    });
     this.hideAlert();
   }
 
   handleMoveBlock = ({
-    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null,
+    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null, newToTime
   }) => {
     const { onDropBlock, blockTimes } = this.props;
     const { buffer } = this.state;
@@ -703,19 +845,61 @@ export default class Calendar extends Component {
     } else {
       oldBlockTime = blockTimes.find(item => item.id === id);
     }
-    onDropBlock(
-      id,
-      {
+    const conflictData = {
+      actionName: CHECK_APPT_CONFLICTS,
+      actionNameSuccess: CHECK_APPT_CONFLICTS_SUCCESS,
+      actionNameFailed: CHECK_APPT_CONFLICTS_FAILED,
+      conflictData: {
+        scheduleBlockId: id,
         date,
-        newTime,
+        fromTime: newTime,
+        toTime: newToTime,
         employeeId,
-        resourceId,
-        resourceOrdinal,
-        roomId,
-        roomOrdinal,
+        blockTypeId: 121,
       },
-      oldBlockTime,
-    );
+    };
+
+    this.props.checkConflictsBlock(conflictData).then(({ data: { conflicts } }) => {
+      if (conflicts && conflicts.length > 0) {
+        const params = {
+          date,
+          startTime: newTime,
+          endTime: newToTime,
+          conflicts,
+          handleGoBack: () => onDropBlock(
+            id,
+            {
+              date,
+              newTime,
+              employeeId,
+              resourceId,
+              resourceOrdinal,
+              roomId,
+              roomOrdinal,
+            },
+            oldBlockTime,
+          ),
+          headerProps: {
+            btnRightText: 'Move anyway',
+          },
+        };
+        this.props.navigation.navigate('Conflicts', params);
+      } else {
+        onDropBlock(
+          id,
+          {
+            date,
+            newTime,
+            employeeId,
+            resourceId,
+            resourceOrdinal,
+            roomId,
+            roomOrdinal,
+          },
+          oldBlockTime,
+        );
+      }
+    });
     this.hideAlert();
   }
 
@@ -754,7 +938,8 @@ export default class Calendar extends Component {
       const oldFromTime = moment(fromTime, 'HH:mm');
       const oldToTime = moment(toTime, 'HH:mm');
       const duration = oldToTime.diff(oldFromTime, 'minutes');
-      const newToTime = moment(newTimeMoment).add(duration, 'm').format('h:mma');
+      const newToTimeMoment = moment(newTimeMoment).add(duration, 'm');
+      const newToTime = newToTimeMoment.format('h:mma');
       const newTime = newTimeMoment.format('HH:mm');
       const date = dateMoment.format('YYYY-MM-DD');
       if (activeCard) {
@@ -766,7 +951,7 @@ export default class Calendar extends Component {
             btnLeftText: 'Cancel',
             btnRightText: 'Move',
             onPressRight: () => this.handleMove({
-              date, newTime, employeeId, id,
+              date, newTime, employeeId, id, newToTime: newToTimeMoment.format(DateTime.timeOld),
             }),
           },
         });
@@ -778,7 +963,7 @@ export default class Calendar extends Component {
             btnLeftText: 'Cancel',
             btnRightText: 'Move',
             onPressRight: () => this.handleMoveBlock({
-              date, newTime, employeeId, id,
+              date, newTime, employeeId, id, newToTime: newToTimeMoment.format(DateTime.timeOld),
             }),
           },
         });
@@ -965,7 +1150,7 @@ export default class Calendar extends Component {
       return (
         <BlockTime
           left={activeBlock.left}
-          width={activeBlock.left}
+          width={activeBlock.cardWidth}
           ref={(block) => { this.resizeBlock = block; }}
           panResponder={this.panResponder}
           block={activeBlock.data}
@@ -1036,7 +1221,7 @@ export default class Calendar extends Component {
       const cardHeight = (appointment.duration / apptGridSettings.step) * 30;
       return (
         <Card
-          cardHeight={cardHeight}
+          height={cardHeight}
           left={overlap.left}
           width={overlap.width}
           hiddenAddonsLength={hiddenAddons.length}

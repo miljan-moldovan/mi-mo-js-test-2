@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import moment, { isMoment } from 'moment';
-import { isNull } from 'lodash';
+import { isNull, find } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import { AppointmentTime } from '../../components/slidePanels/SalonNewAppointmentSlide';
@@ -90,56 +90,49 @@ const styles = StyleSheet.create({
     color: '#0C4699',
     textAlign: 'left',
   },
-
+  btnHeaderText: {
+    fontSize: 14,
+    color: 'white',
+    fontWeight: '500',
+  },
+  btnHeaderDisabledText: {
+    fontSize: 14,
+    color: '#000',
+    fontWeight: '500',
+  },
 });
 
-const conflicts = [
-  {
-    date: '2018-05-31T00:00:00',
-    employeeFullName: 'Tess Cibotti',
-    serviceDescription: '45 Minutes',
-    fromTime: '10:15:00',
-    toTime: '11:00:00',
-    duration: 2700,
-    price: 42,
-    overlap: '00:45:00',
-    reason: 'Overlap',
-    bookAnyway: false,
-    canBeSkipped: true,
-  },
-  {
-    date: '2018-05-31T00:00:00',
-    employeeFullName: 'Tess Cibotti',
-    serviceDescription: '15 Minutes',
-    fromTime: '11:45:00',
-    toTime: '12:15:00',
-    duration: 1800,
-    price: 20,
-    overlap: '00:15:00',
-    reason: 'Overlap',
-    bookAnyway: false,
-    canBeSkipped: true,
-  },
-];
-
 export default class ConflictsScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: 'Conflicts',
-    headerLeft: null,
-    headerRight: (
-      <SalonTouchableOpacity onPress={() => {
-        if (navigation.state.params.handleGoBack) {
-          navigation.state.params.handleGoBack();
-        }
-        navigation.goBack();
-      }}
-      >
-        <Text style={{ fontSize: 14, color: 'white' }}>
-          Done
-        </Text>
-      </SalonTouchableOpacity>
-    ),
-  });
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    const hasheaderProps = params && params.headerProps;
+    const onRightPress = () => {
+      if (navigation.state.params.handleGoBack) {
+        navigation.state.params.handleGoBack();
+      }
+      navigation.goBack();
+    };
+    const btnRightText = (hasheaderProps && params.headerProps.btnRightText) || 'Done';
+    const canPerformAction = !find(navigation.state.params.conflicts, ['canBeSkipped', false]);
+    return {
+      title: 'Conflicts',
+      subTitle: 'Test',
+      headerRight: (
+        <SalonTouchableOpacity onPress={onRightPress} disabled={!canPerformAction}>
+          <Text style={(canPerformAction && styles.btnHeaderText) || styles.btnHeaderDisabledText}>
+            {btnRightText}
+          </Text>
+        </SalonTouchableOpacity>
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity onPress={navigation.goBack}>
+          <Text style={styles.btnHeaderText}>
+            Cancel
+          </Text>
+        </SalonTouchableOpacity>
+      ),
+    };
+  }
 
   constructor(props) {
     super(props);
