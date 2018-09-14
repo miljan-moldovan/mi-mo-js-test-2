@@ -14,6 +14,7 @@ import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonModalPicker from '../../components/slidePanels/SalonModalPicker';
 import Colors from '../../constants/Colors';
+import DateTime from '../../constants/DateTime';
 import {
   InputButton,
   InputDivider,
@@ -229,6 +230,7 @@ export default class RoomAssignmentScreen extends React.Component {
       this.props.navigation.setParams({ canSave: false });
       const params = this.props.navigation.state.params || {};
       const employee = get(params, 'employee', null);
+      const date = get(params, 'date', null);
       const onSave = get(params, 'onSave', () => null);
       if (assignments.filter(itm => this.isIncompleteAssignment(itm)).length > 0) {
         return this.setState({
@@ -245,6 +247,7 @@ export default class RoomAssignmentScreen extends React.Component {
       }
       return this.props.roomAssignmentActions.putAssignments(
         get(employee, 'id', null),
+        moment(date).format(DateTime.serverDateTime),
         this.serializeAssignmentsForRequest(),
         () => {
           this.props.appointmentCalendarActions.setGridView();
@@ -282,8 +285,10 @@ export default class RoomAssignmentScreen extends React.Component {
     const { assignments } = this.state;
     const params = this.props.navigation.state.params || {};
     const date = params.date || moment();
+    const employee = get(params, 'employee', null);
     return assignments.filter(ass => this.isValidAssignment(ass)).map(ass => ({
       date: date.format('YYYY-MM-DD'),
+      employeeId: get(employee, 'id', null),
       fromTime: ass.startTime.format('HH:mm:ss'),
       toTime: ass.endTime.format('HH:mm:ss'),
       roomOrdinal: 0,
