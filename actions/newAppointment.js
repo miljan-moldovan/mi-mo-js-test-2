@@ -557,7 +557,6 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     remarks: get(appt, 'remarks', ''),
     existingApptIds: groupData.map(item => get(item, 'id', null)),
   };
-  debugger //eslint-disable-line
   if (isNumber(newState.client)) {
     return Client.getClient(newState.client)
       .then((client) => {
