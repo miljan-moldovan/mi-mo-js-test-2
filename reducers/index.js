@@ -7,7 +7,6 @@ import walkInReducer from './walkIn';
 import clientsReducer from './clients';
 import formCache from './formCache';
 import appointmentNotesReducer from './appointmentNotes';
-import walkoutReducer from './walkout';
 import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
 import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
 import { salonSearchHeaderReducer } from './searchHeader';
@@ -36,6 +35,7 @@ import storeReducer from './store';
 import rootDrawerNavigator from './rootDrawerNavigator';
 import rebookReducer from './rebookDialog';
 import { AT } from '../actions/login';
+import removalReasonTypesReducer from './removalReasonTypes';
 
 const appReducer = combineReducers({
   auth,
@@ -46,7 +46,6 @@ const appReducer = combineReducers({
   formCache,
   appointmentDetailsReducer,
   appointmentNotesReducer,
-  walkoutReducer,
   salonSearchHeaderReducer,
   checkinReducer,
   serviceReducer,
@@ -73,6 +72,7 @@ const appReducer = combineReducers({
   storeReducer,
   rootDrawerNavigator,
   rebookReducer,
+  removalReasonTypesReducer,
 });
 
 const rootReducer = (state, action) => {

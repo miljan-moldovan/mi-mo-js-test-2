@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { debounce, throttle } from 'lodash';
 
 import { connect } from 'react-redux';
 import WordHighlighter from '../../../../components/wordHighlighter';
@@ -76,6 +77,21 @@ const styles = StyleSheet.create({
 });
 
 class ClientListItem extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.handlePressClientThrottled = throttle(
+        this.handlePressClient,
+        2000, 
+        { 'trailing': false }
+    );
+  }
+  
+  handlePressClient = () => {
+    if (this.props && this.props.onPress){
+      this.props.onPress(this.props.client);
+    }
+  }
+
   render() {
     const phones = this.props.client.phones.map(elem => (elem.value ? elem.value : null)).filter(val => val).join(', ');
     const name = `${this.props.client.name} ${this.props.client.lastName}`;
@@ -85,9 +101,7 @@ class ClientListItem extends React.PureComponent {
       <TouchableHighlight
         style={styles.container}
         underlayColor="black"
-        onPress={() => {
-           this.props.onPress(this.props.client);
-        }}
+        onPress={this.handlePressClientThrottled}
       >
         <View style={styles.container}>
           <View style={styles.dataContainer}>

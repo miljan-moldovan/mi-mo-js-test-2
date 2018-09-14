@@ -1,5 +1,6 @@
 import { isFunction } from 'lodash';
 import moment from 'moment';
+import { showErrorAlert } from './utils';
 import { Store, Employees } from '../utilities/apiWrapper';
 
 export const GET_ROOMS = 'roomAssignment/GET_ROOMS';
@@ -38,19 +39,21 @@ const getAssignments = (date = moment(), employeeId, successCallback) => async (
       data: { assignments },
     });
   } catch (err) {
+    showErrorAlert(err);
     return dispatch({ type: GET_ASSIGNMENTS_FAILED });
   }
 };
 
-const putAssignments = (id, assignments, successCallback) => async (dispatch) => {
+const putAssignments = (id, date, assignments, successCallback) => async (dispatch) => {
   dispatch({ type: PUT_ASSIGNMENTS });
   try {
-    const res = await Employees.putRoomAssignments(id, assignments);
+    const res = await Employees.putRoomAssignments(id, date, assignments);
     if (isFunction(successCallback)) {
       successCallback();
     }
     return dispatch({ type: PUT_ASSIGNMENTS_SUCCESS });
   } catch (err) {
+    showErrorAlert(err);
     return dispatch({ type: PUT_ASSIGNMENTS_FAILED });
   }
 };
