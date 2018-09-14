@@ -253,9 +253,9 @@ const walkOutFailed = error => ({
   data: { error },
 });
 
-export const walkOut = (id, callback) => (dispatch) => {
+export const walkOut = (id, params, callback) => (dispatch) => {
   dispatch({ type: CLIENT_WALKED_OUT, data: { id } });
-  return QueueStatus.putWalkOut(id)
+  return QueueStatus.putWalkOut(id, params)
     .then((resp) => {
       dispatch(walkOutSuccess(resp)); callback(true);
     })
@@ -276,9 +276,9 @@ const noShowFailed = error => ({
   data: { error },
 });
 
-export const noShow = (id, callback) => (dispatch) => {
+export const noShow = (id, params, callback) => (dispatch) => {
   dispatch({ type: CLIENT_NO_SHOW, data: { id } });
-  return QueueStatus.putNoShow(id)
+  return QueueStatus.putNoShow(id, params)
     .then((resp) => {
       dispatch(noShowSuccess(resp)); callback(true);
     })

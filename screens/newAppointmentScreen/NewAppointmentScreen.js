@@ -456,7 +456,7 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   removeServiceAlert = (serviceId) => {
-    const { bookedByEmployee } = this.props.newAppointmentState;
+    const { mainEmployee } = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem(serviceId);
     const serviceTitle = get(get(serviceItem.service, 'service', null), 'name', '');
     const employeeName = `${get(bookedByEmployee, 'name', bookedByEmployee.firstName || '')} ${get(bookedByEmployee, 'lastName', '')[0]}.`;
@@ -608,16 +608,30 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   handleCancel = () => {
-    const { serviceItems, mainEmployee } = this.props.newAppointmentState;
+    const { editType, serviceItems, mainEmployee } = this.props.newAppointmentState;
     const firstService = serviceItems[0] ? get(serviceItems[0].service, 'service', null) : null;
     const serviceTitle = get(firstService, 'name', null);
     const employeeName = `${get(mainEmployee, 'name', get(mainEmployee, 'firstName', ''))} ${get(mainEmployee, 'lastName', '')[0]}.`;
-    const alertBody = serviceTitle ?
-      `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?` :
-      `Are you sure you want to discard this new appointment with ${employeeName}?`;
+    let alertBody = '';
+    let alertTitle = '';
+    switch (editType) {
+      case 'edit':
+        alertTitle = 'Discard Changes?';
+        alertBody = serviceTitle ?
+          `Are you sure you want to discard this appointment for service ${serviceTitle} w/ ${employeeName}?` :
+          `Are you sure you want to discard this appointment with ${employeeName}?`;
+        break;
+      case 'new':
+      default:
+        alertTitle = 'Discard New Appointment?';
+        alertBody = serviceTitle ?
+          `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?` :
+          `Are you sure you want to discard this new appointment with ${employeeName}?`;
+        break;
+    }
 
     Alert.alert(
-      'Discard New Appointment?',
+      alertTitle,
       alertBody,
       [
         { text: 'No, Thank You', onPress: () => null },
@@ -728,7 +742,7 @@ export default class NewAppointmentScreen extends React.Component {
     <ClientInfoButton
       client={this.props.newAppointmentState.client}
       navigation={this.props.navigation}
-      onDonePress={() => {}}
+      onDonePress={() => { }}
       iconStyle={{ fontSize: 20, color: '#115ECD' }}
       apptBook
       buttonStyle={{

@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash';
+
 import {
   GET_ROOMS,
   GET_ROOMS_FAILED,
@@ -18,7 +20,7 @@ const initialState = {
 
 const roomAssignmentReducer = (state = initialState, action) => {
   const { type, data } = action;
-  const newState = state;
+  const newState = cloneDeep(state);
   switch (type) {
     case GET_ROOMS:
       newState.isLoading = true;

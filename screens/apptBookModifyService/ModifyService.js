@@ -234,19 +234,13 @@ export default class ModifyApptServiceScreen extends React.Component {
   }
 
   handleChangeStartTime = (startTimeDateObj) => {
-    const { endTime } = this.state;
+    const { selectedService } = this.state;
     const startTime = moment(startTimeDateObj);
-    if (startTime.isAfter(endTime)) {
-      return this.setState({
-        toast: {
-          description: 'Start time can\'t be after end time!',
-          type: 'error',
-          btnRight: 'OK',
-        },
-      });
-    }
+    const duration = selectedService.maxDuration ? selectedService.maxDuration : selectedService.duration;
+    const endTime = moment(startTime).add(moment.duration(duration));
     return this.setState({
       startTime,
+      endTime,
       length: moment.duration(endTime.diff(startTime)),
     }, this.validate);
   }
