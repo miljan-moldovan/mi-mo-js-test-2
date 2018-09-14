@@ -53,7 +53,7 @@ class Card extends Component {
     return (moment.duration(appointment.gapTime).asMinutes() / apptGridSettings.step) * 30;
   }
 
-  getAfterGapHeight = () => this.props.cardHeight - this.afterTimeHeight - this.gapHeight;
+  getAfterGapHeight = () => this.props.height - this.getAfterTimeHeight() - this.getGapHeight();
 
   getCardProperties = () => {
     const {
@@ -112,11 +112,8 @@ class Card extends Component {
       goToAppointmentId,
       setGoToPositon,
     } = this.props;
-    const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
     const apptToTimeMoment = moment(toTime, 'HH:mm');
-    const apptGapTimeMoment = moment(gapTime, 'HH:mm');
-    const apptAfterTimeMoment = moment(afterTime, 'HH:mm');
     const startTimeMoment = moment(minStartTime, 'HH:mm');
     // calculate height and top
     const verticalPositions = [];
@@ -126,11 +123,11 @@ class Card extends Component {
       height = this.getAfterTimeHeight() - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'm') / step) * 30;
       verticalPositions.push({ height, top });
-      top += this.getGapHeight();
+      top += height + this.getGapHeight() + 1;
       height = this.getAfterGapHeight() - 1;
       verticalPositions.push({ height, top });
     } else {
-      height = this.props.cardHeight - 1;
+      height = this.props.height - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
       verticalPositions.push({ height, top });
     }
@@ -421,7 +418,8 @@ class Card extends Component {
                   style={[container,
                     {
                       width,
-                      height: isResizeCard && isResizeing ? this.state.height : height,
+                      height: index === verticalPositions.length - 1
+                        && isResizeCard && isResizeing ? this.state.height : height,
                       borderColor,
                       backgroundColor,
                       left,

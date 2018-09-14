@@ -11,7 +11,7 @@ import visbleBlocksSelector from '../../redux/selectors/blocksSelector';
 import { getVisibleAppointmentsDataSource } from '../../redux/selectors/appointmentSelector';
 import getAvailabilityWithGaps from '../../redux/selectors/availabilitySelector';
 import { apptGridSettingsSelector } from '../../redux/selectors/apptGridSettingsSelector';
-import { filteredProviders } from '../../redux/selectors/providersSelector';
+import { getConflicts, getConflictsBlocks } from '../../actions/conflicts';
 import * as LoginActions from '../../actions/login';
 
 const mapStateToProps = state => ({
@@ -37,6 +37,8 @@ const mapActionsToProps = dispatch => ({
   rootDrawerNavigatorAction: bindActionCreators({ ...rootDrawerNavigatorAction }, dispatch),
   blockTimeActions: bindActionCreators({ ...blockTimeActions }, dispatch),
   auth: bindActionCreators({ ...LoginActions }, dispatch),
+  checkConflicts: conflictData => dispatch(getConflicts(conflictData)),
+  checkConflictsBlock: conflictData => dispatch(getConflictsBlocks(conflictData)),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(AppointmentScreen);

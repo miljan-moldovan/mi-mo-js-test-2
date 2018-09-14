@@ -15,6 +15,7 @@ import * as Formula from './apiServicesResources/formula';
 import * as Session from './apiServicesResources/session';
 import { getEmployeePhoto } from './api';
 import * as Login from './apiServicesResources/login';
+import * as ScheduleBlocks from './apiServicesResources/scheduleBlocks';
 
 export {
   Appointment,
@@ -34,4 +35,5 @@ export {
   Formula,
   Session,
   Login,
+  ScheduleBlocks,
 };
