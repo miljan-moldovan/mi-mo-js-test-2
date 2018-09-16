@@ -115,6 +115,7 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
         </View>
       ) : (
         <ClientMerge
+          mainClient={this.props.navigation.state.params.clientId}
           data={this.props.mergeableClients}
           navigation={this.props.navigation}
           onChangeMergeClients={this.onChangeMergeClients}

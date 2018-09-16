@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
+import { TouchableOpacity, View, Text, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
   LinearGradient,
@@ -9,104 +9,16 @@ import Svg, {
 } from 'react-native-svg';
 import { get, times } from 'lodash';
 import SvgUri from 'react-native-svg-uri';
+import PropTypes from 'prop-types';
 
-import colors from '../../../../constants/appointmentColors';
-import multiProviderUri from '../../../../assets/svg/multi-provider-icon.svg';
-import Icon from '../../../UI/Icon';
-import Badge from '../../../SalonBadge';
-import ResizeButton from '../resizeButtons';
-import GroupBadge from '../../../SalonGroupBadge';
-
-const styles = StyleSheet.create({
-  clientText: {
-    fontFamily: 'Roboto',
-    fontSize: 12,
-    fontWeight: 'bold',
-    paddingHorizontal: 8,
-    color: '#2F3142',
-    flex: 1,
-    flexWrap: 'wrap',
-  },
-  serviceText: {
-    color: '#1D1E29',
-    fontFamily: 'Roboto',
-    fontSize: 11,
-    fontWeight: 'normal',
-    paddingHorizontal: 8,
-  },
-  header: {
-    height: 4,
-    borderRadius: 2,
-    width: '100%',
-  },
-  container: {
-    position: 'absolute',
-    borderRadius: 4,
-    borderWidth: 1,
-  },
-  stripesContainer: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-    borderRadius: 4,
-  },
-  fullSize: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  cardContent: {
-    flexDirection: 'row',
-    paddingHorizontal: 2,
-    marginTop: 2,
-  },
-  clientContainer: {
-    flexDirection: 'row',
-    paddingVertical: 1,
-    flexWrap: 'wrap',
-  },
-  textContainer: {
-    flex: 1,
-  },
-  resizePosition: {
-    left: -13,
-    bottom: -27,
-  },
-  multiProviderFix: {
-    marginTop: 4,
-  },
-  assistantContainer: {
-    position: 'absolute',
-    top: 6,
-    right: 4,
-    width: 15,
-    backgroundColor: 'rgba(47, 49, 66, 0.3)',
-    borderRadius: 2,
-    zIndex: 99,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  assistantText: {
-    fontSize: 10,
-    lineHeight: 10,
-    minHeight: 10,
-    textAlign: 'center',
-    margin: 0,
-    padding: 0,
-    color: '#fff',
-    transform: [{ rotate: '-90deg' }],
-  },
-  requestedStyle: {
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  badgesContainer: {
-    flexDirection: 'row',
-    marginTop: 2,
-  },
-});
+import colors from '../../../../../constants/appointmentColors';
+import multiProviderUri from '../../../../../assets/svg/multi-provider-icon.svg';
+import Icon from '../../../../UI/Icon';
+import Badge from '../../../../SalonBadge/index';
+import ResizeButton from '../../resizeButtons';
+import GroupBadge from '../../../../SalonGroupBadge/index';
+import { isCardWithGap } from '../../../../../utilities/helpers';
+import styles from './styles';
 
 class Card extends Component {
   constructor(props) {
@@ -121,20 +33,44 @@ class Card extends Component {
   shouldComponentUpdate(nextProps) {
     return (nextProps.activeCard || (nextProps.isInBuffer !== this.props.isInBuffer
       || nextProps.isActive !== this.props.isActive
-    || nextProps.cellWidth !== this.props.cellWidth ||
+    || nextProps.width !== this.props.width || nextProps.left !== this.props.left ||
       !nextProps.isLoading && this.props.isLoading ||
       (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
-      || nextProps.goToAppointmentId === nextProps.appointment.id || nextProps.displayMode !== this.props.displayMode;
+      || nextProps.goToAppointmentId === nextProps.appointment.id ||
+      nextProps.displayMode !== this.props.displayMode ||
+      nextProps.hiddenCard !== this.props.hiddenCard;
   }
 
+  getAfterTimeHeight = () => {
+    const { appointment, apptGridSettings } = this.props;
+
+    return (moment.duration(appointment.afterTime).asMinutes() / apptGridSettings.step) * 30
+  }
+
+  getGapHeight = () => {
+    const { appointment, apptGridSettings } = this.props;
+
+    return (moment.duration(appointment.gapTime).asMinutes() / apptGridSettings.step) * 30;
+  }
+
+  getAfterGapHeight = () => this.props.cardHeight - this.afterTimeHeight - this.gapHeight;
+
   getCardProperties = () => {
-    const { isBufferCard, activeCard, isActive, isResizeCard, isResizeing } = this.props;
+    const {
+      isBufferCard,
+      activeCard,
+      isActive,
+      isResizeCard,
+      isResizeing,
+      left,
+      width,
+    } = this.props;
     if (!isResizeCard && activeCard) {
-      const { cardWidth, verticalPositions, left } = activeCard;
+      const { verticalPositions } = activeCard;
       const opacity = isResizeing ? 0 : 1;
       return {
         left,
-        width: cardWidth,
+        width,
         zIndex: 999,
         verticalPositions,
         opacity,
@@ -143,8 +79,8 @@ class Card extends Component {
     }
     if (!activeCard && isBufferCard) {
       return {
-        left: 0,
-        width: 85,
+        left,
+        width,
         zIndex: 1,
         verticalPositions: [{ top: 0, height: 46 }],
         opacity: isActive ? 0.7 : 1,
@@ -161,25 +97,20 @@ class Card extends Component {
         room,
         id,
         gapTime,
-        afterTime
+        afterTime,
       },
       apptGridSettings: {
         step,
         minStartTime,
         weeklySchedule,
       },
-      appointments,
       cellWidth,
       displayMode,
       provider,
       selectedFilter,
-      headerData,
       isInBuffer,
-      selectedProvider,
       goToAppointmentId,
       setGoToPositon,
-      storeSchedule,
-      numberOfOverlaps,
     } = this.props;
     const dateTime12 = moment('00:00:00', 'HH:mm');
     const apptFromTimeMoment = moment(fromTime, 'HH:mm');
@@ -187,54 +118,24 @@ class Card extends Component {
     const apptGapTimeMoment = moment(gapTime, 'HH:mm');
     const apptAfterTimeMoment = moment(afterTime, 'HH:mm');
     const startTimeMoment = moment(minStartTime, 'HH:mm');
-    const gap = numberOfOverlaps * 8;
-    // calculate left position
-    const firstCellWidth = selectedFilter === 'providers' && selectedProvider === 'all' ? 130 : 0;
-    let index;
-    switch (selectedFilter) {
-      case 'rooms':
-        index = headerData.findIndex(item => item.id === room.id);
-        break;
-      case 'resources':
-        index = headerData.findIndex(item => item.id === resource.id);
-        break;
-      case 'deskStaff':
-      case 'providers':
-        if (selectedProvider === 'all') {
-          index = headerData.findIndex(item => item.id === employee.id);
-        } else if (displayMode === 'week') {
-          const apptDate = moment(date).format('YYYY-DD-MM');
-          index = headerData.findIndex(item => item.format('YYYY-DD-MM') === apptDate);
-        }
-        break;
-      default:
-        index = 0;
-        break;
-    }
-    const left = (index * cellWidth) + firstCellWidth + gap;
-    // calculate card width
-    const width = cellWidth - gap;
     // calculate height and top
     const verticalPositions = [];
     let height = null;
     let top = null;
-    if (gapTime !== '00:00:00') {
-      const firstBlockDuration = apptAfterTimeMoment.diff(dateTime12, 'm');
-      height = ((firstBlockDuration / step) * 30) - 1;
+    if (isCardWithGap(this.props.appointment)) {
+      height = this.getAfterTimeHeight() - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'm') / step) * 30;
       verticalPositions.push({ height, top });
-      const gapMinutes = apptGapTimeMoment.diff(dateTime12, 'm');
-      const newFromtTime = apptFromTimeMoment.clone().add(firstBlockDuration + gapMinutes, 'm');
-      top = (newFromtTime.diff(startTimeMoment, 'm') / step) * 30;
-      height = ((apptToTimeMoment.diff(newFromtTime, 'minutes') / step) * 30) - 1;
+      top += this.getGapHeight();
+      height = this.getAfterGapHeight() - 1;
       verticalPositions.push({ height, top });
     } else {
-      height = ((apptToTimeMoment.diff(apptFromTimeMoment, 'minutes') / step) * 30) - 1;
+      height = this.props.cardHeight - 1;
       top = (apptFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
       verticalPositions.push({ height, top });
     }
     // calculate zIndex
-    const zIndex = isResizeCard ? 999 : numberOfOverlaps + 1;
+    const zIndex = isResizeCard ? 999 : 1;
     // opacity
     const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
     // is emplyee active in cell time
@@ -443,7 +344,7 @@ class Card extends Component {
       zIndex,
       verticalPositions,
       opacity,
-      isActiveEmployeeInCellTime
+      isActiveEmployeeInCellTime,
     } = this.getCardProperties();
     const {
         client,
@@ -468,7 +369,8 @@ class Card extends Component {
       isResizeing,
       isResizeCard,
       isMultiBlock,
-      goToAppointmentId
+      goToAppointmentId,
+      hiddenCard,
     } = this.props;
     const lastIndex = verticalPositions.length - 1;
     if (isResizeCard && this.state.height === 0) {
@@ -481,7 +383,7 @@ class Card extends Component {
     const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
     let activeClientTextColor = badgeData.isCashedOut ? '#1DA314' : clientTextColor;
     activeClientTextColor = badgeData.isNoShow ? '#D0021B' : activeClientTextColor;
-    const borderStyle = isFirstAvailable ? 'dashed' : 'solid';
+    const borderStyle = isFirstAvailable || hiddenCard ? 'dashed' : 'solid';
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard ? [pan.getLayout(), pan2.getLayout()] : ['', ''];
@@ -501,6 +403,12 @@ class Card extends Component {
     if (!activeCard && isResizeing) {
       return null;
     }
+
+    let elementOpacity = opacity;
+    if (hiddenCard) {
+      elementOpacity = 0.1;
+    }
+
     return (
       <React.Fragment>
         {
@@ -509,7 +417,7 @@ class Card extends Component {
               return (
                 <Animated.View
                   {...panHandlers}
-                  ref={(view) => { this.cards.push(view);}}
+                  ref={(view) => { this.cards.push(view); }}
                   style={[container,
                     {
                       width,
@@ -520,7 +428,7 @@ class Card extends Component {
                       top,
                       borderStyle,
                       zIndex,
-                      opacity,
+                      opacity: elementOpacity,
                     },
                     positions[index],
                     highlightCard,
@@ -576,8 +484,6 @@ class Card extends Component {
                       color={colors[color].dark}
                       position={styles.resizePosition}
                       height={height}
-                      calendarMeasure={this.props.calendarMeasure}
-                      calendarOffset={this.props.calendarOffset}
                       onScrollY={this.props.onScrollY}
                       isDisabled={isResizeing}
                     /> : null }
@@ -589,5 +495,27 @@ class Card extends Component {
     );
   }
 }
+
+Card.defaultProps = {
+  hiddenCard: false,
+  calendarMeasure: {
+    width: 0,
+    height: 0,
+  },
+  onScrollY: () => {},
+  onPress: () => {},
+  onResize: () => {},
+};
+
+Card.propTypes = {
+  onResize: PropTypes.func,
+  hiddenCard: PropTypes.bool,
+  calendarMeasure: PropTypes.shape({
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+  }),
+  onScrollY: PropTypes.func,
+  onPress: PropTypes.func,
+};
 
 export default Card;

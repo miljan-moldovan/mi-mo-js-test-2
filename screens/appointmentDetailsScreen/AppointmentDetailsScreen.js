@@ -9,13 +9,14 @@ import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
 
+import AppointmentDetails from './components/AppointmentDetails';
+import ClientFormulas from '../clientInfoScreen/components/clientFormulas';
+import ClientNotes from '../clientInfoScreen/components/clientNotes';
+import ClientInfoButton from '../../components/ClientInfoButton';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import { Employees } from '../../utilities/apiWrapper';
-import AppointmentDetails from './components/AppointmentDetails';
-import ClientFormulas from '../clientInfoScreen/components/clientFormulas';
-import ClientNotes from '../clientInfoScreen/components/clientNotes';
 import styles from './styles';
 
 const initialLayout = {
@@ -26,10 +27,10 @@ const initialLayout = {
 export default class AppointmentDetailsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    const { appointment = null, handleRightClick = (() => { }), handleSave = (() => { }) } = params;
+    const { appointment = null, handleSave = (() => {}) } = params;
     const client = get(appointment, 'client', null);
     const title = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
-    const saveButtonStyle = { marginLeft: 5 };
+    const saveButtonStyle = { marginLeft: 10 };
     return ({
       title,
       headerLeft: (
@@ -44,19 +45,19 @@ export default class AppointmentDetailsScreen extends React.Component {
       ),
       headerRight: (
         <React.Fragment>
-          <SalonTouchableOpacity onPress={handleRightClick}>
-            <FontAwesome style={{ fontSize: 18, color: '#fff' }}>{Icons.infoCircle}</FontAwesome>
-          </SalonTouchableOpacity>
+          <ClientInfoButton
+            client={client}
+            navigation={navigation}
+            onDonePress={() => { }}
+            buttonStyle={styles.rightButton}
+            apptBook={false}
+            iconStyle={{ fontSize: 18, color: 'white' }}
+          />
           <SalonTouchableOpacity
             onPress={handleSave}
             style={saveButtonStyle}
           >
-            <Icon
-              name="save"
-              size={18}
-              color="white"
-              type="solid"
-            />
+            <Text style={{ fontSize: 14, lineHeight: 22, color: 'white' }}>Done</Text>
           </SalonTouchableOpacity>
         </React.Fragment>
       ),
@@ -77,6 +78,7 @@ export default class AppointmentDetailsScreen extends React.Component {
       handleSave: this.handleSave,
       handleRightClick: this.goToClientInfo,
     });
+    this.props.queueDetailActions.setAppointment(get(this.params.appointment, 'id', null));
   }
 
   get params() {
@@ -126,7 +128,6 @@ export default class AppointmentDetailsScreen extends React.Component {
     0: () => (
       <AppointmentDetails
         navigation={this.props.navigation}
-        appointment={this.params.appointment}
         isWaiting={this.props.navigation.state.params.isWaiting}
         onPressSummary={this.props.navigation.state.params.onPressSummary}
       />

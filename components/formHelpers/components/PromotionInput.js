@@ -39,17 +39,17 @@ export default class PromotionInput extends React.Component {
 
   render() {
     const {
-      label,
-      placeholder,
+      label = 'Promotion',
+      placeholder = 'Select Promotion',
       selectedPromotion,
     } = this.props;
     const value = selectedPromotion ? selectedPromotion.name : null;
     return (
       <InputButton
         value={value}
-        label={label || 'Product'}
+        label={label}
         onPress={this.handlePress}
-        placeholder={placeholder || 'Select Product'}
+        placeholder={placeholder}
       />
     );
   }
@@ -58,7 +58,7 @@ PromotionInput.propTypes = {
   ...propTypesObj,
   mode: PropTypes.oneOf(['service', 'product']),
   navigate: PropTypes.func.isRequired,
-  selectedPromotion: PropTypes.any.isRequired,
+  selectedPromotion: PropTypes.node.isRequired,
   onChangePromotion: PropTypes.func.isRequired,
 };
 PromotionInput.defaultProps = {

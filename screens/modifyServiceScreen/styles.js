@@ -18,6 +18,11 @@ export default StyleSheet.create({
     lineHeight: 22,
     color: 'white',
   },
+  subTitleText: {
+    fontSize: 10,
+    lineHeight: 12,
+    color: 'white',
+  },
   cancelButton: { fontSize: 14, color: 'white' },
   rightButtonText: {
     fontSize: 14,

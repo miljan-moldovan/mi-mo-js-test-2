@@ -122,7 +122,7 @@ class SchedulePicker extends React.Component {
           style={styles.noPadding}
         />
         {isOpen ? this.renderPicker() : null}
-      </React.Fragment >
+      </React.Fragment>
     );
   }
 }

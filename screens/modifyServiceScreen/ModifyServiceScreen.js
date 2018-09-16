@@ -16,6 +16,7 @@ import {
   InputLabel,
 } from '../../components/formHelpers';
 
+import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 
@@ -23,6 +24,7 @@ export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     // const canSave = params.canSave || false;
+    const clientName = params.clientName || '';
     const canSave = true;
     return {
       tabBarVisible: false,
@@ -30,6 +32,9 @@ export default class ModifyServiceScreen extends React.Component {
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>
             {'serviceItem' in params ? 'Modify Service' : 'Add Service'}
+          </Text>
+          <Text style={styles.subTitleText}>
+            {clientName}
           </Text>
         </View>
       ),
@@ -68,7 +73,7 @@ export default class ModifyServiceScreen extends React.Component {
     const employee = get(serviceItem, 'employee', null);
     const promotion = get(serviceItem, 'promotion', null);
     const price = get(service, 'price', 0);
-    const isProviderRequested = get(service, 'isProviderRequested', true);
+    const isProviderRequested = get(serviceItem, 'isProviderRequested', true);
     return {
       price,
       service: {
@@ -77,9 +82,41 @@ export default class ModifyServiceScreen extends React.Component {
       },
       employee,
       promotion,
-      discount: 0,
       isProviderRequested,
     };
+  }
+
+  getDiscountAmount = () => {
+    const { promotion } = this.state;
+    switch (get(promotion, 'promotionType', null)) {
+      case PromotionType.ServiceProductPercentOff:
+      case PromotionType.GiftCardPercentOff:
+        return `${get(promotion, 'serviceDiscountAmount', 0)} %`;
+      case PromotionType.ServiceProductDollarOff:
+      case PromotionType.GiftCardDollarOff:
+      case PromotionType.ServiceProductFixedPrice:
+        return `$ ${get(promotion, 'serviceDiscountAmount', 0)}`;
+      default: return '';
+    }
+  }
+
+  calculatePercentFromPrice = (price, percent) =>
+    Number((percent ? price - percent / 100 * price : price).toFixed(2))
+
+  calculatePriceDiscount = (promo, prop, price = null) => {
+    if (price === null) { return 0; }
+
+    switch (get(promo, 'promotionType', null)) {
+      case PromotionType.ServiceProductPercentOff:
+      case PromotionType.GiftCardPercentOff:
+        return this.calculatePercentFromPrice(price, get(promo, prop, 0));
+      case PromotionType.ServiceProductDollarOff:
+      case PromotionType.GiftCardDollarOff:
+        return price - get(promo, prop, 0);
+      case PromotionType.ServiceProductFixedPrice:
+        return get(promo, prop, 0);
+      default: return price;
+    }
   }
 
   cancelButton = () => ({
@@ -100,12 +137,14 @@ export default class ModifyServiceScreen extends React.Component {
       service,
       employee,
       promotion,
+      isProviderRequested,
     } = this.state;
     const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
     onSave({
       service,
       employee,
       promotion,
+      isProviderRequested,
     });
     this.props.navigation.goBack();
   }
@@ -116,7 +155,7 @@ export default class ModifyServiceScreen extends React.Component {
 
   handleChangePromotion = promotion => this.setState({ promotion }, this.validate)
 
-  handleChangeRequested = isProviderRequested => this.setState({ isProviderRequested })
+  handleChangeRequested = isProviderRequested => this.setState({ isProviderRequested: !isProviderRequested })
 
   render() {
     const { navigation: { navigate } } = this.props;
@@ -175,8 +214,8 @@ export default class ModifyServiceScreen extends React.Component {
             onChange={this.handleChangePromotion}
           />
           <InputDivider />
-          <InputLabel label="Discount" value={discount} />
-          <InputLabel label="Price" value={`$ ${price}`} />
+          <InputLabel label="Discount" value={this.getDiscountAmount()} />
+          <InputLabel label="Price" value={`$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', service.price || 0)}`} />
         </InputGroup>
         <SectionDivider />
         {

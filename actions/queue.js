@@ -1,4 +1,4 @@
-import { QueueStatus, Queue } from '../utilities/apiWrapper';
+import { QueueStatus, Queue, Employees } from '../utilities/apiWrapper';
 import { showErrorAlert } from './utils';
 
 export const QUEUE = 'queue/QUEUE';
@@ -51,6 +51,39 @@ export const PUT_QUEUE_FAILED = 'queue/PUT_QUEUE_FAILED';
 export const GET_QUEUE_STATE = 'queue/GET_QUEUE_STATE';
 export const GET_QUEUE_STATE_SUCCESS = 'queue/GET_QUEUE_STATE_SUCCESS';
 export const GET_QUEUE_STATE_FAILED = 'queue/GET_QUEUE_STATE_FAILED';
+export const SET_LOADING = 'queue/SET_LOADING';
+export const QUEUE_EMPLOYEES = 'queue/QUEUE_EMPLOYEES';
+export const QUEUE_EMPLOYEES_SUCCESS = 'queue/QUEUE_EMPLOYEES_SUCCESS';
+export const QUEUE_EMPLOYEES_FAILED = 'queue/QUEUE_EMPLOYEES_FAILED';
+
+export const setLoading = loading => ({
+  type: SET_LOADING,
+  data: { loading },
+});
+
+const getQueueEmployeesSuccess = data => ({
+  type: QUEUE_EMPLOYEES_SUCCESS,
+  data: { data },
+});
+
+const getQueueEmployeesFailed = error => ({
+  type: QUEUE_EMPLOYEES_FAILED,
+  data: { error },
+});
+
+
+export const getQueueEmployees = callback => (dispatch) => {
+  dispatch({ type: QUEUE_EMPLOYEES });
+
+  return Employees.getQueueEmployees()
+    .then((resp) => {
+      dispatch(getQueueEmployeesSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch(getQueueEmployeesFailed(error)); callback(false, error);
+    });
+};
 
 
 const startServiceSuccess = data => ({
@@ -78,16 +111,32 @@ export const startService = (id, serviceData, callback) => (dispatch) => {
 };
 
 
-export const receiveQueue = () => async (dispatch: Object => void) => {
+const receiveQueueSuccess = resp => ({
+  type: QUEUE_RECEIVED,
+  data: { resp },
+});
+
+const receiveQueueFailed = error => ({
+  type: QUEUE_FAILED,
+  data: { error },
+});
+
+
+export const receiveQueue = (callback, showError) => (dispatch) => {
   dispatch({ type: QUEUE });
-  try {
-    const data = await Queue.getQueue();
-    dispatch({ type: QUEUE_RECEIVED, data });
-  } catch (error) {
-    showErrorAlert(error);
-    dispatch({ type: QUEUE_FAILED, error });
-  }
+
+  return Queue.getQueue()
+    .then((resp) => {
+      dispatch(receiveQueueSuccess(resp)); callback(true);
+    })
+    .catch((error) => {
+      if (showError) {
+        showErrorAlert(error);
+      }
+      dispatch(receiveQueueFailed(error)); callback(false, error);
+    });
 };
+
 export function deleteQueueItem(id) {
   return {
     type: QUEUE_DELETE_ITEM,

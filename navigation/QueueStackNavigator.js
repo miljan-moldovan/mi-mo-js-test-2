@@ -246,6 +246,19 @@ export default (QueueStackNavigator = StackNavigator(
       screen: ClientsScreen,
       navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
     },
+    ModalWalkIn: {
+      screen: WalkInScreen,
+      navigationOptions: {
+        headerStyle: {
+          backgroundColor: '#115ECD',
+          paddingBottom: 10,
+          paddingHorizontal: 10,
+        },
+        tabBarVisible: false,
+        headerMode: 'screen',
+        gesturesEnabled: false,
+      },
+    },
   },
   {
     navigationOptions: {

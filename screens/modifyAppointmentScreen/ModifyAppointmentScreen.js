@@ -35,6 +35,7 @@ import SalonCard from '../../components/SalonCard';
 import SalonAvatar from '../../components/SalonAvatar';
 import Icon from '../../components/UI/Icon';
 import { getEmployeePhoto } from '../../utilities/apiWrapper';
+import ClientInfoButton from '../../components/ClientInfoButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -300,10 +301,6 @@ export default class ModifyAppointmentScreen extends React.Component {
     ];
   }
 
-  goToClientInfo = (client) => {
-    this.props.navigation.navigate('ClientInfo', { client, apptBook: true });
-  }
-
   shouldUpdateClientInfo = async () => {
     const {
       clientEmail,
@@ -380,22 +377,16 @@ export default class ModifyAppointmentScreen extends React.Component {
         type="regular"
       />
     </SalonTouchableOpacity>,
-    <SalonTouchableOpacity
-      key={Math.random().toString()}
-      onPress={() => {
-        this.goToClientInfo(this.state.selectedClient);
-      }}
-      style={{
+    <ClientInfoButton
+      client={this.state.selectedClient}
+      navigation={this.props.navigation}
+      onDonePress={() => {}}
+      iconStyle={{ fontSize: 20, color: '#115ECD' }}
+      apptBook
+      buttonStyle={{
         marginHorizontal: 5,
       }}
-    >
-      <Icon
-        name="infoCircle"
-        size={20}
-        color="#115ECD"
-        type="regular"
-      />
-    </SalonTouchableOpacity>,
+    />,
   ]);
 
   render() {

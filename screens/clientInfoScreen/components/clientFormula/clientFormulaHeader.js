@@ -109,6 +109,8 @@ export default class ClientFormulaHeader extends React.Component {
   render() {
     const { params } = this.props.rootProps.navigation.state;
     const canSave = params.canSave || false;
+    const title = params.actionType === 'update' ? 'Edit Formula' : 'New Formula';
+
 
     return (<View style={styles.header}>
 
@@ -123,7 +125,7 @@ export default class ClientFormulaHeader extends React.Component {
         </View>
       </SalonTouchableOpacity>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>New Formula</Text>
+        <Text style={styles.titleText}>{title}</Text>
       </View>
       <SalonTouchableOpacity
         wait={3000}

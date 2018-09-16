@@ -17,7 +17,7 @@ import {
   SectionTitle,
   InputText,
 } from '../../components/formHelpers';
-import SalonTimePicker from '../../components/formHelpers/components/SalonTimePicker';
+import SchedulePicker from '../../components/formHelpers/components/SchedulePicker';
 import styles from './styles';
 import ScheduleTypesEnum from '../../constants/ScheduleTypes';
 
@@ -95,16 +95,6 @@ class EditScheduleScreen extends React.Component {
     const employee = params.employee || { name: 'First', lastName: 'Available' };
     const date = params.date || moment();
     const formatedDate = moment(date).format('YYYY-MM-DD');
-
-
-    const { storeInfo, scheduleExceptions } = this.props.storeState;
-
-    let storeTodaySchedule = storeInfo ?
-      storeInfo.weeklySchedules[moment(date).isoWeekday() - 1] : null;
-    const exception = scheduleExceptions.length > 0 ?
-      filter(scheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(moment(date), 'day'))[0] : null;
-    storeTodaySchedule = exception || storeTodaySchedule;
-    this.setState({ storeTodaySchedule });
 
     this.props.employeeScheduleActions.getEmployeeScheduleException(employee.id, formatedDate, (result) => {
       if (result && this.props.employeeScheduleState.employeeScheduleException.length > 0) {
@@ -284,32 +274,10 @@ class EditScheduleScreen extends React.Component {
       }, this.checkCanSave);
     }
 
-    checkInsideStoreSchedule = (scheduleTime) => {
-      const format = 'hh:mm:ss';
-
-      const start1 = moment(this.state.storeTodaySchedule.start1, format);
-      const end1 = moment(this.state.storeTodaySchedule.end1, format);
-
-      const start2 = moment(this.state.storeTodaySchedule.start2, format);
-      const end2 = moment(this.state.storeTodaySchedule.end2, format);
-
-      const timeString = moment(scheduleTime).format(format);
-      const time = moment(timeString, format);
-
-      return time.isBetween(start1, end1) || time.isSame(start1) || time.isSame(end1)
-      || time.isBetween(start2, end2) || time.isSame(start2) || time.isSame(end2);
-    }
-
-
     pickerToogleStartTimeOne = () => {
       if (this.state.startTimeScheduleOnePickerOpen) {
         if (this.state.startTimeScheduleOne.isAfter(this.state.endTimeScheduleOne)) {
           return alert("Start time can't be after end time");
-        }
-
-        const isValid = this.checkInsideStoreSchedule(this.state.startTimeScheduleOne);
-        if (!isValid) {
-          return alert('Selected time must be inside the salon time schedule');
         }
       }
 
@@ -320,12 +288,6 @@ class EditScheduleScreen extends React.Component {
       if (this.state.endTimeScheduleOnePickerOpen) {
         if (this.state.startTimeScheduleOne.isAfter(this.state.endTimeScheduleOne)) {
           return alert("Start time can't be after end time");
-        }
-
-
-        const isValid = this.checkInsideStoreSchedule(this.state.endTimeScheduleOne);
-        if (!isValid) {
-          return alert('Selected time must be inside the salon time schedule');
         }
       }
 
@@ -339,11 +301,6 @@ class EditScheduleScreen extends React.Component {
         } else if (this.state.endTimeScheduleOne.isAfter(this.state.startTimeScheduleTwo)) {
           return alert("Start time schedule two can't be before end time schedule one");
         }
-
-        const isValid = this.checkInsideStoreSchedule(this.state.startTimeScheduleTwo);
-        if (!isValid) {
-          return alert('Selected time must be inside the salon time schedule');
-        }
       }
 
       this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen });
@@ -353,11 +310,6 @@ class EditScheduleScreen extends React.Component {
       if (this.state.endTimeScheduleTwoPickerOpen) {
         if (this.state.startTimeScheduleTwo.isAfter(this.state.endTimeScheduleTwo)) {
           return alert("Start time can't be after end time");
-        }
-
-        const isValid = this.checkInsideStoreSchedule(this.state.endTimeScheduleTwo);
-        if (!isValid) {
-          return alert('Selected time must be inside the salon time schedule');
         }
       }
       this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen });
@@ -394,20 +346,10 @@ class EditScheduleScreen extends React.Component {
           endTimeScheduleOne.isAfter(startTimeScheduleOne);
         }
 
-        if (canSave) {
-          canSave = this.checkInsideStoreSchedule(startTimeScheduleOne) &&
-          this.checkInsideStoreSchedule(endTimeScheduleOne);
-        }
-
         if (!!startTimeScheduleTwo && !!endTimeScheduleTwo) {
           if (startTimeScheduleTwo.length > 0 && endTimeScheduleTwo.length > 0) {
             canSave = endTimeScheduleTwo.isAfter(startTimeScheduleTwo) &&
             startTimeScheduleTwo.isAfter(endTimeScheduleOne);
-          }
-
-          if (canSave) {
-            canSave = this.checkInsideStoreSchedule(startTimeScheduleTwo) &&
-            this.checkInsideStoreSchedule(endTimeScheduleTwo);
           }
         } else if ((!!endTimeScheduleTwo && startTimeScheduleTwo === '')
           ||
@@ -426,6 +368,9 @@ class EditScheduleScreen extends React.Component {
         startTimeScheduleTwo,
         endTimeScheduleTwo,
       } = this.state;
+
+      const params = this.props.navigation.state.params || {};
+      const date = params.date || moment();
 
       return (
         <View style={styles.container}>
@@ -451,7 +396,8 @@ class EditScheduleScreen extends React.Component {
             <React.Fragment>
               <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle} />
               <InputGroup>
-                <SalonTimePicker
+                <SchedulePicker
+                  date={date}
                   format="hh:mm A"
                   label="Start"
                   noIcon
@@ -461,7 +407,8 @@ class EditScheduleScreen extends React.Component {
                   toggle={this.pickerToogleStartTimeOne}
                 />
                 <InputDivider />
-                <SalonTimePicker
+                <SchedulePicker
+                  date={date}
                   format="hh:mm A"
                   label="Ends"
                   noIcon
@@ -473,7 +420,8 @@ class EditScheduleScreen extends React.Component {
               </InputGroup>
               <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle} />
               <InputGroup>
-                <SalonTimePicker
+                <SchedulePicker
+                  date={date}
                   format="hh:mm A"
                   label="Start"
                   noIcon
@@ -483,7 +431,8 @@ class EditScheduleScreen extends React.Component {
                   toggle={this.pickerToogleStartTimeTwo}
                 />
                 <InputDivider />
-                <SalonTimePicker
+                <SchedulePicker
+                  date={date}
                   format="hh:mm A"
                   label="Ends"
                   noIcon

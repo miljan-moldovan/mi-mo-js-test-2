@@ -85,12 +85,15 @@ class QueueScreen extends React.Component {
     ],
     colorAnimActive: new Animated.Value(0),
     colorAnimInactive: new Animated.Value(0),
+    receiveQueueRetries: 0,
   }
 
   componentWillMount() {
     // setInterval(this.props.actions.receiveQueue, 15000);
     // setInterval(this.props.actions.getQueueState, 5000);
     this.loadQueueData();
+
+    this.props.actions.getQueueEmployees();
     this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
     this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
@@ -115,13 +118,22 @@ class QueueScreen extends React.Component {
     this.setState({ index: route.key }, this.animateText);
   }
 
-  loadQueueData = () => {
+  loadQueueData = (showError = false) => {
     this.props.actions.getQueueState();
-    this.props.actions.receiveQueue();
+    this.props.actions.receiveQueue(this.receiveQueueFinished, showError);
   }
 
-  refreshData = () => {
-    this.props.actions.receiveQueue();
+
+  receiveQueueFinished = (result, error) => {
+    if (!result && error) {
+      setTimeout(() => {
+        const showError = this.state.receiveQueueRetries > 1;
+        this.loadQueueData(showError, showError);
+        this.setState({ receiveQueueRetries: this.state.receiveQueueRetries + 1 });
+      }, 300);
+    } else {
+      this.setState({ receiveQueueRetries: 0 });
+    }
   }
 
   handleSearchClients = () => {
@@ -196,7 +208,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('WalkIn', { newAppointment, loadQueueData: this.loadQueueData });
+    this.props.navigation.navigate('ModalWalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {
@@ -479,6 +491,7 @@ QueueScreen.propTypes = {
     getBlockTimesReasons: PropTypes.func.isRequired,
     receiveQueue: PropTypes.any.isRequired,
     getQueueState: PropTypes.any.isRequired,
+    getQueueEmployees: PropTypes.any.isRequired,
   }).isRequired,
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,

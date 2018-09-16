@@ -94,6 +94,7 @@ class ServiceSection extends Component {
           rootStyle={styles.providerRootStyle}
           selectedProvider={service.provider}
           placeholder="Provider"
+          queueList
           navigate={this.props.navigate}
           headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
           onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}

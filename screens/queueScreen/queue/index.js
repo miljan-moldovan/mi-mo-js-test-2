@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import {
   Text,
@@ -95,6 +94,7 @@ onChangeFilterResultCount = () => {
   }
 }
 
+
 searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
   const { data } = this.props;
   const prevCount = this.state.data.length;
@@ -175,7 +175,7 @@ getprogressMaxMinutes = (item) => {
   return progressMaxMinutes;
 }
 
-getLabelForItem = (item) => {
+getLabelForItem = (item, customStyle = {}) => {
   switch (item.status) {
     case QUEUE_ITEM_FINISHED:
       return (
@@ -233,12 +233,21 @@ getLabelForItem = (item) => {
           estimatedTime={progressMaxMinutes}
           processTime={processMinutes}
           itemStatus={item.status}
-          style={styles.circularCountdown}
+          style={[styles.circularCountdown, customStyle]}
           queueType={item.queueType}
         />
       );
   }
 }
+
+
+hideAll = () => {
+  this.props.setLoading(true);
+  setTimeout(() => {
+    this.hideDialog();
+  }, 500);
+};
+
 
 handlePress = (item) => {
   if (!this.state.isVisible) {
@@ -253,15 +262,18 @@ handlePress = (item) => {
 
 handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
-  this.hideDialog();
   if (appointment !== null) {
-    this.props.navigation.navigate('AppointmentDetails', { appointment, isWaiting, onPressSummary });
+    this.hideDialog();
+    const getLabel = style => this.getLabelForItem(appointment, style);
+    this.props.navigation.navigate('AppointmentDetails', {
+      appointment, getLabel, isWaiting, onPressSummary,
+    });
   }
 }
 
 handlePressRebook = () => {
   const { appointment } = this.state;
-  this.hideDialog();
+  this.hideAll();
   if (appointment !== null) {
     this.props.navigation.navigate('RebookDialog', {
       appointment,
@@ -273,12 +285,12 @@ handlePressRebook = () => {
 handlePressCheckIn = (isActiveCheckin) => {
   const { appointment } = this.state;
   if (isActiveCheckin) {
+    this.hideAll();
     this.props.checkInClient(appointment.id, this.props.loadQueueData);
   } else {
+    this.hideAll();
     this.props.uncheckInClient(appointment.id, this.props.loadQueueData);
   }
-
-  this.hideDialog();
 }
 
 handlePressWalkOut = (isActiveWalkOut) => {
@@ -286,13 +298,12 @@ handlePressWalkOut = (isActiveWalkOut) => {
 
   if (isActiveWalkOut) {
     if (appointment !== null) {
+      this.hideDialog();
       this.props.navigation.navigate('Walkout', {
         appointment,
         ...this.props,
       });
     }
-
-    this.hideDialog();
   } else {
     const { client } = appointment;
 
@@ -302,12 +313,12 @@ handlePressWalkOut = (isActiveWalkOut) => {
       'No show',
       `Are you sure you want to mark ${fullName} as a no show?`,
       [
-        { text: 'No, cancel', onPress: () => { this.hideDialog(); }, style: 'cancel' },
+        { text: 'No, cancel', onPress: () => { }, style: 'cancel' },
         {
           text: 'Yes, I’m sure',
           onPress: () => {
+            this.hideAll();
             this.props.noShow(appointment.id, this.props.loadQueueData);
-            this.hideDialog();
           },
         },
       ],
@@ -320,12 +331,12 @@ handleReturning = (returned) => {
   const { appointment } = this.state;
 
   if (returned) {
+    this.hideAll();
     this.props.returned(appointment.id, this.props.loadQueueData);
   } else {
+    this.hideAll();
     this.props.returnLater(appointment.id, this.props.loadQueueData);
   }
-
-  this.hideDialog();
 }
 
 cancelButton = () => ({
@@ -335,24 +346,27 @@ cancelButton = () => ({
   },
 })
 
-checkHasProvider = (ignoreAutoAssign) => {
+checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { appointment } = this.state;
   const service = appointment.services[0];
 
   const { settings } = this.props.settings;
 
-  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' }).settingValue;
+  let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
+  autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+    autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
 
 
   if (service.employee || autoAssignFirstAvailableProvider) {
+    this.hideAll();
     this.handleStartService();
-    this.props.navigation.navigate('Main');
+    if (redirectAfterMerge) {
+      this.props.navigation.navigate('Main');
+    }
   } else {
-    this.hideDialog();
-
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
-
+    this.hideDialog();
 
     this.props.navigation.navigate('Providers', {
       headerProps: { title: 'Providers', ...this.cancelButton() },
@@ -360,6 +374,7 @@ checkHasProvider = (ignoreAutoAssign) => {
       filterByService: false,
       showFirstAvailable: false,
       checkProviderStatus: true,
+      queueList: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
   }
@@ -369,24 +384,30 @@ checkHasProvider = (ignoreAutoAssign) => {
 checkHasEmail = () => {
   const { appointment } = this.state;
 
+
   const { client } = appointment;
 
   const { settings } = this.props.settings;
 
+
   this.setState({ email: '' });
-  const forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' }).settingValue;
+  let forceMissingQueueEmail = _.find(settings, { settingName: 'ForceMissingQueueEmail' });
+  forceMissingQueueEmail = forceMissingQueueEmail ? forceMissingQueueEmail.settingValue : false;
   if (forceMissingQueueEmail && (!client.email || !client.email.trim())) {
     this.hideDialog();
+    this.props.setLoading(true);
     setTimeout(this.showEmailModal, 500);
   } else {
+    this.hideAll();
     this.checkShouldMerge();
   }
 }
 
 checkShouldMerge = () => {
   const { appointment } = this.state;
-
+  this.props.setLoading(true);
   const { client } = appointment;
+
 
   this.props.clientsActions.getMergeableClients(client.id, (response) => {
     if (response) {
@@ -395,10 +416,12 @@ checkShouldMerge = () => {
         this.checkHasProvider(false);
       } else {
         this.hideDialog();
+
+
         this.props.navigation.navigate('ClientMerge', {
           clientId: client.id,
-          onPressBack: () => { this.checkHasProvider(false); },
-          onDismiss: () => { this.checkHasProvider(false); },
+          onPressBack: () => { this.checkHasProvider(false, true); },
+          onDismiss: () => { this.checkHasProvider(false, true); },
         });
       }
     } else {
@@ -435,37 +458,31 @@ handleStartService = () => {
     deletedServiceEmployeeIds: [],
   };
 
-
+  this.hideAll();
   this.props.startService(appointment.id, serviceData, (response, error) => {
     if (response) {
+      this.hideAll();
       this.props.loadQueueData();
     }
-    // else {
-    //   this.checkHasProvider(true);
-    // }
-    //
   });
-
-  this.hideDialog();
 }
 
 handleToWaiting = () => {
   const { appointment } = this.state;
-
+  this.hideAll();
   this.props.toWaiting(appointment.id, this.props.loadQueueData);
-  this.hideDialog();
 }
 
 handlePressFinish = (finish) => {
   const { appointment } = this.state;
 
   if (!finish) {
+    this.hideAll();
     this.props.undoFinishService(appointment.id, this.props.loadQueueData);
   } else {
+    this.hideAll();
     this.props.finishService(appointment.id, this.props.loadQueueData);
   }
-
-  this.hideDialog();
 }
 
 hideDialog = () => {

@@ -9,6 +9,7 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import Icon from '../../../components/UI/Icon';
 import { Navigation } from '../../../models/propTypes';
 import { Client, AppointmentBook } from '../../../utilities/apiWrapper';
+import ClientInfoButton from '../../../components/ClientInfoButton';
 
 const query = {
   SortOrder: 1,
@@ -38,12 +39,14 @@ class ShowApptScreen extends React.Component {
         </View>),
       headerRight: (
         <View style={styles.rightBtnContainer}>
-          <SalonTouchableOpacity
-            onPress={() => navigation.navigate('ClientInfo', { client, apptBook: true })}
+          <ClientInfoButton
+            client={client}
+            navigation={navigation}
+            onDonePress={() => {}}
+            apptBook
             style={styles.leftButton}
-          >
-            <Icon name="infoCircle" style={styles.infoIcon} type="regular" />
-          </SalonTouchableOpacity>
+            iconStyle={styles.infoIcon}
+          />
           <SalonTouchableOpacity
             onPress={sendEmail}
             style={styles.leftButton}

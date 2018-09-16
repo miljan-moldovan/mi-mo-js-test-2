@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 19,
     paddingTop: 13,
-    minHeight: 123,
+    // minHeight: 123,
   },
   infoTitleText: {
     color: '#4D5067',
@@ -114,8 +114,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   promoDescription: {
+    alignSelf: 'center',
     fontSize: 10,
-    lineHeight: 14,
+    lineHeight: 16,
+    marginRight: 20,
     color: '#FFA300',
     fontFamily: 'Roboto-Light',
   },

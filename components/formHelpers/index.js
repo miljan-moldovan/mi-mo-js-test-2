@@ -171,6 +171,7 @@ export const propTypesObj = {
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   noIcon: PropTypes.bool,
   children: PropTypes.element,
+  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   icon: PropTypes.oneOfType([PropTypes.element, null]),
   iconStyle: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
@@ -184,6 +185,7 @@ export const defaultPropsObj = {
   children: null,
   iconStyle: {},
   icon: null,
+  placeholder: false,
 };
 InputButton.propTypes = propTypesObj;
 InputButton.defaultProps = defaultPropsObj;

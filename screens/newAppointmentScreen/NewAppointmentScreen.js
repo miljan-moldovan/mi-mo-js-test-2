@@ -12,7 +12,7 @@ import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
 import { get, debounce, isNull } from 'lodash';
-
+import ClientInfoButton from '../../components/ClientInfoButton';
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import {
   DefaultAvatar,
@@ -694,11 +694,6 @@ export default class NewAppointmentScreen extends React.Component {
     return items;
   }
 
-
-  goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.props.newAppointmentState.client, apptBook: true });
-  }
-
   renderExtraClientButtons = isDisabled => ([
     <SalonTouchableOpacity
       disabled={isDisabled}
@@ -730,20 +725,16 @@ export default class NewAppointmentScreen extends React.Component {
         type="regular"
       />
     </SalonTouchableOpacity>,
-    <SalonTouchableOpacity
-      key={Math.random().toString()}
-      onPress={this.goToClientInfo}
-      style={{
+    <ClientInfoButton
+      client={this.props.newAppointmentState.client}
+      navigation={this.props.navigation}
+      onDonePress={() => {}}
+      iconStyle={{ fontSize: 20, color: '#115ECD' }}
+      apptBook
+      buttonStyle={{
         marginHorizontal: 5,
       }}
-    >
-      <Icon
-        name="infoCircle"
-        size={20}
-        color="#115ECD"
-        type="regular"
-      />
-    </SalonTouchableOpacity>,
+    />,
   ]);
 
   render() {

@@ -124,8 +124,6 @@ class WalkoutScreen extends Component {
       const { loadQueueData } = this.props.navigation.state.params;
       loadQueueData();
       this.props.navigation.goBack();
-    } else {
-      alert('An error ocurred');
     }
   }
 
