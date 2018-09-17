@@ -402,7 +402,7 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
 
-  debugger //eslint-disable-line
+
 
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.hideAll();
@@ -506,7 +506,7 @@ handleStartService = () => {
 
   this.hideAll();
   this.props.startService(appointment.id, serviceData, (response, error) => {
-    debugger //eslint-disable-line
+    
 
     if (response) {
       this.hideAll();
