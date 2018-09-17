@@ -13,6 +13,7 @@ import getAvailabilityWithGaps from '../../redux/selectors/availabilitySelector'
 import { apptGridSettingsSelector } from '../../redux/selectors/apptGridSettingsSelector';
 import { getConflicts, getConflictsBlocks } from '../../actions/conflicts';
 import * as LoginActions from '../../actions/login';
+import storeActions from '../../actions/store'
 
 const mapStateToProps = state => ({
   appointmentScreenState: {
@@ -39,6 +40,7 @@ const mapActionsToProps = dispatch => ({
   auth: bindActionCreators({ ...LoginActions }, dispatch),
   checkConflicts: conflictData => dispatch(getConflicts(conflictData)),
   checkConflictsBlock: conflictData => dispatch(getConflictsBlocks(conflictData)),
+  storeActions: bindActionCreators({ ...storeActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(AppointmentScreen);

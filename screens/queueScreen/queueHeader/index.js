@@ -16,7 +16,8 @@ import SalonActionSheet from '../../../components/SalonActionSheet';
 import styles from './styles';
 import QueueNavButton from './queueNavButton';
 import BarsActionSheet from '../../../components/BarsActionSheet';
-import * as actions from '../../../actions/login';
+import * as loginActions from '../../../actions/login';
+import storeActions from '../../../actions/store';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 2;
@@ -109,10 +110,11 @@ class QueueHeader extends React.Component {
     this.BarsActionSheet.show();
   }
 
-  onLogoutPressed = () => {
-    this.props.auth.logout();
-  }
+  onLogoutPressed = () => this.props.auth.logout();
 
+  onChangeStore = () => {
+    this.props.storeActions.reselectMainStore();
+  }
   assignBarsActionSheet = (item) => {
     this.BarsActionSheet = item;
   }
@@ -146,6 +148,7 @@ class QueueHeader extends React.Component {
           ref={this.assignBarsActionSheet}
           onLogout={this.onLogoutPressed}
           navigation={this.props.navigation}
+          onChangeStore={this.onChangeStore}
         />
 
         <QueueNavButton
@@ -187,10 +190,14 @@ QueueHeader.propTypes = {
   auth: PropTypes.shape({
     logout: PropTypes.func.isRequired,
   }).isRequired,
+  storeActions: PropTypes.shape({
+    reselectMainStore: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 const mapActionToProps = dispatch => ({
-  auth: bindActionCreators({ ...actions }, dispatch),
+  auth: bindActionCreators({ ...loginActions }, dispatch),
+  storeActions: bindActionCreators({ ...storeActions }, dispatch),
 });
 
 export default connect(null, mapActionToProps)(QueueHeader);

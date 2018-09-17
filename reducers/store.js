@@ -7,6 +7,8 @@ import {
   GET_SCHEDULE_FOR_DATE,
   GET_SCHEDULE_FOR_DATE_FAILED,
   GET_SCHEDULE_FOR_DATE_SUCCESS,
+  RESELECT_MAIN_STORE,
+  CANCEL_SELECT_MAIN_STORE,
 } from '../actions/store';
 
 const initialState = {
@@ -38,6 +40,19 @@ export default function storeReducer(state = initialState, action) {
         hasStore: true,
         storeId: data.storeId,
       };
+    case RESELECT_MAIN_STORE:
+      return {
+        ...state,
+        hasStore: false,
+      };
+    case CANCEL_SELECT_MAIN_STORE:
+      if (state.storeId) {
+        return {
+          ...state,
+          hasStore: true,
+        };
+      }
+      return state;
     case GET_SCHEDULE_FOR_DATE:
       return {
         ...state,

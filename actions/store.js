@@ -13,6 +13,8 @@ export const LOAD_SCHEDULE_EXCEPTIONS_SUCCESS = 'store/LOAD_SCHEDULE_EXCEPTIONS_
 export const SET_MAIN_STORE = 'store/SET_MAIN_STORE';
 export const SET_MAIN_STORE_SUCCESS = 'store/SET_MAIN_STORE_SUCCESS';
 export const SET_MAIN_STORE_FAILURE = 'store/SET_MAIN_STORE_FAILURE';
+export const RESELECT_MAIN_STORE = 'store/RESELECT_MAIN_STORE';
+export const CANCEL_SELECT_MAIN_STORE = 'store/CANCEL_SELECT_MAIN_STORE';
 
 const getScheduleForDate = date => (dispatch, getState) => {
   const { storeReducer: { isLoading } } = getState();
@@ -65,10 +67,20 @@ const setStore = (storeId, callback) => async (dispatch) => {
   }
 };
 
+const reselectMainStore = () => ({
+  type: RESELECT_MAIN_STORE,
+});
+
+const cancelSelectStore = () => ({
+  type: CANCEL_SELECT_MAIN_STORE,
+});
+
 const storeActions = {
   getScheduleForDate,
   loadStoreInfoSuccess,
   loadScheduleExceptionsSuccess,
   setStore,
+  reselectMainStore,
+  cancelSelectStore,
 };
 export default storeActions;
