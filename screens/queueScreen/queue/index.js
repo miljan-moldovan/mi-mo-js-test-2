@@ -402,6 +402,7 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
 
+  debugger //eslint-disable-line
 
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.hideAll();
@@ -505,9 +506,25 @@ handleStartService = () => {
 
   this.hideAll();
   this.props.startService(appointment.id, serviceData, (response, error) => {
+    debugger //eslint-disable-line
+
     if (response) {
       this.hideAll();
       this.props.loadQueueData();
+    } else if (error.response.data.result === 6) { // "Can't automatically assign FA employee, please finish service for some provider"
+      const { settings } = this.props.settings;
+
+      let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
+      preventActivity = preventActivity ?
+        preventActivity.settingValue : false;
+
+      let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
+      autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+        autoAssignFirstAvailableProvider.settingValue : false;
+
+      if (preventActivity && autoAssignFirstAvailableProvider) {
+        this.checkHasProvider(true);
+      }
     }
   });
 }
