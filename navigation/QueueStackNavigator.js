@@ -18,7 +18,7 @@ import RemovalReasonTypesScreen from './../screens/removalReasonTypes';
 
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/newClientScreen';
-import PromotionsScreen from '../screens/PromotionsScreen';
+import PromotionsScreen from '../screens/promotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 
