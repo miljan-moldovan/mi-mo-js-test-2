@@ -22,11 +22,11 @@ function UrlInput(props) {
         placeholderTextColor="rgb(76.15, 135.15, 216.75)"
         value={props.url}
       />
-      <Label
-        style={styles.inputLabel}
-      >
-        .salonultimate.com
-      </Label>
+      {/*<Label*/}
+        {/*style={styles.inputLabel}*/}
+      {/*>*/}
+        {/*.salonultimate.com*/}
+      {/*</Label>*/}
       {props.showSuccess && (
         <FontAwesome
           style={[styles.urlValidationIcon, styles.iconCheck]}
