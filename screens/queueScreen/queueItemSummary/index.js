@@ -62,7 +62,7 @@ renderBtnContainer = () => {
   let isActiveCheckin = false;
   let isDisabledReturnLater;
   let returned;
-  let isActiveWalkOut;
+  let isActiveWalkOut = true;
   let isActiveFinish;
   let isActiveWaiting = true;
   let isAppointment = true;
