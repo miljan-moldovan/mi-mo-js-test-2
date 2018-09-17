@@ -750,7 +750,7 @@
 			path = "New Group";
 			sourceTree = "<group>";
 		};
-		6991AB5B2086450700D9FD1A = {
+		6991AB5B2086450700D9FD1A /*  */ = {
 			isa = PBXGroup;
 			children = (
 				6991AB652086450700D9FD1A /* libRCTDirectedScrollView.a */,
@@ -963,8 +963,6 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				C85D9099DA242F6F016F633A /* [CP] Embed Pods Frameworks */,
-				250D86BF7EDAD3646551D717 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -987,8 +985,6 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				B3958C6C201B2BA500875291 /* Run Fabric */,
 				60B72D56211CB5290037F07D /* Embed Frameworks */,
-				59569A865CFEBDF9A499625B /* [CP] Embed Pods Frameworks */,
-				C8150A2ADE6E616058F81189 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1053,7 +1049,7 @@
 					ProjectRef = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
 				},
 				{
-					ProductGroup = 6991AB5B2086450700D9FD1A;
+					ProductGroup = 6991AB5B2086450700D9FD1A /*  */;
 					ProjectRef = 6991AB5A2086450700D9FD1A /* RCTDirectedScrollView.xcodeproj */;
 				},
 				{
@@ -1527,36 +1523,6 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		250D86BF7EDAD3646551D717 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		59569A865CFEBDF9A499625B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		B229ABC978C59D4C64E3F30D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1605,36 +1571,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C8150A2ADE6E616058F81189 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRN/Pods-SalonUltimateRN-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C85D9099DA242F6F016F633A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalonUltimateRNTests/Pods-SalonUltimateRNTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

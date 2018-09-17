@@ -9,7 +9,7 @@ import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
 
-import AppointmentDetails from './components/AppointmentDetails';
+import AppointmentDetails from './components/appointmentDetails';
 import ClientFormulas from '../clientInfoScreen/components/clientFormulas';
 import ClientNotes from '../clientInfoScreen/components/clientNotes';
 import ClientInfoButton from '../../components/ClientInfoButton';
