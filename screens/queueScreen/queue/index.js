@@ -315,6 +315,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
           ...this.props,
         });
       } else {
+        this.props.setLoading(true);
         const { client } = appointment;
 
         const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
@@ -325,7 +326,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
             'WALK-OUT',
             `Are you sure you want to mark ${fullName} as a walk-out?`,
             [
-              { text: 'No, cancel', onPress: () => { console.log('cancel'); }, style: 'cancel' },
+              { text: 'No, cancel', onPress: () => { this.props.setLoading(false); }, style: 'cancel' },
               {
                 text: 'Yes, I’m sure',
                 onPress: () => {
@@ -349,25 +350,27 @@ handlePressWalkOut = (isActiveWalkOut) => {
         ...this.props,
       });
     } else {
+      this.props.setLoading(true);
       const { client } = appointment;
 
       const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-
-      Alert.alert(
-        'No show',
-        `Are you sure you want to mark ${fullName} as a no show?`,
-        [
-          { text: 'No, cancel', onPress: () => { }, style: 'cancel' },
-          {
-            text: 'Yes, I’m sure',
-            onPress: () => {
-              this.hideAll();
-              this.props.noShow(appointment.id, {}, this.props.loadQueueData);
+      setTimeout(() => {
+        Alert.alert(
+          'No show',
+          `Are you sure you want to mark ${fullName} as a no show?`,
+          [
+            { text: 'No, cancel', onPress: () => { this.props.setLoading(false); }, style: 'cancel' },
+            {
+              text: 'Yes, I’m sure',
+              onPress: () => {
+                this.hideAll();
+                this.props.noShow(appointment.id, {}, this.props.loadQueueData);
+              },
             },
-          },
-        ],
-        { cancelable: false },
-      );
+          ],
+          { cancelable: false },
+        );
+      }, 500);
     }
   }
 }
@@ -508,6 +511,20 @@ handleStartService = () => {
     if (response) {
       this.hideAll();
       this.props.loadQueueData();
+    } else if (error.response.data.result === 6) { // "Can't automatically assign FA employee, please finish service for some provider"
+      const { settings } = this.props.settings;
+
+      let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
+      preventActivity = preventActivity ?
+        preventActivity.settingValue : false;
+
+      let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
+      autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+        autoAssignFirstAvailableProvider.settingValue : false;
+
+      if (preventActivity && autoAssignFirstAvailableProvider) {
+        this.checkHasProvider(true);
+      }
     }
   });
 }

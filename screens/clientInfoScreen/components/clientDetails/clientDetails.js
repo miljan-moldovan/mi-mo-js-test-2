@@ -742,6 +742,7 @@ class ClientDetails extends Component {
                     value={this.state.client.loyalty}
                     onChangeText={(text) => { this.onChangeClientField('loyalty', text); }}
                     placeholder="Enter"
+                    keyboardType="number-pad"
                     inputStyle={this.state.client.loyalty ? {} : styles.inputStyle}
                   />
                   <InputDivider />

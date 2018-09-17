@@ -468,30 +468,34 @@ class AppointmentDetails extends React.Component {
     let isActiveUnCheckin = false;
     let isDisabledStart = true;
 
-    if (this.props.appointment) {
-      returned = this.props.appointment.status === StatusEnum.returningLater;
-      isActiveWalkOut = !(this.props.appointment.queueType === QueueTypes.PosAppointment &&
-        !(this.props.appointment.status === StatusEnum.checkedIn));
+    const {
+      queueDetailState: { appointment },
+    } = this.props;
 
-      isAppointment = this.props.appointment.queueType === QueueTypes.PosAppointment;
+    if (appointment) {
+      returned = appointment.status === StatusEnum.returningLater;
+      isActiveWalkOut = !(appointment.queueType === QueueTypes.PosAppointment &&
+        !(appointment.status === StatusEnum.checkedIn));
 
-      if (this.props.appointment.status === StatusEnum.notArrived) {
+      isAppointment = appointment.queueType === QueueTypes.PosAppointment;
+
+      if (appointment.status === StatusEnum.notArrived) {
         isDisabledReturnLater = true;
         isActiveCheckin = true;
       }
 
-      if (this.props.appointment.status === StatusEnum.checkedIn ||
-        this.props.appointment.status === StatusEnum.notArrived ||
-        this.props.appointment.status === StatusEnum.returningLater
+      if (appointment.status === StatusEnum.checkedIn ||
+        appointment.status === StatusEnum.notArrived ||
+        appointment.status === StatusEnum.returningLater
       ) {
         isDisabledStart = false;
       }
 
-      if (isAppointment && this.props.appointment.status === StatusEnum.checkedIn) {
+      if (isAppointment && appointment.status === StatusEnum.checkedIn) {
         isActiveUnCheckin = true;
       }
 
-      if (this.props.appointment.status === StatusEnum.inService) {
+      if (appointment.status === StatusEnum.inService) {
         isActiveWaiting = true;
         isActiveFinish = true;
       } else {
