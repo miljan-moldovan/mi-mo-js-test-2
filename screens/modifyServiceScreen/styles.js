@@ -35,4 +35,5 @@ export default StyleSheet.create({
   removeButtonText: {
     fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
   },
+  marginTop: { marginTop: 16 },
 });

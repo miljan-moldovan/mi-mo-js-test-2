@@ -3,6 +3,7 @@ import moment from 'moment';
 import {
   LOAD_STORE_INFO_SUCCESS,
   LOAD_SCHEDULE_EXCEPTIONS_SUCCESS,
+  SET_MAIN_STORE_SUCCESS,
   GET_SCHEDULE_FOR_DATE,
   GET_SCHEDULE_FOR_DATE_FAILED,
   GET_SCHEDULE_FOR_DATE_SUCCESS,
@@ -10,6 +11,8 @@ import {
 
 const initialState = {
   isLoading: false,
+  hasStore: false,
+  storeId: null,
   storeInfo: null,
   scheduleExceptions: [],
   selectedDate: moment(),
@@ -28,6 +31,12 @@ export default function storeReducer(state = initialState, action) {
       return {
         ...state,
         scheduleExceptions: data.scheduleExceptions,
+      };
+    case SET_MAIN_STORE_SUCCESS:
+      return {
+        ...state,
+        hasStore: true,
+        storeId: data.storeId,
       };
     case GET_SCHEDULE_FOR_DATE:
       return {

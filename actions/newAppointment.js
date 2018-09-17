@@ -165,37 +165,6 @@ const addQuickServiceItem = (selectedServices, guestId = false) => (dispatch, ge
   });
 };
 
-// const addServiceItem = (service, guestId = false) => (dispatch, getState) => {
-//   const {
-//     client,
-//     guests,
-//     startTime,
-//     bookedByEmployee,
-//   } = getState().newAppointmentReducer;
-//   const length = appointmentLength(getState());
-//   const fromTime = moment(startTime).add(moment.duration(length));
-//   const toTime = moment(fromTime).add(moment.duration(service.maxDuration));
-//   const serviceClient = guestId ? get(guests.filter(guest => guest.guestId === guestId), 'client', null) : client;
-//   const newService = {
-//     service,
-//     client: serviceClient,
-//     requested: true,
-//     employee: bookedByEmployee,
-//     fromTime,
-//     toTime,
-//   };
-//   const serviceItem = {
-//     itemId: uuid(),
-//     guestId,
-//     service: newService,
-//   };
-
-//   return dispatch({
-//     type: ADD_SERVICE_ITEM,
-//     data: { serviceItem },
-//   });
-// };
-
 const addServiceItem = serviceItem => (dispatch, getState) => {
   const { startTime } = getState().newAppointmentReducer;
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
@@ -339,14 +308,6 @@ export function serializeNewApptItem(appointment, service) {
     itemData.afterTime = moment().startOf('day').add(service.afterTime, 'minutes').format('HH:mm:ss');
   }
 
-  // if (srv.room) {
-  //   itemData.roomId = srv.room.id
-  // }
-
-  // if (srv.resource) {
-  //   itemData.resourceId = srv.resource.id
-  // }
-
   return itemData;
 }
 
@@ -417,10 +378,14 @@ const cleanForm = () => ({
 });
 
 const setBookedBy = (employee = null) => async (dispatch, getState) => {
-  const currentEmployee = getBookedByEmployee(getState());
+  const loggedInEmployee = getBookedByEmployee(getState());
+  const loggedInEmployeeId = get(loggedInEmployee, 'id', false);
   const forceReceptionistUser = await Settings.getSettingsByName('ForceReceptionistUser');
-  const isBookedByFieldEnabled = forceReceptionistUser.settingValue || isNull(currentEmployee);
-  const bookedByEmployee = currentEmployee || getState().newAppointmentReducer.mainEmployee;
+  const isBookedByFieldEnabled =
+    !forceReceptionistUser.settingValue || isNull(loggedInEmployee) || !loggedInEmployeeId;
+  const currentEmployee =
+    (loggedInEmployee && loggedInEmployeeId) || getState().newAppointmentReducer.mainEmployee;
+  const bookedByEmployee = get(currentEmployee, 'isFirstAvailable', false) ? null : currentEmployee;
   dispatch({
     type: SET_BOOKED_BY,
     data: {
@@ -553,7 +518,6 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
     remarks: get(appt, 'remarks', ''),
     existingApptIds: groupData.map(item => get(item, 'id', null)),
   };
-
   if (isNumber(newState.client)) {
     return Client.getClient(newState.client)
       .then((client) => {
@@ -611,12 +575,9 @@ const messageAllClients = (date, messageText, callback) => (dispatch) => {
   dispatch({ type: MESSAGE_ALL_CLIENTS });
   return AppointmentBook.postMessageAllClients(date, messageText)
     .then((response) => {
-
       dispatch(messageAllClientsSuccess(response)); callback(true);
     })
     .catch((error) => {
-
-
       dispatch(messageAllClientsFailed(error)); showErrorAlert(error); callback(false);
     });
 };
@@ -636,11 +597,9 @@ const messageProvidersClients = (date, employeeId, messageText, callback) => (di
   dispatch({ type: MESSAGE_PROVIDERS_CLIENTS });
   return AppointmentBook.postMessageProvidersClients(date, employeeId, messageText)
     .then((response) => {
-
       dispatch(messageProvidersClientsSuccess(response)); callback(true);
     })
     .catch((error) => {
-
       dispatch(messageProvidersClientsFailed(error)); showErrorAlert(error); callback(false);
     });
 };
@@ -677,6 +636,7 @@ const modifyAppt = (
       if (isFunction(errorCallback)) {
         errorCallback(err);
       }
+      showErrorAlert(err);
       return dispatch({
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },

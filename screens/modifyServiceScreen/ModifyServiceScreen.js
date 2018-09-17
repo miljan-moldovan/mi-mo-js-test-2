@@ -73,15 +73,18 @@ export default class ModifyServiceScreen extends React.Component {
     const employee = get(serviceItem, 'employee', null);
     const promotion = get(serviceItem, 'promotion', null);
     const price = get(service, 'price', 0);
+    const isFirstAvailable = get(serviceItem, 'isFirstAvailable', false);
     const isProviderRequested = get(serviceItem, 'isProviderRequested', true);
     return {
       price,
-      service: {
-        ...service,
-        name: get(service, 'serviceName', get(service, 'name', null)),
-      },
-      employee,
+      service,
+      employee: isFirstAvailable ? {
+        isFirstAvailable,
+        name: 'First',
+        lastName: 'Available',
+      } : employee,
       promotion,
+      isFirstAvailable,
       isProviderRequested,
     };
   }
@@ -139,11 +142,13 @@ export default class ModifyServiceScreen extends React.Component {
       promotion,
       isProviderRequested,
     } = this.state;
+    const isFirstAvailable = get(employee, 'isFirstAvailable', false);
     const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
     onSave({
       service,
       employee,
       promotion,
+      isFirstAvailable,
       isProviderRequested,
     });
     this.props.navigation.goBack();
@@ -170,7 +175,7 @@ export default class ModifyServiceScreen extends React.Component {
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
     return (
       <View style={styles.container}>
-        <InputGroup style={{ marginTop: 16 }}>
+        <InputGroup style={styles.marginTop}>
           <ServiceInput
             noPlaceholder
             navigate={navigate}
@@ -181,7 +186,7 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <ProviderInput
-            noPlaceholder
+            placeholder={false}
             filterByService
             showFirstAvailable
             label="Provider"
@@ -215,7 +220,7 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <InputLabel label="Discount" value={this.getDiscountAmount()} />
-          <InputLabel label="Price" value={`$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', service.price || 0)}`} />
+          <InputLabel label="Price" value={`$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', get(service, 'price', 0))}`} />
         </InputGroup>
         <SectionDivider />
         {

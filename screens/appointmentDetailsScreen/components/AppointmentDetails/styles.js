@@ -124,6 +124,13 @@ const styles = StyleSheet.create({
   lineThrough: {
     textDecorationLine: 'line-through',
   },
+  totalContainer: {
+    flexDirection: 'row',
+    marginTop: 23,
+    marginBottom: 15,
+    paddingHorizontal: 8,
+    justifyContent: 'space-between',
+  },
   totalLabel: {
     fontSize: 11,
     lineHeight: 16,
@@ -218,5 +225,7 @@ const styles = StyleSheet.create({
     paddingRight: 0,
     justifyContent: 'flex-start',
   },
+  bottomButtonsRoot: { minHeight: 44 },
+  bottomButtonsContainer: { height: 44, paddingHorizontal: 0, paddingVertical: 0 },
 });
 export default styles;

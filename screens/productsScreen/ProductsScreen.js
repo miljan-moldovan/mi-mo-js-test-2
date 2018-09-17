@@ -1,345 +1,130 @@
-// @flow
 import React from 'react';
 import {
-  StyleSheet,
-  View,
   Text,
+  View,
+  FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-
-import SalonSearchHeader from '../../components/SalonSearchHeader';
-import ProductList from './components/productList';
-import CategoryProductsList from './components/categoryProductsList';
-import ProductCategoryList from './components/productCategoryList';
+import { get, isNumber } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import Icon from '../../components/UI/Icon';
+import {
+  InputButton, InputDivider,
+} from '../../components/formHelpers';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#333',
-    flexDirection: 'column',
-  },
-  productListContainer: {
-    flex: 1,
-    backgroundColor: '#333',
-    flexDirection: 'column',
-  },
-  productsList: {
-    flex: 9,
-    backgroundColor: 'white',
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-});
-
+import Colors from '../../constants/Colors';
+import styles from './styles';
 
 class ProductsScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {};
-    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
-
-    const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
-    const { rightButton } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
-    const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
-    const { rightButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
-    const { title } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
-    const { subTitle } = navigation.state.params &&
-    navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
-
-    return {
-      header: props => (<SalonSearchHeader
-        title={title}
-        subTitle={subTitle}
-        leftButton={leftButton}
-        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
-        rightButton={rightButton}
-        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-        hasFilter={false}
-        containerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />),
-    };
-  };
-
-  static flexFilter(list, info) {
-    let matchesFilter = [];
-    const matches = [];
-
-    matchesFilter = function match(item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
-          count += 1;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
-  }
+  static navigationOptions = ({ navigation }) => ({
+    title: 'Products',
+    headerLeft: (
+      <SalonTouchableOpacity onPress={navigation.goBack}>
+        <Text style={styles.headerButton}>Cancel</Text>
+      </SalonTouchableOpacity>
+    ),
+  });
 
   constructor(props) {
     super(props);
-    this.getProducts();
+
+    const { selectedProduct = null } = props.navigation.state.params || {};
+    this.state = {
+      selectedProduct,
+    };
   }
 
-  getProducts = (callback) => {
-    this.props.productsActions.setShowCategoryProducts(false);
-    this.props.productsActions.getProducts().then((response) => {
-      if (response.data.error) {
-        this.goBack();
-      } else {
-        const products = response.data.products;
-        this.props.productsActions.setProducts(products);
-        this.props.productsActions.setFilteredProducts(products);
-        if (callback) {
-          callback();
-        }
-      }
-    }).catch((error) => {
-    });
+  componentDidMount() {
+    const {
+      productsActions: {
+        getProducts,
+      },
+    } = this.props;
+    getProducts();
   }
 
-  state = {
-    prevHeaderProps: {
-
-    },
-    headerProps: {
-      title: 'Products',
-      subTitle: null,
-      leftButtonOnPress: () => { this.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-    },
-    defaultHeaderProps: {
-      title: 'Products',
-      subTitle: null,
-      leftButtonOnPress: () => { this.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-    },
-  }
-
-  componentWillMount() {
-    this.props.navigation.setParams({ defaultProps: this.state.defaultHeaderProps, ignoreNav: false });
-    const selectedProduct = this.props.navigation.state.params ? this.props.navigation.state.params.selectedProduct : null;
-    this.props.productsActions.setSelectedProduct(selectedProduct);
-  }
-
-  setHeaderData(props, ignoreNav = false) {
-    this.setState({ prevHeaderProps: this.state.headerProps });
-    this.props.navigation.setParams({ defaultProps: props, ignoreNav });
-    this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
-    this.setState({ headerProps: props });
-  }
-
-  goBack = () => {
-    if (this.props.productsState.showCategoryProducts) {
-      this.props.productsActions.setFilteredProducts(this.props.productsState.products);
-      this.props.productsActions.setShowCategoryProducts(false);
-      this.setHeaderData(this.state.prevHeaderProps);
-    } else {
+  onChangeProduct = (item) => {
+    const {
+      dismissOnSelect,
+      onChangeProduct = (itm => itm),
+    } = this.props.navigation.state.params || {};
+    onChangeProduct(item);
+    if (dismissOnSelect) {
       this.props.navigation.goBack();
     }
   }
 
-  handleOnChangeProduct = (product) => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
-    }
-    const { onChangeProduct, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeProduct) { onChangeProduct(product); }
-
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
+  get currentData() {
+    const {
+      productsState: { products },
+    } = this.props;
+    return products;
   }
 
+  keyExtractor = item => get(item, 'id');
 
-  filterProducts = (searchText) => {
-    const productsCategories = JSON.parse(JSON.stringify(this.props.productsState.products));
+  renderSeparator = () => <View style={styles.itemSeparator} />
 
-    if (searchText && searchText.length > 0) {
-      this.setHeaderData(this.state.headerProps);
-
-      const criteria = [
-        { Field: 'name', Values: [searchText.toLowerCase()] },
-      ];
-
-      const filtered = [];
-
-      for (let i = 0; i < productsCategories.length; i += 1) {
-        const productsCategory = productsCategories[i];
-        productsCategory.products = ProductsScreen.flexFilter(productsCategory.products, criteria);
-        if (productsCategory.products.length > 0) {
-          filtered.push(productsCategory);
-        }
-      }
-
-      this.props.productsActions.setFilteredProducts(filtered);
-    } else {
-      this.setHeaderData(this.state.defaultHeaderProps);
-      this.props.productsActions.setFilteredProducts(productsCategories);
-    }
-
-    this.props.navigation.setParams({
-      searchText: this.props.salonSearchHeaderState.searchText,
-    });
-  }
-
-  onPressItem = (item) => {
-    this.props.salonSearchHeaderActions.setSearchText(item);
-    this.filterProducts(item);
-    this.props.salonSearchHeaderActions.setShowFilter(false);
-  }
-
-  filterList = (searchText) => {
-    this.props.productsActions.setShowCategoryProducts(false);
-    this.filterProducts(searchText);
-  }
-
-  handlePressProductCategory = (item) => {
-    this.setHeaderData({
-      title: item.name,
-      subTitle: null,
-      leftButton:
-  <SalonTouchableOpacity style={styles.leftButton} onPress={() => { this.goBack(); }}>
-    <View style={styles.leftButtonContainer}>
-      <Text style={styles.leftButtonText}>
-        <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
-      </Text>
-    </View>
-  </SalonTouchableOpacity>,
-
-    }, true);
-    this.props.productsActions.setShowCategoryProducts(true);
-    this.props.productsActions.setCategoryProducts(item.products);
+  renderItem = ({ item }) => {
+    const { selectedProduct } = this.state;
+    const isSelected = (
+      isNumber(get(selectedProduct, 'id', null)) && isNumber(get(item, 'id', null))
+      && item.id === selectedProduct.id
+    );
+    const name = get(item, 'name', '');
+    const size = get(item, 'productSize', null);
+    const price = get(item, 'price', 0);
+    const selectedStyle = isSelected ? styles.selectedText : {};
+    const icon = isSelected ? (
+      <Icon
+        type="solid"
+        name="checkCircle"
+        color={Colors.selectedGreen}
+        size={14}
+      />
+    ) : null;
+    const onPress = () => this.onChangeProduct(item);
+    return (
+      <SalonTouchableOpacity
+        onPress={onPress}
+        style={styles.itemRow}
+      >
+        <View style={[styles.container, styles.flexRow]}>
+          <Text numberOfLines={1} style={[styles.itemText, styles.container, selectedStyle]}>{name}</Text>
+          <View style={styles.info}>
+            {
+              size &&
+              <Text style={styles.sizeText}>{size}</Text>
+            }
+            <Text style={styles.priceText}>{`$ ${price}`}</Text>
+          </View>
+        </View>
+        {icon}
+      </SalonTouchableOpacity>
+    );
   }
 
   render() {
-    let onChangeProduct = null;
-    const { state } = this.props.navigation;
-    // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeProduct) { onChangeProduct = this.handleOnChangeProduct; }
-
     return (
-      <View style={styles.container}>
-        <View style={styles.productsList}>
-          { (!this.props.productsState.showCategoryProducts
-            && !this.props.salonSearchHeaderState.showFilter
-            && this.props.productsState.filtered.length > 0) &&
-            <ProductCategoryList
-              onRefresh={this.getProducts}
-              handlePressProductCategory={this.handlePressProductCategory}
-              productCategories={this.props.productsState.filtered}
-            />
-          }
-
-          { (!this.props.productsState.showCategoryProducts
-            && this.props.salonSearchHeaderState.showFilter
-            && this.props.productsState.filtered.length > 0) &&
-            <ProductList
-              {...this.props}
-              onRefresh={this.getProducts}
-              boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.productListContainer}
-              products={this.props.productsState.filtered}
-              onChangeProduct={onChangeProduct}
-            />
-          }
-
-          { (this.props.productsState.showCategoryProducts
-            && this.props.productsState.filtered.length > 0) &&
-            <CategoryProductsList
-              {...this.props}
-              onRefresh={this.getProducts}
-              onChangeProduct={onChangeProduct}
-              categoryProducts={this.props.productsState.categoryProducts}
-            />
-          }
-
-        </View>
-
+      <View style={[styles.container, styles.whiteBg]}>
+        <FlatList
+          data={this.currentData}
+          style={[styles.container, styles.whiteBg]}
+          keyExtractor={this.keyExtractor}
+          renderItem={this.renderItem}
+          ItemSeparatorComponent={this.renderSeparator}
+        />
       </View>
     );
   }
 }
-
 ProductsScreen.propTypes = {
-  navigation: PropTypes.shape({
-    goBack: PropTypes.func,
-    state: PropTypes.shape({
-      params: PropTypes.shape({
-        onChangeProduct: PropTypes.func,
-        dismissOnSelect: PropTypes.bool,
-      }),
-    }),
-  }),
+  productsActions: PropTypes.shape({
+    getProducts: PropTypes.func,
+  }).isRequired,
+  productsState: PropTypes.shape({
+    isLoading: PropTypes.bool,
+    products: PropTypes.array,
+  }).isRequired,
 };
-
-ProductsScreen.defaultProps = {
-  navigation: null,
-};
-
 export default ProductsScreen;

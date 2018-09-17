@@ -27,10 +27,10 @@ const initialLayout = {
 export default class AppointmentDetailsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    const { appointment = null, handleSave = (() => {}) } = params;
+    const { appointment = null, handleSave = (() => { }) } = params;
     const client = get(appointment, 'client', null);
     const title = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
-    const saveButtonStyle = { marginLeft: 10 };
+    const infoButtonStyle = { fontSize: 18, color: 'white' };
     return ({
       title,
       headerLeft: (
@@ -44,22 +44,14 @@ export default class AppointmentDetailsScreen extends React.Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <React.Fragment>
-          <ClientInfoButton
-            client={client}
-            navigation={navigation}
-            onDonePress={() => { }}
-            buttonStyle={styles.rightButton}
-            apptBook={false}
-            iconStyle={{ fontSize: 18, color: 'white' }}
-          />
-          <SalonTouchableOpacity
-            onPress={handleSave}
-            style={saveButtonStyle}
-          >
-            <Text style={{ fontSize: 14, lineHeight: 22, color: 'white' }}>Done</Text>
-          </SalonTouchableOpacity>
-        </React.Fragment>
+        <ClientInfoButton
+          client={client}
+          navigation={navigation}
+          onDonePress={() => { }}
+          buttonStyle={styles.rightButton}
+          apptBook={false}
+          iconStyle={infoButtonStyle}
+        />
       ),
     });
   };
@@ -133,21 +125,19 @@ export default class AppointmentDetailsScreen extends React.Component {
       />
     ),
     1: () => (
-      // <ClientNotes
-      //   {...this.props}
-      //   client={get(this.params, 'client', null)}
-      //   navigation={this.props.navigation}
-      //   editionMode={this.state.editionMode}
-      // />
-      null
+      <ClientNotes
+        {...this.props}
+        client={get(this.params, 'appointment.client', null)}
+        navigation={this.props.navigation}
+        editionMode={this.state.editionMode}
+      />
     ),
     2: () => (
-      // <ClientFormulas
-      //   {...this.props}
-      //   client={get(this.params, 'client', null)}
-      //   navigation={this.props.navigation}
-      // />
-      null
+      <ClientFormulas
+        {...this.props}
+        client={get(this.params, 'appointment.client', null)}
+        navigation={this.props.navigation}
+      />
     ),
   });
 

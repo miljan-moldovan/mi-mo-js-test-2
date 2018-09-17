@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import moment from 'moment';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SalonActionSheet from '../../../../components/SalonActionSheet';

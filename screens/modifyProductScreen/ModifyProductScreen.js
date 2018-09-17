@@ -2,10 +2,10 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { get } from 'lodash';
+
 import {
   InputGroup,
   InputDivider,
@@ -15,175 +15,193 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
-
+import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import styles from '../modifyServiceScreen/styles';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-  },
-  leftButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  rightButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-    textAlign: 'center',
-  },
-  rightButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-export default class ModifyProductScreen extends React.Component {
-  static navigationOptions = rootProps => ({
-    headerTitle: (
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>{'product' in rootProps.navigation.state.params ?
-              'Modify Product' : 'Add Product'}
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity
-        style={styles.leftButton}
-        onPress={() => { rootProps.navigation.goBack(); }}
-      >
-        <View style={styles.leftButtonContainer}>
-          <Text style={styles.leftButtonText}>
-            <FontAwesome style={{ fontSize: 30, color: '#fff' }}>{Icons.angleLeft}</FontAwesome>
+class ModifyProductScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+    // const canSave = params.canSave || false;
+    const clientName = params.clientName || '';
+    const canSave = true;
+    return {
+      tabBarVisible: false,
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>
+            {'productItem' in params ? 'Modify Product' : 'Add Product'}
+          </Text>
+          <Text style={styles.subTitleText}>
+            {clientName}
           </Text>
         </View>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity
-        wait={3000}
-        onPress={rootProps.navigation.state.params.onSave}
-      >
-        <View style={styles.rightButtonContainer}>
-          <Text style={styles.rightButtonText}>Save</Text>
-        </View>
-      </SalonTouchableOpacity>
-    ),
-  });
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity onPress={navigation.goBack}>
+          <Text style={styles.leftButtonText}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity
+          disabled={!canSave}
+          onPress={() => params.handleSave()}
+        >
+          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+        </SalonTouchableOpacity>
+      ),
+    };
+  }
 
   constructor(props) {
     super(props);
     const { params } = this.props.navigation.state;
-    this.props.navigation.setParams({ onSave: this.onSave.bind(this) });
+    this.state = this.getStateFromParams();
+    this.props.navigation.setParams({ ...params, handleSave: this.handleSave });
+  }
 
-    this.state = {
-      index: 'index' in params ? params.index : null,
-      selectedProduct: 'product' in params ? params.product.product : null,
-      selectedProvider: 'product' in params ? params.product.provider : null,
-      price: 'product' in params ? params.product.price : '$0',
-      discount: 0,
+  get canRemove() {
+    const params = this.props.navigation.state.params || {};
+    return 'onRemove' in params;
+  }
+
+  getStateFromParams = () => {
+    const params = this.props.navigation.state.params || {};
+    const productItem = params.productItem || {};
+    const product = get(productItem, 'product', null);
+    const employee = get(productItem, 'employee', null);
+    const promotion = get(productItem, 'promotion', null);
+    return {
+      product,
+      employee,
+      promotion,
     };
   }
 
-  onSave = () => {
-    alert('Not Implemented');
-    // this.props.appointmentDetailsActions.addProduct({ product: this.state.selectedProduct, provider: this.state.selectedProvider }, this.state.index);
-    // this.props.navigation.goBack();
+  getDiscountAmount = () => {
+    const { promotion } = this.state;
+    switch (get(promotion, 'promotionType', null)) {
+      case PromotionType.ServiceProductPercentOff:
+      case PromotionType.GiftCardPercentOff:
+        return `${get(promotion, 'retailDiscountAmount', 0)} %`;
+      case PromotionType.ServiceProductDollarOff:
+      case PromotionType.GiftCardDollarOff:
+      case PromotionType.ServiceProductFixedPrice:
+        return `$ ${get(promotion, 'retailDiscountAmount', 0)}`;
+      default: return '';
+    }
+  }
+
+  calculatePercentFromPrice = (price, percent) =>
+    Number((percent ? price - percent / 100 * price : price).toFixed(2))
+
+  calculatePriceDiscount = (promo, prop, price = null) => {
+    if (price === null) { return 0; }
+
+    switch (get(promo, 'promotionType', null)) {
+      case PromotionType.ServiceProductPercentOff:
+      case PromotionType.GiftCardPercentOff:
+        return this.calculatePercentFromPrice(price, get(promo, prop, 0));
+      case PromotionType.ServiceProductDollarOff:
+      case PromotionType.GiftCardDollarOff:
+        return price - get(promo, prop, 0);
+      case PromotionType.ServiceProductFixedPrice:
+        return get(promo, prop, 0);
+      default: return price;
+    }
+  }
+
+  cancelButton = () => ({
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButtonOnPress: (navigation) => {
+      navigation.goBack();
+    },
+  })
+
+  handleChangeProduct = product => this.setState({ product })
+
+  handleChangeEmployee = employee => this.setState({ employee })
+
+  handleChangePromotion = promotion => this.setState({ promotion })
+
+  handleRemove = () => {
+    const { onRemove = (itm => itm) } = this.props.navigation.state.params || {};
+    onRemove();
+    this.props.navigation.goBack();
+  }
+
+  handleSave = () => {
+    const {
+      product,
+      employee,
+      promotion,
+    } = this.state;
+    const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
+    onSave({
+      product,
+      employee,
+      promotion,
+    });
+    this.props.navigation.goBack();
   }
 
   render() {
+    const {
+      navigation: { navigate },
+    } = this.props;
+    const {
+      product,
+      employee,
+      promotion,
+    } = this.state;
+    const price = get(product, 'price', 0);
+    const priceText = `$ ${this.calculatePriceDiscount(promotion, 'retailDiscountAmount', price)}`;
     return (
       <View style={styles.container}>
-        <InputGroup style={{ marginTop: 16 }}>
+        <InputGroup style={styles.marginTop}>
           <ProductInput
-            navigate={this.props.navigation.navigate}
-            selectedProduct={this.state.selectedProduct}
-            onChange={(selectedProduct) => {
-              this.setState({ selectedProduct, price: selectedProduct.price });
-            }}
+            navigate={navigate}
+            selectedProduct={product}
+            onChange={this.handleChangeProduct}
+            headerProps={{ title: 'Products', ...this.cancelButton() }}
           />
           <InputDivider />
           <ProviderInput
-            navigate={this.props.navigation.navigate}
-            selectedProvider={this.state.selectedProvider}
-            onChange={(selectedProvider) => {
-              this.setState({ selectedProvider });
-            }}
+            navigate={navigate}
+            placeholder={false}
+            showFirstAvailable={false}
+            selectedProvider={employee}
+            onChange={this.handleChangeEmployee}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
         </InputGroup>
         <SectionDivider />
         <InputGroup>
           <PromotionInput
-            navigate={this.props.navigation.navigate}
-            onChange={(promotion) => {
-              this.setState({ selectedPromotion: promotion });
-            }}
+            mode="product"
+            navigate={navigate}
+            selectedPromotion={promotion}
+            onChange={this.handleChangePromotion}
           />
           <InputDivider />
-          <InputLabel label="Discount" value={this.state.discount} />
+          <InputLabel label="Discount" value={this.getDiscountAmount()} />
           <InputDivider />
-          <InputLabel label="Price" value={this.state.price} />
+          <InputLabel label="Price" value={priceText} />
         </InputGroup>
         <SectionDivider />
-        {this.state.index !== null && (
+        {
+          this.canRemove &&
           <InputGroup>
             <SalonTouchableOpacity
-              style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}
-              onPress={() => {
-                this.props.appointmentDetailsActions.removeProduct(this.state.index);
-                this.props.navigation.goBack();
-              }}
+              style={styles.removeButton}
+              onPress={this.handleRemove}
             >
-              <Text style={{
-                fontSize: 14, lineHeight: 22, color: '#D1242A', fontFamily: 'Roboto-Medium',
-                }}
-              >
-                Remove Product
-              </Text>
+              <Text style={styles.removeButtonText}>Remove Product</Text>
             </SalonTouchableOpacity>
           </InputGroup>
-        )}
+        }
       </View>
     );
   }
 }
+export default ModifyProductScreen;

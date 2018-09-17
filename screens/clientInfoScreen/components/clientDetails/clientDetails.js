@@ -390,7 +390,6 @@ class ClientDetails extends Component {
       required.homePhone = false;
       required.cellPhone = false;
 
-
       this.setState({
         isValidGender: !required.gender,
         isValidBirth: !required.birthday,
@@ -440,8 +439,6 @@ class ClientDetails extends Component {
   handleDeleteClient = (result, message) => {
     if (result) {
       this.props.navigation.goBack();
-    } else {
-      alert(message);
     }
   }
 
@@ -526,8 +523,6 @@ class ClientDetails extends Component {
           } else {
             this.props.navigation.goBack();
           }
-        } else {
-          alert(message);
         }
       });
     } else if (this.props.actionType === 'update') {
@@ -544,8 +539,6 @@ class ClientDetails extends Component {
             this.props.appointmentCalendarActions.setGridView();
             this.props.navigation.goBack();
           }
-        } else {
-          alert(message);
         }
       });
     }
@@ -954,7 +947,7 @@ class ClientDetails extends Component {
                   </View>
                 </InputGroup>
                 <SectionDivider />
-                {this.props.actionType === 'update' ?
+                {this.props.actionType === 'update' && this.props.canDelete ?
                   <React.Fragment>
                     <InputGroup>
                       <InputButton
@@ -979,6 +972,7 @@ ClientDetails.defaultProps = {
   client: null,
   actionType: 'update',
   onDismiss: null,
+  canDelete: false,
 };
 
 ClientDetails.propTypes = {
@@ -990,6 +984,7 @@ ClientDetails.propTypes = {
   setHandleDone: PropTypes.func.isRequired,
   setHandleBack: PropTypes.func.isRequired,
   editionMode: PropTypes.bool,
+  canDelete: PropTypes.bool,
   settingsState: PropTypes.any.isRequired,
   clientInfoState: PropTypes.any.isRequired,
   client: PropTypes.any,

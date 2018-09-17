@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import styles from './styles';
 import UserNameInput from '../../components/login/UserNameInput';
 import UrlInput from '../../components/login/UrlInput';
-import ErrorsView from '../../components/login/ErrorsView';
+import ErrorsView from '../../components/ErrorsView';
 
 import { Auth } from '../../utilities/apiWrapper';
 import * as actions from '../../actions/login';
@@ -124,7 +124,7 @@ class ForgotPassword extends React.Component {
         >Link sent successfully!
         </Text>
         <Text style={styles.successMessage}>
-          We&#39;ve sent an email to r******@g****.com with password reset instructions
+          We&#39;ve sent an email to {this.props.auth.username} with password reset instructions
         </Text>
       </View>
     </View>

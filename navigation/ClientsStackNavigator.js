@@ -26,7 +26,18 @@ const ClientsStackNavigator = StackNavigator(
   {
     navigationOptions: {
       headerStyle: {
-        backgroundColor: 'transparent',
+        backgroundColor: '#115ECD',
+        paddingHorizontal: 10,
+        paddingVertical: 14,
+        paddingTop: 20,
+        // height: 44,
+        // height: 35,
+        borderWidth: 0,
+        shadowColor: 'transparent',
+        elevation: 0,
+        borderBottomWidth: 0,
+        justifyContent: 'center',
+        // alignItems: 'center'
       },
       header: props => <ImageHeader {...props} />,
       headerTitleStyle: {

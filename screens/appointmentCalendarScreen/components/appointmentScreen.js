@@ -137,11 +137,9 @@ class AppointmentScreen extends Component {
       subTitle: null,
       leftButtonOnPress: this.handleClientScreenGoBack,
       leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: this.handleClientScreenNewClient,
     };
 
-    this.props.navigation.navigate('ApptBookClient', { onChangeClient: this.onChangeClient, headerProps });
+    this.props.navigation.navigate('ApptBookClient', { onChangeClient: this.onChangeClient, headerProps, hideAddButton: true });
   };
 
   onPressTitle = () => this.props.navigation.navigate('FilterOptions', {
@@ -544,6 +542,9 @@ class AppointmentScreen extends Component {
           selectedDate={moment(startDate)}
         />
         <SalonCalendar
+          navigation={this.props.navigation}
+          checkConflicts={this.props.checkConflicts}
+          checkConflictsBlock={this.props.checkConflictsBlock}
           storeScheduleExceptions={storeScheduleExceptions}
           providers={providers}
           onPressAvailability={this.onAvailabilityCellPressed}

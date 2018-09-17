@@ -23,6 +23,10 @@ export const POST_APPOINTMENT_CHECKOUT_SUCCESS = 'appointment/POST_APPOINTMENT_C
 export const POST_APPOINTMENT_CHECKOUT_FAILED = 'appointment/POST_APPOINTMENT_CHECKOUT_FAILED';
 export const UNDO_MOVE = 'appointment/UNDO_MOVE';
 export const UNDO_MOVE_SUCCESS = 'appointment/UNDO_MOVE_SUCCESS';
+export const CHECK_APPT_CONFLICTS = 'appointment/CHECK_APPT_CONFLICTS';
+export const CHECK_APPT_CONFLICTS_SUCCESS = 'appointment/CHECK_APPT_CONFLICTS_SUCCESS';
+export const CHECK_APPT_CONFLICTS_FAILED = 'appointment/CHECK_APPT_CONFLICTS_FAILED';
+
 
 const addAppointment = appointment => ({
   type: ADD_APPOINTMENT,
@@ -77,6 +81,7 @@ const getAppoinments = date => (dispatch) => {
 
 const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_MOVE });
+
   return Appointment.postAppointmentMove(appointmentId, params)
     .then(resp =>
       dispatch(appointmentCalendarActions.setGridView()).then(() =>

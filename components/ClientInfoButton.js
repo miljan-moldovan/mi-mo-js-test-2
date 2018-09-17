@@ -9,14 +9,16 @@ class ClientInfoButton extends React.Component {
   }
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: this.props.client, apptBook: this.props.apptBook });
+    this.props.navigation.navigate('ClientInfo', {
+      client: this.props.client,
+      apptBook: this.props.apptBook,
+      canDelete: this.props.canDelete,
+    });
     this.props.onDonePress();
   };
 
   render() {
-
     const { client, iconStyle, buttonStyle } = this.props;
-
     return (
       <React.Fragment>
         {client.id > 1 ? // is not walkin
@@ -39,12 +41,14 @@ class ClientInfoButton extends React.Component {
 ClientInfoButton.defaultProps = {
   iconStyle: { },
   buttonStyle: {},
+  canDelete: false,
 };
 
 ClientInfoButton.propTypes = {
   iconStyle: PropTypes.any,
   buttonStyle: PropTypes.any,
   apptBook: PropTypes.bool.isRequired,
+  canDelete: PropTypes.bool,
   onDonePress: PropTypes.func.isRequired,
   client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,

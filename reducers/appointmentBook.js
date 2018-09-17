@@ -9,6 +9,9 @@ import { POST_APPOINTMENT_RESIZE,
   POST_APPOINTMENT_CHECKIN_FAILED,
   POST_APPOINTMENT_CHECKOUT_FAILED,
   UNDO_MOVE,
+  CHECK_APPT_CONFLICTS,
+  CHECK_APPT_CONFLICTS_SUCCESS,
+  CHECK_APPT_CONFLICTS_FAILED,
 } from '../actions/appointment';
 import {
   PUT_BLOCKTIME_MOVE, PUT_BLOCKTIME_MOVE_SUCCESS, PUT_BLOCKTIME_MOVE_FAILED, UNDO_MOVE_BLOCK,
@@ -59,6 +62,7 @@ const processAppointmentFromApi = (item) => {
 
 
 const initialState = {
+  conflicts: [],
   isLoading: false,
   error: null,
   selectedFilter: 'providers',
@@ -174,6 +178,7 @@ export default function appointmentBookReducer(state = initialState, action) {
         pickerMode: data.pickerMode,
       };
     case SET_GRID_VIEW:
+    case CHECK_APPT_CONFLICTS:
       return {
         ...state,
         isLoading: true,
@@ -277,9 +282,11 @@ export default function appointmentBookReducer(state = initialState, action) {
     case POST_APPOINTMENT_RESIZE_FAILED:
     case POST_APPOINTMENT_CHECKIN_FAILED:
     case POST_APPOINTMENT_CHECKOUT_FAILED:
+    case CHECK_APPT_CONFLICTS_FAILED:
       return {
         ...state,
         isLoading: false,
+        conflicts: [],
         toast: {
           description: data.error.response.data.userMessage,
           type: 'error',
@@ -321,6 +328,13 @@ export default function appointmentBookReducer(state = initialState, action) {
           ...state.filterOptions,
           showFirstAvailable: !state.filterOptions.showFirstAvailable,
         },
+      };
+    }
+    case CHECK_APPT_CONFLICTS_SUCCESS: {
+      return {
+        ...state,
+        isLoading: data.conflicts.length === 0,
+        conflicts: data.conflicts,
       };
     }
     default:

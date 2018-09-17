@@ -62,8 +62,9 @@ export default class App extends Component {
           'apptBookSetEmployeeOrderReducer',
           'modifyApptReducer',
           'userInfoReducer',
+          'productsReducer',
+          'queueDetailReducer',
         ],
-        // whitelist: ['auth']
       },
       () => { this.setState({ storeIsReady: true }); },
     ); // .purge(); use to prevent log in

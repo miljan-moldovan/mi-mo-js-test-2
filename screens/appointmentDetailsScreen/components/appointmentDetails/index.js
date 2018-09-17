@@ -114,16 +114,12 @@ class AppointmentDetails extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const {
-      queueDetailState: { appointment: newAppt },
+      queueDetailState: { isLoading: nextIsLoading },
     } = nextProps;
     const {
-      queueDetailState: { appointment: currentAppt },
+      queueDetailState: { isLoading: prevIsLoading },
     } = this.props;
-    if (
-      newAppt !== currentAppt ||
-      get(newAppt, 'id', null) !== get(currentAppt, 'id', null)
-    ) {
-      // debugger //eslint-disable-line
+    if (nextIsLoading !== prevIsLoading) {
       this.setState({ ...this.getStateFromProps(nextProps) });
     }
   }
@@ -142,7 +138,7 @@ class AppointmentDetails extends React.Component {
       const promo = get(itm, 'promotion', null);
       const price = get(itm.product || {}, 'price', 0);
       if (promo) {
-        return total + this.calculatePriceDiscount(promo, 'productDiscountAmount', price);
+        return total + this.calculatePriceDiscount(promo, 'retailDiscountAmount', price);
       }
       return total + price;
     }, 0);
@@ -152,12 +148,13 @@ class AppointmentDetails extends React.Component {
   getStateFromProps = (props) => {
     const {
       queueDetailState: { appointment },
-    } = this.props;
+    } = props;
     const client = get(appointment, 'client', null);
     const services = get(appointment, 'services', []);
     const products = get(appointment, 'products', []);
     const productItems = products.map(product => ({
       itemId: uuid(),
+      id: get(product, 'product.id', null),
       isDeleted: get(product, 'isDeleted', false),
       product: get(product, 'product', null),
       employee: get(product, 'employee', null),
@@ -165,7 +162,12 @@ class AppointmentDetails extends React.Component {
     }));
     const serviceItems = services.map(service => ({
       itemId: uuid(),
-      service,
+      id: get(service, 'id', null),
+      service: {
+        id: get(service, 'serviceId', null),
+        name: get(service, 'serviceName', ''),
+        price: get(service, 'price', 0),
+      },
       isDeleted: get(service, 'isDeleted', false),
       isProviderRequested: get(service, 'isProviderRequested', false),
       employee: service.isFirstAvailable ? {
@@ -173,6 +175,7 @@ class AppointmentDetails extends React.Component {
         name: 'First',
         lastName: 'Available',
       } : get(service, 'employee', null),
+      isFirstAvailable: service.isFirstAvailable,
       promotion: get(service, 'promotion', null),
     }));
     return {
@@ -276,24 +279,24 @@ class AppointmentDetails extends React.Component {
     const serviceItems = cloneDeep(this.state.serviceItems);
     serviceItems.push({
       itemId: uuid(),
-      isProviderRequested: get(service, 'isProviderRequested', true),
       service,
       employee,
       promotion,
+      isFirstAvailable: get(employee, 'isFirstAvailable', false),
+      isProviderRequested: get(service, 'isProviderRequested', true),
     });
-    this.setState({ serviceItems });
+    this.setState({ serviceItems }, this.updateQueue);
   }
 
   addProductItem = ({ product, employee, promotion }) => {
-    const serviceItems = cloneDeep(this.state.serviceItems);
-    serviceItems.push({
+    const productItems = cloneDeep(this.state.productItems);
+    productItems.push({
       itemId: uuid(),
-      isProviderRequested: get(product, 'isProviderRequested', true),
       product,
       employee,
       promotion,
     });
-    this.setState({ serviceItems });
+    this.setState({ productItems }, this.updateQueue);
   }
 
   calculatePercentFromPrice = (price, percent) =>
@@ -320,7 +323,7 @@ class AppointmentDetails extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
-  handleChangeClient = client => this.setState({ client })
+  handleChangeClient = client => this.setState({ client }, this.updateQueue)
 
   handleAddService = () => {
     const { client } = this.state;
@@ -348,9 +351,9 @@ class AppointmentDetails extends React.Component {
     const { client } = this.state;
     const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
     this.props.navigation.navigate('Product', {
-      client: this.state.appointment.client,
+      clientName,
       dismissOnSelect: true,
-      onChangeProduct: data => this.addProductItem(data),
+      onSave: data => this.addProductItem(data),
     });
   }
 
@@ -370,29 +373,88 @@ class AppointmentDetails extends React.Component {
     const serviceItems = cloneDeep(this.state.serviceItems);
     const index = serviceItems.findIndex(itm => itm.itemId === id);
     serviceItems.splice(index, 1, {
-      itemId: serviceItems[index].itemId,
+      itemId: id,
       ...serviceItems[index],
       ...data,
     });
-    this.setState({ serviceItems });
+    this.setState({ serviceItems }, this.updateQueue);
   }
 
-  updateServiceItem = (id, data) => {
-    const serviceItems = cloneDeep(this.state.serviceItems);
-    const index = serviceItems.findIndex(itm => itm.itemId === id);
-    serviceItems.splice(index, 1, {
-      itemId: serviceItems[index].itemId,
-      ...serviceItems[index],
+  updateProductItem = (id, data) => {
+    const productItems = cloneDeep(this.state.productItems);
+    const index = productItems.findIndex(itm => itm.itemId === id);
+    productItems.splice(index, 1, {
+      itemId: id,
+      ...productItems[index],
       ...data,
     });
-    this.setState({ serviceItems });
+    this.setState({ productItems }, this.updateQueue);
   }
 
   removeServiceItem = (id) => {
     const serviceItems = cloneDeep(this.state.serviceItems);
     const index = serviceItems.findIndex(itm => itm.itemId === id);
     serviceItems.splice(index, 1);
-    this.setState({ serviceItems });
+    this.setState({ serviceItems }, this.updateQueue);
+  }
+
+  removeProductItem = (id) => {
+    const productItems = cloneDeep(this.state.productItems);
+    const index = productItems.findIndex(itm => itm.itemId === id);
+    productItems.splice(index, 1);
+    this.setState({ productItems }, this.updateQueue);
+  }
+
+  updateQueue = () => {
+    const {
+      client,
+      serviceItems,
+      productItems,
+    } = this.state;
+    const clientId = get(client, 'id', null);
+    const services = serviceItems.map(itm => this.serializeServiceItem(itm));
+    const products = productItems.map(itm => this.serializeProductItem(itm));
+    this.props.queueDetailActions.updateAppointment(clientId, services, products);
+  }
+
+  serializeServiceItem = (serviceItem) => {
+    const {
+      id = null,
+      service,
+      employee,
+      promotion,
+      isFirstAvailable,
+      isProviderRequested,
+    } = serviceItem;
+    const promotionCode = get(promotion, 'promotionCode', '');
+    return {
+      id,
+      promotionCode,
+      isFirstAvailable,
+      isProviderRequested,
+      serviceId: get(service, 'id', null),
+      employeeId: isFirstAvailable ? null : get(employee, 'id', null),
+      priceEntered: get(service, 'price', 0),
+    };
+  }
+
+  serializeProductItem = (productItem) => {
+    const {
+      id = null,
+      product,
+      employee,
+      promotion,
+    } = productItem;
+    const promotionCode = get(promotion, 'promotionCode', '');
+    const item = {
+      inventoryItemId: get(product, 'id', null),
+      employeeId: get(employee, 'id', null),
+      promotionCode,
+    };
+    if (id) {
+      item.id = id;
+    }
+    return item;
   }
 
   renderBtnContainer = () => {
@@ -559,45 +621,40 @@ class AppointmentDetails extends React.Component {
                         employee={item.employee}
                         promotion={item.promotion}
                         isProviderRequested={item.isProviderRequested}
-                        price={this.calculatePriceDiscount(item.promotion, 'productDiscountAmount', item.product.price)}
+                        price={this.calculatePriceDiscount(item.promotion, 'retailDiscountAmount', item.product.price)}
                       />
                     ))}
                     <AddButton onPress={this.handleAddProduct} title="Add Product" />
-                    <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>
-                      <InputButton
-                        style={{
-                          paddingTop: 22,
-                          paddingRight: 5,
-                        }}
-                        iconStyle={{
-                          fontSize: 22,
-                          color: '#727A8F',
-                          paddingTop: 12,
-                        }}
-                        labelStyle={{
-                          color: '#4D5067',
-                          fontSize: 14,
-                          fontWeight: '500',
-                        }}
-                        label="Recommendations"
-                        onPress={() => {
-                          this.props.navigation.navigate('Recommendations');
-                        }}
-                      />
-                      <SectionDivider style={{
-                        borderBottomWidth: StyleSheet.hairlineWidth,
-                        borderBottomColor: '#C0C1C6',
-                      }}
-                      />
-                    </View>
-                    <View style={{
-                      flexDirection: 'row',
-                      marginTop: 23,
-                      marginBottom: 15,
-                      paddingHorizontal: 8,
-                      justifyContent: 'space-between',
-                    }}
-                    >
+                    {
+                      // <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>
+                      // <InputButton
+                      //   style={{
+                      //     paddingTop: 22,
+                      //     paddingRight: 5,
+                      //   }}
+                      //   iconStyle={{
+                      //     fontSize: 22,
+                      //     color: '#727A8F',
+                      //     paddingTop: 12,
+                      //   }}
+                      //   labelStyle={{
+                      //     color: '#4D5067',
+                      //     fontSize: 14,
+                      //     fontWeight: '500',
+                      //   }}
+                      //   label="Recommendations"
+                      //   onPress={() => {
+                      //     this.props.navigation.navigate('Recommendations');
+                      //   }}
+                      // />
+                      // <SectionDivider style={{
+                      //   borderBottomWidth: StyleSheet.hairlineWidth,
+                      //   borderBottomColor: '#C0C1C6',
+                      // }}
+                      // />
+                      // </View>
+                    }
+                    <View style={styles.totalContainer}>
                       <Text style={styles.totalLabel}>TOTAL</Text>
                       <Text style={styles.totalAmount}>{`$ ${this.totalPrice}`}</Text>
                     </View>
@@ -605,8 +662,8 @@ class AppointmentDetails extends React.Component {
                 </ScrollView>
                 <SalonFixedBottom
                   backgroundColor="#727A8F"
-                  rootStyle={{ minHeight: 44 }}
-                  containerStyle={{ height: 44, paddingHorizontal: 0, paddingVertical: 0 }}
+                  rootStyle={styles.bottomButtonsRoot}
+                  containerStyle={styles.bottomButtonsContainer}
                 >
                   {this.renderBtnContainer()}
                 </SalonFixedBottom>

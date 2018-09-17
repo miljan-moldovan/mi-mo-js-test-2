@@ -76,11 +76,14 @@ class emptyClientList extends PureComponent {
             <Text style={styles.textTitle}>Search for clients above.</Text>
               <Text style={styles.textDesc}>Type name, code, phone number or email</Text>
           </View>
-            <View style={styles.buttonContainer}>
-              <SalonTouchableOpacity onPress={this.handleOnPress} style={styles.buttonStyle}>
-                <Text style={styles.textButton}>ADD NEW CLIENT</Text>
-              </SalonTouchableOpacity>
-            </View>
+        {
+          !this.props.hideAddButton ?
+          (<View style={styles.buttonContainer}>
+            <SalonTouchableOpacity onPress={this.handleOnPress} style={styles.buttonStyle}>
+              <Text style={styles.textButton}>ADD NEW CLIENT</Text>
+            </SalonTouchableOpacity>
+          </View>) : null
+        }
       </SalonTouchableOpacity>
     );
   }

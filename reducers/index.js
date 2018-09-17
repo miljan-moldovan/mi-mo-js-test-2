@@ -7,7 +7,8 @@ import walkInReducer from './walkIn';
 import clientsReducer from './clients';
 import formCache from './formCache';
 import appointmentNotesReducer from './appointmentNotes';
-import walkoutReducer from './walkout';
+// import walkoutReducer from './walkout';
+// import { appointmentDetailsReducer } from '../screens/appointmentDetailsScreen/redux';
 import { modifyApptReducer } from '../screens/modifyAppointmentScreen/redux';
 import { salonSearchHeaderReducer } from './searchHeader';
 import userInfoReducer from './userInfo';
@@ -37,6 +38,7 @@ import rebookReducer from './rebookDialog';
 import queueDetailReducer from './queueDetail';
 import promotionsReducer from './promotions';
 import { AT } from '../actions/login';
+import removalReasonTypesReducer from './removalReasonTypes';
 
 const appReducer = combineReducers({
   auth,
@@ -46,7 +48,6 @@ const appReducer = combineReducers({
   clientsReducer,
   formCache,
   appointmentNotesReducer,
-  walkoutReducer,
   salonSearchHeaderReducer,
   checkinReducer,
   serviceReducer,
@@ -75,6 +76,7 @@ const appReducer = combineReducers({
   rebookReducer,
   queueDetailReducer,
   promotionsReducer,
+  removalReasonTypesReducer,
 });
 
 const rootReducer = (state, action) => {

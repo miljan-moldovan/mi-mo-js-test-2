@@ -3,7 +3,6 @@ import { View, Text, NetInfo, Dimensions, StyleSheet } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
@@ -11,7 +10,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
     width: '100%',
     height: '100%',
-
   },
   offlineContainer: {
     backgroundColor: '#b52424',
@@ -25,6 +23,8 @@ const styles = StyleSheet.create({
   offlineText: { color: '#fff' },
 });
 
+const CONNECTION_RETRY_TIMEOUT = 10000;
+
 function MiniOfflineSign() {
   return (
     <View style={styles.container}>
@@ -36,20 +36,46 @@ function MiniOfflineSign() {
 }
 
 class OfflineNotice extends PureComponent {
+  constructor(props) {
+    super(props);
+    NetInfo.isConnected.fetch().then(this.doCheckFetch);
+  }
+
   state = {
     isConnected: true,
   };
 
   componentDidMount() {
-    NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    NetInfo.isConnected.addEventListener('connectionChange', this.doCheckFetch);
   }
 
   componentWillUnmount() {
-    NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+    NetInfo.isConnected.removeEventListener('connectionChange', this.doCheckFetch);
+    clearTimeout(this.retryInterval);
   }
 
+  doCheckFetch = (isConnected) => {
+    if (isConnected) {
+      this.handleConnectivityChange(true);
+    } else {
+      this.handleConnectivityChange(isConnected);
+      clearTimeout(this.retryInterval);
+      this.retryInterval = setTimeout(
+        this.retry,
+        CONNECTION_RETRY_TIMEOUT + (Math.random() * 6 - 3) * 1000,
+      );
+    }
+  };
+
   handleConnectivityChange = (isConnected) => {
+    if (isConnected && !this.state.isConnected && this.props.autoRefresh) {
+      this.props.autoRefresh();
+    }
     this.setState({ isConnected });
+  };
+
+  retry = () => {
+    NetInfo.isConnected.fetch().then(this.doCheckFetch);
   };
 
   render() {
