@@ -78,6 +78,7 @@ class ServiceSection extends Component {
       </View>
       <View style={styles.serviceDataContainer}>
         <ServiceInput
+          walkin={this.props.walkin}
           noPlaceholder
           rootStyle={styles.providerRootStyle}
           nameKey={service.service && service.service.description ? 'description' : 'name'}
@@ -89,6 +90,7 @@ class ServiceSection extends Component {
         />
         <InputDivider style={styles.middleSectionDivider} />
         <ProviderInput
+          walkin={this.props.walkin}
           noLabel
           filterByService
           rootStyle={styles.providerRootStyle}
