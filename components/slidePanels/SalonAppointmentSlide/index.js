@@ -64,6 +64,14 @@ class SalonAppointmentSlide extends React.Component {
     }
   }
 
+ 
+  componentDidUpdate(){
+    const {appointment} = this.props;
+    if (appointment && appointment.queueStatus != this.state.appointment.queueStatus){
+      this.setState({appointment: this.props.appointment});
+    }
+  }
+
   get remarksMessage() {
     const {
       client,
@@ -400,17 +408,11 @@ class SalonAppointmentSlide extends React.Component {
       isGridLoading,
     } = this.props;
 
-    const {
-      client,
-      service,
-      employee,
-      isNoShow,
-      queueStatus,
-    } = appointment;
-
+    const { isNoShow, queueStatus } = appointment;
+    
     const isCheckInDisabled = (isGridLoading || isCheckingIn
       || queueStatus !== ApptQueueStatus.NotInQueue || isNoShow);
-    const isCheckOutDisabled = (isGridLoading || isCheckingOut
+    const isCheckOutDisabled = ((isGridLoading && isCheckingOut)
       || queueStatus === ApptQueueStatus.CheckedOut || isNoShow);
 
     return (
