@@ -221,7 +221,7 @@ renderBtnContainer = () => {
           <Text style={styles.btnbottomText}>{isActiveFinish ? 'Finish' : 'Undo finish'}</Text>
         </View>
       </SalonTouchableOpacity>
-      <SalonTouchableOpacity onPress={this.props.onPressSummary.checkout}>
+      <SalonTouchableOpacity onPress={this.props.onPressSummary.checkOut}>
         <View style={styles.btnGroup}>
           <View style={styles.btnBottom}>
             <Icon name="dollar" size={16} color="#fff" type="solid" />

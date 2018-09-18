@@ -143,6 +143,7 @@ handlePressSummary = {
   toService: () => this.checkHasEmail(),
   toWaiting: () => this.handleToWaiting(),
   finish: finish => this.handlePressFinish(finish),
+  checkOut: id => this.handlePressCheckOut(id),
 }
 
 _onRefresh = () => {
@@ -266,7 +267,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
     this.hideDialog();
     const getLabel = style => this.getLabelForItem(appointment, style);
     this.props.navigation.navigate('AppointmentDetails', {
-      appointment, getLabel, isWaiting, onPressSummary,
+      appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary,
     });
   }
 }
@@ -533,6 +534,12 @@ handleToWaiting = () => {
   const { appointment } = this.state;
   this.hideAll();
   this.props.toWaiting(appointment.id, this.props.loadQueueData);
+}
+
+handlePressCheckOut = (id = false) => {
+  const { appointment } = this.state;
+  this.hideDialog();
+  this.props.checkOut(id || appointment.id, this.props.loadQueueData);
 }
 
 handlePressFinish = (finish) => {
@@ -837,6 +844,7 @@ Queue.propTypes = {
   undoFinishService: PropTypes.func.isRequired,
   finishService: PropTypes.func.isRequired,
   walkOut: PropTypes.func.isRequired,
+  checkOut: PropTypes.func.isRequired,
   data: PropTypes.any.isRequired,
   settings: PropTypes.any.isRequired,
   searchClient: PropTypes.any.isRequired,
