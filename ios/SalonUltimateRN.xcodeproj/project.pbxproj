@@ -42,7 +42,6 @@
 		5F3E5F5C218647FC92182819 /* OpenSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9E06E6401D64469F8CF1BB07 /* OpenSans-SemiBoldItalic.ttf */; };
 		609E1DBB211CC481007E7337 /* libRNTextInputMask.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 601A5B81211A7BCF00F897B9 /* libRNTextInputMask.a */; };
 		60B72D28211CB5290037F07D /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 60B72D26211CB5290037F07D /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		60E3074D209D082D000251AD /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60E3074C209D082C000251AD /* FontAwesome.ttf */; };
 		60E3074E209D082D000251AD /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60E3074C209D082C000251AD /* FontAwesome.ttf */; };
 		60E3075720A08659000251AD /* FontAwesome5FreeRegular400.otf in Resources */ = {isa = PBXBuildFile; fileRef = 60E3075520A08658000251AD /* FontAwesome5FreeRegular400.otf */; };
 		60E3075820A08659000251AD /* FontAwesome5FreeRegular400.otf in Resources */ = {isa = PBXBuildFile; fileRef = 60E3075520A08658000251AD /* FontAwesome5FreeRegular400.otf */; };
@@ -751,7 +750,7 @@
 			path = "New Group";
 			sourceTree = "<group>";
 		};
-		6991AB5B2086450700D9FD1A /*  */ = {
+		6991AB5B2086450700D9FD1A = {
 			isa = PBXGroup;
 			children = (
 				6991AB652086450700D9FD1A /* libRCTDirectedScrollView.a */,
@@ -1011,7 +1010,7 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = F44N5MSDA3;
+						DevelopmentTeam = FMPG38UD6Y;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
@@ -1054,7 +1053,7 @@
 					ProjectRef = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
 				},
 				{
-					ProductGroup = 6991AB5B2086450700D9FD1A /*  */;
+					ProductGroup = 6991AB5B2086450700D9FD1A;
 					ProjectRef = 6991AB5A2086450700D9FD1A /* RCTDirectedScrollView.xcodeproj */;
 				},
 				{
@@ -1499,7 +1498,6 @@
 				4D8D737B9E3F4CE78F9E2B87 /* Roboto-Thin.ttf in Resources */,
 				7A617A6A64424883A3DC416D /* Roboto-ThinItalic.ttf in Resources */,
 				1B7371B42CAA4547957ADB23 /* OFL.txt in Resources */,
-				60E3074D209D082D000251AD /* FontAwesome.ttf in Resources */,
 				68AFE49E20234838A5B205E1 /* Entypo.ttf in Resources */,
 				7429D36D8AB84EFF9461367A /* EvilIcons.ttf in Resources */,
 				1286FA38AA3A41FAB5EA8ABC /* FontAwesome.ttf in Resources */,
@@ -1689,7 +1687,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = F44N5MSDA3;
+				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1723,7 +1721,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = F44N5MSDA3;
+				DEVELOPMENT_TEAM = FMPG38UD6Y;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
