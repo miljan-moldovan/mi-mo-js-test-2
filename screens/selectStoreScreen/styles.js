@@ -47,10 +47,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   selectedItem: {
-    color: 'green',
+    color: 'rgb(28, 191, 18)',
   },
   selectedItemIcon: {
-    color: 'green',
+    color: 'rgb(28, 191, 18)',
     position: 'absolute',
     right: 0,
   },
