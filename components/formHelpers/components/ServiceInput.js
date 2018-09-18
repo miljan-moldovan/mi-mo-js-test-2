@@ -73,7 +73,6 @@ export default class ServiceInput extends React.Component {
   }
 
   selectExtraServices = () => {
-    
     const {
       afterDone = () => null,
       onChangeAddons = srv => srv,

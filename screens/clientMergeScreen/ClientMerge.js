@@ -7,8 +7,10 @@ import {
   FlatList,
   RefreshControl,
 } from 'react-native';
+import { get, filter, remove } from 'lodash';
 import Icon from '../../components/UI/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+
 
 class ClientMergeItem extends React.PureComponent {
   _onPress = () => {
@@ -88,12 +90,13 @@ export class ClientMerge extends React.Component {
     selected: (new Map(): Map<string, boolean>),
   }
   componentWillMount() {
-    this.setState({ data: this.props.data });
+    // this.setState({ data: this.props.data });
     this._onPressItem(this.props.mainClient);
   }
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.data !== this.props.data) {
-      this.setState({ data: nextProps.data });
+      // this.setState({ data: nextProps.data });
+      this._onPressItem(this.props.mainClient);
     }
   }
   _onRefresh = () => {
@@ -131,7 +134,14 @@ export class ClientMerge extends React.Component {
       if (this.props.onChangeMergeClients) {
         this.props.onChangeMergeClients(selectedArray, mainClient);
       }
-      return { selected, mainClient };
+
+      let rest = filter(this.props.data, currentObject => currentObject.id !== mainClient);
+
+      const main = filter(this.props.data, currentObject => currentObject.id === mainClient);
+
+      rest = [...main, ...rest];
+
+      return { selected, mainClient, data: rest };
     });
   };
   _onPressSelectMain = (id: string) => {

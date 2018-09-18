@@ -4,6 +4,7 @@ import {
 
 export default StyleSheet.create({
   headerContainer: {
+    paddingTop: 25,
     alignItems: 'center',
     backgroundColor: '#115ECD',
     borderBottomWidth: 0,
