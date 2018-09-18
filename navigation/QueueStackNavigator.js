@@ -18,7 +18,7 @@ import RemovalReasonTypesScreen from './../screens/removalReasonTypes';
 
 import ProvidersScreen from '../screens/providersScreen';
 import NewClientScreen from '../screens/newClientScreen';
-import PromotionsScreen from '../screens/promotionsScreen';
+import PromotionsScreen from '../screens/PromotionsScreen';
 import ServicesScreen from '../screens/servicesScreen';
 import TurnAwayScreen from '../screens/turnAwayScreen';
 
@@ -28,7 +28,7 @@ import ModifyServiceScreen from '../screens/modifyServiceScreen';
 import ModifyProductScreen from '../screens/modifyProductScreen';
 import RecommendationsScreen from '../screens/recommendationsScreen';
 
-import AppointmentDetailsScreen from './../screens/appointmentDetailsScreen/';
+import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 
 import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';

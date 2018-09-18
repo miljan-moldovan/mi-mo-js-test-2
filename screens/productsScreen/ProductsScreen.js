@@ -5,15 +5,18 @@ import {
   FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { get, isNumber } from 'lodash';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import Icon from '../../components/UI/Icon';
-import {
-  InputButton, InputDivider,
-} from '../../components/formHelpers';
+import { get, chain, isNaN, sortBy, isNumber } from 'lodash';
 
+import Icon from '../../components/UI/Icon';
+import WordHighlighter from '../../components/wordHighlighter';
+import ListLetterFilter from '../../components/listLetterFilter';
+import SalonSearchBar from '../../components/SalonSearchBar';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Colors from '../../constants/Colors';
 import styles from './styles';
+import LoadingOverlay from '../../components/LoadingOverlay';
+
+const ITEM_HEIGHT = 48; // 12 (paddingVertical) + (18 (lineHeight) * 2)
 
 class ProductsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -30,6 +33,7 @@ class ProductsScreen extends React.Component {
 
     const { selectedProduct = null } = props.navigation.state.params || {};
     this.state = {
+      searchText: '',
       selectedProduct,
     };
   }
@@ -54,11 +58,35 @@ class ProductsScreen extends React.Component {
     }
   }
 
+  onChangeSearchText = searchText => this.setState({ searchText })
+
   get currentData() {
     const {
       productsState: { products },
     } = this.props;
-    return products;
+    const { searchText } = this.state;
+    const sortByName = itm => get(itm, 'name', '').toLowerCase();
+    const sorted = sortBy(products, sortByName);
+    if (searchText !== '') {
+      return sorted.filter(itm => get(itm, 'name', '').toLowerCase().indexOf(searchText.toLowerCase()) >= 0);
+    }
+    return sorted;
+  }
+
+  getItemLayout = (data, index) => ({ length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index })
+
+  scrollToLetter = (letter) => {
+    for (let i = 0; i <= this.currentData.length; i += 1) {
+      const firstChar = get(this.currentData[i], 'name', '').toUpperCase().charAt(0);
+      if (letter === '#' && !isNaN(Number(firstChar))) {
+        this.listRef.scrollToIndex({ index: i });
+        break;
+      }
+      if (firstChar === letter.toUpperCase()) {
+        this.listRef.scrollToIndex({ index: i });
+        break;
+      }
+    }
   }
 
   keyExtractor = item => get(item, 'id');
@@ -66,7 +94,7 @@ class ProductsScreen extends React.Component {
   renderSeparator = () => <View style={styles.itemSeparator} />
 
   renderItem = ({ item }) => {
-    const { selectedProduct } = this.state;
+    const { selectedProduct, searchText } = this.state;
     const isSelected = (
       isNumber(get(selectedProduct, 'id', null)) && isNumber(get(item, 'id', null))
       && item.id === selectedProduct.id
@@ -77,10 +105,11 @@ class ProductsScreen extends React.Component {
     const selectedStyle = isSelected ? styles.selectedText : {};
     const icon = isSelected ? (
       <Icon
+        size={14}
         type="solid"
         name="checkCircle"
+        style={styles.iconStyle}
         color={Colors.selectedGreen}
-        size={14}
       />
     ) : null;
     const onPress = () => this.onChangeProduct(item);
@@ -89,9 +118,16 @@ class ProductsScreen extends React.Component {
         onPress={onPress}
         style={styles.itemRow}
       >
-        <View style={[styles.container, styles.flexRow]}>
-          <Text numberOfLines={1} style={[styles.itemText, styles.container, selectedStyle]}>{name}</Text>
-          <View style={styles.info}>
+        <View style={styles.container}>
+          <WordHighlighter
+            numberOfLines={1}
+            highlight={searchText}
+            highlightStyle={styles.highlightText}
+            style={[styles.itemText, styles.container, selectedStyle]}
+          >
+            {name}
+          </WordHighlighter>
+          <View style={[styles.container, styles.info]}>
             {
               size &&
               <Text style={styles.sizeText}>{size}</Text>
@@ -99,21 +135,53 @@ class ProductsScreen extends React.Component {
             <Text style={styles.priceText}>{`$ ${price}`}</Text>
           </View>
         </View>
-        {icon}
+        <View style={styles.iconContainer}>
+          {icon}
+        </View>
       </SalonTouchableOpacity>
     );
   }
 
   render() {
+    const {
+      searchText,
+    } = this.state;
+    const {
+      productsState: { isLoading },
+    } = this.props;
     return (
       <View style={[styles.container, styles.whiteBg]}>
-        <FlatList
-          data={this.currentData}
-          style={[styles.container, styles.whiteBg]}
-          keyExtractor={this.keyExtractor}
-          renderItem={this.renderItem}
-          ItemSeparatorComponent={this.renderSeparator}
+        {
+          isLoading &&
+          <LoadingOverlay />
+        }
+        <SalonSearchBar
+          marginVertical={0}
+          searchText={searchText}
+          placeHolderText="Search"
+          searchIconPosition="left"
+          borderColor="transparent"
+          fontColor={Colors.defaultGrey}
+          iconsColor={Colors.defaultGrey}
+          onChangeText={this.onChangeSearchText}
+          placeholderTextColor={Colors.defaultGrey}
+          containerStyle={styles.searchBarContainer}
+          backgroundColor="rgba(142, 142, 147, 0.24)"
         />
+        <View style={[styles.container, styles.flexRow]}>
+          <FlatList
+            ref={(ref) => { this.listRef = ref; }}
+            data={this.currentData}
+            getItemLayout={this.getItemLayout}
+            style={[styles.container, styles.whiteBg]}
+            keyExtractor={this.keyExtractor}
+            renderItem={this.renderItem}
+            ItemSeparatorComponent={this.renderSeparator}
+          />
+          <View style={styles.iconContainer}>
+            <ListLetterFilter onPress={this.scrollToLetter} />
+          </View>
+        </View>
       </View>
     );
   }

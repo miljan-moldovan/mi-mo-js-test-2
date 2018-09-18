@@ -12,12 +12,13 @@ const styles = StyleSheet.create({
   },
   itemRow: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingVertical: 6,
     alignItems: 'center',
   },
   itemText: {
     fontSize: 14,
-    lineHeight: 44,
+    lineHeight: 18,
     color: Colors.defaultBlack,
   },
   selectedText: {
@@ -29,9 +30,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dividerGrey,
   },
   info: {
-    marginLeft: 10,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
   },
   sizeText: {
@@ -39,10 +38,22 @@ const styles = StyleSheet.create({
     color: Colors.serviceCheckBlack,
   },
   priceText: {
-    marginLeft: 5,
     fontSize: 14,
     lineHeight: 18,
     color: Colors.defaultGrey,
+    alignSelf: 'flex-end',
+  },
+  searchBarContainer: { paddingHorizontal: 8 },
+  highlightText: {
+    color: Colors.selectedGreen,
+  },
+  iconContainer: {
+    width: 14,
+    marginLeft: 5,
+  },
+  iconStyle: {
+    lineHeight: 18,
+    alignSelf: 'flex-start',
   },
 });
 export default styles;

@@ -205,7 +205,7 @@ SalonSearchBar.defaultProps = {
   iconsColor: '#FFFFFF',
   searchIconPosition: 'left',
   showCancel: false,
-  placeHolderText: 'Search1',
+  placeHolderText: 'Search',
   onFocus: () => {},
   focusOnMount: false,
   containerStyle: {},

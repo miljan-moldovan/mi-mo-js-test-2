@@ -28,13 +28,15 @@ const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', '
 
 const keyExtractor = item => item;
 
-const renderItem = (elem, props) => (<SalonTouchableOpacity style={styles.rowItem} onPress={() => { props.onPress(elem.item); }}>
-  <Text style={styles.text}>{elem.item}</Text>
-                                     </SalonTouchableOpacity>);
+const renderItem = (elem, props) => (
+  <SalonTouchableOpacity style={styles.rowItem} onPress={() => { props.onPress(elem.item); }}>
+    <Text style={styles.text}>{elem.item}</Text>
+  </SalonTouchableOpacity>
+);
 
 const listLetterFilter = props => (
   <FlatList
-    style={styles.container}
+    style={[styles.container, props.containerStyle]}
     data={abecedary}
     renderItem={elem => renderItem(elem, props)}
     keyExtractor={keyExtractor}

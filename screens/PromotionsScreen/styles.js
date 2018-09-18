@@ -27,5 +27,14 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.dividerGrey,
   },
+  searchBarContainer: { paddingHorizontal: 8 },
+  listLetterContainer: {
+    width: 14,
+    marginLeft: 5,
+  },
+  marginRight: { marginRight: 16 },
+  highlightText: {
+    color: Colors.selectedGreen,
+  },
 });
 export default styles;

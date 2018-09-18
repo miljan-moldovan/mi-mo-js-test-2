@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: 14,
     lineHeight: 22,
+    marginRight: 5,
     color: '#727A8F',
     fontFamily: 'Roboto-Regular',
   },
