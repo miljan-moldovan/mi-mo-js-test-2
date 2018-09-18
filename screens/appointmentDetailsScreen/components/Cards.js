@@ -12,7 +12,7 @@ import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '../../../components/UI/Icon';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import { Employees } from '../../../utilities/apiWrapper';
-import styles from './appointmentDetails/styles';
+import styles from './AppointmentDetails/styles';
 import { DefaultAvatar } from '../../../components/formHelpers';
 
 const cardStyles = StyleSheet.create({
