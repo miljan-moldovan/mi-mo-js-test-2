@@ -41,7 +41,6 @@ export default StyleSheet.create({
     fontSize: 10,
   },
   titleContainer: {
-    paddingTop: 25,
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
