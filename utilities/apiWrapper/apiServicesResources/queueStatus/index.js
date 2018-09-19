@@ -9,6 +9,7 @@ import putToWaiting from './putToWaiting';
 import putUndoFinish from './putUndoFinish';
 import putWalkOut from './putWalkOut';
 import putUncheckIn from './putUncheckIn';
+import putCheckOut from './putCheckOut';
 
 export {
   getReasonTypes,
@@ -22,4 +23,5 @@ export {
   putUndoFinish,
   putWalkOut,
   putUncheckIn,
+  putCheckOut,
 };

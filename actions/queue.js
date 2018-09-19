@@ -1,3 +1,4 @@
+import { isFunction } from 'lodash';
 import { QueueStatus, Queue, Employees } from '../utilities/apiWrapper';
 import { showErrorAlert } from './utils';
 
@@ -33,6 +34,9 @@ export const CLIENT_FINISH_SERVICE_RECEIVED = 'queue/CLIENT_FINISH_SERVICE_RECEI
 export const CLIENT_UNDOFINISH_SERVICE = 'queue/CLIENT_UNDOFINISH_SERVICE';
 export const CLIENT_UNDOFINISH_SERVICE_FAILED = 'queue/CLIENT_UNDOFINISH_SERVICE_FAILED';
 export const CLIENT_UNDOFINISH_SERVICE_RECEIVED = 'queue/CLIENT_UNDOFINISH_SERVICE_RECEIVED';
+export const CLIENT_CHECKOUT = 'queue/CLIENT_CHECKOUT';
+export const CLIENT_CHECKOUT_FAILED = 'queue/CLIENT_CHECKOUT_FAILED';
+export const CLIENT_CHECKOUT_RECEIVED = 'queue/CLIENT_CHECKOUT_RECEIVED';
 export const CLIENT_TO_WAITING = 'queue/CLIENT_TO_WAITING';
 export const CLIENT_TO_WAITING_RECEIVED = 'queue/CLIENT_TO_WAITING_RECEIVED';
 export const CLIENT_TO_WAITING_FAILED = 'queue/CLIENT_TO_WAITING_FAILED';
@@ -474,9 +478,27 @@ export const getQueueStateFailed = error => ({
 });
 
 export const getQueueState = callback => (dispatch) => {
-  callback = callback || (() => {});
+  callback = callback || (() => { });
   dispatch({ type: GET_QUEUE_STATE });
   return Queue.getQueueState()
     .then((response) => { dispatch(getQueueStateSuccess(response)); callback(true); })
     .catch((error) => { dispatch(getQueueStateFailed(error)); callback(false); });
+};
+
+export const checkOut = (id, callback = false) => (dispatch) => {
+  dispatch({ type: CLIENT_CHECKOUT, data: { id } });
+  return QueueStatus.putCheckOut(id)
+    .then((res) => {
+      dispatch({ type: CLIENT_CHECKOUT_RECEIVED, data: { res } });
+      if (isFunction(callback)) {
+        callback(true);
+      }
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      if (isFunction(callback)) {
+        callback(false);
+      }
+      dispatch({ type: CLIENT_CHECKOUT_FAILED, data: { error } });
+    });
 };

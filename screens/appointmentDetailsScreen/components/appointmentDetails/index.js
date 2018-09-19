@@ -357,6 +357,15 @@ class AppointmentDetails extends React.Component {
     });
   }
 
+  handlePressCheckOut = () => {
+    const {
+      navigation: { goBack },
+      onPressSummary: { checkOut },
+      queueDetailState: { appointment },
+    } = this.props;
+    checkOut(get(appointment, 'id', null));
+    goBack();
+  }
   handlePressProduct = (productItem) => {
     const { client } = this.state;
     const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
@@ -522,13 +531,10 @@ class AppointmentDetails extends React.Component {
     }
     return (
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-
         <BottomButton disabled={!isActiveWaiting} icon="hourglassHalf" onPress={() => { this.props.onPressSummary.toWaiting(); this.props.navigation.goBack(); }} title="To Waiting" />
         <BottomButton disabled={false} icon="undo" onPress={() => { this.props.onPressSummary.rebook(); this.props.navigation.goBack(); }} title="Rebook" />
         <BottomButton disabled={false} icon="checkSquare" onPress={() => { this.props.onPressSummary.finish(isActiveFinish); this.props.navigation.goBack(); }} title={isActiveFinish ? 'Finish' : 'Undo finish'} />
-        <BottomButton disabled={false} icon="pldollaray" onPress={() => { this.props.onPressSummary.checkout(); this.props.navigation.goBack(); }} title="Checkout" />
-
-
+        <BottomButton disabled={false} icon="dollar" onPress={this.handlePressCheckOut} title="Checkout" />
       </View>
     );
   }
