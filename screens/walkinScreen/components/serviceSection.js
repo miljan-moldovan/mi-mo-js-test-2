@@ -11,8 +11,9 @@ import {
   ProviderInput,
   InputDivider,
   ServiceInput,
-  InputSwitch,
 } from '../../../components/formHelpers';
+
+import TrackRequestSwitch from '../../../components/TrackRequestSwitch';
 
 
 class ServiceSection extends Component {
@@ -30,9 +31,9 @@ class ServiceSection extends Component {
     this.props.onUpdate(index, newService);
   }
 
-  handleUpdateIsProviderRequested= (service, index) => {
+  handleUpdateIsProviderRequested= (service, index, value) => {
     const newService = service;
-    newService.isProviderRequested = !newService.isProviderRequested;
+    newService.isProviderRequested = value;
     this.props.onUpdate(index, newService);
   }
 
@@ -101,13 +102,11 @@ class ServiceSection extends Component {
           headerProps={{ title: 'Providers', ...this.props.cancelButton() }}
           onChange={(provider) => { this.handleProviderSelection(provider, service, index); }}
         />
-        {service.provider && !service.provider.isFirstAvailable && <InputDivider style={styles.middleSectionDivider} />}
-        {service.provider && !service.provider.isFirstAvailable && <InputSwitch
+        {service.provider && <TrackRequestSwitch
           textStyle={styles.textLabel}
           style={styles.providerRequestedStyle}
-          onChange={() => { this.handleUpdateIsProviderRequested(service, index); }}
-          text="Provider is Requested?"
-          value={service.isProviderRequested}
+          onChange={(value) => { this.handleUpdateIsProviderRequested(service, index, value); }}
+          isFirstAvailable={service.provider.isFirstAvailable}
         />}
       </View>
     </View>

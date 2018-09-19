@@ -15,6 +15,7 @@ import {
   PromotionInput,
   InputLabel,
 } from '../../components/formHelpers';
+import TrackRequestSwitch from '../../components/TrackRequestSwitch';
 
 import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -75,6 +76,8 @@ export default class ModifyServiceScreen extends React.Component {
     const price = get(service, 'price', 0);
     const isFirstAvailable = get(serviceItem, 'isFirstAvailable', false);
     const isProviderRequested = get(serviceItem, 'isProviderRequested', true);
+    
+
     return {
       price,
       service,
@@ -144,6 +147,8 @@ export default class ModifyServiceScreen extends React.Component {
     } = this.state;
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
     const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
+
+
     onSave({
       service,
       employee,
@@ -160,7 +165,10 @@ export default class ModifyServiceScreen extends React.Component {
 
   handleChangePromotion = promotion => this.setState({ promotion }, this.validate)
 
-  handleChangeRequested = isProviderRequested => this.setState({ isProviderRequested: !isProviderRequested })
+  handleChangeRequested = (isProviderRequested) => {
+
+    this.setState({ isProviderRequested });
+  }
 
   render() {
     const { navigation: { navigate } } = this.props;
@@ -199,7 +207,16 @@ export default class ModifyServiceScreen extends React.Component {
             selectedProvider={employee}
             headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
-          {
+
+
+          {employee ? <TrackRequestSwitch
+            onChange={this.handleChangeRequested}
+            isFirstAvailable={isFirstAvailable}
+            initialValue={isProviderRequested}
+          /> : null}
+
+
+          {/*
             !isFirstAvailable ?
               <React.Fragment>
                 <InputDivider />
@@ -209,7 +226,7 @@ export default class ModifyServiceScreen extends React.Component {
                   text="Provider is requested?"
                 />
               </React.Fragment> : null
-          }
+          */}
         </InputGroup>
         <SectionDivider />
         <InputGroup>

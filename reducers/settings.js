@@ -50,7 +50,7 @@ export default function settingsReducer(state = initialState, action) {
         error: null,
         data: {
           ...state.data,
-          [data.settingName]: data.settingValue,
+          [data.settings.settingName]: data.settings.settingValue,
         },
         isLoading: false,
       };

@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
+import { find } from 'lodash';
 import Icon from '../../components/UI/Icon';
 import ClientInfoButton from '../../components/ClientInfoButton';
 
@@ -72,6 +73,7 @@ class WalkInScreen extends Component {
 
   componentWillMount() {
     this.props.queueActions.getQueueState(this.setWaitMins);
+    this.props.settingsActions.getSettings();
 
     const { newAppointment } = this.props.navigation.state.params;
     if (newAppointment) {
@@ -80,7 +82,7 @@ class WalkInScreen extends Component {
       const services = [{
         service,
         provider,
-        isProviderRequested: !provider.isFirstAvailable,
+        isProviderRequested: false, //! provider.isFirstAvailable,
       }];
 
       this.setState({ client, services }, this.checkCanSave);
@@ -131,8 +133,10 @@ class WalkInScreen extends Component {
       const {
         services,
         client,
-        isProviderRequested,
       } = this.state;
+
+
+      
 
 
       const servicesBlock = [];
@@ -143,10 +147,12 @@ class WalkInScreen extends Component {
         serviceContainer.provider.isFirstAvailable ?
           {} : { providerId: serviceContainer.provider.id };
 
+          //! provider.isFirstAvailable,
+
         servicesBlock.push({
           serviceId: serviceContainer.service.id,
           ...providerBlock,
-          isProviderRequested,
+          isProviderRequested: serviceContainer.isProviderRequested,
           isFirstAvailable: serviceContainer.provider.isFirstAvailable,
         });
       }
@@ -224,7 +230,7 @@ class WalkInScreen extends Component {
       const service = {
         provider: employee,
         service: null,
-        isProviderRequested: true,
+        isProviderRequested: false,
       };
 
       const { services } = this.state;
@@ -297,6 +303,9 @@ WalkInScreen.defaultProps = {
 WalkInScreen.propTypes = {
   walkInActions: PropTypes.shape({
     postWalkinClient: PropTypes.func.isRequired,
+  }).isRequired,
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
   queueActions: PropTypes.shape({
     getQueueState: PropTypes.func.isRequired,

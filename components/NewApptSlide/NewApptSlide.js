@@ -35,6 +35,7 @@ import Button from './components/Button';
 import ConflictBox from './components/ConflictBox';
 import AddonsContainer from './components/AddonsContainer';
 import SalonToast from '../../screens/appointmentCalendarScreen/components/SalonToast';
+import TrackRequestSwitch from './../TrackRequestSwitch';
 
 import styles from './styles';
 
@@ -780,11 +781,26 @@ class NewApptSlide extends React.Component {
           <ConflictBox onPress={onPressConflicts} />
         }
         <View style={styles.requestedContainer}>
-          <Text style={styles.requestedText}>Provider is Requested?</Text>
+          {/*  <Text style={styles.requestedText}>Provider is Requested?</Text>
           <Switch
             value={this.props.newApptState.isQuickApptRequested}
             onValueChange={requested => this.props.newApptActions.setQuickApptRequested(requested)}
           />
+          */}
+
+          <View style={{ flex: 1 }}>
+
+            {provider ?
+              <TrackRequestSwitch
+                hideDivider={false}
+                style={{ marginLeft: 0, paddingRight: 0 }}
+                textStyle={styles.requestedText}
+                onChange={this.props.newApptActions.setQuickApptRequested}
+                isFirstAvailable={provider.isFirstAvailable}
+              />
+          : null}
+
+          </View>
         </View>
         <View style={styles.lengthContainer}>
           <Text style={styles.lengthText}>Length</Text>
