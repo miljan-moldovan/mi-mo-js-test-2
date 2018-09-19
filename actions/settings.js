@@ -36,11 +36,14 @@ const getSettingsByNameFailed = error => ({
   data: { error },
 });
 
-const getSettingsByName = name => (dispatch, getState) => {
+const getSettingsByName = (name, callback = () => {}) => (dispatch, getState) => {
   dispatch({ type: SETTINGS_BY_NAME });
   return Settings.getSettingsByName(name)
-    .then(response => dispatch(getSettingsByNameSuccess(response)))
-    .catch(error => dispatch(getSettingsByNameFailed(error)));
+    .then((response) => { dispatch(getSettingsByNameSuccess(response)); callback(true); })
+    .catch((error) => {
+      dispatch(getSettingsByNameFailed(error));
+      callback(false, error.message);
+    });
 };
 
 const settingsActions = {
