@@ -271,6 +271,7 @@ class ClientsScreen extends React.Component {
           ref={item => this.BarsActionSheet = item}
           onLogout={this.props.auth.logout}
           navigation={this.props.navigation}
+          onChangeStore={this.props.storeActions.reselectMainStore}
         />
         <View style={styles.clientsList}>
           <ClientList
@@ -308,6 +309,9 @@ ClientsScreen.propTypes = {
       }),
     }),
   }),
+  storeActions: PropTypes.shape({
+    reselectMainStore: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 ClientsScreen.defaultProps = {

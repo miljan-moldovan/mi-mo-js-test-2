@@ -21,16 +21,19 @@ class SalonActionSheet extends Component {
   constructor(props) {
     super(props);
     this.scrollEnabled = false;
-    this.translateY = this._calculateHeight(props);
+    const translateY = this._calculateHeight(props);
     this.state = {
+      translateY,
       visible: false,
-      sheetAnim: new Animated.Value(this.translateY),
+      sheetAnim: new Animated.Value(translateY),
     };
     this._cancel = this._cancel.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.translateY = this._calculateHeight(nextProps);
+    this.setState({
+      translateY: this._calculateHeight(nextProps),
+    });
   }
 
   show() {
@@ -62,8 +65,9 @@ class SalonActionSheet extends Component {
   }
 
   _hideSheet(callback) {
+    const { translateY } = this.state;
     Animated.timing(this.state.sheetAnim, {
-      toValue: this.translateY,
+      toValue: translateY,
       duration: 150,
     }).start(callback || (() => {}));
   }
@@ -97,7 +101,7 @@ class SalonActionSheet extends Component {
   }
 
   _renderTitle() {
-    const title = this.props.title;
+    const { title } = this.props;
 
     if (!title) {
       return null;
@@ -117,7 +121,7 @@ class SalonActionSheet extends Component {
   }
 
   _renderMessage() {
-    const message = this.props.message;
+    const { message } = this.props;
 
     if (!message) {
       return null;
@@ -203,7 +207,7 @@ class SalonActionSheet extends Component {
 
   render() {
     const { cancelButtonIndex } = this.props;
-    const { visible, sheetAnim } = this.state;
+    const { visible, sheetAnim, translateY } = this.state;
     return (
       <Modal
         visible={visible}
@@ -214,7 +218,7 @@ class SalonActionSheet extends Component {
         <View style={[sheetStyle.wrapper, this.props.wrapperStyle]}>
           <Text style={styles.overlay} onPress={this._cancel} />
           <Animated.View
-            style={[sheetStyle.bd, { height: this.translateY, transform: [{ translateY: sheetAnim }] }]}
+            style={[sheetStyle.bd, { height: translateY, transform: [{ translateY: sheetAnim }] }]}
           >
             {this._renderTitle()}
             {this._renderMessage()}

@@ -533,6 +533,7 @@ class AppointmentScreen extends Component {
           ref={item => this.BarsActionSheet = item}
           onLogout={this.props.auth.logout}
           navigation={this.props.navigation}
+          onChangeStore={this.props.storeActions.reselectMainStore}
         />
         <SalonDatePickerBar
           calendarColor="#FFFFFF"

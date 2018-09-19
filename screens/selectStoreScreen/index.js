@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { View, Text, ActivityIndicator, FlatList, AppState } from 'react-native';
 import PropTypes from 'prop-types';
 import { filter } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import styles from './styles';
 import { Store } from '../../utilities/apiWrapper';
@@ -16,12 +17,18 @@ import salonSearchHeaderActions from '../../reducers/searchHeader';
 
 class SelectStoreScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const leftButtonOnPress = () => {};
+    let leftButton = null;
+    let leftButtonOnPress = () => {};
+    if (navigation.state.params && navigation.state.params.storeId) {
+      leftButton = (<Text style={styles.leftButtonText}>Cancel</Text>);
+      leftButtonOnPress = navigation.state.params.leftButtonOnPress;
+    }
+
     const rightButtonOnPress = () => {};
     return {
       header: () => (<SalonSearchHeader
         title="Stores"
-        leftButton={null}
+        leftButton={leftButton}
         leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
         rightButton={null}
         rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
@@ -44,6 +51,10 @@ class SelectStoreScreen extends React.Component {
       appState: AppState.currentState,
     };
 
+    this.props.navigation.setParams({
+      storeId: props.currentStore.storeId,
+      leftButtonOnPress: props.storeActions.cancelSelectStore,
+    });
     this.props.salonSearchHeaderActions.setFilterAction(searchText => this.filterList(searchText));
     this.props.salonSearchHeaderActions
       .setIgnoredNumberOfLetters(0);
@@ -108,11 +119,28 @@ class SelectStoreScreen extends React.Component {
     this.setState({ appState: nextAppState });
   }
 
-  renderListItem = ({ item }) => (
-    <SalonTouchableOpacity onPress={() => this.handleSelectStore(item.id)}>
-      <Text style={styles.listItem}>{item.name}</Text>
-    </SalonTouchableOpacity>
-  );
+  renderListItem = ({ item }) => {
+    const selectedStore = this.props.currentStore.storeId === item.id;
+    return (
+      <SalonTouchableOpacity
+        onPress={() => this.handleSelectStore(item.id)}
+      >
+        {!selectedStore && (
+          <Text style={styles.listItem}>{item.name}</Text>
+        )}
+        {selectedStore && (
+          <View style={styles.selectedStoreWrapper}>
+            <Text style={[styles.selectedItem]}>{item.name}</Text>
+            <FontAwesome
+              style={styles.selectedItemIcon}
+            >
+              {Icons.checkCircle}
+            </FontAwesome>
+          </View>
+        )}
+      </SalonTouchableOpacity>
+    );
+  };
 
   renderContent = () => (
     <View style={styles.contentWrapper}>
@@ -148,6 +176,7 @@ class SelectStoreScreen extends React.Component {
 SelectStoreScreen.propTypes = {
   storeActions: PropTypes.shape({
     setStore: PropTypes.func.isRequired,
+    cancelSelectStore: PropTypes.func.isRequired,
   }).isRequired,
   authActions: PropTypes.shape({
     logout: PropTypes.func.isRequired,
@@ -159,10 +188,14 @@ SelectStoreScreen.propTypes = {
   salonSearchHeaderState: PropTypes.shape({
     showFilter: PropTypes.bool.isRequired,
   }).isRequired,
+  currentStore: PropTypes.shape({
+    storeId: PropTypes.number,
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({
   salonSearchHeaderState: state.salonSearchHeaderReducer,
+  currentStore: state.storeReducer,
 });
 
 const mapActionsToProps = dispatch => ({

@@ -9,6 +9,9 @@ export default StyleSheet.create({
     color: '#115ECD',
     fontSize: 16,
   },
+  selectStoreIconStyle: {
+    marginLeft: 2,
+  },
   actionItemContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -35,5 +38,8 @@ export default StyleSheet.create({
     width: 35,
     borderRadius: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  storeActionWrapper: {
+    height: 130,
   },
 });

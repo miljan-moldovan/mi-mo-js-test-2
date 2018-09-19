@@ -45,5 +45,32 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  selectedItem: {
+    color: 'rgb(28, 191, 18)',
+  },
+  selectedItemIcon: {
+    color: 'rgb(28, 191, 18)',
+    position: 'absolute',
+    right: 0,
+  },
+  leftButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
+  selectedStoreWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '85%',
+    fontSize: 14,
+    color: 'rgb(18, 10, 36)',
+    fontFamily: 'Roboto-Regular',
+    textAlign: 'left',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    height: 45,
+  },
 });

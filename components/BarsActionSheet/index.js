@@ -6,10 +6,21 @@ import PropTypes from 'prop-types';
 import SalonActionSheet from '../../components/SalonActionSheet';
 import styles from './styles';
 
-const CANCEL_INDEX = 1;
-const DESTRUCTIVE_INDEX = 1;
+const CANCEL_INDEX = 2;
+const DESTRUCTIVE_INDEX = 2;
 
 const options = [
+  <View style={styles.actionItemContainer}>
+    <View style={styles.actionItemLeft}>
+      <Text style={styles.actionItemTitle}>Select Store</Text>
+    </View>
+    <View style={styles.actionItemRight}>
+      <FontAwesome
+        style={[styles.loginIconStyle, styles.selectStoreIconStyle]}
+      >{Icons.chevronRight}
+      </FontAwesome>
+    </View>
+  </View>,
   <View style={styles.actionItemContainer}>
     <View style={styles.actionItemLeft}>
       <Text style={styles.actionItemTitle}>Logout</Text>
@@ -26,6 +37,9 @@ class BarsActionSheet extends React.Component {
   handlePressAction(i) {
     switch (i) {
       case 0:
+        this.props.onChangeStore();
+        break;
+      case 1:
         this.props.onLogout();
         break;
       default:
@@ -65,6 +79,7 @@ class BarsActionSheet extends React.Component {
 }
 
 BarsActionSheet.propTypes = {
+  onChangeStore: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
 };
 
