@@ -58,9 +58,11 @@ export default class ServiceInput extends React.Component {
       selectedClient = null,
       selectedProvider = null,
       actionType = 'service',
+      walkin = false,
     } = this.props;
+    let screenService = walkin ? 'ModalServices' : 'Services'; 
     if (isFunction(onPress)) { onPress(); }
-    navigate(apptBook ? 'ApptBookService' : 'Services', {
+    navigate(apptBook ? 'ApptBookService' : screenService, {
       actionType,
       headerProps,
       selectedService,

@@ -208,7 +208,7 @@ class WalkInScreen extends Component {
 
       for (let i = 0; i < services.length; i += 1) {
         const serviceBlock = services[i];
-        canSave = serviceBlock.service !== null && serviceBlock.provider !== undefined;
+        canSave = canSave && serviceBlock.service !== null && serviceBlock.provider !== undefined;
       }
 
       this.props.navigation.setParams({ canSave });
@@ -282,6 +282,7 @@ class WalkInScreen extends Component {
               onUpdate={this.handleUpdateService}
               cancelButton={this.cancelButton}
               navigate={this.props.navigation.navigate}
+              walkin
             />
           </View>)}
         </ScrollView>

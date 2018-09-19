@@ -32,10 +32,13 @@ export default class ProviderInput extends React.Component {
       showFirstAvailable = true,
       showEstimatedTime = true,
       checkProviderStatus = false,
+      walkin = false,
     } = this.props;
     if (isFunction(onPress)) { onPress(); }
 
-    navigate(apptBook ? 'ApptBookProvider' : 'Providers', {
+    let screenProviders = walkin ? 'ModalProviders' : 'Providers';
+
+    navigate(apptBook ? 'ApptBookProvider' : screenProviders, {
       queueList,
       filterList,
       headerProps,
