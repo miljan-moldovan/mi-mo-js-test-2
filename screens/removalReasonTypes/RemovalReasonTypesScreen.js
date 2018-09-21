@@ -81,11 +81,10 @@ class RemovalReasonTypesScreen extends React.Component {
     const { appointment } = this.props.navigation.state.params;
     const service = appointment.services[0];
     const provider = service.isFirstAvailable ?
-      {
-        id: 0, isFirstAvailable: true, lastName: 'Available', name: 'First',
-      } : service.employee;
+      null : service.employee;
 
-    this.setState({ provider, employeeId: provider.id });
+
+    this.setState({ provider, employeeId: provider ? provider.id : null });
   }
 
 
@@ -231,6 +230,7 @@ class RemovalReasonTypesScreen extends React.Component {
           <InputGroup>
             <ProviderInput
               noLabel
+              showFirstAvailable={false}
               filterByService
               rootStyle={styles.providerRootStyle}
               selectedProvider={this.state.provider}
