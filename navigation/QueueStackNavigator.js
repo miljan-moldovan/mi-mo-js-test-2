@@ -104,10 +104,6 @@ const MainNavigator = StackNavigator(
       screen: ClientCopyFormulaScreen,
       navigationOptions: { tabBarVisible: false },
     },
-    ClientInfo: {
-      screen: ClientInfoScreen,
-      navigationOptions: { tabBarVisible: false },
-    },
     ClientDetails: {
       screen: ClientDetailsScreen,
       navigationOptions: { tabBarVisible: false },
@@ -214,6 +210,10 @@ export default (QueueStackNavigator = StackNavigator(
       screen: MainNavigator,
       navigationOptions: { headerMode: 'none' },
     },
+    ClientInfo: {
+      screen: ClientInfoScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
 
     /** MODAL SCREENS GO HERE * */
     ModalServices: {
@@ -272,7 +272,6 @@ export default (QueueStackNavigator = StackNavigator(
         shadowColor: 'transparent',
         elevation: 0,
         borderBottomWidth: 0,
-
       },
       headerTitleStyle: {
         fontFamily: 'Roboto-Regular',
