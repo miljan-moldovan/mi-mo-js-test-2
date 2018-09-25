@@ -163,6 +163,7 @@ class AppointmentDetails extends React.Component {
     const serviceItems = services.map(service => ({
       itemId: uuid(),
       id: get(service, 'id', null),
+      price: get(service, 'priceEntered', get(service, 'price', 0)),
       service: {
         id: get(service, 'serviceId', null),
         name: get(service, 'serviceName', ''),
@@ -277,8 +278,10 @@ class AppointmentDetails extends React.Component {
 
   addServiceItem = ({ service, employee, promotion }) => {
     const serviceItems = cloneDeep(this.state.serviceItems);
+    const price = get(service, 'price', 0);
     serviceItems.push({
       itemId: uuid(),
+      price,
       service,
       employee,
       promotion,
@@ -366,6 +369,7 @@ class AppointmentDetails extends React.Component {
     checkOut(get(appointment, 'id', null));
     goBack();
   }
+
   handlePressProduct = (productItem) => {
     const { client } = this.state;
     const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
@@ -429,6 +433,7 @@ class AppointmentDetails extends React.Component {
   serializeServiceItem = (serviceItem) => {
     const {
       id = null,
+      price: priceEntered,
       service,
       employee,
       promotion,
@@ -438,12 +443,12 @@ class AppointmentDetails extends React.Component {
     const promotionCode = get(promotion, 'promotionCode', '');
     return {
       id,
+      priceEntered,
       promotionCode,
       isFirstAvailable,
       isProviderRequested,
       serviceId: get(service, 'id', null),
       employeeId: isFirstAvailable ? null : get(employee, 'id', null),
-      priceEntered: get(service, 'price', 0),
     };
   }
 
@@ -615,7 +620,8 @@ class AppointmentDetails extends React.Component {
                         isProviderRequested={item.isProviderRequested}
                         onPress={() => this.handlePressService(item)}
                         discount={this.getDiscountAmount(item.promotion)}
-                        price={this.calculatePriceDiscount(item.promotion, 'serviceDiscountAmount', item.service.price)}
+                        price={item.price}
+                        withDiscount={this.calculatePriceDiscount(item.promotion, 'serviceDiscountAmount', item.price)}
                       />
                     ))}
                     <AddButton
@@ -623,17 +629,19 @@ class AppointmentDetails extends React.Component {
                       title="Add Service"
                     />
                     <Text style={styles.titleText}>Products</Text>
-                    {productItems.map((item, index) => (
-                      <ProductCard
-                        key={item.itemId}
-                        onPress={() => this.handlePressProduct(item, index)}
-                        product={item.product}
-                        employee={item.employee}
-                        promotion={item.promotion}
-                        isProviderRequested={item.isProviderRequested}
-                        price={this.calculatePriceDiscount(item.promotion, 'retailDiscountAmount', item.product.price)}
-                      />
-                    ))}
+                    {
+                      productItems.map((item, index) => (
+                        <ProductCard
+                          key={item.itemId}
+                          onPress={() => this.handlePressProduct(item, index)}
+                          product={item.product}
+                          employee={item.employee}
+                          promotion={item.promotion}
+                          isProviderRequested={item.isProviderRequested}
+                          price={this.calculatePriceDiscount(item.promotion, 'retailDiscountAmount', item.product.price)}
+                        />
+                      ))
+                    }
                     <AddButton onPress={this.handleAddProduct} title="Add Product" />
                     {
                       // <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>

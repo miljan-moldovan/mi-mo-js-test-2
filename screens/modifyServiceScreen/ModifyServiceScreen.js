@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
@@ -16,9 +17,13 @@ import {
   InputLabel,
 } from '../../components/formHelpers';
 
+import { Services } from '../../utilities/apiWrapper';
+import { showErrorAlert } from '../../actions/utils';
+
 import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -61,6 +66,10 @@ export default class ModifyServiceScreen extends React.Component {
     this.props.navigation.setParams({ ...params, handleSave: this.handleSave });
   }
 
+  componentDidMount() {
+    this.getEmployeePrice();
+  }
+
   get canRemove() {
     const params = this.props.navigation.state.params || {};
     return 'onRemove' in params;
@@ -72,10 +81,11 @@ export default class ModifyServiceScreen extends React.Component {
     const service = get(serviceItem, 'service', null);
     const employee = get(serviceItem, 'employee', null);
     const promotion = get(serviceItem, 'promotion', null);
-    const price = get(service, 'price', 0);
+    const price = get(serviceItem, 'price', 0);
     const isFirstAvailable = get(serviceItem, 'isFirstAvailable', false);
     const isProviderRequested = get(serviceItem, 'isProviderRequested', true);
     return {
+      isLoading: false,
       price,
       service,
       employee: isFirstAvailable ? {
@@ -87,6 +97,22 @@ export default class ModifyServiceScreen extends React.Component {
       isFirstAvailable,
       isProviderRequested,
     };
+  }
+
+  getEmployeePrice = () => {
+    const { employee, service } = this.state;
+    if (employee && service) {
+      const employeeId = get(employee, 'id', false);
+      const serviceId = get(service, 'id', false);
+      this.setState({ isLoading: true }, () => {
+        Services.getServiceEmployeeCheck({ employeeId, serviceId })
+          .then(result => this.setState({ isLoading: false, price: get(result, 'price', 0) }))
+          .catch((error) => {
+            showErrorAlert(error);
+            this.setState({ isLoading: false });
+          });
+      });
+    }
   }
 
   getDiscountAmount = () => {
@@ -137,6 +163,7 @@ export default class ModifyServiceScreen extends React.Component {
 
   handleSave = () => {
     const {
+      price,
       service,
       employee,
       promotion,
@@ -145,6 +172,7 @@ export default class ModifyServiceScreen extends React.Component {
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
     const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
     onSave({
+      price,
       service,
       employee,
       promotion,
@@ -154,11 +182,11 @@ export default class ModifyServiceScreen extends React.Component {
     this.props.navigation.goBack();
   }
 
-  handleChangeEmployee = employee => this.setState({ employee }, this.validate)
+  handleChangeEmployee = employee => this.setState({ employee }, this.getEmployeePrice)
 
-  handleChangeService = service => this.setState({ service }, this.validate)
+  handleChangeService = service => this.setState({ service }, this.getEmployeePrice)
 
-  handleChangePromotion = promotion => this.setState({ promotion }, this.validate)
+  handleChangePromotion = promotion => this.setState({ promotion }, this.getEmployeePrice)
 
   handleChangeRequested = isProviderRequested => this.setState({ isProviderRequested: !isProviderRequested })
 
@@ -166,15 +194,20 @@ export default class ModifyServiceScreen extends React.Component {
     const { navigation: { navigate } } = this.props;
     const {
       price,
-      discount,
+      isLoading,
       service,
       employee,
       promotion,
       isProviderRequested,
     } = this.state;
+    const priceLabelValue = `$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', price)}`;
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
     return (
       <View style={styles.container}>
+        {
+          isLoading &&
+          <LoadingOverlay />
+        }
         <InputGroup style={styles.marginTop}>
           <ServiceInput
             noPlaceholder
@@ -220,7 +253,7 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <InputLabel label="Discount" value={this.getDiscountAmount()} />
-          <InputLabel label="Price" value={`$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', get(service, 'price', 0))}`} />
+          <InputLabel label="Price" value={priceLabelValue} />
         </InputGroup>
         <SectionDivider />
         {

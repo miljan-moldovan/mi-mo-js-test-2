@@ -669,7 +669,7 @@ export default class Calendar extends Component {
           appointmentId: id,
           employeeId,
         }],
-      }
+      },
     };
     this.props.checkConflicts(conflictData).then(({ data: { conflicts } }) => {
       if (conflicts && conflicts.length > 0) {
@@ -704,7 +704,7 @@ export default class Calendar extends Component {
         fromTime,
         toTime,
         employeeId,
-      }
+      },
     };
     this.props.checkConflictsBlock(conflictData).then(({ data: { conflicts } }) => {
       if (conflicts && conflicts.length > 0) {
@@ -751,7 +751,7 @@ export default class Calendar extends Component {
   }
 
   handleMove = ({
-    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null, newToTime
+    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null, newToTime,
   }) => {
     const { onDrop, appointments } = this.props;
     const { buffer } = this.state;
@@ -830,7 +830,7 @@ export default class Calendar extends Component {
   }
 
   handleMoveBlock = ({
-    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null, newToTime
+    date, newTime, employeeId, id, resourceId = null, resourceOrdinal = null, roomId = null, roomOrdinal = null, newToTime,
   }) => {
     const { onDropBlock, blockTimes } = this.props;
     const { buffer } = this.state;
@@ -1352,7 +1352,7 @@ export default class Calendar extends Component {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
       isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay,
-      startDate, storeScheduleExceptions,
+      startDate, storeScheduleExceptions, rooms,
     } = this.props;
 
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
@@ -1394,6 +1394,7 @@ export default class Calendar extends Component {
               onPressAvailability={this.handleOnPressAvailability}
               onCellPressed={this.handleCellPressed}
               columns={headerData}
+              rooms={rooms}
               startTime={startTime}
               apptGridSettings={apptGridSettings}
               showAvailability={showAvailability}

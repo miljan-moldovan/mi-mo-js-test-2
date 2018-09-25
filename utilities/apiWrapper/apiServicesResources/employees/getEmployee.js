@@ -8,7 +8,7 @@ export default async (id) => {
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
 
-  return apiInstance.get(`Employees/${id}/Status`, {
+  return apiInstance.get(`Employees/${id}`, {
     cancelToken: new axios.CancelToken((c) => {
       cancellationToken = c;
     }),

@@ -1,4 +1,7 @@
 import {
+  GET_SERVICE_CHECK,
+  GET_SERVICE_CHECK_FAILED,
+  GET_SERVICE_CHECK_SUCCESS,
   GET_APPOINTMENT,
   GET_APPOINTMENT_FAILED,
   GET_APPOINTMENT_SUCCESS,
@@ -10,11 +13,30 @@ import {
 const initialState = {
   isLoading: false,
   appointment: null,
+  serviceChecks: [],
 };
 
 function queueDetailReducer(state = initialState, action) {
   const { type, data } = action;
   switch (type) {
+    case GET_SERVICE_CHECK:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_SERVICE_CHECK_SUCCESS: {
+      return {
+        ...state,
+        isLoading: false,
+        serviceChecks: [...state.serviceChecks, data.result],
+      };
+    }
+    case GET_SERVICE_CHECK_FAILED: {
+      return {
+        ...state,
+        isLoading: false,
+      };
+    }
     case GET_APPOINTMENT:
       return {
         ...state,

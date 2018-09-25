@@ -34,6 +34,27 @@ const styles = StyleSheet.create({
     color: '#2F3142',
     flex: 1,
   },
+  roomContainer: {
+    position: 'absolute',
+    width: 16,
+    backgroundColor: '#082E66',
+    right: 0,
+    borderRadius: 3,
+    zIndex: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  roomText: {
+    fontSize: 11,
+    lineHeight: 11,
+    minHeight: 11,
+    textAlign: 'center',
+    margin: 0,
+    padding: 0,
+    color: 'white',
+    transform: [{ rotate: '-90deg' }],
+  },
 });
 
 export default class Column extends Component {
@@ -68,7 +89,7 @@ export default class Column extends Component {
   renderCell = (cell, index) => {
     const {
       apptGridSettings, colData, cellWidth, isDate, selectedFilter, providerSchedule,
-      displayMode, startDate, storeScheduleExceptions
+      displayMode, startDate, storeScheduleExceptions,
     } = this.props;
     const { weeklySchedule } = apptGridSettings;
     const isCellDisabled = moment().isAfter(startDate, 'day');
@@ -78,18 +99,18 @@ export default class Column extends Component {
     let isException = '';
     if (!isDate) {
       exception = get(storeScheduleExceptions, ['0'], null);
-      storeTodaySchedule = exception ? exception : weeklySchedule[startDate.isoWeekday() - 1];
+      storeTodaySchedule = exception || weeklySchedule[startDate.isoWeekday() - 1];
     } else {
       storeTodaySchedule = apptGridSettings.weeklySchedule[colData.isoWeekday() - 1];
       exception = filter(storeScheduleExceptions, item => moment(item.startDate, 'YYYY-MM-DD').isSame(colData, 'day')
-      || moment(item.endDate, 'YYYY-MM-DD').isSame(colData, 'day'))[0];
+        || moment(item.endDate, 'YYYY-MM-DD').isSame(colData, 'day'))[0];
       storeTodaySchedule = exception || storeTodaySchedule;
     }
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
     if (!isStoreOff) {
       isStoreOff = !this.isBetweenTimes(cell, moment(storeTodaySchedule.start1, 'HH:mm'), moment(storeTodaySchedule.end1, 'HH:mm'))
         && (!storeTodaySchedule.start2 ||
-            !this.isBetweenTimes(cell, moment(storeTodaySchedule.start2, 'HH:mm'), moment(storeTodaySchedule.end2, 'HH:mm')));
+          !this.isBetweenTimes(cell, moment(storeTodaySchedule.start2, 'HH:mm'), moment(storeTodaySchedule.end2, 'HH:mm')));
     }
     let styleOclock = '';
     const timeSplit = moment(cell).add(15, 'm').format('h:mm').split(':');
@@ -131,7 +152,7 @@ export default class Column extends Component {
             break;
           }
           if (cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
-          cell.isBefore(moment(schedule[i].end, 'HH:mm'))) {
+            cell.isBefore(moment(schedule[i].end, 'HH:mm'))) {
             style = styles.cellContainer;
             break;
           }
@@ -144,7 +165,7 @@ export default class Column extends Component {
             style={[style, { width: cellWidth }, styleOclock]}
             onPress={() => { this.onCellPressed(cell, colData, !isDate ? startDate : colData); }}
           >
-            { index === 0 && isException ?
+            {index === 0 && isException ?
               <Text style={styles.exceptionText}>{isException}</Text> : null}
           </TouchableOpacity>
         </View>
@@ -157,7 +178,7 @@ export default class Column extends Component {
           style={[styles.cellContainer, styles.dayOff, { width: cellWidth }, styleOclock]}
           onPress={() => { this.onCellPressed(cell, colData, !isDate ? startDate : colData); }}
         >
-          { index === 0 && isException ?
+          {index === 0 && isException ?
             <Text style={styles.exceptionText}>{isException}</Text> : null}
         </TouchableOpacity>
       </View>
@@ -166,7 +187,7 @@ export default class Column extends Component {
 
   renderRooms() {
     const {
-      colData, apptGridSettings, selectedFilter,
+      colData, apptGridSettings, selectedFilter, rooms,
     } = this.props;
     if (selectedFilter !== 'providers' || !colData || !colData.roomAssignments || !colData.roomAssignments.length) {
       return null;
@@ -180,39 +201,25 @@ export default class Column extends Component {
       const startPosition = (startTimeDifference / apptGridSettings.step) * 30;
       const endPosition = (endTimeDifference / apptGridSettings.step) * 30;
       const height = endPosition - startPosition;
+      const containerStyle = [styles.roomContainer, {
+        height,
+        top: startPosition,
+      }];
+      const textStyle = [styles.roomText, {
+        maxHeight: height,
+        minWidth: height,
+        maxWidth: height,
+      }];
+      const roomName = get(rooms, [room.roomId, 'name']);
       return (
         <View
-          key={`room-${i}`}
-          style={{
-            position: 'absolute',
-            top: startPosition,
-            width: 16,
-            height,
-            backgroundColor: '#082E66',
-            right: 0,
-            borderRadius: 3,
-            zIndex: 9999,
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}
+          key={`room-${get(colData, 'id', '')}-${room.roomId}`}
+          style={containerStyle}
         >
           <Text
-            style={{
-              fontSize: 11,
-              lineHeight: 11,
-              minHeight: 11,
-              maxHeight: height,
-              minWidth: height,
-              maxWidth: height,
-              textAlign: 'center',
-              margin: 0,
-              padding: 0,
-              color: 'white',
-              transform: [{ rotate: '-90deg' }],
-            }}
+            style={textStyle}
             numberOfLines={1}
-          >{`Room ${room.roomId}`}
+          >{roomName}
           </Text>
         </View>
       );
@@ -224,8 +231,8 @@ export default class Column extends Component {
     const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>
-        { apptGridSettings.schedule.map(this.renderCell) }
-        { rooms }
+        {apptGridSettings.schedule.map(this.renderCell)}
+        {rooms}
       </View>
     );
   }

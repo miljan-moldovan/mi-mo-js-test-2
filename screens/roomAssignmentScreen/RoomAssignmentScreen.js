@@ -252,6 +252,11 @@ export default class RoomAssignmentScreen extends React.Component {
         () => {
           this.props.appointmentCalendarActions.setGridView();
           this.props.appointmentCalendarActions.setFilterOptionRoomAssignments(true);
+          this.props.appointmentCalendarActions.setToast({
+            description: 'Room Assignment Completed',
+            type: 'green',
+            btnRightText: 'DISMISS',
+          });
           this.props.navigation.goBack();
           onSave();
         },
