@@ -568,6 +568,7 @@ class AppointmentScreen extends Component {
           displayMode={pickerMode}
           providerSchedule={providerSchedule}
           availability={availability}
+          rooms={rooms}
           startDate={startDate}
           isLoading={isLoading}
           bufferVisible={bufferVisible}

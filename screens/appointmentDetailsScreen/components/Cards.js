@@ -49,11 +49,11 @@ const ServiceCard = (props) => {
     service,
     employee,
     promotion,
-    price: withDiscount,
+    price,
+    withDiscount,
     isProviderRequested,
   } = props;
   const name = get(service, 'name', get(service, 'serviceName', ''));
-  const price = get(service, 'price', 0);
   const providerName = !get(service, 'isFirstAvailable', false) ?
     `${get(employee, 'name', '')} ${get(employee, 'lastName', '')}` : 'First Available';
   const promoName = get(promotion, 'name', '');

@@ -203,7 +203,7 @@ export default function appointmentBookReducer(state = initialState, action) {
         isLoading: false,
         error: null,
         apptGridSettings: {
-          ...state.apptGridSettings, ...data.apptGridSettings
+          ...state.apptGridSettings, ...data.apptGridSettings,
         },
         resources: data.resources,
         appointments: data.appointments.map(processAppointmentFromApi),
@@ -224,6 +224,7 @@ export default function appointmentBookReducer(state = initialState, action) {
         availability: data.availability,
         blockTimes: data.blockTimes.map(processBlockTime),
         storeSchedule: data.schedule,
+        rooms: data.rooms,
       };
     }
     case SET_GRID_WEEK_VIEW_SUCCESS:
