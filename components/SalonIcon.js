@@ -9,6 +9,7 @@ import iconStartService from '../assets/images/icons/icon_start_service.png';
 import iconReturning from '../assets/images/icons/icon_returning.png';
 import iconClock from '../assets/images/icons/icon_clock.png';
 import iconInfo from '../assets/images/icons/icon_info_circle.png';
+import barsIcon from '../assets/images/icons/dotted_bars.png';
 
 const icons = {
   info: require('../assets/images/icons/icon_info.png'),
@@ -33,6 +34,7 @@ const icons = {
   modify: iconModify,
   clock: iconClock,
   iconInfo,
+  barsIcon,
 };
 
 const SalonIcon = props => (

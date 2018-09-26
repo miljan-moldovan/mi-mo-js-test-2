@@ -16,6 +16,7 @@ import {
   InputButton,
 } from '../../formHelpers';
 import AuditInformation from '../../AuditInformation';
+import SalonIcon from '../../SalonIcon';
 
 import { Appointment } from '../../../utilities/apiWrapper';
 import ApptQueueStatus from '../../../constants/apptQueueStatus';
@@ -29,6 +30,7 @@ import ActionSheet from './components/CrossedAppointmentsActionSheet';
 
 import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
+import barsIcon from "../../../assets/images/icons/dotted_bars.png"
 
 class SalonAppointmentSlide extends React.Component {
   constructor(props) {
@@ -263,7 +265,12 @@ class SalonAppointmentSlide extends React.Component {
               style={styles.swipablePanelIconLeft}
               onPress={this.handleActionSheet}
             >
-              <FontAwesome style={styles.barsIcon}>{Icons.bars}</FontAwesome>
+              {/*<FontAwesome style={styles.barsIcon}>{Icons.bars}</FontAwesome>*/}
+              <SalonIcon
+                size={20}
+                icon="barsIcon"
+                style={styles.barsIcon}
+              />
             </SalonTouchableOpacity>
             <Swiper
               showsPagination
