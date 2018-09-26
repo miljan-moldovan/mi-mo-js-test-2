@@ -89,14 +89,10 @@ class QueueScreen extends React.Component {
   }
 
   componentWillMount() {
-    // setInterval(this.props.actions.receiveQueue, 15000);
-    // setInterval(this.props.actions.getQueueState, 5000);
     this.loadQueueData();
 
     this.props.actions.getQueueEmployees();
     this.props.settingsActions.getSettings();
-    // this.props.settingsActions.getSettingsByName('SupressServiceForWalkIn');
-    // this.props.settingsActions.getSettingsByName('PrintToTicket');
   }
 
   componentDidMount() {
@@ -200,7 +196,7 @@ class QueueScreen extends React.Component {
             <Text style={styles.leftButtonText}>Cancel</Text>
           </View>
         ),
-        rightButtonOnPress: (navigation) => { navigation.navigate('Main'); },
+        rightButtonOnPress: (navigation) => { navigation.navigate('Main', {transition: 'slideFromRight'}); },
       },
     });
   }
@@ -209,7 +205,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('ModalWalkIn', { newAppointment, loadQueueData: this.loadQueueData });
+    this.props.navigation.navigate('ModalWalkIn', { newAppointment, loadQueueData: this.loadQueueData, transition: 'slideFromRight' });
   }
 
   handleChangeService = (service) => {

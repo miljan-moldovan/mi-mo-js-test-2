@@ -2,8 +2,6 @@
 import React from 'react';
 import { StackNavigator } from 'react-navigation';
 
-import ImageHeader from '../components/ImageHeader';
-
 import QueueScreen from './../screens/queueScreen';
 import QueueCombineScreen from './../screens/queueCombineScreen';
 import ClientMergeScreen from './../screens/clientMergeScreen';
@@ -183,26 +181,61 @@ const MainNavigator = StackNavigator(
         paddingHorizontal: 10,
         paddingVertical: 14,
         paddingTop: 20,
-        // height: 44,
-        // height: 35,
         borderWidth: 0,
         shadowColor: 'transparent',
         elevation: 0,
         borderBottomWidth: 0,
         justifyContent: 'center',
-        // alignItems: 'center'
       },
       headerTitleStyle: {
         fontFamily: 'Roboto-Regular',
         fontSize: 17,
         color: '#fff',
         fontWeight: '500',
-        // backgroundColor: 'red',
         height: '100%',
       },
     },
   },
 );
+
+const SlideFromRight = (index, position, width) => {
+  const translateX = position.interpolate({
+    inputRange: [index - 1, index, index + 1],
+    outputRange: [width, 1, 1],
+  });
+
+  const slideFromRight = { transform: [{ translateX }] };
+  return slideFromRight;
+};
+
+const SlideFromBottom = (index, position, height) => {
+  const translateY = position.interpolate({
+    inputRange: [index - 1, index, index + 1],
+    outputRange: [height, 0, 0],
+  });
+
+  const slideFromBottom = { transform: [{ translateY }] };
+  return slideFromBottom;
+};
+
+const TransitionConfiguration = () => ({
+  transitionSpec: {
+    duration: 400,
+    useNativeDriver: true,
+  },
+  screenInterpolator: (sceneProps) => {
+    const { layout, position, scene } = sceneProps;
+    const height = layout.initHeight;
+    const width = layout.initWidth;
+    const { index, route } = scene;
+    const params = route.params || {};
+    const transition = params.transition || 'default';
+    return {
+      default: SlideFromBottom(index, position, height),
+      slideFromRight: SlideFromRight(index, position, width),
+    }[transition];
+  },
+});
 
 export default (QueueStackNavigator = StackNavigator(
   {
@@ -230,12 +263,9 @@ export default (QueueStackNavigator = StackNavigator(
         headerStyle: {
           backgroundColor: '#115ECD',
           paddingHorizontal: 10,
-          paddingVertical: 14,
-          paddingTop: 20,
+          paddingTop: 18,
           borderWidth: 0,
           shadowColor: 'transparent',
-          elevation: 0,
-          borderBottomWidth: 0,
           justifyContent: 'center',
         },
         tabBarVisible: false,
@@ -279,6 +309,7 @@ export default (QueueStackNavigator = StackNavigator(
         color: '#fff',
       },
     },
+    transitionConfig: TransitionConfiguration,
     mode: 'modal', // Remember to set the root navigator to display modally.
     //  headerMode: 'none', // This ensures we don't get two top bars.
   },
