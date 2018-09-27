@@ -54,6 +54,9 @@ export const MESSAGE_PROVIDERS_CLIENTS = 'newAppointment/MESSAGE_PROVIDERS_CLIEN
 export const MESSAGE_PROVIDERS_CLIENTS_SUCCESS = 'newAppointment/MESSAGE_PROVIDERS_CLIENTS_SUCCESS';
 export const MESSAGE_PROVIDERS_CLIENTS_FAILED = 'newAppointment/MESSAGE_PROVIDERS_CLIENTS_FAILED';
 
+export const POPULATE_STATE_FROM_REBOOKED_APPT = 'newAppointment/POPULATE_STATE_FROM_REBOOKED_APPT';
+
+
 const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
@@ -395,6 +398,7 @@ const setBookedBy = (employee = null) => async (dispatch, getState) => {
   });
 };
 
+
 const setMainEmployee = mainEmployee => (dispatch) => {
   dispatch({
     type: SET_MAIN_EMPLOYEE,
@@ -433,6 +437,7 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
     type: BOOK_NEW_APPT,
   });
   resetTimeForServices(serviceItems, -1, startTime);
+
   const requestBody = serializeApptToRequestData(getState(), true);
 
   return Appointment.postNewAppointment(requestBody)
@@ -454,11 +459,92 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
     });
 };
 
+
+const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, startTime) => (dispatch, getState) => {
+  dispatch({
+    type: SET_SELECTED_APPT,
+    data: { appt },
+  });
+
+
+  const { badgeData: { isParty, primaryClient } } = appt;
+  const primaryClientId = isParty ? get(primaryClient, 'id', null) : get(appt.client, 'id', null);
+  const mainClient = isParty ? primaryClientId : appt.client;
+
+  let serviceItems = [];
+
+  for (let i = 0; i < services.length; i++) {
+    const service = services[i];
+
+    const fromTime = moment(service.fromTime, 'HH:mm:ss');
+    const toTime = moment(service.toTime, 'HH:mm:ss');
+    const length = moment.duration(service.serviceLength, 'HH:mm:ss');
+    const serviceClient = mainClient;
+    service.name = service.serviceName;
+
+    const newService = {
+      id: get(service, 'id', null),
+      length,
+      service,
+      requested: get(service, 'isProviderRequested', true),
+      client: serviceClient,
+      employee: get(service, 'employee', null),
+      fromTime,
+      toTime,
+      bookBetween: get(service, 'bookBetween', false),
+      gapTime: moment.duration(get(service, 'gapTime', 0)),
+      afterTime: moment.duration(get(service, 'afterTime', 0)),
+    };
+
+
+    const newServiceItem = {
+      itemId: uuid(),
+      guestId: false,
+      service: newService,
+    };
+
+    serviceItems.push(newServiceItem);
+  }
+
+  serviceItems = resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
+
+  serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
+  const newState = {
+    selectedAppt: appt,
+    date: startDate,
+    startTime: serviceItems.length ? serviceItems[0].service.fromTime : moment(appt.fromTime, 'HH:mm:ss'),
+    client: mainClient,
+    bookedByEmployee: mainEmployee,
+    mainEmployee,
+    guests: [],
+    conflicts: [],
+    serviceItems,
+    remarks: get(appt, 'remarks', ''),
+    rebooked: true,
+    existingApptIds: appt.services.map(item => get(item, 'id', null)),
+  };
+  if (isNumber(newState.client)) {
+    return Client.getClient(newState.client)
+      .then((client) => {
+        newState.client = client;
+        return dispatch({
+          type: POPULATE_STATE_FROM_REBOOKED_APPT,
+          data: { newState },
+        });
+      });
+  }
+  return dispatch({
+    type: POPULATE_STATE_FROM_REBOOKED_APPT,
+    data: { newState },
+  });
+};
+
 const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
   dispatch({
     type: SET_SELECTED_APPT,
     data: { appt },
   });
+
   const { badgeData: { isParty, primaryClient } } = appt;
   const clients = groupData.reduce((agg, currentAppt) => [...agg, currentAppt.client], []);
   const primaryClientId = isParty ? get(primaryClient, 'id', null) : get(appt.client, 'id', null);
@@ -496,6 +582,8 @@ const populateStateFromAppt = (appt, groupData) => (dispatch, getState) => {
       gapTime: moment.duration(get(appointment, 'gapTime', 0)),
       afterTime: moment.duration(get(appointment, 'afterTime', 0)),
     };
+
+
     const newServiceItem = {
       itemId: uuid(),
       guestId: guest ? get(guest, 'guestId', false) : false,
@@ -668,6 +756,7 @@ const newAppointmentActions = {
   messageAllClients,
   messageProvidersClients,
   populateStateFromAppt,
+  populateStateFromRebookAppt,
   modifyAppt,
   setMainEmployee,
 };

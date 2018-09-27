@@ -94,6 +94,7 @@ export default class Header extends Component {
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : colors[4].dark;
+    
     return (
       <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)} underlayColor="rgba(0, 0, 0, 0.5)">
         <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">

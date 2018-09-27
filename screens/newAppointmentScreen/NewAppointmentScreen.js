@@ -578,6 +578,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   handleSave = () => {
     const { editType } = this.props.newAppointmentState;
+
     const successCallback = () => {
       this.props.navigation.goBack();
       this.props.apptBookActions.setGridView();

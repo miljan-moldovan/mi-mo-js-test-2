@@ -24,7 +24,7 @@ import { ADD_APPOINTMENT, SET_FILTER_OPTION_COMPANY,
   SET_GRID_ROOM_VIEW_SUCCESS, SET_GRID_RESOURCE_VIEW_SUCCESS,
   SET_GRID_ALL_VIEW_SUCCESS, SET_GRID_WEEK_VIEW_SUCCESS,
   SET_DATE_RANGE, SET_PICKER_MODE,
-  SET_SELECTED_PROVIDER, SET_SELECTED_FILTER,
+  SET_SELECTED_PROVIDER, SET_SELECTED_FILTER, SET_SELECTED_PROVIDERS,
   SET_PROVIDER_DATES, HIDE_TOAST,
   SET_TOAST, CHANGE_FIRST_AVAILABLE } from '../actions/appointmentBook';
 
@@ -67,6 +67,7 @@ const initialState = {
   error: null,
   selectedFilter: 'providers',
   selectedProvider: 'all',
+  selectedProviders: [],
   pickerMode: 'day',
   startDate: moment(),
   endDate: moment(),
@@ -154,6 +155,12 @@ export default function appointmentBookReducer(state = initialState, action) {
       return {
         ...state,
         selectedProvider: data.selectedProvider,
+        // isLoading: true,
+      };
+    case SET_SELECTED_PROVIDERS:
+      return {
+        ...state,
+        selectedProviders: data.selectedProviders,
         // isLoading: true,
       };
     case SET_SELECTED_FILTER:

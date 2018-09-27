@@ -289,8 +289,9 @@ export default class Calendar extends Component {
       selectedProvider,
       displayMode,
     } = nextProps;
+
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
-      if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
+      if (selectedFilter === 'providers' || selectedFilter === 'deskStaff' || selectedFilter === 'rebookAppointment') {
         if (selectedProvider === 'all') {
           const firstColumnWidth = selectedFilter === 'providers' ? 166 : 36;
           this.size = {
@@ -1367,6 +1368,8 @@ export default class Calendar extends Component {
       height: bufferVisible ? this.size.height + 110 : this.size.height,
     };
     const showAvailability = selectedFilter === 'providers' && selectedProvider === 'all';
+
+
     const areProviders = apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0;
     size = areProviders ? size : { width: 0, height: 0, opacity: 0 };
     return (
@@ -1411,6 +1414,7 @@ export default class Calendar extends Component {
             />
             {
                 headerData.map((item, index) => {
+
                   let headerId = item.id;
                   if (selectedProvider !== 'all') {
                     headerId = item.format(DateTime.date);

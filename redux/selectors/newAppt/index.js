@@ -40,6 +40,8 @@ const editTypeSelector = state => state.newAppointmentReducer.editType;
 
 const deletedIdsSelector = state => state.newAppointmentReducer.deletedIds;
 
+const rebookedSelector = state => state.newAppointmentReducer.rebooked;
+
 const newAppointmentInfoSelector = createSelector(
   [
     dateSelector,
@@ -55,12 +57,13 @@ const newAppointmentInfoSelector = createSelector(
     editTypeSelector,
     deletedIdsSelector,
     remarksSelector,
+    rebookedSelector,
   ],
   (
     date, startTime, client, guests,
     bookedByEmployee, mainEmployee, serviceItems,
     isQuickBooking, isQuickApptRequested,
-    conflicts, editType, deletedIds, remarks,
+    conflicts, editType, deletedIds, remarks, rebooked,
   ) => ({
     date,
     startTime,
@@ -75,6 +78,7 @@ const newAppointmentInfoSelector = createSelector(
     editType,
     deletedIds,
     remarks,
+    rebooked,
   }),
 );
 

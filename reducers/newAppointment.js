@@ -26,6 +26,7 @@ import {
   SET_REMARKS,
   SET_SELECTED_APPT,
   POPULATE_STATE_FROM_APPT,
+  POPULATE_STATE_FROM_REBOOKED_APPT,
   SET_MAIN_EMPLOYEE,
 } from '../actions/newAppointment';
 
@@ -46,6 +47,7 @@ const defaultState = {
   serviceItems: [],
   mainEmployee: null,
   remarks: '',
+  rebooked: true,
 };
 
 export default function newAppointmentReducer(state = defaultState, action) {
@@ -59,6 +61,7 @@ export default function newAppointmentReducer(state = defaultState, action) {
         guests: [],
         conflicts: [],
         serviceItems: [],
+        rebooked: true,
         editType: 'new',
       };
     case SET_SELECTED_APPT:
@@ -68,6 +71,27 @@ export default function newAppointmentReducer(state = defaultState, action) {
         bookedByEmployee: data.appt.bookedByEmployee,
         remarks: data.appt.remarks,
         selectedAppt: data.appt,
+      };
+    case POPULATE_STATE_FROM_REBOOKED_APPT:
+
+      return {
+        ...state,
+        isLoading: false,
+        isBooking: false,
+        editType: 'new',
+        rebooked: true,
+        isBookingQuickAppt: false,
+        isQuickApptRequested: true,
+        date: data.newState.date,
+        startTime: data.newState.startTime,
+        client: data.newState.client,
+        bookedByEmployee: data.newState.bookedByEmployee,
+        mainEmployee: data.newState.mainEmployee,
+        deletedIds: data.newState.deletedIds,
+        guests: data.newState.guests,
+        conflicts: data.newState.conflicts,
+        serviceItems: data.newState.serviceItems,
+        remarks: data.newState.remarks,
       };
     case POPULATE_STATE_FROM_APPT:
       return {
