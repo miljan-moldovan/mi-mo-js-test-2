@@ -1,6 +1,4 @@
-import {
-  StyleSheet, Dimensions,
-} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const smallDevice = Dimensions.get('window').width === 320;
 
@@ -14,15 +12,8 @@ export default StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 14,
   },
-  leftButton: {
-    paddingTop: 25,
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  rightButton: {
-    paddingTop: 25,
+  sideButtons: {
+    paddingTop: 18,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -70,12 +61,14 @@ export default StyleSheet.create({
   },
   headerLeftIcon: { marginRight: 8, fontSize: 30, color: '#fff' },
   activityIndicator: {
-    marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
+    marginTop: 100,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelButton: { fontSize: 14, color: 'white' },
   inputGroupStyle: { paddingLeft: smallDevice ? 10 : 16 },
   rootStyle: { paddingRight: smallDevice ? 10 : 16 },
   sectionTitleRootStyle: { marginLeft: 0 },
   sectionTitleStyle: { marginLeft: smallDevice ? 10 : 16 },
-
 });

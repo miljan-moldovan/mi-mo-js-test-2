@@ -7,8 +7,6 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
-import { find } from 'lodash';
-import Icon from '../../components/UI/Icon';
 import ClientInfoButton from '../../components/ClientInfoButton';
 
 import {
@@ -42,7 +40,7 @@ class WalkInScreen extends Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity style={styles.leftButton} onPress={() => { navigation.goBack(); }}>
+        <SalonTouchableOpacity style={styles.sideButtons} onPress={() => { navigation.goBack(); }}>
           <View style={styles.leftButtonContainer}>
             <FontAwesome style={styles.headerLeftIcon}>
               {Icons.angleLeft}
@@ -54,7 +52,7 @@ class WalkInScreen extends Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} style={styles.rightButton} onPress={handlePress}>
+        <SalonTouchableOpacity disabled={!canSave} style={styles.sideButtons} onPress={handlePress}>
           <View style={styles.rightButtonContainer}>
             <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
           </View>
@@ -92,7 +90,6 @@ class WalkInScreen extends Component {
     navigation.setParams({
       walkin: () => {
         this.handleWalkin();
-        // navigation.navigate('Main');
       },
     });
   }
@@ -135,10 +132,6 @@ class WalkInScreen extends Component {
         client,
       } = this.state;
 
-
-      
-
-
       const servicesBlock = [];
       for (let i = 0; i < services.length; i += 1) {
         const serviceContainer = services[i];
@@ -167,7 +160,7 @@ class WalkInScreen extends Component {
         this.saving = false;
         const params = this.props.navigation.state.params || {};
         params.loadQueueData();
-        this.props.navigation.navigate('Main');
+        this.props.navigation.navigate('Main', {transition: 'slideFromRight'});
       });
     }
   }
