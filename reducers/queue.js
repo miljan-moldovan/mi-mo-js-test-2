@@ -139,7 +139,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        queueLength: data.length,
+        queueLength: data.resp.length,
         groups: initialGroups,
         waitingQueue,
         serviceQueue,
