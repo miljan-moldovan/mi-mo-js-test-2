@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { groupBy, orderBy } from 'lodash';
+import { groupBy, orderBy, map, filter, includes } from 'lodash';
 import { Store, AppointmentBook, Appointment, Employees } from '../utilities/apiWrapper';
 import StoreActions from '../actions/store';
 
@@ -18,6 +18,7 @@ export const SET_GRID_WEEK_VIEW_SUCCESS = 'appointmentScreen/SET_GRID_DAY_WEEK_V
 export const SET_DATE_RANGE = 'appointmentCalendar/SET_DATE_RANGE';
 export const SET_PICKER_MODE = 'appointmentCalendar/SET_PICKER_MODE';
 export const SET_SELECTED_PROVIDER = 'appointmentCalendar/SET_SELECTED_PROVIDER';
+export const SET_SELECTED_PROVIDERS = 'appointmentCalendar/SET_SELECTED_PROVIDERS';
 export const SET_SELECTED_FILTER = 'appointmentCalendar/SET_SELECTED_FILTER';
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const HIDE_TOAST = 'appointmentCalendar/HIDE_TOAST';
@@ -102,6 +103,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const {
     selectedFilter,
     selectedProvider,
+    selectedProviders,
     startDate,
     pickerMode,
     filterOptions,
@@ -110,6 +112,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
 
   switch (selectedFilter) {
     case 'deskStaff':
+    case 'rebookAppointment':
     case 'providers': {
       if (selectedProvider === 'all' || pickerMode === 'day') {
         return Promise.all([
@@ -123,9 +126,14 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           .then(([employees, appointments, availabilityItem, blockTimes, scheduleExceptions, storeInfo]) => {
             let filteredEmployees = employees;
 
+
+
             if (selectedFilter === 'deskStaff') {
               filteredEmployees = filteredEmployees.filter(employee => employee.isReceptionist);
+            } else if (selectedFilter === 'rebookAppointment') {
+              filteredEmployees = selectedProviders;
             }
+
             const employeesAppointment = orderBy(filteredEmployees, 'appointmentOrder');
             const orderedAppointments = orderBy(appointments, appt => moment(appt.fromTime, 'HH:mm').unix());
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
@@ -133,7 +141,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             dispatch(setGridAllViewSuccess(
               employeesAppointment,
               orderedAppointments, availabilityItem.timeSlots,
-              blockTimes
+              blockTimes,
             ));
           })
           .catch((ex) => {
@@ -262,6 +270,11 @@ const setSelectedProvider = selectedProvider => ({
   data: { selectedProvider },
 });
 
+const setSelectedProviders = selectedProviders => ({
+  type: SET_SELECTED_PROVIDERS,
+  data: { selectedProviders },
+});
+
 const setSelectedFilter = selectedFilter => ({
   type: SET_SELECTED_FILTER,
   data: { selectedFilter },
@@ -281,6 +294,7 @@ export const appointmentCalendarActions = {
   setProviderScheduleDates,
   setPickerMode,
   setSelectedProvider,
+  setSelectedProviders,
   setSelectedFilter,
   setFilterOptionCompany,
   setFilterOptionPosition,

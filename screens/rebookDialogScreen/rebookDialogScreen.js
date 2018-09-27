@@ -17,7 +17,7 @@ import {
   InputLabel,
   SectionDivider,
 } from '../../components/formHelpers';
-
+import { find, remove } from 'lodash';
 import styles from './styles';
 
 
@@ -67,16 +67,23 @@ class RebookDialogScreen extends Component {
   }
 
   state = {
-    date: moment(),
-    weeks: 0,
+    date: moment().add(1, 'weeks'),
+    weeks: 1,
     updateRebookingPref: false,
     shouldRebookServices: {},
+    rebookServices: [],
   };
 
   componentWillMount() {
     this.props.navigation.setParams({
       handleDone: () => this.saveRebook(),
     });
+
+    const { appointment } = this.props.navigation.state.params;
+
+    if (appointment.services.length === 1) {
+      this.setState({ rebookServices: appointment.services }, this.checkCanSave);
+    }
   }
 
   onChangeWeeks = (operation, weeks) => {
@@ -87,26 +94,44 @@ class RebookDialogScreen extends Component {
     }
   }
 
-  setShouldRebook = (serviceId) => {
+  setShouldRebook = (service) => {
     const { shouldRebookServices } = this.state;
-    shouldRebookServices[serviceId] = !shouldRebookServices[serviceId];
-    this.setState({ shouldRebookServices }, this.checkCanSave);
+    let { rebookServices } = this.state;
+
+    shouldRebookServices[service.id] = !shouldRebookServices[service.id];
+
+    if (shouldRebookServices[service.id]) {
+      rebookServices.push(service);
+    } else {
+      rebookServices = remove(rebookServices, { id: service.id });
+    }
+    this.setState({ shouldRebookServices, rebookServices }, this.checkCanSave);
   }
 
   saveRebook() {
     const { appointment } = this.props.navigation.state.params;
+    const { rebookServices } = this.state;
 
-    
+    const rebookProviders = [];
+    for (let i = 0; i < rebookServices.length; i += 1) {
+      const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
+      if (!provider) {
+        rebookProviders.push(rebookServices[i].employee);
+      }
+    }
 
-    const data = {
-      weeksCount: this.state.weeks,
-      updatePreferences: this.state.updateRebookingPref,
-      appointmentIds: [
-        appointment.id,
-      ],
-    };
+    const { navigate } = this.props.navigation;
 
-    this.props.rebookDialogActions.postRebook(data, this.finishedRebooking);
+    this.goBack();
+
+    navigate('SalonCalendar', {
+      rebookAppointment: true,
+      date: this.state.date,
+      // client: appointment.client,
+      selectedAppointment: appointment,
+      rebookProviders,
+      rebookServices,
+    });
   }
 
   finishedRebooking = (result, error) => {
@@ -123,13 +148,11 @@ class RebookDialogScreen extends Component {
   }
 
   checkCanSave = () => {
-    // const {
-    //   otherReason, startTimeScheduleOne, endTimeScheduleOne,
-    //   startTimeScheduleTwo, endTimeScheduleTwo,
-    //   selectedScheduleExceptionReason,
-    // } = this.state;
+    const {
+      rebookServices,
+    } = this.state;
 
-    const canSave = true;
+    const canSave = rebookServices.length > 0;
 
     this.props.navigation.setParams({ canSave });
   }
@@ -147,9 +170,9 @@ class RebookDialogScreen extends Component {
         style={{ height: 60 }}
         textStyle={{ color: '#000000' }}
         onChange={() => {
-        this.setShouldRebook(service.serviceId);
+          this.setShouldRebook(service);
         }}
-        value={this.state.shouldRebookServices[service.serviceId]}
+        value={this.state.shouldRebookServices[service.id]}
         text={
           <View style={styles.serviceContainer}>
             <Text style={styles.serviceNameText}>{service.serviceName}</Text>
@@ -162,7 +185,6 @@ class RebookDialogScreen extends Component {
 
   render() {
     const { appointment } = this.props.navigation.state.params;
-
 
 
     return (
@@ -180,25 +202,46 @@ class RebookDialogScreen extends Component {
         <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={0} />
         <InputDivider />
         <InputLabel
-          key={Math.random()}
           label={this.state.date.format('DD MMMM YYYY')}
         />
+
+        {appointment.services.length === 1 ?
+
+          <React.Fragment>
+            <InputDivider />
+            <InputSwitch
+              style={{ height: 43 }}
+              textStyle={{ color: '#000000' }}
+              onChange={this.OnChanageUpdateRebookingPref}
+              value={this.state.updateRebookingPref}
+              text="Update rebooking pref."
+            />
+          </React.Fragment>
+
+          : null
+
+        }
       </InputGroup>
 
-      <SectionTitle value="SERVICES TO REBOOK" style={{ height: 37 }} />
-      <InputGroup>
-        {appointment.services && appointment.services.map((service, index) => this.renderService(service, index))}
-      </InputGroup>
-      <SectionDivider />
-      <InputGroup >
-        <InputSwitch
-          style={{ height: 43 }}
-          textStyle={{ color: '#000000' }}
-          onChange={this.OnChanageUpdateRebookingPref}
-          value={this.state.updateRebookingPref}
-          text="Update rebooking pref."
-        />
-      </InputGroup>
+
+      {appointment.services.length > 1 ?
+        <React.Fragment>
+          <SectionTitle value="SERVICES TO REBOOK" style={{ height: 37 }} />
+          <InputGroup>
+            {appointment.services && appointment.services.map((service, index) => this.renderService(service, index))}
+          </InputGroup>
+          <SectionDivider />
+          <InputGroup >
+            <InputSwitch
+              style={{ height: 43 }}
+              textStyle={{ color: '#000000' }}
+              onChange={this.OnChanageUpdateRebookingPref}
+              value={this.state.updateRebookingPref}
+              text="Update rebooking pref."
+            />
+          </InputGroup>
+        </React.Fragment>
+      : null}
     </KeyboardAwareScrollView>)}
       </View>
     );
@@ -207,9 +250,6 @@ class RebookDialogScreen extends Component {
 
 
 RebookDialogScreen.propTypes = {
-  rebookDialogActions: PropTypes.shape({
-    postRebook: PropTypes.func,
-  }).isRequired,
   rebookState: PropTypes.any.isRequired,
   navigate: PropTypes.any.isRequired,
 };

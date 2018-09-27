@@ -157,6 +157,7 @@ class NewApptSlide extends React.Component {
   }
 
   setService = (service) => {
+    
     this.props.servicesActions.setSelectingExtras(true);
     this.showAddons(service)
       .then((selectedAddons) => {
@@ -176,6 +177,8 @@ class NewApptSlide extends React.Component {
                         selectedRecommended: recommended,
                         selectedRequired: required,
                       } = this.state;
+
+                      console.log(JSON.stringify(service));
                       this.props.newApptActions.addQuickServiceItem({
                         service,
                         addons,
@@ -389,6 +392,7 @@ class NewApptSlide extends React.Component {
     if (!this.canBook()) {
       return false;
     }
+    
 
     return this.props.handleBook(true);
   }

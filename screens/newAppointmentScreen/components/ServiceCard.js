@@ -75,6 +75,7 @@ const ServiceCard = (props) => {
   const { data } = props;
   const employee = get(data, 'employee', null);
   const isFirstAvailable = get(employee, 'isFirstAvailable', false);
+  
   const serviceName = data.service.name || data.service.description;
   const showSelectExtras = (
     !props.isAddon &&

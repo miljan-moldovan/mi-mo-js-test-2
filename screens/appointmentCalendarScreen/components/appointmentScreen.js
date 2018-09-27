@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-import { filter, map } from 'lodash';
+import { filter, map, find } from 'lodash';
 
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonCalendar from '../../../components/SalonCalendar';
@@ -15,6 +15,7 @@ import SalonToast from './SalonToast';
 import NewApptSlide from '../../../components/NewApptSlide';
 import { DefaultAvatar } from '../../../components/formHelpers';
 import BookAnother from './bookAnother';
+import RebookAppointment from './rebookAppointment';
 import SalonAlert from '../../../components/SalonAlert';
 import BarsActionSheet from '../../../components/BarsActionSheet';
 
@@ -92,6 +93,7 @@ class AppointmentScreen extends Component {
     bufferVisible: false,
     selectedAppointment: null,
     bookAnotherEnabled: false,
+    rebookAppointmentEnabled: false,
     screenHeight: 0,
     selectedApptId: -1,
     goToAppointmentId: null,
@@ -109,6 +111,32 @@ class AppointmentScreen extends Component {
     });
 
     this.props.appointmentCalendarActions.setGridView();
+
+
+    const { params } = this.props.navigation.state;
+
+    if (params && 'rebookAppointment' in params) {
+      this.selectFilter('providers', 'all');
+
+      const { newAppointmentActions, appointmentCalendarActions } = this.props;
+      const { rebookProviders, selectedAppointment } = params;
+
+      newAppointmentActions.cleanForm();
+      newAppointmentActions.setClient(selectedAppointment.client);
+      appointmentCalendarActions.setProviderScheduleDates(params.date, params.date);
+      appointmentCalendarActions.setGridView();
+
+
+
+      if (rebookProviders.length === 1) {
+        appointmentCalendarActions.setPickerMode('week');
+        this.selectFilter('providers', rebookProviders[0]);
+      } else {
+        this.selectFilter('rebookAppointment', rebookProviders);
+      }
+
+      this.handleRebook(true);
+    }
   }
 
   onPressMenu = () => {
@@ -200,10 +228,10 @@ class AppointmentScreen extends Component {
     const startTime = moment(cellId, 'HH:mm A');
     const { client } = this.props.newAppointmentState;
     newAppointmentActions.cleanForm();
-    if (this.state.bookAnotherEnabled) {
+    if (this.state.bookAnotherEnabled || this.state.rebookAppointmentEnabled) {
       newAppointmentActions.setClient(client);
     }
-    if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
+    if (selectedFilter === 'providers' || selectedFilter === 'deskStaff' || selectedFilter === 'rebookAppointment') {
       if (selectedProvider === 'all') {
         newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
@@ -218,11 +246,40 @@ class AppointmentScreen extends Component {
       newAppointmentActions.setDate(startDate);
     }
     newAppointmentActions.setStartTime(startTime);
-    newAppointmentActions.isBookingQuickAppt(true);
-    this.setState({
-      newApptActiveTab: 0,
-      visibleNewAppointment: true,
-    });
+
+
+
+    if (this.state.rebookAppointmentEnabled) {
+      const { params } = this.props.navigation.state;
+      const {
+        selectedAppointment, rebookProviders, rebookServices, filterProvider,
+      } = params;
+      let mainEmployee = null;
+      const services = JSON.parse(JSON.stringify(rebookServices));
+
+      if (filterProvider !== null && typeof filterProvider === 'object') {
+        mainEmployee = filterProvider;
+      } else {
+        mainEmployee = rebookProviders.length === 1 ? rebookProviders[0] : colData;
+      }
+
+      const date = rebookProviders.length === 1 ? colData : startDate;
+
+      for (let i = 0; i < services.length; i += 1) {
+        services[i].employee = mainEmployee;
+      }
+
+      newAppointmentActions.cleanForm();
+      newAppointmentActions.populateStateFromRebookAppt(selectedAppointment, services, mainEmployee, date, startTime);
+      this.props.navigation.navigate('NewAppointment', { rebook: true });
+      newAppointmentActions.isBookingQuickAppt(false);
+    } else {
+      newAppointmentActions.isBookingQuickAppt(true);
+      this.setState({
+        newApptActiveTab: 0,
+        visibleNewAppointment: true,
+      });
+    }
   }
 
   setSelectedProvider = (provider) => {
@@ -240,6 +297,13 @@ class AppointmentScreen extends Component {
   }
 
   setBookAnother = () => this.setState({ bookAnotherEnabled: false });
+
+  setRebookAppointment = () => {
+    this.setState({ rebookAppointmentEnabled: false }, () => {
+      this.selectFilter('providers', 'all');
+      // this.props.appointmentCalendarActions.setGridView();
+    });
+  };
 
   hideNewApptSlide = () => this.setState({ visibleNewAppointment: false });
 
@@ -269,7 +333,15 @@ class AppointmentScreen extends Component {
       });
       this.props.newAppointmentActions.getConflicts();
     };
+
     this.props.newAppointmentActions.quickBookAppt(callback, errorCallback);
+  }
+
+
+  handleRebook = (rebookAppointmentEnabled) => {
+    this.setState({
+      rebookAppointmentEnabled,
+    });
   }
 
   handleModifyAppt = () => {
@@ -319,6 +391,13 @@ class AppointmentScreen extends Component {
         this.props.navigation.setParams({ filterProvider: null, currentFilter: filter });
         this.props.appointmentCalendarActions.setPickerMode('day');
         this.props.appointmentCalendarActions.setSelectedFilter(filter);
+        break;
+      }
+      case 'rebookAppointment': {
+        this.props.navigation.setParams({ filterProvider: null, currentFilter: filter });
+        this.props.appointmentCalendarActions.setSelectedFilter('rebookAppointment');
+
+        this.props.appointmentCalendarActions.setSelectedProviders(filterProvider);
         break;
       }
       case 'providers':
@@ -491,6 +570,7 @@ class AppointmentScreen extends Component {
     const {
       bufferVisible,
       bookAnotherEnabled,
+      rebookAppointmentEnabled,
       screenHeight,
       goToAppointmentId,
       alert,
@@ -502,6 +582,7 @@ class AppointmentScreen extends Component {
     let headerData = null;
     let dataSource = null;
     let isDate = false;
+
     switch (selectedFilter) {
       case 'rooms': {
         headerData = rooms;
@@ -511,6 +592,13 @@ class AppointmentScreen extends Component {
       case 'resources': {
         headerData = resources;
         dataSource = resourceAppointments;
+        break;
+      }
+      case 'rebookAppointment': {
+
+        isDate = false;
+        headerData = providers;
+        dataSource = providerAppointments;
         break;
       }
       case 'deskStaff':
@@ -665,6 +753,14 @@ class AppointmentScreen extends Component {
           bookAnotherEnabled ? (
             <BookAnother
               hide={this.setBookAnother}
+              client={this.props.newAppointmentState.client}
+            />
+          ) : null
+        }
+        {
+          rebookAppointmentEnabled ? (
+            <RebookAppointment
+              hide={this.setRebookAppointment}
               client={this.props.newAppointmentState.client}
             />
           ) : null

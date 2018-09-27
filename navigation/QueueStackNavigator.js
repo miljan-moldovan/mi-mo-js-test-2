@@ -58,9 +58,9 @@ const MainNavigator = StackNavigator(
         headerTitle: 'Queue',
       },
     },
-    SalonCalendar: {
-      screen: AppointmentCalendarScreen,
-    },
+    // SalonCalendar: {
+    //   screen: AppointmentCalendarScreen,
+    // },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
       navigationOptions: { tabBarVisible: false },

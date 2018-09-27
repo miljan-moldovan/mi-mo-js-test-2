@@ -4,19 +4,19 @@ import {
 
 export default StyleSheet.create({
   rightButtonContainer: {
-    paddingTop: 25,
+    // paddingTop: 25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
   leftButtonContainer: {
-    paddingTop: 25,
+  //  paddingTop: 25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   headerTitle: {
-    paddingTop: 25,
+    // paddingTop: 25,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
