@@ -132,7 +132,7 @@ class queueListItemSummary extends Component {
 
     navigate('ModalProviders', {
       selectedService: { id: service.serviceId },
-      showFirstAvailable: item.status === 0,
+      showFirstAvailable: false,
       dismissOnSelect: true,
       selectedProvider: employee,
       checkProviderStatus: true,
