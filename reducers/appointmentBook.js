@@ -231,6 +231,7 @@ export default function appointmentBookReducer(state = initialState, action) {
         availability: data.availability,
         blockTimes: data.blockTimes.map(processBlockTime),
         storeSchedule: data.schedule,
+        rooms: data.rooms,
       };
     }
     case SET_GRID_WEEK_VIEW_SUCCESS:

@@ -61,7 +61,7 @@ const setFilterOptionShowMultiBlock = showMultiBlock => ({
 });
 
 const setGridAllViewSuccess =
-  (employees, appointments, availability, blockTimes) => {
+  (employees, appointments, availability, blockTimes, rooms) => {
     const step = 15;
     const apptGridSettings = {
       step,
@@ -70,7 +70,7 @@ const setGridAllViewSuccess =
     return {
       type: SET_GRID_ALL_VIEW_SUCCESS,
       data: {
-        employees, appointments, apptGridSettings, availability, blockTimes,
+        employees, appointments, apptGridSettings, availability, blockTimes, rooms,
       },
     };
   };
@@ -107,6 +107,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     startDate,
     pickerMode,
     filterOptions,
+    rooms,
   } = getState().appointmentBookReducer;
   const date = startDate.format('YYYY-MM-DD');
 
@@ -122,10 +123,10 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
           AppointmentBook.getBlockTimes(date),
           Store.getScheduleExceptions({ fromDate: date, toDate: date }),
           Store.getStoreInfo(),
+          filterOptions.showRoomAssignments ? Store.getRooms() : rooms,
         ])
-          .then(([employees, appointments, availabilityItem, blockTimes, scheduleExceptions, storeInfo]) => {
+          .then(([employees, appointments, availabilityItem, blockTimes, scheduleExceptions, storeInfo, storeRooms]) => {
             let filteredEmployees = employees;
-
 
 
             if (selectedFilter === 'deskStaff') {
@@ -142,6 +143,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               employeesAppointment,
               orderedAppointments, availabilityItem.timeSlots,
               blockTimes,
+              storeRooms,
             ));
           })
           .catch((ex) => {

@@ -261,6 +261,7 @@ class WalkInScreen extends Component {
             <SectionTitle value="CLIENT" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
             <InputGroup style={styles.inputGroupStyle}>
               <ClientInput
+                walkin
                 style={styles.rootStyle}
                 navigate={this.props.navigation.navigate}
                 label={this.state.client === null ? 'Client' : 'Client'}

@@ -386,8 +386,8 @@ const setBookedBy = (employee = null) => async (dispatch, getState) => {
   const forceReceptionistUser = await Settings.getSettingsByName('ForceReceptionistUser');
   const isBookedByFieldEnabled =
     !forceReceptionistUser.settingValue || isNull(loggedInEmployee) || !loggedInEmployeeId;
-  const currentEmployee =
-    (loggedInEmployee && loggedInEmployeeId) || getState().newAppointmentReducer.mainEmployee;
+  const currentEmployee = (loggedInEmployee && loggedInEmployeeId)
+    ? loggedInEmployee : getState().newAppointmentReducer.mainEmployee;
   const bookedByEmployee = get(currentEmployee, 'isFirstAvailable', false) ? null : currentEmployee;
   dispatch({
     type: SET_BOOKED_BY,

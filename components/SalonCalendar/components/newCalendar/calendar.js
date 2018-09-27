@@ -1353,7 +1353,7 @@ export default class Calendar extends Component {
       isLoading, headerData, apptGridSettings, dataSource, selectedFilter,
       selectedProvider, displayMode, providerSchedule, availability, bufferVisible,
       isRoom, isResource, filterOptions, setSelectedProvider, setSelectedDay,
-      startDate, storeScheduleExceptions,
+      startDate, storeScheduleExceptions, rooms,
     } = this.props;
 
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
@@ -1397,6 +1397,7 @@ export default class Calendar extends Component {
               onPressAvailability={this.handleOnPressAvailability}
               onCellPressed={this.handleCellPressed}
               columns={headerData}
+              rooms={rooms}
               startTime={startTime}
               apptGridSettings={apptGridSettings}
               showAvailability={showAvailability}

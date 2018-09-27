@@ -29,7 +29,9 @@ export default class ClientInput extends React.Component {
       this.props.onPress();
     }
 
-    this.props.navigate(this.props.apptBook ? 'ApptBookClient' : 'ChangeClient', {
+    let clientScreen = this.props.walkin ? 'ModalClients' : 'ChangeClient'
+
+    this.props.navigate(this.props.apptBook ? 'ApptBookClient' : clientScreen, {
       selectedClient: this.state.selectedClient,
       actionType: 'update',
       dismissOnSelect: true,

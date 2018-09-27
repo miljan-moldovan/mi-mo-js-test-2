@@ -1,10 +1,13 @@
-import { get } from 'lodash';
+import { get, isNumber } from 'lodash';
 import { showErrorAlert } from './utils';
-import { Queue } from '../utilities/apiWrapper';
+import { Queue, Services } from '../utilities/apiWrapper';
 
 export const GET_APPOINTMENT = 'appointmentDetails/GET_APPOINTMENT';
 export const GET_APPOINTMENT_SUCCESS = 'appointmentDetails/GET_APPOINTMENT_SUCCESS';
 export const GET_APPOINTMENT_FAILED = 'appointmentDetails/GET_APPOINTMENT_FAILED';
+export const GET_SERVICE_CHECK = 'appointmentDetails/GET_SERVICE_CHECK';
+export const GET_SERVICE_CHECK_SUCCESS = 'appointmentDetails/GET_SERVICE_CHECK_SUCCESS';
+export const GET_SERVICE_CHECK_FAILED = 'appointmentDetails/GET_SERVICE_CHECK_FAILED';
 export const UPDATE_APPOINTMENT = 'appointmentDetails/UPDATE_APPOINTMENT';
 export const UPDATE_APPOINTMENT_SUCCESS = 'appointmentDetails/UPDATE_APPOINTMENT_SUCCESS';
 export const UPDATE_APPOINTMENT_FAILED = 'appointmentDetails/UPDATE_APPOINTMENT_FAILED';
@@ -37,8 +40,26 @@ const updateAppointment = (clientId, serviceEmployeeClientQueues, productEmploye
       });
   };
 
+const getServiceCheck = (employee, service) => async (dispatch, getState) => {
+  dispatch({ type: GET_SERVICE_CHECK });
+  const employeeId = isNumber(employee) ? employee : get(employee, 'id', false);
+  const serviceId = isNumber(service) ? service : get(service, 'id', false);
+  return Services.getServiceEmployeeCheck({ employeeId, serviceId })
+    .then(result => dispatch({
+      type: GET_SERVICE_CHECK_SUCCESS,
+      data: { result },
+    }))
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch({
+        type: GET_SERVICE_CHECK_FAILED,
+        data: { error },
+      });
+    });
+};
 const queueDetailActions = {
   setAppointment,
+  getServiceCheck,
   updateAppointment,
 };
 

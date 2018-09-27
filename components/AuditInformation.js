@@ -1,12 +1,7 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-import { reverse } from 'lodash';
+import { reverse, slice } from 'lodash';
 
 import SalonTouchableOpacity from './SalonTouchableOpacity';
 
@@ -39,13 +34,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   panelInfoLine: {
-    // paddingLeft: 30,
     flex: 1,
     paddingBottom: 5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    // width: '90%',
   },
   panelInfoTitle: {
     marginTop: 5,
@@ -55,14 +48,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   panelInfoText: {
-    // marginTop: 5,
     color: '#3F3F3F',
     fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
   panelInfoDate: {
-    // marginTop: 5,
     color: '#000000',
     fontSize: 11,
     fontFamily: 'Roboto',
@@ -128,7 +119,7 @@ export default class AuditInformation extends React.Component {
     }
 
     return type;
-  }
+  };
 
   prepareAudit = (audits) => {
     let isBlockTime = false;
@@ -159,16 +150,19 @@ export default class AuditInformation extends React.Component {
       return oneAudit;
     });
     return { audits: reverse(prepareAudits), isBlockTime };
-  }
+  };
 
-  formatDate = date => moment(date, DateTime.date).format('MM/DD/YYYY')
+  formatDate = date => moment(date, DateTime.date).format('MM/DD/YYYY');
 
-  formatTime = time => moment(time, DateTime.time).format(DateTime.displayTime)
+  formatTime = time => moment(time, DateTime.time).format(DateTime.displayTime);
 
-  formatTimeWithMinutes = time => moment(time, DateTime.serverDateTime).format(DateTime.displayTime)
+  formatTimeWithMinutes = time =>
+    moment(time, DateTime.serverDateTime).format(DateTime.displayTime);
 
   formatEmployeeName = (employee) => {
-    if (!employee) { return ''; }
+    if (!employee) {
+      return '';
+    }
     const splitName = employee.split(' ');
     switch (splitName.length) {
       case 0:
@@ -180,47 +174,58 @@ export default class AuditInformation extends React.Component {
       default:
         return `${splitName[0]} ${splitName[2][0]}`;
     }
-  }
+  };
+
+  renderAuditInfo = (audit, isBlockTime, isOpen) => {
+    let auditToRender = audit;
+    if (!isOpen && !this.props.isLoading && audit && audit.length > 1) {
+      auditToRender = slice(auditToRender, 0, 1);
+    }
+    return auditToRender.map(item => (
+      <View key={Math.random()} style={[styles.panelInfoLine, { paddingTop: 5 }]}>
+        <Text style={styles.panelInfoTitle}>{this.getAuditType(item.auditType)}</Text>
+        {isBlockTime
+          ? [
+            <Text style={styles.panelInfoText}>
+                at {this.formatDate(item.auditDateTime)},{' '}
+              {item.auditDateTime ? ` ${this.formatTimeWithMinutes(item.auditDateTime)} ` : ''}
+            </Text>,
+            <Text style={styles.panelInfoDate}>
+              {this.formatEmployeeName(item.auditEmployee)}
+            </Text>,
+            ]
+          : [
+            <Text style={styles.panelInfoText}>
+              {item.service || ''} with {this.formatEmployeeName(item.provider)} on{' '}
+              {this.formatDate(item.appointmentDate)} at{' '}
+              {this.formatTime(item.appointmentStartTime)}
+            </Text>,
+            <Text style={styles.panelInfoDate}>
+                by {this.formatEmployeeName(item.auditEmployee)} on{' '}
+              {item.auditDateTime ? this.formatDate(item.auditDateTime) : ''}
+            </Text>,
+            ]}
+      </View>
+    ));
+  };
 
   render() {
     const { isBlockTime, isOpen } = this.state;
-    let { audit } = this.state;
-    if (!isOpen && !this.props.isLoading && audit && audit.length > 1) {
-      audit = audit.splice(0, 1);
-    }
-
+    const { audit } = this.state;
     return this.props.isLoading ? (
-      <View style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         <ActivityIndicator />
       </View>
     ) : (
       [
-        <View
-          style={[
-            styles.panelInfo,
-            isOpen ? { } : { maxHeight: 230 },
-          ]}
-        >
-          {audit.map((item, index) => (
-            <View key={Math.random()} style={[styles.panelInfoLine, { paddingTop: 5 }]}>
-              <Text style={styles.panelInfoTitle}>{this.getAuditType(item.auditType)}</Text>
-              {isBlockTime ?
-                [
-                  <Text style={styles.panelInfoText}>at {this.formatDate(item.auditDateTime)}, {item.auditDateTime ? ` ${this.formatTimeWithMinutes(item.auditDateTime)} ` : ''}</Text>,
-                  <Text style={styles.panelInfoDate}>{this.formatEmployeeName(item.auditEmployee)}</Text>,
-                ] :
-                [
-                  <Text style={styles.panelInfoText}>{item.service || ''} with {this.formatEmployeeName(item.provider)} on {this.formatDate(item.appointmentDate)} at {this.formatTime(item.appointmentStartTime)}</Text>,
-                  <Text style={styles.panelInfoDate}>by {this.formatEmployeeName(item.auditEmployee)} on {item.auditDateTime ? this.formatDate(item.auditDateTime) : ''}</Text>,
-                ]
-              }
-            </View>
-          ))}
+        <View style={[styles.panelInfo, isOpen ? {} : { maxHeight: 230 }]}>
+          {this.renderAuditInfo(audit, isBlockTime, isOpen)}
         </View>,
         <SalonTouchableOpacity
           style={styles.panelInfoShowMore}
@@ -228,7 +233,9 @@ export default class AuditInformation extends React.Component {
             this.setState({ isOpen: !this.state.isOpen });
           }}
         >
-          <Text style={styles.panelInfoShowMoreText}>{this.state.isOpen ? 'SHOW LESS' : 'SHOW MORE'}</Text>
+          <Text style={styles.panelInfoShowMoreText}>
+            {this.state.isOpen ? 'SHOW LESS' : 'SHOW MORE'}
+          </Text>
         </SalonTouchableOpacity>,
       ]
     );
