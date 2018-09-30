@@ -196,7 +196,7 @@ class QueueScreen extends React.Component {
             <Text style={styles.leftButtonText}>Cancel</Text>
           </View>
         ),
-        rightButtonOnPress: (navigation) => { navigation.navigate('Main', {transition: 'slideFromRight'}); },
+        rightButtonOnPress: (navigation) => { navigation.navigate('Main', { transition: 'slideFromRight' }); },
       },
     });
   }
@@ -214,7 +214,6 @@ class QueueScreen extends React.Component {
     this.setState({ newAppointment });
 
     this.props.serviceActions.setSelectedService({ id: service.id });
-
     this.props.navigation.navigate('ModalProviders', {
       queueList: true,
       selectedService: service,

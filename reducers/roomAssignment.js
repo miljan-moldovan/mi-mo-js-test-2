@@ -40,6 +40,7 @@ const roomAssignmentReducer = (state = initialState, action) => {
     case GET_ASSIGNMENTS_SUCCESS:
       newState.isLoading = false;
       newState.assignments = data.assignments;
+      newState.rooms = data.rooms;
       break;
     case GET_ASSIGNMENTS_FAILED:
       newState.isLoading = false;
