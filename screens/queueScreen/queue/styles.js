@@ -28,6 +28,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1.1,
     paddingBottom: 10,
+    flex: 1,
     // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
   },
   wrapperStyle: {
