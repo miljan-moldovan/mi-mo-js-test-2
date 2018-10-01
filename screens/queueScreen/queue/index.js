@@ -648,42 +648,29 @@ renderItem = (row) => {
       key={item.id}
     >
       <View style={styles.itemSummary}>
-        <View style={{ flexDirection: 'row', marginTop: 11, alignItems: 'center' }}>
-
-          {isBookedByWeb &&
-          <View style={{
-                backgroundColor: '#115ECD',
-                width: 16,
-                height: 14,
-                borderRadius: 8,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 5,
-                marginTop: 2,
-              }}
-          >
-            <Text style={{ fontWeight: '700', color: '#FFFFFF', fontSize: 8 }}>O</Text>
-          </View>
-}
-
+        <View style={{
+ flexDirection: 'column', marginTop: 10, alignItems: 'flex-start', marginRight: 20,
+}}
+        >
           <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
-          <ServiceIcons badgeData={item.badgeData} color={color} item={item} groupLeaderName={groupLeaderName} />
+          <ServiceIcons wrapperStyle={styles.wrapperStyle} badgeData={item.badgeData} color={color} item={item} groupLeaderName={groupLeaderName} />
         </View>
-        <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
-          {serviceName}
-          <Text style={{ color: '#727A8F' }}> with</Text> {employee}
-          {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
 
-        </Text>
-
+        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+          <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
+            {serviceName}
+            <Text style={{ color: '#727A8F' }}> with</Text> {employee}
+            {item.services.length > 1 ? (<Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}> +{item.services.length - 1}</Text>) : null}
+          </Text>
+        </View>
         <QueueTimeNote item={item} type="short" />
-
-
       </View>
       <View style={styles.itemIcons}>
         {label}
       </View>
+
       <Icon name="chevronRight" style={styles.chevron} type="solid" />
+
     </SalonTouchableOpacity>
   );
 }

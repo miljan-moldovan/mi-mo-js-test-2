@@ -6,9 +6,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
   },
   serviceTimeContainer: {
-    // fontSize: 12,
-    // fontFamily: 'Roboto-Regular',
-    // color: '#000',
     marginBottom: 8,
     flexDirection: 'row',
     alignSelf: 'stretch',
@@ -18,12 +15,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     fontSize: 11,
   },
-  serviceTime: {
-    // fontFamily: 'OpenSans-Bold',
-  },
   serviceClockIcon: {
     fontSize: 12,
-    // padding: 0,
     color: '#7E8D98',
     paddingRight: 7,
   },
@@ -51,10 +44,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#C0C1C6',
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingBottom: 19,
+    paddingLeft: 16,
+    paddingRight: 5,
     paddingTop: 13,
-    // minHeight: 123,
   },
   infoTitleText: {
     color: '#4D5067',
@@ -174,7 +166,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     zIndex: 99999,
-    right: 30,
+    right: 0,
     bottom: 5,
   },
   finishedContainer: {
