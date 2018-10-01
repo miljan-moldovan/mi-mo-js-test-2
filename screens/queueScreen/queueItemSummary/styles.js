@@ -37,6 +37,7 @@ export default StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '500',
     fontSize: 16,
+    width: '90%',
   },
   row: {
     flexDirection: 'row',

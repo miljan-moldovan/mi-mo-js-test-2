@@ -269,7 +269,7 @@ render() {
               </SalonTouchableOpacity>
             </View>
             <View style={styles.body}>
-              <View style={[styles.row, { height: 20 }]}>
+              <View style={[styles.row, { minHeight: 20 }]}>
                 {/* isBookedByWeb &&
                   <View style={styles.bookedbyWebStyle}>
                     <Text style={styles.bookedbyWebText}>O</Text>

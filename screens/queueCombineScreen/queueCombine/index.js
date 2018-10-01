@@ -133,7 +133,7 @@ class QueueCombineItem extends React.PureComponent {
       <SalonTouchableOpacity style={[styles.itemContainer, type == 'uncombine' ? { backgroundColor: color.background } : null, first]} key={item.id} onPress={this._onPress}>
         {this.renderCheckContainer()}
         <View style={[styles.itemSummary, type == 'uncombine' ? (groupLeader ? styles.itemSummaryCombinedFirst : styles.itemSummaryCombined) : null]}>
-          <View>
+          <View style={{ width: '100%' }}>
             <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
             <Text style={styles.serviceName} numberOfLines={1} ellipsizeMode="tail">
               {serviceName}
@@ -170,6 +170,9 @@ export class QueueCombine extends React.Component {
     if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
       this.searchText(nextProps.filterText);
     }
+    if (nextProps.combinedClients.length === 0) {
+      this.setState({ selected: (new Map(): Map<string, boolean>) });
+    }
   }
   searchText = (query: string) => {
     const { data } = this.props;
@@ -201,6 +204,8 @@ export class QueueCombine extends React.Component {
   _onPressItem = (id: string) => {
     // updater functions are preferred for transactional updates
     this.setState((state) => {
+
+
       const selected = new Map(state.selected);
       selected.set(id, !selected.get(id)); // toggle
       const selectedArray = [];
@@ -485,6 +490,7 @@ const styles = StyleSheet.create({
     color: '#111415',
     marginTop: 12,
     marginBottom: 4,
+    width: '75%',
   },
   serviceName: {
     fontSize: 11,
@@ -505,6 +511,7 @@ const styles = StyleSheet.create({
     color: '#4D5067',
     marginLeft: 8,
     marginBottom: 7,
+    width: '75%',
   },
   sectionUncombineText: {
     fontSize: 10,

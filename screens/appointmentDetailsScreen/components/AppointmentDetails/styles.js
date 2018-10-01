@@ -219,5 +219,12 @@ const styles = StyleSheet.create({
   },
   bottomButtonsRoot: { minHeight: 44 },
   bottomButtonsContainer: { height: 44, paddingHorizontal: 0, paddingVertical: 0 },
+  itemIcons: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    bottom: 5,
+  },
 });
 export default styles;
