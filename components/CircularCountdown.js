@@ -124,7 +124,7 @@ class CircularCountdown extends Component {
             strokeLinecap={strokeLinecap}
           />
         </Svg>
-        <View style={[styles.overlayContainer, { width: size + 10, height: size + 50 }]}>
+        <View style={[styles.overlayContainer, { width: size + 10, height: size }]}>
           <View style={[styles.processTime, { width: size, height: size }]}>
             <Text style={[styles.processTimeText, { fontSize: 16, marginBottom: -4 }]}>{processTime}</Text>
             <Text style={styles.processTimeText}>min</Text>

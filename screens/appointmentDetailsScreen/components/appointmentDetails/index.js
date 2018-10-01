@@ -198,70 +198,6 @@ class AppointmentDetails extends React.Component {
     return getLabel(styles.circularCountdown);
   }
 
-  // getLabelForItem = (item) => {
-  // switch (item.status) {
-  //   case QUEUE_ITEM_FINISHED:
-  //     return (
-  //       <View style={styles.finishedContainer}>
-
-  //         <View style={styles.finishedTime}>
-  //           <View style={[styles.finishedTimeFlag, item.processTime > item.estimatedTime ? { backgroundColor: '#D1242A' } : null]} />
-  //           <Text style={styles.finishedTimeText}>{this.getprocessMinutes(item)}min /
-  //             <Text style={{ fontFamily: 'Roboto-Regular' }}>{this.getprogressMaxMinutes(item)}min est. </Text>
-  //           </Text>
-  //         </View>
-
-  //         <View style={[styles.waitingTime, { backgroundColor: 'black', marginRight: 0 }]}>
-  //           <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>FINISHED</Text>
-  //         </View>
-  //       </View>
-  //     );
-  //     break;
-  //   case QUEUE_ITEM_RETURNING:
-  //     return (
-  //       <View style={styles.returningContainer}>
-  //         <View style={[styles.waitingTime, { marginRight: 0, backgroundColor: 'black' }]}>
-  //           <Text style={[styles.waitingTimeTextTop, { color: 'white' }]}>RETURNING</Text>
-  //         </View>
-  //       </View>
-  //     );
-  //   case QUEUE_ITEM_NOT_ARRIVED:
-  //     return (
-  //       <View style={styles.notArrivedContainer}>
-  //         <View style={[styles.waitingTime, { marginRight: 0, flexDirection: 'row', backgroundColor: 'rgba(192,193,198,1)' }]}>
-  //           <Text style={[styles.waitingTimeTextTop, { color: '#555' }]}>NOT ARRIVED </Text>
-  //           <Icon name="circle" style={{ fontSize: 2, color: '#555' }} type="solid" />
-  //           <Text style={[styles.waitingTimeTextTop, { color: '#D1242A' }]}> LATE</Text>
-  //         </View>
-  //       </View>
-  //     );
-  //   default:
-
-  //     let processTime = moment(item.processTime, 'hh:mm:ss'),
-  //       progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
-  //       estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
-  //       processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
-  //         ? processTime.minutes() + processTime.hours() * 60
-  //         : 0,
-  //       progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-  //         ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
-  //         : 0,
-  //       estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-  //         ? estimatedTime.minutes() + estimatedTime.hours() * 60
-  //         : 0;
-
-  //     return (
-  //       <CircularCountdown
-  //         size={46}
-  //         estimatedTime={progressMaxMinutes}
-  //         processTime={processMinutes}
-  //         itemStatus={item.status}
-  //         style={styles.circularCountdown}
-  //         queueType={item.queueType}
-  //       />
-  //     );
-  // }
-  // }
 
   getDiscountAmount = (promotion) => {
     switch (get(promotion, 'promotionType', null)) {
@@ -571,7 +507,10 @@ class AppointmentDetails extends React.Component {
               <React.Fragment>
                 <ScrollView style={{ marginBottom: 44 }}>
                   <View style={styles.infoContainer}>
-                    <View style={{ flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                    <View style={{
+ paddingBottom: 19, flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start',
+}}
+                    >
                       <Text style={styles.infoTitleText}>Queue Appointment</Text>
                       <QueueTimeNote type="long" containerStyles={{ marginTop: 3 }} item={appointment} />
                       <View style={{ alignSelf: 'flex-start' }}>
@@ -579,14 +518,21 @@ class AppointmentDetails extends React.Component {
                           item={appointment}
                           badgeData={badgeData}
                           hideInitials
-                          wrapperStyle={{ marginTop: 6 }}
                           align="flex-start"
                           direction="column"
                           groupLeaderName={groupLeaderName}
                         />
                       </View>
                     </View>
-                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                    <View style={{
+                     position: 'absolute',
+                     marginVertical: 5,
+                     flex: 1,
+                     alignItems: 'flex-end',
+                     bottom: 5,
+                     right: 20,
+                    }}
+                    >
                       {label}
                     </View>
                   </View>

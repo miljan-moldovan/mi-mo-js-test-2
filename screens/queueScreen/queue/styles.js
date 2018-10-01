@@ -11,7 +11,7 @@ export default StyleSheet.create({
   },
   itemContainer: {
     // width: '100%',
-    height: smallDevice ? 110 : 94,
+    // minHeight: smallDevice ? 126 : 110,
     // borderBottomWidth: 1,
     // borderBottomColor: 'rgba(29,29,38,1)',
     borderRadius: 4,
@@ -27,23 +27,22 @@ export default StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1.1,
-    paddingBottom: 26,
+    paddingBottom: 10,
     // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
+  },
+  wrapperStyle: {
+    paddingVertical: 3,
   },
   itemSummary: {
     marginLeft: 10,
-    marginRight: 'auto',
-    paddingRight: 10,
-    height: smallDevice ? 96 : 90,
-    flex: smallDevice ? 3 : 3.5,
+    flex: smallDevice ? 5 : 4,
     justifyContent: 'flex-end',
   },
   itemIcons: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    height: smallDevice ? 96 : 90,
-    flex: 1,
-    paddingTop: 11,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
   clientName: {
     fontSize: 16,
@@ -56,7 +55,6 @@ export default StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
     marginTop: 4,
-    // marginBottom: 12
   },
   serviceTimeContainer: {
     fontSize: 11,
@@ -69,7 +67,6 @@ export default StyleSheet.create({
   serviceRemainingWaitTime: {
     fontFamily: 'Roboto-Medium',
     fontSize: 10,
-    //  textDecorationLine: 'underline',
   },
   serviceTime: {
 
@@ -88,14 +85,12 @@ export default StyleSheet.create({
     paddingVertical: 2,
     height: 16,
     minWidth: 56,
-    // marginBottom: 14,
   },
   circularCountdown: {
     marginLeft: 'auto',
-    marginBottom: 'auto',
-    marginRight: 52,
-    marginTop: 16,
+    marginRight: smallDevice ? 25 : 52,
     alignItems: 'center',
+    marginBottom: 10,
   },
   waitingTimeTextTop: {
     fontSize: 9,
@@ -110,7 +105,6 @@ export default StyleSheet.create({
   },
   serviceClockIcon: {
     fontSize: 12,
-    // padding: 0,
     color: '#7E8D98',
     paddingRight: 7,
   },
@@ -121,7 +115,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     zIndex: 99999,
-    right: 15,
+    right: 10,
     bottom: 0,
   },
   returningContainer: {
@@ -148,7 +142,6 @@ export default StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
     height: 16,
-    // marginBottom: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

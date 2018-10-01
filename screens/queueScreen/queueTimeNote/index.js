@@ -5,7 +5,7 @@ import moment from 'moment';
 import styles from './styles';
 import Icon from '../../../components/UI/Icon';
 
-const smallDevice = Dimensions.get('window').width === 320;
+const smallDevice = false; // Dimensions.get('window').width === 320;
 
 const calcEstimatedTime = (estimatedTime) => {
   const seconds = moment(estimatedTime, 'hh:mm:ss').seconds() > 0 ? 1 : 0;

@@ -270,11 +270,11 @@ render() {
             </View>
             <View style={styles.body}>
               <View style={[styles.row, { height: 20 }]}>
-                {isBookedByWeb &&
+                {/* isBookedByWeb &&
                   <View style={styles.bookedbyWebStyle}>
                     <Text style={styles.bookedbyWebText}>O</Text>
                   </View>
-                }
+                */}
                 <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
                 <ClientInfoButton
                   client={this.props.client}
