@@ -80,9 +80,9 @@ class RemovalReasonTypesScreen extends React.Component {
   componentWillMount() {
     const { appointment } = this.props.navigation.state.params;
     const service = appointment.services[0];
-    const provider = service.isFirstAvailable ?
-      null : service.employee;
-
+    // const provider = service.isFirstAvailable ?
+    //  null : service.employee;
+    const provider = null;
 
     this.setState({ provider, employeeId: provider ? provider.id : null });
   }
@@ -225,16 +225,16 @@ class RemovalReasonTypesScreen extends React.Component {
         { this.props.loading &&
         <LoadingOverlay />
             }
-        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={80} enableAutoAutomaticScroll>
           <SectionDivider style={styles.sectionDivider} />
           <InputGroup>
             <ProviderInput
-              noLabel
+              label="Select Receptionist"
               showFirstAvailable={false}
               filterByService
               rootStyle={styles.providerRootStyle}
               selectedProvider={this.state.provider}
-              placeholder="Provider"
+              placeholder={false}
               navigate={this.props.navigation.navigate}
               headerProps={{ title: 'Providers', ...this.cancelButton() }}
               onChange={this.onChangeProvider}

@@ -1,4 +1,8 @@
-import { StyleSheet } from 'react-native';
+import {
+  StyleSheet, Dimensions,
+} from 'react-native';
+
+const smallDevice = Dimensions.get('window').width === 320;
 
 export default StyleSheet.create({
   container: {
@@ -183,6 +187,11 @@ export default StyleSheet.create({
   tabQueueCounterText: {
     color: '#1963CE',
     fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    padding: 0,
+  },
+  animatedText: {
+    fontSize: smallDevice ? 11 : 15,
     fontFamily: 'Roboto-Regular',
     padding: 0,
   },

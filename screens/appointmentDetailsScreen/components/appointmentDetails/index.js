@@ -557,6 +557,7 @@ class AppointmentDetails extends React.Component {
       },
     } = this.props;
     const badgeData = get(appointment, 'badgeData', []);
+    debugger //eslint-disable-line
     const label = this.getLabel();
     const groupLeaderName = this.getGroupLeaderName(appointment);
 
