@@ -641,8 +641,6 @@ renderItem = (row) => {
     color = groupColors[0];
   }
 
-  debugger //eslint-disable-line
-
   return (
     <SalonTouchableOpacity
       style={styles.itemContainer}

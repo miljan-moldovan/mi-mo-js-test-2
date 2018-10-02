@@ -149,7 +149,6 @@ class QueueScreen extends React.Component {
 
   handleWalkInPress = () => {
     const { navigate } = this.props.navigation;
-
     this.setState({
       newAppointment: {
         client: null,
@@ -159,6 +158,8 @@ class QueueScreen extends React.Component {
     });
     navigate('ModalClients', {
       onChangeClient: this.handleChangeClient,
+      isModal: true,
+      isWalkin: true,
       headerProps: {
         title: 'Walk-in',
         subTitle: 'step 1 of 3',
@@ -438,41 +439,39 @@ class QueueScreen extends React.Component {
           )
         }
         <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this.closeWalkOut}>
-          {[
-            <View key={Math.random().toString()} style={styles.walkoutContainer}>
-              <View style={styles.walkoutImageContainer}>
-                <Image style={styles.walkoutImage} source={walkoutImage} />
-              </View>
-              <Text style={styles.walkoutText}>Walk-out reason:
-                <Text style={styles.walkoutTextBold}>Other</Text>
-              </Text>
-              <View style={styles.walkoutTextContainer}>
-                <SalonTextInput
-                  multiline
-                  placeholder="Please insert other reasons"
-                  placeholderColor="#0A274A"
-                  style={styles.walkoutInput}
-                  placeholderStyle={styles.walkoutPlaceholder}
-                  text={this.state.walkoutText}
-                  onChange={this.handleWalkOutTextChange}
-                />
-              </View>
-              <View style={styles.walkoutButtonContainer}>
-                <SalonTouchableOpacity
-                  onPress={this.closeWalkOut}
-                  style={styles.walkoutButtonCancel}
-                >
-                  <Text style={styles.walkoutTextCancel}>Cancel</Text>
-                </SalonTouchableOpacity>
-                <SalonTouchableOpacity
-                  onPress={this.closeWalkOut}
-                  style={styles.walkoutButtonOk}
-                >
-                  <Text style={styles.walkoutTextOk}>Ok</Text>
-                </SalonTouchableOpacity>
-              </View>
-            </View>,
-          ]}
+          <View style={styles.walkoutContainer}>
+            <View style={styles.walkoutImageContainer}>
+              <Image style={styles.walkoutImage} source={walkoutImage} />
+            </View>
+            <Text style={styles.walkoutText}>Walk-out reason:
+              <Text style={styles.walkoutTextBold}>Other</Text>
+            </Text>
+            <View style={styles.walkoutTextContainer}>
+              <SalonTextInput
+                multiline
+                placeholder="Please insert other reasons"
+                placeholderColor="#0A274A"
+                style={styles.walkoutInput}
+                placeholderStyle={styles.walkoutPlaceholder}
+                text={this.state.walkoutText}
+                onChange={this.handleWalkOutTextChange}
+              />
+            </View>
+            <View style={styles.walkoutButtonContainer}>
+              <SalonTouchableOpacity
+                onPress={this.closeWalkOut}
+                style={styles.walkoutButtonCancel}
+              >
+                <Text style={styles.walkoutTextCancel}>Cancel</Text>
+              </SalonTouchableOpacity>
+              <SalonTouchableOpacity
+                onPress={this.closeWalkOut}
+                style={styles.walkoutButtonOk}
+              >
+                <Text style={styles.walkoutTextOk}>Ok</Text>
+              </SalonTouchableOpacity>
+            </View>
+          </View>
         </SalonModal>
       </View>
     );
