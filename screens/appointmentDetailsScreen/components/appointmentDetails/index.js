@@ -493,7 +493,7 @@ class AppointmentDetails extends React.Component {
       },
     } = this.props;
     const badgeData = get(appointment, 'badgeData', []);
-    debugger //eslint-disable-line
+
     const label = this.getLabel();
     const groupLeaderName = this.getGroupLeaderName(appointment);
 
@@ -524,7 +524,10 @@ class AppointmentDetails extends React.Component {
                         />
                       </View>
                     </View>
-                    <View style={{
+
+                    <View style={styles.itemIcons}>
+
+                      {/*    <View style={{
                      position: 'absolute',
                      marginVertical: 5,
                      flex: 1,
@@ -532,7 +535,7 @@ class AppointmentDetails extends React.Component {
                      bottom: 5,
                      right: 20,
                     }}
-                    >
+                    > */}
                       {label}
                     </View>
                   </View>

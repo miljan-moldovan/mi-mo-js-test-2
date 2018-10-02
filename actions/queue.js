@@ -386,7 +386,7 @@ export function cancelCombine() {
   };
 }
 
-export const finishCombine = (combiningClients: Array<Object>) => async (dispatch: Object => void) => {
+export const finishCombine = (combiningClients: Array<Object>, callback) => async (dispatch: Object => void) => {
   try {
     dispatch({ type: QUEUE });
     const data = {
@@ -403,8 +403,16 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
     const response = await Queue.postQueueGroup(data);
 
     dispatch(receiveQueue());
+
+    if (isFunction(callback)) {
+      callback(true);
+    }
   } catch (error) {
     dispatch({ type: QUEUE_FAILED, error });
+
+    if (isFunction(callback)) {
+      callback(false);
+    }
   }
 };
 export const updateGroupLeaders = (groups: Object) => async (dispatch: Object => void) => {
