@@ -294,13 +294,10 @@ class ProviderScreen extends React.Component {
 
   handleOnChangeProvider = async (provider) => {
     const {
-    //  queueList,
       dismissOnSelect,
       onChangeProvider,
-      // checkProviderStatus,
     } = this.params;
     const {
-    //  providersState,
       providersActions,
       navigation: { goBack },
     } = this.props;
@@ -446,16 +443,6 @@ class ProviderScreen extends React.Component {
             />
 
           </View>
-          {/* <View style={styles.letterListContainer}>
-            {letters.map(item => (
-              <SalonTouchableOpacity
-                key={item}
-                onPress={() => this.scrollToIndex(this.getFirstItemForLetter(item))}
-              >
-                <Text style={styles.letterListText}>{item}</Text>
-              </SalonTouchableOpacity>
-            ))}
-          </View> */}
         </View>
       </View>
     );
