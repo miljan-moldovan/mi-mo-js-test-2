@@ -28,6 +28,7 @@ import { NotificationBanner, NotificationBannerButton } from '../../../component
 import ServiceIcons from '../../../components/ServiceIcons';
 import Icon from '../../../components/UI/Icon';
 import QueueTimeNote from '../queueTimeNote';
+import { shortenTitle } from '../../../utilities/helpers';
 import styles from './styles';
 
 import type { QueueItem } from '../../../models';
@@ -397,6 +398,7 @@ cancelButton = () => ({
 
 checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { appointment } = this.state;
+  const firstService = 0;
   const service = appointment.services[0];
 
   const { settings } = this.props.settings;
@@ -416,17 +418,26 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   } else {
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
     this.hideDialog();
-
-    this.props.navigation.navigate('Providers', {
-      headerProps: { title: 'Providers', ...this.cancelButton() },
-      dismissOnSelect: false,
-      selectedService: { id: service.serviceId },
-      showFirstAvailable: false,
-      checkProviderStatus: true,
-      queueList: true,
-      onChangeProvider: provider => this.handleProviderSelection(provider),
-    });
+    this.selectProvider(0);
   }
+}
+
+selectProvider = (index) => {
+  const { appointment } = this.state;
+  const service = appointment.services[index];
+  this.props.navigation.navigate('Providers', {
+    headerProps: { 
+      title: shortenTitle(service.serviceName),
+      subTitle: 'Select Provider',
+      ...this.cancelButton() 
+    },
+    dismissOnSelect: false,
+    selectedService: { id: service.serviceId },
+    showFirstAvailable: false,
+    checkProviderStatus: true,
+    queueList: true,
+    onChangeProvider: provider => this.handleProviderSelection(provider, index),
+  });
 }
 
 
@@ -480,12 +491,17 @@ checkShouldMerge = () => {
 }
 
 
-handleProviderSelection = (provider) => {
+handleProviderSelection = (provider, index) => {
   const { appointment } = this.state;
-  const service = appointment.services[0];
+  const service = appointment.services[index];
   service.employee = provider;
-  this.handleStartService();
-  this.props.navigation.navigate('Main');
+  const newIndex = index + 1;
+  if (newIndex < appointment.services.length){
+    this.selectProvider(newIndex);    
+  } else {
+    this.handleStartService();
+    this.props.navigation.navigate('Main');
+  }
 }
 
 
@@ -641,8 +657,6 @@ renderItem = (row) => {
     color = groupColors[0];
   }
 
-  
-
   return (
     <SalonTouchableOpacity
       style={styles.itemContainer}
@@ -739,7 +753,6 @@ handleOk = (email) => {
 }
 
 render() {
-//
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
 
