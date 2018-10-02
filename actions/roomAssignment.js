@@ -29,19 +29,23 @@ const getRooms = () => async (dispatch) => {
 
 const getAssignments = (date = moment(), employeeId, successCallback) => async (dispatch) => {
   dispatch({ type: GET_ASSIGNMENTS });
-  try {
-    const assignments = await Employees.getRoomAssignments(moment(date).format('YYYY-MM-DD'), employeeId);
-    if (isFunction(successCallback)) {
-      successCallback(assignments);
-    }
-    return dispatch({
-      type: GET_ASSIGNMENTS_SUCCESS,
-      data: { assignments },
+  return Promise.all([
+    Store.getRooms(),
+    Employees.getRoomAssignments(moment(date).format('YYYY-MM-DD'), employeeId),
+  ])
+    .then(([rooms, assignments]) => {
+      if (isFunction(successCallback)) {
+        successCallback(assignments);
+      }
+      dispatch({
+        type: GET_ASSIGNMENTS_SUCCESS,
+        data: { assignments, rooms },
+      });
+    })
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch({ type: GET_ASSIGNMENTS_FAILED });
     });
-  } catch (err) {
-    showErrorAlert(err);
-    return dispatch({ type: GET_ASSIGNMENTS_FAILED });
-  }
 };
 
 const putAssignments = (id, date, assignments, successCallback) => async (dispatch) => {

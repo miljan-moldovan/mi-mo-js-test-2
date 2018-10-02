@@ -7,4 +7,5 @@ export default {
   serverDateTime: 'YYYY-MM-DDTHH:mm:ss',
   dateForTextMessage: 'ddd M/D',
   dateForPrint: 'M/DD/YYYY',
+  dateWithMonthShort: 'MMM D YYYY',
 };

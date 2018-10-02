@@ -1,20 +1,37 @@
-import { get, find, filter } from 'lodash';
+import { get, find, filter, intersectionWith } from 'lodash';
 import { createSelector } from 'reselect';
 
-const providersSelector = state => state.queue.providers;
-const settings = state => state.settingsReducer.settings;
-
+const queueEmployeesSelector = state => state.providersReducer.queueEmployees;
+const employeesByServiceSelector = state => state.providersReducer.employeesByService;
+const selectedServiceSelector = state => state.providersReducer.selectedService;
+const settingsSelector = state => state.settingsReducer.settings;
 
 const queueListSelector = createSelector(
-  providersSelector,
-  (providers) => {
+  queueEmployeesSelector,
+  employeesByServiceSelector,
+  selectedServiceSelector,
+  settingsSelector,
+  (
+    queueEmployees,
+    employeesByService,
+    selectedService,
+    settings,
+  ) => {
     const showOnlyAvailable = find(settings, { settingName: 'ShowOnlyClockedInEmployeesInClientQueue' });
-    if (get(showOnlyAvailable, 'settingValue', false)) {
-      return filter(providers, item => (
-        item.isClockedIn === true
-      ));
+    let list = queueEmployees;
+    if (selectedService) {
+      list = intersectionWith(
+        queueEmployees, employeesByService,
+        (queue, srv) => queue.id === srv.id,
+      );
     }
-    return providers;
+    if (get(showOnlyAvailable, 'settingValue', false)) {
+      list = filter(
+        list,
+        item => item.state.isClockedIn === true,
+      );
+    }
+    return list;
   },
 );
 export default queueListSelector;

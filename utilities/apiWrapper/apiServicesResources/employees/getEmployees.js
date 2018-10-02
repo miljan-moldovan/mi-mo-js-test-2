@@ -1,6 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
-import cancelRequest from '../../../helpers/cancelRequest';
+import { cancelRequest } from '../../../helpers/cancelRequest';
 import { getApiInstance } from '../../api';
 
 let cancellationToken = null;

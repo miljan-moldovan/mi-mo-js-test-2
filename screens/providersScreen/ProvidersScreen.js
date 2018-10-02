@@ -1,20 +1,15 @@
-// @flow
-
 import React from 'react';
 import {
-  StyleSheet,
   View,
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
   Text,
-  Alert,
+  FlatList,
+  StyleSheet,
+  RefreshControl,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get, isNull } from 'lodash';
-
-import { Settings } from '../../utilities/apiWrapper';
-import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
+import { get, includes, isArray } from 'lodash';
+import PropTypes from 'prop-types';
+import { getEmployeePhotoSource } from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -22,187 +17,103 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { DefaultAvatar } from '../../components/formHelpers';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-  'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+import Colors from '../../constants/Colors';
+import styles from './styles';
 
-const styles = StyleSheet.create({
-  headerTitle: {
-    fontSize: 17,
-    lineHeight: 22,
-    fontFamily: 'Roboto-Medium',
-    color: 'white',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    flexDirection: 'column',
-  },
-  itemRow: {
-    height: 43,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-    backgroundColor: 'white',
-    // borderBottomWidth: StyleSheet.hairlineWidth,
-    // borderBottomColor: '#C0C1C6',
-  },
-  inputRow: {
-    flex: 9,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  providerName: {
-    fontSize: 14,
-    marginLeft: 7,
-    color: '#110A24',
-    fontFamily: 'Roboto-Medium',
-  },
-  providerRound: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  timeLeftText: {
-    fontSize: 11,
-    textAlign: 'right',
-    fontFamily: 'Roboto-Light',
-    color: '#0C4699',
-  },
-  letterListContainer: {
-    paddingTop: 77,
-    alignSelf: 'stretch',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: 'white',
-  },
-  letterListText: {
-    fontSize: 11,
-    lineHeight: 13,
-    fontFamily: 'Roboto-Regular',
-    color: '#727A8F',
-  },
-  headerSubTitle: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-});
-
-const FirstAvailableRow = props => (
-  <SalonTouchableOpacity
-    onPress={() => props.onPress({
-      id: 0,
-      isFirstAvailable: true,
-      name: 'First',
-      lastName: 'Available',
-    })}
-    style={styles.itemRow}
-    key={Math.random()}
-  >
-    <View style={styles.inputRow}>
-      <DefaultAvatar
-        size={22}
-        fontSize={9}
-        provider={{ isFirstAvailable: true }}
-      />
-      <Text style={styles.providerName}>First Available</Text>
-    </View>
-    <View style={{ flex: 1, alignItems: 'center' }} />
-  </SalonTouchableOpacity>
-);
+const FirstAvailableRow = (props) => {
+  const firstAvProvider = {
+    id: 0,
+    isFirstAvailable: true,
+    name: 'First',
+    lastName: 'Available',
+  };
+  const onPress = () => props.onPress(firstAvProvider);
+  return (
+    <SalonTouchableOpacity
+      onPress={onPress}
+      style={styles.itemRow}
+      key="firstAvailableRow"
+    >
+      <View style={styles.inputRow}>
+        <DefaultAvatar
+          size={22}
+          fontSize={9}
+          provider={firstAvProvider}
+        />
+        <Text style={styles.providerName}>First Available</Text>
+      </View>
+    </SalonTouchableOpacity>
+  );
+};
 
 class ProviderScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params && navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
-      title: 'Providers',
-      subTitle: null,
-      leftButtonOnPress: navigation.goBack,
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-    };
+    const defaultProps = navigation.state.params && navigation.state.params.defaultProps
+      ? navigation.state.params.defaultProps : {
+        title: 'Providers',
+        subTitle: null,
+        leftButtonOnPress: navigation.goBack,
+        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      };
 
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+      navigation.state.params.headerProps && !ignoreNav
+      ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
+      navigation.state.params.headerProps && !ignoreNav
+      ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
+      navigation.state.params.headerProps && !ignoreNav
+      ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+      navigation.state.params.headerProps && !ignoreNav
+      ? navigation.state.params.headerProps
+      : { rightButtonOnPress: defaultProps.rightButtonOnPress };
 
     const { title } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
+      navigation.state.params.headerProps && !ignoreNav
+      ? navigation.state.params.headerProps : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+      navigation.state.params.headerProps && !ignoreNav
+      ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
     let customLeftButton = false;
     if (navigation.state.params) {
-      if (navigation.state.params.headerProps && navigation.state.params.headerProps.leftButtonOnPress) {
+      if (
+        navigation.state.params.headerProps && navigation.state.params.headerProps.leftButtonOnPress
+      ) {
         customLeftButton = true;
       }
     }
-
+    const headerLeftOnPress = customLeftButton
+      ? () => leftButtonOnPress(navigation) : leftButtonOnPress;
     return {
       headerTitle: (
-        <View style={{
-          flexDirection: 'column',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        >
+        <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>{title}</Text>
           {subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null}
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onPress={customLeftButton ? () => leftButtonOnPress(navigation) : leftButtonOnPress}>
+        <SalonTouchableOpacity style={styles.leftHeaderButton} onPress={headerLeftOnPress}>
           {leftButton}
         </SalonTouchableOpacity>
       ),
-      headerRight: (null),
+      headerRight: null,
     };
   };
 
-  static flexFilter(list, info) {
-    let matchesFilter = [];
-    const matches = [];
-
-    matchesFilter = function match(item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
-          count += 1;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
-  }
-
-  static alphabetFilter = (list, letter) => this.list.filter(item => item.name.indexOf(letter) === 0);
-
   constructor(props) {
     super(props);
-
+    if (this.params.selectedService) {
+      props.providersActions.setSelectedService(this.params.selectedService);
+    }
+    if (this.params.selectedProvider) {
+      props.providersActions.setSelectedProvider(this.params.selectedProvider);
+    }
     this.state = {
-      showEstimatedTime: false,
       refreshing: false,
+      searchText: '',
       headerProps: {
         title: 'Providers',
         subTitle: null,
@@ -212,41 +123,97 @@ class ProviderScreen extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.navigation.setParams({ defaultProps: this.state.headerProps });
     this.onRefresh();
   }
 
+  onChangeSearchText = searchText => this.setState({ searchText });
+
   onRefresh = () => {
     const { filterList, selectedService } = this.params;
-    this.props.providersActions.getProviders(
-      {
-        filterRule: 3,
-        maxCount: 100,
-        sortOrder: 1,
-        sortField: 'FirstName,LastName',
+    const {
+      providersActions: {
+        getProviders,
+        getReceptionists,
+        getQueueEmployees,
       },
-      selectedService,
-      filterList,
-    );
+    } = this.props;
+    const req = {
+      filterRule: 3,
+      maxCount: 1000,
+      sortOrder: 1,
+      sortField: 'FirstName,LastName',
+    };
+    switch (this.mode) {
+      case 'queue':
+        getQueueEmployees(req);
+        break;
+      case 'receptionists':
+        getReceptionists({
+          ...req,
+          sortField: 'Name,LastName',
+        });
+        break;
+      case 'employees':
+      default:
+        getProviders(req, selectedService, []);
+        break;
+    }
   }
 
   get currentData() {
-    const { queueList } = this.params;
+    const {
+      providersState: {
+        employees,
+        providers,
+        currentData: allProviders,
+      },
+      queueList,
+      receptionistList,
+    } = this.props;
+    const { searchText } = this.state;
+    const { filterList } = this.params;
+    // if (this.props.navigation.state.routeName !== 'ModalProviders') {
+    //   return currentData;
+    // }
+    let currentData = [];
+    switch (this.mode) {
+      case 'queue':
+        currentData = queueList;
+        break;
+      case 'receptionists':
+        currentData = receptionistList;
+        break;
+      case 'providers':
+        currentData = providers;
+        break;
+      case 'employees':
+      default:
+        currentData = allProviders;
+        break;
+    }
+    return (
+      (isArray(filterList) && filterList.length > 0) ||
+      searchText.length > 0
+    ) ? currentData.filter((employee) => {
+        const isProviderFoundByName = [employee.name, employee.lastName, employee.middleName]
+          .filter(item => !!item)
+          .map(item => item.toLowerCase())
+          .some(item => item.indexOf(searchText.toLowerCase()) >= 0);
 
-    if (queueList) {
-      return this.props.queueList;
+        if (isArray(filterList) && filterList.length > 0 && !includes(filterList, employee.id)) {
+          return false;
+        }
+        return isProviderFoundByName || employee.code === searchText;
+      }) : currentData;
+  }
+
+  get mode() {
+    if (this.params.queueList) {
+      return 'queue';
     }
-    if (this.props.navigation.state.routeName !== 'ModalProviders') {
-      return this.props.providersState.currentData;
-    }
-    let data = [];
-    this.props.providersState.currentData.forEach((item) => {
-      if (item.inAppointmentBook) {
-        data = [...data, item];
-      }
-    });
-    return data;
+    return this.params.mode || 'employees';
   }
 
   get params() {
@@ -261,7 +228,9 @@ class ProviderScreen extends React.Component {
     const onChangeProvider = get(params, 'onChangeProvider', null);
     const dismissOnSelect = get(params, 'dismissOnSelect', null);
     const queueList = get(params, 'queueList', false);
+    const mode = get(params, 'mode', false);
     return {
+      mode,
       queueList,
       filterList,
       dismissOnSelect,
@@ -294,57 +263,27 @@ class ProviderScreen extends React.Component {
 
   handleOnChangeProvider = async (provider) => {
     const {
-    //  queueList,
       dismissOnSelect,
       onChangeProvider,
-      // checkProviderStatus,
     } = this.params;
     const {
-    //  providersState,
       providersActions,
       navigation: { goBack },
     } = this.props;
-
     providersActions.setSelectedProvider(provider);
     onChangeProvider(provider);
     if (dismissOnSelect) { goBack(); }
   }
 
-  filterProviders = (searchText) => {
-    if (searchText && searchText.length > 0) {
-      const criteria = [
-        { Field: 'name', Values: [searchText.toLowerCase()] },
-        { Field: 'lastName', Values: [searchText.toLowerCase()] },
-      ];
-
-      const filtered = ProviderScreen.flexFilter(this.props.providersState.providers, criteria);
-      this.props.providersActions.setFilteredProviders(filtered);
-    } else {
-      this.props.providersActions.setFilteredProviders(this.props.providersState.providers);
-    }
-
-    this.props.navigation.setParams({
-      searchText: this.props.salonSearchHeaderState.searchText,
-    });
-  }
-
-  filterList = (searchText) => {
-    this.filterProviders(searchText);
-    this.setState({ searchText });
-  }
-
-  filterByLetter = (letter) => {
-    const filtered = this.props.providersState.providers
-      .filter(item => item.name.indexOf(letter) === 0);
-    this.props.providersActions.setFilteredProviders(filtered);
-    this.setState({ providers: this.props.providersState.filtered });
-  }
-
   renderItem = ({ item, index }) => {
     const {
       selectedProvider,
+      showEstimatedTime,
     } = this.params;
+    const { searchText } = this.state;
     const image = getEmployeePhotoSource(item);
+    const highlightStyle = selectedProvider === item.id
+      ? [styles.providerName, styles.selectedGreen] : styles.providerName;
     return (
       <SalonTouchableOpacity
         style={styles.itemRow}
@@ -367,34 +306,30 @@ class ProviderScreen extends React.Component {
             )}
           />
           <WordHighlighter
-            highlight={this.state.searchText}
-            style={selectedProvider === item.id ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-            highlightStyle={{ color: '#1DBF12' }}
+            highlight={searchText}
+            style={highlightStyle}
+            highlightStyle={styles.selectedGreen}
           >
             {item.fullName}
           </WordHighlighter>
         </View>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-          {this.state.showEstimatedTime && <Text style={styles.timeLeftText}>21m</Text>}
+        <View style={styles.estimatedTimeContainer}>
+          {
+            // showEstimatedTime &&
+            // <Text style={styles.timeLeftText}>21m</Text> // TODO: Add estimated time text
+          }
         </View>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          {selectedProvider === item.id && (
-            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-          )}
+        <View style={styles.selectedIconContainer}>
+          {
+            selectedProvider === item.id &&
+            <FontAwesome style={styles.selectedGreen}>{Icons.checkCircle}</FontAwesome>
+          }
         </View>
       </SalonTouchableOpacity>
     );
   };
 
-  renderSeparator = () => (
-    <View
-      style={{
-        height: StyleSheet.hairlineWidth,
-        width: '100%',
-        backgroundColor: '#C0C1C6',
-      }}
-    />
-  );
+  renderSeparator = () => <View style={styles.listItemSeparator} />
 
   render() {
     const { showFirstAvailable } = this.params;
@@ -405,24 +340,18 @@ class ProviderScreen extends React.Component {
           <LoadingOverlay />
         }
         <SalonSearchBar
-          backgroundColor="#d9d9da"
-          fontColor="#727A8F"
-          iconsColor="#727A8F"
-          placeholderTextColor="#727A8F"
+          backgroundColor={Colors.searchBarBackground}
+          fontColor={Colors.defaultGrey}
+          iconsColor={Colors.defaultGrey}
+          placeholderTextColor={Colors.defaultGrey}
           placeHolderText="Search"
           borderColor="transparent"
-          containerStyle={{
-            paddingTop: 3,
-            paddingBottom: 3.1,
-            paddingHorizontal: 8,
-          }}
-          onChangeText={(text) => {
-            this.filterList(text);
-          }}
+          containerStyle={styles.searchBarContainer}
+          onChangeText={this.onChangeSearchText}
         />
 
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ flexDirection: 'column', flex: 1 }}>
+        <View style={styles.flexRow}>
+          <View style={styles.fullSizeColumn}>
             {
               showFirstAvailable &&
               <React.Fragment>
@@ -431,12 +360,12 @@ class ProviderScreen extends React.Component {
               </React.Fragment>
             }
             <FlatList
-              style={{ backgroundColor: 'white' }}
+              style={styles.whiteBackground}
               data={this.currentData}
               renderItem={this.renderItem}
-              ItemSeparatorComponent={this.renderSeparator}
-              ref={(ref) => { this.flatListRef = ref; }}
               getItemLayout={this.getItemLayout}
+              ref={(ref) => { this.flatListRef = ref; }}
+              ItemSeparatorComponent={this.renderSeparator}
               refreshControl={
                 <RefreshControl
                   refreshing={this.state.refreshing}
@@ -444,21 +373,28 @@ class ProviderScreen extends React.Component {
                 />
               }
             />
-
           </View>
-          {/* <View style={styles.letterListContainer}>
-            {letters.map(item => (
-              <SalonTouchableOpacity
-                key={item}
-                onPress={() => this.scrollToIndex(this.getFirstItemForLetter(item))}
-              >
-                <Text style={styles.letterListText}>{item}</Text>
-              </SalonTouchableOpacity>
-            ))}
-          </View> */}
         </View>
       </View>
     );
   }
 }
+ProviderScreen.propTypes = {
+  queueList: PropTypes.node.isRequired,
+  receptionistList: PropTypes.node.isRequired,
+  providersState: PropTypes.shape({
+    employees: PropTypes.array,
+    providers: PropTypes.array,
+    currentData: PropTypes.array,
+    receptionists: PropTypes.array,
+    queueEmployees: PropTypes.array,
+  }).isRequired,
+  providersActions: PropTypes.shape({
+    getProviders: PropTypes.func,
+    getReceptionists: PropTypes.func,
+    getQueueEmployees: PropTypes.func,
+    setSelectedService: PropTypes.func,
+    setSelectedProvider: PropTypes.func,
+  }).isRequired,
+};
 export default ProviderScreen;
