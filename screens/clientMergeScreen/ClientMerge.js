@@ -8,7 +8,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { get, filter, remove } from 'lodash';
-import Icon from '../../components/UI/Icon';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 
@@ -27,7 +27,15 @@ class ClientMergeItem extends React.PureComponent {
         <View style={[styles.checkboxContainer, main ? { backgroundColor: '#1DBF12' } : null]}>
           <View style={[styles.checkbox, main ? { borderColor: 'transparent' } : null]}>
             { main ? (
-              <Icon color="#fff" size={9} name="check" type="regular" />
+              <FontAwesome style={{
+fontSize: 9,
+color: '#fff',
+fontWeight: '100',
+               fontFamily: 'FontAwesome5ProLight',
+}}
+              >{Icons.check}
+              </FontAwesome>
+
             ) : null }
           </View>
           <Text style={[styles.checkboxLabel, main ? { color: '#fff' } : null]}>Main</Text>
@@ -39,12 +47,22 @@ class ClientMergeItem extends React.PureComponent {
     const { selected } = this.props;
     return (
       <View style={styles.checkContainer}>
-        <Icon
+        {/* <Icon
           name={selected ? 'checkCircle' : 'circle'}
           type={selected ? 'regularFree' : 'solid'}
           size={selected ? 23 : 20}
           color={selected ? '#2BBA11' : '#727A8F'}
-        />
+        /> */}
+
+
+        <FontAwesome style={{
+        fontSize: selected ? 23 : 20,
+        color: selected ? '#2BBA11' : '#727A8F',
+        fontWeight: selected ? '900' : '100',
+        fontFamily: selected ? 'FontAwesome5ProSolid' : 'FontAwesome5ProLight',
+        }}
+        >{selected ? Icons.checkCircle : Icons.circle}
+        </FontAwesome>
       </View>
     );
   }
@@ -60,14 +78,32 @@ class ClientMergeItem extends React.PureComponent {
       <SalonTouchableOpacity style={styles.itemContainer} key={id} onPress={this._onPress}>
         {this.renderCheckContainer()}
         <View style={styles.itemSummary}>
-          <View>
-            <Text style={styles.clientName} numberOfLines={1} ellipsizemode="middle">{fullName}</Text>
+          <View style={{ width: '100%' }}>
+            <Text style={styles.clientName} numberOfLines={2} ellipsizemode="middle">{fullName}</Text>
             <View style={styles.clientMobileAddress}>
-              <Icon name="mobile" type="regular" size={16} color="#4D5067" style={{ marginRight: 5 }} />
+              <FontAwesome style={{
+              fontSize: 16,
+              color: '#4D5067',
+              fontWeight: '100',
+              fontFamily: 'FontAwesome',
+              marginRight: 5,
+              }}
+              >{Icons.mobile}
+              </FontAwesome>
               <Text style={styles.clientMobileAddressText} numberOfLines={1} ellipsizeMode="tail">
                 {phone}
               </Text>
-              <Icon name="home" type="light" size={12} color="#4D5067" style={{ marginRight: 4, marginLeft: 16 }} />
+              <FontAwesome style={{
+                marginRight: 4,
+marginLeft: 16,
+              fontSize: 12,
+              color: '#4D5067',
+              fontWeight: '100',
+              fontFamily: 'FontAwesome5ProLight',
+              }}
+              >{Icons.home}
+              </FontAwesome>
+
               <Text style={styles.clientMobileAddressText} numberOfLines={1} ellipsizeMode="tail">
                 {zip}
               </Text>
@@ -187,7 +223,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1',
   },
   itemContainer: {
-    height: 91,
+    // minHeight: 100,
+    flex: 1,
     borderRadius: 4,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 1 },
@@ -205,7 +242,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     // paddingRight: 10,
     flex: 1,
-    height: 91,
+    height: '100%',
     borderRadius: 4,
     shadowColor: 'black',
     shadowOffset: { width: 2, height: 0 },
@@ -217,13 +254,13 @@ const styles = StyleSheet.create({
     left: 1,
   },
   listItem: {
-    height: 75,
+    // height: 75,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkContainer: {
     width: 44,
-    height: 92,
+    // height: 92,
     alignItems: 'center',
     justifyContent: 'center',
     // backgroundColor: '#F8F8F8',
@@ -272,6 +309,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto-Regular',
     marginTop: 14,
+    width: '75%',
   },
   clientMobileAddress: {
     flexDirection: 'row',
@@ -288,5 +326,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     marginTop: 2,
+    marginBottom: 14,
   },
 });

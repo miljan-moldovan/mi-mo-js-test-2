@@ -486,7 +486,7 @@ class NewApptSlide extends React.Component {
 
   goToRoomAssignment = () => {
     const { date, mainEmployee: employee } = this.props.newApptState;
-    const onSave = () => this.showPanel();
+    const onSave = () => this.hidePanel();
     if (employee.isFirstAvailable) {
       return this.setState({
         toast: {

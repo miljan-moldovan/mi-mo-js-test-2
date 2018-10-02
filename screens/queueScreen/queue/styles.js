@@ -1,6 +1,4 @@
-import {
-  StyleSheet, Dimensions,
-} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const smallDevice = Dimensions.get('window').width === 320;
 
@@ -30,6 +28,7 @@ export default StyleSheet.create({
     paddingBottom: 10,
     flex: 1,
     // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
+    flex: 1,
   },
   wrapperStyle: {
     paddingVertical: 3,
@@ -69,9 +68,7 @@ export default StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     fontSize: 10,
   },
-  serviceTime: {
-
-  },
+  serviceTime: {},
   chevronRightIcon: {
     fontSize: 12,
     color: '#000000',

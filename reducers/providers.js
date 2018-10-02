@@ -7,18 +7,33 @@ import {
   GET_PROVIDER_STATUS,
   GET_PROVIDER_STATUS_SUCCESS,
   GET_PROVIDER_STATUS_FAILED,
+  GET_QUEUE_EMPLOYEES,
+  GET_QUEUE_EMPLOYEES_ERROR,
+  GET_QUEUE_EMPLOYEES_SUCCESS,
+  GET_EMPLOYEES_BY_SERVICE,
+  GET_EMPLOYEES_BY_SERVICE_ERROR,
+  GET_EMPLOYEES_BY_SERVICE_SUCCESS,
+  GET_RECEPTIONISTS,
+  GET_RECEPTIONISTS_ERROR,
+  GET_RECEPTIONISTS_SUCCESS,
+  SET_SELECTED_SERVICE,
 } from '../actions/providers';
 
 const initialState = {
   error: null,
   filtered: [],
-  providers: [],
   currentData: [],
   deskStaff: [],
   filteredDeskStaff: [],
   currentDeskStaffData: [],
-  selectedProvider: null,
   isLoading: false,
+  selectedProvider: null,
+  selectedServivce: null,
+  employees: [],
+  providers: [],
+  receptionists: [],
+  queueEmployees: [],
+  employeesByService: [],
 };
 
 const providersReducer = (state = initialState, action) => {
@@ -28,6 +43,60 @@ const providersReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedProvider: data.selectedProvider,
+      };
+    case SET_SELECTED_SERVICE:
+      return {
+        ...state,
+        selectedService: data.selectedService,
+      };
+    case GET_EMPLOYEES_BY_SERVICE:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_EMPLOYEES_BY_SERVICE_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        employeesByService: data.employees,
+      };
+    case GET_EMPLOYEES_BY_SERVICE_ERROR:
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case GET_RECEPTIONISTS:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_RECEPTIONISTS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        receptionists: data.employees,
+      };
+    case GET_RECEPTIONISTS_ERROR:
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case GET_QUEUE_EMPLOYEES:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_QUEUE_EMPLOYEES_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        queueEmployees: data.employees,
+        employeesByService: data.employeesByService || state.employeesByService,
+      };
+    case GET_QUEUE_EMPLOYEES_ERROR:
+      return {
+        ...state,
+        isLoading: false,
       };
     case GET_PROVIDERS:
       return {
