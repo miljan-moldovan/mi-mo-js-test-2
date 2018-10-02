@@ -1,4 +1,4 @@
-import { Settings } from '../utilities/apiWrapper';
+import { Settings, Client } from '../utilities/apiWrapper';
 
 export const SETTINGS_BY_NAME = 'services/SETTINGS_BY_NAME';
 export const SETTINGS_BY_NAME_SUCCESS = 'services/SETTINGS_BY_NAME_SUCCESS';
@@ -9,9 +9,9 @@ export const SETTINGS_SUCCESS = 'services/SETTINGS_SUCCESS';
 export const SETTINGS_FAILED = 'services/SETTINGS_FAILED';
 
 
-const getSettingsSuccess = settings => ({
+const getSettingsSuccess = ({ settings, walkinClient }) => ({
   type: SETTINGS_SUCCESS,
-  data: { settings },
+  data: { settings, walkinClient },
 });
 
 const getSettingsFailed = error => ({
@@ -19,10 +19,13 @@ const getSettingsFailed = error => ({
   data: { error },
 });
 
-const getSettings = (callback = () => {}) => (dispatch, getState) => {
+const getSettings = (callback = () => {}) => (dispatch) => {
   dispatch({ type: SETTINGS });
-  return Settings.getSettings()
-    .then((response) => { dispatch(getSettingsSuccess(response)); callback(true); })
+  return Promise.all([Settings.getSettings(), Client.getClient(1)])
+    .then(([settings, walkinClient]) => {
+      callback(true);
+      return dispatch(getSettingsSuccess({ settings, walkinClient }));
+    })
     .catch((error) => { dispatch(getSettingsFailed(error)); callback(false, error.message); });
 };
 
