@@ -167,41 +167,46 @@ class ProviderScreen extends React.Component {
       providersState: {
         employees,
         providers,
-        currentData,
+        currentData: allProviders,
       },
       queueList,
       receptionistList,
     } = this.props;
+    const { searchText } = this.state;
+    const { filterList } = this.params;
     // if (this.props.navigation.state.routeName !== 'ModalProviders') {
     //   return currentData;
     // }
+    let currentData = [];
     switch (this.mode) {
       case 'queue':
-        return queueList;
+        currentData = queueList;
+        break;
       case 'receptionists':
-        return receptionistList;
+        currentData = receptionistList;
+        break;
       case 'providers':
-        return providers;
+        currentData = providers;
+        break;
       case 'employees':
       default:
-        return providers;
+        currentData = allProviders;
+        break;
     }
-  }
+    return (
+      (isArray(filterList) && filterList.length > 0) ||
+      searchText.length > 0
+    ) ? currentData.filter((employee) => {
+        const isProviderFoundByName = [employee.name, employee.lastName, employee.middleName]
+          .filter(item => !!item)
+          .map(item => item.toLowerCase())
+          .some(item => item.indexOf(searchText.toLowerCase()) >= 0);
 
-  get filteredListData() {
-    const { searchText } = this.state;
-    const { filterList } = this.params;
-    return this.currentData.filter((employee) => {
-      const isProviderFoundByName = [employee.name, employee.lastName, employee.middleName]
-        .filter(item => !!item)
-        .map(item => item.toLowerCase())
-        .some(item => item.indexOf(searchText) >= 0);
-
-      if (isArray(filterList) && !includes(filterList, employee.id)) {
-        return false;
-      }
-      return isProviderFoundByName || employee.code === searchText;
-    });
+        if (isArray(filterList) && filterList.length > 0 && !includes(filterList, employee.id)) {
+          return false;
+        }
+        return isProviderFoundByName || employee.code === searchText;
+      }) : currentData;
   }
 
   get mode() {
@@ -356,7 +361,7 @@ class ProviderScreen extends React.Component {
             }
             <FlatList
               style={styles.whiteBackground}
-              data={this.filteredListData}
+              data={this.currentData}
               renderItem={this.renderItem}
               getItemLayout={this.getItemLayout}
               ref={(ref) => { this.flatListRef = ref; }}
