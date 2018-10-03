@@ -10,7 +10,7 @@ import {
 import { connect } from 'react-redux';
 
 import moment from 'moment';
-import _ from 'lodash';
+import _, { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 import LoadingOverlay from '../../../components/LoadingOverlay';
@@ -18,6 +18,8 @@ import LoadingOverlay from '../../../components/LoadingOverlay';
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
 import SalonInputModal from '../../../components/SalonInputModal';
+import SalonModal from '../../../components/SalonModal';
+import SalonAlert from '../../../components/SalonAlert';
 import { Client } from '../../../utilities/apiWrapper';
 import regexs from '../../../constants/Regexs';
 
@@ -32,6 +34,7 @@ import { shortenTitle } from '../../../utilities/helpers';
 import styles from './styles';
 
 import type { QueueItem } from '../../../models';
+import checkBusyEmploeeInServiceQueue from './util';
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },
@@ -64,6 +67,7 @@ state = {
   isEmailVisible: false,
   email: '',
   sortItemsBy: { value: 'FIRST_ARRIVED', label: 'First Arrived' },
+  modalBusyEmployee: null,
 }
 componentWillMount() {
   const {
@@ -426,10 +430,10 @@ selectProvider = (index) => {
   const { appointment } = this.state;
   const service = appointment.services[index];
   this.props.navigation.navigate('Providers', {
-    headerProps: { 
+    headerProps: {
       title: shortenTitle(service.serviceName),
       subTitle: 'Select Provider',
-      ...this.cancelButton() 
+      ...this.cancelButton()
     },
     dismissOnSelect: false,
     selectedService: { id: service.serviceId },
@@ -497,7 +501,7 @@ handleProviderSelection = (provider, index) => {
   service.employee = provider;
   const newIndex = index + 1;
   if (newIndex < appointment.services.length){
-    this.selectProvider(newIndex);    
+    this.selectProvider(newIndex);
   } else {
     this.handleStartService();
     this.props.navigation.navigate('Main');
@@ -523,27 +527,34 @@ handleStartService = () => {
     deletedServiceEmployeeIds: [],
   };
 
+  const modalBusyEmployee = checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
-  this.props.startService(appointment.id, serviceData, (response, error) => {
-    if (response) {
-      this.hideAll();
-      this.props.loadQueueData();
-    } else if (error.response.data.result === 6) { // "Can't automatically assign FA employee, please finish service for some provider"
-      const { settings } = this.props.settings;
+  if (modalBusyEmployee) {
 
-      let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
-      preventActivity = preventActivity ?
-        preventActivity.settingValue : false;
+    this.setState({ modalBusyEmployee });
+  } else {
+    this.props.startService(appointment.id, serviceData, (response, error) => {
+      if (response) {
+        this.hideAll();
+        this.props.loadQueueData();
+      } else if (error.response.data.result === 6) {
+        // "Can't automatically assign FA employee, please finish service for some provider"
+        const { settings } = this.props.settings;
 
-      let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
-      autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
-        autoAssignFirstAvailableProvider.settingValue : false;
+        let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
+        preventActivity = preventActivity ?
+          preventActivity.settingValue : false;
 
-      if (preventActivity && autoAssignFirstAvailableProvider) {
-        this.checkHasProvider(true);
+        let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
+        autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+          autoAssignFirstAvailableProvider.settingValue : false;
+
+        if (preventActivity && autoAssignFirstAvailableProvider) {
+          this.checkHasProvider(true);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 handleToWaiting = () => {
@@ -752,6 +763,10 @@ handleOk = (email) => {
   }
 }
 
+closeBusyModal = () => {
+  this.setState({ modalBusyEmployee: null }, () => this.props.setLoading(false));
+}
+
 render() {
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
@@ -812,6 +827,18 @@ render() {
         hide={this.hideDialog}
       />
       {this.renderNotification()}
+      {
+        this.state.modalBusyEmployee &&
+        <SalonAlert
+          visible={this.state.modalBusyEmployee}
+          title={get(this.state.modalBusyEmployee, 'title', '')}
+          description={get(this.state.modalBusyEmployee, 'text', '')}
+          btnRightText={get(this.state.modalBusyEmployee, 'buttonOkText', '')}
+          btnLeftText="Don't finish"
+          onPressLeft={this.closeBusyModal}
+          onPressRight={null}
+        />
+    }
     </View>
   );
 }

@@ -337,6 +337,7 @@ class QueueScreen extends React.Component {
           <Queue
             {...this.props}
             data={waitingQueue}
+            serviceQueue={serviceQueue}
             groups={groups}
             navigation={navigation}
             loading={loading}

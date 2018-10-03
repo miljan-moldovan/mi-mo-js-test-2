@@ -191,4 +191,9 @@ export default StyleSheet.create({
     width: 10,
     color: '#53646F',
   },
+  modalBusyText: {
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular',
+    color: '#111415',
+  },
 });
