@@ -161,12 +161,13 @@ class ServiceSection extends Component {
 }
 
 ServiceSection.propTypes = {
-  services: PropTypes.arrayOf(PropTypes.object).isRequired,
   onAdd: PropTypes.func.isRequired,
-  minuteInterval: PropTypes.number,
   onRemove: PropTypes.func.isRequired,
   onUpdate: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
+  services: PropTypes.arrayOf(PropTypes.object).isRequired,
+  cancelButton: PropTypes.func.isRequired,
+  minuteInterval: PropTypes.number,
 };
 ServiceSection.defaultProps = {
   minuteInterval: 1,
