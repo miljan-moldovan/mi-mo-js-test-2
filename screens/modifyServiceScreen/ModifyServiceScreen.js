@@ -29,7 +29,6 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    // const canSave = params.canSave || false;
     const clientName = params.clientName || '';
     const canSave = true;
     return {
@@ -230,7 +229,7 @@ export default class ModifyServiceScreen extends React.Component {
             queueList
             placeholder={false}
             filterByService
-            showFirstAvailable
+            showFirstAvailable={false}
             label="Provider"
             avatarSize={20}
             navigate={navigate}
@@ -251,18 +250,6 @@ export default class ModifyServiceScreen extends React.Component {
               />
             ) : null
           }
-
-          {/*
-            !isFirstAvailable ?
-              <React.Fragment>
-                <InputDivider />
-                <InputSwitch
-                  value={isProviderRequested}
-                  onChange={this.handleChangeRequested}
-                  text="Provider is requested?"
-                />
-              </React.Fragment> : null
-          */}
         </InputGroup>
         <SectionDivider />
         <InputGroup>

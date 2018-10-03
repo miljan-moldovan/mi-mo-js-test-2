@@ -12,6 +12,7 @@ const initialState = {
   loading: false,
   data: {},
   settings: [],
+  walkinClient: null,
 };
 
 export default function settingsReducer(state = initialState, action) {
@@ -28,12 +29,14 @@ export default function settingsReducer(state = initialState, action) {
         ...state,
         error: null,
         settings: data.settings,
+        walkinClient: data.walkinClient,
         isLoading: false,
       };
     case SETTINGS_FAILED:
       return {
         ...state,
         isLoading: false,
+        walkinClient: null,
         error: data.error,
         settings: [],
       };

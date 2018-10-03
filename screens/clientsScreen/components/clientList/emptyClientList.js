@@ -1,7 +1,10 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import { View, Text, StyleSheet, Keyboard } from 'react-native';
+import { get } from 'lodash';
 import Icon from '../../../../components/UI/Icon';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
+import grouppedSettingsSelector from '../../../../redux/selectors/settingsSelector';
 
 const styles = StyleSheet.create({
   container: {
@@ -58,15 +61,24 @@ const styles = StyleSheet.create({
 });
 
 class emptyClientList extends PureComponent {
-  handleOnPress = () => {
+  addNewClient = () => {
     this.props.navigate('NewClient', { onChangeClient: this.props.onChangeClient });
   };
+
+  walkinClient = () => {
+    if (this.props.onWalkinPress) {
+      this.props.onWalkinPress(this.props.walkinClient);
+    }
+  }
 
   hideKeyboard = () => {
     Keyboard.dismiss();
   };
 
   render() {
+    const hideBtn = this.props.isWalkin && get(this.props.settings, '[WalkInMode][0].settingValue', -1) !== 1;
+    const btnText = this.props.isWalkin ? 'WALK-IN CLIENT' : 'ADD NEW CLIENT';
+    const btnPress = this.props.isWalkin ? this.walkinClient : this.addNewClient;
     return (
       <SalonTouchableOpacity style={styles.container} onPress={this.hideKeyboard}>
         <View style={styles.circle}>
@@ -77,15 +89,23 @@ class emptyClientList extends PureComponent {
               <Text style={styles.textDesc}>Type name, code, phone number or email</Text>
           </View>
         {
-          !this.props.hideAddButton ?
-          (<View style={styles.buttonContainer}>
-            <SalonTouchableOpacity onPress={this.handleOnPress} style={styles.buttonStyle}>
-              <Text style={styles.textButton}>ADD NEW CLIENT</Text>
-            </SalonTouchableOpacity>
-          </View>) : null
+          !this.props.hideAddButton && !hideBtn ?
+          (
+            <View style={styles.buttonContainer}>
+              <SalonTouchableOpacity onPress={btnPress} style={styles.buttonStyle}>
+                <Text style={styles.textButton}>{btnText}</Text>
+              </SalonTouchableOpacity>
+            </View>
+          ) : null
         }
       </SalonTouchableOpacity>
     );
   }
 }
-export default emptyClientList;
+
+const mapStateToProps = state => ({
+  settings: grouppedSettingsSelector(state),
+  walkinClient: state.settingsReducer.walkinClient,
+});
+
+export default connect(mapStateToProps)(emptyClientList);

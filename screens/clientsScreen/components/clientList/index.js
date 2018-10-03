@@ -180,6 +180,8 @@ class ClientList extends React.Component {
             onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
             navigate={this.props.navigate}
             hideAddButton={this.props.hideAddButton}
+            isWalkin={this.props.isWalkin}
+            onWalkinPress={this.props.onChangeClient}
           />);
         }
         return null;
