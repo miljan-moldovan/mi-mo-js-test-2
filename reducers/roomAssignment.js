@@ -14,6 +14,8 @@ import {
 
 const initialState = {
   isLoading: false,
+  isError: false,
+  isUpdating: false,
   rooms: [],
   assignments: [],
 };
@@ -48,10 +50,18 @@ const roomAssignmentReducer = (state = initialState, action) => {
       break;
     case PUT_ASSIGNMENTS:
       newState.isLoading = true;
+      newState.isUpdating = true;
+      newState.isError = false;
       break;
     case PUT_ASSIGNMENTS_SUCCESS:
-    case PUT_ASSIGNMENTS_FAILED:
+      newState.isUpdating = false;
       newState.isLoading = false;
+      newState.isError = false;
+      break;
+    case PUT_ASSIGNMENTS_FAILED:
+      newState.isUpdating = false;
+      newState.isLoading = false;
+      newState.isError = true;
       break;
     default:
       break;
