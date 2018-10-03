@@ -270,7 +270,7 @@ render() {
             </View>
             <View style={styles.body}>
               <View style={[styles.row, { minHeight: 20 }]}>
-                <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
+                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
                 <ClientInfoButton
                   client={this.props.client}
                   navigation={this.props.navigation}

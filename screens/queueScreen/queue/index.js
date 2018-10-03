@@ -215,28 +215,11 @@ getLabelForItem = (item, customStyle = {}) => {
         </View>
       );
     default:
-
-      let processTime = moment(item.processTime, 'hh:mm:ss'),
-        progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
-        estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
-        processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
-          ? processTime.minutes() + processTime.hours() * 60
-          : 0,
-        progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-          ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
-          : 0,
-        estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-          ? estimatedTime.minutes() + estimatedTime.hours() * 60
-          : 0;
-
       return (
         <CircularCountdown
           size={46}
-          estimatedTime={progressMaxMinutes}
-          processTime={processMinutes}
-          itemStatus={item.status}
+          item={item}
           style={[styles.circularCountdown, customStyle]}
-          queueType={item.queueType}
         />
       );
   }
@@ -426,10 +409,10 @@ selectProvider = (index) => {
   const { appointment } = this.state;
   const service = appointment.services[index];
   this.props.navigation.navigate('Providers', {
-    headerProps: { 
+    headerProps: {
       title: shortenTitle(service.serviceName),
       subTitle: 'Select Provider',
-      ...this.cancelButton() 
+      ...this.cancelButton(),
     },
     dismissOnSelect: false,
     selectedService: { id: service.serviceId },
@@ -496,8 +479,8 @@ handleProviderSelection = (provider, index) => {
   const service = appointment.services[index];
   service.employee = provider;
   const newIndex = index + 1;
-  if (newIndex < appointment.services.length){
-    this.selectProvider(newIndex);    
+  if (newIndex < appointment.services.length) {
+    this.selectProvider(newIndex);
   } else {
     this.handleStartService();
     this.props.navigation.navigate('Main');
@@ -668,7 +651,7 @@ renderItem = (row) => {
  flexDirection: 'column', marginTop: 10, alignItems: 'flex-start', marginRight: 20,
 }}
         >
-          <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+          <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
           <ServiceIcons wrapperStyle={styles.wrapperStyle} badgeData={item.badgeData} color={color} item={item} groupLeaderName={groupLeaderName} />
         </View>
 
