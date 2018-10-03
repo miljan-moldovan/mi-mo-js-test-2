@@ -232,6 +232,7 @@ class RemovalReasonTypesScreen extends React.Component {
               label="Select Receptionist"
               showFirstAvailable={false}
               filterByService
+              mode="receptionists"
               rootStyle={styles.providerRootStyle}
               selectedProvider={this.state.provider}
               placeholder={false}
