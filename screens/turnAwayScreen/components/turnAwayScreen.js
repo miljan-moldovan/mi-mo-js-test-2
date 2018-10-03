@@ -9,6 +9,9 @@ import ServiceSection from './serviceSection';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import LoadingOverlay from '../../../components/LoadingOverlay';
 import Colors from '../../../constants/Colors';
+import DateTime from '../../../constants/DateTime';
+import { Services } from '../../../utilities/apiWrapper';
+import { showErrorAlert } from '../../../actions/utils';
 
 import {
   SectionDivider,
@@ -30,32 +33,24 @@ class TurnAwayScreen extends Component {
     const handleDone = params.handleDone || (() => null);
     const doneButtonStyle = { color: canSave ? '#FFFFFF' : '#19428A' };
     return {
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Turn Away</Text>
-        </View>
-      ),
+      title: 'Turn Away',
       headerLeft: (
-        <View style={styles.leftButtonContainer}>
-          <SalonTouchableOpacity
-            onPress={navigation.goBack}
-            style={styles.leftButton}
-          >
-            <Text style={styles.leftButtonText}>Cancel</Text>
-          </SalonTouchableOpacity>
-        </View>
+        <SalonTouchableOpacity
+          onPress={navigation.goBack}
+          style={styles.leftButton}
+        >
+          <Text style={styles.leftButtonText}>Cancel</Text>
+        </SalonTouchableOpacity>
       ),
       headerRight: (
-        <View style={styles.rightButtonContainer}>
-          <SalonTouchableOpacity
-            wait={3000}
-            disabled={!canSave}
-            onPress={handleDone}
-            style={styles.rightButton}
-          >
-            <Text style={[styles.rightButtonText, doneButtonStyle]}>Done</Text>
-          </SalonTouchableOpacity>
-        </View>
+        <SalonTouchableOpacity
+          wait={3000}
+          disabled={!canSave}
+          onPress={handleDone}
+          style={styles.rightButton}
+        >
+          <Text style={[styles.rightButtonText, doneButtonStyle]}>Done</Text>
+        </SalonTouchableOpacity>
       ),
     };
   };
@@ -98,6 +93,11 @@ class TurnAwayScreen extends Component {
       isEditableOtherReason,
       selectedReasonCode: option,
     }, this.checkCanSave);
+  }
+
+  get totalDuration() {
+    const { services } = this.state;
+    return services.reduce((agg, srv) => agg.add(srv.length), moment.duration(0));
   }
 
   get hasInvalidServices() {
@@ -150,22 +150,18 @@ class TurnAwayScreen extends Component {
   }
 
   handleDone = () => {
-
     const services = [];
-
     const selectedServices = JSON.parse(JSON.stringify(this.state.services));
     for (let i = 0; i < selectedServices.length; i += 1) {
       const service = selectedServices[i];
       delete service.service;
       delete service.provider;
-      service.toTime = moment(service.toTime).format('HH:mm:ss');
-      service.fromTime = moment(service.fromTime).format('HH:mm:ss');
+      service.toTime = moment(service.toTime).format(DateTime.time);
+      service.fromTime = moment(service.fromTime).format(DateTime.time);
       services.push(service);
     }
-
-
     const turnAway = {
-      date: this.state.date.format('YYYY-MM-DD'),
+      date: this.state.date.format(DateTime.date),
       reasonCode: this.state.selectedReasonCode.id,
       reason: this.state.otherReason.length > 0 ? this.state.otherReason : null,
       myClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
@@ -179,16 +175,15 @@ class TurnAwayScreen extends Component {
   handleAddService = () => {
     const { apptGridSettings: { step } } = this.props;
     const params = this.props.navigation.state.params || {};
-    const { employee } = params;
+    const { employee, fromTime: startTime = moment('7:00:00', DateTime.time) } = params;
     const services = cloneDeep(this.state.services);
-
+    const fromTime = moment(startTime).add(this.totalDuration);
     const service = {
       provider: employee,
       service: null,
-      fromTime: moment('07:00:00 AM', 'hh:mm:ss A'),
-      toTime: moment('07:00:00 AM', 'hh:mm:ss A').add(step, 'm'),
+      fromTime,
+      toTime: moment(fromTime).add(step, 'm'),
     };
-
     services.push(service);
     this.setState({ services }, this.checkCanSave);
   }
@@ -201,8 +196,26 @@ class TurnAwayScreen extends Component {
 
   handleUpdateService = (index, updatedService) => {
     const services = cloneDeep(this.state.services);
-    services[index] = updatedService;
-    this.setState({ services }, this.checkCanSave);
+    const { provider, service } = updatedService;
+    const serviceId = get(service, 'id');
+    const employeeId = get(provider, 'id');
+    this.setState({ isLoading: true }, () => {
+      Services.getServiceEmployeeCheck({
+        employeeId,
+        serviceId,
+      })
+        .then((check) => {
+          const length = get(check, 'duration');
+          services[index] = { ...updatedService, length };
+          this.setState({ services, isLoading: false }, this.checkCanSave);
+        })
+        .catch((error) => {
+          // showErrorAlert(error);
+          const length = get(service, 'maxDuration');
+          services[index] = { ...updatedService, length };
+          this.setState({ services, isLoading: false }, this.checkCanSave);
+        });
+    });
   }
 
   handleDateModal = () => this.setState({ isModalVisible: true })
@@ -241,12 +254,12 @@ class TurnAwayScreen extends Component {
   render() {
     const {
       apptGridSettings: { step = 15 },
-      turnAwayState: { isLoading },
+      turnAwayState: { isLoadingState },
       navigation: { navigate, state: { params = {} } },
       turnAwayReasonsState: { isLoading: isLoadingReasons },
     } = this.props;
     const { apptBook = false } = params;
-    const { date, selectedReasonCode } = this.state;
+    const { date, isLoading, selectedReasonCode } = this.state;
     const inputGroupLoadingStyle = isLoadingReasons ? {
       height: 50,
       alignItems: 'center',
@@ -255,7 +268,7 @@ class TurnAwayScreen extends Component {
     return (
       <View style={styles.container} >
         {
-          isLoading &&
+          (isLoading || isLoadingState) &&
           <LoadingOverlay />
         }
         <KeyboardAwareScrollView
