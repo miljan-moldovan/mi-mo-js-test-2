@@ -266,7 +266,7 @@ class ClientsScreen extends React.Component {
         />
         <View style={styles.clientsList}>
           <ClientList
-            isWalkin={this.props.navigation.state.params.isWalkin}
+            isWalkin={get(this.props.navigation.state,'params.isWalkin', false)}
             isLoadingMore={this.props.isLoadingMore}
             fetchMore={this.fetchMore}
             navigate={this.props.navigation.navigate}
