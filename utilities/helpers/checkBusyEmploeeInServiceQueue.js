@@ -1,9 +1,8 @@
 import { uniq } from 'lodash';
 
-import Status from '../../../constants/Status';
+import Status from '../../constants/Status';
 
 const checkBusyEmploeeInServiceQueue = (item, manualAssignFA, serviceQueue) => {
-  // debugger
   const allEmployeeIdFromItem = [];
   const employeeWhoBusy = [];
   item.services.forEach((itm) => {

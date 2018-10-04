@@ -20,7 +20,7 @@ import * as actions from '../../../actions/queue';
 import SalonInputModal from '../../../components/SalonInputModal';
 import SalonModal from '../../../components/SalonModal';
 import SalonAlert from '../../../components/SalonAlert';
-import { Client } from '../../../utilities/apiWrapper';
+import { Client, QueueStatus } from '../../../utilities/apiWrapper';
 import regexs from '../../../constants/Regexs';
 
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
@@ -34,7 +34,7 @@ import { shortenTitle } from '../../../utilities/helpers';
 import styles from './styles';
 
 import type { QueueItem } from '../../../models';
-import checkBusyEmploeeInServiceQueue from './util';
+import checkBusyEmploeeInServiceQueue from '../../../utilities/helpers/checkBusyEmploeeInServiceQueue';
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },
@@ -508,11 +508,9 @@ handleProviderSelection = (provider, index) => {
   }
 }
 
-
-handleStartService = () => {
+startService = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
-
   const serviceEmployees = service.employee ? [
     {
       serviceEmployeeId: service.id,
@@ -526,34 +524,39 @@ handleStartService = () => {
     serviceEmployees,
     deletedServiceEmployeeIds: [],
   };
+  this.props.startService(appointment.id, serviceData, (response, error) => {
+    if (response) {
+      this.hideAll();
+      this.props.loadQueueData();
+    } else if (error.response.data.result === 6) {
+      // "Can't automatically assign FA employee, please finish service for some provider"
+      const { settings } = this.props.settings;
+
+      let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
+      preventActivity = preventActivity ?
+        preventActivity.settingValue : false;
+
+      let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
+      autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
+        autoAssignFirstAvailableProvider.settingValue : false;
+
+      if (preventActivity && autoAssignFirstAvailableProvider) {
+        this.checkHasProvider(true);
+      }
+    }
+  });
+}
+
+handleStartService = () => {
+  const { appointment } = this.state;
+  const service = appointment.services[0];
 
   const modalBusyEmployee = checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
   if (modalBusyEmployee) {
-
     this.setState({ modalBusyEmployee });
   } else {
-    this.props.startService(appointment.id, serviceData, (response, error) => {
-      if (response) {
-        this.hideAll();
-        this.props.loadQueueData();
-      } else if (error.response.data.result === 6) {
-        // "Can't automatically assign FA employee, please finish service for some provider"
-        const { settings } = this.props.settings;
-
-        let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
-        preventActivity = preventActivity ?
-          preventActivity.settingValue : false;
-
-        let autoAssignFirstAvailableProvider = _.find(settings, { settingName: 'AutoAssignFirstAvailableProvider' });
-        autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
-          autoAssignFirstAvailableProvider.settingValue : false;
-
-        if (preventActivity && autoAssignFirstAvailableProvider) {
-          this.checkHasProvider(true);
-        }
-      }
-    });
+    this.startService();
   }
 }
 
@@ -577,7 +580,7 @@ handlePressFinish = (finish) => {
     this.props.undoFinishService(appointment.id, this.props.loadQueueData);
   } else {
     this.hideAll();
-    this.props.finishService(appointment.id, this.props.loadQueueData);
+    this.props.finishService([appointment.id], this.props.loadQueueData);
   }
 }
 
@@ -767,6 +770,14 @@ closeBusyModal = () => {
   this.setState({ modalBusyEmployee: null }, () => this.props.setLoading(false));
 }
 
+handleBusyModalOk = () => {
+  const { itemsId } = this.state.modalBusyEmployee;
+  this.setState({ modalBusyEmployee: null });
+  this.props.finishService(itemsId, null).then(() => {
+    this.startService();
+  });
+}
+
 render() {
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
@@ -836,7 +847,7 @@ render() {
           btnRightText={get(this.state.modalBusyEmployee, 'buttonOkText', '')}
           btnLeftText="Don't finish"
           onPressLeft={this.closeBusyModal}
-          onPressRight={null}
+          onPressRight={this.handleBusyModalOk}
         />
     }
     </View>
