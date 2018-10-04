@@ -249,6 +249,11 @@ handlePress = (item) => {
   }
 }
 
+
+showDialog = () => {
+  this.setState({ isVisible: true });
+}
+
 handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
   if (appointment !== null) {
@@ -814,6 +819,7 @@ render() {
         client={this.state.client}
         services={this.state.services}
         onDonePress={this.hideDialog}
+        showDialog={this.showDialog}
         onPressSummary={this.handlePressSummary}
         isWaiting={this.props.isWaiting}
         item={this.state.appointment}
