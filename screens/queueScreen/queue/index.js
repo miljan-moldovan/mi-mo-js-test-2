@@ -18,7 +18,6 @@ import LoadingOverlay from '../../../components/LoadingOverlay';
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
 import SalonInputModal from '../../../components/SalonInputModal';
-import SalonModal from '../../../components/SalonModal';
 import SalonAlert from '../../../components/SalonAlert';
 import { Client, QueueStatus } from '../../../utilities/apiWrapper';
 import regexs from '../../../constants/Regexs';
@@ -31,6 +30,7 @@ import ServiceIcons from '../../../components/ServiceIcons';
 import Icon from '../../../components/UI/Icon';
 import QueueTimeNote from '../queueTimeNote';
 import { shortenTitle } from '../../../utilities/helpers';
+import groupedSettingsSelector from '../../../redux/selectors/settingsSelector';
 import styles from './styles';
 
 import type { QueueItem } from '../../../models';
@@ -532,9 +532,9 @@ startService = () => {
 
 handleStartService = () => {
   const { appointment } = this.state;
-  const service = appointment.services[0];
-
-  const modalBusyEmployee = checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
+  const settingAllowMultiService = get(this.props.settings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', true);
+  const modalBusyEmployee = settingAllowMultiService
+    ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
   if (modalBusyEmployee) {
     this.setState({ modalBusyEmployee });
@@ -877,4 +877,8 @@ Queue.propTypes = {
   onChangeFilterResultCount: PropTypes.any.isRequired,
 };
 
-export default connect(null, actions)(Queue);
+const mapStateToProps = state => ({
+  settings: groupedSettingsSelector(state),
+});
+
+export default connect(mapStateToProps, actions)(Queue);
