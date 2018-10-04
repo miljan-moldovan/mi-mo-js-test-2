@@ -532,7 +532,7 @@ startService = () => {
 
 handleStartService = () => {
   const { appointment } = this.state;
-  const settingAllowMultiService = get(this.props.settings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', true);
+  const settingAllowMultiService = get(this.props.settings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', false);
   const modalBusyEmployee = settingAllowMultiService
     ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
