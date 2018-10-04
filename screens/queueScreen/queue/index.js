@@ -400,7 +400,6 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
 
-
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.hideAll();
     this.handleStartService();
@@ -537,7 +536,7 @@ startService = () => {
 
 handleStartService = () => {
   const { appointment } = this.state;
-  const settingAllowMultiService = get(this.props.settings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', false);
+  const settingAllowMultiService = get(this.props.groupedSettings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', false);
   const modalBusyEmployee = settingAllowMultiService
     ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
@@ -884,7 +883,8 @@ Queue.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  settings: groupedSettingsSelector(state),
+  settings: state.settingsReducer,
+  groupedSettings: groupedSettingsSelector(state),
 });
 
 export default connect(mapStateToProps, actions)(Queue);
