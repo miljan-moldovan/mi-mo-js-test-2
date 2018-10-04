@@ -5,6 +5,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
+import { isEqual } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import ClientInfoButton from '../../components/ClientInfoButton';
@@ -94,6 +95,15 @@ class WalkInScreen extends Component {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const prevClientInfo = this.state.client;
+    const newClientInfo = nextProps.clientInfoState.client;
+    if (prevClientInfo.id === newClientInfo.id && 
+      !isEqual(prevClientInfo, newClientInfo)) {
+      this.setState({ client: newClientInfo }, this.checkCanSave);
+    }
+  }
+
 
   setWaitMins = () => {
     const { guestWaitMins } = this.props.queue.queueState ? this.props.queue.queueState : {};
@@ -175,22 +185,22 @@ class WalkInScreen extends Component {
     }, this.checkCanSave);
   }
 
-    renderExtraClientButtons = isDisabled => (<ClientInfoButton
-      client={this.state.client}
-      navigation={this.props.navigation}
-      onDonePress={() => {}}
-      apptBook={false}
-      buttonStyle={{ marginHorizontal: 5 }}
-      iconStyle={{ fontSize: 20, color: '#115ECD' }}
-    />)
-    ;
+  renderExtraClientButtons = isDisabled => (<ClientInfoButton
+    client={this.state.client}
+    navigation={this.props.navigation}
+    onDonePress={() => {}}
+    apptBook={false}
+    buttonStyle={{ marginHorizontal: 5 }}
+    iconStyle={{ fontSize: 20, color: '#115ECD' }}
+  />)
+  ;
 
 
-    handleRemoveService= (index) => {
-      const { services } = this.state;
-      services.splice(index, 1);
-      this.setState({ services }, this.checkCanSave);
-    }
+  handleRemoveService= (index) => {
+    const { services } = this.state;
+    services.splice(index, 1);
+    this.setState({ services }, this.checkCanSave);
+  }
 
     handleUpdateService= (index, service) => {
       const { services } = this.state;
