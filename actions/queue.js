@@ -303,15 +303,23 @@ const finishServiceFailed = error => ({
   data: { error },
 });
 
-export const finishService = (id, callback) => (dispatch) => {
-  dispatch({ type: CLIENT_FINISH_SERVICE, data: { id } });
-  return QueueStatus.putFinish(id)
+export const finishService = (ids, callback) => (dispatch) => {
+  dispatch({ type: CLIENT_FINISH_SERVICE, data: { ids } });
+  const promisees = [];
+  ids.forEach(id => promisees.push(QueueStatus.putFinish(id)));
+  return Promise.all(promisees)
     .then((resp) => {
-      dispatch(finishServiceSuccess(resp)); callback(true);
+      if (callback) {
+        callback(true);
+      }
+      return dispatch(finishServiceSuccess(resp));
     })
     .catch((error) => {
       showErrorAlert(error);
-      dispatch(finishServiceFailed(error)); callback(false, error);
+      if (callback) {
+        callback(true);
+      }
+      return dispatch(finishServiceFailed(error));
     });
 };
 

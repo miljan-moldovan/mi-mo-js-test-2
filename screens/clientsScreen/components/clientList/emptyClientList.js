@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Keyboard } from 'react-native';
 import { get } from 'lodash';
 import Icon from '../../../../components/UI/Icon';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import grouppedSettingsSelector from '../../../../redux/selectors/settingsSelector';
+import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
 
 const styles = StyleSheet.create({
   container: {
@@ -104,7 +104,7 @@ class emptyClientList extends PureComponent {
 }
 
 const mapStateToProps = state => ({
-  settings: grouppedSettingsSelector(state),
+  settings: groupedSettingsSelector(state),
   walkinClient: state.settingsReducer.walkinClient,
 });
 
