@@ -27,6 +27,7 @@ export default class ProviderInput extends React.Component {
       headerProps = {},
       queueList = false,
       filterList = false,
+      mode = 'employees',
       selectedService = null,
       selectedProvider = null,
       showFirstAvailable = true,
@@ -35,10 +36,9 @@ export default class ProviderInput extends React.Component {
       walkin = false,
     } = this.props;
     if (isFunction(onPress)) { onPress(); }
-
-    let screenProviders = walkin ? 'ModalProviders' : 'Providers';
-
+    const screenProviders = walkin ? 'ModalProviders' : 'Providers';
     navigate(apptBook ? 'ApptBookProvider' : screenProviders, {
+      mode,
       queueList,
       filterList,
       headerProps,

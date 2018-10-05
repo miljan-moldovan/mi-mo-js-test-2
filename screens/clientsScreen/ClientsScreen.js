@@ -2,6 +2,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
@@ -17,45 +18,37 @@ const query = {
 
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params &&
-      navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
-        title: 'Clients',
-        subTitle: null,
-        leftButtonOnPress: () => { navigation.goBack(); },
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-        rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-        rightButtonOnPress: () => { navigation.navigate('NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
-      };
-    const ignoreNav = navigation.state.params &&
-    navigation.state.params.ignoreNav ? navigation.state.params.ignoreNav : false;
+    const isModal = get(navigation.state.params, 'isModal', false);
+    const headerProps = get(navigation.state.params, 'headerProps', {});
+    const stateProps = get(navigation.state.params, 'defaultProps', {});
+    const hideAddButton = get(navigation.state.params, 'hideAddButton', false);
+    const defaultProps = {
+      title: 'Clients',
+      subTitle: null,
+      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      rightButton: hideAddButton ? null : <Text style={styles.rightButtonText}>Add Client</Text>,
+      rightButtonOnPress: () => { navigation.navigate(isModal ? 'ModalNewClient' : 'NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
+    };
+    const mergedProps = {
+      ...defaultProps,
+      ...stateProps,
+      ...headerProps,
+    };
+    const {
+      rightButton,
+      rightButtonOnPress,
+      title,
+      subTitle,
+    } = mergedProps;
 
-    let { leftButton } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
-    const { rightButton } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
-    let { leftButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav ? navigation.state.params.headerProps : {
-        leftButtonOnPress: defaultProps.leftButtonOnPress,
-      };
-    const { rightButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav ? navigation.state.params.headerProps : {
-        rightButtonOnPress: defaultProps.rightButtonOnPress,
-      };
-    const { title } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav ? navigation.state.params.headerProps : { title: defaultProps.title };
-    const { subTitle } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+    let {
+      leftButton,
+      leftButtonOnPress,
+    } = mergedProps;
+
     const clearSearch = navigation.state.params &&
       navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
-    const onChangeClient = navigation.state.params &&
-      navigation.state.params.onChangeClient ? navigation.state.params.onChangeClient : null;
-
 
     if (!leftButton) {
       leftButton = (
@@ -70,7 +63,7 @@ class ClientsScreen extends React.Component {
       leftButtonOnPress = defaultProps.defaultLeftButtonOnPress;
     }
     return {
-      header: props => (
+      header: () => (
         <SalonSearchHeader
           clearSearch={clearSearch}
           title={title}
@@ -135,9 +128,7 @@ class ClientsScreen extends React.Component {
       title: 'Clients',
       subTitle: null,
       defaultLeftButtonOnPress: () => { this.handleLeftButton(); },
-      leftButtonOnPress: () => { this.props.navigation.goBack(); },
-      rightButton: <Text style={styles.rightButtonText}>Add</Text>,
-      rightButtonOnPress: () => { this.props.navigation.navigate('NewClient', { onChangeClient: this._handleOnChangeClient }); },
+      rightButtonOnPress: () => { this.props.navigation.navigate(this.props.navigation.state.params.isModal ? 'ModalNewClient' : 'NewClient', { onChangeClient: this._handleOnChangeClient }); },
     },
   }
 
@@ -275,6 +266,7 @@ class ClientsScreen extends React.Component {
         />
         <View style={styles.clientsList}>
           <ClientList
+            isWalkin={get(this.props.navigation.state,'params.isWalkin', false)}
             isLoadingMore={this.props.isLoadingMore}
             fetchMore={this.fetchMore}
             navigate={this.props.navigation.navigate}

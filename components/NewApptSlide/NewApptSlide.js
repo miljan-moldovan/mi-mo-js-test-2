@@ -157,7 +157,6 @@ class NewApptSlide extends React.Component {
   }
 
   setService = (service) => {
-    
     this.props.servicesActions.setSelectingExtras(true);
     this.showAddons(service)
       .then((selectedAddons) => {
@@ -392,7 +391,7 @@ class NewApptSlide extends React.Component {
     if (!this.canBook()) {
       return false;
     }
-    
+
 
     return this.props.handleBook(true);
   }
@@ -486,7 +485,10 @@ class NewApptSlide extends React.Component {
 
   goToRoomAssignment = () => {
     const { date, mainEmployee: employee } = this.props.newApptState;
-    const onSave = () => this.showPanel();
+    const onSave = () => {
+      this.hidePanel();
+      this.props.apptBookActions.setGridView();
+    };
     if (employee.isFirstAvailable) {
       return this.setState({
         toast: {

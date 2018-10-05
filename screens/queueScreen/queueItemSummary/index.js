@@ -269,13 +269,8 @@ render() {
               </SalonTouchableOpacity>
             </View>
             <View style={styles.body}>
-              <View style={[styles.row, { height: 20 }]}>
-                {/* isBookedByWeb &&
-                  <View style={styles.bookedbyWebStyle}>
-                    <Text style={styles.bookedbyWebText}>O</Text>
-                  </View>
-                */}
-                <Text style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
+              <View style={[styles.row, { minHeight: 20 }]}>
+                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameText}>{`${this.props.client.name} ${this.props.client.lastName}`}</Text>
                 <ClientInfoButton
                   client={this.props.client}
                   navigation={this.props.navigation}

@@ -29,7 +29,6 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    // const canSave = params.canSave || false;
     const clientName = params.clientName || '';
     const canSave = true;
     return {
@@ -85,7 +84,6 @@ export default class ModifyServiceScreen extends React.Component {
     const price = get(serviceItem, 'price', 0);
     const isFirstAvailable = get(serviceItem, 'isFirstAvailable', false);
     const isProviderRequested = get(serviceItem, 'isProviderRequested', true);
-    
 
     return {
       isLoading: false,
@@ -104,17 +102,19 @@ export default class ModifyServiceScreen extends React.Component {
 
   getEmployeePrice = () => {
     const { employee, service } = this.state;
-    if (employee && service) {
+    if (employee && service && !employee.isFirstAvailable) {
       const employeeId = get(employee, 'id', false);
       const serviceId = get(service, 'id', false);
-      this.setState({ isLoading: true }, () => {
-        Services.getServiceEmployeeCheck({ employeeId, serviceId })
-          .then(result => this.setState({ isLoading: false, price: get(result, 'price', 0) }))
-          .catch((error) => {
-            showErrorAlert(error);
-            this.setState({ isLoading: false });
-          });
-      });
+      if (employeeId && serviceId) {
+        this.setState({ isLoading: true }, () => {
+          Services.getServiceEmployeeCheck({ employeeId, serviceId })
+            .then(result => this.setState({ isLoading: false, price: get(result, 'price', 0) }))
+            .catch((error) => {
+              showErrorAlert(error);
+              this.setState({ isLoading: false });
+            });
+        });
+      }
     }
   }
 
@@ -194,7 +194,6 @@ export default class ModifyServiceScreen extends React.Component {
   handleChangePromotion = promotion => this.setState({ promotion }, this.getEmployeePrice)
 
   handleChangeRequested = (isProviderRequested) => {
-
     this.setState({ isProviderRequested });
   }
 
@@ -227,9 +226,10 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <ProviderInput
+            queueList
             placeholder={false}
             filterByService
-            showFirstAvailable
+            showFirstAvailable={false}
             label="Provider"
             avatarSize={20}
             navigate={navigate}
@@ -241,25 +241,15 @@ export default class ModifyServiceScreen extends React.Component {
             headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
 
-
-          {employee ? <TrackRequestSwitch
-            onChange={this.handleChangeRequested}
-            isFirstAvailable={isFirstAvailable}
-            initialValue={isProviderRequested}
-          /> : null}
-
-
-          {/*
-            !isFirstAvailable ?
-              <React.Fragment>
-                <InputDivider />
-                <InputSwitch
-                  value={isProviderRequested}
-                  onChange={this.handleChangeRequested}
-                  text="Provider is requested?"
-                />
-              </React.Fragment> : null
-          */}
+          {
+            employee ? (
+              <TrackRequestSwitch
+                onChange={this.handleChangeRequested}
+                isFirstAvailable={isFirstAvailable}
+                initialValue={isProviderRequested}
+              />
+            ) : null
+          }
         </InputGroup>
         <SectionDivider />
         <InputGroup>

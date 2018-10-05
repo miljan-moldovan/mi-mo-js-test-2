@@ -2,103 +2,54 @@ import React from 'react';
 import {
   View,
   Text,
-  Picker,
   ScrollView,
-  StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
-import { get, times } from 'lodash';
+import { get, slice, times, orderBy, cloneDeep } from 'lodash';
 import moment, { isMoment } from 'moment';
 
-import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import SalonModalPicker from '../../components/slidePanels/SalonModalPicker';
 import Colors from '../../constants/Colors';
 import DateTime from '../../constants/DateTime';
+import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import SalonModalPicker from '../../components/slidePanels/SalonModalPicker';
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import {
   InputButton,
   InputDivider,
   InputGroup,
   SectionTitle,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
-import SalonModal from '../../components/SalonModal';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  marginBottom: {
-    marginBottom: 15,
-  },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    paddingBottom: 60,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#cccccc',
-    opacity: 0.3,
-    zIndex: 999,
-    elevation: 2,
-  },
-});
+import styles from './styles';
 
 export default class RoomAssignmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const date = params.date || moment();
     const canSave = params.canSave || false;
+    const onPress = () => params.handleSave();
+    const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     const employee = params.employee || { name: 'First', lastName: 'Available' };
     return {
       headerTitle: (
-        <View style={{
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        >
-          <Text style={{
-            fontFamily: 'Roboto-Medium',
-            fontSize: 17,
-            lineHeight: 22,
-            color: 'white',
-          }}
-          >
-            Room Assignment
-          </Text>
-          <Text style={{
-            fontFamily: 'Roboto',
-            fontSize: 10,
-            lineHeight: 12,
-            color: 'white',
-          }}
-          >
-            {`${employee.name} ${employee.lastName[0]}. - ${moment(date).format('MMM D YYYY')}`}
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitleText}>Room Assignment</Text>
+          <Text style={styles.headerSubtitleText}>
+            {`${employee.name} ${employee.lastName[0]}. - ${moment(date).format(DateTime.dateWithMonthShort)}`}
           </Text>
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={{ fontSize: 14, lineHeight: 22, color: 'white' }}>Cancel</Text>
+        <SalonTouchableOpacity onPress={navigation.goBack}>
+          <Text style={styles.headerButton}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <SalonTouchableOpacity
-          onPress={() => params.handleSave()}
+          onPress={onPress}
           disabled={!canSave}
         >
-          <Text style={{
-            fontSize: 14,
-            lineHeight: 22,
-            color: canSave ? 'white' : 'rgba(0,0,0,0.3)',
-          }}
-          >Done
-          </Text>
+          <Text style={[styles.headerButton, doneButtonStyle]}>Done</Text>
         </SalonTouchableOpacity>
       ),
     };
@@ -106,20 +57,7 @@ export default class RoomAssignmentScreen extends React.Component {
 
   constructor(props) {
     super(props);
-
-    const assignments = times(4, () => ({
-      room: null,
-      startTime: null,
-      endTime: null,
-    }));
-
-    this.state = {
-      assignments,
-      toast: null,
-      pickerType: 'room',
-      currentOpenAssignment: 0,
-      isModalPickerVisible: false,
-    };
+    this.state = this.getStateFromProps(props);
     this.props.navigation.setParams({ handleSave: this.handleSave });
   }
 
@@ -127,15 +65,20 @@ export default class RoomAssignmentScreen extends React.Component {
     const params = this.props.navigation.state.params || {};
     const employee = params.employee || null;
     const date = params.date || moment();
-    this.props.roomAssignmentActions.getRooms();
-    this.props.roomAssignmentActions.getAssignments(date, get(employee, 'id', null), this.composeAssignments);
+    this.props.roomAssignmentActions.getAssignments(date, get(employee, 'id', null));
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.roomAssignmentState.assignments !== this.props.roomAssignmentState.assignments) {
-  //     this.composeAssignments(nextProps.roomAssignmentState.assignments);
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    const {
+      roomAssignmentState: { isLoading: nextIsLoading, isError, isUpdating },
+    } = nextProps;
+    const {
+      roomAssignmentState: { isLoading: prevIsLoading },
+    } = this.props;
+    if (nextIsLoading !== prevIsLoading && !isUpdating && !isError) {
+      this.setState(state => ({ ...this.getStateFromProps(nextProps, state) }), this.canSave);
+    }
+  }
 
   onPickerChange = (value) => {
     const { pickerType, currentOpenAssignment } = this.state;
@@ -143,11 +86,15 @@ export default class RoomAssignmentScreen extends React.Component {
     switch (pickerType) {
       case 'startTime':
       case 'endTime': {
-        const index = chunkedSchedule.findIndex(time => time.format('hh:mm A') === value);
+        const index =
+          chunkedSchedule.findIndex(time => time.format(DateTime.displayTime) === value);
         this.setState((state) => {
-          const newState = state;
+          const newState = cloneDeep(state);
           const selectedTime = chunkedSchedule[index] || null;
           newState.assignments[currentOpenAssignment][pickerType] = selectedTime;
+          if (!isMoment(selectedTime) && pickerType === 'startTime') {
+            newState.assignments[currentOpenAssignment].endTime = null;
+          }
           return newState;
         }, this.canSave);
         break;
@@ -155,7 +102,7 @@ export default class RoomAssignmentScreen extends React.Component {
       case 'room': {
         const index = rooms.findIndex(room => room.name === value);
         this.setState((state) => {
-          const newState = state;
+          const newState = cloneDeep(state);
           const selectedRoom = rooms[index] ? rooms[index] : null;
           newState.assignments[currentOpenAssignment].room = selectedRoom;
           return newState;
@@ -167,31 +114,77 @@ export default class RoomAssignmentScreen extends React.Component {
     }
   }
 
-  getPickerData = () => {
+  get pickerData() {
     const { pickerType } = this.state;
     const { roomAssignmentState: { rooms }, chunkedSchedule } = this.props;
     switch (pickerType) {
       case 'startTime':
       case 'endTime':
-        return ['Off', ...chunkedSchedule.map(time => time.format('hh:mm A'))];
+        return ['Off', ...chunkedSchedule.map(time => time.format(DateTime.displayTime))];
       case 'room':
       default:
         return ['None', ...rooms.map(room => room.name)];
     }
   }
 
-  getSelectedValue = () => {
+  get hasIncompleteAssignments() {
+    const { assignments } = this.state;
+    return assignments.reduce((agg, assignment) => (
+      (
+        !!assignment.room ||
+        isMoment(assignment.startTime) ||
+        isMoment(assignment.fromTime)
+      ) &&
+      !this.isValidAssignment(assignment)
+    ) || agg, false);
+  }
+
+  get selectedValue() {
     const { assignments, pickerType, currentOpenAssignment } = this.state;
     const time = get(assignments[currentOpenAssignment], pickerType, null);
     switch (pickerType) {
       case 'startTime':
       case 'endTime':
-        return isMoment(time) ? time.format('hh:mm A') : 'Off';
+        return isMoment(time) ? time.format(DateTime.displayTime) : 'Off';
       case 'room':
-        return get(assignments[currentOpenAssignment].room, 'name', 'None');
+        return get(assignments[currentOpenAssignment], 'room.name', 'None');
       default:
         return null;
     }
+  }
+
+  getStateFromProps = (props, prevState = null) => {
+    const {
+      roomAssignmentState: { rooms, assignments: roomAssignments },
+    } = props;
+    const toast = get(prevState, 'toast', null);
+    const pickerType = get(prevState, 'pickerType', 'room');
+    const currentOpenAssignment = get(prevState, 'currentOpenAssignment', 0);
+    const isModalPickerVisible = get(prevState, 'isModalPickerVisible', false);
+    const assignments = roomAssignments.map((itm) => {
+      const room = rooms.find(rm => get(itm, 'roomId', null) === get(rm, 'id'));
+      return {
+        room,
+        roomOrdinal: get(itm, 'roomOrdinal', get(room, 'roomOrdinal', 0)),
+        startTime: room ? moment(itm.fromTime, DateTime.time) : null,
+        endTime: room ? moment(itm.toTime, DateTime.time) : null,
+      };
+    });
+    if (assignments.length < 4) {
+      times(4 - assignments.length, () => assignments.push({
+        room: null,
+        roomOrdinal: null,
+        startTime: null,
+        endTime: null,
+      }));
+    }
+    return {
+      toast,
+      pickerType,
+      assignments: slice(assignments, 0, 4),
+      isModalPickerVisible,
+      currentOpenAssignment,
+    };
   }
 
   getRoomById = (id) => {
@@ -200,16 +193,6 @@ export default class RoomAssignmentScreen extends React.Component {
   }
 
   hideToast = () => this.setState({ toast: null })
-
-  composeAssignments = assignments => this.setState((state) => {
-    const newState = state;
-    assignments.forEach((item, index) => {
-      newState.assignments[index].room = this.getRoomById(item.roomId);
-      newState.assignments[index].startTime = moment(item.fromTime, 'hh:mm:ss');
-      newState.assignments[index].endTime = moment(item.toTime, 'hh:mm:ss');
-    });
-    return newState;
-  })
 
   canSave = () => {
     const { assignments } = this.state;
@@ -220,9 +203,21 @@ export default class RoomAssignmentScreen extends React.Component {
     return canSave;
   }
 
-  closeModal = () => this.setState({ isModalPickerVisible: false })
+  closeModal = () => this.setState((state) => {
+    const newState = cloneDeep(state);
+    newState.isModalPickerVisible = false;
+    // newState.assignments.forEach((ass, index) => {
+    //   if (!ass.room) {
+    //     newState.assignments[index].startTime = null;
+    //     newState.assignments[index].endTime = null;
+    //   } else if (ass.room && !isMoment(ass.startTime)) {
+    //     newState.assignments[index].endTime = null;
+    //   }
+    // });
+    return newState;
+  }, this.canSave)
 
-  openModal = () => this.setState({ isModalPickerVisible: true })
+  openModal = () => this.setState({ isModalPickerVisible: true }, this.canSave)
 
   handleSave = () => {
     if (this.canSave()) {
@@ -232,7 +227,7 @@ export default class RoomAssignmentScreen extends React.Component {
       const employee = get(params, 'employee', null);
       const date = get(params, 'date', null);
       const onSave = get(params, 'onSave', () => null);
-      if (assignments.filter(itm => this.isIncompleteAssignment(itm)).length > 0) {
+      if (this.hasIncompleteAssignments) {
         return this.setState({
           toast: {
             description: 'You have invalid assignments. Please try again.',
@@ -247,7 +242,7 @@ export default class RoomAssignmentScreen extends React.Component {
       }
       return this.props.roomAssignmentActions.putAssignments(
         get(employee, 'id', null),
-        moment(date).format(DateTime.serverDateTime),
+        moment(date).format(DateTime.date),
         this.serializeAssignmentsForRequest(),
         () => {
           this.props.appointmentCalendarActions.setGridView();
@@ -266,20 +261,15 @@ export default class RoomAssignmentScreen extends React.Component {
   }
 
   isValidAssignment = assignment => (
-    assignment.room !== null &&
+    !!assignment.room &&
     isMoment(assignment.startTime) &&
     isMoment(assignment.endTime) &&
-    assignment.startTime < assignment.endTime
+    assignment.endTime.isAfter(assignment.startTime)
   )
 
   isIncompleteAssignment = assignment => (
-    !(
-      assignment.room === null &&
-      !isMoment(assignment.startTime) &&
-      !isMoment(assignment.fromTime)
-    ) &&
     (
-      assignment.room !== null ||
+      !!assignment.room ||
       isMoment(assignment.startTime) ||
       isMoment(assignment.fromTime)
     ) &&
@@ -291,14 +281,15 @@ export default class RoomAssignmentScreen extends React.Component {
     const params = this.props.navigation.state.params || {};
     const date = params.date || moment();
     const employee = get(params, 'employee', null);
-    return assignments.filter(ass => this.isValidAssignment(ass)).map(ass => ({
-      date: date.format('YYYY-MM-DD'),
-      employeeId: get(employee, 'id', null),
-      fromTime: ass.startTime.format('HH:mm:ss'),
-      toTime: ass.endTime.format('HH:mm:ss'),
-      roomOrdinal: 0,
-      roomId: get(ass.room, 'id', null),
-    }));
+    return assignments.filter(ass => this.isValidAssignment(ass))
+      .sort((a, b) => a.startTime.diff(b.startTime)).map(ass => ({
+        date: date.format(DateTime.date),
+        employeeId: get(employee, 'id', null),
+        fromTime: ass.startTime.format(DateTime.time),
+        toTime: ass.endTime.format(DateTime.time),
+        roomOrdinal: get(ass.room, 'roomOrdinal', 1),
+        roomId: get(ass.room, 'id', null),
+      }));
   }
 
   renderRoomData = () => this.state.assignments.map((assignment, index) => {
@@ -317,7 +308,7 @@ export default class RoomAssignmentScreen extends React.Component {
           noIcon
           label="Start"
           labelStyle={labelStyle}
-          value={isMoment(assignment.startTime) ? assignment.startTime.format('hh:mm A') : 'Off'}
+          value={isMoment(assignment.startTime) ? assignment.startTime.format(DateTime.displayTime) : 'Off'}
           onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'startTime' }, this.openModal)}
         />
         <InputDivider style={dividerStyle} />
@@ -326,7 +317,7 @@ export default class RoomAssignmentScreen extends React.Component {
           label="End"
           labelStyle={labelStyle}
           disabled={!isMoment(assignment.startTime)}
-          value={isMoment(assignment.endTime) ? assignment.endTime.format('hh:mm A') : '-'}
+          value={isMoment(assignment.endTime) ? assignment.endTime.format(DateTime.displayTime) : '-'}
           onPress={() => this.setState({ currentOpenAssignment: index, pickerType: 'endTime' }, this.openModal)}
         />
       </InputGroup>
@@ -343,34 +334,38 @@ export default class RoomAssignmentScreen extends React.Component {
     } = this.state;
     return (
       <View style={styles.container}>
-        {isLoading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator />
-          </View>
-        )}
-        <ScrollView>
-          <SectionTitle
-            value="ASSIGNED TO ROOM"
-          />
-          {this.renderRoomData()}
-        </ScrollView>
-        <SalonModalPicker
-          pickerData={this.getPickerData()}
-          selectedValue={this.getSelectedValue()}
-          onValueChange={this.onPickerChange}
-          show={this.openModal}
-          hide={this.closeModal}
-          visible={isModalPickerVisible}
-        />
         {
-          toast && (
-            <SalonToast
-              description={toast.description}
-              type={toast.type}
-              btnRightText={toast.btnRight}
-              hide={this.hideToast}
-            />
-          )
+          isLoading
+            ? (
+              <LoadingOverlay />
+            ) : (
+              <React.Fragment>
+                <ScrollView>
+                  <SectionTitle
+                    value="ASSIGNED TO ROOM"
+                  />
+                  {this.renderRoomData()}
+                </ScrollView>
+                <SalonModalPicker
+                  show={this.openModal}
+                  hide={this.closeModal}
+                  visible={isModalPickerVisible}
+                  pickerData={this.pickerData}
+                  onValueChange={this.onPickerChange}
+                  selectedValue={this.selectedValue}
+                />
+                {
+                  toast && (
+                    <SalonToast
+                      description={toast.description}
+                      type={toast.type}
+                      btnRightText={toast.btnRight}
+                      hide={this.hideToast}
+                    />
+                  )
+                }
+              </React.Fragment>
+            )
         }
       </View>
     );

@@ -5,13 +5,11 @@ import { getApiInstance } from '../../api';
 
 let cancellationToken = null;
 
-export default async (includeWaitTimes = true) => {
+export default async (query = {}) => {
   const apiInstance = await getApiInstance();
-  const query = qs.stringify({
-    includeWaitTimes,
-  });
   cancelRequest(cancellationToken);
-  return apiInstance.get(`Queue/Employees?${query}`, {
+  const queryString = qs.stringify(query);
+  return apiInstance.get(`Employees/Receptionists?${queryString}`, {
     cancelToken: new axios.CancelToken((c) => {
       cancellationToken = c;
     }),

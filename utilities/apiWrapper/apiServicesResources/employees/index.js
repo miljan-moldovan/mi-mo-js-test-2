@@ -12,6 +12,7 @@ import getEmployee from './getEmployee';
 import getEmployeeStatus from './getEmployeeStatus';
 import getEmployeesScheduleDates from './getEmployeesScheduleDates';
 import getQueueEmployees from './getQueueEmployees';
+import getReceptionists from './getReceptionists';
 
 export {
   getEmployeeAppointments,
@@ -28,4 +29,5 @@ export {
   getEmployeeScheduleException,
   putEmployeeScheduleException,
   getQueueEmployees,
+  getReceptionists,
 };

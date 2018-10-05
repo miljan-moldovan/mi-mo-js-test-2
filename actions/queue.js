@@ -303,15 +303,23 @@ const finishServiceFailed = error => ({
   data: { error },
 });
 
-export const finishService = (id, callback) => (dispatch) => {
-  dispatch({ type: CLIENT_FINISH_SERVICE, data: { id } });
-  return QueueStatus.putFinish(id)
+export const finishService = (ids, callback) => (dispatch) => {
+  dispatch({ type: CLIENT_FINISH_SERVICE, data: { ids } });
+  const promisees = [];
+  ids.forEach(id => promisees.push(QueueStatus.putFinish(id)));
+  return Promise.all(promisees)
     .then((resp) => {
-      dispatch(finishServiceSuccess(resp)); callback(true);
+      if (callback) {
+        callback(true);
+      }
+      return dispatch(finishServiceSuccess(resp));
     })
     .catch((error) => {
       showErrorAlert(error);
-      dispatch(finishServiceFailed(error)); callback(false, error);
+      if (callback) {
+        callback(true);
+      }
+      return dispatch(finishServiceFailed(error));
     });
 };
 
@@ -386,7 +394,7 @@ export function cancelCombine() {
   };
 }
 
-export const finishCombine = (combiningClients: Array<Object>) => async (dispatch: Object => void) => {
+export const finishCombine = (combiningClients: Array<Object>, callback) => async (dispatch: Object => void) => {
   try {
     dispatch({ type: QUEUE });
     const data = {
@@ -403,8 +411,16 @@ export const finishCombine = (combiningClients: Array<Object>) => async (dispatc
     const response = await Queue.postQueueGroup(data);
 
     dispatch(receiveQueue());
+
+    if (isFunction(callback)) {
+      callback(true);
+    }
   } catch (error) {
     dispatch({ type: QUEUE_FAILED, error });
+
+    if (isFunction(callback)) {
+      callback(false);
+    }
   }
 };
 export const updateGroupLeaders = (groups: Object) => async (dispatch: Object => void) => {
@@ -459,11 +475,12 @@ export const putQueueFailed = error => ({
   data: { error },
 });
 
-export const putQueue = (queueId, queue) => (dispatch) => {
+export const putQueue = (queueId, queue, callback) => (dispatch) => {
+  callback = callback || (() => { });
   dispatch({ type: PUT_QUEUE });
   return Queue.putQueue(queueId, queue)
-    .then(response => dispatch(putQueueSuccess(response)))
-    .catch(error => dispatch(putQueueFailed(error)));
+    .then((response) => { dispatch(putQueueSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(putQueueFailed(error)); callback(false); });
 };
 
 

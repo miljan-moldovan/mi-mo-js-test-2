@@ -10,7 +10,7 @@ import {
 import { connect } from 'react-redux';
 
 import moment from 'moment';
-import _ from 'lodash';
+import _, { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 import LoadingOverlay from '../../../components/LoadingOverlay';
@@ -18,7 +18,8 @@ import LoadingOverlay from '../../../components/LoadingOverlay';
 import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../actions/queue';
 import SalonInputModal from '../../../components/SalonInputModal';
-import { Client } from '../../../utilities/apiWrapper';
+import SalonAlert from '../../../components/SalonAlert';
+import { Client, QueueStatus } from '../../../utilities/apiWrapper';
 import regexs from '../../../constants/Regexs';
 
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED } from '../../../constants/QueueStatus';
@@ -28,9 +29,12 @@ import { NotificationBanner, NotificationBannerButton } from '../../../component
 import ServiceIcons from '../../../components/ServiceIcons';
 import Icon from '../../../components/UI/Icon';
 import QueueTimeNote from '../queueTimeNote';
+import { shortenTitle } from '../../../utilities/helpers';
+import groupedSettingsSelector from '../../../redux/selectors/settingsSelector';
 import styles from './styles';
 
 import type { QueueItem } from '../../../models';
+import checkBusyEmploeeInServiceQueue from '../../../utilities/helpers/checkBusyEmploeeInServiceQueue';
 
 const groupColors = [
   { font: '#00E480', background: '#F1FFF2' },
@@ -63,6 +67,7 @@ state = {
   isEmailVisible: false,
   email: '',
   sortItemsBy: { value: 'FIRST_ARRIVED', label: 'First Arrived' },
+  modalBusyEmployee: null,
 }
 componentWillMount() {
   const {
@@ -214,28 +219,11 @@ getLabelForItem = (item, customStyle = {}) => {
         </View>
       );
     default:
-
-      let processTime = moment(item.processTime, 'hh:mm:ss'),
-        progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss'),
-        estimatedTime = moment(item.estimatedTime, 'hh:mm:ss'),
-        processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
-          ? processTime.minutes() + processTime.hours() * 60
-          : 0,
-        progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
-          ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
-          : 0,
-        estimatedTimeMinutes = moment(item.estimatedTime, 'hh:mm:ss').isValid()
-          ? estimatedTime.minutes() + estimatedTime.hours() * 60
-          : 0;
-
       return (
         <CircularCountdown
           size={46}
-          estimatedTime={progressMaxMinutes}
-          processTime={processMinutes}
-          itemStatus={item.status}
+          item={item}
           style={[styles.circularCountdown, customStyle]}
-          queueType={item.queueType}
         />
       );
   }
@@ -259,6 +247,11 @@ handlePress = (item) => {
       isVisible: true,
     });
   }
+}
+
+
+showDialog = () => {
+  this.setState({ isVisible: true });
 }
 
 handlePressModify = (isWaiting, onPressSummary) => {
@@ -397,6 +390,7 @@ cancelButton = () => ({
 
 checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { appointment } = this.state;
+  const firstService = 0;
   const service = appointment.services[0];
 
   const { settings } = this.props.settings;
@@ -405,7 +399,6 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
-
 
   if (service.employee || autoAssignFirstAvailableProvider) {
     this.hideAll();
@@ -416,17 +409,26 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   } else {
     this.props.serviceActions.setSelectedService({ id: service.serviceId });
     this.hideDialog();
-
-    this.props.navigation.navigate('Providers', {
-      headerProps: { title: 'Providers', ...this.cancelButton() },
-      dismissOnSelect: false,
-      selectedService: { id: service.serviceId },
-      showFirstAvailable: false,
-      checkProviderStatus: true,
-      queueList: true,
-      onChangeProvider: provider => this.handleProviderSelection(provider),
-    });
+    this.selectProvider(0);
   }
+}
+
+selectProvider = (index) => {
+  const { appointment } = this.state;
+  const service = appointment.services[index];
+  this.props.navigation.navigate('Providers', {
+    headerProps: {
+      title: shortenTitle(service.serviceName),
+      subTitle: 'Select Provider',
+      ...this.cancelButton(),
+    },
+    dismissOnSelect: false,
+    selectedService: { id: service.serviceId },
+    showFirstAvailable: false,
+    checkProviderStatus: true,
+    queueList: true,
+    onChangeProvider: provider => this.handleProviderSelection(provider, index),
+  });
 }
 
 
@@ -480,19 +482,22 @@ checkShouldMerge = () => {
 }
 
 
-handleProviderSelection = (provider) => {
+handleProviderSelection = (provider, index) => {
   const { appointment } = this.state;
-  const service = appointment.services[0];
+  const service = appointment.services[index];
   service.employee = provider;
-  this.handleStartService();
-  this.props.navigation.navigate('Main');
+  const newIndex = index + 1;
+  if (newIndex < appointment.services.length) {
+    this.selectProvider(newIndex);
+  } else {
+    this.handleStartService();
+    this.props.navigation.navigate('Main');
+  }
 }
 
-
-handleStartService = () => {
+startService = () => {
   const { appointment } = this.state;
   const service = appointment.services[0];
-
   const serviceEmployees = service.employee ? [
     {
       serviceEmployeeId: service.id,
@@ -506,13 +511,12 @@ handleStartService = () => {
     serviceEmployees,
     deletedServiceEmployeeIds: [],
   };
-
-  this.hideAll();
   this.props.startService(appointment.id, serviceData, (response, error) => {
     if (response) {
       this.hideAll();
       this.props.loadQueueData();
-    } else if (error.response.data.result === 6) { // "Can't automatically assign FA employee, please finish service for some provider"
+    } else if (error.response.data.result === 6) {
+      // "Can't automatically assign FA employee, please finish service for some provider"
       const { settings } = this.props.settings;
 
       let preventActivity = _.find(settings, { settingName: 'PreventActivity' });
@@ -528,6 +532,19 @@ handleStartService = () => {
       }
     }
   });
+}
+
+handleStartService = () => {
+  const { appointment } = this.state;
+  const settingAllowMultiService = get(this.props.groupedSettings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', false);
+  const modalBusyEmployee = settingAllowMultiService
+    ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
+  this.hideAll();
+  if (modalBusyEmployee) {
+    this.setState({ modalBusyEmployee });
+  } else {
+    this.startService();
+  }
 }
 
 handleToWaiting = () => {
@@ -550,7 +567,7 @@ handlePressFinish = (finish) => {
     this.props.undoFinishService(appointment.id, this.props.loadQueueData);
   } else {
     this.hideAll();
-    this.props.finishService(appointment.id, this.props.loadQueueData);
+    this.props.finishService([appointment.id], this.props.loadQueueData);
   }
 }
 
@@ -641,8 +658,6 @@ renderItem = (row) => {
     color = groupColors[0];
   }
 
-  debugger //eslint-disable-line
-
   return (
     <SalonTouchableOpacity
       style={styles.itemContainer}
@@ -654,7 +669,7 @@ renderItem = (row) => {
  flexDirection: 'column', marginTop: 10, alignItems: 'flex-start', marginRight: 20,
 }}
         >
-          <Text style={styles.clientName}>{item.client.name} {item.client.lastName} </Text>
+          <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
           <ServiceIcons wrapperStyle={styles.wrapperStyle} badgeData={item.badgeData} color={color} item={item} groupLeaderName={groupLeaderName} />
         </View>
 
@@ -738,8 +753,19 @@ handleOk = (email) => {
   }
 }
 
+closeBusyModal = () => {
+  this.setState({ modalBusyEmployee: null }, () => this.props.setLoading(false));
+}
+
+handleBusyModalOk = () => {
+  const { itemsId } = this.state.modalBusyEmployee;
+  this.setState({ modalBusyEmployee: null });
+  this.props.finishService(itemsId, null).then(() => {
+    this.startService();
+  });
+}
+
 render() {
-//
   const { headerTitle, searchText } = this.props;
   const numResult = this.state.data.length;
 
@@ -792,6 +818,7 @@ render() {
         client={this.state.client}
         services={this.state.services}
         onDonePress={this.hideDialog}
+        showDialog={this.showDialog}
         onPressSummary={this.handlePressSummary}
         isWaiting={this.props.isWaiting}
         item={this.state.appointment}
@@ -799,6 +826,18 @@ render() {
         hide={this.hideDialog}
       />
       {this.renderNotification()}
+      {
+        this.state.modalBusyEmployee &&
+        <SalonAlert
+          visible={this.state.modalBusyEmployee}
+          title={get(this.state.modalBusyEmployee, 'title', '')}
+          description={get(this.state.modalBusyEmployee, 'text', '')}
+          btnRightText={get(this.state.modalBusyEmployee, 'buttonOkText', '')}
+          btnLeftText="Don't finish"
+          onPressLeft={this.closeBusyModal}
+          onPressRight={this.handleBusyModalOk}
+        />
+    }
     </View>
   );
 }
@@ -843,4 +882,9 @@ Queue.propTypes = {
   onChangeFilterResultCount: PropTypes.any.isRequired,
 };
 
-export default connect(null, actions)(Queue);
+const mapStateToProps = state => ({
+  settings: state.settingsReducer,
+  groupedSettings: groupedSettingsSelector(state),
+});
+
+export default connect(mapStateToProps, actions)(Queue);

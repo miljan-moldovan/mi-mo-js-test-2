@@ -1,5 +1,6 @@
 import { get, isFunction } from 'lodash';
 import { Services, Employees } from '../utilities/apiWrapper';
+import { showErrorAlert } from './utils';
 
 const alphabeticFilter = (a, b) => {
   if (a.fullName < b.fullName) return -1;
@@ -10,9 +11,23 @@ const alphabeticFilter = (a, b) => {
 export const GET_PROVIDERS = 'providers/GET_PROVIDERS';
 export const GET_PROVIDERS_SUCCESS = 'providers/GET_PROVIDERS_SUCCESS';
 export const GET_PROVIDERS_ERROR = 'providers/GET_PROVIDERS_ERROR';
+
+export const GET_QUEUE_EMPLOYEES = 'providers/GET_QUEUE_EMPLOYEES';
+export const GET_QUEUE_EMPLOYEES_SUCCESS = 'providers/GET_QUEUE_EMPLOYEES_SUCCESS';
+export const GET_QUEUE_EMPLOYEES_ERROR = 'providers/GET_PROVIDERS_ERROR';
+
+export const GET_RECEPTIONISTS = 'providers/GET_RECEPTIONISTS';
+export const GET_RECEPTIONISTS_SUCCESS = 'providers/GET_RECEPTIONISTS_SUCCESS';
+export const GET_RECEPTIONISTS_ERROR = 'providers/GET_PROVIDERS_ERROR';
+
+export const GET_EMPLOYEES_BY_SERVICE = 'providers/GET_EMPLOYEES_BY_SERVICE';
+export const GET_EMPLOYEES_BY_SERVICE_SUCCESS = 'providers/GET_EMPLOYEES_BY_SERVICE_SUCCESS';
+export const GET_EMPLOYEES_BY_SERVICE_ERROR = 'providers/GET_PROVIDERS_ERROR';
+
 export const SET_FILTERED_PROVIDERS = 'providers/SET_FILTERED_PROVIDERS';
 export const SELECTED_FILTER_TYPES = 'providers/SELECTED_FILTER_TYPES';
 export const SET_SELECTED_PROVIDER = 'providers/SET_SELECTED_PROVIDER';
+export const SET_SELECTED_SERVICE = 'providers/SET_SELECTED_SERVICE';
 
 export const GET_PROVIDER_STATUS = 'providers/GET_PROVIDER_STATUS';
 export const GET_PROVIDER_STATUS_SUCCESS = 'providers/GET_PROVIDER_STATUS_SUCCESS';
@@ -23,6 +38,60 @@ const setSelectedProvider = selectedProvider => ({
   type: SET_SELECTED_PROVIDER,
   data: { selectedProvider },
 });
+
+const setSelectedService = selectedService => ({
+  type: SET_SELECTED_SERVICE,
+  data: { selectedService },
+});
+
+const getQueueEmployees = req => (dispatch, getState) => {
+  dispatch({ type: GET_QUEUE_EMPLOYEES });
+  if (getState().providersReducer.selectedService) {
+    const serviceId = get(getState().providersReducer.selectedService, 'id', null);
+    return Promise.all([
+      Employees.getQueueEmployees(),
+      Services.getEmployeesByService(serviceId, req),
+    ])
+      .then(([{ employees = [] }, employeesByService]) => {
+        dispatch({
+          type: GET_QUEUE_EMPLOYEES_SUCCESS,
+          data: { employees, employeesByService },
+        });
+      })
+      .catch((error) => {
+        dispatch({
+          type: GET_QUEUE_EMPLOYEES_ERROR,
+          data: { error },
+        });
+        showErrorAlert(error);
+      });
+  }
+  return Employees.getQueueEmployees(req)
+    .then(({ employees = [] }) => dispatch({
+      type: GET_QUEUE_EMPLOYEES_SUCCESS,
+      data: { employees },
+    }))
+    .catch((error) => {
+      dispatch({
+        type: GET_QUEUE_EMPLOYEES_ERROR,
+        data: { error },
+      });
+      showErrorAlert(error);
+    });
+};
+
+const getReceptionists = req => (dispatch) => {
+  dispatch({ type: GET_RECEPTIONISTS });
+  return Employees.getReceptionists(req)
+    .then(employees => dispatch({
+      type: GET_RECEPTIONISTS_SUCCESS,
+      data: { employees },
+    }))
+    .catch((error) => {
+      showErrorAlert(error);
+      dispatch({ type: GET_RECEPTIONISTS_ERROR });
+    });
+};
 
 const getProvidersSuccess = (providerList, filterList = false) => {
   let providers = providerList;
@@ -110,6 +179,9 @@ const providersActions = {
   setFilteredProviders,
   setSelectedProvider,
   getProviderStatus,
+  setSelectedService,
+  getQueueEmployees,
+  getReceptionists,
 };
 
 export default providersActions;

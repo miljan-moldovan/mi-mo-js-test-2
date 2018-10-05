@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { View, Animated, StyleSheet, Text } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import moment from 'moment';
 
 import {
   QUEUE_ITEM_FINISHED,
@@ -19,6 +20,7 @@ function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
   };
 }
 
+
 function describeArc(x, y, radius, startAngle, endAngle) {
   const start = polarToCartesian(x, y, radius, endAngle);
   const end = polarToCartesian(x, y, radius, startAngle);
@@ -34,64 +36,67 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 }
 const baseSize = 600,
   baseStrokeWidth = 40,
-  baseRadius = 285 - baseStrokeWidth / 2,
-  normal = '#31CE49',
-  warning = '#FCA301',
-  danger = '#D1242A';
+  baseRadius = 285 - baseStrokeWidth / 2;
 
 class CircularCountdown extends Component {
-  getStrokeColor() {
-    const {
-      estimatedTime, processTime, itemStatus, queueType,
-    } = this.props;
-    switch (itemStatus) {
-      case QUEUE_ITEM_NOT_ARRIVED:
-        if (processTime != null && estimatedTime != null) {
-          if (processTime > estimatedTime + 15) { return danger; } else if (processTime > estimatedTime + 60) { return warning; }
-          return normal;
-        }
-        return normal;
+  getLabelColor = (item) => {
+    let background = '#4a4a4a';
 
-      case QUEUE_ITEM_RETURNING:
-        return normal;
-      case QUEUE_ITEM_CHECKEDIN:
-        // FIXME fix once appointment API is defined
-      //  if (QueueType == QueueTypes.PosAppointment || estimatedTime == null) {
-        if (queueType == 1 || estimatedTime == null) {
-          if (processTime > 30) { return danger; } else if (processTime > 15) { return warning; }
-          return normal;
-        }
-
-        if (processTime > estimatedTime + 15) { return danger; } else if (processTime > estimatedTime + 60) { return warning; }
-        return normal;
-
-      case QUEUE_ITEM_INSERVICE:
-        if (estimatedTime - processTime <= -15) { return danger; } else if (estimatedTime - processTime <= 0) { return warning; }
-        return normal;
-        // not implemented in mobile
-        // case QUEUE_ITEM_FINISHED:
-        //   if (TimeSpanExtensions.Now - FinishServiceTime > new TimeSpan(0, 30, 0))
-        //     return danger;
-        //   else if (TimeSpanExtensions.Now - FinishServiceTime > new TimeSpan(0, 15, 0))
-        //     return warning;
-        //   else
-        //    return normal;
-      default:
-        return normal;
+    if (item.status === QUEUE_ITEM_CHECKEDIN) {
+      const progressTime = Math.abs(Math.round(moment.duration(item.progressTime).asMinutes()));
+      if (progressTime < 15) {
+        background = '#00CF48';
+      } else if (progressTime < 30) {
+        background = '#FFA300';
+      } else {
+        background = '#D1242A';
+      }
+    } else if (item.status === QUEUE_ITEM_NOT_ARRIVED) {
+      // todo: (Malakhov) not sure about it
+      // background = '#00CF48';
+    } else if (item.status === QUEUE_ITEM_INSERVICE) {
+      const progressTime = Math.round(moment.duration(item.progressTime).asMinutes());
+      const progressMaxTime = Math.round(moment.duration(item.progressMaxTime).asMinutes());
+      if (progressTime >= +progressMaxTime + 15) {
+        background = '#D1242A';
+      } else if (progressTime >= +progressMaxTime) {
+        background = '#FFA300';
+      } else if (progressTime < +progressMaxTime) {
+        background = '#00CF48';
+      }
     }
+    return background;
   }
+
   render() {
     const {
-      size, estimatedTime, processTime, style, itemStatus,
+      size, style, item,
     } = this.props;
+
+
+    const processTime = moment(item.processTime, 'hh:mm:ss');
+    const progressMaxTime = moment(item.progressMaxTime, 'hh:mm:ss');
+    const processMinutes = moment(item.processTime, 'hh:mm:ss').isValid()
+      ? processTime.minutes() + processTime.hours() * 60
+      : 0;
+    const progressMaxMinutes = moment(item.progressMaxTime, 'hh:mm:ss').isValid()
+      ? progressMaxTime.minutes() + progressMaxTime.hours() * 60
+      : 0;
+    let valueForBar = Math.floor((processMinutes / progressMaxMinutes * 100));
+
+    if (valueForBar >= 100) {
+      valueForBar = 100;
+    } else if (!valueForBar || valueForBar <= 0) {
+      valueForBar = 0;
+    }
+
+
     const strokeWidth = baseStrokeWidth * size / baseSize;
     const radius = baseRadius * size / baseSize; // ((baseSize - 15 - 20) * size/baseSize - strokeWidth/2)/2;
-    const progress = estimatedTime > 0 ? processTime / estimatedTime : 0;
-    const delay = (estimatedTime - processTime) / 60;
+    const progress = valueForBar / 100;
 
     const fill = '#FFFFFF',
-      // stroke = progress <= 1 ? '#31CE49' : (progress <= 1.2 ? '#FCA301' : '#D1242A'),
-      stroke = this.getStrokeColor(),
+      stroke = this.getLabelColor(item),
       strokeLinecap = 'butt',
       arc = describeArc(size / 2, size / 2, radius, 0, 359.999 * (progress > 1 ? 1 : progress)),
       backgroundArc = describeArc(size / 2, size / 2, radius, 0, 359.999);
@@ -125,11 +130,11 @@ class CircularCountdown extends Component {
           />
         </Svg>
         <View style={[styles.overlayContainer, { width: size + 10, height: size }]}>
-          <View style={[styles.processTime, { width: size, height: size }]}>
-            <Text style={[styles.processTimeText, { fontSize: 16, marginBottom: -4 }]}>{processTime}</Text>
-            <Text style={styles.processTimeText}>min</Text>
+          <View style={[styles.processMinutes, { width: size, height: size }]}>
+            <Text style={[styles.processMinutesText, { fontSize: 16, marginBottom: -4 }]}>{processMinutes}</Text>
+            <Text style={styles.processMinutesText}>min</Text>
           </View>
-          <Text style={styles.estimatedTime}>{estimatedTime} min est.</Text>
+          <Text style={styles.progressMaxMinutes}>{progressMaxMinutes} min est.</Text>
         </View>
       </View>
     );
@@ -143,11 +148,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
   },
-  processTime: {
+  processMinutes: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  processTimeText: {
+  processMinutesText: {
     color: '#4D5067',
     fontSize: 10,
     fontFamily: 'Roboto-Regular',
@@ -155,7 +160,7 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
-  estimatedTime: {
+  progressMaxMinutes: {
     color: '#4D5067',
     fontSize: 10,
     fontFamily: 'Roboto-Regular',

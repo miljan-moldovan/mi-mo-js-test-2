@@ -9,6 +9,7 @@ import {
   ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TextInputMask from 'react-native-text-input-mask';
 import ValidatableInput from './components/ValidatableInput';
@@ -34,7 +35,7 @@ const DefaultAvatar = props => (
     <Text style={[styles.avatarDefaultComponentText, props.fontSize ? { fontSize: props.fontSize } : '']}>
       {
         props.provider && !props.provider.isFirstAvailable
-          ? `${props.provider.name[0]}${props.provider.lastName[0]}`
+          ? `${get(props.provider, 'name[0]', '')}${get(props.provider, 'lastName[0]', '')}`
           : 'FA'
       }
     </Text>

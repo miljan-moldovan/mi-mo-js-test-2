@@ -52,9 +52,7 @@ class queueListItemSummary extends Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    });
-
-    this.props.loadQueueData();
+    }, this.props.loadQueueData);
   }
 
   saveQueueProvider = (provider) => {
@@ -91,9 +89,7 @@ class queueListItemSummary extends Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    });
-
-    this.props.loadQueueData();
+    }, this.props.loadQueueData);
   }
 
   handlePressService = (service) => {
@@ -119,6 +115,7 @@ class queueListItemSummary extends Component {
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
       navigation.goBack();
+      this.props.showDialog();
     },
   })
 
