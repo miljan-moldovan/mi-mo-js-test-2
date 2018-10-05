@@ -764,6 +764,7 @@ export default class NewAppointmentScreen extends React.Component {
       guests,
       remarks,
       isBookedByFieldEnabled,
+      editType,
     } = this.props.newAppointmentState;
     const {
       clientEmail,
@@ -795,7 +796,7 @@ export default class NewAppointmentScreen extends React.Component {
               noAvatar
               label="Booked by"
               placeholder={false}
-              showFirstAvailable={false}
+              showFirstAvailable={editType === 'new'}
               noIcon={!isBookedByFieldEnabled}
               selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
               selectedProvider={bookedByEmployee}
