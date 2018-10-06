@@ -63,6 +63,7 @@ export function salonSearchHeaderReducer(state = initialState, action) {
         ...state,
         error: null,
         searchText: data.searchText,
+        showFilter: data.searchText.length > 0 ? state.showFilter : false,
       };
     case SET_IGNORED_NUMBER_OF_LETTERS:
       return { ...state, ignoredNumberOfLetters: data };

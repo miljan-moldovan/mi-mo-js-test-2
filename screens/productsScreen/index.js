@@ -5,6 +5,7 @@ import ProductsScreen from './ProductsScreen';
 import salonSearchHeaderActions from '../../reducers/searchHeader';
 
 const mapStateToProps = state => ({
+  searchHeaderState: state.salonSearchHeaderReducer,
   walkInState: state.walkInReducer,
   productsState: state.productsReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
