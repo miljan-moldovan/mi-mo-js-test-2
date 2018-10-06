@@ -3,6 +3,26 @@ import Colors from '../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  rootView: {
+    marginTop: -44,
+  },
+  listContainer: {
+    flex: 1,
+    backgroundColor: Colors.white,
+  },
+  noContentContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.noContentBackground,
+  },
+  noContentText: {
+    fontSize: 13,
+    lineHeight: 15,
+    color: Colors.defaultGrey,
+    fontFamily: 'Roboto-Medium',
+  },
   flexRow: { flexDirection: 'row' },
   whiteBg: { backgroundColor: Colors.white },
   headerButton: {
@@ -49,11 +69,41 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     width: 14,
-    marginLeft: 5,
+    marginHorizontal: 8,
   },
   iconStyle: {
     lineHeight: 18,
     alignSelf: 'flex-start',
+  },
+  headerStyle: {
+    backgroundColor: 'transparent',
+    paddingLeft: 10,
+    paddingRight: 10,
+    height: 44,
+    borderWidth: 0,
+    shadowColor: 'transparent',
+    elevation: 0,
+    borderBottomWidth: 0,
+  },
+  headerTitleStyle: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 17,
+    color: '#fff',
+  },
+  sectionHeaderContainer: {
+    height: 38,
+    flexDirection: 'column',
+    backgroundColor: '#EFEFEF',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  sectionHeaderText: {
+    color: '#727A8F',
+    fontSize: 12,
+    paddingLeft: 15,
+    paddingTop: 8,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
   },
 });
 export default styles;

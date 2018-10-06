@@ -64,6 +64,7 @@ export default class App extends Component {
           'userInfoReducer',
           'productsReducer',
           'queueDetailReducer',
+          'salonSearchHeaderReducer',
         ],
       },
       () => { this.setState({ storeIsReady: true }); },

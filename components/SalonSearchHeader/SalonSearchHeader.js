@@ -14,6 +14,13 @@ class SalonSearchHeader extends React.Component {
     this.debouncedOnChange = debounce(this.onChangeText, 500);
   }
 
+  componentWillUnmount() {
+    const {
+      salonSearchHeaderActions: { setSearchText },
+    } = this.props;
+    setSearchText('');
+  }
+
   onChangeText = (searchText) => {
     if (searchText.length > this.props.salonSearchHeaderState.ignoredNumberOfLetters) {
       this.props.salonSearchHeaderActions.setSearchText(searchText);
@@ -22,12 +29,27 @@ class SalonSearchHeader extends React.Component {
     if (searchText && searchText.length > 0) {
       this.props.salonSearchHeaderActions.setShowFilter(true);
     } else {
+      this.searchBar.blurInput();
       this.props.salonSearchHeaderActions.setShowFilter(false);
+      this.props.salonSearchHeaderActions.setSearchText('');
       if (this.props.clearSearch) {
         this.props.clearSearch();
       }
     }
   };
+
+  onInputBlur = () => {
+    const {
+      salonSearchHeaderState: {
+        searchText,
+        showFilter,
+      },
+      salonSearchHeaderActions: { setShowFilter },
+    } = this.props;
+    if (searchText.length === 0 && showFilter) {
+      setShowFilter(false);
+    }
+  }
 
   handleTypeChange = (ev, selectedIndex) => {
     this.props.salonSearchHeaderActions.setSelectedFilter(selectedIndex);
@@ -56,24 +78,30 @@ class SalonSearchHeader extends React.Component {
                 {this.props.leftButton}
               </SalonTouchableOpacity>
             </View>
-              <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>{this.props.title}</Text>
-                {this.props.subTitle && (
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleText}>{this.props.title}</Text>
+              {this.props.subTitle && (
                 <Text style={styles.subTitleText}>{this.props.subTitle}</Text>
               )}
-              </View>
-                <View style={styles.rightButton}>
-                  { this.props.rightButton ?
-                    (<SalonTouchableOpacity style={{ flex: 1 }} onPress={this.props.rightButtonOnPress}>
+            </View>
+            <View style={styles.rightButton}>
+              {
+                this.props.rightButton ?
+                  (
+                    <SalonTouchableOpacity
+                      style={{ flex: 1 }}
+                      onPress={this.props.rightButtonOnPress}
+                    >
                       {this.props.rightButton}
-                    </SalonTouchableOpacity>): null
-                  }
-                </View>
+                    </SalonTouchableOpacity>
+                  ) : null
+              }
+            </View>
           </View>
         )}
 
-          <View
-            style={[
+        <View
+          style={[
             styles.topSearchBar,
             {
               paddingTop: !this.props.salonSearchHeaderState.showFilter ? 0 : 15,
@@ -82,33 +110,36 @@ class SalonSearchHeader extends React.Component {
                 : '#115ECD',
             },
           ]}
-          >
-            <SalonSearchBar
-              placeHolderText="Search"
-              containerStyle={{
+        >
+          <SalonSearchBar
+            placeHolderText="Search"
+            containerStyle={{
               paddingTop: 4,
               paddingBottom: 4,
               paddingLeft: !this.props.salonSearchHeaderState.showFilter ? 7 : 15,
               paddingRight: !this.props.salonSearchHeaderState.showFilter ? 7 : 2,
               paddingVertical: 5,
             }}
-              marginVertical={!this.props.salonSearchHeaderState.showFilter ? 0 : 0}
-              placeholderTextColor={
+            marginVertical={!this.props.salonSearchHeaderState.showFilter ? 0 : 0}
+            placeholderTextColor={
               !this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'
             }
-              showCancel={this.props.salonSearchHeaderState.showFilter}
-              searchIconPosition="left"
-              iconsColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
-              fontColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
-              borderColor="transparent"
-              backgroundColor={
-                !this.props.salonSearchHeaderState.showFilter ? 'rgba(142,142,147,0.24)' : '#0C4699'
-              }
-              onChangeText={this.debouncedOnChange}
-              onFocus={this.showSuggestions}
-              handleCancel={this.props.leftButtonOnPress}
-            />
-          </View>
+            showCancel={this.props.salonSearchHeaderState.showFilter}
+            searchIconPosition="left"
+            iconsColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
+            fontColor={!this.props.salonSearchHeaderState.showFilter ? '#727A8F' : '#FFFFFF'}
+            borderColor="transparent"
+            backgroundColor={
+              !this.props.salonSearchHeaderState.showFilter ? 'rgba(142,142,147,0.24)' : '#0C4699'
+            }
+            onChangeText={this.debouncedOnChange}
+            onFocus={this.showSuggestions}
+            onBlur={this.onInputBlur}
+            handleCancel={this.props.leftButtonOnPress}
+            onClear={this.onInputBlur}
+            ref={(ref) => { this.searchBar = ref; }}
+          />
+        </View>
 
         {this.props.hasFilter &&
           this.props.salonSearchHeaderState.showFilter && (
@@ -133,9 +164,9 @@ class SalonSearchHeader extends React.Component {
 SalonSearchHeader.defaultProps = {
   headerContainerStyle: {},
   subTitle: '',
-  leftButtonOnPress: () => {},
+  leftButtonOnPress: () => { },
   leftButton: null,
-  clearSearch: () => {},
+  clearSearch: () => { },
 };
 
 SalonSearchHeader.propTypes = {
