@@ -29,7 +29,9 @@ class SalonSearchHeader extends React.Component {
     if (searchText && searchText.length > 0) {
       this.props.salonSearchHeaderActions.setShowFilter(true);
     } else {
-      this.searchBar.blurInput();
+      if (this.searchBar) {
+        this.searchBar.blurInput();
+      }
       this.props.salonSearchHeaderActions.setShowFilter(false);
       this.props.salonSearchHeaderActions.setSearchText('');
       if (this.props.clearSearch) {
