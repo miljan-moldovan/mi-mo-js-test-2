@@ -84,6 +84,7 @@ export default class ModifyServiceScreen extends React.Component {
     const price = get(serviceItem, 'price', 0);
     const isFirstAvailable = get(serviceItem, 'isFirstAvailable', false);
     const isProviderRequested = get(serviceItem, 'isProviderRequested', true);
+    const isInService = get(params, 'isInService', false);
 
     return {
       isLoading: false,
@@ -97,6 +98,7 @@ export default class ModifyServiceScreen extends React.Component {
       promotion,
       isFirstAvailable,
       isProviderRequested,
+      isInService,
     };
   }
 
@@ -206,6 +208,7 @@ export default class ModifyServiceScreen extends React.Component {
       employee,
       promotion,
       isProviderRequested,
+      isInService
     } = this.state;
     const priceLabelValue = `$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', price)}`;
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
@@ -229,7 +232,7 @@ export default class ModifyServiceScreen extends React.Component {
             queueList
             placeholder={false}
             filterByService
-            showFirstAvailable={false}
+            showFirstAvailable={!isInService}
             label="Provider"
             avatarSize={20}
             navigate={navigate}
