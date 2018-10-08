@@ -399,26 +399,26 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
-  if (autoAssignFirstAvailableProvider) {
+  if (!autoAssignFirstAvailableProvider) {
+    services.forEach((service, index) => {
+      if (!service.employee || ignoreAutoAssign) {
+        serviceIndexesWithOutProvider.push(index);
+      }
+    });
+  }
+  if (serviceIndexesWithOutProvider.length) {
+    this.hideDialog();
+    this.selectProvider(serviceIndexesWithOutProvider);
+  } else {
     this.hideAll();
     this.handleStartService();
     if (redirectAfterMerge) {
       this.props.navigation.navigate('Main');
     }
-  } else {
-    services.forEach((service, index) => {
-      if (!service.employee) {
-        serviceIndexesWithOutProvider.push(index);
-      }
-    })
-    //this.props.serviceActions.setSelectedService({ id: service.serviceId });
-    this.hideDialog();
-    this.selectProvider(serviceIndexesWithOutProvider);
   }
 }
 
 selectProvider = (serviceIndexesWithOutProvider) => {
-  debugger
   const { appointment } = this.state;
   const index = serviceIndexesWithOutProvider[0];
   const service = appointment.services[index];
@@ -503,15 +503,17 @@ handleProviderSelection = (provider, index, serviceIndexesWithOutProvider) => {
 
 startService = () => {
   const { appointment } = this.state;
-  const service = appointment.services[0];
-  const serviceEmployees = service.employee ? [
-    {
-      serviceEmployeeId: service.id,
-      serviceId: service.serviceId,
-      employeeId: service.employee.id,
-      isRequested: true,
-    },
-  ] : [];
+  const serviceEmployees = [];
+  appointment.services.forEach((service) => {
+    if (service.employee) {
+      serviceEmployees.push({
+        serviceEmployeeId: service.id,
+        serviceId: service.serviceId,
+        employeeId: service.employee.id,
+        isRequested: true,
+      });
+    }
+  });
 
   const serviceData = {
     serviceEmployees,

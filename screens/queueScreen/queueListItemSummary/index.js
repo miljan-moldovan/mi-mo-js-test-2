@@ -126,10 +126,9 @@ class queueListItemSummary extends Component {
       service: { employee = null, ...service },
       item,
     } = this.props;
-
     navigate('ModalProviders', {
       selectedService: { id: service.serviceId },
-      showFirstAvailable: this.props.isWaiting,
+      showFirstAvailable: !!this.props.isWaiting,
       dismissOnSelect: true,
       selectedProvider: employee,
       checkProviderStatus: true,
