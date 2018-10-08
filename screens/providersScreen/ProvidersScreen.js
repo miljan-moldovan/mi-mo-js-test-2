@@ -133,12 +133,13 @@ class ProviderScreen extends React.Component {
   onChangeSearchText = searchText => this.setState({ searchText });
 
   onRefresh = () => {
-    const { filterList, selectedService } = this.params;
+    const { filterList, selectedService, queueItem } = this.params;
     const {
       providersActions: {
         getProviders,
         getReceptionists,
         getQueueEmployees,
+        getQuickQueueEmployees,
       },
     } = this.props;
     const req = {
@@ -147,9 +148,14 @@ class ProviderScreen extends React.Component {
       sortOrder: 1,
       sortField: 'FirstName,LastName',
     };
+
+
     switch (this.mode) {
       case 'queue':
         getQueueEmployees(req);
+        break;
+      case 'quickQueue':
+        getQuickQueueEmployees({ ...req, queueItemId: queueItem.id });
         break;
       case 'receptionists':
         getReceptionists({
@@ -173,16 +179,22 @@ class ProviderScreen extends React.Component {
       },
       queueList,
       receptionistList,
+      quickQueueEmployees,
     } = this.props;
     const { searchText } = this.state;
     const { filterList } = this.params;
     // if (this.props.navigation.state.routeName !== 'ModalProviders') {
     //   return currentData;
     // }
+
+
     let currentData = [];
     switch (this.mode) {
       case 'queue':
         currentData = queueList;
+        break;
+      case 'quickQueue':
+        currentData = quickQueueEmployees;
         break;
       case 'receptionists':
         currentData = receptionistList;
@@ -203,6 +215,7 @@ class ProviderScreen extends React.Component {
           .filter(item => !!item)
           .map(item => item.toLowerCase())
           .some(item => item.indexOf(searchText.toLowerCase()) >= 0);
+
 
         if (isArray(filterList) && filterList.length > 0 && !includes(filterList, employee.id)) {
           return false;
@@ -225,6 +238,7 @@ class ProviderScreen extends React.Component {
     const checkProviderStatus = get(params, 'checkProviderStatus', false);
     const showEstimatedTime = get(params, 'showEstimatedTime', true);
     const selectedService = get(params, 'selectedService', null);
+    const queueItem = get(params, 'queueItem', null);
     const filterList = get(params, 'filterList', false);
     const selectedProvider = get(params, 'selectedProvider', null);
     const onChangeProvider = get(params, 'onChangeProvider', null);
@@ -237,6 +251,7 @@ class ProviderScreen extends React.Component {
       filterList,
       dismissOnSelect,
       selectedService,
+      queueItem,
       onChangeProvider,
       selectedProvider,
       showEstimatedTime,
@@ -284,6 +299,8 @@ class ProviderScreen extends React.Component {
     } = this.params;
     const { searchText } = this.state;
     const image = getEmployeePhotoSource(item);
+
+
     const highlightStyle = selectedProvider === item.id
       ? [styles.providerName, styles.selectedGreen] : styles.providerName;
     return (
@@ -383,6 +400,7 @@ class ProviderScreen extends React.Component {
 }
 ProviderScreen.propTypes = {
   queueList: PropTypes.node.isRequired,
+  quickQueueEmployees: PropTypes.node.isRequired,
   receptionistList: PropTypes.node.isRequired,
   providersState: PropTypes.shape({
     employees: PropTypes.array,
@@ -395,6 +413,7 @@ ProviderScreen.propTypes = {
     getProviders: PropTypes.func,
     getReceptionists: PropTypes.func,
     getQueueEmployees: PropTypes.func,
+    getQuickQueueEmployees: PropTypes.func,
     setSelectedService: PropTypes.func,
     setSelectedProvider: PropTypes.func,
   }).isRequired,

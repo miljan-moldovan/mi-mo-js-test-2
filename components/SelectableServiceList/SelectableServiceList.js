@@ -17,13 +17,15 @@ class SelectableServiceList extends React.Component {
     if (item.isNone) {
       return item.onPress();
     }
-    const { onChangeSelected, selected } = this.props;
+    const { onChangeSelected, selected, returnFullObject } = this.props;
     if (this.isSelected(item.id)) {
       remove(selected, id => id === item.id);
     } else {
       selected.push(item.id);
     }
-    return onChangeSelected(selected);
+
+    const obj = returnFullObject ? item : selected;
+    return onChangeSelected(obj);
   }
 
   get services() {
@@ -53,7 +55,7 @@ class SelectableServiceList extends React.Component {
         <View style={styles.listItemContainer}>
           <Text style={styles.listItemText}>{item.name}</Text>
           {
-            !item.isNone && (
+            !item.isNone && !this.props.hidePrice && (
               <Text style={styles.priceText}>{`$${price.toFixed(2)}`}</Text>
             )
           }
@@ -78,6 +80,7 @@ class SelectableServiceList extends React.Component {
 
   render() {
     const { isLoading } = this.props.servicesState;
+
     return isLoading ? (
       <LoadingOverlay />
     ) : (

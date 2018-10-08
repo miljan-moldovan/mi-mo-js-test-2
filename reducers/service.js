@@ -5,6 +5,9 @@ import {
   GET_SERVICES,
   GET_SERVICES_SUCCESS,
   GET_SERVICES_FAILED,
+  GET_QUEUE_SERVICE_EMPLOYEE_SERVICES,
+  GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS,
+  GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED,
   GET_SHOW_CATEGORY_SERVICES,
   SET_CATEGORY_SERVICES,
   GET_CATEGORY_SERVICES,
@@ -16,6 +19,7 @@ const initialState = {
   isLoading: false,
   filtered: [],
   services: [],
+  quickQueueServices: [],
   showCategoryServices: false,
   categoryServices: [],
   selectedService: null,
@@ -52,6 +56,7 @@ export default function serviceReducer(state = initialState, action) {
         error: null,
         showCategoryServices: data.showCategoryServices,
       };
+
     case GET_SERVICES:
       return {
         ...state,
@@ -71,6 +76,27 @@ export default function serviceReducer(state = initialState, action) {
         isLoading: false,
         error: data.error,
         services: [],
+      };
+    case GET_QUEUE_SERVICE_EMPLOYEE_SERVICES:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS:
+
+      return {
+        ...state,
+        error: null,
+        filtered: data.services,
+        quickQueueServices: data.services,
+        isLoading: false,
+      };
+    case GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: data.error,
+        quickQueueServices: [],
       };
     case SET_SERVICES:
       return {

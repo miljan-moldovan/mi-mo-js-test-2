@@ -116,6 +116,7 @@ class ServiceList extends React.Component {
   constructor(props) {
     super(props);
 
+
     const services = props.services.sort(ServiceList.compareByName);
 
     this.keyboardHeight = new Animated.Value(14);
@@ -251,11 +252,11 @@ class ServiceList extends React.Component {
             renderSectionHeader={item => ServiceList.renderSection(item)}
             ItemSeparatorComponent={ServiceList.renderSeparator}
           />
-            <ListLetterFilter
-              onPress={(letter) => {
+          <ListLetterFilter
+            onPress={(letter) => {
               this.scrollToIndex(letter);
             }}
-            />
+          />
         </Animated.View>
       </View>
     );
