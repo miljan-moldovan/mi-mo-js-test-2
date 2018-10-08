@@ -390,8 +390,8 @@ cancelButton = () => ({
 
 checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { appointment } = this.state;
-  const firstService = 0;
-  const service = appointment.services[0];
+  const serviceIndexesWithOutProvider = []
+  const { services } = appointment;
 
   const { settings } = this.props.settings;
 
@@ -399,24 +399,30 @@ checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   autoAssignFirstAvailableProvider = autoAssignFirstAvailableProvider ?
     autoAssignFirstAvailableProvider.settingValue : false;
   autoAssignFirstAvailableProvider = ignoreAutoAssign ? false : autoAssignFirstAvailableProvider;
-
-
-  if (service.employee || autoAssignFirstAvailableProvider) {
+  if (!autoAssignFirstAvailableProvider) {
+    services.forEach((service, index) => {
+      if (!service.employee || ignoreAutoAssign) {
+        serviceIndexesWithOutProvider.push(index);
+      }
+    });
+  }
+  if (serviceIndexesWithOutProvider.length) {
+    this.hideDialog();
+    this.selectProvider(serviceIndexesWithOutProvider);
+  } else {
     this.hideAll();
     this.handleStartService();
     if (redirectAfterMerge) {
       this.props.navigation.navigate('Main');
     }
-  } else {
-    this.props.serviceActions.setSelectedService({ id: service.serviceId });
-    this.hideDialog();
-    this.selectProvider(0);
   }
 }
 
-selectProvider = (index) => {
+selectProvider = (serviceIndexesWithOutProvider) => {
   const { appointment } = this.state;
+  const index = serviceIndexesWithOutProvider[0];
   const service = appointment.services[index];
+  const newServiceIndexesWithOutProvider = serviceIndexesWithOutProvider.slice(1);
   this.props.navigation.navigate('Providers', {
     headerProps: {
       title: shortenTitle(service.serviceName),
@@ -428,7 +434,7 @@ selectProvider = (index) => {
     showFirstAvailable: false,
     checkProviderStatus: true,
     queueList: true,
-    onChangeProvider: provider => this.handleProviderSelection(provider, index),
+    onChangeProvider: provider => this.handleProviderSelection(provider, index, newServiceIndexesWithOutProvider),
   });
 }
 
@@ -483,13 +489,12 @@ checkShouldMerge = () => {
 }
 
 
-handleProviderSelection = (provider, index) => {
+handleProviderSelection = (provider, index, serviceIndexesWithOutProvider) => {
   const { appointment } = this.state;
   const service = appointment.services[index];
   service.employee = provider;
-  const newIndex = index + 1;
-  if (newIndex < appointment.services.length) {
-    this.selectProvider(newIndex);
+  if (serviceIndexesWithOutProvider.length) {
+    this.selectProvider(serviceIndexesWithOutProvider);
   } else {
     this.handleStartService();
     this.props.navigation.navigate('Main');
@@ -498,15 +503,17 @@ handleProviderSelection = (provider, index) => {
 
 startService = () => {
   const { appointment } = this.state;
-  const service = appointment.services[0];
-  const serviceEmployees = service.employee ? [
-    {
-      serviceEmployeeId: service.id,
-      serviceId: service.serviceId,
-      employeeId: service.employee.id,
-      isRequested: true,
-    },
-  ] : [];
+  const serviceEmployees = [];
+  appointment.services.forEach((service) => {
+    if (service.employee) {
+      serviceEmployees.push({
+        serviceEmployeeId: service.id,
+        serviceId: service.serviceId,
+        employeeId: service.employee.id,
+        isRequested: true,
+      });
+    }
+  });
 
   const serviceData = {
     serviceEmployees,
@@ -537,7 +544,7 @@ startService = () => {
 
 handleStartService = () => {
   const { appointment } = this.state;
-  const settingAllowMultiService = get(this.props.settings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', false);
+  const settingAllowMultiService = get(this.props.groupedSettings, '[AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously][0].settingValue', false);
   const modalBusyEmployee = settingAllowMultiService
     ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
@@ -884,7 +891,8 @@ Queue.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  settings: groupedSettingsSelector(state),
+  settings: state.settingsReducer,
+  groupedSettings: groupedSettingsSelector(state),
 });
 
 export default connect(mapStateToProps, actions)(Queue);

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
+import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get, includes, isArray } from 'lodash';
 import PropTypes from 'prop-types';
@@ -16,6 +17,7 @@ import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { DefaultAvatar } from '../../components/formHelpers';
 import LoadingOverlay from '../../components/LoadingOverlay';
+import groupedSettingsSelector from '../../redux/selectors/settingsSelector';
 
 import Colors from '../../constants/Colors';
 import styles from './styles';
@@ -416,4 +418,9 @@ ProviderScreen.propTypes = {
     setSelectedProvider: PropTypes.func,
   }).isRequired,
 };
-export default ProviderScreen;
+
+const mapStateToProps = state => ({
+  groupedSettings: groupedSettingsSelector(state),
+});
+
+export default connect(mapStateToProps, null)(ProviderScreen);

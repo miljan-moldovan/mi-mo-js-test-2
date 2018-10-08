@@ -29,7 +29,7 @@ class ServicesScreen extends React.Component {
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
       navigation.state.params.headerProps &&
-        !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+      !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
       navigation.state.params.headerProps &&
       !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
@@ -51,18 +51,20 @@ class ServicesScreen extends React.Component {
       !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
 
     return {
-      header: () => (<SalonSearchHeader
-        title={title}
-        subTitle={subTitle}
-        leftButton={leftButton}
-        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
-        rightButton={rightButton}
-        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-        hasFilter={false}
-        containerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />),
+      header: () => (
+        <SalonSearchHeader
+          title={title}
+          subTitle={subTitle}
+          leftButton={leftButton}
+          leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+          rightButton={rightButton}
+          rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+          hasFilter={false}
+          containerStyle={{
+            paddingHorizontal: 20,
+          }}
+        />
+      ),
     };
   };
 
@@ -153,11 +155,26 @@ class ServicesScreen extends React.Component {
       servicesState: {
         services,
       },
+      salonSearchHeaderState: {
+        searchText,
+      },
       quickQueueServices,
     } = this.props;
 
+
     if (this.mode === 'quickQueue') {
-      return quickQueueServices;
+      let filtered = quickQueueServices;
+
+      if (searchText && searchText.length > 0) {
+        const criteria = [
+          { Field: 'name', Values: [searchText.toLowerCase()] },
+        ];
+
+        filtered = ServicesScreen.flexFilter(filtered, criteria);
+      }
+
+
+      return filtered;
     }
 
 
@@ -296,6 +313,7 @@ class ServicesScreen extends React.Component {
   filterServices = (searchText) => {
     const servicesCategories = JSON.parse(JSON.stringify(this.props.servicesState.services));
 
+
     if (searchText && searchText.length > 0) {
       this.setHeaderData(this.state.headerProps);
 
@@ -375,52 +393,51 @@ class ServicesScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.servicesList}>
 
-
           {(!hasCategories
-          && this.services.length > 0) &&
-          <SelectableServiceList
-            services={this.services}
-            selected={[]}
-            hidePrice
-            returnFullObject
-            onChangeSelected={this.handleOnChangeService}
-          />
-        }
-
-
-          {hasCategories && (!servicesState.showCategoryServices
-            && !this.props.salonSearchHeaderState.showFilter
             && this.services.length > 0) &&
-            <ServiceCategoryList
-              onRefresh={this.getServices}
-              handlePressServiceCategory={this.handlePressServiceCategory}
-              serviceCategories={this.services}
-              serviceCategoriesLength={this.services.length}
-            />
-          }
-
-          {hasCategories && (!servicesState.showCategoryServices
-            && this.props.salonSearchHeaderState.showFilter
-            && this.services.length > 0) &&
-            <ServiceList
-              {...this.props}
-              onRefresh={this.getServices}
-              boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.serviceListContainer}
+            <SelectableServiceList
               services={this.services}
-              onChangeService={this.handleOnChangeService}
+              selected={[]}
+              hidePrice
+              returnFullObject
+              onChangeSelected={this.handleOnChangeService}
             />
           }
+
+
+          {hasCategories && (!servicesState.showCategoryServices
+              && !this.props.salonSearchHeaderState.showFilter
+              && this.services.length > 0) &&
+              <ServiceCategoryList
+                onRefresh={this.getServices}
+                handlePressServiceCategory={this.handlePressServiceCategory}
+                serviceCategories={this.services}
+                serviceCategoriesLength={this.services.length}
+              />
+            }
+
+          {hasCategories && (!servicesState.showCategoryServices
+              && this.props.salonSearchHeaderState.showFilter
+              && this.services.length > 0) &&
+              <ServiceList
+                {...this.props}
+                onRefresh={this.getServices}
+                boldWords={this.props.salonSearchHeaderState.searchText}
+                style={styles.serviceListContainer}
+                services={this.services}
+                onChangeService={this.handleOnChangeService}
+              />
+            }
 
           {hasCategories && (servicesState.showCategoryServices
-            && this.services.length > 0) &&
-            <CategoryServicesList
-              {...this.props}
-              onRefresh={this.getServices}
-              onChangeService={this.handleOnChangeService}
-              categoryServices={servicesState.categoryServices}
-            />
-          }
+              && this.services.length > 0) &&
+              <CategoryServicesList
+                {...this.props}
+                onRefresh={this.getServices}
+                onChangeService={this.handleOnChangeService}
+                categoryServices={servicesState.categoryServices}
+              />
+            }
         </View>
       </View>
     );

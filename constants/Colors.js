@@ -31,4 +31,5 @@ export default {
   selectedGreen: '#1DBF12',
   dividerGrey: '#0C4699',
   searchBarBackground: '#D9D9DA',
+  noContentBackground: '#F4F4F4',
 };

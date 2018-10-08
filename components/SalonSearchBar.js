@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
+import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from './../components/UI/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
@@ -69,22 +70,21 @@ const styles = StyleSheet.create({
 });
 
 class SalonSearchBar extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentWillMount() {
-    this.setState({ searchText: '' });
-  }
+  state = {
+    searchText: '',
+  };
 
   componentDidMount() {
     if (this.props.focusOnMount) {
-      textInput.focus();
+      this.textInput.focus();
     }
   }
 
+  blurInput = () => {
+    this.textInput.blur();
+  }
 
-  handleChange= (searchText) => {
+  handleChange = (searchText) => {
     this.setState({ searchText }, () => {
       if (this.props.onChangeText) {
         this.props.onChangeText(searchText);
@@ -92,90 +92,93 @@ class SalonSearchBar extends Component {
     });
   }
 
+  handleCancel = () => {
+    this.handleChange('');
+    if (isFunction(this.props.handleCancel)) {
+      this.props.handleCancel();
+    }
+  }
+
   render() {
+    const {
+      iconsColor,
+      borderColor,
+      backgroundColor,
+      focusOnMount,
+      fontColor,
+      showCancel,
+      searchIconPosition,
+      onClear,
+    } = this.props;
+    const { searchText } = this.state;
+    const searchBarStyle = {
+      borderColor,
+      backgroundColor,
+    };
+    const searchIconStyle = { color: iconsColor };
+    const textInputStyle = { color: fontColor };
+    const clearSearchText = () => {
+      this.handleChange('');
+      this.textInput.blur();
+    };
     return (
       <View style={[styles.container, this.props.containerStyle]}>
-        <View style={[styles.searchBar,
-          {
-          backgroundColor: this.props.backgroundColor,
-          borderColor: this.props.borderColor,
-
-          },
-        ]}
-        >
+        <View style={[styles.searchBar, searchBarStyle]}>
           <View style={styles.searchBarItems}>
-            {this.props.searchIconPosition === 'left' &&
-
-            <Icon
-              style={[styles.searchIconLeft,
-            { color: this.props.iconsColor }]}
-              name="search"
-            />
-
-
+            {
+              searchIconPosition === 'left' &&
+              <Icon
+                style={[styles.searchIconLeft, searchIconStyle]}
+                name="search"
+              />
             }
             <TextInput
-              ref={ref => textInput = ref}
-              focusOnMount={this.props.focusOnMount}
-              style={[styles.searchBarInput, { color: this.props.fontColor }]}
+              ref={(ref) => { this.textInput = ref; }}
+              focusOnMount={focusOnMount}
+              style={[styles.searchBarInput, textInputStyle]}
               placeholder={this.props.placeHolderText}
               placeholderTextColor={this.props.placeholderTextColor}
               onChangeText={this.handleChange}
-              value={this.state.searchText}
+              value={searchText}
               onFocus={this.props.onFocus}
+              onBlur={this.props.onBlur}
             />
-            {this.state.searchText.length === 0 && this.props.searchIconPosition === 'right' &&
-
+            {
+              searchText.length === 0 && searchIconPosition === 'right' &&
               <Icon
-                style={[styles.searchIconRight, { color: this.props.iconsColor }]}
+                style={[styles.searchIconRight, searchIconStyle]}
                 name="search"
               />
-
             }
-
-
             <View style={styles.crossIconContainer}>
-              {this.state.searchText.length > 0 &&
-
+              {
+                searchText.length > 0 &&
                 <SalonTouchableHighlight
-                  style={styles.crossIconButton}
                   underlayColor="transparent"
-                  onPress={
-                    () => {
-                      this.handleChange('');
-                    }}
+                  onPress={clearSearchText}
+                  style={styles.crossIconButton}
                 >
-
                   <Icon
-                    style={[styles.crossIcon,
-                    { color: this.props.iconsColor }]}
                     name="timesCircle"
+                    style={[styles.crossIcon, searchIconStyle]}
                   />
-
                 </SalonTouchableHighlight>
-
               }
             </View>
           </View>
         </View>
-        {this.props.showCancel &&
+        {
+          showCancel &&
           <View style={styles.cancelContainer}>
             <SalonTouchableHighlight
               style={styles.cancelSearchContainer}
               underlayColor="transparent"
-              onPress={
-                () => {
-                  this.handleChange('');
-                  if (this.props.handleCancel) {
-                    this.props.handleCancel();
-                  }
-                }
-              }
+              onPress={this.handleCancel}
             >
-              <Text style={[styles.cancelSearch, { color: this.props.fontColor }]}>Cancel</Text>
+              <Text style={[styles.cancelSearch, textInputStyle]}>Cancel</Text>
             </SalonTouchableHighlight>
           </View>
-          }
+        }
       </View>
     );
   }
@@ -192,9 +195,11 @@ SalonSearchBar.propTypes = {
   showCancel: PropTypes.bool,
   placeHolderText: PropTypes.string,
   onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
   onChangeText: PropTypes.func.isRequired,
   focusOnMount: PropTypes.bool,
   containerStyle: ViewPropTypes.style,
+  onClear: PropTypes.func,
 };
 
 SalonSearchBar.defaultProps = {
@@ -206,7 +211,9 @@ SalonSearchBar.defaultProps = {
   searchIconPosition: 'left',
   showCancel: false,
   placeHolderText: 'Search',
-  onFocus: () => {},
+  onFocus: () => { },
+  onBlur: () => { },
+  onClear: () => { },
   focusOnMount: false,
   containerStyle: {},
 };

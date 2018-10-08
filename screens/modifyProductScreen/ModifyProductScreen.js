@@ -167,6 +167,7 @@ class ModifyProductScreen extends React.Component {
           />
           <InputDivider />
           <ProviderInput
+            mode="employees"
             navigate={navigate}
             placeholder={false}
             showFirstAvailable={false}
