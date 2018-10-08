@@ -270,6 +270,7 @@ class AppointmentDetails extends React.Component {
     this.props.navigation.navigate('Service', {
       clientName,
       dismissOnSelect: true,
+      isInService: !this.props.isWaiting,
       onSave: data => this.addServiceItem(data),
     });
   }
