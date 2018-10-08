@@ -1,4 +1,5 @@
 import { Product } from '../utilities/apiWrapper';
+
 export const SET_PRODUCTS = 'products/SET_PRODUCTS';
 export const SET_FILTERED_PRODUCTS = 'products/SET_FILTERED_PRODUCTS';
 export const SET_SHOW_CATEGORY_PRODUCTS = 'products/SET_SHOW_CATEGORY_PRODUCTS';
@@ -27,7 +28,7 @@ const getProducts = () => (dispatch) => {
   //   .then(response => dispatch(getProductsSuccess(response)))
   //   .catch(error => dispatch(getProductsFailed(error)));
   dispatch({ type: GET_PRODUCTS });
-  Product.getProducts()
+  Product.getProductTree()
     .then(response => dispatch(getProductsSuccess(response)))
     .catch(error => dispatch(getProductsFailed(error)));
 };

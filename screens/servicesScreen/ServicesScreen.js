@@ -28,7 +28,7 @@ class ServicesScreen extends React.Component {
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
       navigation.state.params.headerProps &&
-        !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
+      !ignoreNav ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
       navigation.state.params.headerProps &&
       !ignoreNav ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
@@ -50,18 +50,20 @@ class ServicesScreen extends React.Component {
       !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
 
     return {
-      header: () => (<SalonSearchHeader
-        title={title}
-        subTitle={subTitle}
-        leftButton={leftButton}
-        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
-        rightButton={rightButton}
-        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-        hasFilter={false}
-        containerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />),
+      header: () => (
+        <SalonSearchHeader
+          title={title}
+          subTitle={subTitle}
+          leftButton={leftButton}
+          leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+          rightButton={rightButton}
+          rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+          hasFilter={false}
+          containerStyle={{
+            paddingHorizontal: 20,
+          }}
+        />
+      ),
     };
   };
 
@@ -290,42 +292,42 @@ class ServicesScreen extends React.Component {
       </View>
     ) : (
       <View style={styles.container}>
-        <View style={styles.servicesList}>
-          {(!servicesState.showCategoryServices
-            && !this.props.salonSearchHeaderState.showFilter
-            && this.services.length > 0) &&
-            <ServiceCategoryList
-              onRefresh={this.getServices}
-              handlePressServiceCategory={this.handlePressServiceCategory}
-              serviceCategories={this.services}
-              serviceCategoriesLength={this.services.length}
-            />
-          }
+          <View style={styles.servicesList}>
+            {(!servicesState.showCategoryServices
+              && !this.props.salonSearchHeaderState.showFilter
+              && this.services.length > 0) &&
+              <ServiceCategoryList
+                onRefresh={this.getServices}
+                handlePressServiceCategory={this.handlePressServiceCategory}
+                serviceCategories={this.services}
+                serviceCategoriesLength={this.services.length}
+              />
+            }
 
-          {(!servicesState.showCategoryServices
-            && this.props.salonSearchHeaderState.showFilter
-            && this.services.length > 0) &&
-            <ServiceList
-              {...this.props}
-              onRefresh={this.getServices}
-              boldWords={this.props.salonSearchHeaderState.searchText}
-              style={styles.serviceListContainer}
-              services={this.services}
-              onChangeService={this.handleOnChangeService}
-            />
-          }
+            {(!servicesState.showCategoryServices
+              && this.props.salonSearchHeaderState.showFilter
+              && this.services.length > 0) &&
+              <ServiceList
+                {...this.props}
+                onRefresh={this.getServices}
+                boldWords={this.props.salonSearchHeaderState.searchText}
+                style={styles.serviceListContainer}
+                services={this.services}
+                onChangeService={this.handleOnChangeService}
+              />
+            }
 
-          {(servicesState.showCategoryServices
-            && this.services.length > 0) &&
-            <CategoryServicesList
-              {...this.props}
-              onRefresh={this.getServices}
-              onChangeService={this.handleOnChangeService}
-              categoryServices={servicesState.categoryServices}
-            />
-          }
+            {(servicesState.showCategoryServices
+              && this.services.length > 0) &&
+              <CategoryServicesList
+                {...this.props}
+                onRefresh={this.getServices}
+                onChangeService={this.handleOnChangeService}
+                categoryServices={servicesState.categoryServices}
+              />
+            }
+          </View>
         </View>
-      </View>
     );
   }
 }
