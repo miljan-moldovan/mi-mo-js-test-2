@@ -9,6 +9,7 @@ const mapStateToProps = state => ({
   settings: state.settingsReducer.settings,
   queueList: queueListSelector(state),
   receptionistList: receptionistListSelector(state),
+  quickQueueEmployees: state.providersReducer.quickQueueEmployees,
   providersState: state.providersReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
 });

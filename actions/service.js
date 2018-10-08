@@ -1,4 +1,4 @@
-import { Services } from '../utilities/apiWrapper';
+import { Services, Queue } from '../utilities/apiWrapper';
 
 export const SET_SERVICES = 'services/SET_SERVICES';
 export const SET_FILTERED_SERVICES = 'services/SET_FILTERED_SERVICES';
@@ -10,6 +10,12 @@ export const GET_SERVICES_SUCCESS = 'services/GET_SERVICES_SUCCESS';
 export const GET_SERVICES_FAILED = 'services/GET_SERVICES_FAILED';
 export const GET_CATEGORY_SERVICES = 'services/GET_CATEGORY_SERVICES';
 export const SET_SELECTED_SERVICE = 'services/SET_SELECTED_SERVICE';
+
+
+export const GET_QUEUE_SERVICE_EMPLOYEE_SERVICES = 'services/GET_QUEUE_SERVICE_EMPLOYEE_SERVICES';
+export const GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS = 'services/GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS';
+export const GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED = 'services/GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED';
+
 
 const getServicesSuccess = services => ({
   type: GET_SERVICES_SUCCESS,
@@ -41,6 +47,29 @@ const getServices = params => (dispatch, getState) => {
   return Services.getServiceTree(params)
     .then(response => dispatch(getServicesSuccess(response)))
     .catch(error => dispatch(getServicesFailed(error)));
+};
+
+
+const getQueueServiceEmployeeServicesSuccess = services => ({
+  type: GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS,
+  data: { services },
+});
+
+const getQueueServiceEmployeeServicesFailed = error => ({
+  type: GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED,
+  data: { error },
+});
+
+const getQueueServiceEmployeeServices = params => (dispatch, getState) => {
+  const { isSelectingExtras } = getState().serviceReducer;
+  if (isSelectingExtras) {
+    return false;
+  }
+
+  dispatch({ type: GET_QUEUE_SERVICE_EMPLOYEE_SERVICES });
+  return Queue.getQueueServiceEmployeeServices(params)
+    .then(response => dispatch(getQueueServiceEmployeeServicesSuccess(response)))
+    .catch(error => dispatch(getQueueServiceEmployeeServicesFailed(error)));
 };
 
 function setServices(services) {
@@ -87,6 +116,7 @@ const servicesActions = {
   setShowCategoryServices,
   setCategoryServices,
   setSelectedService,
+  getQueueServiceEmployeeServices,
 };
 
 export default servicesActions;

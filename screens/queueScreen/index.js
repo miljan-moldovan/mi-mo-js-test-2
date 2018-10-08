@@ -91,7 +91,7 @@ class QueueScreen extends React.Component {
   componentWillMount() {
     this.loadQueueData();
 
-    this.props.actions.getQueueEmployees();
+    // this.props.actions.getQueueEmployees();
     this.props.settingsActions.getSettings();
   }
 

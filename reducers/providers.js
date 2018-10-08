@@ -10,6 +10,9 @@ import {
   GET_QUEUE_EMPLOYEES,
   GET_QUEUE_EMPLOYEES_ERROR,
   GET_QUEUE_EMPLOYEES_SUCCESS,
+  GET_QUICK_QUEUE_EMPLOYEES,
+  GET_QUICK_QUEUE_EMPLOYEES_ERROR,
+  GET_QUICK_QUEUE_EMPLOYEES_SUCCESS,
   GET_EMPLOYEES_BY_SERVICE,
   GET_EMPLOYEES_BY_SERVICE_ERROR,
   GET_EMPLOYEES_BY_SERVICE_SUCCESS,
@@ -33,6 +36,7 @@ const initialState = {
   providers: [],
   receptionists: [],
   queueEmployees: [],
+  quickQueueEmployees: [],
   employeesByService: [],
 };
 
@@ -94,6 +98,23 @@ const providersReducer = (state = initialState, action) => {
         employeesByService: data.employeesByService || state.employeesByService,
       };
     case GET_QUEUE_EMPLOYEES_ERROR:
+      return {
+        ...state,
+        isLoading: false,
+      };
+
+    case GET_QUICK_QUEUE_EMPLOYEES:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_QUICK_QUEUE_EMPLOYEES_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        quickQueueEmployees: data.employees,
+      };
+    case GET_QUICK_QUEUE_EMPLOYEES_ERROR:
       return {
         ...state,
         isLoading: false,
