@@ -730,7 +730,11 @@ renderNotification = () => {
       break;
     }
     case 'error': {
-      notificationText = (<Text>{notificationItem.response.data.userMessage}</Text>);
+      const text = get(notificationItem, 'response.data.userMessage', '');
+      if (!text) {
+        return null;
+      }
+      notificationText = text || (<Text>{text}</Text>);
       notificationColor = '#F50035';
       break;
     }
