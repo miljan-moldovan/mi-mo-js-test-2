@@ -130,8 +130,6 @@ class QueueCombineScreen extends React.Component {
   }
 
   onChangeCombineClients = (combinedClients, groupLeader) => {
-    
-
     if (combinedClients === null && groupLeader !== undefined && groupLeader !== null) {
       // update only groupLeader
       this.setState({ groupLeader, alertDone: TAB_COMBINE });
@@ -144,7 +142,7 @@ class QueueCombineScreen extends React.Component {
   updateNavButtons = () => {
     const { combinedClients } = this.state;
 
-
+    
 
 
     if ((combinedClients && combinedClients.length > 1) || this.getUpdatedGroupLeaders()
@@ -191,7 +189,7 @@ class QueueCombineScreen extends React.Component {
       });
     }
     const groupLeadersNew = this.getUpdatedGroupLeaders();
-    if (groupLeadersNew) { this.props.updateGroupLeaders(groupLeadersNew); }
+    if (groupLeadersNew) { this.props.navigation.setParams({ onPressDone: undefined }); this.props.updateGroupLeaders(groupLeadersNew); }
   }
 
   getUpdatedGroupLeaders = () => {
@@ -248,6 +246,7 @@ class QueueCombineScreen extends React.Component {
   changeSearchText = searchText => this.setState({ searchText });
 
   onPressTab = (ev, index) => {
+
     this.setState({ activeTab: index });
   }
 
