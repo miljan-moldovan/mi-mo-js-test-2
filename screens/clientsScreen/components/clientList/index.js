@@ -12,7 +12,7 @@ import ListLetterFilter from '../../../../components/listLetterFilter';
 import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
 import EmptyList from './emptyClientList';
 
-const ITEM_HEIGHT = 60;
+const ITEM_HEIGHT = 88;
 const HEADER_HEIGHT = 30;
 
 const abecedary = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -122,7 +122,7 @@ class ClientList extends React.Component {
       }
 
       renderItem = obj => (
-        <View key={obj.item.id} style={{ height: ITEM_HEIGHT }}>
+        <View key={obj.item.id}>
           <ClientListItem
             client={obj.item}
             boldWords={this.props.boldWords}

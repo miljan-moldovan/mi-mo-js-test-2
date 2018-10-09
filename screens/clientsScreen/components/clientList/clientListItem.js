@@ -16,8 +16,17 @@ const styles = StyleSheet.create({
   phoneIconLeft: {
     fontSize: 18,
     marginRight: 10,
+    marginLeft: 2,
     textAlign: 'center',
     color: '#727A8F',
+  },
+  homeIconLeft: {
+    fontSize: 12,
+    marginRight: 8,
+    textAlign: 'center',
+    color: '#727A8F',
+    fontWeight: '100',
+    fontFamily: 'FontAwesome5ProLight',
   },
   highlightStyle: {
     color: '#1DBF12',
@@ -31,17 +40,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   clientNameContainer: {
+    marginLeft: 2,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   topContainer: {
+    paddingTop: 10,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   bottomContainer: {
+
     flex: 2,
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -53,12 +65,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: 'bold',
     backgroundColor: 'transparent',
+    width: '95%',
   },
   clientEmail: {
     color: '#727A8F',
     fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
+    maxWidth: '50%',
   },
   clientPhone: {
     color: '#727A8F',
@@ -66,6 +80,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     marginRight: 10,
+    maxWidth: '50%',
   },
   dataContainer: {
     marginLeft: 20,
@@ -80,14 +95,14 @@ class ClientListItem extends React.PureComponent {
   constructor(props) {
     super(props);
     this.handlePressClientThrottled = throttle(
-        this.handlePressClient,
-        2000, 
-        { 'trailing': false }
+      this.handlePressClient,
+      2000,
+      { trailing: false },
     );
   }
-  
+
   handlePressClient = () => {
-    if (this.props && this.props.onPress){
+    if (this.props && this.props.onPress) {
       this.props.onPress(this.props.client);
     }
   }
@@ -97,6 +112,10 @@ class ClientListItem extends React.PureComponent {
     const name = `${this.props.client.name} ${this.props.client.lastName}`;
     const phone = phones.length > 0 ? phones : null;
     const email = this.props.client.email ? this.props.client.email : null;
+    const store = this.props.client.visit ? this.props.client.visit : null;
+
+    debugger //eslint-disable-line
+
     return (
       <TouchableHighlight
         style={styles.container}
@@ -111,12 +130,29 @@ class ClientListItem extends React.PureComponent {
                   highlight={this.props.boldWords}
                   highlightStyle={styles.highlightStyle}
                   style={styles.clientName}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                 >
                   {name}
                 </WordHighlighter>
               </View>
             </View>
-            <View style={styles.bottomContainer}>
+
+            <View style={[styles.bottomContainer, { paddingTop: 10 }]}>
+              {store &&
+              <FontAwesome style={styles.homeIconLeft}>{Icons.home}</FontAwesome>}
+              {store &&
+              <WordHighlighter
+                highlight={this.props.boldWords}
+                highlightStyle={styles.highlightStyle}
+                style={styles.clientPhone}
+              >
+                {store}
+              </WordHighlighter>
+            }
+            </View>
+            <View style={[styles.bottomContainer, { paddingTop: 5, width: '90%' }]}>
+
               {phone &&
               <FontAwesome style={styles.phoneIconLeft}>{Icons.mobile}</FontAwesome>}
               {phone &&
@@ -124,6 +160,8 @@ class ClientListItem extends React.PureComponent {
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientPhone}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {phone}
               </WordHighlighter>
@@ -135,6 +173,8 @@ class ClientListItem extends React.PureComponent {
                 highlight={this.props.boldWords}
                 highlightStyle={styles.highlightStyle}
                 style={styles.clientEmail}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {email}
               </WordHighlighter>
