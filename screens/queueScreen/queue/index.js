@@ -267,7 +267,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
     this.hideDialog();
     const getLabel = style => this.getLabelForItem(appointment, style);
     this.props.navigation.navigate('AppointmentDetails', {
-      appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary,
+      appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary, loadQueueData: this.props.loadQueueData,
     });
   }
 }
