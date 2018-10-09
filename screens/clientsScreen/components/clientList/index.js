@@ -210,9 +210,9 @@ class ClientList extends React.Component {
               ListFooterComponent={this.renderMoreLoading}
             />
 
-            {this.props.clients.length > 0 ? <ListLetterFilter
+            {/* this.props.clients.length > 0 ? <ListLetterFilter
               onPress={(letter) => { this.scrollToIndex(letter); }}
-            /> : null }
+            /> : null */}
           </View>
         );
       }
