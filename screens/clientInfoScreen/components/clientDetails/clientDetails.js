@@ -495,7 +495,7 @@ class ClientDetails extends Component {
         zipCode: this.state.client.zipCode ? this.state.client.zipCode : null,
       },
       gender: this.state.client.gender ? this.state.client.gender.key : null,
-      loyaltyNumber: this.state.client.loyaltyNumber,
+      loyaltyNumber: this.state.client.loyalty,
       confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy.key : null,
       referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
       clientReferralTypeId: this.state.client.clientReferralType ? this.state.client.clientReferralType.key : null,

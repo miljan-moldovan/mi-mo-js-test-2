@@ -37,7 +37,7 @@ const QueueTimeNote = (props) => {
   if (status === 0 || status === 1 || status === 5) {
     const timeCheckedIn = item.status === 5 ? 0 : estimatedTime;
     serviceTime = (
-      <Text style={styles.serviceTime}>  exp, start in <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>
+      <Text style={styles.serviceTime}>  exp. start in <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>
         {timeCheckedIn}m
       </Text>
         {showAgo && <Text style={styles.serviceTime}> ago</Text>}
@@ -45,8 +45,8 @@ const QueueTimeNote = (props) => {
   } else if (status === 6) {
     if (estimatedTime >= 0 && moment(item.progressTime, 'hh:mm:ss').isBefore(moment(item.progressMaxTime, 'hh:mm:ss'))) {
       serviceTime = (
-        <Text style={styles.serviceTime}> remaining rem.
-          <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>
+        <Text style={styles.serviceTime}> remaining
+          <Text style={[styles.serviceRemainingWaitTime]}>
             {estimatedTime}m
           </Text>
         </Text>
@@ -71,7 +71,7 @@ const QueueTimeNote = (props) => {
     }
   } else {
     serviceTime = (
-      <Text style={styles.serviceTime}>  exp, start in
+      <Text style={styles.serviceTime}>  exp. start in
         <Text style={[styles.serviceRemainingWaitTime, styles.underline]}>0m</Text>
       </Text>);
   }
