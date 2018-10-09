@@ -267,7 +267,7 @@ handlePressModify = (isWaiting, onPressSummary) => {
     this.hideDialog();
     const getLabel = style => this.getLabelForItem(appointment, style);
     this.props.navigation.navigate('AppointmentDetails', {
-      appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary,
+      appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary, loadQueueData: this.props.loadQueueData,
     });
   }
 }
@@ -730,7 +730,11 @@ renderNotification = () => {
       break;
     }
     case 'error': {
-      notificationText = (<Text>{notificationItem.response.data.userMessage}</Text>);
+      const text = get(notificationItem, 'response.data.userMessage', '');
+      if (!text) {
+        return null;
+      }
+      notificationText = text || (<Text>{text}</Text>);
       notificationColor = '#F50035';
       break;
     }

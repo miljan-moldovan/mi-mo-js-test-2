@@ -34,7 +34,13 @@ export default class AppointmentDetailsScreen extends React.Component {
     return ({
       title,
       headerLeft: (
-        <SalonTouchableOpacity onPress={navigation.goBack}>
+        <SalonTouchableOpacity onPress={() => {
+          if (params.loadQueueData) {
+            params.loadQueueData();
+          }
+
+          navigation.goBack()
+        }}>
           <Icon
             name="angleLeft"
             size={35}
