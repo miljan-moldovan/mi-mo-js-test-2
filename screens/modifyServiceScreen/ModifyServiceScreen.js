@@ -75,7 +75,7 @@ export default class ModifyServiceScreen extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     const canSave = nextState.service && nextState.employee;
     const { navigation } = nextProps;
-    if (navigation.state.params.canSave != canSave){
+    if (navigation.state.params.canSave !== canSave) {
       this.props.navigation.setParams({ handleSave: this.handleSave, canSave });
     }
   }
