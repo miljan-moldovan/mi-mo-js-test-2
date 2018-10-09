@@ -234,7 +234,7 @@ renderBtnContainer = () => {
 }
 
 renderItem =({ item }) => (
-  <ListItem {...this.props} onDonePress={this.props.onDonePress} service={item} />
+  <ListItem {...this.props} service={item} />
 )
 
 render() {

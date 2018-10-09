@@ -343,6 +343,7 @@ class QueueScreen extends React.Component {
             loading={loading}
             isWaiting
             loadQueueData={this.loadQueueData}
+            error={this.props.error}
           />
         );
       case SERVICED:
@@ -354,6 +355,7 @@ class QueueScreen extends React.Component {
             navigation={navigation}
             loading={loading}
             loadQueueData={this.loadQueueData}
+            error={this.props.error}
           />
 
         );

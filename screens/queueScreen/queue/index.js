@@ -99,6 +99,12 @@ onChangeFilterResultCount = () => {
   }
 }
 
+componentDidUpdate(prevProps, prevState) {
+  if (this.props.error && !this.state.notificationVisible) {
+    this.showNotification(this.props.error, 'error');
+  }
+}
+
 
 searchText = (query: string, searchClient: boolean, searchProvider: boolean) => {
   const { data } = this.props;
@@ -241,6 +247,7 @@ hideAll = () => {
 handlePress = (item) => {
   if (!this.state.isVisible) {
     this.setState({
+      appointmentId: item.id,
       appointment: item,
       client: item.client,
       services: item.services,
@@ -715,14 +722,21 @@ renderNotification = () => {
     notificationButton,
     notificationText;
   switch (notificationType) {
-    case 'service':
+    case 'service': {
       const client = notificationItem.client || {};
       notificationText = (<Text>Started service for <Text style={{ fontFamily: 'OpenSans-Bold' }}>{`${client.name} ${client.lastName}`}</Text></Text>);
       notificationColor = '#ccc';
-      notificationButton = <NotificationBannerButton title="UNDO" />;
+      notificationButton = <NotificationBannerButton title="OK" onPress={this.onDismissNotification} />;
       break;
-    default: '';
+    }
+    case 'error': {
+      notificationText = (<Text>{notificationItem.response.data.userMessage}</Text>);
+      notificationColor = '#F50035';
+      break;
+    }
+    default: return null;
   }
+
   return (
     <NotificationBanner
       backgroundColor={notificationColor}
@@ -789,6 +803,7 @@ render() {
       <Text style={styles.headerCount}>{numResult} {numResult === 1 ? 'Result' : 'Results'}</Text>
     </View>
   ) : null;
+  const appt = _.find(this.props.data, item => item.id === this.state.appointmentId);
   return (
     <View style={styles.container}>
 
@@ -822,15 +837,15 @@ render() {
 
       <QueueItemSummary
         {...this.props}
-        isVisible={this.state.isVisible}
-        client={this.state.client}
-        services={this.state.services}
+        isVisible={this.state.isVisible && !this.props.loading}
+        client={appt && appt.client}
+        services={appt && appt.services}
         onDonePress={this.hideDialog}
         showDialog={this.showDialog}
         onPressSummary={this.handlePressSummary}
         isWaiting={this.props.isWaiting}
         item={this.state.appointment}
-        appointment={this.state.appointment}
+        appointment={appt}
         hide={this.hideDialog}
       />
       {this.renderNotification()}

@@ -64,6 +64,7 @@ export class NotificationBanner extends React.Component {
     return (
       <Animated.View style={[
         styles.container,
+        this.props.backgroundColor && { backgroundColor: this.props.backgroundColor },
         {
           opacity: this.state.fadeAnim,
           top: this.state.fadeAnim.interpolate({
