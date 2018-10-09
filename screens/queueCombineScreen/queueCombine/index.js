@@ -161,9 +161,15 @@ export class QueueCombine extends React.Component {
     selected: (new Map(): Map<string, boolean>),
   }
   componentWillMount() {
+
     this.setState({ data: this.props.data });
+
+    for (let i = 0; i < this.props.combinedClients.length; i++) {
+      this._onPressItem(this.props.combinedClients[i]);
+    }
   }
   componentWillReceiveProps(nextProps: Object) {
+
     if (nextProps.data !== this.props.data) {
       this.setState({ data: nextProps.data });
     }
@@ -204,8 +210,6 @@ export class QueueCombine extends React.Component {
   _onPressItem = (id: string) => {
     // updater functions are preferred for transactional updates
     this.setState((state) => {
-
-
       const selected = new Map(state.selected);
       selected.set(id, !selected.get(id)); // toggle
       const selectedArray = [];
