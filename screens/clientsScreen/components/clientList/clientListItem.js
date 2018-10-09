@@ -65,14 +65,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: 'bold',
     backgroundColor: 'transparent',
-    width: '95%',
+    width: '98%',
   },
   clientEmail: {
     color: '#727A8F',
     fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
-    maxWidth: '50%',
+    maxWidth: '60%',
   },
   clientPhone: {
     color: '#727A8F',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     marginRight: 10,
-    maxWidth: '50%',
+    maxWidth: '60%',
   },
   dataContainer: {
     marginLeft: 20,
