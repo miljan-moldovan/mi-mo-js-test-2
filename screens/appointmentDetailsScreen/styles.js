@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   },
   tabIcon: {
     marginRight: 5,
-
   },
   textWalkInBtn: {
     color: '#fff',
@@ -37,6 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rightButton: {
+    paddingRight: 10,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',

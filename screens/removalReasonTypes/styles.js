@@ -1,6 +1,4 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -42,12 +40,17 @@ export default StyleSheet.create({
   },
   titleContainer: {
     flex: 2,
+    paddingTop: 20,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
   activityIndicator: {
-    marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
+    marginTop: 100,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  rightButtonContainer: { paddingTop: 20, paddingRight: 10 },
   cancelButton: { fontSize: 14, color: 'white' },
 });

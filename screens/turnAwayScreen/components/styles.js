@@ -1,6 +1,4 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -76,12 +74,14 @@ export default StyleSheet.create({
   },
   leftButton: {
     flex: 1,
+    paddingLeft: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   rightButton: {
     flex: 1,
+    paddingRight: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -111,7 +111,10 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   activityIndicator: {
-    marginTop: 100, flex: 1, alignItems: 'center', justifyContent: 'center',
+    marginTop: 100,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   inputDividerContainer: { width: '100%', backgroundColor: '#FFFFFF' },
   inputDivider: { marginHorizontal: 16 },
@@ -130,7 +133,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 16,
     paddingRight: 16,
-
   },
   cancelButton: { fontSize: 14, color: 'white' },
 });

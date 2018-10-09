@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { StackActions, NavigationActions } from 'react-navigation';
 import {
   ScrollView,
   Text,
@@ -220,12 +221,13 @@ class WalkInScreen extends Component {
         email: client.email,
         services: servicesBlock,
       };
+
       this.props.walkInActions.postWalkinClient(params).then(() => {
         this.saving = false;
         const params = this.props.navigation.state.params || {};
         params.loadQueueData();
-        this.props.navigation.navigate('Main', {transition: 'slideFromRight'});
-      });
+        this.props.navigation.popToTop({immediate: true});
+      });  
     }
   }
 
@@ -301,7 +303,7 @@ class WalkInScreen extends Component {
     if (email) {
       updateObject.email = newEmail;
     }
-
+    
     const updated = await Client.putContactInformation(
       client.id,
       updateObject,

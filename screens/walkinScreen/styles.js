@@ -14,6 +14,7 @@ export default StyleSheet.create({
   },
   sideButtons: {
     paddingTop: 18,
+    paddingHorizontal: 10,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
