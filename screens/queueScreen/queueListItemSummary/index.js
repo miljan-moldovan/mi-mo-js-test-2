@@ -89,7 +89,10 @@ class queueListItemSummary extends Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    }, this.props.loadQueueData);
+    }, () => {
+      this.props.loadQueueData();
+      this.props.showDialog();
+    });
   }
 
   handlePressService = (service) => {
