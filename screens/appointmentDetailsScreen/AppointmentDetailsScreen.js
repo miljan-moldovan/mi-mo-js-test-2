@@ -87,7 +87,6 @@ export default class AppointmentDetailsScreen extends React.Component {
   handleSave = () => alert('saving')
 
   renderLabel = ({ position, navigationState }) => ({ route, index }) => (
-
     <Text
       style={
         this.state.index === index
@@ -103,7 +102,6 @@ export default class AppointmentDetailsScreen extends React.Component {
       />
       {` ${route.title}`}
     </Text>
-
   );
 
   renderHeader = props => (
