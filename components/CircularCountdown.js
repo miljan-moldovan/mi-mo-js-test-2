@@ -106,13 +106,6 @@ class CircularCountdown extends Component {
         <Svg
           height={size}
           width={size}
-          style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.5,
-            shadowRadius: 2,
-            elevation: 1,
-          }}
         >
           <Path
             d={backgroundArc}
