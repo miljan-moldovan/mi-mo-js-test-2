@@ -142,6 +142,8 @@ class ProviderScreen extends React.Component {
         getQuickQueueEmployees,
       },
     } = this.props;
+
+
     const req = {
       filterRule: 3,
       maxCount: 1000,
@@ -165,7 +167,8 @@ class ProviderScreen extends React.Component {
         break;
       case 'employees':
       default:
-        getProviders(req, selectedService, []);
+
+        getProviders(req, selectedService, filterList);
         break;
     }
   }
