@@ -45,10 +45,9 @@ const QueueTimeNote = (props) => {
   } else if (status === 6) {
     if (estimatedTime >= 0 && moment(item.progressTime, 'hh:mm:ss').isBefore(moment(item.progressMaxTime, 'hh:mm:ss'))) {
       serviceTime = (
-        <Text style={styles.serviceTime}> remaining
-          <Text style={[styles.serviceRemainingWaitTime]}>
-            {estimatedTime}m
-          </Text>
+        <Text style={styles.serviceTime}> remaining <Text style={[styles.serviceRemainingWaitTime]}>
+          {estimatedTime}m
+                                                    </Text>
         </Text>
       );
     } else {
