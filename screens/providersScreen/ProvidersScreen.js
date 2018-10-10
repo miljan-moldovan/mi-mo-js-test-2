@@ -403,8 +403,8 @@ class ProviderScreen extends React.Component {
 }
 ProviderScreen.propTypes = {
   queueList: PropTypes.node.isRequired,
-  quickQueueEmployees: PropTypes.node.isRequired,
-  receptionistList: PropTypes.node.isRequired,
+  quickQueueEmployees: PropTypes.array.isRequired,
+  receptionistList: PropTypes.array.isRequired,
   providersState: PropTypes.shape({
     employees: PropTypes.array,
     providers: PropTypes.array,
