@@ -279,7 +279,7 @@ export default (QueueStackNavigator = StackNavigator(
     },
     ModalNewClient: {
       screen: NewClientScreen,
-      navigationOptions: { tabBarVisible: false },
+      navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
     },
     ModalWalkIn: {
       screen: WalkInScreen,
