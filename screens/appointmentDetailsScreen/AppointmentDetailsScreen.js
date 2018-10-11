@@ -27,8 +27,7 @@ const initialLayout = {
 export default class AppointmentDetailsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    const { appointment = null, handleSave = (() => { }) } = params;
-    const client = get(appointment, 'client', null);
+    const client = get(params, 'client', null);
     const title = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
     const infoButtonStyle = { fontSize: 18, color: 'white' };
     return ({
@@ -56,26 +55,34 @@ export default class AppointmentDetailsScreen extends React.Component {
     });
   };
 
-  state = {
-    index: 0,
-    routes: [
-      { key: '0', title: 'Appt. Details', icon: 'penAlt' },
-      { key: '1', title: 'Notes', icon: 'fileText' },
-      { key: '2', title: 'Formulas', icon: 'eyedropper' },
-    ],
-  };
-
-  componentDidMount() {
-    this.props.navigation.setParams({
+  constructor(props) {
+    super(props);
+    props.navigation.setParams({
+      client: get(this.params, 'appointment.client', null),
       handleSave: this.handleSave,
       handleRightClick: this.goToClientInfo,
     });
+    this.state = {
+      index: 0,
+      routes: [
+        { key: '0', title: 'Appt. Details', icon: 'penAlt' },
+        { key: '1', title: 'Notes', icon: 'fileText' },
+        { key: '2', title: 'Formulas', icon: 'eyedropper' },
+      ],
+    };
+  }
+
+  componentDidMount() {
     this.props.queueDetailActions.setAppointment(get(this.params.appointment, 'id', null));
   }
 
+  onChangeClient = client => this.props.navigation.setParams({ client });
+
   get params() {
-    const { appointment = null } = this.props.navigation.state.params || {};
-    return { appointment };
+    const params = get(this.props.navigation, 'state.params', {});
+    const client = get(params, 'client', null);
+    const appointment = get(params, 'appointment', null);
+    return { appointment, client };
   }
 
   goToClientInfo = () => {
@@ -119,6 +126,7 @@ export default class AppointmentDetailsScreen extends React.Component {
       <AppointmentDetails
         navigation={this.props.navigation}
         isWaiting={this.props.navigation.state.params.isWaiting}
+        onChangeClient={this.onChangeClient}
         onPressSummary={this.props.navigation.state.params.onPressSummary}
       />
     ),

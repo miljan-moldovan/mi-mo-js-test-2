@@ -256,11 +256,12 @@ showDialog = () => {
 
 handlePressModify = (isWaiting, onPressSummary) => {
   const { appointment } = this.state;
-  if (appointment !== null) {
+  const client = get(appointment, 'client', null);
+  if (appointment && client) {
     this.hideDialog();
     const getLabel = style => this.getLabelForItem(appointment, style);
     this.props.navigation.navigate('AppointmentDetails', {
-      appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary,
+      client, appointment, getLabel, isWaiting, onPressSummary: this.handlePressSummary,
     });
   }
 }
@@ -390,7 +391,7 @@ cancelButton = () => ({
 
 checkHasProvider = (ignoreAutoAssign, redirectAfterMerge = false) => {
   const { appointment } = this.state;
-  const serviceIndexesWithOutProvider = []
+  const serviceIndexesWithOutProvider = [];
   const { services } = appointment;
 
   const { settings } = this.props.settings;
