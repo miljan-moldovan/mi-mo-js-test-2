@@ -33,7 +33,7 @@ handle_curl_return_code() {
 
 echo "Sync repo..."
 git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salonultimate/pos.git
-git push -u bitbucket $CI_COMMIT_REF_NAME:$CI_COMMIT_REF_NAME
+git push -u bitbucket $CI_COMMIT_REF_NAME
 sleep 20
 
 echo "Starting the build..."
