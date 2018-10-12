@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -eo pipefail
 [ "$TRACE" = "true" ] && set -x
 
@@ -16,7 +17,7 @@ END
 json_value() {
   local json=${1}
   local value_name=${2}
-  echo $json | python -c "import sys, json; print json.load(sys.stdin)['$value_name']"
+  echo $json | python -c "import sys, json; print json.load(sys.stdin)['$value_name'];"
 }
 
 json_array_value() {
