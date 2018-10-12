@@ -29,13 +29,13 @@ json_array_value() {
 echo "Starting the build..."
 START_RESULT=$(curl -sX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"sourceVersion\": \"$CI_BUILD_REF\", \"debug\": false}")
 
-BUILD_NUMBER=$(json_value $START_RESULT 'buildNumber')
+BUILD_NUMBER=$(json_value "$START_RESULT" 'buildNumber')
 echo "Build number $BUILD_NUMBER"
 
 echo "Checking pipeline status"
 while true; do
   BUILD_INFO=$(curl -sX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN")
-  STATUS=$(json_value $BUILD_INFO 'status')
+  STATUS=$(json_value "$BUILD_INFO" 'status')
   case "$STATUS" in
     notStarted|inProgress)
       echo "Status $STATUS"
