@@ -6,23 +6,10 @@ variables:
 
 stages:
   - build
-  - beta
 
 build:
   stage: build
   script:
     - ./ci/gitlab.sh
-  only:
-    - master
   tags:
     - docker
-
-
-beta:on-schedule:
-  stage: beta
-  only:
-    - schedules
-  tags:
-    - docker
-  script:
-    - fastlane beta
