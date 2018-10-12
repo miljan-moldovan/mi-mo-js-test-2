@@ -11,6 +11,7 @@ import deleteClient from './deleteClient';
 import getClientAppointmetns from './getClientAppointments';
 import putClientEmail from './putClientEmail';
 import postClient from './postClient';
+import getZipCode from './getZipCode';
 
 export {
   getClientFormulas,
@@ -26,4 +27,5 @@ export {
   putClientEmail,
   deleteClient,
   postClient,
+  getZipCode,
 };
