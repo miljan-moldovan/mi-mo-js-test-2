@@ -34,10 +34,8 @@ handle_curl_return_code() {
 echo "Sync repo..."
 echo "Adding remote..."
 git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salonultimate/pos.git || true
-echo "Attempt to push as new branch..."
-git push -u bitbucket $CI_COMMIT_REF_NAME || true
-echo "Attempt to push as existing branch..."
-git push bitbucket $CI_COMMIT_REF_NAME
+echo "Attempt to sync the branch..."
+git push bitbucket 'refs/remotes/origin/$CI_COMMIT_REF_NAME:refs/heads/$CI_COMMIT_REF_NAME'
 echo "Waiting..."
 sleep 20
 
