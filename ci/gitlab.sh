@@ -24,17 +24,27 @@ json_array_value() {
   echo $json | python -c "import sys, json; values=json.load(sys.stdin)['$value_name']; print \"\\n\".join(values);"
 }
 
-echo "Starting the build..."
-START_RESULT=`curl -sX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"sourceVersion\": \"$CI_BUILD_REF\", \"debug\": false}"`
-echo $START_RESULT
+handle_curl_return_code() {
+  local error=$?
+  if [ $error != 0 ]; then
+    echo "Curl error $error"
+    exit 1
+  fi
+}
 
-BUILD_NUMBER=$(json_value "$START_RESULT" 'buildNumber')
+echo "Starting the build..."
+START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"sourceVersion\": \"$CI_BUILD_REF\", \"debug\": false}"`
+
+handle_curl_return_code
+
+BUILD_NUMBER=`json_value "$START_RESULT" 'buildNumber'`
 echo "Build number $BUILD_NUMBER"
 
 echo "Checking pipeline status"
 while true; do
-  BUILD_INFO=`curl -sX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
-  echo $BUILD_INFO
+  BUILD_INFO=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
+  handle_curl_return_code
+  
   STATUS=`json_value "$BUILD_INFO" 'status'`
   case "$STATUS" in
     notStarted|inProgress)
@@ -44,7 +54,9 @@ while true; do
 
     completed)
       echo "The pipeline has completed"
-      LOGS_RESULT=`curl -sX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER/logs" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
+      LOGS_RESULT=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER/logs" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
+      handle_curl_return_code
+      
       LOGS=`json_array_value "$LOGS_RESULT" 'value'`
       echo "-------------------------------------------------------------------------------------------------------"
       echo "$LOGS"
@@ -65,4 +77,3 @@ while true; do
       ;;
   esac
 done
-
