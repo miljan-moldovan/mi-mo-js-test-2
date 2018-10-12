@@ -31,6 +31,11 @@ handle_curl_return_code() {
   fi
 }
 
+echo "Sync repo..."
+git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salonultimate/pos.git
+git push -u bitbucket $CI_COMMIT_REF_NAME:$CI_COMMIT_REF_NAME
+sleep 20
+
 echo "Starting the build..."
 START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"sourceVersion\": \"$CI_BUILD_REF\", \"debug\": false}"`
 
