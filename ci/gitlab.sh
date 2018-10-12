@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
-[ "$TRACE" = "true" ] && set -x
+set -e
 
 cat <<END
 SG has been triggered and will use the following args:
