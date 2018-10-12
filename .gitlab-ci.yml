@@ -1,12 +1,12 @@
 image: registry.gitlab.salondev.net/kuber-infra/k8s-deploy
 variables:
-  CI_API_TOKEN='8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
-  CI_OWNER_NAME='SalonUltimate'
-  CI_APP_NAME='POS'
+  CI_API_TOKEN: '8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
+  CI_OWNER_NAME: 'SalonUltimate'
+  CI_APP_NAME: 'POS'
 
 stages:
   - build
-  # - beta
+  - beta
 
 build:
   stage: build
