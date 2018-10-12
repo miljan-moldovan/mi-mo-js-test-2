@@ -23,6 +23,6 @@ beta:on-schedule:
   only:
     - schedules
   tags:
-    - iOS
+    - docker
   script:
     - fastlane beta
