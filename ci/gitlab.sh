@@ -35,7 +35,7 @@ echo "Sync repo..."
 echo "Adding remote..."
 git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salonultimate/pos.git || true
 echo "Attempt to sync the branch..."
-git push bitbucket 'refs/remotes/origin/$CI_COMMIT_REF_NAME:refs/heads/$CI_COMMIT_REF_NAME'
+git push bitbucket refs/remotes/origin/$CI_COMMIT_REF_NAME:refs/heads/$CI_COMMIT_REF_NAME
 echo "Waiting..."
 sleep 20
 
