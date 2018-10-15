@@ -248,6 +248,11 @@ const LabeledTextInput = props => (
         placeholder={props.placeholder}
         placeholderTextColor="#727A8F"
       />}
+
+    {
+        props.icon
+      }
+
   </View>
 );
 

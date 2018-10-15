@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import servicesActions from '../../actions/service';
 import ServicesScreen from './ServicesScreen';
-import { flatServicesSelector } from '../../redux/selectors/services';
+import { flatServicesSelector, quickQueueServicesSelector } from '../../redux/selectors/services';
 import salonSearchHeaderActions from '../../reducers/searchHeader';
 
 const mapStateToProps = state => ({
@@ -10,6 +10,7 @@ const mapStateToProps = state => ({
   servicesState: state.serviceReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
   flatServices: flatServicesSelector(state),
+  quickQueueServices: quickQueueServicesSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({

@@ -550,13 +550,36 @@ class NewApptSlide extends React.Component {
     }
   }
 
-  renderOthersTab = () => (
-    <View style={styles.body}>
-      <InputButton
-        noIcon
-        style={styles.otherOptionsBtn}
-        labelStyle={styles.otherOptionsLabels}
-        onPress={() => {
+  renderOthersTab = () => {
+    const { mainEmployee: employee } = this.props.newApptState;
+
+    const { isFirstAvailable } = employee;
+
+    const messageAllClientsButton = (<InputButton
+      noIcon
+      style={styles.otherOptionsBtn}
+      labelStyle={styles.otherOptionsLabels}
+      onPress={this.openMessageAllClients}
+      label="Message All Clients"
+    >
+      <View style={styles.iconContainer}>
+        <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
+      </View>
+                                     </InputButton>);
+
+    return (
+      <View style={styles.body}>
+        {isFirstAvailable ?
+          <React.Fragment>
+            {messageAllClientsButton}
+          </React.Fragment>
+      :
+          <React.Fragment>
+            <InputButton
+              noIcon
+              style={styles.otherOptionsBtn}
+              labelStyle={styles.otherOptionsLabels}
+              onPress={() => {
           this.hidePanel();
           const {
             date, mainEmployee: employee, startTime, bookedByEmployee,
@@ -568,27 +591,27 @@ class NewApptSlide extends React.Component {
             },
           );
         }}
-        label="Block Time"
-      >
-        <View style={styles.iconContainer}>
-          <Icon name="clockO" size={18} color={Colors.defaultBlue} type="solid" />
-          <View style={styles.banIconContainer}>
-            <Icon
-              style={styles.subIcon}
-              name="ban"
-              size={9}
-              color={Colors.defaultBlue}
-              type="solid"
-            />
-          </View>
-        </View>
-      </InputButton>
+              label="Block Time"
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="clockO" size={18} color={Colors.defaultBlue} type="solid" />
+                <View style={styles.banIconContainer}>
+                  <Icon
+                    style={styles.subIcon}
+                    name="ban"
+                    size={9}
+                    color={Colors.defaultBlue}
+                    type="solid"
+                  />
+                </View>
+              </View>
+            </InputButton>
 
-      <InputButton
-        noIcon
-        style={styles.otherOptionsBtn}
-        labelStyle={styles.otherOptionsLabels}
-        onPress={() => {
+            <InputButton
+              noIcon
+              style={styles.otherOptionsBtn}
+              labelStyle={styles.otherOptionsLabels}
+              onPress={() => {
           this.hidePanel();
           const { date, mainEmployee: employee } = this.props.newApptState;
           this.props.navigation.navigate(
@@ -596,76 +619,78 @@ class NewApptSlide extends React.Component {
             { date, employee },
           );
         }}
-        label="Edit Schedule"
-      >
-        <View style={styles.iconContainer}>
-          <Icon name="calendarO" size={18} color={Colors.defaultBlue} type="solid" />
-          <View style={styles.penIconContainer}>
-            <Icon
-              style={styles.subIcon}
-              name="pen"
-              size={9}
-              color={Colors.defaultBlue}
-              type="solid"
-            />
-          </View>
-        </View>
-      </InputButton>
+              label="Edit Schedule"
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="calendarO" size={18} color={Colors.defaultBlue} type="solid" />
+                <View style={styles.penIconContainer}>
+                  <Icon
+                    style={styles.subIcon}
+                    name="pen"
+                    size={9}
+                    color={Colors.defaultBlue}
+                    type="solid"
+                  />
+                </View>
+              </View>
+            </InputButton>
 
-      <InputButton
-        noIcon
-        style={styles.otherOptionsBtn}
-        labelStyle={styles.otherOptionsLabels}
-        onPress={this.goToRoomAssignment}
-        label="Room Assignment"
-      >
-        <View style={styles.iconContainer}>
-          <Icon name="streetView" size={18} color={Colors.defaultBlue} type="solid" />
-        </View>
-      </InputButton>
+            <InputButton
+              noIcon
+              style={styles.otherOptionsBtn}
+              labelStyle={styles.otherOptionsLabels}
+              onPress={this.goToRoomAssignment}
+              label="Room Assignment"
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="streetView" size={18} color={Colors.defaultBlue} type="solid" />
+              </View>
+            </InputButton>
 
-      <InputButton
-        noIcon
-        style={styles.otherOptionsBtn}
-        labelStyle={styles.otherOptionsLabels}
-        onPress={() => {
+            <InputButton
+              noIcon
+              style={styles.otherOptionsBtn}
+              labelStyle={styles.otherOptionsLabels}
+              onPress={() => {
           this.hidePanel();
           const { date, mainEmployee: employee, startTime } = this.props.newApptState;
           this.props.navigation.navigate('TurnAway', {
             date, employee, fromTime: startTime, apptBook: true,
           });
         }}
-        label="Turn Away"
-      >
-        <View style={styles.iconContainer}>
-          <Icon name="ban" size={18} color={Colors.defaultBlue} type="solid" />
-        </View>
-      </InputButton>
+              label="Turn Away"
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="ban" size={18} color={Colors.defaultBlue} type="solid" />
+              </View>
+            </InputButton>
 
-      <InputButton
-        noIcon
-        style={styles.otherOptionsBtn}
-        labelStyle={styles.otherOptionsLabels}
-        onPress={this.openMessageProvidersClients}
-        label="Message Provider's Clients"
-      >
-        <View style={styles.iconContainer}>
-          <Icon name="user" size={18} color={Colors.defaultBlue} type="solid" />
-        </View>
-      </InputButton>
-      <InputButton
-        noIcon
-        style={styles.otherOptionsBtn}
-        labelStyle={styles.otherOptionsLabels}
-        onPress={this.openMessageAllClients}
-        label="Message All Clients"
-      >
-        <View style={styles.iconContainer}>
-          <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
-        </View>
-      </InputButton>
-    </View>
-  )
+            <InputButton
+              noIcon
+              style={styles.otherOptionsBtn}
+              labelStyle={styles.otherOptionsLabels}
+              onPress={this.openMessageProvidersClients}
+              label="Message Provider's Clients"
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="user" size={18} color={Colors.defaultBlue} type="solid" />
+              </View>
+            </InputButton>
+            <InputButton
+              noIcon
+              style={styles.otherOptionsBtn}
+              labelStyle={styles.otherOptionsLabels}
+              onPress={this.openMessageAllClients}
+              label="Message All Clients"
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
+              </View>
+            </InputButton>
+          </React.Fragment>}
+      </View>
+    );
+  }
 
   renderBookingTab = () => {
     const {

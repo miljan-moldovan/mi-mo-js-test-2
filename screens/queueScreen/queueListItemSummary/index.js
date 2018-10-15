@@ -89,7 +89,10 @@ class queueListItemSummary extends Component {
       clientId: this.props.appointment.client.id,
       serviceEmployeeClientQueues: newServices,
       productEmployeeClientQueues: [],
-    }, this.props.loadQueueData);
+    }, () => {
+      this.props.loadQueueData();
+      this.props.showDialog();
+    });
   }
 
   handlePressService = (service) => {
@@ -99,6 +102,9 @@ class queueListItemSummary extends Component {
       client: this.props.appointment.client,
       employeeId: service.employeeId,
       dismissOnSelect: true,
+      hasCategories: false,
+      mode: 'quickQueue',
+      queueItem: this.props.item,
       onChangeService: data => this.saveQueueService(data),
       headerProps: {
         title: 'Services',
@@ -132,7 +138,9 @@ class queueListItemSummary extends Component {
       dismissOnSelect: true,
       selectedProvider: employee,
       checkProviderStatus: true,
-      queueList: true,
+      // queueList: true,
+      queueItem: item,
+      mode: 'quickQueue',
       headerProps: { title: 'Providers', ...this.cancelButton() },
       onChangeProvider: data => this.saveQueueProvider(data),
     });

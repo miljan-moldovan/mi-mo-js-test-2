@@ -30,7 +30,7 @@ export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const clientName = params.clientName || '';
-    const canSave = true;
+    const canSave = get(params, 'canSave', false);
     return {
       tabBarVisible: false,
       headerTitle: (
@@ -63,11 +63,21 @@ export default class ModifyServiceScreen extends React.Component {
     super(props);
     const { params } = this.props.navigation.state;
     this.state = this.getStateFromParams();
-    this.props.navigation.setParams({ ...params, handleSave: this.handleSave });
+    const canSave = this.state.service && this.state.employee;
+    this.props.navigation.setParams({ handleSave: this.handleSave, canSave });
   }
 
   componentDidMount() {
     this.getEmployeePrice();
+  }
+
+
+  componentWillUpdate(nextProps, nextState) {
+    const canSave = nextState.service && nextState.employee;
+    const { navigation } = nextProps;
+    if (navigation.state.params.canSave !== canSave) {
+      this.props.navigation.setParams({ handleSave: this.handleSave, canSave });
+    }
   }
 
   get canRemove() {
@@ -194,7 +204,10 @@ export default class ModifyServiceScreen extends React.Component {
     this.props.navigation.goBack();
   }
 
-  handleChangeEmployee = employee => this.setState({ employee }, this.getEmployeePrice)
+  handleChangeEmployee = employee => {
+    const canSave = this.state.service && employee;
+    this.setState({ employee }, this.getEmployeePrice);
+  }
 
   handleChangeService = service => this.setState({ service }, this.getEmployeePrice)
 

@@ -27,7 +27,7 @@ lane :beta do
     path: "./ios/SalonUltimateRN.xcodeproj"
   )
   
-  ci_job_id = ENV['CI_JOB_ID']
+  ci_job_id = 60010#ENV['CI_JOB_ID']
   if ci_job_id
     increment_build_number(
       build_number: ci_job_id,
@@ -55,6 +55,6 @@ lane :beta do
 
   slack(
     slack_url: "https://hooks.slack.com/services/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", #su_mobileapp
-    message: "Available new build of iOS POS <https://betas.to/8giUbXFH|install>",
+    message: "Available new build of iOS POS <https://betas.to/5k1zsCBG|install>",
   )
 end

@@ -7,8 +7,8 @@ export default StyleSheet.create({
     marginTop: 11,
   },
   serviceRemainingWaitTime: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    fontSize: 11,
   },
   serviceTime: {
     fontSize: 11,

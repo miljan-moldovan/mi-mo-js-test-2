@@ -10,6 +10,7 @@ const mapStateToProps = state => ({
   queue: state.queue,
   walkInState: state.walkInReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
+  clientInfoState: state.clientInfoReducer,
   settings: state.settingsReducer,
 });
 
@@ -20,4 +21,7 @@ const mapActionsToProps = dispatch => ({
   settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
 });
 
-export default connect(mapStateToProps, mapActionsToProps)(WalkInScreen);
+export default connect(
+  mapStateToProps,
+  mapActionsToProps,
+)(WalkInScreen);
