@@ -10,6 +10,7 @@ SG has been triggered and will use the following args:
   - AC_APP_NAME=$AC_APP_NAME
 END
 
+
 echo "Sync repo..."
 echo "Adding a remote..."
 git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salonultimate/pos.git || true
@@ -18,4 +19,4 @@ git push bitbucket refs/remotes/origin/$CI_COMMIT_REF_NAME:refs/heads/$CI_COMMIT
 echo "Waiting..."
 sleep 20
 
-./appcentre.sh
+$(dirname $0)/appcentre.sh
