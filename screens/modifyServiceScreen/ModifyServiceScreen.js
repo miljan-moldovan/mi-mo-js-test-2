@@ -114,7 +114,12 @@ export default class ModifyServiceScreen extends React.Component {
 
   getEmployeePrice = () => {
     const { employee, service } = this.state;
-    if (employee && service && !employee.isFirstAvailable) {
+    if (employee && service) {
+      if (get(employee, 'isFirstAvailable', false)) {
+        console.log(employee);
+        this.setState({ price: get(service, 'price', 0) });
+        return;
+      }
       const employeeId = get(employee, 'id', false);
       const serviceId = get(service, 'id', false);
       if (employeeId && serviceId) {
@@ -221,7 +226,7 @@ export default class ModifyServiceScreen extends React.Component {
       employee,
       promotion,
       isProviderRequested,
-      isInService
+      isInService,
     } = this.state;
     const priceLabelValue = `$ ${this.calculatePriceDiscount(promotion, 'serviceDiscountAmount', price)}`;
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);

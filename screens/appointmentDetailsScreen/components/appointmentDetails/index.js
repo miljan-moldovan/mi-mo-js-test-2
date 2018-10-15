@@ -262,7 +262,10 @@ class AppointmentDetails extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
-  handleChangeClient = client => this.setState({ client }, this.updateQueue)
+  handleChangeClient = (client) => {
+    this.props.onChangeClient(client);
+    this.setState({ client }, this.updateQueue);
+  }
 
   handleAddService = () => {
     const { client } = this.state;
@@ -647,6 +650,7 @@ AppointmentDetails.propTypes = {
   navigation: PropTypes.func.isRequired,
   isWaiting: PropTypes.any.isRequired,
   onPressSummary: PropTypes.any.isRequired,
+  onChangeClient: PropTypes.func.isRequired,
   queueDetailState: PropTypes.shape({
     isLoading: PropTypes.bool,
     appointment: PropTypes.oneOfType([PropTypes.any, null]),
