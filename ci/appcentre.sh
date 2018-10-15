@@ -3,11 +3,11 @@
 export LC_ALL='en_US.utf8'
 
 # for debug
-AC_API_TOKEN='8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
-AC_OWNER_NAME='SalonUltimate'
-AC_APP_NAME='POS'
-CI_COMMIT_REF_NAME='ci'
-CI_BUILD_REF='1d71331f19e6830dbf99aa2c53cb264e4a490bab'
+# AC_API_TOKEN='8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
+# AC_OWNER_NAME='SalonUltimate'
+# AC_APP_NAME='POS'
+# CI_COMMIT_REF_NAME='ci'
+# CI_BUILD_REF='1d71331f19e6830dbf99aa2c53cb264e4a490bab'
 
 cat <<END
 ==============================================================================
@@ -37,7 +37,7 @@ json_array_value() {
 
 json_update_config() {
   local json=${1}
-  echo $json | python -c "import sys, json; values=json.load(sys.stdin); del values['branch']; del values['id']; del values['toolsets']['distribution']; print json.dumps(values);"
+  echo $json | python -c "import sys, json; values=json.load(sys.stdin); del values['branch']; del values['id']; del values['toolsets']['distribution']; del values['toolsets']['xcode']['certificatePassword']; del values['toolsets']['xcode']['certificateFilename']; del values['toolsets']['xcode']['provisioningProfileFilename']; del values['toolsets']['xcode']['certificateFileId']; del values['toolsets']['xcode']['provisioningProfileFileId']; print json.dumps(values);"
 }
 
 handle_curl_return_code() {
@@ -53,8 +53,7 @@ if [ $CI_COMMIT_REF_NAME != "develop" ] && [ $CI_COMMIT_REF_NAME != "master" ]; 
   echo "Getting config..."
   DEVELOP_CONFIG=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/develop/config" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
   BRANCH_CONFIG=`json_update_config $DEVELOP_CONFIG`
-
-
+  
   echo "Attempt to push a new config for the branch..."
   curl -sfX POST \
     "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/config" \
