@@ -93,7 +93,7 @@ while true; do
 #       echo "$LOGS"
 #       echo "-------------------------------------------------------------------------------------------------------"
       RESULT=`json_value $BUILD_INFO 'result'`
-      if [ $RESULT = "success" ]; then
+      if [ $RESULT = "succeeded" ]; then
         exit 0
       else
         echo "The build has been failed"

@@ -47,4 +47,5 @@ export default [{ key: 1, value: 'AK' },
   { key: 47, value: 'WA' },
   { key: 48, value: 'WI' },
   { key: 49, value: 'WV' },
-  { key: 50, value: 'WY' }];
+  { key: 50, value: 'WY' },
+  { key: 51, value: 'PR' }];
