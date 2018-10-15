@@ -39,6 +39,7 @@ echo "Waiting..."
 sleep 60
 
 echo "Starting the build..."
+echo "curl -sfX POST \"https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds\" -H \"accept: application/json\" -H \"X-API-Token: $AC_API_TOKEN\" -H \"Content-Type: application/json\" -d \"{ \\\"sourceVersion\\\": \\\"$CI_BUILD_REF\\\", \\\"debug\\\": false}\""
 START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"sourceVersion\": \"$CI_BUILD_REF\", \"debug\": false}"`
 
 handle_curl_return_code
