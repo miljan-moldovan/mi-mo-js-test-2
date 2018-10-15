@@ -93,7 +93,7 @@ while true; do
       ;;
 
     completed)
-      echo "The pipeline has completed"
+      echo "\nThe pipeline has completed"
       LOGS_RESULT=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER/logs" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
       handle_curl_return_code
 
@@ -113,7 +113,7 @@ while true; do
       ;;
 
     *)
-      echo "The pipeline has failed, go to this link for more details/logs"
+      echo "\nThe pipeline has failed, go to this link for more details/logs"
       exit 1
       ;;
   esac
