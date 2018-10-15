@@ -32,7 +32,7 @@ json_value() {
 json_array_value() {
   local json=${1}
   local value_name=${2}
-  echo $json | python -c "import sys, json; values=json.load(sys.stdin)['$value_name']; logString=\"\\n\".join(values); print logString.encode('utf-8');"
+  echo $json | python -c "import sys, json; values=json.load(sys.stdin)['$value_name']; logString=\"\\n\".join(values); print logString.encode('utf-8').[0:900000];"
 }
 
 json_update_config() {
@@ -59,7 +59,7 @@ curl -sfX POST \
   -H 'Content-Type: application/json' \
   -H "X-API-Token: $AC_API_TOKEN" \
   -H 'accept: application/json' \
-  -d "$BRANCH_CONFIG"
+  -d "$BRANCH_CONFIG" >> /dev/null
 
 echo "Attempt to update config for the branch..."
 curl -sfX PUT \
@@ -67,7 +67,7 @@ curl -sfX PUT \
   -H 'Content-Type: application/json' \
   -H "X-API-Token: $AC_API_TOKEN" \
   -H 'accept: application/json' \
-  -d "$BRANCH_CONFIG"
+  -d "$BRANCH_CONFIG" >> /dev/null
 
 echo "Starting the build..."
 START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"debug\": false }"`
@@ -101,6 +101,7 @@ while true; do
       echo "-------------------------------------------------------------------------------------------------------"
       echo "$LOGS"
       echo "-------------------------------------------------------------------------------------------------------"
+      echo "Go to  https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$CI_COMMIT_REF_NAME/builds/$BUILD_NUMBER for more info."
       RESULT=`json_value $BUILD_INFO 'result'`
       if [ $RESULT = "succeeded" ]; then
         exit 0
