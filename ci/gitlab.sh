@@ -22,6 +22,11 @@ json_array_value() {
   echo $json | python -c "import sys, json; values=json.load(sys.stdin)['$value_name']; print \"\\n\".join(values);"
 }
 
+json_update_config() {
+  local json=${1}
+  echo $json | python -c "import sys, json; values=json.load(sys.stdin); del values['branch']; del values['id']; print json.dumps(values);"
+}
+
 handle_curl_return_code() {
   local error=$?
   if [ $error != 0 ]; then
@@ -36,7 +41,27 @@ git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salo
 echo "Attempt to sync the branch..."
 git push bitbucket refs/remotes/origin/$CI_COMMIT_REF_NAME:refs/heads/$CI_COMMIT_REF_NAME
 echo "Waiting..."
-sleep 60
+sleep 20
+
+DEVELOP_CONFIG=`curl -X GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/develop/config" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
+BRANCH_CONFIG=`json_update_config $DEVELOP_CONFIG`
+
+
+echo "Attempt to push a new config for the branch..."
+curl -X POST \
+  "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/config" \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Token: $AC_API_TOKEN" \
+  -H 'accept: application/json' \
+  -d "$BRANCH_CONFIG"
+
+echo "Attempt to update config for the branch..."
+curl -X PUT \
+  "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/config" \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Token: $AC_API_TOKEN" \
+  -H 'accept: application/json' \
+  -d "$BRANCH_CONFIG"
 
 echo "Starting the build..."
 echo "curl -sfX POST \"https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds\" -H \"accept: application/json\" -H \"X-API-Token: $AC_API_TOKEN\" -H \"Content-Type: application/json\" -d \"{ \\\"sourceVersion\\\": \\\"$CI_BUILD_REF\\\", \\\"debug\\\": false}\""
