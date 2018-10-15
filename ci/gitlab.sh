@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -e
 
 cat <<END
 SG has been triggered and will use the following args:
@@ -37,7 +36,7 @@ git remote add bitbucket https://antonsu:bWDvUcTr3y2zxS6G7fFZ@bitbucket.org/salo
 echo "Attempt to sync the branch..."
 git push bitbucket refs/remotes/origin/$CI_COMMIT_REF_NAME:refs/heads/$CI_COMMIT_REF_NAME
 echo "Waiting..."
-sleep 20
+sleep 60
 
 echo "Starting the build..."
 START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"sourceVersion\": \"$CI_BUILD_REF\", \"debug\": false}"`
