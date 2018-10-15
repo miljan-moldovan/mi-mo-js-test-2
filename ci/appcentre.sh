@@ -32,7 +32,7 @@ json_value() {
 json_array_value() {
   local json=${1}
   local value_name=${2}
-  echo $json | python -c "import sys, json; values=json.load(sys.stdin)['$value_name']; logString=\"\\n\".join(values); print logString.encode('utf-8').[0:900000];"
+  echo $json | python -c "import sys, json; values=json.load(sys.stdin)['$value_name']; logString=\"\\n\".join(values); print logString.encode('utf-8')[-900000:];"
 }
 
 json_update_config() {
@@ -47,6 +47,17 @@ handle_curl_return_code() {
     exit 1
   fi
 }
+
+LOGS_RESULT=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/235/logs" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
+handle_curl_return_code
+
+LOGS=`json_array_value "$LOGS_RESULT" 'value'`
+echo "-------------------------------------------------------------------------------------------------------"
+echo "$LOGS"
+echo "-------------------------------------------------------------------------------------------------------"
+echo "Go to  https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$CI_COMMIT_REF_NAME/builds/$BUILD_NUMBER for more info."
+
+exit 1
 
 echo "Getting config of develop..."
 DEVELOP_CONFIG=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/develop/config" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
@@ -93,7 +104,7 @@ while true; do
       ;;
 
     completed)
-      echo "\nThe pipeline has completed"
+      echo -e "\nThe pipeline has completed"
       LOGS_RESULT=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/$BUILD_NUMBER/logs" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
       handle_curl_return_code
 
@@ -113,7 +124,7 @@ while true; do
       ;;
 
     *)
-      echo "\nThe pipeline has failed, go to this link for more details/logs"
+      echo -e "\nThe pipeline has failed, go to this link for more details/logs"
       exit 1
       ;;
   esac
