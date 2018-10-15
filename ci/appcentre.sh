@@ -3,11 +3,11 @@
 export LC_ALL='en_US.utf8'
 
 # for debug
-AC_API_TOKEN='8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
-AC_OWNER_NAME='SalonUltimate'
-AC_APP_NAME='POS'
-CI_COMMIT_REF_NAME='ci'
-CI_BUILD_REF='1d71331f19e6830dbf99aa2c53cb264e4a490bab'
+# AC_API_TOKEN='8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
+# AC_OWNER_NAME='SalonUltimate'
+# AC_APP_NAME='POS'
+# CI_COMMIT_REF_NAME='ci'
+# CI_BUILD_REF='1d71331f19e6830dbf99aa2c53cb264e4a490bab'
 
 cat <<END
 ==============================================================================
@@ -48,16 +48,6 @@ handle_curl_return_code() {
   fi
 }
 
-LOGS_RESULT=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/builds/235/logs" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
-handle_curl_return_code
-
-LOGS=`json_array_value "$LOGS_RESULT" 'value'`
-echo "-------------------------------------------------------------------------------------------------------"
-echo "$LOGS"
-echo "-------------------------------------------------------------------------------------------------------"
-echo "Go to  https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$CI_COMMIT_REF_NAME/builds/$BUILD_NUMBER for more info."
-
-exit 1
 
 echo "Getting config of develop..."
 DEVELOP_CONFIG=`curl -sfX GET "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/develop/config" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN"`
