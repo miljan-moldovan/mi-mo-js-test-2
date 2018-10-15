@@ -1,34 +1,15 @@
+image: registry.gitlab.salondev.net/kuber-infra/k8s-deploy
+variables:
+  AC_API_TOKEN: '8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
+  AC_OWNER_NAME: 'SalonUltimate'
+  AC_APP_NAME: 'POS'
+
 stages:
   - build
-  - beta
-  # - archive
 
-build_project:
+build:
   stage: build
-  except:
-    - schedules
   script:
-    - npm install
-    - cd ./ios && pod install
-    - xcodebuild -workspace SalonUltimateRN.xcworkspace -scheme SalonUltimateRN -allowProvisioningUpdates build > /dev/null
+    - ./ci/gitlab.sh
   tags:
-    - iOS
-
-# archive_project:
-#   stage: archive
-#   except:
-#     - schedules
-#   script:
-#     - cd ./ios
-#     - pod install
-#   tags:
-#     - iOS
-    
-beta:on-schedule:
-  stage: beta
-  only:
-    - schedules
-  tags:
-    - iOS
-  script:
-    - fastlane beta
+    - docker
