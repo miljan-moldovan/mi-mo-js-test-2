@@ -38,7 +38,7 @@ export default class ModifyServiceScreen extends React.Component {
           <Text style={styles.titleText}>
             {'serviceItem' in params ? 'Modify Service' : 'Add Service'}
           </Text>
-          <Text style={styles.subTitleText}>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.subTitleText}>
             {clientName}
           </Text>
         </View>
@@ -204,7 +204,7 @@ export default class ModifyServiceScreen extends React.Component {
     this.props.navigation.goBack();
   }
 
-  handleChangeEmployee = employee => {
+  handleChangeEmployee = (employee) => {
     const canSave = this.state.service && employee;
     this.setState({ employee }, this.getEmployeePrice);
   }

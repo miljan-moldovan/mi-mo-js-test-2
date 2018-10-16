@@ -32,7 +32,7 @@ class ModifyProductScreen extends React.Component {
           <Text style={styles.titleText}>
             {'productItem' in params ? 'Modify Product' : 'Add Product'}
           </Text>
-          <Text style={styles.subTitleText}>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.subTitleText}>
             {clientName}
           </Text>
         </View>

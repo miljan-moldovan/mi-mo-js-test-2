@@ -105,5 +105,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
+  categoryIconStyle: {
+    fontSize: 20,
+    color: '#727A8F',
+    marginHorizontal: 10,
+  },
 });
 export default styles;
