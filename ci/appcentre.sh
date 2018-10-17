@@ -40,6 +40,11 @@ json_update_config() {
   echo $json | python -c "import sys, json; values=json.load(sys.stdin); del values['branch']; del values['id']; del values['toolsets']['distribution']; del values['toolsets']['xcode']['certificatePassword']; del values['toolsets']['xcode']['certificateFilename']; del values['toolsets']['xcode']['provisioningProfileFilename']; del values['toolsets']['xcode']['certificateFileId']; del values['toolsets']['xcode']['provisioningProfileFileId']; print json.dumps(values);"
 }
 
+encode() {
+  local url=${1}
+  echo $url | python -c "import sys, urllib; print urllib.quote(''.join(sys.stdin.readlines()).strip(), safe='');"
+}
+
 handle_curl_return_code() {
   local error=$?
   if [ $error != 0 ]; then
@@ -48,6 +53,7 @@ handle_curl_return_code() {
   fi
 }
 
+BRANCH=`encode $CI_COMMIT_REF_NAME`
 
 if [ $CI_COMMIT_REF_NAME != "develop" ] && [ $CI_COMMIT_REF_NAME != "master" ]; then
   echo "Getting config..."
@@ -56,7 +62,7 @@ if [ $CI_COMMIT_REF_NAME != "develop" ] && [ $CI_COMMIT_REF_NAME != "master" ]; 
   
   echo "Attempt to push a new config for the branch..."
   curl -sfX POST \
-    "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/config" \
+    "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$BRANCH/config" \
     -H 'Content-Type: application/json' \
     -H "X-API-Token: $AC_API_TOKEN" \
     -H 'accept: application/json' \
@@ -64,7 +70,7 @@ if [ $CI_COMMIT_REF_NAME != "develop" ] && [ $CI_COMMIT_REF_NAME != "master" ]; 
 
   echo "Attempt to update config for the branch..."
   curl -sfX PUT \
-    "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/config" \
+    "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$BRANCH/config" \
     -H 'Content-Type: application/json' \
     -H "X-API-Token: $AC_API_TOKEN" \
     -H 'accept: application/json' \
@@ -72,7 +78,7 @@ if [ $CI_COMMIT_REF_NAME != "develop" ] && [ $CI_COMMIT_REF_NAME != "master" ]; 
 fi
 
 echo "Starting the build..."
-START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$CI_COMMIT_REF_NAME/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"debug\": false }"`
+START_RESULT=`curl -sfX POST "https://api.appcenter.ms/v0.1/apps/$AC_OWNER_NAME/$AC_APP_NAME/branches/$BRANCH/builds" -H "accept: application/json" -H "X-API-Token: $AC_API_TOKEN" -H "Content-Type: application/json" -d "{ \"debug\": false }"`
 
 handle_curl_return_code
 
@@ -80,7 +86,7 @@ BUILD_NUMBER=`json_value "$START_RESULT" 'buildNumber'`
 
 
 echo "Build number $BUILD_NUMBER"
-echo "Build url https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$CI_COMMIT_REF_NAME/builds/$BUILD_NUMBER"
+echo "Build url https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$BRANCH/builds/$BUILD_NUMBER"
 
 echo "Checking pipeline status"
 while true; do
@@ -103,7 +109,7 @@ while true; do
       echo "-------------------------------------------------------------------------------------------------------"
       echo "$LOGS"
       echo "-------------------------------------------------------------------------------------------------------"
-      echo "Go to  https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$CI_COMMIT_REF_NAME/builds/$BUILD_NUMBER for more info."
+      echo "Go to  https://appcenter.ms/orgs/$AC_OWNER_NAME/apps/$AC_APP_NAME/build/branches/$BRANCH/builds/$BUILD_NUMBER for more info."
       RESULT=`json_value $BUILD_INFO 'result'`
       if [ $RESULT = "succeeded" ]; then
         exit 0
