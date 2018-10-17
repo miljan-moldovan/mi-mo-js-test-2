@@ -280,6 +280,7 @@ class ProductsScreen extends React.Component {
           renderItem={this.renderProductItem}
           ItemSeparatorComponent={this.renderSeparator}
           renderSectionHeader={this.renderSectionHeader}
+          ListFooterComponent={this.renderSeparator}
         />
       );
     }
@@ -292,6 +293,8 @@ class ProductsScreen extends React.Component {
         keyExtractor={this.keyExtractor}
         renderItem={this.renderProductItem}
         ItemSeparatorComponent={this.renderSeparator}
+        ListFooterComponent={this.renderSeparator}
+
       /> :
       <FlatList
         ref={(ref) => { this.listRef = ref; }}
@@ -301,6 +304,7 @@ class ProductsScreen extends React.Component {
         keyExtractor={this.keyExtractor}
         renderItem={this.renderCategoryItem}
         ItemSeparatorComponent={this.renderSeparator}
+        ListFooterComponent={this.renderSeparator}
       />;
   }
 

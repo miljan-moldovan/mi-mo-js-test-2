@@ -48,13 +48,13 @@ class ServiceCategoryList extends React.Component {
         borderTopWidth: 0,
       }}
       >
-        {[<InputButton
-          key={Math.random().toString()}
+        <InputButton
+          icon="default"
           style={{ flex: 1 }}
           labelStyle={{ color: '#110A24' }}
           onPress={() => { this.props.handlePressServiceCategory(elem.item); }}
           label={elem.item.name}
-        />]}
+        />
       </InputGroup>
     );
   }
