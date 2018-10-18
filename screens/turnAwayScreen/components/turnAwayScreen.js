@@ -95,6 +95,15 @@ class TurnAwayScreen extends Component {
     }, this.checkCanSave);
   }
 
+  get params() {
+    const params = this.props.navigation.state.params || {};
+    const { employee, fromTime: startTime = moment('7:00:00', DateTime.time) } = params;
+    return {
+      employee,
+      startTime,
+    };
+  }
+
   get totalDuration() {
     const { services } = this.state;
     return services.reduce((agg, srv) => agg.add(srv.length), moment.duration(0));
@@ -174,8 +183,7 @@ class TurnAwayScreen extends Component {
 
   handleAddService = () => {
     const { apptGridSettings: { step } } = this.props;
-    const params = this.props.navigation.state.params || {};
-    const { employee, fromTime: startTime = moment('7:00:00', DateTime.time) } = params;
+    const { employee, startTime } = this.params;
     const services = cloneDeep(this.state.services);
     const fromTime = moment(startTime).add(this.totalDuration);
     const service = {
@@ -183,18 +191,21 @@ class TurnAwayScreen extends Component {
       service: null,
       fromTime,
       toTime: moment(fromTime).add(step, 'm'),
+      length: moment.duration(step, 'minutes'),
     };
     services.push(service);
     this.setState({ services }, this.checkCanSave);
   }
 
   handleRemoveService = (index) => {
+    const { startTime } = this.params;
     const services = cloneDeep(this.state.services);
     services.splice(index, 1);
-    this.setState({ services }, this.checkCanSave);
+    this.setState({ services: this.resetTimeForServices(services, index, startTime) }, this.checkCanSave);
   }
 
   handleUpdateService = (index, updatedService) => {
+    const { startTime } = this.params;
     const services = cloneDeep(this.state.services);
     const { provider, service } = updatedService;
     const serviceId = get(service, 'id');
@@ -205,15 +216,17 @@ class TurnAwayScreen extends Component {
         serviceId,
       })
         .then((check) => {
-          const length = get(check, 'duration');
+          debugger //eslint-disable-line
+          const length = moment.duration(get(check, 'duration'));
           services[index] = { ...updatedService, length };
-          this.setState({ services, isLoading: false }, this.checkCanSave);
+          this.setState({ services: this.resetTimeForServices(services, index, startTime), isLoading: false }, this.checkCanSave);
         })
         .catch((error) => {
           // showErrorAlert(error);
-          const length = get(service, 'maxDuration');
+          debugger //eslint-disable-line
+          const length = moment.duration(get(service, 'maxDuration'));
           services[index] = { ...updatedService, length };
-          this.setState({ services, isLoading: false }, this.checkCanSave);
+          this.setState({ services: this.resetTimeForServices(services, index, startTime), isLoading: false }, this.checkCanSave);
         });
     });
   }
@@ -250,6 +263,22 @@ class TurnAwayScreen extends Component {
       navigation.goBack();
     },
   })
+
+  resetTimeForServices = (items, index, initialFromTime) => items.map((item, i) => {
+    if (i > index) {
+      const prevItem = items[i - 1];
+      let fromTime = initialFromTime;
+      if (prevItem) {
+        fromTime = get(prevItem, 'toTime', initialFromTime);
+      }
+      return {
+        ...item,
+        fromTime,
+        toTime: moment(item.fromTime).add(item.length),
+      };
+    }
+    return item;
+  });
 
   render() {
     const {
