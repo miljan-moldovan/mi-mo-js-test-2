@@ -18,6 +18,7 @@ import {
   InputText,
 } from '../../components/formHelpers';
 import SalonTimePicker from '../../components/formHelpers/components/SalonTimePicker';
+import EditTypes from '../../constants/EditTypes';
 import styles from './styles';
 
 class BlockTimeScreen extends React.Component {
@@ -65,16 +66,26 @@ class BlockTimeScreen extends React.Component {
       employee,
       date,
       bookedByEmployee,
+      reason,
+      toTime,
+      id,
+      notes,
     } = params;
 
-    this.state.fromTime = fromTime;
-    this.state.toTime = moment(fromTime, 'hh:mm:ss A').add(15, 'minutes');
-    this.state.provider = employee;
-    this.state.selectedDate = date;
-    this.state.blockedBy = bookedByEmployee;
+    this.state = {
+      fromTime,
+      toTime: toTime || moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
+      provider: employee,
+      selectedDate: date,
+      blockedBy: bookedByEmployee,
+      id: id || -1,
+      blockTimesReason: reason,
+      comments: notes,
+    }
   }
 
   state = {
+    id: -1,
     fromTime: null,
     fromTimePickerOpen: false,
     toTime: null,
@@ -185,15 +196,25 @@ class BlockTimeScreen extends React.Component {
           isDeleted: false,
         };
 
-
-        this.props.blockTimeActions.postBlockTime(schedule, (result, error) => {
-          if (result) {
-            this.props.appointmentCalendarActions.setGridView();
-            this.props.navigation.goBack();
-          } else {
-            alert(error.message);
-          }
-        });
+        if (this.props.navigation.state.params.editType === EditTypes.new) {
+          this.props.blockTimeActions.postBlockTime(schedule, (result, error) => {
+            if (result) {
+              this.props.appointmentCalendarActions.setGridView();
+              this.props.navigation.goBack();
+            } else {
+              alert(error.message);
+            }
+          });
+        } else {
+          this.props.blockTimeActions.putBlockTimeEdit(this.state.id, schedule, (result, error) => {
+            if (result) {
+              this.props.appointmentCalendarActions.setGridView();
+              this.props.navigation.goBack();
+            } else {
+              alert(error.message);
+            }
+          });
+        }
       }
 
       checkCanSave = () => {
@@ -329,12 +350,14 @@ class BlockTimeScreen extends React.Component {
 
 
 BlockTimeScreen.defaultProps = {
-
+  editType: EditTypes.new,
 };
 
 BlockTimeScreen.propTypes = {
+  editType: PropTypes.number,
   blockTimeActions: PropTypes.shape({
     postBlockTime: PropTypes.func.isRequired,
+    putBlockTimeEdit: PropTypes.func.isRequired,
   }).isRequired,
   appointmentCalendarActions: PropTypes.shape({
     setGridView: PropTypes.func.isRequired,

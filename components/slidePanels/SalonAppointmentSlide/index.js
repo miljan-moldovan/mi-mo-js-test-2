@@ -643,7 +643,7 @@ class SalonAppointmentSlide extends React.Component {
                   </InputButton>
                 </InputGroup>
               </View>
-              <View style={styles.panelDiff} />
+              {/* <View style={styles.panelDiff} /> */}
             </ScrollView>
           </View>
         </View>

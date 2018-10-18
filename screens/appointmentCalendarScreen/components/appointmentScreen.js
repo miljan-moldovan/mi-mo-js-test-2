@@ -8,7 +8,8 @@ import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
-import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide/index';
+// import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide/index';
+import SalonAppointmentSlide from '../../../components/slidePanels/SalonCardDetailsSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonToast from './SalonToast';
@@ -204,6 +205,7 @@ class AppointmentScreen extends Component {
   onCardPressed = (appointment) => {
     const { allCrossedAppointments, appointmentAfter } = appointmentOverlapHelper(
       this.props.appointments,
+      this.props.blockTimes,
       appointment,
     );
     this.props.modifyApptActions.setSelectedAppt(appointment);
@@ -726,7 +728,7 @@ class AppointmentScreen extends Component {
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}
           onHide={this.hideApptSlide}
-          appointment={this.props.modifyApptState.appointment}
+          isBlockTime={this.state.selectedAppointment && this.state.selectedAppointment.isBlockTime}
           handleModify={this.handleModifyAppt}
           goToCancelAppt={this.goToCancelAppt}
           goToShowAppt={this.goToShowAppt}

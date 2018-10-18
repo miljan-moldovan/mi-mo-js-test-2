@@ -196,7 +196,7 @@ const getApiInstance = async () => {
       if (apiURL !== null) {
         BASEURL = `https://${apiURL}/api/v1`;
       } else {
-        BASEURL = 'https://zenithpos.dev.cicd.salondev.net/api/v1';
+        BASEURL = 'https://nw.qa.sg.salondev.net/api/v1';
       }
 
       if (store !== null) {
