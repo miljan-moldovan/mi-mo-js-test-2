@@ -4,12 +4,15 @@ import moment from 'moment';
 import { filter, map, find } from 'lodash';
 
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
+import { Client } from '../../../utilities/apiWrapper';
 import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
-import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide/index';
+// import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide/index';
+import SalonAppointmentSlide from '../../../components/slidePanels/SalonCardDetailsSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
+import EditTypes from '../../../constants/EditTypes';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonToast from './SalonToast';
 import NewApptSlide from '../../../components/NewApptSlide';
@@ -204,6 +207,7 @@ class AppointmentScreen extends Component {
   onCardPressed = (appointment) => {
     const { allCrossedAppointments, appointmentAfter } = appointmentOverlapHelper(
       this.props.appointments,
+      this.props.blockTimes,
       appointment,
     );
     this.props.modifyApptActions.setSelectedAppt(appointment);
@@ -355,8 +359,23 @@ class AppointmentScreen extends Component {
     }, () => {
       this.props.navigation.setParams({ tabBarVisible: true });
     });
-    newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
-    navigate('NewAppointment');
+    if (this.state.selectedAppointment.isBlockTime) {
+      Client.getClient(this.state.selectedAppointment.bookedByEmployeeId).then((resp) => {
+        navigate('BlockTime', {
+          fromTime: this.state.selectedAppointment.fromTime,
+          employee: this.state.selectedAppointment.employee,
+          date: moment(this.state.selectedAppointment.date),
+          bookedByEmployee: resp,
+          reason: this.state.selectedAppointment.reason,
+          toTime: this.state.selectedAppointment.toTime,
+          id: this.state.selectedAppointment.id,
+          editType: EditTypes.edit,
+        });
+      });
+    } else {
+      newAppointmentActions.populateStateFromAppt(selectedAppointment, groupData);
+      navigate('NewAppointment');
+    }
   }
 
   manageBuffer = (bufferVisible) => {
@@ -726,7 +745,7 @@ class AppointmentScreen extends Component {
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}
           onHide={this.hideApptSlide}
-          appointment={this.props.modifyApptState.appointment}
+          isBlockTime={this.state.selectedAppointment && this.state.selectedAppointment.isBlockTime}
           handleModify={this.handleModifyAppt}
           goToCancelAppt={this.goToCancelAppt}
           goToShowAppt={this.goToShowAppt}

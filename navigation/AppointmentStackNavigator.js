@@ -42,7 +42,6 @@ import BlockTimeScreen from './../screens/blockTimeScreen';
 import BlockTimesReasonsScreen from './../screens/blockTimesReasons';
 import TurnAwayScreen from './../screens/turnAwayScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
-import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 import ConflictsScreen from '../screens/conflictsScreen';
 import AddonServicesScreen from '../screens/addonServicesScreen';
 import RecommendedServicesScreen from '../screens/recommendedServicesScreen';

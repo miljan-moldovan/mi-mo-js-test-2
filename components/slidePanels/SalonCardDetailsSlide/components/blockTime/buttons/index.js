@@ -1,0 +1,57 @@
+import React from 'react';
+import { View, Text } from 'react-native';
+import PropTypes from 'prop-types';
+
+import SalonTouchableOpacity from '../../../../../SalonTouchableOpacity';
+import Icon from '../../../../../UI/Icon';
+import styles from './styles';
+
+const blockButtons = ({
+  handleNewAppt, handleModify, handleCancel,
+}) => (
+  <React.Fragment>
+    <View style={styles.panelIcon}>
+      <SalonTouchableOpacity
+        style={styles.panelIconBtn}
+        onPress={handleNewAppt}
+      >
+        <Icon name="plusCircle" size={18} color="#FFFFFF" fontWeight="300" />
+      </SalonTouchableOpacity>
+      <Text style={styles.panelIconText}>New Appt.</Text>
+    </View>
+    <View style={styles.panelIcon}>
+      <SalonTouchableOpacity
+        style={styles.panelIconBtn}
+        onPress={handleCancel}
+      >
+        <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+        <View style={styles.plusIconContainer}>
+          <Icon
+            name="times"
+            size={9}
+            color="#FFFFFF"
+            type="solid"
+          />
+        </View>
+      </SalonTouchableOpacity>
+      <Text style={styles.panelIconText}>Cancel</Text>
+    </View>
+    <View style={styles.panelIcon}>
+      <SalonTouchableOpacity
+        style={styles.panelIconBtn}
+        onPress={handleModify}
+      >
+        <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+      </SalonTouchableOpacity>
+      <Text style={styles.panelIconText}>Modifiy</Text>
+    </View>
+  </React.Fragment>
+);
+
+blockButtons.propTypes = {
+  handleModify: PropTypes.func.isRequired,
+  handleCancel: PropTypes.func.isRequired,
+  handleNewAppt: PropTypes.func.isRequired,
+};
+
+export default blockButtons;

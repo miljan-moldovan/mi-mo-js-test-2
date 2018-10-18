@@ -1,0 +1,53 @@
+export default {
+  panelBottom: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 133,
+    borderBottomColor: '#CACBCF',
+    borderBottomWidth: 1 / 2,
+  },
+  panelBottomOf3: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 201,
+    borderBottomColor: '#CACBCF',
+    borderBottomWidth: 1 / 2,
+  },
+  otherOptionsGroup: {
+    borderBottomWidth: 0,
+    borderBottomColor: 'transparent',
+    borderTopWidth: 0,
+    borderTopColor: 'transparent',
+    width: '92%',
+    paddingLeft: 0,
+  },
+  otherOptionsBtn: {
+    height: 67,
+    paddingRight: 0,
+  },
+  otherOptionsLabels: {
+    color: '#115ECD',
+    fontSize: 15,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 40 / 2,
+    backgroundColor: '#E5E5E5',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  plusIconContainer: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    paddingVertical: 1,
+    paddingHorizontal: 2,
+  },
+};
