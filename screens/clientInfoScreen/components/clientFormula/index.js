@@ -15,6 +15,7 @@ import settingsActions from '../../../../actions/settings';
 import fetchFormCache from '../../../../utilities/fetchFormCache';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
 import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
+import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 
 import {
   InputDate,
@@ -34,16 +35,29 @@ class ClientFormula extends React.Component {
     super(props);
 
     const { client } = props.navigation.state.params;
+    const { settings } = props.settingsState;
+
     const formulaTypes = [];
-    let availableFormulaTypes = get(props.groupedSettings, '[AvailableFormulaTypes][0].settingValue', false);
-    availableFormulaTypes = availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
-    for (let i = 0; i < availableFormulaTypes.length; i += 1) {
-      formulaTypes.push({ key: availableFormulaTypes[i], value: availableFormulaTypes[i] });
+    let defaultFormulaType = null;
+
+    if (settings) {
+      let availableFormulaTypes = find(settings, { settingName: 'AvailableFormulaTypes' });
+      availableFormulaTypes = availableFormulaTypes ?
+        availableFormulaTypes.settingValue : false;
+
+      availableFormulaTypes = availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
+      for (let i = 0; i < availableFormulaTypes.length; i += 1) {
+        formulaTypes.push({ key: formulaTypesEnum[availableFormulaTypes[i]], value: availableFormulaTypes[i] });
+      }
+
+      let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
+      defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
+        defaultFormulaTypeSetting.settingValue : null;
+
+      defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
+      defaultFormulaType = defaultFormulaType || null;
     }
 
-    const defaultFormulaTypeSetting = get(props.groupedSettings, '[DefaultFormulaType][0].settingValue', availableFormulaTypes[0]);
-    let defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
-    defaultFormulaType = defaultFormulaType || formulaTypes[0];
 
     this.state = {
       client,
@@ -105,7 +119,6 @@ class ClientFormula extends React.Component {
   }
 
   goBack() {
-    this.setState({ isVisible: false });
     this.props.navigation.goBack();
   }
 
