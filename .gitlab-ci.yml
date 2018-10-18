@@ -10,7 +10,7 @@ stages:
 build:
   stage: build
   script:
-    - sync_gitlab
-    - sync_appcenter
+    - . sync_gitlab
+    - . sync_appcenter
   tags:
     - docker
