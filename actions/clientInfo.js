@@ -22,6 +22,10 @@ export const DELETE_CLIENT_SUCCESS = 'clientInfo/DELETE_CLIENT_SUCCESS';
 export const DELETE_CLIENT_FAILED = 'clientInfo/DELETE_CLIENT_FAILED';
 
 
+export const GET_ZIP_CODE = 'clientInfo/GET_ZIP_CODE';
+export const GET_ZIP_CODE_SUCCESS = 'clientInfo/GET_ZIP_CODE_SUCCESS';
+export const GET_ZIP_CODE_FAILED = 'clientInfo/GET_ZIP_CODE_FAILED';
+
 const postClientInfoSuccess = client => ({
   type: POST_CLIENT_SUCCESS,
   data: { client },
@@ -121,12 +125,32 @@ const getClientReferralTypes = callback => (dispatch) => {
 };
 
 
+function getZipCodeSuccess(zipCode) {
+  return {
+    type: GET_ZIP_CODE_SUCCESS,
+    data: { zipCode },
+  };
+}
+
+const getZipCodeFailed = error => ({
+  type: GET_ZIP_CODE_FAILED,
+  data: { error },
+});
+
+const getZipCode = (zipCode, callback) => (dispatch) => {
+  dispatch({ type: GET_ZIP_CODE });
+  return Client.getZipCode(zipCode)
+    .then((response) => { dispatch(getZipCodeSuccess(response)); callback(true); })
+    .catch((error) => { dispatch(getZipCodeFailed(error)); callback(false, error.message); });
+};
+
 const clientInfoActions = {
   getClientInfo,
   deleteClientInfo,
   putClientInfo,
   postClientInfo,
   getClientReferralTypes,
+  getZipCode,
 };
 
 export default clientInfoActions;
