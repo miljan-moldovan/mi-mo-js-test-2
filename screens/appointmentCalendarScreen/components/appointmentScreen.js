@@ -252,6 +252,7 @@ class AppointmentScreen extends Component {
 
 
     if (this.state.rebookAppointmentEnabled) {
+
       const { params } = this.props.navigation.state;
       const {
         selectedAppointment, rebookProviders, rebookServices, filterProvider,
@@ -344,6 +345,15 @@ class AppointmentScreen extends Component {
     this.setState({
       rebookAppointmentEnabled,
     });
+  }
+
+  handleRebookAppt = (appointment) => {
+    if (appointment !== null) {
+      this.props.navigation.navigate('RebookDialog', {
+        appointment,
+        ...this.props,
+      });
+    }
   }
 
   handleModifyAppt = () => {
@@ -745,6 +755,7 @@ class AppointmentScreen extends Component {
           onHide={this.hideApptSlide}
           isBlockTime={this.state.selectedAppointment && this.state.selectedAppointment.isBlockTime}
           handleModify={this.handleModifyAppt}
+          handleRebook={this.handleRebookAppt}
           goToCancelAppt={this.goToCancelAppt}
           goToShowAppt={this.goToShowAppt}
           handleCheckin={appointmentActions.postAppointmentCheckin}

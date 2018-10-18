@@ -449,7 +449,6 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
       dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
-      
       if (isFunction(errorCallback)) {
         errorCallback(err);
       }
@@ -473,6 +472,8 @@ const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, st
   const mainClient = isParty ? primaryClientId : appt.client;
 
   let serviceItems = [];
+
+
 
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
