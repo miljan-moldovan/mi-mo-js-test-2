@@ -130,7 +130,6 @@ class AppointmentScreen extends Component {
       appointmentCalendarActions.setGridView();
 
 
-
       if (rebookProviders.length === 1) {
         appointmentCalendarActions.setPickerMode('week');
         this.selectFilter('providers', rebookProviders[0]);
@@ -250,7 +249,6 @@ class AppointmentScreen extends Component {
       newAppointmentActions.setDate(startDate);
     }
     newAppointmentActions.setStartTime(startTime);
-
 
 
     if (this.state.rebookAppointmentEnabled) {
@@ -614,7 +612,6 @@ class AppointmentScreen extends Component {
         break;
       }
       case 'rebookAppointment': {
-
         isDate = false;
         headerData = providers;
         dataSource = providerAppointments;
@@ -696,6 +693,7 @@ class AppointmentScreen extends Component {
         }
         {selectedFilter === 'providers' && selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
+            bottomDistance={(this.state.bookAnotherEnabled || this.state.rebookAppointmentEnabled) ? 60 : 16}
             pickerMode={pickerMode}
             handlePress={() => {
               const newPickerMode = pickerMode === 'week' ? 'day' : 'week';

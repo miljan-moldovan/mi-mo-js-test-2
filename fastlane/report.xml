@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.072785">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.011177">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: npm install" time="21.494323">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: npm run bundle:ios" time="60.380747">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: cocoapods" time="55.322889">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: automatic_code_signing" time="0.262532">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: increment_build_number" time="2.055455">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="7: gym" time="769.99066">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="8: crashlytics" time="27.540278">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="9: slack" time="2.092597">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

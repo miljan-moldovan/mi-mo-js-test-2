@@ -449,6 +449,7 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
       dispatch(bookNewApptSuccess(successCallback));
     })
     .catch((err) => {
+      
       if (isFunction(errorCallback)) {
         errorCallback(err);
       }
