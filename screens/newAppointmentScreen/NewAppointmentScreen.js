@@ -589,9 +589,10 @@ export default class NewAppointmentScreen extends React.Component {
       });
     };
     const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment api error' } } }) => {
+      
       this.setState({
         toast: {
-          text,
+          text: text || 'Unknown appointment api error',
           type: 'error',
           btnRightText: 'DISMISS',
         },

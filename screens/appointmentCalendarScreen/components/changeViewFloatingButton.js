@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 
 import FloatingButton from '../../../components/FloatingButton';
 import Icon from '../../../components/UI/Icon';
@@ -41,8 +42,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ChangeViewFloatingButton extends Component {
-
+class ChangeViewFloatingButton extends Component {
   handlePress = () => {
     if (this.props.handlePress) {
       this.props.handlePress();
@@ -57,7 +57,7 @@ export default class ChangeViewFloatingButton extends Component {
           width: 70,
           height: 70,
           backgroundColor: '#1DBF12',
-          bottom: 16,
+          bottom: this.props.bottomDistance,
           right: 16,
         }}
       >
@@ -87,3 +87,16 @@ export default class ChangeViewFloatingButton extends Component {
     );
   }
 }
+
+
+ChangeViewFloatingButton.defaultProps = {
+  pickerMode: 'day',
+  bottomDistance: 16,
+};
+
+ChangeViewFloatingButton.propTypes = {
+  bottomDistance: PropTypes.number,
+  pickerMode: PropTypes.string,
+};
+
+export default ChangeViewFloatingButton;

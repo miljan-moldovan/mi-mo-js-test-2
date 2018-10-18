@@ -186,6 +186,10 @@ class SalonCardDetailsSlide extends React.Component {
     this.props.handleModify(this.state.appointment.id);
   }
 
+  handleRebook = () => {
+    this.props.handleRebook(this.state.appointment);
+  }
+
   handleNewAppt = () => {
     if (this.state.appointment.isBlockTime) {
       notImplemented();
@@ -365,7 +369,7 @@ class SalonCardDetailsSlide extends React.Component {
                   handleShowAppt={this.handleShowAppt}
                   handleRecommendProductPress={this.handleRecommendProductPress}
                   handleNewAppointment={notImplemented}
-                  handleRebook={notImplemented}
+                  handleRebook={this.handleRebook}
                   handleEmailClient={notImplemented}
                   handleSMSClient={notImplemented}
                 /> : null}

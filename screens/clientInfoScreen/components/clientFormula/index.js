@@ -15,6 +15,7 @@ import settingsActions from '../../../../actions/settings';
 import fetchFormCache from '../../../../utilities/fetchFormCache';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
 import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
+import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 
 import {
   InputDate,
@@ -34,16 +35,13 @@ class ClientFormula extends React.Component {
     super(props);
 
     const { client } = props.navigation.state.params;
-    const formulaTypes = [];
-    let availableFormulaTypes = get(props.groupedSettings, '[AvailableFormulaTypes][0].settingValue', false);
-    availableFormulaTypes = availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
-    for (let i = 0; i < availableFormulaTypes.length; i += 1) {
-      formulaTypes.push({ key: availableFormulaTypes[i], value: availableFormulaTypes[i] });
-    }
+    props.settingsActions.getSettingsByName(
+      'AvailableFormulaTypes',
+      () => {
+        props.settingsActions.getSettingsByName('DefaultFormulaType', this.loadFormulaTypes);
+      },
+    );
 
-    const defaultFormulaTypeSetting = get(props.groupedSettings, '[DefaultFormulaType][0].settingValue', availableFormulaTypes[0]);
-    let defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
-    defaultFormulaType = defaultFormulaType || formulaTypes[0];
 
     this.state = {
       client,
@@ -54,9 +52,9 @@ class ClientFormula extends React.Component {
         enteredBy: {},
         text: '',
       },
-      defaultFormulaType,
+      defaultFormulaType: null,
       isVisible: true,
-      formulaTypes,
+      formulaTypes: [],
     };
   }
 
@@ -91,6 +89,7 @@ class ClientFormula extends React.Component {
     });
   }
 
+
   handleGoBackCopy = () => {
     this.setState({ isVisible: true });
   }
@@ -105,7 +104,6 @@ class ClientFormula extends React.Component {
   }
 
   goBack() {
-    this.setState({ isVisible: false });
     this.props.navigation.goBack();
   }
 
@@ -195,6 +193,39 @@ class ClientFormula extends React.Component {
       this.setState({ formula }, this.checkCanSave);
     }
 
+    loadFormulaTypes = (result) => {
+      if (result) {
+        const { settings } = this.props.settingsState;
+
+
+        const formulaTypes = [];
+        let defaultFormulaType = null;
+
+        if (settings) {
+          let availableFormulaTypes = find(settings, { settingName: 'AvailableFormulaTypes' });
+          availableFormulaTypes = availableFormulaTypes ?
+            availableFormulaTypes.settingValue : false;
+
+          availableFormulaTypes = availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
+          for (let i = 0; i < availableFormulaTypes.length; i += 1) {
+            formulaTypes.push({ key: formulaTypesEnum[availableFormulaTypes[i]], value: availableFormulaTypes[i] });
+          }
+
+          let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
+          defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
+            defaultFormulaTypeSetting.settingValue : null;
+
+          defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
+          defaultFormulaType = defaultFormulaType || null;
+        }
+
+        this.setState({
+          defaultFormulaType,
+          formulaTypes,
+        });
+      }
+    }
+
     saveFormula() {
       const { client } = this.props.navigation.state.params;
 
@@ -236,7 +267,7 @@ class ClientFormula extends React.Component {
           style={styles.modal}
         >
           <View style={styles.container}>
-            { this.props.clientFormulasState.isLoading &&
+            { (this.props.clientFormulasState.isLoading || this.props.settingsState.isLoading) &&
             <LoadingOverlay />
                 }
             <ClienteFormulaHeader rootProps={this.props} />
@@ -344,6 +375,9 @@ ClientFormula.propTypes = {
   clientFormulasState: PropTypes.any.isRequired,
   client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(ClientFormula);

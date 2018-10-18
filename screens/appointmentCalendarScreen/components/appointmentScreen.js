@@ -129,7 +129,6 @@ class AppointmentScreen extends Component {
       appointmentCalendarActions.setGridView();
 
 
-
       if (rebookProviders.length === 1) {
         appointmentCalendarActions.setPickerMode('week');
         this.selectFilter('providers', rebookProviders[0]);
@@ -251,8 +250,8 @@ class AppointmentScreen extends Component {
     newAppointmentActions.setStartTime(startTime);
 
 
-
     if (this.state.rebookAppointmentEnabled) {
+
       const { params } = this.props.navigation.state;
       const {
         selectedAppointment, rebookProviders, rebookServices, filterProvider,
@@ -345,6 +344,15 @@ class AppointmentScreen extends Component {
     this.setState({
       rebookAppointmentEnabled,
     });
+  }
+
+  handleRebookAppt = (appointment) => {
+    if (appointment !== null) {
+      this.props.navigation.navigate('RebookDialog', {
+        appointment,
+        ...this.props,
+      });
+    }
   }
 
   handleModifyAppt = () => {
@@ -613,7 +621,6 @@ class AppointmentScreen extends Component {
         break;
       }
       case 'rebookAppointment': {
-
         isDate = false;
         headerData = providers;
         dataSource = providerAppointments;
@@ -695,6 +702,7 @@ class AppointmentScreen extends Component {
         }
         {selectedFilter === 'providers' && selectedProvider !== 'all' && (
           <ChangeViewFloatingButton
+            bottomDistance={(this.state.bookAnotherEnabled || this.state.rebookAppointmentEnabled) ? 60 : 16}
             pickerMode={pickerMode}
             handlePress={() => {
               const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
@@ -747,6 +755,7 @@ class AppointmentScreen extends Component {
           onHide={this.hideApptSlide}
           isBlockTime={this.state.selectedAppointment && this.state.selectedAppointment.isBlockTime}
           handleModify={this.handleModifyAppt}
+          handleRebook={this.handleRebookAppt}
           goToCancelAppt={this.goToCancelAppt}
           goToShowAppt={this.goToShowAppt}
           handleCheckin={appointmentActions.postAppointmentCheckin}
