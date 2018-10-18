@@ -43,7 +43,7 @@ class ProductsScreen extends React.Component {
           title={title}
           hasFilter={false}
           leftButton={leftButton}
-          leftButtonOnPress={leftButtonOnPress}
+          lreftButtonOnPress={leftButtonOnPress}
           containerStyle={styles.headerContainer}
         />
       ),
