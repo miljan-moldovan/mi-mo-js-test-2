@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { get, cloneDeep } from 'lodash';
 import moment from 'moment';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonAvatar from '../../../components/SalonAvatar';
@@ -46,8 +47,13 @@ class ServiceSection extends Component {
   }
 
   handleDateSelection = (date) => {
-    const newService = this.state.service;
-    newService[this.state.type] = moment(date.getTime());
+    const { service, type } = this.state;
+    const newService = cloneDeep(service);
+    newService[type] = moment(date.getTime());
+    if (type === 'fromTime') {
+      newService.toTime = moment(newService.fromTime).add(newService.length);
+    }
+    newService.length = newService.fromTime.diff(newService.toTime);
     this.props.onUpdate(this.state.index, newService);
     this.hideDateTimePicker();
   }

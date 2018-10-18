@@ -8,7 +8,9 @@ import groupedAvailableProvidersSelector from './providersSelector';
 
 const appointmentSelector = state => state.appointmentBookReducer.appointments;
 
-const selectedApptId = (state, props) => props.appointmentId;
+const blockTimeSelector = state => state.appointmentBookReducer.blockTimes;
+
+const getProps = (state, props) => props;
 
 const appoinmentGroupedByProvider = createSelector(
   appointmentSelector,
@@ -55,8 +57,10 @@ export const getVisibleAppointmentsDataSource = createSelector(
 );
 
 export const getSelectedAppt = createSelector(
-  [appointmentSelector, selectedApptId],
-  (appointments, selectedId) => appointments.find(appt => appt.id === selectedId),
+  [appointmentSelector, blockTimeSelector, getProps],
+  (appointments, blockTimes, props) => (props.isBlockTime ?
+    blockTimes.find(appt => appt.id === props.appointmentId)
+    : appointments.find(appt => appt.id === props.appointmentId)),
 );
 
 export default { getVisibleAppointmentsDataSource, getSelectedAppt };
