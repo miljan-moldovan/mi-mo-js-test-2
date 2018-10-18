@@ -34,7 +34,7 @@ export default class InputPicker extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ selectedOption: nextProps.value ? nextProps.value : null });
+    this.setState({ selectedOption: nextProps.value ? nextProps.value : null, options: nextProps.options });
   }
 
 
