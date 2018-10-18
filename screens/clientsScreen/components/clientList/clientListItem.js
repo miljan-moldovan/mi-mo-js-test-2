@@ -114,8 +114,6 @@ class ClientListItem extends React.PureComponent {
     const email = this.props.client.email ? this.props.client.email : null;
     const store = this.props.client.visit ? this.props.client.visit : null;
 
-    debugger //eslint-disable-line
-
     return (
       <TouchableHighlight
         style={styles.container}

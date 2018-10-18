@@ -14,13 +14,18 @@ import clientInfoActions, {
   GET_CLIENT_REFERRAL_TYPES,
   GET_CLIENT_REFERRAL_TYPES_SUCCESS,
   GET_CLIENT_REFERRAL_TYPES_FAILED,
+  GET_ZIP_CODE,
+  GET_ZIP_CODE_SUCCESS,
+  GET_ZIP_CODE_FAILED,
 } from '../actions/clientInfo';
 
 const initialState = {
   client: [],
   clientReferralTypes: [],
   isLoading: false,
+  isLoadingZipCode: false,
   error: null,
+  zipCode: null,
 };
 
 const renameClientReferralTypes = (clientReferralTypes) => {
@@ -128,6 +133,26 @@ export default function clientInfoReducer(state = initialState, action) {
         isLoading: false,
         error: data.error,
         clientReferralTypes: [],
+      };
+
+    case GET_ZIP_CODE:
+      return {
+        ...state,
+        isLoadingZipCode: true,
+      };
+    case GET_ZIP_CODE_SUCCESS:
+      return {
+        ...state,
+        isLoadingZipCode: false,
+        zipCode: data.zipCode,
+        error: null,
+      };
+    case GET_ZIP_CODE_FAILED:
+      return {
+        ...state,
+        isLoadingZipCode: false,
+        error: data.error,
+        zipCode: {},
       };
     default:
       return state;

@@ -55,7 +55,7 @@ export default class InputPicker extends React.Component {
 
   pickerToogle = () => {
     this.setState(
-      { selectedOption: this.state.options[0] },
+      { selectedOption: this.state.selectedOption ? this.state.selectedOption : this.state.options[0] },
       () => {
         this.singlePicker.show();
       },

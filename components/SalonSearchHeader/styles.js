@@ -52,6 +52,7 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
+    paddingBottom: 7,
   },
   subTitleText: {
     fontFamily: 'Roboto',
@@ -69,12 +70,14 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    paddingBottom: 7,
   },
   rightButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    paddingBottom: 7,
   },
   leftButtonText: {
     color: '#FFFFFF',

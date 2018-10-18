@@ -7,7 +7,9 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F1F1',
   },
-  activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  activityIndicator: {
+    marginHorizontal: 10, height: 14, alignItems: 'flex-end', justifyContent: 'center',
+  },
   inputGroup: { marginTop: 16 },
   inputSwitch: { height: 43 },
   inputSwitchText: { color: '#727A8F' },
@@ -85,4 +87,32 @@ export default StyleSheet.create({
   clientReferralTypeContainer: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
   inputStyle: { fontFamily: 'Roboto-Light' },
   dateValueStyle: { color: '#727A8F', fontFamily: 'Roboto-Light' },
+  autocompleteContainer: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+  },
+  suggestionStyle: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#C0C1C6',
+  },
+  inputContainerStyle: {
+    paddingVertical: 10,
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  inputRow: {
+    minHeight: 43.5,
+    paddingRight: 16,
+    alignSelf: 'stretch',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
 });
