@@ -10,7 +10,6 @@ export default {
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.30,
     shadowRadius: 3,
-    height: 124,
     paddingBottom: 18,
     borderBottomColor: '#CACBCF',
     borderBottomWidth: 1 / 2,
@@ -45,9 +44,11 @@ export default {
     justifyContent: 'center',
   },
   slidePanelWrapper: {
-    height: 70,
+    height: 50,
+    paddingTop: 10,
     width: '100%',
-    paddingHorizontal: 15,
+    paddingLeft: 15,
+    paddingRight: 15,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -70,9 +71,7 @@ export default {
     marginTop: 40,
   },
   headerPanelWithSlider: {
-    flex: 1,
     paddingTop: 10,
-    paddingBottom: 20,
   },
   panelContainer: {
     backgroundColor: '#FFFFFF',

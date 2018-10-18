@@ -9,7 +9,6 @@ import SalonCalendar from '../../../components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
 import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
 import SalonDatePickerSlide from '../../../components/slidePanels/SalonDatePickerSlide';
-// import SalonAppointmentSlide from '../../../components/slidePanels/SalonAppointmentSlide/index';
 import SalonAppointmentSlide from '../../../components/slidePanels/SalonCardDetailsSlide';
 import SalonAvatar from '../../../components/SalonAvatar';
 import EditTypes from '../../../constants/EditTypes';
@@ -741,6 +740,7 @@ class AppointmentScreen extends Component {
           }}
         />
         <SalonAppointmentSlide
+          appointments={appointments}
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}

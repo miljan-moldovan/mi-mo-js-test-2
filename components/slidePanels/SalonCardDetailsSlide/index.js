@@ -27,6 +27,7 @@ import PanelbottomAppt from './components/appointment/panelBottom';
 
 const notImplemented = () => alert('Not implemented');
 
+const headerPaddings = 63;
 
 class SalonCardDetailsSlide extends React.Component {
   constructor(props) {
@@ -39,9 +40,9 @@ class SalonCardDetailsSlide extends React.Component {
       showEditRemarksSuccess: false,
       appointmentHasBeenChanged: false,
       scrollHeight: 0,
-      headerHeight: 187,
       previousHeight: 0,
       defaultPosition: 0,
+      headerHeight: 0,
     };
     this.slidingPanel = null;
   }
@@ -104,7 +105,7 @@ class SalonCardDetailsSlide extends React.Component {
         defaultPosition: height,
         previousHeight: height,
       }, () => {
-        this.setScrollHeight(height - this.state.headerHeight);
+        this.setScrollHeight(height - this.state.headerHeight - headerPaddings);
       });
     }
     return height;
@@ -139,7 +140,7 @@ class SalonCardDetailsSlide extends React.Component {
       this.setState({
         previousHeight: nextHeight,
       }, () => {
-        this.setScrollHeight(nextHeight - this.state.headerHeight);
+        this.setScrollHeight(nextHeight - this.state.headerHeight - headerPaddings);
       });
     }
   }
@@ -174,12 +175,10 @@ class SalonCardDetailsSlide extends React.Component {
   }
 
   handleCheckin = () => {
-    console.log('bacon - checkin');
     this.props.handleCheckin(this.state.appointment.id);
   }
 
   handleCheckout = () => {
-    console.log('bacon - checkout');
     this.props.handleCheckout(this.state.appointment.id);
   }
 
@@ -231,6 +230,13 @@ class SalonCardDetailsSlide extends React.Component {
     this.setState({ showEditRemarks: false });
   }
 
+  handleHeaderOnLayout = ({ nativeEvent: { layout: { height } } }) => {
+    if (!this.state.headerHeight || this.state.headerHeight !== height) {
+      this.setState({ headerHeight: height }, () =>
+        this.setScrollHeight(this.state.defaultPosition - height - headerPaddings));
+    }
+  }
+
   assignActionSheet = (item) => {
     this.actionSheet = item;
   }
@@ -273,13 +279,14 @@ class SalonCardDetailsSlide extends React.Component {
       return null;
     }
     return !appointment.isBlockTime ? (
-      <ApptointmentHeader appointment={appointment} />) : (
+      <ApptointmentHeader appointment={appointment} appointments={this.props.appointments} />) : (
         <BlockHeader appointment={appointment} />
     );
   }
 
   renderHeader = panHendler => (
     <View
+      onLayout={this.handleHeaderOnLayout}
       pointerEvents="box-none"
       {...panHendler}
       style={styles.panelTop}
@@ -311,7 +318,6 @@ class SalonCardDetailsSlide extends React.Component {
 
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
-
     return (
       <View style={{ flex: 1 }}>
         <InputModal
