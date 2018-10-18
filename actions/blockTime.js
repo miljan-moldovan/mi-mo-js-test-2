@@ -49,7 +49,7 @@ const putBlockTimeEditFailed = error => ({
 const putBlockTimeEdit = (id, data, callback) => (dispatch) => {
   dispatch({ type: PUT_BLOCKTIME_EDIT });
 
-  return AppointmentBook.putBlockTimeEdit(data)
+  return AppointmentBook.putBlockTimeEdit(id, data)
     .then((resp) => { dispatch(putBlockTimeEditSuccess(resp)); callback(true); })
     .catch((error) => { dispatch(putBlockTimeEditFailed(error)); callback(false, error); });
 };

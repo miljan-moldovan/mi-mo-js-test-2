@@ -184,11 +184,7 @@ class SalonCardDetailsSlide extends React.Component {
   }
 
   handleModify = () => {
-    if (this.state.appointment.isBlockTime) {
-      this.props.handleModifyBlock(this.state.appointment.id);
-    } else {
-      this.props.handleModify(this.state.appointment.id);
-    }
+    this.props.handleModify(this.state.appointment.id);
   }
 
   handleNewAppt = () => {
