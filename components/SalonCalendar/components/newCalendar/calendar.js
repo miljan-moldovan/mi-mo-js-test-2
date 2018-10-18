@@ -13,7 +13,7 @@ import Buffer from '../calendarBuffer';
 import SalonAlert from '../../../SalonAlert';
 import BlockTime from './blockCard';
 import EmptyScreen from './EmptyScreen';
-import { sortCardsForBoard, getRangeExtendedMoment, isCardWithGap, areDatesInRange, areDateRangeOverlapped } from '../../../../utilities/helpers';
+import { getHiddenAddons, sortCardsForBoard, getRangeExtendedMoment, isCardWithGap, areDatesInRange, areDateRangeOverlapped } from '../../../../utilities/helpers';
 import DateTime from '../../../../constants/DateTime';
 import ViewTypes from '../../../../constants/ViewTypes';
 import {
@@ -1216,9 +1216,7 @@ export default class Calendar extends Component {
         left: delta,
         width: this.cellWidth - gap,
       };
-      const hiddenAddons = appointments.filter(appt =>
-        appt.primaryAppointmentId === appointment.id
-          && appt.service.isAddon && appt.duration === 0);
+      const hiddenAddons = getHiddenAddons(appointments, appointment);
       const cardHeight = (appointment.duration / apptGridSettings.step) * 30;
       return (
         <Card
@@ -1267,9 +1265,7 @@ export default class Calendar extends Component {
       activeCard, isResizeing, pan, pan2,
     } = this.state;
     if (activeCard) {
-      const hiddenAddons = appointments.filter(appt =>
-        appt.primaryAppointmentId === activeCard.data.id
-            && appt.service.isAddon && appt.duration === 0);
+      const hiddenAddons = getHiddenAddons(appointments, activeCard.data);
       return (
         <Card
           left={activeCard.left}
@@ -1310,9 +1306,7 @@ export default class Calendar extends Component {
     const provider = activeCard && isAllProviderView ?
       providers.find(item => item.id === get(activeCard.data.employee, 'id', false)) : selectedProvider;
     if (provider && isResizeing && activeCard) {
-      const hiddenAddons = appointments.filter(appt =>
-        appt.primaryAppointmentId === activeCard.data.id
-          && appt.service.isAddon && appt.duration === 0);
+      const hiddenAddons = getHiddenAddons(appointments, activeCard.data);
       return (
         <Card
           ref={(card) => { this.resizeCard = card; }}

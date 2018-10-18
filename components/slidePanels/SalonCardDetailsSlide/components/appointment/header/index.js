@@ -2,10 +2,27 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 import ClientInfoButton from '../../../../../ClientInfoButton';
+import { getBadges, getHiddenAddons } from '../../../../../../utilities/helpers';
 import { AppointmentTime } from '../../../../SalonNewAppointmentSlide';
 import styles from './styles';
 
-const appointmentHeader = ({ appointment, navigation, hidePanel }) => (
+const renderBadges = (appointment, appointments) => {
+  const badges = getBadges(appointment, getHiddenAddons(appointments, appointment).length);
+  for (let i = 0; i < badges.length; i += 1) {
+    if (badges[i]) {
+      return (
+        <View style={{ padding: 5, flexDirection: 'row', backgroundColor: '#F1F1F1' }}>
+          { badges }
+        </View>
+      );
+    }
+  }
+  return null;
+};
+
+const appointmentHeader = ({
+  appointment, navigation, hidePanel, appointments,
+}) => (
   <React.Fragment>
     <View style={styles.panelTopLine}>
       <View style={styles.panelTopLineLeft}>
@@ -19,6 +36,7 @@ const appointmentHeader = ({ appointment, navigation, hidePanel }) => (
         />
       </View>
     </View>
+    { renderBadges(appointment, appointments) }
     <View style={styles.panelTopLine}>
       <View style={styles.panelTopLineLeft}>
         <Text style={styles.panelTopService}>{appointment.service.description}</Text>
@@ -31,7 +49,7 @@ const appointmentHeader = ({ appointment, navigation, hidePanel }) => (
       </View>
     </View>
 
-    {appointment.remarks !== '' &&
+    {appointment.remarks &&
     <React.Fragment>
       <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
         <View style={styles.panelTopLineLeft}>
