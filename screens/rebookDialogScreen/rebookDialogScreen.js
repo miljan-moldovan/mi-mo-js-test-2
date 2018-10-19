@@ -84,8 +84,10 @@ class RebookDialogScreen extends Component {
 
     const { appointment } = this.props.navigation.state.params;
 
+
     if ('service' in appointment && !('services' in appointment)) {
       const { service } = appointment;
+      service.serviceId = service.id;
       service.employee = appointment.employee;
       service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
       appointment.services = [service];

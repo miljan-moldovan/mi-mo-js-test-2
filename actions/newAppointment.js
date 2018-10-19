@@ -479,12 +479,12 @@ const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, st
     const service = services[i];
 
 
-
     const fromTime = moment(service.fromTime, 'HH:mm:ss');
     const toTime = moment(service.toTime, 'HH:mm:ss');
     const length = moment.duration(service.serviceLength, 'HH:mm:ss');
     const serviceClient = mainClient;
     service.name = service.serviceName;
+
 
     const newService = {
       id: get(service, 'serviceId', null),
