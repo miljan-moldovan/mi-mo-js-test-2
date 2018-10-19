@@ -78,16 +78,16 @@ class RebookDialogScreen extends Component {
   };
 
   componentWillMount() {
-    
     this.props.navigation.setParams({
       handleDone: () => this.saveRebook(),
     });
 
     const { appointment } = this.props.navigation.state.params;
+
     if ('service' in appointment && !('services' in appointment)) {
       const { service } = appointment;
       service.employee = appointment.employee;
-      service.serviceLength = service.duration;
+      service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
       appointment.services = [service];
     }
 
@@ -119,15 +119,17 @@ class RebookDialogScreen extends Component {
   }
 
   saveRebook() {
-
     const { appointment } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
     const rebookProviders = [];
     for (let i = 0; i < rebookServices.length; i += 1) {
-      const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
-      if (!provider) {
-        rebookProviders.push(rebookServices[i].employee);
+      rebookServices[i].id = rebookServices[i].serviceId;
+      if (rebookServices[i].employee) {
+        const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
+        if (!provider) {
+          rebookProviders.push(rebookServices[i].employee);
+        }
       }
     }
 
@@ -187,7 +189,7 @@ class RebookDialogScreen extends Component {
         text={
           <View style={styles.serviceContainer}>
             <Text style={styles.serviceNameText}>{service.serviceName}</Text>
-            <Text style={styles.employeeNameText}>{`w/ ${service.employee.fullName}`}</Text>
+            <Text style={styles.employeeNameText}>{`w/ ${service.employee ? service.employee.fullName : 'First Available'}`}</Text>
           </View>
         }
       />

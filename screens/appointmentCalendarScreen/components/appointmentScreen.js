@@ -123,12 +123,16 @@ class AppointmentScreen extends Component {
       const { newAppointmentActions, appointmentCalendarActions } = this.props;
       const { rebookProviders, selectedAppointment } = params;
 
+
+
       newAppointmentActions.cleanForm();
       newAppointmentActions.setClient(selectedAppointment.client);
       appointmentCalendarActions.setProviderScheduleDates(params.date, params.date);
       appointmentCalendarActions.setGridView();
 
-
+      if (rebookProviders.length === 0) {
+        this.selectFilter('providers', 'all');
+      } else
       if (rebookProviders.length === 1) {
         appointmentCalendarActions.setPickerMode('week');
         this.selectFilter('providers', rebookProviders[0]);
@@ -251,7 +255,6 @@ class AppointmentScreen extends Component {
 
 
     if (this.state.rebookAppointmentEnabled) {
-
       const { params } = this.props.navigation.state;
       const {
         selectedAppointment, rebookProviders, rebookServices, filterProvider,
@@ -266,6 +269,8 @@ class AppointmentScreen extends Component {
       }
 
       const date = rebookProviders.length === 1 ? colData : startDate;
+
+
 
       for (let i = 0; i < services.length; i += 1) {
         services[i].employee = mainEmployee;

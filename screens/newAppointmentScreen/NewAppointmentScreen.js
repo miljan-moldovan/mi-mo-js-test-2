@@ -456,7 +456,8 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   removeServiceAlert = (serviceId) => {
-    const { mainEmployee } = this.props.newAppointmentState;
+    
+    const { mainEmployee, bookedByEmployee } = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem(serviceId);
     const serviceTitle = get(get(serviceItem.service, 'service', null), 'name', '');
     const employeeName = `${get(bookedByEmployee, 'name', bookedByEmployee.firstName || '')} ${get(bookedByEmployee, 'lastName', '')[0]}.`;
@@ -589,7 +590,6 @@ export default class NewAppointmentScreen extends React.Component {
       });
     };
     const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment api error' } } }) => {
-      
       this.setState({
         toast: {
           text: text || 'Unknown appointment api error',
