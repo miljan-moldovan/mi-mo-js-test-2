@@ -473,6 +473,8 @@ const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, st
 
   let serviceItems = [];
 
+
+
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
 

@@ -244,7 +244,7 @@ class BlockCard extends Component {
         </Svg>
         <TouchableOpacity
           onPress={() => {
-            //this.props.onPress(this.props.appointment)
+            this.props.onPress(this.props.block)
           }}
           onLongPress={() => {
             this.handleOnLongPress({

@@ -28,6 +28,9 @@ class RebookDialogScreen extends Component {
     const { appointment } = params;
     const { client } = appointment;
 
+
+    const fullName = 'fullName' in client ? client.fullName : `${client.name} ${client.lastName}`;
+
     return {
       headerTitle: (
         <View style={styles.headerTitle}>
@@ -35,7 +38,7 @@ class RebookDialogScreen extends Component {
           Rebook
           </Text>
           <Text style={styles.headerTitleSubTitle}>
-            {`${client.fullName}`}
+            {`${fullName}`}
           </Text>
         </View>
       ),
@@ -75,11 +78,18 @@ class RebookDialogScreen extends Component {
   };
 
   componentWillMount() {
+    
     this.props.navigation.setParams({
       handleDone: () => this.saveRebook(),
     });
 
     const { appointment } = this.props.navigation.state.params;
+    if ('service' in appointment && !('services' in appointment)) {
+      const { service } = appointment;
+      service.employee = appointment.employee;
+      service.serviceLength = service.duration;
+      appointment.services = [service];
+    }
 
     if (appointment.services.length === 1) {
       this.setState({ rebookServices: appointment.services }, this.checkCanSave);
@@ -109,6 +119,7 @@ class RebookDialogScreen extends Component {
   }
 
   saveRebook() {
+
     const { appointment } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
@@ -185,6 +196,11 @@ class RebookDialogScreen extends Component {
 
   render() {
     const { appointment } = this.props.navigation.state.params;
+
+
+    if ('service' in appointment && !('services' in appointment)) {
+      appointment.services = [appointment.service];
+    }
 
 
     return (

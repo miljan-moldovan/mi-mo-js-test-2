@@ -17,7 +17,8 @@ import Icon from '../../../../UI/Icon';
 import Badge from '../../../../SalonBadge/index';
 import ResizeButton from '../../resizeButtons';
 import GroupBadge from '../../../../SalonGroupBadge/index';
-import { isCardWithGap } from '../../../../../utilities/helpers';
+import { isCardWithGap, getBadges } from '../../../../../utilities/helpers';
+
 import styles from './styles';
 
 class Card extends Component {
@@ -248,46 +249,10 @@ class Card extends Component {
 
   renderBadges = () => {
     const { appointment, hiddenAddonsLength } = this.props;
-    const { badgeData, client: { name, lastName } } = appointment;
-    const initials = `${name[0]}${lastName[0]}`;
-    const users = appointment.isMultipleProviders ? (
-      <View style={styles.multiProviderFix}>
-        <SvgUri
-          width="16"
-          height="8"
-          source={multiProviderUri}
-          fill="#082E66"
-        />
-      </View>) : null;
-    const star = badgeData.clientHasMembership ? <Icon color="#082E66" size={16} name="star" type="solid" /> : null;
-    const birthdayCake = badgeData.clientBirthday ? <Icon color="#082E66" size={16} name="birthdayCake" type="regular" /> : null;
-    const checkCircle = appointment.confirmationStatus ? <Icon color="#082E66" size={16} name="checkCircle" type="solid" /> : null;
-    const repeat = badgeData.isRecurring ? <Icon color="#082E66" size={16} name="repeatAlt" type="solid" /> : null;
-    const badgeNL = !badgeData.clientIsNew && badgeData.clientIsNewLocally ? <Badge text="NL" /> : null;
-    const badgeN = badgeData.clientIsNew ? <Badge text="N" /> : null;
-    const badgeO = badgeData.isOnlineBooking ? <Badge text="O" /> : null;
-    const badgeW = badgeData.isWaiting ? <Badge text="W" /> : null;
-    const badgeS = badgeData.isInService ? <Badge text="S" /> : null;
-    const badgeF = badgeData.isFinished ? <Badge text="F" /> : null;
-    const badgeR = badgeData.isReturning ? <Badge text="R" /> : null;
-    const badgeAddons = hiddenAddonsLength > 0 ? <Badge text={`+${hiddenAddonsLength}`} /> : null;
-    const badgeParty = badgeData.isParty ? <GroupBadge text={initials} /> : null;
+    const badges = getBadges(appointment, hiddenAddonsLength);
     return (
       <View style={styles.badgesContainer}>
-        {badgeAddons}
-        {badgeParty}
-        { users }
-        { star }
-        { birthdayCake }
-        { checkCircle }
-        { repeat }
-        { badgeNL }
-        { badgeN }
-        { badgeO }
-        { badgeW }
-        { badgeS }
-        { badgeF }
-        { badgeR }
+        { badges }
       </View>
     );
   }

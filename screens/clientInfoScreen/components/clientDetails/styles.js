@@ -10,6 +10,15 @@ export default StyleSheet.create({
   activityIndicator: {
     marginHorizontal: 10, height: 14, alignItems: 'flex-end', justifyContent: 'center',
   },
+  loadingContainer: {
+    position: 'absolute',
+    paddingBottom: 60,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#cccccc4d',
+  },
   inputGroup: { marginTop: 16 },
   inputSwitch: { height: 43 },
   inputSwitchText: { color: '#727A8F' },

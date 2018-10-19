@@ -13,6 +13,7 @@ import postEmailUpcomingAppointments from './postEmailUpcomingAppointments';
 import postAppointmentBookRebookMulti from './postAppointmentBookRebookMulti';
 import putBlockTimeMove from './putBlockTimeMove';
 import putBlockTimeResize from './putBlockTimeResize';
+import putBlockTimeEdit from './putBlockTimeEdit';
 
 export {
   getAppointmentBookAvailability,
@@ -28,6 +29,7 @@ export {
   postMessageProvidersClients,
   postAppointmentBookBlockTime,
   postAppointmentBookRebookMulti,
+  putBlockTimeEdit,
   putBlockTimeMove,
   putBlockTimeResize,
 };

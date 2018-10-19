@@ -25,6 +25,7 @@ export default function settingsReducer(state = initialState, action) {
         isLoading: true,
       };
     case SETTINGS_SUCCESS:
+
       return {
         ...state,
         error: null,
@@ -33,6 +34,7 @@ export default function settingsReducer(state = initialState, action) {
         isLoading: false,
       };
     case SETTINGS_FAILED:
+
       return {
         ...state,
         isLoading: false,
