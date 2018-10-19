@@ -49,19 +49,19 @@ const appointmentHeader = ({
       </View>
     </View>
 
-    {appointment.remarks &&
-    <React.Fragment>
-      <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-        <View style={styles.panelTopLineLeft}>
-          <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+    {appointment.remarks ?
+      <React.Fragment>
+        <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+          <View style={styles.panelTopLineLeft}>
+            <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+          </View>
         </View>
-      </View>
-      <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
-        <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
-          <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+        <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
+          <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+            <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
+          </View>
         </View>
-      </View>
-    </React.Fragment>
+      </React.Fragment> : null
     }
   </React.Fragment>
 );
