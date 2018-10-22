@@ -30,8 +30,8 @@ export default class ClientInput extends React.Component {
     }
 
     const clientScreen = this.props.walkin ? 'ModalClients' : 'ChangeClient';
-
-    this.props.navigate(this.props.apptBook ? 'ApptBookClient' : clientScreen, {
+    const nav = this.props.walkin ? this.props.push : this.props.navigate;
+    nav(this.props.apptBook ? 'ApptBookClient' : clientScreen, {
       selectedClient: this.state.selectedClient,
       actionType: 'update',
       dismissOnSelect: true,
@@ -92,6 +92,7 @@ ClientInput.propTypes = {
   labelStyle: Text.propTypes.style,
   iconStyle: Text.propTypes.style,
   navigate: PropTypes.func.isRequired,
+  push: PropTypes.func,
 };
 ClientInput.defaultProps = {
   apptBook: false,
@@ -101,4 +102,5 @@ ClientInput.defaultProps = {
   extraComponents: [],
   selectedClient: null,
   headerProps: {},
+  push: () => {},
 };
