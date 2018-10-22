@@ -202,6 +202,7 @@ class ClientFormulas extends Component {
       formula,
       client: this.props.client,
       onNavigateBack: this.getFormulas,
+      handleOnNavigateBack: this.props.handleOnNavigateBack,
       apptBook,
       ...this.props,
     });
@@ -367,6 +368,7 @@ ClientFormulas.propTypes = {
   clientFormulasState: PropTypes.any.isRequired,
   client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
+  handleOnNavigateBack: PropTypes.func.isRequired,
 };
 
 export default ClientFormulas;

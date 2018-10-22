@@ -161,6 +161,14 @@ export const MainNavigator = StackNavigator(
       screen: TurnAwayScreen,
       navigationOptions: { tabBarVisible: false },
     },
+    ClientInfo: {
+      screen: ClientInfoScreen,
+      navigationOptions: {
+        tabBarVisible: false,
+        headerMode: 'screen',
+        gesturesEnabled: false,
+      },
+    },
     Settings: { screen: SettingsScreen },
     RemovalReasonTypes: {
       screen: RemovalReasonTypesScreen,
@@ -228,7 +236,7 @@ const TransitionConfiguration = () => ({
     const transition = params.transition || 'default';
     return {
       SlideFromBottom: SlideFromBottom(index, position, height),
-      default: SlideFromRight(index, position, width),
+      default: SlideFromBottom(index, position, width),
     }[transition];
   },
 });
@@ -239,11 +247,6 @@ export default (QueueStackNavigator = StackNavigator(
       screen: MainNavigator,
       navigationOptions: { headerMode: 'none', header: null },
     },
-    ClientInfo: {
-      screen: ClientInfoScreen,
-      navigationOptions: { tabBarVisible: false },
-    },
-
     /** MODAL SCREENS GO HERE * */
     ModalServices: {
       screen: ServicesScreen,

@@ -1,6 +1,7 @@
 import { Alert } from 'react-native';
 
 export const showErrorAlert = (error) => {
+
   if (error.response) {
     const message = error.response.data.userMessage
     || error.response.data.systemMessage || error.response.data.systemErrorMessage

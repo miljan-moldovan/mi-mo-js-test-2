@@ -40,8 +40,10 @@ class ClientFormula extends React.Component {
     const { client } = props.navigation.state.params;
     props.settingsActions.getSettingsByName(
       'AvailableFormulaTypes',
-      () => {
-        props.settingsActions.getSettingsByName('DefaultFormulaType', this.loadFormulaTypes);
+      (result, availableFormulaTypes) => {
+        props.settingsActions.getSettingsByName('DefaultFormulaType', (result, defaultFormulaType) => {
+          this.loadFormulaTypes(availableFormulaTypes, defaultFormulaType);
+        });
       },
     );
 
@@ -76,7 +78,7 @@ class ClientFormula extends React.Component {
     const { formula } = this.state;
     formula.text = copied.text;
     formula.date = copied.date;
-    formula.enteredBy = { fullName: copied.stylistName, name: copied.stylistName.split(' ')[0], lastName: copied.stylistName.split(' ')[1] };
+    formula.enteredBy = copied.stylistName ? { fullName: copied.stylistName, name: copied.stylistName.split(' ')[0], lastName: copied.stylistName.split(' ')[1] } : null;
 
 
     const formulaType = find(this.state.formulaTypes, { key: copied.formulaType });
@@ -173,15 +175,8 @@ class ClientFormula extends React.Component {
       this.setState({ formula }, this.checkCanSave);
     }
 
-    // onPressDate = (selectedDate) => {
-    //   const { formula } = this.state;
-    //   formula.date = selectedDate;
-    //   this.shouldSave = true;
-    //   this.setState({ formula }, this.checkCanSave);
-    // }
-
-    loadFormulaTypes = (result) => {
-      if (result) {
+    loadFormulaTypes = (availableFormulaTypesSetting, defaultFormulaTypeSetting) => {
+      if (availableFormulaTypesSetting && defaultFormulaTypeSetting) {
         const { settings } = this.props.settingsState;
 
 
@@ -189,20 +184,18 @@ class ClientFormula extends React.Component {
         let defaultFormulaType = null;
 
         if (settings) {
-          let availableFormulaTypes = find(settings, { settingName: 'AvailableFormulaTypes' });
-          availableFormulaTypes = availableFormulaTypes ?
-            availableFormulaTypes.settingValue : false;
+          let availableFormulaTypes = availableFormulaTypesSetting ?
+            availableFormulaTypesSetting.settingValue : false;
 
-          availableFormulaTypes = availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
+          availableFormulaTypes = availableFormulaTypes && availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
           for (let i = 0; i < availableFormulaTypes.length; i += 1) {
             formulaTypes.push({ key: formulaTypesEnum[availableFormulaTypes[i]], value: availableFormulaTypes[i] });
           }
 
-          let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
-          defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
+          defaultFormulaType = defaultFormulaTypeSetting ?
             defaultFormulaTypeSetting.settingValue : null;
 
-          defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
+          defaultFormulaType = find(formulaTypes, { value: defaultFormulaType });
           defaultFormulaType = defaultFormulaType || null;
         }
 
@@ -210,6 +203,8 @@ class ClientFormula extends React.Component {
           defaultFormulaType,
           formulaTypes,
         }, this.loadFormulaData);
+      } else {
+        this.setState({ isLoading: false }, this.checkCanSave);
       }
     }
 
@@ -221,7 +216,8 @@ class ClientFormula extends React.Component {
       if (this.props.navigation.state.params.actionType === 'update') {
         formula = Object.assign({}, onEditionFormula);
 
-        const provider = { fullName: formula.stylistName, name: formula.stylistName.split(' ')[0], lastName: formula.stylistName.split(' ')[1] };
+
+        const provider = formula.stylistName ? { fullName: formula.stylistName, name: formula.stylistName.split(' ')[0], lastName: formula.stylistName.split(' ')[1] } : null;
 
         const formulaType = find(this.state.formulaTypes, { key: formula.formulaType });
         formula.formulaType = formulaType;
@@ -407,7 +403,7 @@ ClientFormula.propTypes = {
     selectProvider: PropTypes.func.isRequired,
   }).isRequired,
   clientFormulasState: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
+  // client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
   settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,

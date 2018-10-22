@@ -480,7 +480,7 @@ export const putQueue = (queueId, queue, callback) => (dispatch) => {
   dispatch({ type: PUT_QUEUE });
   return Queue.putQueue(queueId, queue)
     .then((response) => { dispatch(putQueueSuccess(response)); callback(true); })
-    .catch((error) => { dispatch(putQueueFailed(error)); callback(false); });
+    .catch((error) => { showErrorAlert(error); dispatch(putQueueFailed(error)); callback(false); });
 };
 
 
