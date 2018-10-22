@@ -70,5 +70,6 @@ export default StyleSheet.create({
   inputGroupStyle: { paddingLeft: smallDevice ? 10 : 16 },
   rootStyle: { paddingRight: smallDevice ? 10 : 16 },
   sectionTitleRootStyle: { marginLeft: 0 },
+  inputStyle: { fontFamily: 'Roboto-Light' },
   sectionTitleStyle: { marginLeft: smallDevice ? 10 : 16 },
 });
