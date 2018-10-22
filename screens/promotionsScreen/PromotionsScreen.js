@@ -178,14 +178,16 @@ class PromotionsScreen extends React.Component {
         <View style={[styles.container, styles.flexRow]}>
           <FlatList
             data={this.currentData}
-            style={[styles.container, styles.marginRight]}
+            style={styles.container}
             ref={(ref) => { this.listRef = ref; }}
             keyExtractor={this.keyExtractor}
             renderItem={this.renderItem}
             getItemLayout={this.getItemLayout}
             ItemSeparatorComponent={this.renderSeparator}
           />
-          <ListLetterFilter onPress={this.scrollToLetter} />
+          {
+            // <ListLetterFilter onPress={this.scrollToLetter} />
+          }
         </View>
       </View>
     );

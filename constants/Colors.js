@@ -30,6 +30,7 @@ export default {
   serviceCheckBlack: '#0C4699',
   selectedGreen: '#1DBF12',
   dividerGrey: '#0C4699',
+  divider: '#C0C1C6',
   searchBarBackground: '#D9D9DA',
   noContentBackground: '#F4F4F4',
 };

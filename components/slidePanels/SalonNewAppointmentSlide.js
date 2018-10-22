@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '90%',
-  //  height: 300,
+    //  height: 300,
   },
   btnTop: {
     height: 54,
@@ -401,7 +401,7 @@ export default class SalonNewAppointmentSlide extends React.Component {
     this.props.onHide();
   }
 
-  handleTypeChange=(ev, selectedFilter) => {
+  handleTypeChange = (ev, selectedFilter) => {
     this.setState({ selectedFilter });
   }
 
@@ -610,14 +610,14 @@ export default class SalonNewAppointmentSlide extends React.Component {
                     paddingLeft: 0,
                   }}
                 >
-                  {[<InputButton
-                    noIcon
+                  <InputButton
+                    icon={false}
                     style={styles.otherOptionsBtn}
                     labelStyle={styles.otherOptionsLabels}
                     onPress={() => { alert('Not implemented'); }}
                     label="Block Time"
                   >
-                    {[<View style={styles.iconContainer}>
+                    <View style={styles.iconContainer}>
                       <Icon name="clockO" size={18} color="#115ECD" type="solid" />
                       <View style={styles.banIconContainer}>
                         <Icon
@@ -628,76 +628,71 @@ export default class SalonNewAppointmentSlide extends React.Component {
                           type="solid"
                         />
                       </View>
-                      </View>]}
-                  </InputButton>,
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    icon={false}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Edit Schedule"
+                  >
+                    <View style={styles.iconContainer}>
+                      <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
 
-                    <InputButton
-                      noIcon
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Edit Schedule"
-                    >
-                      {[<View style={styles.iconContainer}>
-                        <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-
-                        <View style={styles.penIconContainer}>
-                          <Icon
-                            style={styles.subIcon}
-                            name="pen"
-                            size={9}
-                            color="#115ECD"
-                            type="solid"
-                          />
-                        </View>
-                      </View>]}
-                    </InputButton>,
-
-                    <InputButton
-                      noIcon
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Room Assignment"
-                    >
-                      {[<View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
-                      </View>]}
-                    </InputButton>,
-
-                    <InputButton
-                      noIcon
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Turn Away"
-                    >
-                      {[<View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
-                      </View>]}
-                    </InputButton>,
-
-                    <InputButton
-                      noIcon
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Message Provider's Clients"
-                    >
-                      {[<View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
-                      </View>]}
-                    </InputButton>,
-                    <InputButton
-                      noIcon
-                      style={styles.otherOptionsBtn}
-                      labelStyle={styles.otherOptionsLabels}
-                      onPress={() => { alert('Not implemented'); }}
-                      label="Message All Clients"
-                    >
-                      {[<View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
-                      </View>]}
-                    </InputButton>]}
+                      <View style={styles.penIconContainer}>
+                        <Icon
+                          style={styles.subIcon}
+                          name="pen"
+                          size={9}
+                          color="#115ECD"
+                          type="solid"
+                        />
+                      </View>
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    icon={false}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Room Assignment"
+                  >
+                    <View style={styles.iconContainer}><Icon name="streetView" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    icon={false}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Turn Away"
+                  >
+                    <View style={styles.iconContainer}><Icon name="ban" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    icon={false}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Message Provider's Clients"
+                  >
+                    <View style={styles.iconContainer}><Icon name="user" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
+                  <InputButton
+                    icon={false}
+                    style={styles.otherOptionsBtn}
+                    labelStyle={styles.otherOptionsLabels}
+                    onPress={() => { alert('Not implemented'); }}
+                    label="Message All Clients"
+                  >
+                    <View style={styles.iconContainer}><Icon name="users" size={18} color="#115ECD" type="solid" />
+                    </View>
+                  </InputButton>
                 </InputGroup>
               </View>
-
             }
           </View>
         </View>

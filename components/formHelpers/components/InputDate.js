@@ -66,7 +66,7 @@ export default class InputDate extends React.Component {
           style={{ flex: 1 }}
           valueStyle={this.props.valueStyle}
           onPress={this.onPressButton}
-          noIcon
+          icon={false}
           label={this.props.placeholder}
           value={moment.isMoment(this.props.selectedDate) ? this.props.selectedDate.format(format) : this.props.selectedDate}
         />

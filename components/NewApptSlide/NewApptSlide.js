@@ -556,17 +556,18 @@ class NewApptSlide extends React.Component {
 
     const { isFirstAvailable } = employee;
 
-    const messageAllClientsButton = (<InputButton
-      noIcon
-      style={styles.otherOptionsBtn}
-      labelStyle={styles.otherOptionsLabels}
-      onPress={this.openMessageAllClients}
-      label="Message All Clients"
-    >
-      <View style={styles.iconContainer}>
-        <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
-      </View>
-                                     </InputButton>);
+    const messageAllClientsButton = (
+      <InputButton
+        icon={false}
+        style={styles.otherOptionsBtn}
+        labelStyle={styles.otherOptionsLabels}
+        onPress={this.openMessageAllClients}
+        label="Message All Clients"
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
+        </View>
+      </InputButton>);
 
     return (
       <View style={[styles.body, { height: this.state.otherHeight }]}>
@@ -574,24 +575,24 @@ class NewApptSlide extends React.Component {
           <React.Fragment>
             {messageAllClientsButton}
           </React.Fragment>
-      :
+          :
           <React.Fragment>
             <InputButton
-              noIcon
+              icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
-          this.hidePanel();
-          const {
-            date, mainEmployee: employee, startTime, bookedByEmployee,
-          } = this.props.newApptState;
-          this.props.navigation.navigate(
-            'BlockTime',
-            {
-              date, employee, fromTime: startTime, bookedByEmployee,
-            },
-          );
-        }}
+                this.hidePanel();
+                const {
+                  date, mainEmployee: employee, startTime, bookedByEmployee,
+                } = this.props.newApptState;
+                this.props.navigation.navigate(
+                  'BlockTime',
+                  {
+                    date, employee, fromTime: startTime, bookedByEmployee,
+                  },
+                );
+              }}
               label="Block Time"
             >
               <View style={styles.iconContainer}>
@@ -609,17 +610,17 @@ class NewApptSlide extends React.Component {
             </InputButton>
 
             <InputButton
-              noIcon
+              icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
-          this.hidePanel();
-          const { date, mainEmployee: employee } = this.props.newApptState;
-          this.props.navigation.navigate(
-            'EditSchedule',
-            { date, employee },
-          );
-        }}
+                this.hidePanel();
+                const { date, mainEmployee: employee } = this.props.newApptState;
+                this.props.navigation.navigate(
+                  'EditSchedule',
+                  { date, employee },
+                );
+              }}
               label="Edit Schedule"
             >
               <View style={styles.iconContainer}>
@@ -637,7 +638,7 @@ class NewApptSlide extends React.Component {
             </InputButton>
 
             <InputButton
-              noIcon
+              icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={this.goToRoomAssignment}
@@ -649,16 +650,16 @@ class NewApptSlide extends React.Component {
             </InputButton>
 
             <InputButton
-              noIcon
+              icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
-          this.hidePanel();
-          const { date, mainEmployee: employee, startTime } = this.props.newApptState;
-          this.props.navigation.navigate('TurnAway', {
-            date, employee, fromTime: startTime, apptBook: true,
-          });
-        }}
+                this.hidePanel();
+                const { date, mainEmployee: employee, startTime } = this.props.newApptState;
+                this.props.navigation.navigate('TurnAway', {
+                  date, employee, fromTime: startTime, apptBook: true,
+                });
+              }}
               label="Turn Away"
             >
               <View style={styles.iconContainer}>
@@ -667,7 +668,7 @@ class NewApptSlide extends React.Component {
             </InputButton>
 
             <InputButton
-              noIcon
+              icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={this.openMessageProvidersClients}
@@ -678,7 +679,7 @@ class NewApptSlide extends React.Component {
               </View>
             </InputButton>
             <InputButton
-              noIcon
+              icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={this.openMessageAllClients}
@@ -790,7 +791,7 @@ class NewApptSlide extends React.Component {
             apptBook
             label={false}
             isRequested={isQuickApptRequested}
-            filterList={filterProviders}
+            filterList={filterProviders.map(itm => itm.id)}
             rootStyle={styles.inputHeight}
             selectedProvider={provider}
             selectedService={service}
@@ -838,7 +839,7 @@ class NewApptSlide extends React.Component {
                 onChange={this.props.newApptActions.setQuickApptRequested}
                 isFirstAvailable={provider.isFirstAvailable}
               />
-          : null}
+              : null}
 
           </View>
         </View>

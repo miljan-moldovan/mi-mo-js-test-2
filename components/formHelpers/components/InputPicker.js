@@ -70,7 +70,7 @@ export default class InputPicker extends React.Component {
       <React.Fragment>
         <InputButton
           labelStyle={labelStyle}
-          noIcon={this.props.noIcon}
+          icon={this.props.noIcon ? false : 'default'}
           label={this.props.label}
           value={this.state.selectedOption ? this.state.selectedOption.value : 'Select'}
           valueStyle={this.state.selectedOption ? {} : noValueStyle}

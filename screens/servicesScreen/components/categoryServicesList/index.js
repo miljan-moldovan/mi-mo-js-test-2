@@ -1,15 +1,19 @@
 // @flow
 import React from 'react';
-import { View,
+import {
+  View,
   StyleSheet,
   RefreshControl,
-  FlatList } from 'react-native';
+  FlatList,
+} from 'react-native';
 import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
   InputGroup,
   InputButton,
+  InputDivider,
 } from '../../../../components/formHelpers';
+import Colors from '../../../../constants/Colors';
 
 const styles = StyleSheet.create({
   categoryServicesList: {
@@ -40,6 +44,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#1DBF12',
   },
+  dividerComponent: {
+    marginLeft: 16,
+    height: StyleSheet.hairlineWidth,
+    color: Colors.divider,
+  },
 });
 
 class CategoryServicesList extends React.Component {
@@ -54,37 +63,30 @@ class CategoryServicesList extends React.Component {
   _keyExtractor = (item, index) => item.id;
 
   renderItem = elem => (
-    <InputGroup style={{
-        flexDirection: 'row',
-        height: 44,
-        borderBottomWidth: 1 / 3,
-        borderTopWidth: 0,
-      }}
+    <InputButton
+      icon={false}
+      key={Math.random().toString()}
+      style={{ height: 44, paddingLeft: 16 }}
+      labelStyle={{ color: '#110A24' }}
+      onPress={this.props.onChangeService ? () => { this.props.servicesActions.setSelectedService(elem.item); this.props.onChangeService(elem.item); } : () => { }}
+      label={elem.item.name}
     >
-      {[
-        <InputButton
-          noIcon
-          key={Math.random().toString()}
-          style={{ flex: 1 }}
-          labelStyle={{ color: '#110A24' }}
-          onPress={this.props.onChangeService ? () => { this.props.servicesActions.setSelectedService(elem.item); this.props.onChangeService(elem.item); } : () => {}}
-          label={elem.item.name}
-          children={
-            <View style={styles.inputRow}>
-              {elem.item === this.props.servicesState.selectedService &&
-                <FontAwesome style={styles.checkIcon}>
-                  {Icons.checkCircle}
-                </FontAwesome>
-            }
-            </View>
-          }
-        />]}
-    </InputGroup>
+      <View style={styles.inputRow}>
+        {
+          elem.item === this.props.servicesState.selectedService &&
+          <FontAwesome style={styles.checkIcon}>
+            {Icons.checkCircle}
+          </FontAwesome>
+        }
+      </View>
+    </InputButton>
   )
 
   onRefreshFinish = () => {
     this.setState({ refreshing: false });
   }
+
+  renderSeparator = () => <View style={{ backgroundColor: Colors.divider, marginLeft: 16, height: StyleSheet.hairlineWidth }} />
 
   render() {
     return (
@@ -95,9 +97,9 @@ class CategoryServicesList extends React.Component {
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={() => {
-                  this.setState({ refreshing: true });
-                  this.props.onRefresh(this.onRefreshFinish);
-                }
+                this.setState({ refreshing: true });
+                this.props.onRefresh(this.onRefreshFinish);
+              }
               }
             />
           }
@@ -106,6 +108,7 @@ class CategoryServicesList extends React.Component {
           extraData={this.props}
           keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
+          ItemSeparatorComponent={this.renderSeparator}
         />
       </View>
     );

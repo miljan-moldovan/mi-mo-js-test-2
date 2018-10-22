@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
+  Alert,
   ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -25,6 +26,7 @@ import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
+import Icon from '../../components/UI/Icon';
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -44,8 +46,13 @@ export default class ModifyServiceScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity onPress={navigation.goBack}>
-          <Text style={styles.leftButtonText}>Cancel</Text>
+        <SalonTouchableOpacity style={styles.leftButtonContainer} onPress={navigation.goBack}>
+          <Icon
+            name="angleLeft"
+            size={24}
+            color="white"
+          />
+          <Text style={styles.leftButtonText}>Back</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
@@ -61,7 +68,6 @@ export default class ModifyServiceScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    const { params } = this.props.navigation.state;
     this.state = this.getStateFromParams();
     const canSave = this.state.service && this.state.employee;
     this.props.navigation.setParams({ handleSave: this.handleSave, canSave });
@@ -116,7 +122,6 @@ export default class ModifyServiceScreen extends React.Component {
     const { employee, service } = this.state;
     if (employee && service) {
       if (get(employee, 'isFirstAvailable', false)) {
-        console.log(employee);
         this.setState({ price: get(service, 'price', 0) });
         return;
       }
@@ -175,6 +180,23 @@ export default class ModifyServiceScreen extends React.Component {
     },
   })
 
+  // errorCallback = (error) => {
+  //   if (error.response) {
+  //     const message = error.response.data.userMessage || 'Unknown error';
+  //     Alert.alert(
+  //       'Something went wrong',
+  //       message,
+  //       [
+  //         {
+  //           text: 'Ok, got it',
+  //           onPress: () => {},
+  //         },
+  //       ],
+  //       { cancelable: false },
+  //     );
+  //   }
+  // };
+
   handleRemove = () => {
     const { onRemove = (itm => itm) } = this.props.navigation.state.params || {};
     onRemove();
@@ -190,9 +212,9 @@ export default class ModifyServiceScreen extends React.Component {
       isProviderRequested,
     } = this.state;
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
-    const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
-
-
+    const {
+      onSave = (itm => itm),
+    } = this.props.navigation.state.params || {};
     onSave({
       price,
       service,
@@ -200,8 +222,7 @@ export default class ModifyServiceScreen extends React.Component {
       promotion,
       isFirstAvailable,
       isProviderRequested,
-    });
-    this.props.navigation.goBack();
+    }, this.props.navigation.goBack, this.errorCallback);
   }
 
   handleChangeEmployee = (employee) => {
@@ -218,7 +239,10 @@ export default class ModifyServiceScreen extends React.Component {
   }
 
   render() {
-    const { navigation: { navigate } } = this.props;
+    const {
+      navigation: { navigate },
+      queueDetailState: { isLoading: isLoadingState },
+    } = this.props;
     const {
       price,
       isLoading,
@@ -233,7 +257,7 @@ export default class ModifyServiceScreen extends React.Component {
     return (
       <View style={styles.container}>
         {
-          isLoading &&
+          (isLoading || isLoadingState) &&
           <LoadingOverlay />
         }
         <InputGroup style={styles.marginTop}>
@@ -281,6 +305,7 @@ export default class ModifyServiceScreen extends React.Component {
           />
           <InputDivider />
           <InputLabel label="Discount" value={this.getDiscountAmount()} />
+          <InputDivider />
           <InputLabel label="Price" value={priceLabelValue} />
         </InputGroup>
         <SectionDivider />

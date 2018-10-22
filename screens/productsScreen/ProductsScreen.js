@@ -197,8 +197,7 @@ class ProductsScreen extends React.Component {
         >
           {name}
         </WordHighlighter>
-
-        <FontAwesome style={[styles.categoryIconStyle]}>{Icons.angleRight}</FontAwesome>
+        <Icon name="angleRight" size={20} color={Colors.defaultGrey} style={styles.caretIcon} />
       </SalonTouchableOpacity>
     );
   }

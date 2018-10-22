@@ -272,7 +272,7 @@ class BlockTimeScreen extends React.Component {
             />
             <InputDivider />
             <InputDate
-              noIcon
+              icon={false}
               style={{ flex: 1 }}
               placeholder="Date"
               minDate={moment().toDate()}
@@ -319,7 +319,7 @@ class BlockTimeScreen extends React.Component {
           <InputGroup>
             <SalonTimePicker
               label="Start"
-              noIcon
+              icon={false}
               value={fromTime}
               isOpen={this.state.fromTimePickerOpen}
               onChange={this.handleChangefromTime}
@@ -328,7 +328,7 @@ class BlockTimeScreen extends React.Component {
             <InputDivider />
             <SalonTimePicker
               label="Ends"
-              noIcon
+              icon={false}
               value={toTime}
               isOpen={this.state.toTimePickerOpen}
               onChange={this.handleChangetoTime}

@@ -213,7 +213,7 @@ class ClientDetails extends Component {
         break;
       }
       default:
-            /* nothing */
+      /* nothing */
     }
 
     this.setState({ client: newClient, hasChanged: true }, this.checkValidation);
@@ -364,11 +364,11 @@ class ClientDetails extends Component {
     this.props.clientInfoActions.deleteClientInfo(this.state.client.id, this.handleDeleteClient);
   }
 
-  setReferredOptionOther =() => {
+  setReferredOptionOther = () => {
     this.selectReferredOption(SelectedReferredClientEnum.Other);
   }
 
-  setReferredOptionClient =(navigateToClients) => {
+  setReferredOptionClient = (navigateToClients) => {
     this.selectReferredOption(SelectedReferredClientEnum.Client, navigateToClients);
   }
 
@@ -376,7 +376,7 @@ class ClientDetails extends Component {
     if (result) {
       const { settings } = this.props.settingsState;
 
-      const required: { [key: string]: boolean } = { };
+      const required: { [key: string]: boolean } = {};
 
       const trackClientAge = find(settings, { settingName: 'TrackClientAge' }).settingValue;
       const forceAgeInput = find(settings, { settingName: 'ForceAgeInput' }).settingValue;
@@ -433,7 +433,7 @@ class ClientDetails extends Component {
       'Delete client',
       message,
       [
-        { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+        { text: 'Cancel', onPress: () => { }, style: 'cancel' },
         {
           text: 'OK',
           onPress: this.onPressOkDelete,
@@ -567,7 +567,7 @@ class ClientDetails extends Component {
   isValidZipCodeRegExp = regexs.zipcode;
   isValidPhoneRegExp = regexs.phone;
   isValidText = regexs.notemptytext;
-  isValidAddress= regexs.address;
+  isValidAddress = regexs.address;
 
 
   loadClientData = (result) => {

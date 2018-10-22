@@ -9,7 +9,7 @@ import ClientInfoScreen from '../screens/clientInfoScreen';
 
 const ClientsStackNavigator = StackNavigator(
   {
-    Clients: {
+    ClientsMain: {
       screen: ClientsScreen,
     },
     NewClient: {

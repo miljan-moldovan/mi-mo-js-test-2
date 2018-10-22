@@ -133,7 +133,7 @@ class ProviderScreen extends React.Component {
   onChangeSearchText = searchText => this.setState({ searchText });
 
   onRefresh = () => {
-    const { filterList, selectedService, queueItem } = this.params;
+    const { selectedService, queueItem } = this.params;
     const {
       providersActions: {
         getProviders,
@@ -167,8 +167,7 @@ class ProviderScreen extends React.Component {
         break;
       case 'employees':
       default:
-
-        getProviders(req, selectedService, filterList);
+        getProviders(req, selectedService);
         break;
     }
   }
@@ -210,21 +209,16 @@ class ProviderScreen extends React.Component {
         currentData = allProviders;
         break;
     }
-    return (
-      (isArray(filterList) && filterList.length > 0) ||
-      searchText.length > 0
-    ) ? currentData.filter((employee) => {
-        const isProviderFoundByName = [employee.name, employee.lastName, employee.middleName]
-          .filter(item => !!item)
-          .map(item => item.toLowerCase())
-          .some(item => item.indexOf(searchText.toLowerCase()) >= 0);
-
-
-        if (isArray(filterList) && filterList.length > 0 && !includes(filterList, employee.id)) {
-          return false;
-        }
-        return isProviderFoundByName || employee.code === searchText;
-      }) : currentData;
+    if (isArray(filterList) && filterList.length > 0) {
+      currentData = currentData.filter(itm => includes(filterList, itm.id));
+    }
+    return searchText.length > 0 ? currentData.filter((employee) => {
+      const isProviderFoundByName = [employee.name, employee.lastName, employee.middleName]
+        .filter(item => !!item)
+        .map(item => item.toLowerCase())
+        .some(item => item.indexOf(searchText.toLowerCase()) >= 0);
+      return isProviderFoundByName || employee.code === searchText;
+    }) : currentData;
   }
 
   get mode() {

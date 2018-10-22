@@ -303,20 +303,20 @@ export default class ModifyApptServiceScreen extends React.Component {
             noPlaceholder
             nameKey={selectedService.description ? 'description' : 'name'}
             selectedProvider={selectedProvider}
-            navigate={this.props.navigation.navigate}
             selectedService={selectedService}
+            navigate={this.props.navigation.navigate}
             onChange={this.handleSelectService}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
           />
           <InputDivider />
           <ProviderInput
             apptBook
-            filterByService
-            filterList={this.props.apptBookState.providers}
             noPlaceholder
-            navigate={this.props.navigation.navigate}
+            selectedService={selectedService}
             selectedProvider={selectedProvider}
             onChange={this.handleSelectProvider}
+            navigate={this.props.navigation.navigate}
+            filterList={this.props.apptBookState.providers.map(itm => itm.id)}
             headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
           <InputDivider />

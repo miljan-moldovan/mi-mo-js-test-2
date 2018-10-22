@@ -79,7 +79,6 @@ const OthersTab = ({ handleSelect, selectedFilter }) => {
       <InputGroup>
         <InputButton
           icon={roomIcon}
-          noIcon={!roomIcon}
           labelStyle={
             selectedFilter === 'rooms' ?
               [styles.rowText, styles.boldText] :
@@ -90,7 +89,6 @@ const OthersTab = ({ handleSelect, selectedFilter }) => {
         />
         <InputDivider />
         <InputButton
-          noIcon={!resourceIcon}
           icon={resourceIcon}
           labelStyle={
             selectedFilter === 'resources' ?

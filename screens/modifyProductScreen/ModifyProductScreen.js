@@ -18,6 +18,7 @@ import {
 import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from '../modifyServiceScreen/styles';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 class ModifyProductScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -136,18 +137,21 @@ class ModifyProductScreen extends React.Component {
       employee,
       promotion,
     } = this.state;
+    if (!product || !employee) {
+      return;
+    }
     const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
     onSave({
       product,
       employee,
       promotion,
-    });
-    this.props.navigation.goBack();
+    }, this.props.navigation.goBack);
   }
 
   render() {
     const {
       navigation: { navigate },
+      queueDetailState: { isLoading },
     } = this.props;
     const {
       product,
@@ -158,6 +162,10 @@ class ModifyProductScreen extends React.Component {
     const priceText = `$ ${this.calculatePriceDiscount(promotion, 'retailDiscountAmount', price)}`;
     return (
       <View style={styles.container}>
+        {
+          isLoading &&
+          <LoadingOverlay />
+        }
         <InputGroup style={styles.marginTop}>
           <ProductInput
             navigate={navigate}

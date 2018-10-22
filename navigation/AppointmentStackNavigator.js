@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import { View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
@@ -189,7 +188,7 @@ const AppointmentStackNavigator = StackNavigator(
         headerTitle: <View style={styles.titleContainer}>
           <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
           <Text style={styles.subTitleText}>Appointment notes</Text>
-                     </View>,
+        </View>,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (

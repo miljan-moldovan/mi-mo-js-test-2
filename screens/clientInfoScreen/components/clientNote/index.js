@@ -319,7 +319,7 @@ class ClientNote extends Component {
                 minDate={moment().format('DD MMMM YYYY')}
                 style={styles.inputDate}
                 placeholder="Expire Date"
-                noIcon={this.state.note.expiration == null}
+                icon={!this.state.note.expiration ? false : 'default'}
                 onPress={this.inputDate}
                 valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
                 selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { get, cloneDeep } from 'lodash';
 import moment from 'moment';
-import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
+import { getEmployeePhotoSource } from '../../../utilities/helpers/getEmployeePhotoSource';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './stylesServiceSection';
@@ -17,6 +17,7 @@ import {
   DefaultAvatar,
   SchedulePicker,
 } from '../../../components/formHelpers';
+import ProviderSchedulePicker from '../../../components/formHelpers/components/ProviderSchedulePicker';
 
 
 class ServiceSection extends Component {

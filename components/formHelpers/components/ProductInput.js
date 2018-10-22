@@ -9,6 +9,7 @@ const ProductInput = (props) => {
     apptBook,
     navigate,
     onChange,
+    icon = 'default',
     label = 'Product',
     selectedProduct,
   } = props;
@@ -24,6 +25,7 @@ const ProductInput = (props) => {
   return (
     <InputButton
       {...props}
+      icon={icon}
       value={value}
       label={label}
       onPress={onPress}

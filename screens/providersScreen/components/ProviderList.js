@@ -220,7 +220,7 @@ class ProviderList extends React.Component {
           <Text style={styles.providerMin}>min</Text>
         </View>
       </View>);
-    return (<InputButton label={itemLabel} noIcon />);
+    return (<InputButton label={itemLabel} icon={false} />);
     // return (
     //   <TouchableHighlight
     //     key={provider.id}
@@ -286,7 +286,7 @@ class ProviderList extends React.Component {
     <View>
       <InputButton
         label={label}
-        noIcon
+        icon={false}
         onPress={() => {
           if (this.state.selectable) {
             this.setState({

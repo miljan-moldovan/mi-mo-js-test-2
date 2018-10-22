@@ -453,6 +453,7 @@ const quickBookAppt = (successCallback, errorCallback) => (dispatch, getState) =
       if (isFunction(errorCallback)) {
         errorCallback(err);
       }
+      showErrorAlert(err);
       dispatch({
         type: BOOK_NEW_APPT_FAILED,
         data: { error: err },

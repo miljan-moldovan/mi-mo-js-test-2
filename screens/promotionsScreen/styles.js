@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
   },
   itemSeparator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.dividerGrey,
+    backgroundColor: Colors.divider,
+    marginLeft: 16,
   },
   searchBarContainer: { paddingHorizontal: 8 },
   listLetterContainer: {

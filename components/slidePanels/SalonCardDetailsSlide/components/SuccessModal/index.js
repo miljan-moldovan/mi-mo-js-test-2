@@ -29,7 +29,7 @@ class SuccessModal extends React.Component {
           </Text>
           <InputButton
             onPress={this.handleHideModal}
-            noIcon
+            icon={false}
             style={styles.button}
           ><Text style={styles.buttonText}>DISMISS</Text>
           </InputButton>
