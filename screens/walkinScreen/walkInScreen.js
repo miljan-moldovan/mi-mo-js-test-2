@@ -177,10 +177,12 @@ class WalkInScreen extends Component {
       services,
       client,
     } = this.state;
-    let canSave = this.isValidEmailRegExp.test(email) || (isNull(client.email) && (isNull(email) || email === ''));
-    canSave = canSave && (this.isValidPhoneRegExp.test(phone) ||
-      (isUndefined(currentPhone.phone) && (isNull(phone) || phone === '')));
-
+    let canSave = client.id === 1;
+    if (!canSave) {
+      canSave = this.isValidEmailRegExp.test(email) || (isNull(client.email) && (isNull(email) || email === ''));
+      canSave = canSave && (this.isValidPhoneRegExp.test(phone) ||
+        (isUndefined(currentPhone.phone) && (isNull(phone) || phone === '')));
+    }
     for (let i = 0; i < services.length; i += 1) {
       const serviceBlock = services[i];
       canSave = canSave && serviceBlock.service !== null && serviceBlock.provider !== undefined;
@@ -432,6 +434,7 @@ class WalkInScreen extends Component {
                   walkin
                   style={styles.rootStyle}
                   navigate={this.props.navigation.navigate}
+                  push={this.props.navigation.push}
                   label={this.state.client === null ? 'Client' : 'Client'}
                   headerProps={{
                 title: 'Clients',
@@ -457,6 +460,7 @@ class WalkInScreen extends Component {
                     onUpdate={this.handleUpdateService}
                     cancelButton={this.cancelButton}
                     navigate={this.props.navigation.navigate}
+                    push={this.props.navigation.push}
                     walkin
                   />
           </View>)}

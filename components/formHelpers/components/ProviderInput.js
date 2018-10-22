@@ -22,6 +22,7 @@ export default class ProviderInput extends React.Component {
   handlePress = () => {
     const {
       navigate,
+      push,
       onPress = false,
       apptBook = false,
       headerProps = {},
@@ -37,7 +38,8 @@ export default class ProviderInput extends React.Component {
     } = this.props;
     if (isFunction(onPress)) { onPress(); }
     const screenProviders = walkin ? 'ModalProviders' : 'Providers';
-    navigate(apptBook ? 'ApptBookProvider' : screenProviders, {
+    let nav = walkin ? push : navigate;
+    nav(apptBook ? 'ApptBookProvider' : screenProviders, {
       mode,
       queueList,
       filterList,
