@@ -34,14 +34,13 @@ class RemovalReasonTypesScreen extends React.Component {
 
     return {
       headerTitle: (
-
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.subTitleText}>{`${name} ${lastName}`}</Text>
         </View>),
       headerLeft: (
         <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{ fontSize: 14, color: 'white' }}>Back</Text>
+          <Text style={{ fontSize: 14, color: 'white', paddingLeft: 10, paddingTop: 20,}}>Back</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (

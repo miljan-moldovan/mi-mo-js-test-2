@@ -1,12 +1,6 @@
 // @flow
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-} from 'react-native';
+import { Image, StyleSheet, Text, View, Alert } from 'react-native';
 import SalonTouchableHighlight from '../../../components/SalonTouchableHighlight';
 
 export const QueueButton = (props) => {
@@ -16,10 +10,17 @@ export const QueueButton = (props) => {
   const { title, image, color } = type;
   const _onPress = onPress || (() => Alert.alert(title, '[Not Implemented]'));
   return (
-    <SalonTouchableHighlight style={[left ? styles.leftSwipeItem : styles.rightSwipeItem, { backgroundColor: color }]} onPress={_onPress}>
-      <View style={{
-width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: color,
-}}
+    <SalonTouchableHighlight
+      style={[left ? styles.leftSwipeItem : styles.rightSwipeItem, { backgroundColor: color }]}
+      onPress={_onPress}
+    >
+      <View
+        style={{
+          width: 100,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: color,
+        }}
       >
         <Image source={image} style={styles.queueButtonImage} />
         <Text style={styles.queueButtonText}>{title}</Text>

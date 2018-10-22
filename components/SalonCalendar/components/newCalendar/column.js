@@ -220,7 +220,7 @@ export default class Column extends Component {
           <Text
             style={textStyle}
             numberOfLines={1}
-          >{roomName}
+          >{`${roomName} ${room.roomOrdinal}`}
           </Text>
         </View>
       );
