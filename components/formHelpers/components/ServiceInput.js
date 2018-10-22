@@ -51,6 +51,7 @@ export default class ServiceInput extends React.Component {
   handlePress = () => {
     const {
       navigate,
+      push,
       onPress = false,
       apptBook = false,
       headerProps = {},
@@ -62,7 +63,8 @@ export default class ServiceInput extends React.Component {
     } = this.props;
     const screenService = walkin ? 'ModalServices' : 'Services';
     if (isFunction(onPress)) { onPress(); }
-    navigate(apptBook ? 'ApptBookService' : screenService, {
+    const nav = walkin ? push : navigate;
+    nav(apptBook ? 'ApptBookService' : screenService, {
       actionType,
       headerProps,
       selectedService,
