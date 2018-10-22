@@ -158,6 +158,7 @@ class QueueScreen extends React.Component {
     });
     navigate('ModalClients', {
       onChangeClient: this.handleChangeClient,
+      transition: 'SlideFromBottom',
       isModal: true,
       isWalkin: true,
       headerProps: {
@@ -197,7 +198,7 @@ class QueueScreen extends React.Component {
             <Text style={styles.leftButtonText}>Cancel</Text>
           </View>
         ),
-        rightButtonOnPress: (navigation) => { navigation.navigate('Main', { transition: 'slideFromRight' }); },
+        rightButtonOnPress: (navigation) => { navigation.navigate('Main'); },
       },
     });
   }
@@ -206,7 +207,7 @@ class QueueScreen extends React.Component {
     const { newAppointment } = this.state;
     newAppointment.provider = provider;
     this.setState({ newAppointment });
-    this.props.navigation.navigate('ModalWalkIn', { newAppointment, loadQueueData: this.loadQueueData, transition: 'slideFromRight' });
+    this.props.navigation.navigate('ModalWalkIn', { newAppointment, loadQueueData: this.loadQueueData });
   }
 
   handleChangeService = (service) => {

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
@@ -30,35 +25,33 @@ export default class AppointmentDetailsScreen extends React.Component {
     const client = get(params, 'client', null);
     const title = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
     const infoButtonStyle = { fontSize: 18, color: 'white' };
-    return ({
+    return {
       title,
       headerLeft: (
-        <SalonTouchableOpacity onPress={() => {
-          if (params.loadQueueData) {
-            params.loadQueueData();
-          }
+        <SalonTouchableOpacity
+          style={{ paddingLeft: 10 }}
+          onPress={() => {
+            if (params.loadQueueData) {
+              params.loadQueueData();
+            }
 
-          navigation.goBack()
-        }}>
-          <Icon
-            name="angleLeft"
-            size={35}
-            color="white"
-            type="regular"
-          />
+            navigation.goBack();
+          }}
+        >
+          <Icon name="angleLeft" size={35} color="white" type="regular" />
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <ClientInfoButton
           client={client}
           navigation={navigation}
-          onDonePress={() => { }}
+          onDonePress={() => {}}
           buttonStyle={styles.rightButton}
           apptBook={false}
           iconStyle={infoButtonStyle}
         />
       ),
-    });
+    };
   };
 
   constructor(props) {
@@ -92,12 +85,15 @@ export default class AppointmentDetailsScreen extends React.Component {
   }
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', { client: get(this.params.appointment, 'client', null), apptBook: false });
+    this.props.navigation.navigate('ClientInfo', {
+      client: get(this.params.appointment, 'client', null),
+      apptBook: false,
+    });
   };
 
   handleIndexChange = index => this.setState({ index });
 
-  handleSave = () => alert('saving')
+  handleSave = () => alert('saving');
 
   renderLabel = ({ position, navigationState }) => ({ route, index }) => (
     <Text
@@ -121,7 +117,11 @@ export default class AppointmentDetailsScreen extends React.Component {
     <TabBar
       {...props}
       tabStyle={[styles.tabLabel, { backgroundColor: 'transparent' }]}
-      style={{ backgroundColor: 'transparent', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#C0C1C6' }}
+      style={{
+        backgroundColor: 'transparent',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: '#C0C1C6',
+      }}
       renderLabel={this.renderLabel(props)}
       indicatorStyle={{ backgroundColor: '#1DBF12', height: 2 }}
     />
@@ -158,20 +158,17 @@ export default class AppointmentDetailsScreen extends React.Component {
     const tabViewStyle = { flex: 1 };
     return (
       <View style={styles.container}>
-        {
-          isLoading &&
-          <LoadingOverlay />
-        }
-        <TabView
-          style={tabViewStyle}
-          navigationState={this.state}
-          renderScene={this.renderScene}
-          renderTabBar={this.renderHeader}
-          onIndexChange={this.handleIndexChange}
-          initialLayout={initialLayout}
-          swipeEnabled={false}
-          useNativeDriver
-        />
+        {isLoading && <LoadingOverlay />}
+          <TabView
+            style={tabViewStyle}
+            navigationState={this.state}
+            renderScene={this.renderScene}
+            renderTabBar={this.renderHeader}
+            onIndexChange={this.handleIndexChange}
+            initialLayout={initialLayout}
+            swipeEnabled={false}
+            useNativeDriver
+          />
       </View>
     );
   }
