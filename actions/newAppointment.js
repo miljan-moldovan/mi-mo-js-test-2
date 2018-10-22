@@ -290,6 +290,7 @@ const removeServiceItem = serviceId => (dispatch, getState) => {
 
 export function serializeNewApptItem(appointment, service) {
   const isFirstAvailable = get(service.employee, 'isFirstAvailable', false);
+
   const itemData = {
     clientId: service.isGuest ? get(service.client, 'id') : get(appointment.client, 'id'),
     serviceId: get(service.service, 'id'),
@@ -474,8 +475,10 @@ const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, st
 
   let serviceItems = [];
 
+
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
+
 
     const fromTime = moment(service.fromTime, 'HH:mm:ss');
     const toTime = moment(service.toTime, 'HH:mm:ss');
@@ -483,8 +486,9 @@ const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, st
     const serviceClient = mainClient;
     service.name = service.serviceName;
 
+
     const newService = {
-      id: get(service, 'id', null),
+      id: get(service, 'serviceId', null),
       length,
       service,
       requested: get(service, 'isProviderRequested', true),
@@ -510,6 +514,8 @@ const populateStateFromRebookAppt = (appt, services, mainEmployee, startDate, st
   serviceItems = resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
 
   serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
+
+
   const newState = {
     selectedAppt: appt,
     date: startDate,

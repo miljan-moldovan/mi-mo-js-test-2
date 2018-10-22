@@ -1,8 +1,9 @@
-image: registry.gitlab.salondev.net/kuber-infra/k8s-deploy
+image: registry.gitlab.salondev.net/mobile/appcenter:latest
 variables:
   AC_API_TOKEN: '8d50e3627e741aeb3aff1447cab83989ecdc6a0a'
   AC_OWNER_NAME: 'SalonUltimate'
   AC_APP_NAME: 'POS'
+  MIRROR_PATH: 'salonultimate/pos.git'
 
 stages:
   - build
@@ -10,6 +11,7 @@ stages:
 build:
   stage: build
   script:
-    - ./ci/gitlab.sh
+    - . sync_gitlab
+    - . sync_appcenter
   tags:
     - docker

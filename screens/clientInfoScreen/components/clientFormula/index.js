@@ -9,11 +9,13 @@ import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { find } from 'lodash';
+import { find, get } from 'lodash';
 import clientFormulasActions from '../../../../actions/clientFormulas';
 import settingsActions from '../../../../actions/settings';
 import fetchFormCache from '../../../../utilities/fetchFormCache';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
+import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
+import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 
 import {
   InputDate,
@@ -26,24 +28,20 @@ import {
   ProviderInput,
 } from '../../../../components/formHelpers';
 import styles from './stylesClientFormula';
-import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 import ClienteFormulaHeader from './clientFormulaHeader';
-
-const formulaTypes = [
-  { key: formulaTypesEnum.Color, value: 'Color' },
-  { key: formulaTypesEnum.Perm, value: 'Perm' },
-  { key: formulaTypesEnum.Skin, value: 'Skin' },
-  { key: formulaTypesEnum.Nail, value: 'Nail' },
-  { key: formulaTypesEnum.Massage, value: 'Massage' },
-  { key: formulaTypesEnum.Hair, value: 'Hair' },
-  { key: formulaTypesEnum.NULL, value: 'NULL' },
-];
 
 class ClientFormula extends React.Component {
   constructor(props) {
     super(props);
 
     const { client } = props.navigation.state.params;
+    props.settingsActions.getSettingsByName(
+      'AvailableFormulaTypes',
+      () => {
+        props.settingsActions.getSettingsByName('DefaultFormulaType', this.loadFormulaTypes);
+      },
+    );
+
 
     this.state = {
       client,
@@ -54,31 +52,23 @@ class ClientFormula extends React.Component {
         enteredBy: {},
         text: '',
       },
-      defaultFormulaType: formulaTypes[0],
+      defaultFormulaType: null,
       isVisible: true,
+      formulaTypes: [],
     };
   }
 
   componentWillMount() {
-    const { settings } = this.props.settingsState;
-
     const onEditionFormula = this.props.navigation.state.params.formula;
 
-    let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
-    defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
-      defaultFormulaTypeSetting.settingValue : null;
-
-    const defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
-
     let { formula } = this.state;
-
 
     if (this.props.navigation.state.params.actionType === 'update') {
       formula = Object.assign({}, onEditionFormula);
 
       const provider = { fullName: formula.stylistName, name: formula.stylistName.split(' ')[0], lastName: formula.stylistName.split(' ')[1] };
 
-      const formulaType = find(formulaTypes, { key: formula.formulaType });
+      const formulaType = find(this.state.formulaTypes, { key: formula.formulaType });
       formula.formulaType = formulaType;
       formula.enteredBy = provider;
 
@@ -88,16 +78,17 @@ class ClientFormula extends React.Component {
         formula = cachedForm;
       }
     } else if (this.props.navigation.state.params.actionType === 'new') {
-      formula.formulaType = defaultFormulaType;
+      formula.formulaType = this.state.defaultFormulaType;
     }
 
-    this.setState({ defaultFormulaType, formula });
+    this.setState({ formula });
 
     this.props.navigation.setParams({
       handlePress: () => this.saveFormula(),
       handleGoBack: () => this.goBack(),
     });
   }
+
 
   handleGoBackCopy = () => {
     this.setState({ isVisible: true });
@@ -113,7 +104,6 @@ class ClientFormula extends React.Component {
   }
 
   goBack() {
-    this.setState({ isVisible: false });
     this.props.navigation.goBack();
   }
 
@@ -203,6 +193,39 @@ class ClientFormula extends React.Component {
       this.setState({ formula }, this.checkCanSave);
     }
 
+    loadFormulaTypes = (result) => {
+      if (result) {
+        const { settings } = this.props.settingsState;
+
+
+        const formulaTypes = [];
+        let defaultFormulaType = null;
+
+        if (settings) {
+          let availableFormulaTypes = find(settings, { settingName: 'AvailableFormulaTypes' });
+          availableFormulaTypes = availableFormulaTypes ?
+            availableFormulaTypes.settingValue : false;
+
+          availableFormulaTypes = availableFormulaTypes.split(',').length > 0 ? availableFormulaTypes.split(',') : ['Default'];
+          for (let i = 0; i < availableFormulaTypes.length; i += 1) {
+            formulaTypes.push({ key: formulaTypesEnum[availableFormulaTypes[i]], value: availableFormulaTypes[i] });
+          }
+
+          let defaultFormulaTypeSetting = find(settings, { settingName: 'DefaultFormulaType' });
+          defaultFormulaTypeSetting = defaultFormulaTypeSetting ?
+            defaultFormulaTypeSetting.settingValue : null;
+
+          defaultFormulaType = find(formulaTypes, { value: defaultFormulaTypeSetting });
+          defaultFormulaType = defaultFormulaType || null;
+        }
+
+        this.setState({
+          defaultFormulaType,
+          formulaTypes,
+        });
+      }
+    }
+
     saveFormula() {
       const { client } = this.props.navigation.state.params;
 
@@ -244,7 +267,7 @@ class ClientFormula extends React.Component {
           style={styles.modal}
         >
           <View style={styles.container}>
-            { this.props.clientFormulasState.isLoading &&
+            { (this.props.clientFormulasState.isLoading || this.props.settingsState.isLoading) &&
             <LoadingOverlay />
                 }
             <ClienteFormulaHeader rootProps={this.props} />
@@ -270,7 +293,7 @@ class ClientFormula extends React.Component {
                   value={this.state.formula ? this.state.formula.formulaType : this.state.defaultFormulaType}
                   onChange={this.onChangeType}
                   defaultOption={this.state.defaultFormulaType}
-                  options={formulaTypes}
+                  options={this.state.formulaTypes}
                 />
                 <InputDivider />
                 <InputText
@@ -329,6 +352,7 @@ class ClientFormula extends React.Component {
 const mapStateToProps = state => ({
   clientFormulasState: state.clientFormulasReducer,
   settingsState: state.settingsReducer,
+  groupedSettings: groupedSettingsSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({
@@ -341,6 +365,7 @@ ClientFormula.defaultProps = {
 };
 
 ClientFormula.propTypes = {
+  groupedSettings: PropTypes.any.isRequired,
   settingsState: PropTypes.any.isRequired,
   clientFormulasActions: PropTypes.shape({
     postClientFormulas: PropTypes.func.isRequired,
@@ -350,6 +375,9 @@ ClientFormula.propTypes = {
   clientFormulasState: PropTypes.any.isRequired,
   client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
+  settingsActions: PropTypes.shape({
+    getSettingsByName: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(ClientFormula);

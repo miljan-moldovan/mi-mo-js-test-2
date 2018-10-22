@@ -43,6 +43,7 @@ class ServiceCategoryList extends React.Component {
 
   renderItem(elem) {
     return (
+<<<<<<< HEAD
       <InputButton
         icon="default"
         key={Math.random().toString()}
@@ -51,6 +52,24 @@ class ServiceCategoryList extends React.Component {
         onPress={() => { this.props.handlePressServiceCategory(elem.item); }}
         label={elem.item.name}
       />
+=======
+      <InputGroup style={{
+        flexDirection: 'row',
+
+        height: 44,
+        borderBottomWidth: 1 / 3,
+        borderTopWidth: 0,
+      }}
+      >
+        <InputButton
+          icon="default"
+          style={{ flex: 1 }}
+          labelStyle={{ color: '#110A24' }}
+          onPress={() => { this.props.handlePressServiceCategory(elem.item); }}
+          label={elem.item.name}
+        />
+      </InputGroup>
+>>>>>>> 81cdc9989a3cf54b41845d5e84d16c1e666e6189
     );
   }
 

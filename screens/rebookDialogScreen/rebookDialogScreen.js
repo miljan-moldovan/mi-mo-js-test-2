@@ -28,6 +28,9 @@ class RebookDialogScreen extends Component {
     const { appointment } = params;
     const { client } = appointment;
 
+
+    const fullName = 'fullName' in client ? client.fullName : `${client.name} ${client.lastName}`;
+
     return {
       headerTitle: (
         <View style={styles.headerTitle}>
@@ -35,7 +38,7 @@ class RebookDialogScreen extends Component {
           Rebook
           </Text>
           <Text style={styles.headerTitleSubTitle}>
-            {`${client.fullName}`}
+            {`${fullName}`}
           </Text>
         </View>
       ),
@@ -81,6 +84,15 @@ class RebookDialogScreen extends Component {
 
     const { appointment } = this.props.navigation.state.params;
 
+
+    if ('service' in appointment && !('services' in appointment)) {
+      const { service } = appointment;
+      service.serviceId = service.id;
+      service.employee = appointment.employee;
+      service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
+      appointment.services = [service];
+    }
+
     if (appointment.services.length === 1) {
       this.setState({ rebookServices: appointment.services }, this.checkCanSave);
     }
@@ -114,9 +126,12 @@ class RebookDialogScreen extends Component {
 
     const rebookProviders = [];
     for (let i = 0; i < rebookServices.length; i += 1) {
-      const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
-      if (!provider) {
-        rebookProviders.push(rebookServices[i].employee);
+      rebookServices[i].id = rebookServices[i].serviceId;
+      if (rebookServices[i].employee) {
+        const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
+        if (!provider) {
+          rebookProviders.push(rebookServices[i].employee);
+        }
       }
     }
 
@@ -176,7 +191,7 @@ class RebookDialogScreen extends Component {
         text={
           <View style={styles.serviceContainer}>
             <Text style={styles.serviceNameText}>{service.serviceName}</Text>
-            <Text style={styles.employeeNameText}>{`w/ ${service.employee.fullName}`}</Text>
+            <Text style={styles.employeeNameText}>{`w/ ${service.employee ? service.employee.fullName : 'First Available'}`}</Text>
           </View>
         }
       />
@@ -185,6 +200,11 @@ class RebookDialogScreen extends Component {
 
   render() {
     const { appointment } = this.props.navigation.state.params;
+
+
+    if ('service' in appointment && !('services' in appointment)) {
+      appointment.services = [appointment.service];
+    }
 
 
     return (

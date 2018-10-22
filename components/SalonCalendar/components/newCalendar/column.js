@@ -212,9 +212,6 @@ export default class Column extends Component {
       }];
       const selectedRoom = rooms.find(itm => itm.id === room.roomId);
       const roomName = get(selectedRoom, 'name', '');
-      if (selectedRoom) {
-        debugger //eslint-disable-line
-      }
       return (
         <View
           key={`room-${get(colData, 'id', '')}-${room.roomId}`}
@@ -223,7 +220,7 @@ export default class Column extends Component {
           <Text
             style={textStyle}
             numberOfLines={1}
-          >{roomName}
+          >{`${roomName} ${room.roomOrdinal}`}
           </Text>
         </View>
       );

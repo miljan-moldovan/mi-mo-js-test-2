@@ -6,7 +6,8 @@ import {
   SectionList,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { get, sortBy, isFunction, isNumber } from 'lodash';
+import { get, sortBy, isNumber } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import Icon from '../../components/UI/Icon';
 import WordHighlighter from '../../components/wordHighlighter';
@@ -278,6 +279,7 @@ class ProductsScreen extends React.Component {
           renderItem={this.renderProductItem}
           ItemSeparatorComponent={this.renderSeparator}
           renderSectionHeader={this.renderSectionHeader}
+          ListFooterComponent={this.renderSeparator}
         />
       );
     }
@@ -290,6 +292,8 @@ class ProductsScreen extends React.Component {
         keyExtractor={this.keyExtractor}
         renderItem={this.renderProductItem}
         ItemSeparatorComponent={this.renderSeparator}
+        ListFooterComponent={this.renderSeparator}
+
       /> :
       <FlatList
         ref={(ref) => { this.listRef = ref; }}
@@ -299,6 +303,7 @@ class ProductsScreen extends React.Component {
         keyExtractor={this.keyExtractor}
         renderItem={this.renderCategoryItem}
         ItemSeparatorComponent={this.renderSeparator}
+        ListFooterComponent={this.renderSeparator}
       />;
   }
 

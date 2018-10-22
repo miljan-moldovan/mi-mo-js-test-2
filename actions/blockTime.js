@@ -12,6 +12,9 @@ export const PUT_BLOCKTIME_MOVE_FAILED = 'appointmentBook/PUT_BLOCKTIME_MOVE_FAI
 export const PUT_BLOCKTIME_RESIZE = 'appointmentBook/PUT_BLOCKTIME_RESIZE';
 export const PUT_BLOCKTIME_RESIZE_SUCCESS = 'appointmentBook/PUT_BLOCKTIME_RESIZE_SUCCESS';
 export const PUT_BLOCKTIME_RESIZE_FAILED = 'appointmentBook/PUT_BLOCKTIME_RESIZE_FAILED';
+export const PUT_BLOCKTIME_EDIT = 'appointmentBook/PUT_BLOCKTIME_EDIT';
+export const PUT_BLOCKTIME_EDIT_SUCCESS = 'appointmentBook/PUT_BLOCKTIME_EDIT_SUCCESS';
+export const PUT_BLOCKTIME_EDIT_FAILED = 'appointmentBook/PUT_BLOCKTIME_EDIT_FAILED';
 export const UNDO_MOVE_BLOCK = 'appointmentBook/UNDO_MOVE_BLOCK';
 export const UNDO_MOVE_BLOCK_SUCCESS = 'appointmentBook/UNDO_MOVE_BLOCK_SUCCESS';
 
@@ -31,6 +34,24 @@ const postBlockTime = (data, callback) => (dispatch) => {
   return AppointmentBook.postAppointmentBookBlockTime(data)
     .then((resp) => { dispatch(postBlockTimeSuccess(resp)); callback(true); })
     .catch((error) => { dispatch(postBlockTimeFailed(error)); callback(false, error); });
+};
+
+const putBlockTimeEditSuccess = blockTime => ({
+  type: PUT_BLOCKTIME_EDIT_SUCCESS,
+  data: { blockTime },
+});
+
+const putBlockTimeEditFailed = error => ({
+  type: PUT_BLOCKTIME_EDIT_FAILED,
+  data: { error },
+});
+
+const putBlockTimeEdit = (id, data, callback) => (dispatch) => {
+  dispatch({ type: PUT_BLOCKTIME_EDIT });
+
+  return AppointmentBook.putBlockTimeEdit(id, data)
+    .then((resp) => { dispatch(putBlockTimeEditSuccess(resp)); callback(true); })
+    .catch((error) => { dispatch(putBlockTimeEditFailed(error)); callback(false, error); });
 };
 
 const putBlockTimeMoveSuccess = (blockTime, oldBlockTime) => {
@@ -141,6 +162,7 @@ const undoMove = () => (dispatch, getState) => {
 
 const blockTimeActions = {
   postBlockTime,
+  putBlockTimeEdit,
   putBlockTimeMove,
   putBlockTimeResize,
   undoMove,

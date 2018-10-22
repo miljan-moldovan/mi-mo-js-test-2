@@ -69,6 +69,7 @@ class NewApptSlide extends React.Component {
     isInputModalVisible: false,
     postModalFunction: null,
     toast: null,
+    otherHeight: 0,
   });
 
   componentWillReceiveProps(newProps) {
@@ -569,7 +570,7 @@ class NewApptSlide extends React.Component {
       </InputButton>);
 
     return (
-      <View style={styles.body}>
+      <View style={[styles.body, { height: this.state.otherHeight }]}>
         {isFirstAvailable ?
           <React.Fragment>
             {messageAllClientsButton}
@@ -693,6 +694,14 @@ class NewApptSlide extends React.Component {
     );
   }
 
+  handleHeigth = (contentWidth, contentHeight) => {
+    if (this.state.otherHeight !== contentHeight) {
+      this.setState({
+        otherHeight: contentHeight,
+      });
+    }
+  }
+
   renderBookingTab = () => {
     const {
       navigation,
@@ -730,7 +739,7 @@ class NewApptSlide extends React.Component {
     };
     const onPressConflicts = () => this.hidePanel(conflictsCallback);
     return (
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView onContentSizeChange={this.handleHeigth} contentContainerStyle={styles.body}>
         <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
         <AppointmentTime
           containerStyle={styles.flexStart}

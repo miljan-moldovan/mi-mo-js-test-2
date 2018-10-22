@@ -11,11 +11,20 @@ class CrossedAppointmentsActionSheet extends React.Component {
     if (!appointments || appointments.length === 0) {
       return [];
     }
-    const optionsMap = appointments.map((appointment) => (
-      <View style={styles.actionItemContainer}>
-        <Text style={styles.actionItemTitle}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
-      </View>
-    ));
+    const optionsMap = appointments.map((appointment) => {
+      if (appointment.isBlockTime) {
+        return (
+          <View style={styles.actionItemContainer}>
+            <Text style={styles.actionItemTitle}>{appointment.reason.name}</Text>
+          </View>
+        );
+      }
+      return (
+        <View style={styles.actionItemContainer}>
+          <Text style={styles.actionItemTitle}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
+        </View>
+      );
+    });
     optionsMap.push((
       <View style={styles.actionItemContainer}>
         <Text style={styles.actionItemTitle}>Cancel</Text>

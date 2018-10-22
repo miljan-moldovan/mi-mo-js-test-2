@@ -221,6 +221,10 @@ class TurnAwayScreen extends Component {
           this.setState({ services: this.resetTimeForServices(services, index, startTime), isLoading: false }, this.checkCanSave);
         })
         .catch((error) => {
+<<<<<<< HEAD
+=======
+          // showErrorAlert(error);
+>>>>>>> 81cdc9989a3cf54b41845d5e84d16c1e666e6189
           const length = moment.duration(get(service, 'maxDuration'));
           services[index] = { ...updatedService, length };
           this.setState({ services: this.resetTimeForServices(services, index, startTime), isLoading: false }, this.checkCanSave);

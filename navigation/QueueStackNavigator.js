@@ -9,7 +9,6 @@ import QueueDetailScreen from './../screens/queueDetailScreen';
 
 import WalkInScreen from '../screens/walkinScreen';
 import WalkInHeader from '../screens/walkinScreen/components/WalkInHeader';
-import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
 
 import ClientsScreen from './../screens/clientsScreen';
 import RemovalReasonTypesScreen from './../screens/removalReasonTypes';
@@ -39,7 +38,6 @@ import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDe
 
 import ProductsScreen from './../screens/productsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
-import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 
 import AppointmentScreen from '../screens/AppointmentsScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -47,18 +45,14 @@ import apptBookViewOptions from './../screens/apptBookViewOptions';
 
 import SettingsScreen from './../screens/SettingsScreen';
 
-const MainNavigator = StackNavigator(
+export const MainNavigator = StackNavigator(
   {
     Main: {
       screen: QueueScreen,
       navigationOptions: {
         gesturesEnabled: false,
-        headerTitle: 'Queue',
       },
     },
-    // SalonCalendar: {
-    //   screen: AppointmentCalendarScreen,
-    // },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
       navigationOptions: { tabBarVisible: false },
@@ -170,11 +164,13 @@ const MainNavigator = StackNavigator(
     Settings: { screen: SettingsScreen },
     RemovalReasonTypes: {
       screen: RemovalReasonTypesScreen,
-      navigationOptions: { tabBarVisible: false },
+      navigationOptions: {
+        tabBarVisible: false,
+      },
     },
   },
   {
-    headerMode: 'none',
+    headerMode: 'screen',
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#115ECD',
@@ -231,8 +227,8 @@ const TransitionConfiguration = () => ({
     const params = route.params || {};
     const transition = params.transition || 'default';
     return {
-      default: SlideFromBottom(index, position, height),
-      slideFromRight: SlideFromRight(index, position, width),
+      SlideFromBottom: SlideFromBottom(index, position, height),
+      default: SlideFromRight(index, position, width),
     }[transition];
   },
 });
@@ -241,7 +237,7 @@ export default (QueueStackNavigator = StackNavigator(
   {
     Main: {
       screen: MainNavigator,
-      navigationOptions: { headerMode: 'none' },
+      navigationOptions: { headerMode: 'none', header: null },
     },
     ClientInfo: {
       screen: ClientInfoScreen,
