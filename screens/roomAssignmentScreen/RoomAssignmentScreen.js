@@ -305,7 +305,7 @@ export default class RoomAssignmentScreen extends React.Component {
         />
         <InputDivider style={dividerStyle} />
         <InputButton
-          noIcon
+          icon={false}
           label="Start"
           labelStyle={labelStyle}
           value={isMoment(assignment.startTime) ? assignment.startTime.format(DateTime.displayTime) : 'Off'}
@@ -313,7 +313,7 @@ export default class RoomAssignmentScreen extends React.Component {
         />
         <InputDivider style={dividerStyle} />
         <InputButton
-          noIcon
+          icon={false}
           label="End"
           labelStyle={labelStyle}
           disabled={!isMoment(assignment.startTime)}

@@ -212,22 +212,24 @@ class AppointmentDetails extends React.Component {
     }
   }
 
-  addServiceItem = ({ service, employee, promotion }) => {
+  addServiceItem = ({
+    price, service, employee, promotion, isFirstAvailable, isProviderRequested,
+  }, onSuccess, onFailed) => {
     const serviceItems = cloneDeep(this.state.serviceItems);
-    const price = get(service, 'price', 0);
+    // const price = get(service, 'price', 0);
     serviceItems.push({
       itemId: uuid(),
       price,
       service,
       employee,
       promotion,
-      isFirstAvailable: get(employee, 'isFirstAvailable', false),
-      isProviderRequested: get(service, 'isProviderRequested', true),
+      isFirstAvailable,
+      isProviderRequested,
     });
-    this.setState({ serviceItems }, this.updateQueue);
+    return this.setState({ serviceItems }, () => this.updateQueue(onSuccess, onFailed));
   }
 
-  addProductItem = ({ product, employee, promotion }) => {
+  addProductItem = ({ product, employee, promotion }, onSuccess, onFailed) => {
     const productItems = cloneDeep(this.state.productItems);
     productItems.push({
       itemId: uuid(),
@@ -235,7 +237,7 @@ class AppointmentDetails extends React.Component {
       employee,
       promotion,
     });
-    this.setState({ productItems }, this.updateQueue);
+    this.setState({ productItems }, () => this.updateQueue(onSuccess, onFailed));
   }
 
   calculatePercentFromPrice = (price, percent) =>
@@ -273,8 +275,9 @@ class AppointmentDetails extends React.Component {
     this.props.navigation.navigate('Service', {
       clientName,
       dismissOnSelect: true,
+      updateQueue: this.updateQueue,
       isInService: !this.props.isWaiting,
-      onSave: data => this.addServiceItem(data),
+      onSave: (data, onSuccess = false, onFailed = false) => this.addServiceItem(data, onSuccess, onFailed),
     });
   }
 
@@ -285,8 +288,9 @@ class AppointmentDetails extends React.Component {
       clientName,
       serviceItem,
       dismissOnSelect: true,
-      onSave: data => this.updateServiceItem(serviceItem.itemId, data),
+      onSave: (data, onSuccess, onFailed) => this.updateServiceItem(serviceItem.itemId, data, onSuccess, onFailed),
       onRemove: () => this.removeServiceItem(serviceItem.itemId),
+      updateQueue: this.updateQueue,
     });
   }
 
@@ -296,7 +300,7 @@ class AppointmentDetails extends React.Component {
     this.props.navigation.navigate('Product', {
       clientName,
       dismissOnSelect: true,
-      onSave: data => this.addProductItem(data),
+      onSave: (data, onSuccess, onFailed) => this.addProductItem(data, onSuccess, onFailed),
     });
   }
 
@@ -317,12 +321,12 @@ class AppointmentDetails extends React.Component {
       clientName,
       productItem,
       dismissOnSelect: true,
-      onSave: data => this.updateProductItem(productItem.itemId, data),
+      onSave: (data, onSuccess, onFailed) => this.updateProductItem(productItem.itemId, data, onSuccess, onFailed),
       onRemove: () => this.removeProductItem(productItem.itemId),
     });
   }
 
-  updateServiceItem = (id, data) => {
+  updateServiceItem = (id, data, onSuccess, onFailed) => {
     const serviceItems = cloneDeep(this.state.serviceItems);
     const index = serviceItems.findIndex(itm => itm.itemId === id);
     serviceItems.splice(index, 1, {
@@ -330,10 +334,10 @@ class AppointmentDetails extends React.Component {
       ...serviceItems[index],
       ...data,
     });
-    this.setState({ serviceItems }, this.updateQueue);
+    return this.setState({ serviceItems }, () => this.updateQueue(onSuccess, onFailed));
   }
 
-  updateProductItem = (id, data) => {
+  updateProductItem = (id, data, onSuccess, onFailed) => {
     const productItems = cloneDeep(this.state.productItems);
     const index = productItems.findIndex(itm => itm.itemId === id);
     productItems.splice(index, 1, {
@@ -341,24 +345,24 @@ class AppointmentDetails extends React.Component {
       ...productItems[index],
       ...data,
     });
-    this.setState({ productItems }, this.updateQueue);
+    this.setState({ productItems }, () => this.updateQueue(onSuccess, onFailed));
   }
 
-  removeServiceItem = (id) => {
+  removeServiceItem = (id, onSuccess, onFailed) => {
     const serviceItems = cloneDeep(this.state.serviceItems);
     const index = serviceItems.findIndex(itm => itm.itemId === id);
     serviceItems.splice(index, 1);
-    this.setState({ serviceItems }, this.updateQueue);
+    this.setState({ serviceItems }, () => this.updateQueue(onSuccess, onFailed));
   }
 
-  removeProductItem = (id) => {
+  removeProductItem = (id, onSuccess, onFailed) => {
     const productItems = cloneDeep(this.state.productItems);
     const index = productItems.findIndex(itm => itm.itemId === id);
     productItems.splice(index, 1);
-    this.setState({ productItems }, this.updateQueue);
+    this.setState({ productItems }, () => this.updateQueue(onSuccess, onFailed));
   }
 
-  updateQueue = () => {
+  updateQueue = (onSuccess = false, onFailed = false) => {
     const {
       client,
       serviceItems,
@@ -367,7 +371,7 @@ class AppointmentDetails extends React.Component {
     const clientId = get(client, 'id', null);
     const services = serviceItems.map(itm => this.serializeServiceItem(itm));
     const products = productItems.map(itm => this.serializeProductItem(itm));
-    this.props.queueDetailActions.updateAppointment(clientId, services, products);
+    this.props.queueDetailActions.updateAppointment(clientId, services, products, onSuccess, onFailed);
   }
 
   serializeServiceItem = (serviceItem) => {
@@ -512,8 +516,8 @@ class AppointmentDetails extends React.Component {
                 <ScrollView style={{ marginBottom: 44 }}>
                   <View style={styles.infoContainer}>
                     <View style={{
- paddingBottom: 19, flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start',
-}}
+                      paddingBottom: 19, flex: 1.5, alignItems: 'flex-start', justifyContent: 'flex-start',
+                    }}
                     >
                       <Text style={styles.infoTitleText}>Queue Appointment</Text>
                       <QueueTimeNote type="long" containerStyles={{ marginTop: 3 }} item={appointment} />
@@ -530,16 +534,6 @@ class AppointmentDetails extends React.Component {
                     </View>
 
                     <View style={styles.itemIcons}>
-
-                      {/*    <View style={{
-                     position: 'absolute',
-                     marginVertical: 5,
-                     flex: 1,
-                     alignItems: 'flex-end',
-                     bottom: 5,
-                     right: 20,
-                    }}
-                    > */}
                       {label}
                     </View>
                   </View>

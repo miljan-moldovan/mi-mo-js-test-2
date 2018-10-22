@@ -133,51 +133,42 @@ const getReceptionists = req => (dispatch) => {
     });
 };
 
-const getProvidersSuccess = (providerList, filterList = false) => {
-  let providers = providerList;
+const getProvidersSuccess = (providers) => {
   const deskStaff = providers.filter(item => item.isReceptionist);
-  if (filterList) {
-    if (isFunction(filterList)) {
-      providers = filterList(providers);
-    } else {
-      const filterProviderIds = filterList.slice().sort(alphabeticFilter).map(item => item.id);
-      providers = providers.filter(item => filterProviderIds.includes(item.id));
-    }
-  }
   return {
     type: GET_PROVIDERS_SUCCESS,
     data: { providers, deskStaff },
   };
 };
 
-const getProvidersError = error => ({
-  type: GET_PROVIDERS_ERROR,
-  data: { error },
-});
+const getProvidersError = (error) => {
+  showErrorAlert(error);
+  return ({
+    type: GET_PROVIDERS_ERROR,
+    data: { error },
+  });
+};
 
-const getProviders = (params, selectedService = null, filterList = false) =>
+const getProviders = (params, selectedService = null) =>
   (dispatch) => {
     dispatch({ type: GET_PROVIDERS });
     const serviceId = get(selectedService, 'id', false);
     if (serviceId) {
       return Services.getEmployeesByService(serviceId, params)
-        .then((providers) => {
-          dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), filterList));
+        .then((employees) => {
+          dispatch(getProvidersSuccess(employees));
         })
         .catch((err) => {
           dispatch(getProvidersError(err));
         });
     }
-    if (!filterList) {
-      return Employees.getEmployees(params)
-        .then((providers) => {
-          dispatch(getProvidersSuccess(providers.sort(alphabeticFilter), false));
-        })
-        .catch((err) => {
-          dispatch(getProvidersError(err));
-        });
-    }
-    return dispatch(getProvidersSuccess(filterList, filterList));
+    return Employees.getEmployees(params)
+      .then((providers) => {
+        dispatch(getProvidersSuccess(providers));
+      })
+      .catch((err) => {
+        dispatch(getProvidersError(err));
+      });
   };
 
 const setFilteredProviders = (filtered) => {

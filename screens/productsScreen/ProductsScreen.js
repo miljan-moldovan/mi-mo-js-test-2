@@ -196,6 +196,7 @@ class ProductsScreen extends React.Component {
         >
           {name}
         </WordHighlighter>
+        <Icon name="angleRight" size={20} color={Colors.defaultGrey} style={styles.caretIcon} />
       </SalonTouchableOpacity>
     );
   }

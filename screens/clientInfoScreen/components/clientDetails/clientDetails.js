@@ -213,7 +213,7 @@ class ClientDetails extends Component {
         break;
       }
       default:
-            /* nothing */
+      /* nothing */
     }
 
     this.setState({ client: newClient, hasChanged: true }, this.checkValidation);
@@ -364,11 +364,11 @@ class ClientDetails extends Component {
     this.props.clientInfoActions.deleteClientInfo(this.state.client.id, this.handleDeleteClient);
   }
 
-  setReferredOptionOther =() => {
+  setReferredOptionOther = () => {
     this.selectReferredOption(SelectedReferredClientEnum.Other);
   }
 
-  setReferredOptionClient =(navigateToClients) => {
+  setReferredOptionClient = (navigateToClients) => {
     this.selectReferredOption(SelectedReferredClientEnum.Client, navigateToClients);
   }
 
@@ -376,7 +376,7 @@ class ClientDetails extends Component {
     if (result) {
       const { settings } = this.props.settingsState;
 
-      const required: { [key: string]: boolean } = { };
+      const required: { [key: string]: boolean } = {};
 
       const trackClientAge = find(settings, { settingName: 'TrackClientAge' }).settingValue;
       const forceAgeInput = find(settings, { settingName: 'ForceAgeInput' }).settingValue;
@@ -433,7 +433,7 @@ class ClientDetails extends Component {
       'Delete client',
       message,
       [
-        { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+        { text: 'Cancel', onPress: () => { }, style: 'cancel' },
         {
           text: 'OK',
           onPress: this.onPressOkDelete,
@@ -567,7 +567,7 @@ class ClientDetails extends Component {
   isValidZipCodeRegExp = regexs.zipcode;
   isValidPhoneRegExp = regexs.phone;
   isValidText = regexs.notemptytext;
-  isValidAddress= regexs.address;
+  isValidAddress = regexs.address;
 
 
   loadClientData = (result) => {
@@ -714,9 +714,9 @@ class ClientDetails extends Component {
     return (
       <View style={styles.container}>
 
-        { (this.props.clientInfoState.isLoading || this.state.loadingClient) &&
+        {(this.props.clientInfoState.isLoading || this.state.loadingClient) &&
           <LoadingOverlay />
-              }
+        }
 
         <KeyboardAwareScrollView extraHeight={300} enableAutoAutomaticScroll={false}>
           <View pointerEvents={this.state.pointerEvents}>
@@ -833,7 +833,7 @@ class ClientDetails extends Component {
             <SectionTitle value="CONTACTS" style={styles.sectionTitle} />
             <InputGroup>
               <ValidatableInput
-                    // validateOnChange
+                // validateOnChange
                 keyboardType="email-address"
                 validation={this.isValidEmailRegExp}
                 label="Email"
@@ -967,7 +967,7 @@ class ClientDetails extends Component {
                     label="Other"
                     noValueStyle={!this.state.client.clientReferralType ? styles.dateValueStyle : {}}
                     value={this.state.client.clientReferralType ?
-                          this.state.client.clientReferralType : null}
+                      this.state.client.clientReferralType : null}
                     onChange={this.onChangeClientReferralTypes}
                     defaultOption={this.state.client.clientReferralType}
                     options={this.props.clientInfoState.clientReferralTypes}
@@ -980,7 +980,7 @@ class ClientDetails extends Component {
               <React.Fragment>
                 <InputGroup>
                   <InputButton
-                    noIcon
+                    icon={false}
                     childrenContainerStyle={styles.deleteButton}
                     onPress={this.deleteClient}
                   >
@@ -988,7 +988,7 @@ class ClientDetails extends Component {
                   </InputButton>
                 </InputGroup>
                 <SectionDivider />
-              </React.Fragment> : null }
+              </React.Fragment> : null}
           </View>
         </KeyboardAwareScrollView>
       </View>

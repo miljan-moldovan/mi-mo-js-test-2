@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     color: Colors.defaultGrey,
     fontFamily: 'Roboto-Medium',
   },
+  caretIcon: {
+    marginHorizontal: 10,
+  },
   flexRow: { flexDirection: 'row' },
   whiteBg: { backgroundColor: Colors.white },
   headerButton: {
@@ -47,7 +50,8 @@ const styles = StyleSheet.create({
   },
   itemSeparator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.dividerGrey,
+    backgroundColor: Colors.divider,
+    marginLeft: 16,
   },
   info: {
     flexDirection: 'row',

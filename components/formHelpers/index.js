@@ -9,7 +9,7 @@ import {
   ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
+import { get, isString } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TextInputMask from 'react-native-text-input-mask';
 import ValidatableInput from './components/ValidatableInput';
@@ -134,35 +134,39 @@ InputGroup.defaultProps = {
   children: [],
 };
 
-const InputButton = props => (
-  <SalonTouchableOpacity
-    style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
-    onPress={props.onPress}
-    disabled={props.disabled || false}
-  >
-    {props.label && typeof props.label === 'string'
-      ? (
-        <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
-      ) : props.label}
-    <View style={[{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }, props.childrenContainerStyle]}>
+const InputButton = (props) => {
+  const icon = props.icon === 'default'
+    ? <FontAwesome style={[styles.iconStyle, props.iconStyle]}>{Icons.angleRight}</FontAwesome>
+    : props.icon;
+
+  return (
+    <SalonTouchableOpacity
+      style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
+      onPress={props.onPress}
+      disabled={props.disabled || false}
+    >
+      {props.label && typeof props.label === 'string'
+        ? (
+          <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
+        ) : props.label}
+      <View style={[{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }, props.childrenContainerStyle]}>
+        {
+          typeof props.value === 'string'
+            ? (
+              <Text numberOfLines={1} style={[styles.inputText, props.valueStyle]}>
+                {props.value}
+              </Text>
+            ) :
+            props.value
+        }
+        {props.children}
+      </View>
       {
-        typeof props.value === 'string'
-          ? (
-            <Text numberOfLines={1} style={[styles.inputText, props.valueStyle]}>{props.value}</Text>
-          ) :
-          props.value
+        props.icon ? icon : null
       }
-      {props.children}
-    </View>
-    {
-      !props.noIcon && props.icon && props.icon
-    }
-    {
-      !props.noIcon && props.icon === 'default' &&
-      <FontAwesome style={[styles.iconStyle, props.iconStyle]}>{Icons.angleRight}</FontAwesome>
-    }
-  </SalonTouchableOpacity>
-);
+    </SalonTouchableOpacity>
+  );
+};
 export const propTypesObj = {
   onPress: PropTypes.func.isRequired,
   style: ViewPropTypes.style,
@@ -170,10 +174,8 @@ export const propTypesObj = {
   valueStyle: Text.propTypes.style,
   label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
-  noIcon: PropTypes.bool,
   children: PropTypes.element,
-  placeholder: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.element]),
-  icon: PropTypes.oneOfType([PropTypes.element, null]),
+  icon: PropTypes.oneOfType([PropTypes.element, PropTypes.bool]),
   iconStyle: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 export const defaultPropsObj = {
@@ -250,8 +252,8 @@ const LabeledTextInput = props => (
       />}
 
     {
-        props.icon
-      }
+      props.icon
+    }
 
   </View>
 );

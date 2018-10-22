@@ -1,4 +1,4 @@
-import { get, isNumber } from 'lodash';
+import { get, isFunction, isNumber } from 'lodash';
 import { showErrorAlert } from './utils';
 import { Queue, Services } from '../utilities/apiWrapper';
 
@@ -19,8 +19,8 @@ const setAppointment = appointmentId => (dispatch) => {
     .catch(error => dispatch({ type: GET_APPOINTMENT_FAILED, data: { error } }));
 };
 
-const updateAppointment = (clientId, serviceEmployeeClientQueues, productEmployeeClientQueues) =>
-  (dispatch, getState) => {
+const updateAppointment = (clientId, serviceEmployeeClientQueues, productEmployeeClientQueues, onSuccess, onFailed) =>
+  async (dispatch, getState) => {
     const { appointment } = getState().queueDetailReducer;
     const apptId = get(appointment, 'id', null);
     dispatch({ type: UPDATE_APPOINTMENT });
@@ -29,14 +29,22 @@ const updateAppointment = (clientId, serviceEmployeeClientQueues, productEmploye
       serviceEmployeeClientQueues,
       productEmployeeClientQueues,
     };
-    Queue.putQueue(apptId, req)
-      .then(appt => dispatch({
-        type: UPDATE_APPOINTMENT_SUCCESS,
-        data: { appt },
-      }))
+    return Queue.putQueue(apptId, req)
+      .then((appt) => {
+        dispatch({
+          type: UPDATE_APPOINTMENT_SUCCESS,
+          data: { appt },
+        });
+        if (isFunction(onSuccess)) {
+          onSuccess();
+        }
+      })
       .catch((error) => {
         showErrorAlert(error);
         dispatch({ type: UPDATE_APPOINTMENT_FAILED });
+        if (isFunction(onFailed)) {
+          onFailed(error);
+        }
       });
   };
 

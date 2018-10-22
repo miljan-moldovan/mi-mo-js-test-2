@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import { View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
@@ -42,7 +41,6 @@ import BlockTimeScreen from './../screens/blockTimeScreen';
 import BlockTimesReasonsScreen from './../screens/blockTimesReasons';
 import TurnAwayScreen from './../screens/turnAwayScreen';
 import RepeatsOnScreen from './../screens/repeatsOnScreen';
-import ModifyAppointmentScreen from '../screens/modifyAppointmentScreen';
 import ConflictsScreen from '../screens/conflictsScreen';
 import AddonServicesScreen from '../screens/addonServicesScreen';
 import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
@@ -190,7 +188,7 @@ const AppointmentStackNavigator = StackNavigator(
         headerTitle: <View style={styles.titleContainer}>
           <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
           <Text style={styles.subTitleText}>Appointment notes</Text>
-                     </View>,
+        </View>,
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (

@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
 export default class SalonAvatar extends React.Component {
   state = {
     isLoading: false,
+    isError: false,
   }
 
   render() {
@@ -40,7 +41,7 @@ export default class SalonAvatar extends React.Component {
       defaultComponent,
       imageStyle: imageStyleProp,
     } = this.props;
-    const { isLoading } = this.state;
+    const { isLoading, isError } = this.state;
     const badgeSize = width / 2;
     const badgeBorderRadius = badgeSize / 2;
     const badgeOffsetTop = badgeSize - (badgeSize / 5);
@@ -88,11 +89,11 @@ export default class SalonAvatar extends React.Component {
             <ActivityIndicator />
           }
           {
-            defaultComponent && (isNull(image) || !image.uri) &&
+            defaultComponent && (isNull(image) || !image.uri || isError) &&
             <View style={defaultComponentStyle}>{defaultComponent}</View>
           }
           {
-            !isNull(image) && image.uri &&
+            !isNull(image) && image.uri && !isError &&
             <CachedImage
               style={[
                 imageStyle,
@@ -101,6 +102,7 @@ export default class SalonAvatar extends React.Component {
               source={image}
               onLoadStart={() => this.setState({ isLoading: true })}
               onLoadEnd={() => this.setState({ isLoading: false })}
+              onError={() => this.setState({ isError: true })}
             />
           }
           {

@@ -26,7 +26,8 @@ class ClientsScreen extends React.Component {
       title: 'Clients',
       subTitle: null,
       leftButtonOnPress: () => { navigation.goBack(); },
-      leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+      leftButton: navigation.state.routeName === 'ClientsMain'
+        ? <Text style={styles.leftButtonText}>Cancel</Text> : null,
       rightButton: hideAddButton ? null : <Text style={styles.rightButtonText}>Add Client</Text>,
       rightButtonOnPress: () => { navigation.navigate(isModal ? 'ModalNewClient' : 'NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
     };

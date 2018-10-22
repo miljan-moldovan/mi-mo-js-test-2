@@ -400,7 +400,7 @@ class EditScheduleScreen extends React.Component {
                   date={date}
                   format="hh:mm A"
                   label="Start"
-                  noIcon
+                  icon={false}
                   value={startTimeScheduleOne}
                   isOpen={this.state.startTimeScheduleOnePickerOpen}
                   onChange={this.handleChangestartTimeScheduleOne}
@@ -411,7 +411,7 @@ class EditScheduleScreen extends React.Component {
                   date={date}
                   format="hh:mm A"
                   label="Ends"
-                  noIcon
+                  icon={false}
                   value={endTimeScheduleOne}
                   isOpen={this.state.endTimeScheduleOnePickerOpen}
                   onChange={this.handleChangeendTimeScheduleOne}
@@ -424,7 +424,7 @@ class EditScheduleScreen extends React.Component {
                   date={date}
                   format="hh:mm A"
                   label="Start"
-                  noIcon
+                  icon={false}
                   value={startTimeScheduleTwo}
                   isOpen={this.state.startTimeScheduleTwoPickerOpen}
                   onChange={this.handleChangestartTimeScheduleTwo}
@@ -435,7 +435,7 @@ class EditScheduleScreen extends React.Component {
                   date={date}
                   format="hh:mm A"
                   label="Ends"
-                  noIcon
+                  icon={false}
                   value={endTimeScheduleTwo}
                   isOpen={this.state.endTimeScheduleTwoPickerOpen}
                   onChange={this.handleChangeendTimeScheduleTwo}

@@ -70,11 +70,12 @@ const styles = StyleSheet.create({
   viewAllButton: { paddingHorizontal: 14 },
 });
 
-const ViewAllProviders = ({ icon, onPress, isSelected, separator }) => (
+const ViewAllProviders = ({
+  icon, onPress, isSelected, separator,
+}) => (
   <React.Fragment>
     <InputButton
       icon={icon}
-      noIcon={!icon}
       style={styles.viewAllButton}
       onPress={onPress}
       label="View All Desk Staff"

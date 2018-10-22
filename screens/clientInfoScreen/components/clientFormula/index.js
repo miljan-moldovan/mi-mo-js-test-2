@@ -290,7 +290,7 @@ class ClientFormula extends React.Component {
                 <InputDate
                   style={styles.inputDate}
                   placeholder="Date"
-                  noIcon={this.state.formula.date == null}
+                  icon={!this.state.formula.date ? false : 'default'}
                   onPress={this.onPressDate}
                   valueStyle={this.state.formula.date == null ? styles.dateValueStyle : {}}
                   selectedDate={this.state.formula.date == null ? 'Optional' : moment(this.state.formula.date).format('DD MMMM YYYY')}

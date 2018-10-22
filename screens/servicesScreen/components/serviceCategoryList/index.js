@@ -4,16 +4,19 @@ import {
   View,
   RefreshControl,
   FlatList,
+  StyleSheet,
 } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
   InputGroup,
+  InputDivider,
   InputButton,
 } from '../../../../components/formHelpers';
 
 import styles from './styles';
+import Colors from '../../../../constants/Colors';
 
 class ServiceCategoryList extends React.Component {
   constructor(props) {
@@ -40,24 +43,18 @@ class ServiceCategoryList extends React.Component {
 
   renderItem(elem) {
     return (
-      <InputGroup style={{
-        flexDirection: 'row',
-
-        height: 44,
-        borderBottomWidth: 1 / 3,
-        borderTopWidth: 0,
-      }}
-      >
-        {[<InputButton
-          key={Math.random().toString()}
-          style={{ flex: 1 }}
-          labelStyle={{ color: '#110A24' }}
-          onPress={() => { this.props.handlePressServiceCategory(elem.item); }}
-          label={elem.item.name}
-        />]}
-      </InputGroup>
+      <InputButton
+        icon="default"
+        key={Math.random().toString()}
+        style={{ height: 44, paddingLeft: 16 }}
+        labelStyle={{ color: '#110A24' }}
+        onPress={() => { this.props.handlePressServiceCategory(elem.item); }}
+        label={elem.item.name}
+      />
     );
   }
+
+  renderSeparator = () => <View style={{ backgroundColor: Colors.divider, marginLeft: 16, height: StyleSheet.hairlineWidth }} />
 
   render() {
     return (
@@ -71,12 +68,13 @@ class ServiceCategoryList extends React.Component {
                 this.setState({ refreshing: true });
                 this.props.onRefresh(this.onRefreshFinish);
               }
-            }
+              }
             />
-        }
+          }
           style={styles.serviceCategoriesList}
           data={this.state.serviceCategories}
           extraData={this.props}
+          ItemSeparatorComponent={this.renderSeparator}
           keyExtractor={this.keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />

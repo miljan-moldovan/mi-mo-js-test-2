@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,6 +16,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     paddingLeft: 16,
     justifyContent: 'flex-start',
+  },
+  placeholderText: {
+    color: Colors.placeholderText,
   },
   inputRow: {
     height: 43.5,

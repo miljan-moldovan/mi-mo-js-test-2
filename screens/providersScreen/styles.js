@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
   listItemSeparator: {
     height: StyleSheet.hairlineWidth,
     width: '100%',
-    backgroundColor: Colors.dividerGrey,
+    marginLeft: 16,
+    backgroundColor: Colors.divider,
   },
   selectedGreen: {
     color: Colors.selectedGreen,

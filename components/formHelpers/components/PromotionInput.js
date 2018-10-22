@@ -39,6 +39,7 @@ export default class PromotionInput extends React.Component {
 
   render() {
     const {
+      icon = 'default',
       label = 'Promotion',
       placeholder = 'Select Promotion',
       selectedPromotion,
@@ -46,6 +47,7 @@ export default class PromotionInput extends React.Component {
     const value = selectedPromotion ? selectedPromotion.name : null;
     return (
       <InputButton
+        icon={icon}
         value={value}
         label={label}
         onPress={this.handlePress}

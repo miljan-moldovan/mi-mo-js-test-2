@@ -216,14 +216,11 @@ class TurnAwayScreen extends Component {
         serviceId,
       })
         .then((check) => {
-          debugger //eslint-disable-line
           const length = moment.duration(get(check, 'duration'));
           services[index] = { ...updatedService, length };
           this.setState({ services: this.resetTimeForServices(services, index, startTime), isLoading: false }, this.checkCanSave);
         })
         .catch((error) => {
-          // showErrorAlert(error);
-          debugger //eslint-disable-line
           const length = moment.duration(get(service, 'maxDuration'));
           services[index] = { ...updatedService, length };
           this.setState({ services: this.resetTimeForServices(services, index, startTime), isLoading: false }, this.checkCanSave);
@@ -312,7 +309,7 @@ class TurnAwayScreen extends Component {
               value={date.format('DD MMMM YYYY')}
               onPress={this.handleDateModal}
             />
-            <InputDivider style={styles.inputDivider} />
+            <InputDivider />
             <ClientInput
               apptBook={apptBook}
               label={false}

@@ -37,4 +37,15 @@ class ValidatableInput extends React.Component {
     );
   }
 }
+ValidatableInput.propTypes = {
+  isValid: PropTypes.bool.isRequired,
+  onValidated: PropTypes.func.isRequired,
+  validation: PropTypes.oneOfType([PropTypes.func, RegExp]).isRequired,
+  onChangeText: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+  validateOnChange: PropTypes.bool,
+};
+ValidatableInput.defaultProps = {
+  validateOnChange: false,
+};
 export default ValidatableInput;

@@ -456,10 +456,12 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   removeServiceAlert = (serviceId) => {
-    const { mainEmployee } = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem(serviceId);
     const serviceTitle = get(get(serviceItem.service, 'service', null), 'name', '');
-    const employeeName = `${get(bookedByEmployee, 'name', bookedByEmployee.firstName || '')} ${get(bookedByEmployee, 'lastName', '')[0]}.`;
+    const employee = get(serviceItem, 'service.employee', null);
+    const employeeName = employee.isFirstAvailable ?
+      'First Available' :
+      `${get(employee, 'name', employee.firstName || '')} ${get(employee, 'lastName', '')[0]}.`;
     Alert.alert(
       'Remove Service',
       `Are you sure you want to remove service ${serviceTitle} w/ ${employeeName}?`,
@@ -588,18 +590,10 @@ export default class NewAppointmentScreen extends React.Component {
         btnRightText: 'DISMISS',
       });
     };
-    const errorCallback = ({ response: { data: { userMessage: text = 'Unknown appointment api error' } } }) => {
-      this.setState({
-        toast: {
-          text,
-          type: 'error',
-          btnRightText: 'DISMISS',
-        },
-      }, this.checkConflicts);
-    };
+    const errorCallback = () => this.checkConflicts();
+    this.shouldUpdateClientInfo();
     if (editType === 'new') {
       if (this.props.isValidAppointment) {
-        this.shouldUpdateClientInfo();
         this.props.newAppointmentActions.quickBookAppt(successCallback, errorCallback);
       }
     } else if (editType === 'edit') {
@@ -636,7 +630,13 @@ export default class NewAppointmentScreen extends React.Component {
       alertBody,
       [
         { text: 'No, Thank You', onPress: () => null },
-        { text: 'Yes, Discard', onPress: () => this.props.navigation.goBack() },
+        {
+          text: 'Yes, Discard',
+          onPress: () => {
+            this.props.navigation.goBack();
+            this.props.apptBookActions.setGridView();
+          },
+        },
       ],
     );
   }
@@ -645,14 +645,22 @@ export default class NewAppointmentScreen extends React.Component {
     if (email === '' || isNull(email)) {
       return true;
     }
-    return this.isValidEmailRegExp.test(email);
+    const isValid = this.isValidEmailRegExp.test(email);
+    if (isValid) {
+      this.shouldUpdateClientInfo();
+    }
+    return isValid;
   }
 
   phoneValidation = (phone) => {
     if (phone === '' || isNull(phone)) {
       return true;
     }
-    return this.isValidPhoneNumberRegExp.test(phone);
+    const isValid = this.isValidPhoneNumberRegExp.test(phone);
+    if (isValid) {
+      this.shouldUpdateClientInfo();
+    }
+    return isValid;
   }
 
   onChangeEmail = clientEmail => this.setState({ clientEmail })
@@ -797,7 +805,7 @@ export default class NewAppointmentScreen extends React.Component {
               label="Booked by"
               placeholder={false}
               showFirstAvailable={editType === 'new'}
-              noIcon={!isBookedByFieldEnabled}
+              icon={isBookedByFieldEnabled ? 'default' : false}
               selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
               selectedProvider={bookedByEmployee}
               disabled={!isBookedByFieldEnabled}
@@ -837,6 +845,7 @@ export default class NewAppointmentScreen extends React.Component {
             />
             <InputDivider />
             <ValidatableInput
+              validateOnChange
               label="Email"
               value={clientEmail}
               isValid={isValidEmail || !client}
@@ -846,6 +855,7 @@ export default class NewAppointmentScreen extends React.Component {
             />
             <InputDivider style={isValidEmail || !client ? {} : dividerWithErrorStyle} />
             <ValidatableInput
+              validateOnChange
               label="Phone"
               mask="[000]-[000]-[0000]"
               isValid={isValidPhone || !client}

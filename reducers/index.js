@@ -37,6 +37,7 @@ import rootDrawerNavigator from './rootDrawerNavigator';
 import rebookReducer from './rebookDialog';
 import queueDetailReducer from './queueDetail';
 import promotionsReducer from './promotions';
+import scheduleReducer from './schedule';
 import { AT } from '../actions/login';
 import removalReasonTypesReducer from './removalReasonTypes';
 
@@ -77,6 +78,7 @@ const appReducer = combineReducers({
   queueDetailReducer,
   promotionsReducer,
   removalReasonTypesReducer,
+  scheduleReducer,
 });
 
 const rootReducer = (state, action) => {

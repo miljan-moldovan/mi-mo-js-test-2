@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Text,
   RefreshControl,
-  FlatList
+  FlatList,
 } from 'react-native';
 import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -88,7 +88,7 @@ class CategoryProductsList extends React.Component {
     }}
     >
       <InputButton
-        noIcon
+        icon={false}
         key={Math.random().toString()}
         style={{ flex: 1 }}
         childrenContainerStyle={{ flex: 0 }}

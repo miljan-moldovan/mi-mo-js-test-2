@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../../../../constants/Colors';
 
 export default StyleSheet.create({
   serviceCategoriesList: {
@@ -21,5 +22,10 @@ export default StyleSheet.create({
     flex: 9,
     backgroundColor: '#FFF',
     flexDirection: 'column',
+  },
+  dividerComponent: {
+    marginLeft: 16,
+    height: StyleSheet.hairlineWidth,
+    color: Colors.divider,
   },
 });

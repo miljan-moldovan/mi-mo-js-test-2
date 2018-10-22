@@ -65,7 +65,7 @@ export default class RepeatsOnScreen extends React.Component {
             this.state.weekOcurrences.map(item =>
               ([
                 <InputButton
-                  noIcon
+                  icon={false}
                   value={<Text style={{ flex: 1 }}>{item}</Text>}
                   onPress={() => this.setState({ selectedValue: item })}
                 />,
@@ -74,7 +74,7 @@ export default class RepeatsOnScreen extends React.Component {
             this.state.monthOcurrences.map(item =>
               ([
                 <InputButton
-                  noIcon
+                  icon={false}
                   value={<Text style={{ flex: 1 }}>{item}</Text>}
                   onPress={() => this.setState({ selectedValue: item })}
                 />,
