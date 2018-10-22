@@ -155,7 +155,7 @@ const InputButton = props => (
       {props.children}
     </View>
     {
-      !props.noIcon && props.icon && props.icon && props.icon !== 'default'
+      !props.noIcon && props.icon && props.icon !== 'default' ? props.icon : null
     }
     {
       !props.noIcon && props.icon === 'default' &&

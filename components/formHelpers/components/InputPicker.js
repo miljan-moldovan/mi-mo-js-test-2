@@ -81,7 +81,9 @@ export default class InputPicker extends React.Component {
         {this.state.selectedOption ?
           <SinglePicker
             buttonCancelStyle={{ color: 'transparent' }}
-            buttonAcceptStyle={{ color: '#D0021B', paddingRight: 10, fontSize: 14 }}
+            buttonAcceptStyle={{
+ color: '#0076FF', paddingRight: 10, fontSize: 14, fontWeight: '500',
+}}
             langs={{
             BTN_CONFIRM: 'Done',
             BTN_CANCEL: 'Cancel',

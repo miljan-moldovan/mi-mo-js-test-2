@@ -9,13 +9,16 @@ import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { find, get } from 'lodash';
+import { find } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import clientFormulasActions from '../../../../actions/clientFormulas';
 import settingsActions from '../../../../actions/settings';
 import fetchFormCache from '../../../../utilities/fetchFormCache';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
 import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
 import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
+import SalonTimePicker from '../../../../components/formHelpers/components/SalonTimePicker';
+
 
 import {
   InputDate,
@@ -52,41 +55,16 @@ class ClientFormula extends React.Component {
         enteredBy: {},
         text: '',
       },
+      isLoading: true,
       defaultFormulaType: null,
       isVisible: true,
       formulaTypes: [],
+      datePickerOpen: false,
     };
   }
 
   componentWillMount() {
-    const onEditionFormula = this.props.navigation.state.params.formula;
 
-    let { formula } = this.state;
-
-    if (this.props.navigation.state.params.actionType === 'update') {
-      formula = Object.assign({}, onEditionFormula);
-
-      const provider = { fullName: formula.stylistName, name: formula.stylistName.split(' ')[0], lastName: formula.stylistName.split(' ')[1] };
-
-      const formulaType = find(this.state.formulaTypes, { key: formula.formulaType });
-      formula.formulaType = formulaType;
-      formula.enteredBy = provider;
-
-      const cachedForm = fetchFormCache('ClientFormulaUpdate', onEditionFormula.id, this.props.formCache);
-
-      if (onEditionFormula.id === cachedForm.id) {
-        formula = cachedForm;
-      }
-    } else if (this.props.navigation.state.params.actionType === 'new') {
-      formula.formulaType = this.state.defaultFormulaType;
-    }
-
-    this.setState({ formula });
-
-    this.props.navigation.setParams({
-      handlePress: () => this.saveFormula(),
-      handleGoBack: () => this.goBack(),
-    });
   }
 
 
@@ -98,9 +76,13 @@ class ClientFormula extends React.Component {
     const { formula } = this.state;
     formula.text = copied.text;
     formula.date = copied.date;
-    formula.formulaType = copied.formulaType;
+    formula.enteredBy = { fullName: copied.stylistName, name: copied.stylistName.split(' ')[0], lastName: copied.stylistName.split(' ')[1] };
 
-    this.setState({ isVisible: true, formula });
+
+    const formulaType = find(this.state.formulaTypes, { key: copied.formulaType });
+    formula.formulaType = formulaType;
+
+    this.setState({ isVisible: true, formula, defaultFormulaType: formulaType }, this.checkCanSave);
   }
 
   goBack() {
@@ -114,6 +96,10 @@ class ClientFormula extends React.Component {
     const newFormula = this.state.formula;
     newFormula.formulaType = value;
     this.setState({ formula: newFormula }, this.checkCanSave);
+  }
+
+  toogledate = () => {
+    this.setState({ datePickerOpen: !this.state.datePickerOpen });
   }
 
   cancelButton = () => ({
@@ -146,6 +132,7 @@ class ClientFormula extends React.Component {
     onChangeProvider = (provider) => {
       const { formula } = this.state;
       formula.provider = provider;
+
       this.setState({ formula, isVisible: true }, this.checkCanSave);
     }
 
@@ -186,12 +173,12 @@ class ClientFormula extends React.Component {
       this.setState({ formula }, this.checkCanSave);
     }
 
-    onPressDate = (selectedDate) => {
-      const { formula } = this.state;
-      formula.date = selectedDate;
-      this.shouldSave = true;
-      this.setState({ formula }, this.checkCanSave);
-    }
+    // onPressDate = (selectedDate) => {
+    //   const { formula } = this.state;
+    //   formula.date = selectedDate;
+    //   this.shouldSave = true;
+    //   this.setState({ formula }, this.checkCanSave);
+    // }
 
     loadFormulaTypes = (result) => {
       if (result) {
@@ -222,8 +209,39 @@ class ClientFormula extends React.Component {
         this.setState({
           defaultFormulaType,
           formulaTypes,
-        });
+        }, this.loadFormulaData);
       }
+    }
+
+    loadFormulaData = () => {
+      const onEditionFormula = this.props.navigation.state.params.formula;
+
+      let { formula } = this.state;
+
+      if (this.props.navigation.state.params.actionType === 'update') {
+        formula = Object.assign({}, onEditionFormula);
+
+        const provider = { fullName: formula.stylistName, name: formula.stylistName.split(' ')[0], lastName: formula.stylistName.split(' ')[1] };
+
+        const formulaType = find(this.state.formulaTypes, { key: formula.formulaType });
+        formula.formulaType = formulaType;
+        formula.enteredBy = provider;
+
+        const cachedForm = fetchFormCache('ClientFormulaUpdate', onEditionFormula.id, this.props.formCache);
+
+        if (onEditionFormula.id === cachedForm.id) {
+          formula = cachedForm;
+        }
+      } else if (this.props.navigation.state.params.actionType === 'new') {
+        formula.formulaType = this.state.defaultFormulaType;
+      }
+
+      this.setState({ formula, isLoading: false }, this.checkCanSave);
+
+      this.props.navigation.setParams({
+        handlePress: () => this.saveFormula(),
+        handleGoBack: () => this.goBack(),
+      });
     }
 
     saveFormula() {
@@ -233,6 +251,7 @@ class ClientFormula extends React.Component {
         const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
         formula.formulaType = formula.formulaType.key;
+        formula.stylistName = formula.enteredBy.fullName;
         delete formula.provider;
         delete formula.enteredBy;
         // delete formula.date;
@@ -247,6 +266,7 @@ class ClientFormula extends React.Component {
         const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
         formula.formulaType = formula.formulaType.key;
+        formula.stylistName = formula.enteredBy.fullName;
         delete formula.provider;
         delete formula.enteredBy;
         delete formula.store;
@@ -260,6 +280,13 @@ class ClientFormula extends React.Component {
       }
     }
 
+    handleChangedate = (dateDateObj) => {
+      const { formula } = this.state;
+      formula.date = moment(dateDateObj);
+      this.shouldSave = true;
+      this.setState({ formula }, this.checkCanSave);
+    }
+
     render() {
       return (
         <Modal
@@ -267,8 +294,10 @@ class ClientFormula extends React.Component {
           style={styles.modal}
         >
           <View style={styles.container}>
-            { (this.props.clientFormulasState.isLoading || this.props.settingsState.isLoading) &&
-            <LoadingOverlay />
+            { (this.props.clientFormulasState.isLoading
+              || this.props.settingsState.isLoading
+             || this.state.isLoading) &&
+             <LoadingOverlay />
                 }
             <ClienteFormulaHeader rootProps={this.props} />
             <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
@@ -310,13 +339,18 @@ class ClientFormula extends React.Component {
                   label="Associated appt."
                 />
                 <InputDivider />
-                <InputDate
-                  style={styles.inputDate}
-                  placeholder="Date"
+                <SalonTimePicker
+                  label="Date"
                   noIcon={this.state.formula.date == null}
-                  onPress={this.onPressDate}
-                  valueStyle={this.state.formula.date == null ? styles.dateValueStyle : {}}
-                  selectedDate={this.state.formula.date == null ? 'Optional' : moment(this.state.formula.date).format('DD MMMM YYYY')}
+                  icon={<FontAwesome style={{ fontSize: 20, color: '#727A8F', marginLeft: 16 }}>{Icons.timesCircle}</FontAwesome>}
+                  mode="date"
+                  placeholder="Optional"
+                  valueStyle={this.state.formula.date == null ? styles.dateValueStyle : { }}
+                  value={this.state.formula.date}
+                  isOpen={this.state.datePickerOpen}
+                  onChange={this.handleChangedate}
+                  toggle={this.toogledate}
+                  format="DD MMMM YYYY"
                 />
                 <InputDivider />
                 <ProviderInput

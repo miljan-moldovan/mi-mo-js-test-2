@@ -48,6 +48,7 @@ class SalonTimePicker extends React.Component {
     const value = moment(this.props.value).isValid() ? moment(this.props.value).format(format) : this.props.placeholder || '-';
     const date = moment(this.props.value).isValid() ? moment(this.props.value).toDate() : new Date();
     const valueStyle = this.props.isOpen ? { color: '#1B65CF' } : this.props.valueStyle || null;
+
     return (
       <React.Fragment>
         <InputButton

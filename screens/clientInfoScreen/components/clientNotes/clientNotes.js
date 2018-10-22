@@ -162,20 +162,21 @@ class ClientNotesScreen extends Component {
     return tags;
   }
 
-
   setTagsBar = () => {
     const activeStyle = {
       icon: 'check',
       iconColor: '#FFFFFF',
       backgroundColor: '#1DBF12',
       valueColor: '#FFFFFF',
+      iconSize: 8,
     };
 
     const inactiveStyle = {
-      icon: 'unchecked',
+      icon: 'square',
       iconColor: '#727A8F',
       backgroundColor: '#FFFFFF',
       valueColor: '#727A8F',
+      iconSize: 16,
     };
 
     const tags = [
