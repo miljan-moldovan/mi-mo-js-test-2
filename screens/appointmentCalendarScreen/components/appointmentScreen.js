@@ -124,7 +124,6 @@ class AppointmentScreen extends Component {
       const { rebookProviders, selectedAppointment } = params;
 
 
-
       newAppointmentActions.cleanForm();
       newAppointmentActions.setClient(selectedAppointment.client);
       appointmentCalendarActions.setProviderScheduleDates(params.date, params.date);
@@ -233,6 +232,8 @@ class AppointmentScreen extends Component {
     const { newAppointmentActions } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
     const { client } = this.props.newAppointmentState;
+
+
     newAppointmentActions.cleanForm();
     if (this.state.bookAnotherEnabled || this.state.rebookAppointmentEnabled) {
       newAppointmentActions.setClient(client);
@@ -269,7 +270,6 @@ class AppointmentScreen extends Component {
       }
 
       const date = rebookProviders.length === 1 ? colData : startDate;
-
 
 
       for (let i = 0; i < services.length; i += 1) {
@@ -795,6 +795,7 @@ class AppointmentScreen extends Component {
           rebookAppointmentEnabled ? (
             <RebookAppointment
               hide={this.setRebookAppointment}
+              newAppointmentState={this.props.newAppointmentState}
               client={this.props.newAppointmentState.client}
             />
           ) : null

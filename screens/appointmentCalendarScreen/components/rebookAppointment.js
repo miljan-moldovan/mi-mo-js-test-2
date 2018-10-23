@@ -60,7 +60,8 @@ class RebookAppointment extends Component {
   render() {
     const { height } = this.state;
     const { client } = this.props;
-    const clientName = `${client.name.toUpperCase()} ${client.lastName.toUpperCase()}`;
+
+    const clientName = client ? `${client.name.toUpperCase()} ${client.lastName.toUpperCase()}` : '';
     return (
       <Animated.View style={[styles.container, { height }]}>
         <View style={{ flex: 1 }}>
