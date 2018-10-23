@@ -165,6 +165,11 @@ class ServicesScreen extends React.Component {
     if (this.mode === 'quickQueue') {
       let filtered = quickQueueServices;
 
+      
+
+
+      filtered = filtered.length > 0 ? filtered.filter(item => item.canBePerformed === true) : filtered;
+
       if (searchText && searchText.length > 0) {
         const criteria = [
           { Field: 'name', Values: [searchText.toLowerCase()] },

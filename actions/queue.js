@@ -484,6 +484,44 @@ export const putQueue = (queueId, queue, callback) => (dispatch) => {
 };
 
 
+export const putQueueServiceEmployeeEmployeeSuccess = notes => ({
+  type: PUT_QUEUE_SUCCESS,
+  data: { notes },
+});
+
+export const putQueueServiceEmployeeEmployeeFailed = error => ({
+  type: PUT_QUEUE_FAILED,
+  data: { error },
+});
+
+export const putQueueServiceEmployeeEmployee = (queueId, serviceEmployeeId, queue, callback) => (dispatch) => {
+  callback = callback || (() => { });
+  dispatch({ type: PUT_QUEUE });
+  return Queue.putQueueServiceEmployeeEmployee(queueId, serviceEmployeeId, queue)
+    .then((response) => { dispatch(putQueueServiceEmployeeEmployeeSuccess(response)); callback(true); })
+    .catch((error) => { showErrorAlert(error); dispatch(putQueueServiceEmployeeEmployeeFailed(error)); callback(false); });
+};
+
+
+export const putQueueServiceEmployeeServiceSuccess = notes => ({
+  type: PUT_QUEUE_SUCCESS,
+  data: { notes },
+});
+
+export const putQueueServiceEmployeeServiceFailed = error => ({
+  type: PUT_QUEUE_FAILED,
+  data: { error },
+});
+
+export const putQueueServiceEmployeeService = (queueId, serviceEmployeeId, queue, callback) => (dispatch) => {
+  callback = callback || (() => { });
+  dispatch({ type: PUT_QUEUE });
+  return Queue.putQueueServiceEmployeeService(queueId, serviceEmployeeId, queue)
+    .then((response) => { dispatch(putQueueServiceEmployeeServiceSuccess(response)); callback(true); })
+    .catch((error) => { showErrorAlert(error); dispatch(putQueueServiceEmployeeServiceFailed(error)); callback(false); });
+};
+
+
 export const getQueueStateSuccess = response => ({
   type: GET_QUEUE_STATE_SUCCESS,
   data: { response },
