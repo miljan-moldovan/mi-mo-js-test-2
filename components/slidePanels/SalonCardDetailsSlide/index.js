@@ -247,6 +247,7 @@ class SalonCardDetailsSlide extends React.Component {
 
   renderHeaderSlide = () => {
     const { crossedAppointments } = this.props;
+
     const { appointment } = this.state;
     const index = crossedAppointments.indexOf(appointment);
     if (crossedAppointments.length < 2) {

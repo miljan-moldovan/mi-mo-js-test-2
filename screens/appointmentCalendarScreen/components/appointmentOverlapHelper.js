@@ -33,6 +33,26 @@ function checkAppointmentAfter(appointments, index, sourceAppointment) {
   return filteredAppt;
 }
 
+
+function checkAppointmentSame(appointments, index, sourceAppointment) {
+  let filteredAppt = [];
+
+  if (appointments[index] &&
+    moment(sourceAppointment.fromTime, DateTime.timeOld).isSame(moment(appointments[index].fromTime, DateTime.timeOld), moment(appointments[index].toTime, DateTime.timeOld), 'minute')) {
+    if (appointments[index].id !== sourceAppointment.id) {
+      filteredAppt.push(appointments[index]);
+    }
+
+    if (index < appointments.length - 1) {
+      filteredAppt = filteredAppt
+        .concat(checkAppointmentSame(appointments, index + 1, sourceAppointment));
+    }
+  }
+
+  return filteredAppt;
+}
+
+
 const sortAppointmentByStartingTime = (a, b) =>
   moment(a.fromTime, DateTime.timeOld).diff(moment(b.fromTime, DateTime.timeOld));
 
@@ -54,9 +74,16 @@ function appointmentOverlapHelper(appointments = [], blockTimes = [], selectedAp
     selectedAppointment,
   );
 
+
+  const crossedAppointmentSame = checkAppointmentSame(
+    employeesAppointments,
+    0,
+    selectedAppointment,
+  );
+
   return {
     allCrossedAppointments: crossedAppointmentsBefore.concat([selectedAppointment]
-      .concat(crossedAppointmentAfter)).sort(sortAppointmentByStartingTime),
+      .concat(crossedAppointmentAfter)).concat(crossedAppointmentSame).sort(sortAppointmentByStartingTime),
     appointmentAfter: crossedAppointmentAfter,
   };
 }
