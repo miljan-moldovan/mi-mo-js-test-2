@@ -134,11 +134,10 @@ class TurnAwayScreen extends Component {
     }
   }
 
-  goBack = (result) => {
+  goBack = (result, userMessage) => {
     if (result) {
+      alert(userMessage);
       this.props.navigation.goBack();
-    } else {
-      alert('An error ocurred');
     }
   }
 

@@ -1,5 +1,6 @@
 import { Store, TurnAway } from '../utilities/apiWrapper';
 import { storeForm, purgeForm } from './formCache';
+import { showErrorAlert } from './utils';
 
 export const SET_ON_EDITION_TURN_AWAY = 'turnAway/SET_ON_EDITION_TURN_AWAY';
 
@@ -19,10 +20,12 @@ const postTurnAwayFailed = error => ({
 
 const postTurnAway = (turnAway, callback) => (dispatch) => {
   dispatch({ type: POST_TURN_AWAY });
-
   return TurnAway.postTurnAway(turnAway)
-    .then((response) => { dispatch(postTurnAwaySuccess(response)); callback(true); })
-    .catch((error) => { dispatch(postTurnAwayFailed(error)); callback(false); });
+    .then((response) => {
+      dispatch(postTurnAwaySuccess(response));
+      callback(true, response);
+    })
+    .catch((error) => { showErrorAlert(error); dispatch(postTurnAwayFailed(error)); callback(false); });
 };
 
 
