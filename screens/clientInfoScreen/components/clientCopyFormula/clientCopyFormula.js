@@ -47,21 +47,18 @@ class ClientCopyFormula extends Component {
 
     return ({
       headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Copy Formula</Text>
-          <Text style={styles.subTitleText}>{subtitle}</Text>
+        <View style={styles.headerTitle}>
+          <Text style={styles.headerTitleTitle}>Copy Formula</Text>
+          <Text style={styles.headerTitleSubTitle}>{subtitle}</Text>
         </View>
       ),
       headerLeft: (
         <SalonTouchableOpacity
-          style={styles.leftButton}
           onPress={handleGoBack}
         >
-          <View style={styles.leftButtonContainer}>
-            <Text style={styles.leftButtonText}>
+          <Text style={styles.headerLeftText}>
               Cancel
-            </Text>
-          </View>
+          </Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (

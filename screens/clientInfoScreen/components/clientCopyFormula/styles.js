@@ -27,40 +27,25 @@ export default StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
   },
-  leftButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  leftButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    backgroundColor: 'transparent',
-  },
-  leftButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  headerRightText: { fontSize: 14 },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
+  headerTitle: {
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 5,
+    marginTop: 20,
   },
+  headerTitleTitle: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  headerTitleSubTitle: {
+    fontFamily: 'Roboto',
+    fontSize: 10,
+    lineHeight: 12,
+    color: 'white',
+  },
+  headerLeftText: { marginTop: 20, fontSize: 14, color: 'white' },
+  headerRightText: { marginTop: 20, fontSize: 14 },
 });
