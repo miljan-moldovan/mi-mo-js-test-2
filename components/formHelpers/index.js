@@ -163,7 +163,7 @@ const InputButton = (props) => {
       </View>
       {
         props.icon ? icon : null
-      }s
+      }
     </SalonTouchableOpacity>
   );
 };
