@@ -251,30 +251,55 @@ class SalonCardDetailsSlide extends React.Component {
     const { appointment } = this.state;
     const index = crossedAppointments.indexOf(appointment);
     if (crossedAppointments.length < 2) {
-      return null;
+      return (
+        <View style={[styles.slidePanelWrapper, {
+         zIndex: 9999, height: 20, position: 'absolute', top: 10,
+        }]}
+        >
+          <View style={[styles.swipablePanelIconRight, { marginBottom: 0 }]}>
+            <SalonTouchableOpacity onPress={this.hidePanel}>
+              <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
+            </SalonTouchableOpacity>
+          </View>
+        </View>);
     }
     return (
+
       <React.Fragment>
-        <SalonTouchableOpacity
-          style={styles.swipablePanelIconLeft}
-          onPress={this.handleActionSheet}
-        >
-          <SalonIcon
-            size={20}
-            icon="barsIcon"
-            style={styles.barsIcon}
-          />
-        </SalonTouchableOpacity>
-        <Swiper
-          showsPagination
-          index={index}
-          onIndexChanged={this.handleSlideChanged}
-        >
-          {crossedAppointments.map(() => (
-            <View style={styles.crossedAppointmentSliderItem} />
-          ))}
-        </Swiper>
+        <View style={styles.slidePanel}>
+          <View style={styles.slidePanelWrapper}>
+            <React.Fragment>
+              <SalonTouchableOpacity
+                style={styles.swipablePanelIconLeft}
+                onPress={this.handleActionSheet}
+              >
+                <SalonIcon
+                  size={20}
+                  icon="barsIcon"
+                  style={styles.barsIcon}
+                />
+              </SalonTouchableOpacity>
+              <Swiper
+                showsPagination
+                index={index}
+                onIndexChanged={this.handleSlideChanged}
+              >
+                {crossedAppointments.map(() => (
+                  <View style={styles.crossedAppointmentSliderItem} />
+            ))}
+              </Swiper>
+            </React.Fragment>
+            <View style={styles.swipablePanelIconRight}>
+              <SalonTouchableOpacity onPress={this.hidePanel}>
+                <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
+              </SalonTouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View style={styles.topBorder} />
       </React.Fragment>
+
+
     );
   }
 
@@ -308,17 +333,9 @@ class SalonCardDetailsSlide extends React.Component {
           style={styles.topIcon}
         />
       </SalonTouchableOpacity>
-      <View style={styles.slidePanel}>
-        <View style={styles.slidePanelWrapper}>
-          {this.renderHeaderSlide()}
-          <View style={styles.swipablePanelIconRight}>
-            <SalonTouchableOpacity onPress={this.hidePanel}>
-              <Icon name="timesCircle" size={18} color="#C0C1C6" type="solid" />
-            </SalonTouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <View style={styles.topBorder} />
+
+      {this.renderHeaderSlide()}
+
       <View style={styles.headerPanelWithSlider}>
         {this.renderHeaderData()}
       </View>

@@ -1,10 +1,10 @@
 import { Dimensions } from 'react-native';
 
 const { height } = Dimensions.get('window');
-let bottomCofficient = 1;
+let bottomCofficient = 1.2;
 
 if (height < 600) {
-  bottomCofficient = 1.2;
+  bottomCofficient = 1.4;
 }
 
 const onePercent = (height / 100);
