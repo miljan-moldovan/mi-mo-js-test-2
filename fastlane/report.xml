@@ -5,52 +5,42 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.072785">
+      <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.018776">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.011177">
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.001683">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: npm install" time="21.494323">
+      <testcase classname="fastlane.lanes" name="2: npm install" time="15.535266">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: npm run bundle:ios" time="60.380747">
+      <testcase classname="fastlane.lanes" name="3: npm run bundle:ios" time="52.456169">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: cocoapods" time="55.322889">
+      <testcase classname="fastlane.lanes" name="4: cocoapods" time="71.427605">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: automatic_code_signing" time="0.262532">
+      <testcase classname="fastlane.lanes" name="5: automatic_code_signing" time="0.31687">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: increment_build_number" time="2.055455">
+      <testcase classname="fastlane.lanes" name="6: increment_build_number" time="3.636332">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: gym" time="769.99066">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="8: crashlytics" time="27.540278">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="9: slack" time="2.092597">
+      <testcase classname="fastlane.lanes" name="7: gym" time="289.740974">
         
       </testcase>
     

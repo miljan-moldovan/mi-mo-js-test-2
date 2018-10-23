@@ -100,6 +100,7 @@ export default {
     flex: 1,
     alignSelf: 'stretch',
     alignItems: 'center',
+    paddingBottom: 14,
   },
   panelDiff: {
     backgroundColor: 'transparent',

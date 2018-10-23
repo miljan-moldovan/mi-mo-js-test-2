@@ -30,12 +30,10 @@ const styles = StyleSheet.create({
     width: '92%',
     backgroundColor: '#F1F1F1',
     flex: 1,
-    marginBottom: 14,
     paddingVertical: 15,
   },
   panelInfoLine: {
     flex: 1,
-    paddingBottom: 5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -182,7 +180,7 @@ export default class AuditInformation extends React.Component {
       auditToRender = slice(auditToRender, 0, 1);
     }
     return auditToRender.map(item => (
-      <View key={Math.random()} style={[styles.panelInfoLine, { paddingTop: 5 }]}>
+      <View key={Math.random()} style={[styles.panelInfoLine, { paddingVertical: 5 }]}>
         <Text style={styles.panelInfoTitle}>{this.getAuditType(item.auditType)}</Text>
         {isBlockTime
           ? [
@@ -224,7 +222,7 @@ export default class AuditInformation extends React.Component {
       </View>
     ) : (
       [
-        <View style={[styles.panelInfo, isOpen ? {} : { maxHeight: 230 }]}>
+        <View style={[styles.panelInfo, isOpen ? {} : { maxHeight: 230, minHeight: 55 }]}>
           {this.renderAuditInfo(audit, isBlockTime, isOpen)}
         </View>,
         <SalonTouchableOpacity
