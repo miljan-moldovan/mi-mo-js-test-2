@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ViewPropTypes, Text } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
