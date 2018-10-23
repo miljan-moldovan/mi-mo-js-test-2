@@ -342,6 +342,12 @@ class SalonCardDetailsSlide extends React.Component {
     </View>
   );
 
+  hideShowEditRemarksSuccess = () => {
+    this.setState({
+      showEditRemarksSuccess: false,
+    });
+  }
+
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
     return (
@@ -355,6 +361,7 @@ class SalonCardDetailsSlide extends React.Component {
           title="Edit Appointment Remarks"
           value={appointment.remarks}
         />
+
         <SuccessModal
           text="Remarks Edited"
           show={this.state.showEditRemarksSuccess}
