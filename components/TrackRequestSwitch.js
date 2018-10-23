@@ -44,7 +44,7 @@ class TrackRequestSwitch extends React.Component {
     const {
       textStyle, style, isFirstAvailable, hideDivider,
     } = this.props;
-
+    // TODO: Remove InputDivider from this component
     return (
       <React.Fragment>
         {this.state.trackRequest && !isFirstAvailable ?
