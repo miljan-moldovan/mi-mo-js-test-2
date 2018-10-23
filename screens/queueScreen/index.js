@@ -172,6 +172,7 @@ class QueueScreen extends React.Component {
         ),
         leftButtonOnPress: (navigation) => {
           navigation.goBack();
+          this.loadQueueData();
         },
       },
     });

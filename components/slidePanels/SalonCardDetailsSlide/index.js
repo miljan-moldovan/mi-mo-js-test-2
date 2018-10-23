@@ -283,7 +283,11 @@ class SalonCardDetailsSlide extends React.Component {
       return null;
     }
     return !appointment.isBlockTime ? (
-      <ApptointmentHeader appointment={appointment} appointments={this.props.appointments} />) : (
+      <ApptointmentHeader
+        navigation={this.props.navigation}
+        appointment={appointment}
+        appointments={this.props.appointments}
+      />) : (
         <BlockHeader appointment={appointment} />
     );
   }

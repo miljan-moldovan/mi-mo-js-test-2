@@ -14,7 +14,9 @@ class ClientInfoButton extends React.Component {
       apptBook: this.props.apptBook,
       canDelete: this.props.canDelete,
     });
-    this.props.onDonePress();
+    if (this.props.onDonePress) {
+      this.props.onDonePress();
+    }
   };
 
   render() {
