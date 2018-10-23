@@ -5,18 +5,33 @@ import {
   FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { get, isNaN, sortBy, isNumber } from 'lodash';
+import { get, isFunction, sortBy, isNumber } from 'lodash';
 
 import Icon from '../../components/UI/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import WordHighlighter from '../../components/wordHighlighter';
-import ListLetterFilter from '../../components/listLetterFilter';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Colors from '../../constants/Colors';
 import styles from './styles';
 
 const ITEM_HEIGHT = 44;
+const NoneButton = props => (
+  <SalonTouchableOpacity
+    onPress={props.onPress}
+    style={styles.itemRow}
+  >
+    <Text
+      numberOfLines={1}
+      style={[styles.itemText, styles.container]}
+    >
+      No Promo
+    </Text>
+  </SalonTouchableOpacity>
+);
+NoneButton.propTypes = {
+  onPress: PropTypes.func.isRequired,
+};
 
 class PromotionsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -31,7 +46,7 @@ class PromotionsScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    const { selectedPromotion = null } = props.navigation.state.params || {};
+    const selectedPromotion = props.navigation.getParam('selectedPromotion', null);
     this.state = {
       searchText: '',
       selectedPromotion,
@@ -57,19 +72,18 @@ class PromotionsScreen extends React.Component {
   onChangeSearchText = searchText => this.setState({ searchText })
 
   onChangePromotion = (item) => {
-    const {
-      dismissOnSelect,
-      onChangePromotion = (itm => itm),
-    } = this.props.navigation.state.params || {};
-    onChangePromotion(item);
+    const dismissOnSelect = this.props.navigation.getParam('dismissOnSelect', true);
+    const onChangePromotion = this.props.navigation.getParam('onChangePromotion', null);
+    if (isFunction(onChangePromotion)) {
+      onChangePromotion(item);
+    }
     if (dismissOnSelect) {
       this.props.navigation.goBack();
     }
   }
 
   get mode() {
-    const { mode = 'service' } = this.props.navigation.state.params || {};
-    return mode;
+    return this.props.navigation.getParam('mode', 'service');
   }
 
   get currentData() {
@@ -95,20 +109,6 @@ class PromotionsScreen extends React.Component {
   }
 
   getItemLayout = (data, index) => ({ length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index })
-
-  scrollToLetter = (letter) => {
-    for (let i = 0; i <= this.currentData.length; i += 1) {
-      const firstChar = get(this.currentData[i], 'name', '').toUpperCase().charAt(0);
-      if (letter === '#' && isNumber(firstChar)) {
-        this.listRef.scrollToIndex({ index: i });
-        break;
-      }
-      if (firstChar === letter.toUpperCase()) {
-        this.listRef.scrollToIndex({ index: i });
-        break;
-      }
-    }
-  }
 
   keyExtractor = item => get(item, 'id');
 
@@ -154,8 +154,11 @@ class PromotionsScreen extends React.Component {
       searchText,
     } = this.state;
     const {
+      navigation: { getParam },
       promotionsState: { isLoading },
     } = this.props;
+    const selectNoneButton = getParam('showNoneButton', true);
+    const onPressSelectNone = () => this.onChangePromotion(null);
     return (
       <View style={[styles.container, styles.whiteBg]}>
         {
@@ -176,6 +179,13 @@ class PromotionsScreen extends React.Component {
           backgroundColor="rgba(142, 142, 147, 0.24)"
         />
         <View style={[styles.container, styles.flexRow]}>
+          {
+            selectNoneButton &&
+            <React.Fragment>
+              <NoneButton onPress={onPressSelectNone} />
+              {this.renderSeparator()}
+            </React.Fragment>
+          }
           <FlatList
             data={this.currentData}
             style={styles.container}
@@ -184,10 +194,8 @@ class PromotionsScreen extends React.Component {
             renderItem={this.renderItem}
             getItemLayout={this.getItemLayout}
             ItemSeparatorComponent={this.renderSeparator}
+            ListFooterComponent={this.renderSeparator}
           />
-          {
-            // <ListLetterFilter onPress={this.scrollToLetter} />
-          }
         </View>
       </View>
     );

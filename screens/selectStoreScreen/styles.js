@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../../constants/Colors';
 
 export default StyleSheet.create({
   mainContainer: {
@@ -21,21 +22,21 @@ export default StyleSheet.create({
   },
   contentWrapper: { flex: 1 },
   listItem: {
-    width: '85%',
+    width: '100%',
     fontSize: 14,
     color: 'rgb(18, 10, 36)',
     fontFamily: 'Roboto-Regular',
     textAlign: 'left',
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    marginLeft: 16,
     marginTop: 10,
     marginBottom: 10,
     borderBottomWidth: 5,
     borderBottomColor: 'rgb(18, 10, 36)',
   },
   listColumnWrapper: {
+    marginLeft: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(18, 10, 36, 0.3)',
+    borderBottomColor: Colors.divider,
   },
   listWrapper: {
     flex: 1,

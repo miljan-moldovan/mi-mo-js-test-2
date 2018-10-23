@@ -2,6 +2,8 @@
 import React from 'react';
 import { StackNavigator } from 'react-navigation';
 
+import headerStyles from '../constants/headerStyles';
+
 import QueueScreen from './../screens/queueScreen';
 import QueueCombineScreen from './../screens/queueCombineScreen';
 import ClientMergeScreen from './../screens/clientMergeScreen';
@@ -180,24 +182,7 @@ export const MainNavigator = StackNavigator(
   {
     headerMode: 'screen',
     navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#115ECD',
-        paddingHorizontal: 10,
-        paddingVertical: 14,
-        paddingTop: 20,
-        borderWidth: 0,
-        shadowColor: 'transparent',
-        elevation: 0,
-        borderBottomWidth: 0,
-        justifyContent: 'center',
-      },
-      headerTitleStyle: {
-        fontFamily: 'Roboto-Regular',
-        fontSize: 17,
-        color: '#fff',
-        fontWeight: '500',
-        height: '100%',
-      },
+      ...headerStyles,
     },
   },
 );
@@ -327,6 +312,7 @@ QueueStackNavigator.navigationOptions = ({ navigation }) => {
   }
 
   return {
+    ...headerStyles,
     tabBarVisible,
   };
 };

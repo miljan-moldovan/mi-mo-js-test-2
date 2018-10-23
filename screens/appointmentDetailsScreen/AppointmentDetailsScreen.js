@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get } from 'lodash';
 
 import AppointmentDetails from './components/appointmentDetails';
@@ -11,7 +10,7 @@ import ClientInfoButton from '../../components/ClientInfoButton';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
-import { Employees } from '../../utilities/apiWrapper';
+
 import styles from './styles';
 
 const initialLayout = {
@@ -159,16 +158,16 @@ export default class AppointmentDetailsScreen extends React.Component {
     return (
       <View style={styles.container}>
         {isLoading && <LoadingOverlay />}
-          <TabView
-            style={tabViewStyle}
-            navigationState={this.state}
-            renderScene={this.renderScene}
-            renderTabBar={this.renderHeader}
-            onIndexChange={this.handleIndexChange}
-            initialLayout={initialLayout}
-            swipeEnabled={false}
-            useNativeDriver
-          />
+        <TabView
+          style={tabViewStyle}
+          navigationState={this.state}
+          renderScene={this.renderScene}
+          renderTabBar={this.renderHeader}
+          onIndexChange={this.handleIndexChange}
+          initialLayout={initialLayout}
+          swipeEnabled={false}
+          useNativeDriver
+        />
       </View>
     );
   }
