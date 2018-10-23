@@ -366,31 +366,28 @@ class ProviderScreen extends React.Component {
           onChangeText={this.onChangeSearchText}
         />
 
-        <View style={styles.flexRow}>
-          <View style={styles.fullSizeColumn}>
-            {
-              showFirstAvailable &&
-              <React.Fragment>
-                <FirstAvailableRow onPress={this.handleOnChangeProvider} />
-                {this.renderSeparator()}
-              </React.Fragment>
-            }
-            <FlatList
-              style={styles.whiteBackground}
-              data={this.currentData}
-              renderItem={this.renderItem}
-              getItemLayout={this.getItemLayout}
-              ref={(ref) => { this.flatListRef = ref; }}
-              ItemSeparatorComponent={this.renderSeparator}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.onRefresh}
-                />
-              }
+        {
+          showFirstAvailable &&
+          <React.Fragment>
+            <FirstAvailableRow onPress={this.handleOnChangeProvider} />
+            {this.renderSeparator()}
+          </React.Fragment>
+        }
+        <FlatList
+          style={styles.whiteBackground}
+          data={this.currentData}
+          renderItem={this.renderItem}
+          getItemLayout={this.getItemLayout}
+          ref={(ref) => { this.flatListRef = ref; }}
+          ListFooterComponent={this.renderSeparator}
+          ItemSeparatorComponent={this.renderSeparator}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.onRefresh}
             />
-          </View>
-        </View>
+          }
+        />
       </View>
     );
   }

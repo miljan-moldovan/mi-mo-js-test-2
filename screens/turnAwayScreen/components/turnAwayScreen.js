@@ -11,7 +11,6 @@ import LoadingOverlay from '../../../components/LoadingOverlay';
 import Colors from '../../../constants/Colors';
 import DateTime from '../../../constants/DateTime';
 import { Services } from '../../../utilities/apiWrapper';
-import { showErrorAlert } from '../../../actions/utils';
 
 import {
   SectionDivider,

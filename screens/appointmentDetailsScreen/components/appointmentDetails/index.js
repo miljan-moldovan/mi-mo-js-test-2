@@ -376,7 +376,7 @@ class AppointmentDetails extends React.Component {
 
   serializeServiceItem = (serviceItem) => {
     const {
-      id = null,
+      // id = null,
       price: priceEntered,
       service,
       employee,
@@ -384,13 +384,13 @@ class AppointmentDetails extends React.Component {
       isFirstAvailable,
       isProviderRequested,
     } = serviceItem;
-    const promotionCode = get(promotion, 'promotionCode', '');
+    const promotionCode = get(promotion, 'promotionCode', null);
     return {
-      id,
+      // id,
       priceEntered,
       promotionCode,
       isFirstAvailable,
-      isProviderRequested,
+      isProviderRequested: isFirstAvailable ? false : isProviderRequested,
       serviceId: get(service, 'id', null),
       employeeId: isFirstAvailable ? null : get(employee, 'id', null),
     };
@@ -398,20 +398,20 @@ class AppointmentDetails extends React.Component {
 
   serializeProductItem = (productItem) => {
     const {
-      id = null,
+      // id = null,
       product,
       employee,
       promotion,
     } = productItem;
-    const promotionCode = get(promotion, 'promotionCode', '');
+    const promotionCode = get(promotion, 'promotionCode', null);
     const item = {
       inventoryItemId: get(product, 'id', null),
       employeeId: get(employee, 'id', null),
       promotionCode,
     };
-    if (id) {
-      item.id = id;
-    }
+    // if (id) {
+    //   item.id = id;
+    // }
     return item;
   }
 
