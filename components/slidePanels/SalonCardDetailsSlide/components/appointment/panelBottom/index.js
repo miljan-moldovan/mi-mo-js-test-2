@@ -75,7 +75,7 @@ const apptPanelBottom = ({
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
           onPress={handleShowAppt}
-          label="Show Apps. (today.future)"
+          label="Show Apps. (today/future)"
         >
           <View style={styles.iconContainer}>
             <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
