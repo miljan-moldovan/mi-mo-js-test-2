@@ -7,7 +7,7 @@ import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './stylesServiceSection';
 
-import { ProviderInput, InputDivider, ServiceInput } from '../../../components/formHelpers';
+import { ProviderInput, InputDivider, ServiceInput, InputGroup } from '../../../components/formHelpers';
 
 import TrackRequestSwitch from '../../../components/TrackRequestSwitch';
 
@@ -59,15 +59,7 @@ class ServiceSection extends Component {
 
   renderService = (service, index) => (
     <View style={styles.serviceRow} key={index}>
-      <View style={styles.iconContainer}>
-        <SalonTouchableOpacity onPress={() => this.props.onRemove(index)}>
-          <View style={styles.row}>
-            <FontAwesome style={styles.removeIcon}>{Icons.minusCircle}</FontAwesome>
-            <Text style={styles.textData}>service</Text>
-          </View>
-        </SalonTouchableOpacity>
-      </View>
-      <View style={styles.serviceDataContainer}>
+      <InputGroup style={styles.inputGroupStyle}>
         <ServiceInput
           walkin={this.props.walkin}
           noPlaceholder
@@ -82,7 +74,7 @@ class ServiceSection extends Component {
             this.handleServiceSelection(selectedService, service, index);
           }}
         />
-        <InputDivider style={styles.middleSectionDivider} />
+        <InputDivider />
         <ProviderInput
           walkin={this.props.walkin}
           noLabel
@@ -99,16 +91,21 @@ class ServiceSection extends Component {
           }}
         />
         {service.provider && (
-          <TrackRequestSwitch
-            textStyle={styles.textLabel}
-            style={styles.providerRequestedStyle}
-            onChange={(value) => {
-              this.handleUpdateIsProviderRequested(service, index, value);
-            }}
-            isFirstAvailable={service.provider.isFirstAvailable}
-          />
+          <View>
+            <InputDivider />
+            <TrackRequestSwitch
+              textStyle={styles.textLabel}
+              style={styles.providerRequestedStyle}
+              middleSectionDivider={styles.middleSectionDivider}
+              hideDivider={false}
+              onChange={(value) => {
+                this.handleUpdateIsProviderRequested(service, index, value);
+              }}
+              isFirstAvailable={service.provider.isFirstAvailable}
+            />
+          </View>
         )}
-      </View>
+      </InputGroup>
     </View>
   );
 
@@ -116,12 +113,6 @@ class ServiceSection extends Component {
     return (
       <View style={styles.container}>
         {this.props.services.map((service, index) => this.renderService(service, index))}
-          <SalonTouchableOpacity onPress={this.props.onAdd}>
-            <View style={styles.addRow}>
-              <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>
-                <Text style={styles.textData}>add service</Text>
-            </View>
-          </SalonTouchableOpacity>
       </View>
     );
   }

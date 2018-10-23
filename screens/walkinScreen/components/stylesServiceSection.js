@@ -47,11 +47,7 @@ export default StyleSheet.create({
     marginLeft: 5,
   },
   serviceRow: {
-    flexDirection: 'row',
     backgroundColor: '#fff',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C0C1C6',
-    paddingLeft: smallDevice ? 10 : 10,
   },
   iconContainer: {
     paddingRight: smallDevice ? 5 : 16,
@@ -85,12 +81,12 @@ export default StyleSheet.create({
     flexDirection: 'row',
   },
   middleSectionDivider: {
-    width: '95%', height: 1, alignSelf: 'center', backgroundColor: '#DDE6F4',
+    width: '95%', alignSelf: 'center', backgroundColor: '#C0C1C6',
   },
   providerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   providerWrapper: { marginRight: 5 },
-  providerRootStyle: { marginLeft: smallDevice ? 5 : 10, paddingRight: smallDevice ? 10 : 16 },
-  providerRequestedStyle: { marginLeft: smallDevice ? 5 : 10, paddingRight: smallDevice ? 10 : 16 },
+  providerRootStyle: { paddingRight: smallDevice ? 10 : 16 },
+  providerRequestedStyle: { paddingRight: smallDevice ? 10 : 16 },
   cancelButton: { fontSize: 14, color: 'white' },
-
+  inputGroupStyle: { paddingLeft: smallDevice ? 10 : 16 },
 });
