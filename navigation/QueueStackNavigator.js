@@ -241,7 +241,7 @@ const TransitionConfiguration = () => ({
   },
 });
 
-export default (QueueStackNavigator = StackNavigator(
+const QueueStackNavigator = StackNavigator(
   {
     Main: {
       screen: MainNavigator,
@@ -316,4 +316,19 @@ export default (QueueStackNavigator = StackNavigator(
     mode: 'modal', // Remember to set the root navigator to display modally.
     //  headerMode: 'none', // This ensures we don't get two top bars.
   },
-));
+);
+
+QueueStackNavigator.navigationOptions = ({ navigation }) => {
+  const { state } = navigation;
+  let tabBarVisible = true;
+
+  if (state.index > 0 || state.routes[0].routes.length > 1) {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarVisible,
+  };
+};
+
+export default QueueStackNavigator;
