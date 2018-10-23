@@ -46,6 +46,12 @@ export default class setEmployeesOrder extends React.PureComponent {
 
   saveOrder = () => {
     const newOrder = [];
+
+    if (this.order === null || this.order === undefined) {
+      this.goBack();
+      return;
+    }
+
     for (var i = 0; i < this.order.length; i++) {
       const employee = this.props.apptBookSetEmployeeOrderState.employees[this.order[i]];
       employee.appointmentOrder = i;

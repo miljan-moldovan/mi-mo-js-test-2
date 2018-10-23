@@ -236,7 +236,7 @@ const TransitionConfiguration = () => ({
     const transition = params.transition || 'default';
     return {
       SlideFromBottom: SlideFromBottom(index, position, height),
-      default: SlideFromBottom(index, position, width),
+      default: SlideFromRight(index, position, width),
     }[transition];
   },
 });
