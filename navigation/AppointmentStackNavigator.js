@@ -300,4 +300,17 @@ const AppointmentStackNavigator = StackNavigator(
     },
   },
 );
+
+AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
+  const { state } = navigation;
+  let tabBarVisible = true;
+  if (state.index > 0) {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarVisible,
+  };
+};
+
 export default AppointmentStackNavigator;
