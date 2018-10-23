@@ -348,7 +348,6 @@ class WalkInScreen extends Component {
           onValidated={this.onValidateEmail}
           value={email}
           onChangeText={this.onChangeEmail}
-          placeholder="Enter"
         />);
     };
 
