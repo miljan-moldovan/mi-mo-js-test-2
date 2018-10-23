@@ -112,6 +112,7 @@ class SelectStoreScreen extends React.Component {
   handleSelectStore = (id) => {
     this.props.storeActions.setStore(id, this.setStoreCallback);
   }
+
   handleAppStateChange = (nextAppState) => {
     if (nextAppState.match(/inactive|background/) && this.state.appState === 'active') {
       this.props.authActions.logout();

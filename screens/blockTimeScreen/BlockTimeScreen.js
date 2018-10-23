@@ -114,7 +114,7 @@ class BlockTimeScreen extends React.Component {
   }
 
   onChangeTextComments =(txtNote) => {
-    this.setState({ comments: txtNote });
+    this.setState({ comments: txtNote }, this.checkCanSave);
   }
 
   onChangeBlockTimeReason = (blockTimesReason) => {
@@ -178,11 +178,11 @@ class BlockTimeScreen extends React.Component {
 
 
     tooglefromTime = () => {
-      this.setState({ fromTimePickerOpen: !this.state.fromTimePickerOpen });
+      this.setState({ fromTimePickerOpen: !this.state.fromTimePickerOpen }, this.checkCanSave);
     }
 
     toogletoTime = () => {
-      this.setState({ toTimePickerOpen: !this.state.toTimePickerOpen });
+      this.setState({ toTimePickerOpen: !this.state.toTimePickerOpen }, this.checkCanSave);
     }
 
 

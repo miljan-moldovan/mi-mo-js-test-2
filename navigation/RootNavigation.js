@@ -61,10 +61,9 @@ const RootDrawerNavigator = TabNavigator(
         if (previousScene.routeName === 'Clients' && previousScene.route !== scene.route) {
           screenProps.clientsActions.setClients([]);
         }
-
         jumpToIndex(scene.index);
       },
-      tabBarVisible: screenProps.drawerOptions.showTabBar,
+      // tabBarVisible: true//screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',

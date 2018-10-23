@@ -212,9 +212,8 @@ class AppointmentScreen extends Component {
       appointment,
     );
     this.props.modifyApptActions.setSelectedAppt(appointment);
-    this.props.rootDrawerNavigatorAction.changeShowTabBar(false);
 
-    // this.props.navigation.setParams({ tabBarVisible: false });
+    this.props.navigation.setParams({ hideTabBar: true });
     this.setState({
       crossedAppointments: allCrossedAppointments,
       crossedAppointmentsIdAfter: map(appointmentAfter, 'id'),
@@ -370,7 +369,7 @@ class AppointmentScreen extends Component {
       crossedAppointments: [],
       crossedAppointmentsIdAfter: [],
     }, () => {
-      this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      this.props.navigation.setParams({ hideTabBar: false });
     });
     if (this.state.selectedAppointment.isBlockTime) {
       Client.getClient(this.state.selectedAppointment.bookedByEmployeeId).then((resp) => {
@@ -382,6 +381,7 @@ class AppointmentScreen extends Component {
           reason: this.state.selectedAppointment.reason,
           toTime: this.state.selectedAppointment.toTime,
           id: this.state.selectedAppointment.id,
+          notes: this.state.selectedAppointment.notes,
           editType: EditTypes.edit,
         });
       });
@@ -394,10 +394,9 @@ class AppointmentScreen extends Component {
   manageBuffer = (bufferVisible) => {
     if (this.state.bufferVisible !== bufferVisible) {
       this.setState({ bufferVisible });
-      // requestAnimationFrame(() => this.props.navigation.setParams({
-      //   tabBarVisible: !bufferVisible,
-      // }));
-      requestAnimationFrame(() => this.props.rootDrawerNavigatorAction.changeShowTabBar(!bufferVisible));
+      requestAnimationFrame(() => this.props.navigation.setParams({
+        tabBarVisible: bufferVisible,
+      }));
     }
   }
 
@@ -466,8 +465,8 @@ class AppointmentScreen extends Component {
           crossedAppointmentsIdAfter: [],
         },
         () => {
-          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
-          // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.setParams({ hideTabBar: false });
+          // this.props.navigation.setParams({ hideTabBar: false });
           this.props.navigation.navigate('CancelAppointmentScreen', { appointments });
           if (appointments.length > 1) {
             this.hideAlert();
@@ -483,8 +482,8 @@ class AppointmentScreen extends Component {
           crossedAppointmentsIdAfter: [],
         },
         () => {
-          this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
-          // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+          this.props.navigation.setParams({ hideTabBar: false });
+          // this.props.navigation.setParams({ hideTabBar: false });
           this.props.navigation.navigate('CancelAppointmentScreen', { appointments: [appointment] });
           if (appointments.length > 1) {
             this.hideAlert();
@@ -516,8 +515,8 @@ class AppointmentScreen extends Component {
         crossedAppointmentsIdAfter: [],
       },
       () => {
-        // this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
-        this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+        // this.props.navigation.setParams({ hideTabBar: false });
+        this.props.navigation.setParams({ hideTabBar: false });
         this.props.navigation.navigate('ShowApptScreen', {
           goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
         });
@@ -538,7 +537,7 @@ class AppointmentScreen extends Component {
       crossedAppointments: [],
       crossedAppointmentsIdAfter: [],
     }, () => {
-      this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
+      this.props.navigation.setParams({ hideTabBar: false });
     });
   }
 

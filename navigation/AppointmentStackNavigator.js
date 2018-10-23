@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import Icon from '../components/UI/Icon';
+import headerStyles from '../constants/headerStyles';
 
 import AppointmentScreen from '../screens/AppointmentsScreen';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
@@ -281,23 +282,27 @@ const AppointmentStackNavigator = StackNavigator(
   },
   {
     navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#115ECD',
-        paddingLeft: 10,
-        paddingRight: 10,
-        height: 44,
-        borderWidth: 0,
-        shadowColor: 'transparent',
-        elevation: 0,
-        borderBottomWidth: 0,
-
-      },
-      headerTitleStyle: {
-        fontFamily: 'Roboto-Regular',
-        fontSize: 17,
-        color: '#fff',
-      },
+      tabBarVisible: false,
+      ...headerStyles,
     },
   },
 );
+
+AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
+  const { state } = navigation;
+
+  const hideTabBar = navigation.state.routes[0].params ?
+    navigation.state.routes[0].params.hideTabBar : false;
+
+  let tabBarVisible = true;
+  if (state.index > 0 || hideTabBar) {
+    tabBarVisible = false;
+  }
+
+  return {
+    ...headerStyles,
+    tabBarVisible,
+  };
+};
+
 export default AppointmentStackNavigator;
