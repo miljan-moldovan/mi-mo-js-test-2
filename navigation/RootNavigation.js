@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import Icon from './../components/UI/Icon';
+import headerStyles from '../constants/headerStyles';
 
 import { isValidAppointment } from '../redux/selectors/newAppt';
 import userActions from '../actions/user';
@@ -30,6 +31,7 @@ const RootDrawerNavigator = TabNavigator(
   {
 
     navigationOptions: ({ navigation, screenProps }) => ({
+      ...headerStyles,
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
@@ -63,7 +65,7 @@ const RootDrawerNavigator = TabNavigator(
         }
         jumpToIndex(scene.index);
       },
-      //tabBarVisible: true//screenProps.drawerOptions.showTabBar,
+      // tabBarVisible: true//screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',
