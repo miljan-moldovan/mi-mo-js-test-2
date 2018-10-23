@@ -109,7 +109,7 @@ class SalonSearchHeader extends React.Component {
             {
               paddingTop: !this.props.salonSearchHeaderState.showFilter ? 0 : 15,
               backgroundColor: !this.props.salonSearchHeaderState.showFilter
-                ? '#F8F8F8'
+                ? '#F1F1F1'
                 : '#115ECD',
             },
           ]}
