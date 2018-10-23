@@ -57,6 +57,10 @@ import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
 import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
+
+import RebookDialogScreen from './../screens/rebookDialogScreen';
+
+
 import styles from './styles';
 
 const AppointmentStackNavigator = StackNavigator(
@@ -144,6 +148,10 @@ const AppointmentStackNavigator = StackNavigator(
     },
     Appointments: {
       screen: AppointmentScreen,
+      navigationOptions: { tabBarVisible: false },
+    },
+    RebookDialog: {
+      screen: RebookDialogScreen,
       navigationOptions: { tabBarVisible: false },
     },
     NewAppointment: {

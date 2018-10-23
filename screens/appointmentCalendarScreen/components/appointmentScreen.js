@@ -353,6 +353,8 @@ class AppointmentScreen extends Component {
 
   handleRebookAppt = (appointment) => {
     if (appointment !== null) {
+      this.hideApptSlide();
+      this.props.navigation.setParams({ hideTabBar: false });
       this.props.navigation.navigate('RebookDialog', {
         appointment,
         ...this.props,
