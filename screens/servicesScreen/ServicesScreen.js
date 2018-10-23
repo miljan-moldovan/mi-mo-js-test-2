@@ -96,6 +96,7 @@ class ServicesScreen extends React.Component {
     super(props);
     this.clearSearch();
     const params = props.navigation.state.params || {};
+
     const selectedService = get(params, 'selectedService', null);
     props.servicesActions.setSelectedService(selectedService);
     this.state = {
@@ -164,8 +165,6 @@ class ServicesScreen extends React.Component {
 
     if (this.mode === 'quickQueue') {
       let filtered = quickQueueServices;
-
-      
 
 
       filtered = filtered.length > 0 ? filtered.filter(item => item.canBePerformed === true) : filtered;
@@ -402,7 +401,7 @@ class ServicesScreen extends React.Component {
             && this.services.length > 0) &&
             <SelectableServiceList
               services={this.services}
-              selected={[]}
+              selected={[this.props.servicesState.selectedService ? this.props.servicesState.selectedService.serviceId : null]}
               hidePrice
               returnFullObject
               onChangeSelected={this.handleOnChangeService}

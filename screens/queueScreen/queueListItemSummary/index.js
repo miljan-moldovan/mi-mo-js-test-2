@@ -34,6 +34,7 @@ class queueListItemSummary extends Component {
     this.props.navigation.navigate('ModalServices', {
       service,
       index: 0,
+      selectedService: service,
       client: this.props.appointment.client,
       employeeId: service.employeeId,
       dismissOnSelect: true,
