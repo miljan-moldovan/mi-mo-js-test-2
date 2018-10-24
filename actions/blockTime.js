@@ -17,6 +17,9 @@ export const PUT_BLOCKTIME_EDIT_SUCCESS = 'appointmentBook/PUT_BLOCKTIME_EDIT_SU
 export const PUT_BLOCKTIME_EDIT_FAILED = 'appointmentBook/PUT_BLOCKTIME_EDIT_FAILED';
 export const UNDO_MOVE_BLOCK = 'appointmentBook/UNDO_MOVE_BLOCK';
 export const UNDO_MOVE_BLOCK_SUCCESS = 'appointmentBook/UNDO_MOVE_BLOCK_SUCCESS';
+export const BLOCK_CANCEL = 'block/POST__CANCEL';
+export const BLOCK_CANCEL_SUCCESS = 'block/POST_APPOINTMENT_SUCCESS';
+export const BLOCK_CANCEL_FAILED = 'block/POST_APPOINTMENT_FAILED';
 
 const postBlockTimeSuccess = blockTime => ({
   type: POST_BLOCKTIME_SUCCESS,
@@ -160,7 +163,29 @@ const undoMove = () => (dispatch, getState) => {
   }
 };
 
+const cancelBlockTimeSuccess = resp => ({
+  type: BLOCK_CANCEL_SUCCESS,
+  data: { resp },
+});
+
+const cancelBlockTimeFailed = error => ({
+  type: BLOCK_CANCEL_FAILED,
+  data: { error },
+});
+
+const cancelBlockTime = id => (dispatch) => {
+  dispatch({ type: BLOCK_CANCEL });
+
+  return AppointmentBook.deleteBlock(id)
+    .then((resp) => {
+      dispatch(appointmentCalendarActions.setGridView());
+      return dispatch(cancelBlockTimeSuccess(resp));
+    })
+    .catch(error => dispatch(cancelBlockTimeFailed(error)));
+};
+
 const blockTimeActions = {
+  cancelBlockTime,
   postBlockTime,
   putBlockTimeEdit,
   putBlockTimeMove,

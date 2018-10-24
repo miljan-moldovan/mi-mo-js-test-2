@@ -5,10 +5,14 @@ import {
   PUT_BLOCKTIME_EDIT,
   PUT_BLOCKTIME_EDIT_SUCCESS,
   PUT_BLOCKTIME_EDIT_FAILED,
+  BLOCK_CANCEL,
+  BLOCK_CANCEL_SUCCESS,
+  BLOCK_CANCEL_FAILED,
 } from '../actions/blockTime';
 
 const initialState = {
   isLoading: false,
+  isCancelling: false,
   error: null,
   blockTime: null,
 };
@@ -34,6 +38,21 @@ export default function blockTimeReducer(state = initialState, action) {
       return {
         ...state,
         isLoading: false,
+      };
+    case BLOCK_CANCEL:
+      return {
+        ...state,
+        isCancelling: true,
+      };
+    case BLOCK_CANCEL_SUCCESS:
+      return {
+        ...state,
+        isCancelling: false,
+      };
+    case BLOCK_CANCEL_FAILED:
+      return {
+        ...state,
+        isCancelling: false,
       };
     default:
       return state;
