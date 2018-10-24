@@ -73,7 +73,6 @@ const AppointmentStackNavigator = StackNavigator(
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
-      navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
     },
     ApptBookViewOptions: {
       screen: apptBookViewOptions,
@@ -133,15 +132,15 @@ const AppointmentStackNavigator = StackNavigator(
     },
     FilterByPosition: {
       screen: FilterByPositionScreen,
-      navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
+      navigationOptions: { tabBarVisible: false },
     },
     FilterByCompany: {
       screen: FilterByCompanyScreen,
-      navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
+      navigationOptions: { tabBarVisible: false },
     },
     ServiceCheck: {
       screen: ServiceCheckScreen,
-      navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
+      navigationOptions: { tabBarVisible: false },
     },
     ServiceCheckResult: {
       screen: ServiceCheckResultScreen,

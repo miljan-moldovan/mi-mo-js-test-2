@@ -44,6 +44,11 @@ export default class setEmployeesOrder extends React.PureComponent {
     setTimeout(this.props.navigation.goBack, 300);
   }
 
+
+  componentWillUnmount() {
+    this.props.navigation.state.params.onNavigateBack();
+  }
+
   saveOrder = () => {
     const newOrder = [];
 
@@ -52,13 +57,13 @@ export default class setEmployeesOrder extends React.PureComponent {
       return;
     }
 
-    for (var i = 0; i < this.order.length; i++) {
+    for (let i = 0; i < this.order.length; i++) {
       const employee = this.props.apptBookSetEmployeeOrderState.employees[this.order[i]];
       employee.appointmentOrder = i;
       newOrder.push(employee);
     }
 
-    this.props.apptBookSetEmployeeOrderActions.postEmployeesAppointmentOrder(newOrder).then(()=>{
+    this.props.apptBookSetEmployeeOrderActions.postEmployeesAppointmentOrder(newOrder).then(() => {
       this.goBack();
     });
   }
@@ -67,10 +72,7 @@ export default class setEmployeesOrder extends React.PureComponent {
     this.order = nextOrder;
   }
 
-  _renderRow = ({ data, active }) => {
-    return <Row data={data} active={active} />
-  }
-
+  _renderRow = ({ data, active }) => <Row data={data} active={active} />
 
 
   render() {
@@ -84,7 +86,7 @@ export default class setEmployeesOrder extends React.PureComponent {
           contentContainerStyle={styles.contentContainer}
           data={employees}
           renderRow={this._renderRow}
-          //order={this.state.order}
+          // order={this.state.order}
           onChangeOrder={this.handleChangeOrder}
         />
         }

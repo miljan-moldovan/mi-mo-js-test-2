@@ -129,6 +129,10 @@ export default class FilterByPositionScreen extends React.Component {
     this.getData();
   }
 
+  componentWillUnmount() {
+    this.props.navigation.state.params.onNavigateBack();
+  }
+
   onRefresh = () => this.getData();
 
   getData = () => {

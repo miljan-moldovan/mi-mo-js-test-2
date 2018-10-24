@@ -136,6 +136,10 @@ export default class ServiceCheckScreen extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
+  componentWillUnmount() {
+    this.props.navigation.state.params.onNavigateBack();
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     const { selectedProvider, selectedService } = this.state;
