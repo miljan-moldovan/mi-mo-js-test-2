@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '400',
     fontSize: 12,
+    flex: 1,
   },
   btn: {
     fontFamily: 'Roboto-Medium',
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
-    flex: 1,
+    // flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
