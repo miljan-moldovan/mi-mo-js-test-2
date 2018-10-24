@@ -895,7 +895,6 @@ class NewApptSlide extends React.Component {
         visible={this.props.visible}
         transparent
         animationType="slide"
-      // style={{ marginBottom: 60 }}
       >
         <View style={[styles.container, { height }]}>
           {
