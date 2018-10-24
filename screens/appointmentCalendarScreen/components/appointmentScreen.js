@@ -493,7 +493,7 @@ class AppointmentScreen extends Component {
         },
       );
     };
-    
+
     if (appointment.badgeData.isCashedOut) {
       this.props.appointmentCalendarActions.setToast({
         description: 'This appointment cannot be canceled because it has already been cashed out',
@@ -536,7 +536,7 @@ class AppointmentScreen extends Component {
   handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     if (this.state.screenHeight === 0) {
-      this.setState({ screenHeight: height + 48 });
+      this.setState({ screenHeight: height + 49 });
     }
   }
 
