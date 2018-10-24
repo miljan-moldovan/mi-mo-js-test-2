@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Dimensions, StyleSheet } from 'react-native';
+import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import SortableList from 'react-native-sortable-list';
+import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
-import ApptBookSetEmployeeOrderHeader from './apptBookSetEmployeeOrderHeader';
+// import ApptBookSetEmployeeOrderHeader from './apptBookSetEmployeeOrderHeader';
 import Row from './rowComponent';
 
 const window = Dimensions.get('window');
@@ -23,11 +24,55 @@ const styles = StyleSheet.create({
   contentContainer: {
     width: window.width,
   },
+  leftButtonText: {
+    backgroundColor: 'transparent',
+    paddingLeft: 10,
+    fontSize: 14,
+    color: 'white',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  rightButtonText: {
+    backgroundColor: 'transparent',
+    paddingRight: 10,
+    fontSize: 14,
+    color: 'white',
+  },
 });
 
 export default class setEmployeesOrder extends React.PureComponent {
+  // static navigationOptions = ({ navigation }) => ({
+  //   header: (<ApptBookSetEmployeeOrderHeader params={navigation.state.params} />),
+  // })
+
+
   static navigationOptions = ({ navigation }) => ({
-    header: (<ApptBookSetEmployeeOrderHeader params={navigation.state.params} />),
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>
+            Set Employee Order
+        </Text>
+      </View>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+        <Text style={styles.leftButtonText}>Cancel</Text>
+      </SalonTouchableOpacity>
+    ),
+    headerRight: (
+      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+        <Text style={styles.rightButtonText}>Done</Text>
+      </SalonTouchableOpacity>
+    ),
   })
 
   constructor(props) {
@@ -35,18 +80,12 @@ export default class setEmployeesOrder extends React.PureComponent {
     props.apptBookSetEmployeeOrderActions.getEmployees();
     props.navigation.setParams({
       handlePress: () => this.saveOrder(),
-      handleGoBack: () => this.goBack(),
+      // handleGoBack: () => this.goBack(),
     });
   }
 
   goBack() {
-    this.props.navigation.state.params.onNavigateBack();
     setTimeout(this.props.navigation.goBack, 300);
-  }
-
-
-  componentWillUnmount() {
-    this.props.navigation.state.params.onNavigateBack();
   }
 
   saveOrder = () => {

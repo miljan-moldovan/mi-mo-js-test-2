@@ -59,6 +59,7 @@ import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
 
 import RebookDialogScreen from './../screens/rebookDialogScreen';
+import TransitionConfiguration from './transitionConfiguration';
 
 
 import styles from './styles';
@@ -289,6 +290,7 @@ const AppointmentStackNavigator = StackNavigator(
     },
   },
   {
+    transitionConfig: TransitionConfiguration,
     navigationOptions: {
       tabBarVisible: false,
       ...headerStyles,

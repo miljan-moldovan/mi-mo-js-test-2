@@ -19,9 +19,8 @@ import {
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
 import fetchFormCache from '../../utilities/fetchFormCache';
-import ApptBookViewOptionsHeader from './components/apptBookViewOptionsHeader';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
-
+import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   modal: {
@@ -43,6 +42,29 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#F1F1F1',
     zIndex: 0,
+  },
+  leftButtonText: {
+    backgroundColor: 'transparent',
+    paddingLeft: 10,
+    fontSize: 14,
+    color: 'white',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  rightButtonText: {
+    backgroundColor: 'transparent',
+    paddingRight: 10,
+    fontSize: 14,
+    color: 'white',
   },
 });
 
@@ -71,6 +93,26 @@ const SelectedWithRemove = props => (
 );
 
 class ApptBookViewOptionsScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>
+            View Options
+        </Text>
+      </View>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+        <Text style={styles.leftButtonText}>Cancel</Text>
+      </SalonTouchableOpacity>
+    ),
+    headerRight: (
+      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+        <Text style={styles.rightButtonText}>Done</Text>
+      </SalonTouchableOpacity>
+    ),
+  })
+
   constructor(props) {
     super(props);
 
@@ -80,11 +122,9 @@ class ApptBookViewOptionsScreen extends Component {
 
     this.props.navigation.setParams({
       handlePress: this.saveOptions,
-      handleGoBack: this.goBack,
     });
     this.shouldSave = false;
     this.state = {
-      isVisibleViewOptions: true,
       options: filterOptions,
     };
 
@@ -117,15 +157,7 @@ class ApptBookViewOptionsScreen extends Component {
   }
 
   goBack = () => {
-    this.setState({ isVisibleViewOptions: false });
     this.props.navigation.goBack();
-  }
-
-  handleOnNavigateBack = () => {
-    const { navigate } = this.props.navigation;
-    this.setState({ isVisibleViewOptions: true });
-    //this.props.navigation.goBack();
-    // navigate('ApptBookViewOptions');
   }
 
   handleChangeCompany = (company) => {
@@ -140,21 +172,8 @@ class ApptBookViewOptionsScreen extends Component {
 
   handleRemovePosition = () => this.setState({ options: { ...this.state.options, position: null } });
 
-  dismissOnSelect() {
-    const { navigate } = this.props.navigation;
-    this.setState({ isVisibleViewOptions: true });
-    navigate('ApptBookViewOptions');
-  }
-
   goToEmployeesOrder = () => {
-    this.setState({ isVisibleViewOptions: false });
-    this.props.navigation.navigate(
-      'ApptBookSetEmployeeOrder',
-      {
-        dismissOnSelect: this.dismissOnSelect,
-        onNavigateBack: this.handleOnNavigateBack,
-      },
-    );
+    this.props.navigation.navigate('ApptBookSetEmployeeOrder', { transition: 'SlideFromBottom' });
   }
 
   render() {
@@ -164,152 +183,141 @@ class ApptBookViewOptionsScreen extends Component {
     } = this.state.options;
 
     return (
-      <Modal
-        key="ApptBookViewOptionsScreen"
-        isVisible={this.state.isVisibleViewOptions}
-        style={styles.modal}
-      >
-        <View style={styles.container}>
-          <ApptBookViewOptionsHeader rootProps={this.props} />
-          <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-            <SectionTitle value="EMPLOYEE OPTIONS" style={{ height: 38 }} />
-            <InputGroup>
-              {[<InputButton
-                key={Math.random()}
-                style={{ flex: 1 }}
-                labelStyle={{ color: '#110A24' }}
-                onPress={() => {
-                  this.setState({ isVisibleViewOptions: false });
+
+      <View style={styles.container}>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+          <SectionTitle value="EMPLOYEE OPTIONS" style={{ height: 38 }} />
+          <InputGroup>
+            {[<InputButton
+              key={Math.random()}
+              style={{ flex: 1 }}
+              labelStyle={{ color: '#110A24' }}
+              onPress={() => {
                   this.props.navigation.navigate(
                     'FilterByPosition',
                     {
-                      dismissOnSelect: this.dismissOnSelect,
-                      onNavigateBack: this.handleOnNavigateBack,
+                      transition: 'SlideFromBottom',
                       onChangePosition: this.handleChangePosition,
                     },
                   );
                 }}
-                label="Filter By Position"
-                value={position === null ? null : (
-                  <SelectedWithRemove
-                    onPressRemove={this.handleRemovePosition}
-                    value={position.name}
-                  />
+              label="Filter By Position"
+              value={position === null ? null : (
+                <SelectedWithRemove
+                  onPressRemove={this.handleRemovePosition}
+                  value={position.name}
+                />
                 )}
-              />,
-                <InputDivider key={Math.random()} />,
-                <InputButton
-                  key={Math.random()}
-                  style={{ flex: 1 }}
-                  labelStyle={{ color: '#110A24' }}
-                  onPress={() => {
-                    this.setState({ isVisibleViewOptions: false });
+            />,
+              <InputDivider key={Math.random()} />,
+              <InputButton
+                key={Math.random()}
+                style={{ flex: 1 }}
+                labelStyle={{ color: '#110A24' }}
+                onPress={() => {
                     this.props.navigation.navigate(
                       'FilterByCompany',
                       {
-                        dismissOnSelect: this.dismissOnSelect,
-                        onNavigateBack: this.handleOnNavigateBack,
+                        transition: 'SlideFromBottom',
                         onChangeCompany: this.handleChangeCompany,
                       },
                     );
                     }}
-                  label="Filter By Company"
-                  value={company === null ? null : (
-                    <SelectedWithRemove
-                      onPressRemove={this.handleRemoveCompany}
-                      value={company.name}
-                    />
+                label="Filter By Company"
+                value={company === null ? null : (
+                  <SelectedWithRemove
+                    onPressRemove={this.handleRemoveCompany}
+                    value={company.name}
+                  />
                   )}
-                />,
-                <InputDivider key={Math.random()} />,
-                <InputButton
-                  key={Math.random()}
-                  style={{ flex: 1 }}
-                  labelStyle={{ color: '#110A24' }}
-                  onPress={() => { this.goToEmployeesOrder(); }}
-                  label="Set Employee Order"
-                  value={this.props.employeeOrderState.orderInitials}
-                />,
-                <InputDivider key={Math.random()} />,
-                <InputButton
-                  key={Math.random()}
-                  style={{ flex: 1 }}
-                  labelStyle={{ color: '#110A24' }}
-                  onPress={() => {
-                    this.setState({ isVisibleViewOptions: false });
+              />,
+              <InputDivider key={Math.random()} />,
+              <InputButton
+                key={Math.random()}
+                style={{ flex: 1 }}
+                labelStyle={{ color: '#110A24' }}
+                onPress={() => { this.goToEmployeesOrder(); }}
+                label="Set Employee Order"
+                value={this.props.employeeOrderState.orderInitials}
+              />,
+              <InputDivider key={Math.random()} />,
+              <InputButton
+                key={Math.random()}
+                style={{ flex: 1 }}
+                labelStyle={{ color: '#110A24' }}
+                onPress={() => {
                     this.props.navigation.navigate(
                       'ServiceCheck',
                       {
-                        dismissOnSelect: this.dismissOnSelect,
-                        onNavigateBack: this.handleOnNavigateBack,
+                        transition: 'SlideFromBottom',
                       },
                     );
                   }}
-                  label="Service Check"
-                  value={this.state.options.serviceCheck}
-                />]}
-            </InputGroup>
-            <SectionTitle value="DISPLAY OPTIONS" style={{ height: 38 }} />
-            <InputGroup>
-              {[<InputSwitch
-                key={Math.random()}
-                style={{ height: 43 }}
-                textStyle={{ color: '#000000' }}
-                onChange={(state) => {
+                label="Service Check"
+                value={this.state.options.serviceCheck}
+              />]}
+          </InputGroup>
+          <SectionTitle value="DISPLAY OPTIONS" style={{ height: 38 }} />
+          <InputGroup>
+            {[<InputSwitch
+              key={Math.random()}
+              style={{ height: 43 }}
+              textStyle={{ color: '#000000' }}
+              onChange={(state) => {
                   const { options } = this.state;
                   options.showRoomAssignments = !options.showRoomAssignments;
                   this.shouldSave = true;
                   this.setState({ options });
                 }}
-                value={this.state.options.showRoomAssignments}
-                text="Room Assigments"
-              />,
-                <InputDivider key={Math.random()} />,
-                <InputSwitch
-                  key={Math.random()}
-                  style={{ height: 43 }}
-                  textStyle={{ color: '#000000' }}
-                  onChange={(state) => {
+              value={this.state.options.showRoomAssignments}
+              text="Room Assigments"
+            />,
+              <InputDivider key={Math.random()} />,
+              <InputSwitch
+                key={Math.random()}
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
                     const { options } = this.state;
                     options.showAssistantAssignments = !options.showAssistantAssignments;
                     this.shouldSave = true;
                     this.setState({ options });
                   }}
-                  value={this.state.options.showAssistantAssignments}
-                  text="Assistant Assigments"
-                />,
-                <InputDivider key={Math.random()} />,
-                <InputSwitch
-                  key={Math.random()}
-                  style={{ height: 43 }}
-                  textStyle={{ color: '#000000' }}
-                  onChange={(state) => {
+                value={this.state.options.showAssistantAssignments}
+                text="Assistant Assigments"
+              />,
+              <InputDivider key={Math.random()} />,
+              <InputSwitch
+                key={Math.random()}
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
                       const { options } = this.state;
                       options.showMultiBlock = !options.showMultiBlock;
                       this.shouldSave = true;
                       this.setState({ options });
                     }}
-                  value={this.state.options.showMultiBlock}
-                  text="Client name in every blocks"
-                />,
-                <InputDivider key={Math.random()} />,
-                <InputSwitch
-                  key={Math.random()}
-                  style={{ height: 43 }}
-                  textStyle={{ color: '#000000' }}
-                  onChange={(state) => {
+                value={this.state.options.showMultiBlock}
+                text="Client name in every blocks"
+              />,
+              <InputDivider key={Math.random()} />,
+              <InputSwitch
+                key={Math.random()}
+                style={{ height: 43 }}
+                textStyle={{ color: '#000000' }}
+                onChange={(state) => {
                         const { options } = this.state;
                         options.showOffEmployees = !options.showOffEmployees;
                         this.shouldSave = true;
                         this.setState({ options });
                       }}
-                  value={this.state.options.showOffEmployees}
-                  text="Show employees that are off"
-                />]}
-            </InputGroup>
-          </KeyboardAwareScrollView>
-        </View>
-      </Modal>
+                value={this.state.options.showOffEmployees}
+                text="Show employees that are off"
+              />]}
+          </InputGroup>
+        </KeyboardAwareScrollView>
+      </View>
+
     );
   }
 }

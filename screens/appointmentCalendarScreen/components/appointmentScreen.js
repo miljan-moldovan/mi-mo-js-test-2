@@ -149,7 +149,7 @@ class AppointmentScreen extends Component {
     }
   };
 
-  onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions');
+  onPressEllipsis = () => this.props.navigation.navigate('ApptBookViewOptions', { transition: 'SlideFromBottom' });
 
   onChangeClient = (client) => {
     this.goToShowAppt(client);

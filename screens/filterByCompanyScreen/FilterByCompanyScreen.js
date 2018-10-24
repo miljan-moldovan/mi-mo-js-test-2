@@ -62,23 +62,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
+  leftButtonText: {
+    backgroundColor: 'transparent',
+    paddingLeft: 10,
+    fontSize: 14,
+    color: 'white',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  rightButtonText: {
+    backgroundColor: 'transparent',
+    paddingRight: 10,
+    fontSize: 14,
+    color: 'white',
+  },
 });
 
 export default class FilterByCompanyScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Filter By Position',
-    headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.goBack()}>
-        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
-          Cancel
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>
+          Filter By Company
         </Text>
+      </View>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+        <Text style={styles.leftButtonText}>Cancel</Text>
       </SalonTouchableOpacity>
     ),
     headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.state.params.handleSave()}>
-        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto-Medium' }}>
-          Done
-        </Text>
+      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleSave', () => {})}>
+        <Text style={styles.rightButtonText}>Done</Text>
       </SalonTouchableOpacity>
     ),
   });
@@ -124,10 +149,6 @@ export default class FilterByCompanyScreen extends React.Component {
 
   componentDidMount() {
     this.getData();
-  }
-
-  componentWillUnmount() {
-    this.props.navigation.state.params.onNavigateBack();
   }
 
   onRefresh = () => this.getData();

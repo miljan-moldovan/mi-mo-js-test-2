@@ -12,5 +12,4 @@ const mapActionsToProps = dispatch => ({
   apptBookSetEmployeeOrderActions: bindActionCreators({ ...apptBookSetEmployeeOrderActions }, dispatch),
 });
 
-//export default connect(mapStateToProps, mapActionsToProps)(ApptBookSetEmployeeOrderScreen);
 export default connect(mapStateToProps, mapActionsToProps)(SetEmployeesOrderScreen);

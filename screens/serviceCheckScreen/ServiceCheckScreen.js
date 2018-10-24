@@ -77,30 +77,51 @@ const styles = StyleSheet.create({
   },
   headerButton: { fontSize: 14, color: 'white', fontFamily: 'Roboto' },
   robotoMedium: { fontFamily: 'Roboto-Medium' },
+  leftButtonText: {
+    backgroundColor: 'transparent',
+    paddingLeft: 10,
+    fontSize: 14,
+    color: 'white',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  rightButtonText: {
+    backgroundColor: 'transparent',
+    paddingRight: 10,
+    fontSize: 14,
+    color: 'white',
+  },
 });
 
 export default class ServiceCheckScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const goBack = () => navigation.state.params.onNavigateBack();
-    const checkFunc = () => navigation.state.params.handleCheck();
-    return ({
-      title: 'Service Check',
-      headerLeft: (
-        <SalonTouchableOpacity wait={3000} onPress={goBack}>
-          <Text style={styles.headerButton}>
-            Cancel
-          </Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity wait={3000} onPress={checkFunc}>
-          <Text style={[styles.headerButton, styles.robotoMedium]}>
-            Check
-          </Text>
-        </SalonTouchableOpacity>
-      ),
-    });
-  };
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>
+              Service Check
+        </Text>
+      </View>
+    ),
+    headerLeft: (
+      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+        <Text style={styles.leftButtonText}>Cancel</Text>
+      </SalonTouchableOpacity>
+    ),
+    headerRight: (
+      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleCheck', () => {})}>
+        <Text style={styles.rightButtonText}>Check</Text>
+      </SalonTouchableOpacity>
+    ),
+  });
 
   constructor(props) {
     super(props);
@@ -136,9 +157,6 @@ export default class ServiceCheckScreen extends React.Component {
     leftButtonOnPress: navigation => navigation.goBack(),
   })
 
-  componentWillUnmount() {
-    this.props.navigation.state.params.onNavigateBack();
-  }
 
   render() {
     const { navigate } = this.props.navigation;
