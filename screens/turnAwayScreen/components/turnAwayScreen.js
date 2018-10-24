@@ -228,10 +228,14 @@ class TurnAwayScreen extends Component {
 
   handleDateModal = () => this.setState({ isModalVisible: true })
 
-  handleSelectDate = data => this.setState({
-    date: moment(data),
-    isModalVisible: false,
-  }, this.checkCanSave)
+  handleSelectDate = (data) => {
+    if (moment(data).isValid()) {
+      this.setState({
+        date: moment(data),
+        isModalVisible: false,
+      }, this.checkCanSave);
+    }
+  }
 
   handleClientSelection = (client) => {
     const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[
