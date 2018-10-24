@@ -1410,7 +1410,7 @@ export default class Calendar extends Component {
                 headerData.map((item, index) => {
 
                   let headerId = item.id;
-                  if (selectedProvider !== 'all') {
+                  if (displayMode === 'providers' && selectedProvider !== 'all') {
                     headerId = item.format(DateTime.date);
                   }
                   return this.renderCards(chain(cardsArray[headerId]).orderBy(card => get(overlappingCardsMap, [headerId, card.id, 'overlappingCardsLength'], 0), 'asc').value(), index, headerId);
