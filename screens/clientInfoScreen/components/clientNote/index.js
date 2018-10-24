@@ -248,7 +248,6 @@ class ClientNote extends Component {
   render() {
     const params = this.props.navigation.state.params || {};
     const { apptBook = false } = params;
-
     return (
       <Modal
         isVisible={this.state.isVisible}
@@ -319,7 +318,7 @@ class ClientNote extends Component {
                 minDate={moment().format('DD MMMM YYYY')}
                 style={styles.inputDate}
                 placeholder="Expire Date"
-                icon={!this.state.note.expiration ? false : 'default'}
+                noIcon={!this.state.note.expiration}
                 onPress={this.inputDate}
                 valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
                 selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
