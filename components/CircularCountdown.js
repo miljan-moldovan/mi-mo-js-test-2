@@ -102,7 +102,7 @@ class CircularCountdown extends Component {
       backgroundArc = describeArc(size / 2, size / 2, radius, 0, 359.999);
 
     return (
-      <View style={[style, { width: size }]}>
+      <View style={[style, { width: size, height: size + 15 }]}>
         <Svg
           height={size}
           width={size}
@@ -127,7 +127,12 @@ class CircularCountdown extends Component {
             <Text style={[styles.processMinutesText, { fontSize: 16, marginBottom: -4 }]}>{processMinutes}</Text>
             <Text style={styles.processMinutesText}>min</Text>
           </View>
-          <Text style={styles.progressMaxMinutes}>{progressMaxMinutes} min est.</Text>
+          <View style={[{
+ width: '100%', height: 10, marginTop: 5, alignItems: 'center',
+}]}
+          >
+            <Text style={styles.progressMaxMinutes}>{progressMaxMinutes} min est.</Text>
+          </View>
         </View>
       </View>
     );
@@ -139,7 +144,6 @@ const styles = StyleSheet.create({
   overlayContainer: {
     position: 'absolute',
     alignItems: 'center',
-
   },
   processMinutes: {
     alignItems: 'center',

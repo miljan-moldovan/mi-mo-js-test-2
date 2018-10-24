@@ -25,10 +25,10 @@ export default StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1.1,
-    paddingBottom: 10,
+    paddingVertical: 8,
+    // maxHeight: 94,
     flex: 1,
     // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
-    flex: 1,
   },
   wrapperStyle: {
     paddingVertical: 3,
@@ -54,14 +54,14 @@ export default StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#4D5067',
-    marginTop: 4,
+    // marginTop: 4,
   },
   serviceTimeContainer: {
     fontSize: 11,
     fontFamily: 'Roboto-Regular',
     color: '#000',
-    marginTop: 11,
-    marginBottom: 8,
+    // marginTop: 11,
+    // marginBottom: 8,
     flexDirection: 'row',
   },
   serviceRemainingWaitTime: {
@@ -88,7 +88,14 @@ export default StyleSheet.create({
     marginLeft: 'auto',
     marginRight: smallDevice ? 25 : 52,
     alignItems: 'center',
-    marginBottom: 10,
+  },
+  circularCountdownContainer: {
+    height: '100%',
+    width: '100%',
+    flexDirection: 'column',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   waitingTimeTextTop: {
     fontSize: 9,

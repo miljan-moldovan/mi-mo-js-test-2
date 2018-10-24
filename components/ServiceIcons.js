@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     color: '#2F3142',
     left: 20,
-    width: smallDevice ? 250 : 320,
+    width: smallDevice ? 240 : 310,
     zIndex: 99999,
   },
   newClientTag: {

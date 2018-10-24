@@ -226,11 +226,13 @@ getLabelForItem = (item, customStyle = {}) => {
       );
     default:
       return (
-        <CircularCountdown
-          size={46}
-          item={item}
-          style={[styles.circularCountdown, customStyle]}
-        />
+        <View style={styles.circularCountdownContainer}>
+          <CircularCountdown
+            size={46}
+            item={item}
+            style={[styles.circularCountdown, customStyle]}
+          />
+        </View>
       );
   }
 }
@@ -682,7 +684,7 @@ renderItem = (row) => {
     >
       <View style={styles.itemSummary}>
         <View style={{
- flexDirection: 'column', marginTop: 10, alignItems: 'flex-start', marginRight: 20,
+ flexDirection: 'column', alignItems: 'flex-start', marginRight: 20,
 }}
         >
           <Text style={styles.clientName} numberOfLines={1} ellipsizeMode="tail">{item.client.name} {item.client.lastName} </Text>
