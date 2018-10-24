@@ -371,6 +371,7 @@ class ServicesScreen extends React.Component {
           </View>
         </SalonTouchableOpacity>
       ),
+      leftButtonOnPress: this.goBack,
       rightButton: walkInRoute ? navigation.state.params.headerProps.rightButton : null,
       rightButtonOnPress: walkInRoute ? navigation.state.params.headerProps.rightButtonOnPress : null,
     }, true);
