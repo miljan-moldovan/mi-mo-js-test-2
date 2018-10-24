@@ -190,7 +190,7 @@ export default class FilterByCompanyScreen extends React.Component {
     }
     const { onChangeCompany, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeCompany) { onChangeCompany(this.state.selectedCompany); }
-    if (dismissOnSelect) { onNavigateBack(); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   goBack = () => {
@@ -198,7 +198,7 @@ export default class FilterByCompanyScreen extends React.Component {
       return;
     }
     const { onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
-    if (dismissOnSelect) { onNavigateBack(); this.props.navigation.goBack(); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   renderItem = ({ item, index }) => {

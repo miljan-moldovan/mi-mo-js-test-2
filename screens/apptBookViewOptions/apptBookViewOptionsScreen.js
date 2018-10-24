@@ -173,7 +173,7 @@ class ApptBookViewOptionsScreen extends Component {
   handleRemovePosition = () => this.setState({ options: { ...this.state.options, position: null } });
 
   goToEmployeesOrder = () => {
-    this.props.navigation.navigate('ApptBookSetEmployeeOrder', { transition: 'SlideFromBottom' });
+    this.props.navigation.navigate('ApptBookSetEmployeeOrder', { transition: 'SlideFromBottom', dismissOnSelect: true });
   }
 
   render() {
@@ -198,6 +198,7 @@ class ApptBookViewOptionsScreen extends Component {
                     {
                       transition: 'SlideFromBottom',
                       onChangePosition: this.handleChangePosition,
+dismissOnSelect: true,
                     },
                   );
                 }}
@@ -220,6 +221,7 @@ class ApptBookViewOptionsScreen extends Component {
                       {
                         transition: 'SlideFromBottom',
                         onChangeCompany: this.handleChangeCompany,
+dismissOnSelect: true,
                       },
                     );
                     }}
@@ -249,7 +251,7 @@ class ApptBookViewOptionsScreen extends Component {
                     this.props.navigation.navigate(
                       'ServiceCheck',
                       {
-                        transition: 'SlideFromBottom',
+                        transition: 'SlideFromBottom', dismissOnSelect: true,
                       },
                     );
                   }}

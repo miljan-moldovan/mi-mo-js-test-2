@@ -20,7 +20,12 @@ export default StyleSheet.create({
     fontSize: 11,
     color: 'white',
   },
-  headerLeftButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  headerLeftButton: {
+    paddingLeft: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+  },
+  headerRightButton: {
+    paddingRight: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+  },
   headerButtonText: {
     fontSize: 14,
     color: 'white',

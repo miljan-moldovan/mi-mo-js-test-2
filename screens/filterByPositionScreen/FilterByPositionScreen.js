@@ -193,7 +193,7 @@ export default class FilterByPositionScreen extends React.Component {
     }
     const { onChangePosition, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangePosition) { onChangePosition(this.state.selectedPosition); }
-    if (dismissOnSelect) { onNavigateBack(); }
+    if (dismissOnSelect) { this.props.navigation.goBack(); }
   }
 
   goBack = () => {

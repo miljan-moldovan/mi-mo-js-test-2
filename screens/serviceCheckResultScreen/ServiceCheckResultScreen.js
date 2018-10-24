@@ -42,7 +42,7 @@ export default class ServiceCheckResultScreen extends React.Component {
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity wait={3000} onPress={doneFunc}>
+        <SalonTouchableOpacity style={styles.headerRightButton} wait={3000} onPress={doneFunc}>
           <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
         </SalonTouchableOpacity>
       ),
@@ -81,13 +81,14 @@ export default class ServiceCheckResultScreen extends React.Component {
     }
     const {
       onChangePosition,
-      onNavigateBack,
       dismissOnSelect,
     } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangePosition) {
       onChangePosition(this.state.selectedPosition);
     }
-    if (dismissOnSelect) { onNavigateBack(); }
+    if (dismissOnSelect) {
+      this.props.navigation.navigate('ApptBookViewOptions', { transition: 'SlideFromBottom' });
+    }
   }
 
   render() {

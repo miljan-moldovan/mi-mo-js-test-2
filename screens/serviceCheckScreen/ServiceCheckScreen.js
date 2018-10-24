@@ -141,12 +141,11 @@ export default class ServiceCheckScreen extends React.Component {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
+    const { dismissOnSelect } = this.props.navigation.state.params;
 
     const { selectedProvider, selectedService } = this.state;
     this.props.navigation.navigate('ServiceCheckResult', {
       dismissOnSelect,
-      onNavigateBack,
       selectedService,
       selectedProvider,
     });
