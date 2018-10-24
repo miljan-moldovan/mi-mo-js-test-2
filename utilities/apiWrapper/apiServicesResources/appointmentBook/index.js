@@ -14,8 +14,10 @@ import postAppointmentBookRebookMulti from './postAppointmentBookRebookMulti';
 import putBlockTimeMove from './putBlockTimeMove';
 import putBlockTimeResize from './putBlockTimeResize';
 import putBlockTimeEdit from './putBlockTimeEdit';
+import deleteBlock from './deleteBlock';
 
 export {
+  deleteBlock,
   getAppointmentBookAvailability,
   getAppointmentBookEmployees,
   getBlockTimes,
