@@ -452,71 +452,7 @@ class AppointmentScreen extends Component {
     requestAnimationFrame(() => this.manageBuffer(false));
   }
 
-  goToCancelAppt = (appointment) => {
-    const { client, date } = appointment;
-    const dateMoment = moment(date, 'YYYY-MM-DD');
-    const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
-      && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
-    const hiddenAddonsLenght = appointments.filter(appt => (appt.id !== appointment.id
-      && appt.appointmentGroupId === appointment.appointmentGroupId));
-    const onPressRight = () => {
-      this.setState(
-        {
-          visibleAppointment: false,
-          crossedAppointments: [],
-          crossedAppointmentsIdAfter: [],
-        },
-        () => {
-          this.props.navigation.setParams({ hideTabBar: false });
-          // this.props.navigation.setParams({ hideTabBar: false });
-          this.props.navigation.navigate('CancelAppointmentScreen', { appointments });
-          if (appointments.length > 1) {
-            this.hideAlert();
-          }
-        },
-      );
-    };
-    const onPressLeft = () => {
-      this.setState(
-        {
-          visibleAppointment: false,
-          crossedAppointments: [],
-          crossedAppointmentsIdAfter: [],
-        },
-        () => {
-          this.props.navigation.setParams({ hideTabBar: false });
-          // this.props.navigation.setParams({ hideTabBar: false });
-          this.props.navigation.navigate('CancelAppointmentScreen', { appointments: [appointment] });
-          if (appointments.length > 1) {
-            this.hideAlert();
-          }
-        },
-      );
-    };
-
-    if (appointment.badgeData.isCashedOut) {
-      this.props.appointmentCalendarActions.setToast({
-        description: 'This appointment cannot be canceled because it has already been cashed out',
-        type: 'error',
-        btnRightText: 'DISMISS',
-      });
-    } else if (appointments.length - hiddenAddonsLenght.length > 1) {
-      const alert = {
-        title: 'Question',
-        description: 'The client has other appointments scheduled today, would you like to cancel them all?',
-        btnLeftText: 'No',
-        btnRightText: 'Yes',
-        onPressRight,
-        onPressLeft,
-      };
-      this.setState({ alert });
-    } else {
-      onPressRight();
-    }
-  }
-
-  goToShowAppt = (client) => {
-    const { startDate } = this.props.appointmentScreenState;
+  goToCancelScreen = (appointments) => {
     this.setState(
       {
         visibleAppointment: false,
@@ -524,13 +460,83 @@ class AppointmentScreen extends Component {
         crossedAppointmentsIdAfter: [],
       },
       () => {
-        // this.props.navigation.setParams({ hideTabBar: false });
         this.props.navigation.setParams({ hideTabBar: false });
-        this.props.navigation.navigate('ShowApptScreen', {
-          goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
-        });
+        // this.props.navigation.setParams({ hideTabBar: false });
+        this.props.navigation.navigate('CancelAppointmentScreen', { appointments });
+        if (appointments.length > 1) {
+          this.hideAlert();
+        }
       },
     );
+  };
+
+  goToCancelAppt = (appointment) => {
+    if (appointment.isBlockTime) {
+      this.goToCancelScreen([appointment]);
+    } else {
+      const { client, date } = appointment;
+      const dateMoment = moment(date, 'YYYY-MM-DD');
+      const appointments = filter(this.props.appointments, appt => (appt.client.id === client.id
+        && dateMoment.isSame(moment(appt.date, 'YYYY-MM-DD'))));
+      const hiddenAddonsLenght = appointments.filter(appt => (appt.id !== appointment.id
+        && appt.appointmentGroupId === appointment.appointmentGroupId));
+      const onPressRight = () => this.goToCancelScreen(appointments);
+      const onPressLeft = () => {
+        this.setState(
+          {
+            visibleAppointment: false,
+            crossedAppointments: [],
+            crossedAppointmentsIdAfter: [],
+          },
+          () => {
+            this.props.navigation.setParams({ hideTabBar: false });
+            // this.props.navigation.setParams({ hideTabBar: false });
+            this.props.navigation.navigate('CancelAppointmentScreen', { appointments: [appointment] });
+            if (appointments.length > 1) {
+              this.hideAlert();
+            }
+          },
+        );
+      };
+
+      if (appointment.badgeData.isCashedOut) {
+        this.props.appointmentCalendarActions.setToast({
+          description: 'This appointment cannot be canceled because it has already been cashed out',
+          type: 'error',
+          btnRightText: 'DISMISS',
+        });
+      } else if (appointments.length - hiddenAddonsLenght.length > 1) {
+        const alert = {
+          title: 'Question',
+          description: 'The client has other appointments scheduled today, would you like to cancel them all?',
+          btnLeftText: 'No',
+          btnRightText: 'Yes',
+          onPressRight,
+          onPressLeft,
+        };
+        this.setState({ alert });
+      } else {
+        onPressRight();
+      }
+    }
+
+    goToShowAppt = (client) => {
+      const { startDate } = this.props.appointmentScreenState;
+      this.setState(
+        {
+          visibleAppointment: false,
+          crossedAppointments: [],
+          crossedAppointmentsIdAfter: [],
+        },
+        () => {
+          // this.props.navigation.setParams({ hideTabBar: false });
+          this.props.navigation.setParams({ hideTabBar: false });
+          this.props.navigation.navigate('ShowApptScreen', {
+            goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
+          });
+        },
+      );
+    }
   }
 
   handleLayout = (event) => {

@@ -64,7 +64,11 @@ export default class CancelAppointmentScreen extends React.Component {
     const { reason } = this.state;
     const { appointments } = this.props.navigation.state.params;
     const appointmentIds = appointments.map(appt => appt.id);
-    this.props.cancelAppointment({ appointmentIds, appointmentCancellation: { reason } });
+    if (appointments[0].isBlockTime) {
+      this.props.cancelBlock(appointmentIds[0]);
+    } else {
+      this.props.cancelAppointment({ appointmentIds, appointmentCancellation: { reason } });
+    }
   }
 
   goBack = (navigation) => {
@@ -102,16 +106,18 @@ export default class CancelAppointmentScreen extends React.Component {
   }
 
   renderCard = (appointment) => {
-    const { client, service, employee } = appointment;
-    const serviceName = service.description.toUpperCase();
+    const {
+      isBlockTime, client, service, employee,
+    } = appointment;
     const employeeName = `${employee.name.toUpperCase()} ${employee.lastName[0]}.`;
+    const subtitle = isBlockTime ? employeeName : `${service.description.toUpperCase()} with ${employeeName}`;
     const fromTime = moment(appointment.fromTime, 'HH:mm').format('h:mmA');
     const toTime = moment(appointment.toTime, 'HH:mm').format('h:mmA');
     const dateMoment = moment(appointment.date, 'YYYY-MM-DD');
+    const title = isBlockTime ? appointment.reason.name : `${client.name} ${client.lastName}`;
     const props = {
-      client,
-      serviceName,
-      employeeName,
+      title,
+      subtitle,
       fromTime,
       toTime,
       day: dateMoment.format('D'),
@@ -166,6 +172,7 @@ export default class CancelAppointmentScreen extends React.Component {
 
 CancelAppointmentScreen.propTypes = {
   cancelAppointment: PropTypes.func.isRequired,
+  cancelBlock: PropTypes.func.isRequired,
   isCancelling: PropTypes.bool.isRequired,
   navigation: PropTypes.shape({
     setParams: PropTypes.func,

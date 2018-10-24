@@ -6,12 +6,12 @@ import Icon from '../../../components/UI/Icon';
 import styles from './cancelApptStyles';
 
 const card = ({
-  client, serviceName, employeeName, fromTime, toTime, day, month,
+  title, subtitle, fromTime, toTime, day, month,
 }) => (
   <View style={styles.header}>
     <View style={styles.apptInfo}>
-      <Text style={styles.clientName}>{`${client.name} ${client.lastName}`}</Text>
-      <Text style={styles.serviceInfo}>{`${serviceName} with ${employeeName}`}</Text>
+      <Text style={styles.clientName}>{title}</Text>
+      <Text style={styles.serviceInfo}>{subtitle}</Text>
       <View style={styles.timeContainer}>
         <Icon style={styles.clockIcon} name="clockO" type="regular" size={12} color="rgb(122, 139, 149)" />
         <Text style={styles.timeInfo}>{fromTime}</Text>
@@ -27,12 +27,8 @@ const card = ({
 );
 
 card.propTypes = {
-  client: PropTypes.shape({
-    name: PropTypes.string,
-    lastName: PropTypes.string,
-  }).isRequired,
-  serviceName: PropTypes.string.isRequired,
-  employeeName: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string.isRequired,
   day: PropTypes.string.isRequired,
   month: PropTypes.string.isRequired,
   fromTime: PropTypes.string.isRequired,
