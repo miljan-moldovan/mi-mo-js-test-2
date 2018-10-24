@@ -493,7 +493,14 @@ class AppointmentScreen extends Component {
         },
       );
     };
-    if (appointments.length - hiddenAddonsLenght.length > 1) {
+    
+    if (appointment.badgeData.isCashedOut) {
+      this.props.appointmentCalendarActions.setToast({
+        description: 'This appointment cannot be canceled because it has already been cashed out',
+        type: 'error',
+        btnRightText: 'DISMISS',
+      });
+    } else if (appointments.length - hiddenAddonsLenght.length > 1) {
       const alert = {
         title: 'Question',
         description: 'The client has other appointments scheduled today, would you like to cancel them all?',
