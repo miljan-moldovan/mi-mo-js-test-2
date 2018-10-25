@@ -15,11 +15,6 @@ import {
   SectionTitle,
 } from '../../components/formHelpers';
 
-const types = [
-  { id: 1, name: 'Personal' },
-  { id: 2, name: 'Vacation' },
-  { id: 3, name: 'OutSick' },
-];
 
 class BlockTimesReasonsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -44,14 +39,14 @@ class BlockTimesReasonsScreen extends React.Component {
 
     headerLeft: (
       <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={{ fontSize: 14, color: 'white' }}>Back</Text>
+        <Text style={{ paddingLeft: 10, fontSize: 14, color: 'white' }}>Back</Text>
       </SalonTouchableOpacity>
     ),
     headerRight: (
       <SalonTouchableOpacity
         onPress={() => {}}
       >
-        <Text style={{ fontSize: 14, color: 'white' }}>
+        <Text style={{ paddingRight: 10, fontSize: 14, color: 'white' }}>
           Modify List
         </Text>
       </SalonTouchableOpacity>
@@ -63,7 +58,8 @@ class BlockTimesReasonsScreen extends React.Component {
     this.props.navigation.setParams({ handleDone: this.handleDone });
     const { selectedBlockTimesReason } = this.props.navigation.state.params;
 
-    this.state.type = selectedBlockTimesReason || types[types.length - 1];
+
+    this.state.type = selectedBlockTimesReason;
 
     props.blockTimesReasonsActions.getBlockTimesReasons(this.finishedBlockTimesReasons);
   }
@@ -74,10 +70,7 @@ class BlockTimesReasonsScreen extends React.Component {
 
 
   finishedBlockTimesReasons = (result) => {
-    const selectedBlockTimesReason = this.props.blockTimesReasonsState.blockTimesReasons[this.props.blockTimesReasonsState.blockTimesReasons.length - 1];
-    this.setState({
-      type: selectedBlockTimesReason,
-    });
+
   }
 
 

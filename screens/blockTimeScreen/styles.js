@@ -30,6 +30,7 @@ export default StyleSheet.create({
     marginTop: 7,
   },
   rightButtonText: {
+    paddingRight: 10,
     fontSize: 14,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
@@ -39,7 +40,7 @@ export default StyleSheet.create({
   inputGroup: { marginTop: 16 },
   activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   cancelButton: { fontSize: 14, color: 'white' },
-  leftButtonText: { fontSize: 14, color: 'white' },
+  leftButtonText: { paddingLeft: 10, fontSize: 14, color: 'white' },
   titleContainer: {
     flexDirection: 'column',
     alignItems: 'center',
