@@ -26,11 +26,6 @@ import LoadingOverlay from '../../../../components/LoadingOverlay';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
-const options = [
-  'Edit Note',
-  'Delete/Undelete Note',
-  'Cancel',
-];
 
 class ClientNotesScreen extends Component {
   static flexFilter(list, info) {
@@ -80,7 +75,7 @@ class ClientNotesScreen extends Component {
       showTagBar,
       editionMode,
       client,
-      note: null,
+      options: [],
       forQueue,
       forSales,
       refreshing: false,
@@ -96,7 +91,11 @@ class ClientNotesScreen extends Component {
     showTagBar: false,
     editionMode: true,
     showDeleted: false,
-    note: null,
+    options: [
+      'Edit Note',
+       'Delete Note',
+      'Cancel',
+    ],
     forAppointment: false,
     forQueue: false,
     forSales: false,
@@ -303,7 +302,7 @@ class ClientNotesScreen extends Component {
   }
 
   showActionSheet = (note) => {
-    this.setState({ note }, () => { this.SalonActionSheet.show(); });
+    this.setState({ note, options: this.getOptions(note) }, () => { this.SalonActionSheet.show(); });
   };
 
   handlePress = (i) => {
@@ -403,6 +402,16 @@ class ClientNotesScreen extends Component {
     this.filterNotes(this.state.searchText, !this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
+  getOptions = (note) => {
+    const deleteOption = note.isDeleted ? 'Undelete Note' : 'Delete Note';
+
+    return [
+      'Edit Note',
+      deleteOption,
+      'Cancel',
+    ];
+  }
+
   render() {
     const params = this.props.navigation.state.params || {};
     const { apptBook = false } = params;
@@ -417,7 +426,7 @@ class ClientNotesScreen extends Component {
 
         <SalonActionSheet
           ref={o => this.SalonActionSheet = o}
-          options={options}
+          options={this.state.options}
           cancelButtonIndex={CANCEL_INDEX}
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
           onPress={this.handlePress}
