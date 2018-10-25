@@ -25,7 +25,7 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 
 const TAB_UNCOMBINED = 0;
 const TAB_COMBINED = 1;
-const TAB_COMBINE = { title: 'Combine', message: 'Are you sure you want to combine this items?' };
+const TAB_COMBINE = { title: 'Group', message: 'Are you sure you want to group this items?' };
 const TAB_CHANGE_LEADER = { title: 'Change leader', message: 'Are you sure you want to change the leader?' };
 
 class QueueCombineScreen extends React.Component {
@@ -35,8 +35,8 @@ class QueueCombineScreen extends React.Component {
     return {
       headerTitle: (
         <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Combine</Text>
-          <Text style={styles.subTitleText}>Select clients to combine</Text>
+          <Text style={styles.titleText}>Group</Text>
+          <Text style={styles.subTitleText}>Select clients to group</Text>
         </View>
       ),
       headerLeft: (
@@ -142,8 +142,6 @@ class QueueCombineScreen extends React.Component {
   updateNavButtons = () => {
     const { combinedClients } = this.state;
 
-    
-
 
     if ((combinedClients && combinedClients.length > 1) || this.getUpdatedGroupLeaders()
     ) {
@@ -218,8 +216,8 @@ class QueueCombineScreen extends React.Component {
 
 
     Alert.alert(
-      'Uncombine',
-      'Are you sure you want to uncombine this items?',
+      'Ungroup',
+      'Are you sure you want to ungroup this items?',
       [
         { text: 'Cancel', onPress: () => null, style: 'cancel' },
         { text: 'OK', onPress: () => this.props.uncombine(groupId) },
@@ -246,7 +244,6 @@ class QueueCombineScreen extends React.Component {
   changeSearchText = searchText => this.setState({ searchText });
 
   onPressTab = (ev, index) => {
-
     this.setState({ activeTab: index });
   }
 
@@ -286,12 +283,12 @@ class QueueCombineScreen extends React.Component {
             }}
             selectedColor="#115ECD"
             unSelectedTextColor="#115ECD"
-            dataSource={['Uncombined', 'Combined']}
+            dataSource={['Ungrouped', 'Grouped']}
           />
           {/* <SalonTouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
             <Icon name={combinedFirst ? 'sortAmountAsc' : 'sortAmountDesc'} size={10} color="rgba(114,122,143,1)" type="solid" />
             <Text style={styles.sortButtonLabel}>Sort</Text>
-            <Text style={styles.sortButtonText}>{combinedFirst ? 'Combined First' : 'Uncombined First'}</Text>
+            <Text style={styles.sortButtonText}>{combinedFirst ? 'Grouped First' : 'Ungrouped First'}</Text>
           </SalonTouchableOpacity> */}
         </View>
 
