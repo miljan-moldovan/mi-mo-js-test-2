@@ -7,10 +7,9 @@ import {
   Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import ClientNoteHeader from './clientNoteHeader';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 import clientNotesActions from '../../../../actions/clientNotes';
 
@@ -30,6 +29,32 @@ import styles from './stylesClientNote';
 
 
 class ClientNote extends Component {
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    const canSave = params.canSave || false;
+    const title = params.actionType === 'update' ? 'Edit Note' : 'New Note';
+
+    return {
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>
+            {title}
+          </Text>
+        </View>
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleGoBack', () => {})}>
+          <Text style={styles.leftButtonText}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity disabled={!canSave} wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Save</Text>
+        </SalonTouchableOpacity>
+      ),
+    };
+  }
+
   static compareByDate(a, b) {
     if (a.enterTime < b.enterTime) { return 1; }
     if (a.enterTime > b.enterTime) { return -1; }
@@ -49,7 +74,6 @@ class ClientNote extends Component {
     forSales: false,
     forQueue: false,
     forAppointment: false,
-    isVisible: true,
   };
 
   componentWillMount() {
@@ -116,7 +140,7 @@ class ClientNote extends Component {
     const providerName = !provider.isFirstAvailable ? ((`${provider.name || ''} ${provider.lastName || ''}`).toUpperCase()) : 'First Available';
 
     note.enteredBy = providerName;
-    this.setState({ note, isVisible: true }, this.checkCanSave);
+    this.setState({ note }, this.checkCanSave);
   }
 
     onChangeText = (txtNote) => {
@@ -126,11 +150,6 @@ class ClientNote extends Component {
       this.setState({ note }, this.checkCanSave);
     }
 
-    dismissOnSelect() {
-      const { navigate } = this.props.navigation;
-      this.setState({ isVisible: true });
-      navigate('ClientNote', { ...this.props });
-    }
 
   inputDate = (selectedDate) => {
     const { note } = this.state;
@@ -161,26 +180,20 @@ class ClientNote extends Component {
   }
 
 
-    handleOnNavigateBack = () => {
-      this.setState({ isVisible: true });
-    }
-
     handlePressProvider = () => {
       const { navigate } = this.props.navigation;
       const { selectedProvider } = this.props.clientNotesState;
 
       this.shouldSave = true;
-
-      this.setState({ isVisible: false });
     }
 
 
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
-      this.setState({ isVisible: true });
       navigation.goBack();
     },
+    dismissOnSelect: true,
   });
     checkCanSave = () => {
       let isNoteValid = false;
@@ -239,7 +252,6 @@ class ClientNote extends Component {
       } else {
         this.props.clientNotesActions.purgeClientNoteUpdateForm(this.state.note);
       }
-      this.setState({ isVisible: false });
       this.props.navigation.goBack();
     }
 
@@ -249,85 +261,80 @@ class ClientNote extends Component {
     const params = this.props.navigation.state.params || {};
     const { apptBook = false } = params;
     return (
-      <Modal
-        isVisible={this.state.isVisible}
-        style={styles.modal}
-      >
-        <View style={styles.container}>
-          <ClientNoteHeader rootProps={this.props} />
-          { this.props.clientNotesState.isLoading &&
+
+      <View style={styles.container}>
+        { this.props.clientNotesState.isLoading &&
           <LoadingOverlay />
                 }
-          <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-            <View style={styles.topSeparator} />
-            <InputGroup style={styles.providerInputGroup}>
-              <ProviderInput
-                apptBook={apptBook}
-                placeholder={false}
-                showFirstAvailable={false}
-                filterByService
-                style={styles.innerRow}
-                selectedProvider={this.props.clientNotesState.selectedProvider}
-                label="Added By"
-                iconStyle={styles.carretIcon}
-                avatarSize={20}
-                navigate={this.props.navigation.navigate}
-                onChange={this.onChangeProvider}
-                onPress={this.handlePressProvider}
-                headerProps={{ title: 'Providers', ...this.cancelButton() }}
-              />
-            </InputGroup>
-            <SectionTitle value="NOTE" style={styles.sectionTitle} />
-            <InputGroup>
-              <InputText
-                placeholder="Write Note"
-                onChangeText={this.onChangeText}
-                value={this.state.note.text}
-              />
-            </InputGroup>
-            <SectionTitle value="TYPES" style={styles.sectionTitle} />
-            <InputGroup >
-              <InputSwitch
-                style={styles.inputSwitchSales}
-                textStyle={styles.inputSwitchTextStyle}
-                onChange={this.inputSwitchSales}
-                value={this.state.forSales}
-                text="Sales"
-              />
-              <InputDivider />
-              <InputSwitch
-                style={styles.inputSwitchAppointment}
-                textStyle={styles.inputSwitchTextStyle}
-                onChange={this.inputSwitchAppointment}
-                value={this.state.forAppointment}
-                text="Appointment"
-              />
-              <InputDivider />
-              <InputSwitch
-                style={styles.inputSwitchQueue}
-                textStyle={styles.inputSwitchTextStyle}
-                onChange={this.inputSwitchQueue}
-                value={this.state.forQueue}
-                text="Queue"
-              />
-            </InputGroup>
-            <SectionDivider style={styles.sectionDivider} />
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+          <View style={styles.topSeparator} />
+          <InputGroup style={styles.providerInputGroup}>
+            <ProviderInput
+              apptBook={apptBook}
+              placeholder={false}
+              showFirstAvailable={false}
+              filterByService
+              style={styles.innerRow}
+              selectedProvider={this.props.clientNotesState.selectedProvider}
+              label="Added By"
+              iconStyle={styles.carretIcon}
+              avatarSize={20}
+              navigate={this.props.navigation.navigate}
+              onChange={this.onChangeProvider}
+              onPress={this.handlePressProvider}
+              headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            />
+          </InputGroup>
+          <SectionTitle value="NOTE" style={styles.sectionTitle} />
+          <InputGroup>
+            <InputText
+              placeholder="Write Note"
+              onChangeText={this.onChangeText}
+              value={this.state.note.text}
+            />
+          </InputGroup>
+          <SectionTitle value="TYPES" style={styles.sectionTitle} />
+          <InputGroup >
+            <InputSwitch
+              style={styles.inputSwitchSales}
+              textStyle={styles.inputSwitchTextStyle}
+              onChange={this.inputSwitchSales}
+              value={this.state.forSales}
+              text="Sales"
+            />
+            <InputDivider />
+            <InputSwitch
+              style={styles.inputSwitchAppointment}
+              textStyle={styles.inputSwitchTextStyle}
+              onChange={this.inputSwitchAppointment}
+              value={this.state.forAppointment}
+              text="Appointment"
+            />
+            <InputDivider />
+            <InputSwitch
+              style={styles.inputSwitchQueue}
+              textStyle={styles.inputSwitchTextStyle}
+              onChange={this.inputSwitchQueue}
+              value={this.state.forQueue}
+              text="Queue"
+            />
+          </InputGroup>
+          <SectionDivider style={styles.sectionDivider} />
 
-            <InputGroup style={styles.inputGroupDate}>
-              <InputDate
-                minDate={moment().format('DD MMMM YYYY')}
-                style={styles.inputDate}
-                placeholder="Expire Date"
-                noIcon={!this.state.note.expiration}
-                onPress={this.inputDate}
-                valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
-                selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
-              />
-            </InputGroup>
-          </KeyboardAwareScrollView>
+          <InputGroup style={styles.inputGroupDate}>
+            <InputDate
+              minDate={moment().format('DD MMMM YYYY')}
+              style={styles.inputDate}
+              placeholder="Expire Date"
+              noIcon={!this.state.note.expiration}
+              onPress={this.inputDate}
+              valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
+              selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
+            />
+          </InputGroup>
+        </KeyboardAwareScrollView>
 
-        </View>
-      </Modal>
+      </View>
     );
   }
 }

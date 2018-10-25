@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -18,10 +17,10 @@ import LoadingOverlay from '../../../../components/LoadingOverlay';
 import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
 import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 import SalonTimePicker from '../../../../components/formHelpers/components/SalonTimePicker';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 
 import {
-  InputDate,
   InputText,
   InputGroup,
   InputButton,
@@ -31,9 +30,35 @@ import {
   ProviderInput,
 } from '../../../../components/formHelpers';
 import styles from './stylesClientFormula';
-import ClienteFormulaHeader from './clientFormulaHeader';
 
 class ClientFormula extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    const canSave = params.canSave || false;
+    const title = params.actionType === 'update' ? 'Edit Formula' : 'New Formula';
+
+    return {
+      headerTitle: (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>
+            {title}
+          </Text>
+        </View>
+      ),
+      headerLeft: (
+        <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleGoBack', () => {})}>
+          <Text style={styles.leftButtonText}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity disabled={!canSave} wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Save</Text>
+        </SalonTouchableOpacity>
+      ),
+    };
+  }
+
+
   constructor(props) {
     super(props);
 
@@ -59,7 +84,6 @@ class ClientFormula extends React.Component {
       },
       isLoading: true,
       defaultFormulaType: null,
-      isVisible: true,
       formulaTypes: [],
       datePickerOpen: false,
     };
@@ -69,10 +93,6 @@ class ClientFormula extends React.Component {
 
   }
 
-
-  handleGoBackCopy = () => {
-    this.setState({ isVisible: true });
-  }
 
   handleSaveCopy = (copied) => {
     const { formula } = this.state;
@@ -84,7 +104,7 @@ class ClientFormula extends React.Component {
     const formulaType = find(this.state.formulaTypes, { key: copied.formulaType });
     formula.formulaType = formulaType;
 
-    this.setState({ isVisible: true, formula, defaultFormulaType: formulaType }, this.checkCanSave);
+    this.setState({ formula, defaultFormulaType: formulaType }, this.checkCanSave);
   }
 
   goBack() {
@@ -111,41 +131,31 @@ class ClientFormula extends React.Component {
     },
   });
 
-    handleOnNavigateBack = () => {
-      this.setState({ isVisible: true });
-    }
-
-    dismissOnSelect() {
-      this.setState({ isVisible: true });
-    }
 
     handlePressProvider = (onChangeProvider) => {
       const { navigate } = this.props.navigation;
-
-      this.setState({ isVisible: false });
     }
 
     onChangeEnteredBy = (enteredBy) => {
       const { formula } = this.state;
       formula.enteredBy = enteredBy;
-      this.setState({ formula, isVisible: true }, this.checkCanSave);
+      this.setState({ formula }, this.checkCanSave);
     }
 
     onChangeProvider = (provider) => {
       const { formula } = this.state;
       formula.provider = provider;
 
-      this.setState({ formula, isVisible: true }, this.checkCanSave);
+      this.setState({ formula }, this.checkCanSave);
     }
 
     goToCopy = () => {
       const { navigate } = this.props.navigation;
-      this.setState({ isVisible: false });
 
       navigate('ClientCopyFormula', {
+        transition: 'SlideFromBottom',
         ...this.props,
         client: this.state.client,
-        handleGoBack: this.handleGoBackCopy,
         handleSaveCopy: this.handleSaveCopy,
       });
     }
@@ -247,7 +257,7 @@ class ClientFormula extends React.Component {
         const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
         formula.formulaType = formula.formulaType.key;
-        formula.stylistName = formula.enteredBy.fullName;
+        formula.stylistName = formula.enteredBy ? formula.enteredBy.fullName : null;
         delete formula.provider;
         delete formula.enteredBy;
         // delete formula.date;
@@ -262,7 +272,7 @@ class ClientFormula extends React.Component {
         const formula = Object.assign({}, this.state.formula);
         formula.text = formula.text;
         formula.formulaType = formula.formulaType.key;
-        formula.stylistName = formula.enteredBy.fullName;
+        formula.stylistName = formula.enteredBy ? formula.enteredBy.fullName : null;
         delete formula.provider;
         delete formula.enteredBy;
         delete formula.store;
@@ -285,96 +295,91 @@ class ClientFormula extends React.Component {
 
     render() {
       return (
-        <Modal
-          isVisible={this.state.isVisible}
-          style={styles.modal}
-        >
-          <View style={styles.container}>
-            { (this.props.clientFormulasState.isLoading
+        <View style={styles.container}>
+          { (this.props.clientFormulasState.isLoading
               || this.props.settingsState.isLoading
              || this.state.isLoading) &&
              <LoadingOverlay />
                 }
-            <ClienteFormulaHeader rootProps={this.props} />
-            <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-              <View style={styles.topView} />
-              <InputGroup>
-                <ProviderInput
-                  showFirstAvailable={false}
-                  placeholder={false}
-                  style={styles.innerRow}
-                  selectedProvider={this.state.formula.enteredBy}
-                  label="Added By"
-                  iconStyle={styles.carretIcon}
-                  avatarSize={20}
-                  navigate={this.props.navigation.navigate}
-                  onChange={this.onChangeEnteredBy}
-                  onPress={this.handlePressProvider}
-                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                />
-                <InputDivider />
-                <InputPicker
-                  label="Type"
-                  value={this.state.formula ? this.state.formula.formulaType : this.state.defaultFormulaType}
-                  onChange={this.onChangeType}
-                  defaultOption={this.state.defaultFormulaType}
-                  options={this.state.formulaTypes}
-                />
-                <InputDivider />
-                <InputText
-                  placeholder="Write formula"
-                  onChangeText={this.onChangeText}
-                  value={this.state.formula.text}
-                />
-              </InputGroup>
-              <SectionDivider />
-              <InputGroup style={styles.inputGroupAssociated}>
-                <InputButton
-                  style={styles.inputButton}
-                  onPress={this.goToAssociatedAppt}
-                  label="Associated appt."
-                />
-                <InputDivider />
-                <SalonTimePicker
-                  label="Date"
-                  noIcon={this.state.formula.date == null}
-                  icon={<FontAwesome style={{ fontSize: 20, color: '#727A8F', marginLeft: 16 }}>{Icons.timesCircle}</FontAwesome>}
-                  mode="date"
-                  placeholder="Optional"
-                  valueStyle={this.state.formula.date == null ? styles.dateValueStyle : { }}
-                  value={this.state.formula.date}
-                  isOpen={this.state.datePickerOpen}
-                  onChange={this.handleChangedate}
-                  toggle={this.toogledate}
-                  format="DD MMMM YYYY"
-                />
-                <InputDivider />
-                <ProviderInput
-                  showFirstAvailable={false}
-                  placeholder={false}
-                  style={styles.innerRow}
-                  selectedProvider={this.state.formula.provider}
-                  label="Provider"
-                  iconStyle={styles.carretIcon}
-                  avatarSize={20}
-                  navigate={this.props.navigation.navigate}
-                  onChange={this.onChangeProvider}
-                  onPress={this.handlePressProvider}
-                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                />
-              </InputGroup>
-              <SectionDivider />
-              <InputGroup style={styles.inputGroupCopy}>
-                <InputButton
-                  style={styles.inputGroupCopyButton}
-                  onPress={this.goToCopy}
-                  label="Copy formula to"
-                />
-              </InputGroup>
-              <SectionDivider />
-            </KeyboardAwareScrollView>
-          </View>
-        </Modal>
+          <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+            <View style={styles.topView} />
+            <InputGroup>
+              <ProviderInput
+                showFirstAvailable={false}
+                placeholder={false}
+                style={styles.innerRow}
+                selectedProvider={this.state.formula.enteredBy}
+                label="Added By"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                onChange={this.onChangeEnteredBy}
+                onPress={this.handlePressProvider}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+              />
+              <InputDivider />
+              <InputPicker
+                label="Type"
+                value={this.state.formula ? this.state.formula.formulaType : this.state.defaultFormulaType}
+                onChange={this.onChangeType}
+                defaultOption={this.state.defaultFormulaType}
+                options={this.state.formulaTypes}
+              />
+              <InputDivider />
+              <InputText
+                placeholder="Write formula"
+                onChangeText={this.onChangeText}
+                value={this.state.formula.text}
+              />
+            </InputGroup>
+            <SectionDivider />
+            <InputGroup style={styles.inputGroupAssociated}>
+              <InputButton
+                style={styles.inputButton}
+                onPress={this.goToAssociatedAppt}
+                label="Associated appt."
+              />
+              <InputDivider />
+              <SalonTimePicker
+                label="Date"
+                noIcon={this.state.formula.date == null}
+                icon={<FontAwesome style={{ fontSize: 20, color: '#727A8F', marginLeft: 16 }}>{Icons.timesCircle}</FontAwesome>}
+                mode="date"
+                placeholder="Optional"
+                valueStyle={this.state.formula.date == null ? styles.dateValueStyle : { }}
+                value={this.state.formula.date}
+                isOpen={this.state.datePickerOpen}
+                onChange={this.handleChangedate}
+                toggle={this.toogledate}
+                format="DD MMMM YYYY"
+              />
+              <InputDivider />
+              <ProviderInput
+                showFirstAvailable={false}
+                placeholder={false}
+                style={styles.innerRow}
+                selectedProvider={this.state.formula.provider}
+                label="Provider"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                onChange={this.onChangeProvider}
+                onPress={this.handlePressProvider}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+              />
+            </InputGroup>
+            <SectionDivider />
+            <InputGroup style={styles.inputGroupCopy}>
+              <InputButton
+                style={styles.inputGroupCopyButton}
+                onPress={this.goToCopy}
+                label="Copy formula to"
+              />
+            </InputGroup>
+            <SectionDivider />
+          </KeyboardAwareScrollView>
+        </View>
+
       );
     }
 }

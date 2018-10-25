@@ -195,10 +195,9 @@ class ClientFormulas extends Component {
     // this.props.clientFormulasActions.setOnEditionFormula(formula);
     const { navigate } = this.props.navigation;
 
-
     navigate('ClientFormula', {
-      mode: 'modal',
       actionType: 'update',
+      transition: 'SlideFromBottom',
       formula,
       client: this.props.client,
       onNavigateBack: this.getFormulas,
@@ -338,7 +337,7 @@ class ClientFormulas extends Component {
           handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('ClientFormula', {
-              mode: 'modal',
+              transition: 'SlideFromBottom',
               actionType: 'new',
               ...this.props,
               client: this.props.client,

@@ -40,11 +40,6 @@ class ClientCopyFormula extends Component {
       navigation.state.params.handleDone :
       () => { alert('Not Implemented'); };
 
-    const handleGoBack = navigation.state.params.handleGoBack ?
-      navigation.state.params.handleGoBack
-      :
-      () => { navigation.goBack(); };
-
     return ({
       headerTitle: (
         <View style={styles.headerTitle}>
@@ -54,7 +49,7 @@ class ClientCopyFormula extends Component {
       ),
       headerLeft: (
         <SalonTouchableOpacity
-          onPress={handleGoBack}
+          onPress={navigation.goBack}
         >
           <Text style={styles.headerLeftText}>
               Cancel

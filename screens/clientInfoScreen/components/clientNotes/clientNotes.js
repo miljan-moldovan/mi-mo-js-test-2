@@ -288,7 +288,7 @@ class ClientNotesScreen extends Component {
     const { navigate } = this.props.navigation;
     const { item } = this.props.navigation.state.params;
     navigate('ClientNote', {
-      mode: 'modal',
+      transition: 'SlideFromBottom',
       actionType: 'update',
       note,
       client: this.props.client,
@@ -542,7 +542,7 @@ class ClientNotesScreen extends Component {
             handlePress={() => {
             const { navigate } = this.props.navigation;
             navigate('ClientNote', {
-             mode: 'modal',
+            transition: 'SlideFromBottom',
             actionType: 'new',
             ...this.props,
             apptBook,
