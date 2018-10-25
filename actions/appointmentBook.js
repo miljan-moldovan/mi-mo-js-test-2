@@ -277,10 +277,15 @@ const setSelectedProviders = selectedProviders => ({
   data: { selectedProviders },
 });
 
-const setSelectedFilter = selectedFilter => ({
-  type: SET_SELECTED_FILTER,
-  data: { selectedFilter },
-});
+const setSelectedFilter = (selectedFilter) => dispatch => {
+  if (selectedFilter !== 'providers') {
+    dispatch(setPickerMode('day'));
+  }
+  return {
+    type: SET_SELECTED_FILTER,
+    data: { selectedFilter },
+  };
+};
 
 const hideToast = () => ({
   type: HIDE_TOAST,

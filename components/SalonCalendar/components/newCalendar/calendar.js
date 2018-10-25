@@ -1039,7 +1039,7 @@ export default class Calendar extends Component {
       selectedFilter,
       selectedProvider, displayMode, startDate,
     } = this.props;
-    if (cards) {
+    if (cards && cards.length) {
       return cards.map(card =>
         (card.isBlockTime ? this.renderBlock(card, headerIndex, headerId)
           : this.renderCard(card, headerIndex, headerId)));
@@ -1410,7 +1410,7 @@ export default class Calendar extends Component {
                 headerData.map((item, index) => {
 
                   let headerId = item.id;
-                  if (displayMode === 'providers' && selectedProvider !== 'all') {
+                  if (selectedFilter === 'providers' && selectedProvider !== 'all') {
                     headerId = item.format(DateTime.date);
                   }
                   return this.renderCards(chain(cardsArray[headerId]).orderBy(card => get(overlappingCardsMap, [headerId, card.id, 'overlappingCardsLength'], 0), 'asc').value(), index, headerId);

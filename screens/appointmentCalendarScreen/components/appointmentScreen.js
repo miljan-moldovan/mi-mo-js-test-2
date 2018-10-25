@@ -647,7 +647,11 @@ class AppointmentScreen extends Component {
         dataSource = providerAppointments;
         break;
       }
-      case 'deskStaff':
+      case 'deskStaff': {
+        headerData = providers;
+        dataSource = providerAppointments;
+        break;
+      }
       case 'providers': {
         isDate = selectedProvider !== 'all';
         headerData = isDate ? dates : providers;
