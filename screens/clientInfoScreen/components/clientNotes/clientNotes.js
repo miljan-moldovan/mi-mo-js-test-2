@@ -130,7 +130,7 @@ class ClientNotesScreen extends Component {
       tags.push(<SalonTag
         tagHeight={17}
         key={Math.random().toString()}
-        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        backgroundColor={!this.isExpiredOrDelete(note) ? '#112F62' : '#B6B9C3'}
         value="QUEUE"
         valueSize={10}
         valueColor="#FFFFFF"
@@ -141,7 +141,7 @@ class ClientNotesScreen extends Component {
       tags.push(<SalonTag
         tagHeight={17}
         key={Math.random().toString()}
-        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        backgroundColor={!this.isExpiredOrDelete(note) ? '#112F62' : '#B6B9C3'}
         value="SALES"
         valueSize={10}
         valueColor="#FFFFFF"
@@ -152,7 +152,7 @@ class ClientNotesScreen extends Component {
       tags.push(<SalonTag
         tagHeight={17}
         key={Math.random().toString()}
-        backgroundColor={!note.isDeleted ? '#112F62' : '#B6B9C3'}
+        backgroundColor={!this.isExpiredOrDelete(note) ? '#112F62' : '#B6B9C3'}
         value="APPOINTMENT"
         valueSize={10}
         valueColor="#FFFFFF"
@@ -328,11 +328,16 @@ class ClientNotesScreen extends Component {
     return false;
   }
 
+  isExpiredOrDelete = (note) => {
+    const isExpired = (note.expiration ? moment(note.expiration).isSameOrBefore(moment().startOf('day')) : false);
+    return (note.isDeleted || isExpired);
+  }
+
   filterNotes(searchText, showDeleted, forSales, forAppointment, forQueue) {
     const baseNotes = showDeleted ?
       this.props.clientNotesState.notes :
       this.props.clientNotesState.notes.filter(el =>
-        !el.isDeleted && (el.expiration ? moment(el.expiration).isSameOrAfter(moment().startOf('day')) : true));
+        !this.isExpiredOrDelete(el));
 
 
     if (searchText && searchText.length > 0) {
@@ -458,7 +463,7 @@ class ClientNotesScreen extends Component {
                     containerStyles={styles.salonCardContainer}
                     bodyStyles={styles.salonCardBody}
                     key={index}
-                    backgroundColor={!item.isDeleted ? '#FFFFFF' : '#F8F8F8'}
+                    backgroundColor={!this.isExpiredOrDelete(item) ? '#FFFFFF' : '#F8F8F8'}
                     headerChildren={[
                       <View style={styles.noteTags}>
                         <View style={styles.noteHeaderLeft}>
@@ -466,7 +471,7 @@ class ClientNotesScreen extends Component {
                           <SalonDateTxt
                             dateFormat="MMM. DD"
                             value={item.enterTime}
-                            valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
+                            valueColor={!this.isExpiredOrDelete(item) ? '#000000' : '#4D5065'}
                             fontFamily="Roboto-Bold"
                             valueSize={12}
                             fontWeight="500"
@@ -475,7 +480,7 @@ class ClientNotesScreen extends Component {
                           <SalonDateTxt
                             dateFormat=" YYYY"
                             value={item.enterTime}
-                            valueColor={!item.isDeleted ? '#000000' : '#4D5065'}
+                            valueColor={!this.isExpiredOrDelete(item) ? '#000000' : '#4D5065'}
                             fontFamily="Roboto-Bold"
                             valueSize={12}
                             fontWeight="normal"
@@ -508,7 +513,7 @@ class ClientNotesScreen extends Component {
                       //  renderViewLess={this.renderViewLess}
                       >
                         <Text
-                          style={[styles.noteText, { color: !item.isDeleted ? '#2E3032' : '#58595B' }]}
+                          style={[styles.noteText, { color: !this.isExpiredOrDelete(item) ? '#2E3032' : '#58595B' }]}
                         >
                           {item.text}
                         </Text>

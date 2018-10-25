@@ -80,6 +80,7 @@ class QueueHeader extends React.Component {
         navigation.navigate(
           'TurnAway',
           {
+            transition: 'SlideFromBottom',
             date: moment(),
             employee: null,
             apptBook: false,
