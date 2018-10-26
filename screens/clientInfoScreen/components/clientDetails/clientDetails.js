@@ -682,7 +682,7 @@ class ClientDetails extends Component {
             value={phone.value}
             required={phoneType.required}
             onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
-            placeholder="Enter"
+            placeholder=""
             inputStyle={phone.value ? {} : styles.inputStyle}
           />
           <InputDivider />
@@ -707,6 +707,9 @@ class ClientDetails extends Component {
       //  }
 
       this.onChangeClientField('zipCode', this.props.clientInfoState.zipCode.zip);
+
+
+      this.setState({ isValidState: true, isValidCity: true });
     }
   }
 
@@ -732,7 +735,7 @@ class ClientDetails extends Component {
                   label="First Name"
                   value={this.state.client.name}
                   onChangeText={(text) => { this.onChangeClientField('name', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                   inputStyle={this.state.client.name ? {} : styles.inputStyle}
                 />
                 <InputDivider />
@@ -741,7 +744,7 @@ class ClientDetails extends Component {
                   label="Middle Name"
                   value={this.state.client.middleName}
                   onChangeText={(text) => { this.onChangeClientField('middleName', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                 />
                 <InputDivider />
                 <ValidatableInput
@@ -753,7 +756,7 @@ class ClientDetails extends Component {
                   label="Last Name"
                   value={this.state.client.lastName}
                   onChangeText={(text) => { this.onChangeClientField('lastName', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                 />
               </InputGroup>
 
@@ -763,7 +766,7 @@ class ClientDetails extends Component {
                   label="Loyalty Number"
                   value={this.state.client.loyalty}
                   onChangeText={(text) => { this.onChangeClientField('loyalty', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                   keyboardType="number-pad"
                   inputStyle={this.state.client.loyalty ? {} : styles.inputStyle}
                 />
@@ -773,8 +776,8 @@ class ClientDetails extends Component {
                   format="D MMM YYYY"
                   label="Birthday"
                   mode="date"
-                  placeholder="Select"
-                  icon={<FontAwesome style={[styles.iconStyle]}>{Icons.calendar}</FontAwesome>}
+                  placeholder=""
+                  noIcon
                   value={this.state.client.birthday}
                   isOpen={this.state.birthdayPickerOpen}
                   onChange={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
@@ -787,6 +790,7 @@ class ClientDetails extends Component {
                 <InputDivider />
                 <InputPicker
                   label="Age"
+                  placeholder=""
                   required={this.state.requiredFields.age}
                   isValid={this.state.isValidAge}
                   onValidated={this.onValidateAge}
@@ -802,8 +806,8 @@ class ClientDetails extends Component {
                   format="D MMM YYYY"
                   label="Anniversary"
                   mode="date"
-                  placeholder="Select"
-                  icon={<FontAwesome style={[styles.iconStyle]}>{Icons.calendar}</FontAwesome>}
+                  placeholder=""
+                  noIcon
                   value={this.state.client.anniversary}
                   isOpen={this.state.anniversaryPickerOpen}
                   onChange={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
@@ -816,12 +820,13 @@ class ClientDetails extends Component {
                   label="Client ID"
                   value={this.state.client.clientId}
                   onChangeText={(text) => { this.onChangeClientField('clientId', text); }}
-                  placeholder="####"
+                  placeholder=""
                   inputStyle={this.state.client.clientId ? {} : styles.inputStyle}
                 />
                 <InputDivider />
                 <InputPicker
                   label="Gender"
+                  placeholder=""
                   required={this.state.requiredFields.gender}
                   isValid={this.state.isValidGender}
                   onValidated={this.onValidateGender}
@@ -843,7 +848,7 @@ class ClientDetails extends Component {
                   onValidated={this.onValidateEmail}
                   value={this.state.client.email}
                   onChangeText={(text) => { this.onChangeClientField('email', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                   inputStyle={this.state.client.email ? {} : styles.inputStyle}
                 />
                 <InputDivider />
@@ -869,7 +874,7 @@ class ClientDetails extends Component {
                 <InputDivider style={styles.inputDivider} />
                 <LabeledTextarea
                   label="Notes"
-                  placeholder="Some note here"
+                  placeholder=""
                   onChangeText={(text) => { this.onChangeClientField('confirmationNote', text); }}
                   value={this.state.client.confirmationNote}
                 />
@@ -884,7 +889,7 @@ class ClientDetails extends Component {
                   label="Address Line 1"
                   value={this.state.client.street1}
                   onChangeText={(text) => { this.onChangeClientField('street1', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                   inputStyle={this.state.client.street1 ? {} : styles.inputStyle}
                 />
                 <InputDivider />
@@ -896,12 +901,13 @@ class ClientDetails extends Component {
                   label="City"
                   value={this.state.client.city}
                   onChangeText={(text) => { this.onChangeClientField('city', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                   inputStyle={this.state.client.city ? {} : styles.inputStyle}
                 />
                 <InputDivider />
                 <InputPicker
                   label="State"
+                  placeholder=""
                   required={this.state.requiredFields.state}
                   isValid={this.state.isValidState}
                   onValidated={this.onValidateState}
@@ -922,7 +928,7 @@ class ClientDetails extends Component {
                   label="ZIP"
                   value={this.state.client.zipCode}
                   onChangeText={(text) => { this.onChangeClientField('zipCode', text); }}
-                  placeholder="Enter"
+                  placeholder=""
                   inputStyle={!this.props.clientInfoState.isLoadingZipCode && this.state.client.zipCode ? {} : styles.inputStyle}
                   icon={this.props.clientInfoState.isLoadingZipCode ?
 
@@ -945,10 +951,9 @@ class ClientDetails extends Component {
 
                   <ClientInput
                     label="Select Client"
+                    placeholder={false}
                     selectedClient={this.state.selectedClient}
                     style={styles.clientInput}
-                    extraComponents={this.state.selectedClient === null ?
-                      <Text style={styles.optionaLabel}>Select</Text> : null}
                     onPress={this.setReferredOptionClient}
                     navigate={this.props.navigation.navigate}
                     headerProps={{ title: 'Clients', ...this.cancelButton() }}
@@ -966,6 +971,7 @@ class ClientDetails extends Component {
                   <View style={styles.clientReferralTypeInput}>
                     <InputPicker
                       label="Other"
+                      placeholder=""
                       noValueStyle={!this.state.client.clientReferralType ? styles.dateValueStyle : {}}
                       value={this.state.client.clientReferralType ?
                           this.state.client.clientReferralType : null}
