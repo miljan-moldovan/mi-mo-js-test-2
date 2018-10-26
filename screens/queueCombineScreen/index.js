@@ -23,8 +23,8 @@ UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
 
 
-const TAB_UNCOMBINED = 0;
-const TAB_COMBINED = 1;
+const TAB_UNCOMBINED = 1;
+const TAB_COMBINED = 0;
 const TAB_COMBINE = { title: 'Group', message: 'Are you sure you want to group this items?' };
 const TAB_CHANGE_LEADER = { title: 'Change leader', message: 'Are you sure you want to change the leader?' };
 
@@ -79,7 +79,7 @@ class QueueCombineScreen extends React.Component {
     combinedFirst: false,
     searchText: '',
     groupLeader: '',
-    activeTab: TAB_UNCOMBINED,
+    activeTab: TAB_COMBINED,
     alertDone: TAB_COMBINE,
   }
   componentWillMount() {
@@ -283,7 +283,7 @@ class QueueCombineScreen extends React.Component {
             }}
             selectedColor="#115ECD"
             unSelectedTextColor="#115ECD"
-            dataSource={['Ungrouped', 'Grouped']}
+            dataSource={['Ungroup', 'Group']}
           />
           {/* <SalonTouchableOpacity style={styles.sortButtonContainer} onPress={this.toggleSort}>
             <Icon name={combinedFirst ? 'sortAmountAsc' : 'sortAmountDesc'} size={10} color="rgba(114,122,143,1)" type="solid" />
@@ -292,6 +292,9 @@ class QueueCombineScreen extends React.Component {
           </SalonTouchableOpacity> */}
         </View>
 
+        {this.state.activeTab === TAB_COMBINED &&
+        <View style={{ marginTop: 23 }}>{uncombined}</View>
+        }
         {this.state.activeTab === TAB_UNCOMBINED &&
           <QueueCombine
             data={queueData}
@@ -301,9 +304,6 @@ class QueueCombineScreen extends React.Component {
             activeTab={this.state.activeTab}
             filterText={searchText}
           />
-        }
-        {this.state.activeTab === TAB_COMBINED &&
-        <View style={{ marginTop: 23 }}>{uncombined}</View>
         }
       </KeyboardAwareScrollView>
     );
