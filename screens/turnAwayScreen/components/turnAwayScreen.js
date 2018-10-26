@@ -58,15 +58,34 @@ class TurnAwayScreen extends Component {
     super(props);
 
     props.navigation.setParams({ handleDone: this.handleDone });
+
+    const services = [];
+    const { startTime } = this.params;
+    const { apptGridSettings: { step } } = this.props;
+    const fromTime = moment(startTime);
+    const service = {
+      provider: {
+        id: 0, name: 'First', lastName: 'Available', fullName: 'First Available',
+      },
+      service: null,
+      fromTime,
+      toTime: moment(fromTime).add(step, 'm'),
+      length: moment.duration(step, 'minutes'),
+    };
+    services.push(service);
+
+
     this.state = {
       date: moment(),
       isModalVisible: false,
       selectedClient: null,
-      services: [],
+      services,
       selectedReasonCode: null,
       isEditableOtherReason: true,
       otherReason: '',
     };
+
+    this.checkCanSave();
   }
 
   componentDidMount() {
@@ -120,6 +139,7 @@ class TurnAwayScreen extends Component {
   }
 
   checkCanSave = () => {
+
     const isTextValid = this.state.isEditableOtherReason ? this.state.otherReason.length > 0 : true;
     if (
       isTextValid &&
@@ -142,18 +162,16 @@ class TurnAwayScreen extends Component {
   }
 
   finishedGetTurnAwayReasons = (result) => {
-    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[
-      this.props.turnAwayReasonsState.turnAwayReasons.length - 1
-    ];
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[0];
     this.setState({
       date: moment(),
       isModalVisible: false,
       selectedClient: null,
       services: [],
       selectedReasonCode,
-      isEditableOtherReason: true,
+      isEditableOtherReason: false,
       otherReason: '',
-    });
+    }, this.checkCanSave);
   }
 
   handleDone = () => {
@@ -180,6 +198,7 @@ class TurnAwayScreen extends Component {
   }
 
   handleAddService = () => {
+    
     const { apptGridSettings: { step } } = this.props;
     const { employee, startTime } = this.params;
     const services = cloneDeep(this.state.services);
@@ -203,6 +222,7 @@ class TurnAwayScreen extends Component {
   }
 
   handleUpdateService = (index, updatedService) => {
+
     const { startTime } = this.params;
     const services = cloneDeep(this.state.services);
     const { provider, service } = updatedService;
