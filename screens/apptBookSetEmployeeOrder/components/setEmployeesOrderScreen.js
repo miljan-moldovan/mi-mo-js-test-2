@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Dimensions, StyleSheet } from 'react-native';
+import { Text, View, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import SortableList from 'react-native-sortable-list';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
@@ -119,15 +119,18 @@ export default class setEmployeesOrder extends React.PureComponent {
     return (
       <View style={styles.container}>
 
-        {isLoading ? null :
-        <SortableList
-          style={styles.list}
-          contentContainerStyle={styles.contentContainer}
-          data={employees}
-          renderRow={this._renderRow}
+        {isLoading ?
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View> :
+          <SortableList
+            style={styles.list}
+            contentContainerStyle={styles.contentContainer}
+            data={employees}
+            renderRow={this._renderRow}
           // order={this.state.order}
-          onChangeOrder={this.handleChangeOrder}
-        />
+            onChangeOrder={this.handleChangeOrder}
+          />
         }
       </View>
     );
