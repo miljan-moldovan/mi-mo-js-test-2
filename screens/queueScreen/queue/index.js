@@ -314,6 +314,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
 
       if (trackQueueRemoval) {
         this.props.navigation.navigate('RemovalReasonTypes', {
+          transition: 'SlideFromBottom',
           appointment,
           type: 'walkout',
           ...this.props,
@@ -349,6 +350,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
 
     if (trackQueueRemoval) {
       this.props.navigation.navigate('RemovalReasonTypes', {
+        transition: 'SlideFromBottom',
         appointment,
         type: 'noshow',
         ...this.props,

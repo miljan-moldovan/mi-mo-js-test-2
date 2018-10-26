@@ -38,7 +38,7 @@ export default class ProviderInput extends React.Component {
     } = this.props;
     if (isFunction(onPress)) { onPress(); }
     const screenProviders = walkin ? 'ModalProviders' : 'Providers';
-    let nav = walkin ? push : navigate;
+    const nav = walkin ? push : navigate;
     nav(apptBook ? 'ApptBookProvider' : screenProviders, {
       mode,
       queueList,
@@ -61,7 +61,7 @@ export default class ProviderInput extends React.Component {
       placeholder = 'Select Provider',
     } = this.props;
     let value = selectedProvider !== null && 'name' in selectedProvider ?
-      `${selectedProvider.name} ${selectedProvider.lastName}` : null;
+      `${selectedProvider.name} ${selectedProvider.lastName ? selectedProvider.lastName : ''}` : null;
 
     if (selectedProvider !== null) {
       if ('isFirstAvailable' in selectedProvider) {
