@@ -126,9 +126,10 @@ class ClientFormula extends React.Component {
 
   cancelButton = () => ({
     leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
-    leftButtonOnPress: () => {
-      this.dismissOnSelect();
+    leftButtonOnPress: (navigation) => {
+      navigation.goBack();
     },
+    dismissOnSelect: true,
   });
 
 
