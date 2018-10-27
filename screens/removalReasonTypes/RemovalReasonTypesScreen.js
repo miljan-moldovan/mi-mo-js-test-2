@@ -209,11 +209,10 @@ class RemovalReasonTypesScreen extends React.Component {
     const {
       otherReason, provider, isOtherReasonSelected,
     } = this.state;
-
     let canSave = !!provider;
 
     if (isOtherReasonSelected) {
-      canSave = otherReason.length > 0;
+      canSave = canSave && otherReason.length > 0;
     }
 
     this.props.navigation.setParams({ canSave });
