@@ -519,24 +519,24 @@ class AppointmentScreen extends Component {
         onPressRight();
       }
     }
+  }
 
-    goToShowAppt = (client) => {
-      const { startDate } = this.props.appointmentScreenState;
-      this.setState(
-        {
-          visibleAppointment: false,
-          crossedAppointments: [],
-          crossedAppointmentsIdAfter: [],
-        },
-        () => {
-          // this.props.navigation.setParams({ hideTabBar: false });
-          this.props.navigation.setParams({ hideTabBar: false });
-          this.props.navigation.navigate('ShowApptScreen', {
-            goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
-          });
-        },
-      );
-    }
+  goToShowAppt = (client) => {
+    const { startDate } = this.props.appointmentScreenState;
+    this.setState(
+      {
+        visibleAppointment: false,
+        crossedAppointments: [],
+        crossedAppointmentsIdAfter: [],
+      },
+      () => {
+        // this.props.navigation.setParams({ hideTabBar: false });
+        this.props.navigation.setParams({ hideTabBar: false });
+        this.props.navigation.navigate('ShowApptScreen', {
+          goToAppt: this.goToAppt, client, date: startDate.format('YYYY-MM-DD'),
+        });
+      },
+    );
   }
 
   handleLayout = (event) => {

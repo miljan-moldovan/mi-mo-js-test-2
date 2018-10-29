@@ -110,7 +110,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     rooms,
   } = getState().appointmentBookReducer;
   const date = startDate.format('YYYY-MM-DD');
-
   switch (selectedFilter) {
     case 'deskStaff':
     case 'rebookAppointment':
@@ -277,14 +276,14 @@ const setSelectedProviders = selectedProviders => ({
   data: { selectedProviders },
 });
 
-const setSelectedFilter = (selectedFilter) => dispatch => {
+const setSelectedFilter = selectedFilter => (dispatch) => {
   if (selectedFilter !== 'providers') {
     dispatch(setPickerMode('day'));
   }
-  return {
+  return dispatch({
     type: SET_SELECTED_FILTER,
     data: { selectedFilter },
-  };
+  });
 };
 
 const hideToast = () => ({
