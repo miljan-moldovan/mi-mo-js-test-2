@@ -28,22 +28,27 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   mediumBold: { fontFamily: 'Roboto-Medium' },
+  rightButton: { marginRight: 10 },
+  leftButton: { marginLeft: 10 },
 });
 
 class ChangeDateTimeScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    headerTitle: 'Change Date/Time',
-    headerLeft: (
-      <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.headerButton}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity onPress={() => navigation.state.params.handleSave()}>
-        <Text style={[styles.headerButton, styles.mediumBold]}>Done</Text>
-      </SalonTouchableOpacity>
-    ),
-  });
+  static navigationOptions = ({ navigation }) => {
+    const rightButtonOnPress = () => navigation.state.params.handleSave();
+    return {
+      headerTitle: 'Change Date/Time',
+      headerLeft: (
+        <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>
+          <Text style={styles.headerButton}>Cancel</Text>
+        </SalonTouchableOpacity>
+      ),
+      headerRight: (
+        <SalonTouchableOpacity style={styles.rightButton} onPress={rightButtonOnPress}>
+          <Text style={[styles.headerButton, styles.mediumBold]}>Done</Text>
+        </SalonTouchableOpacity>
+      ),
+    };
+  };
 
   constructor(props) {
     super(props);

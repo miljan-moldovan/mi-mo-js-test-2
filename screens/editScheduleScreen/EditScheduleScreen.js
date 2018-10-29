@@ -48,12 +48,13 @@ class EditScheduleScreen extends React.Component {
       ),
 
       headerLeft: (
-        <SalonTouchableOpacity onPress={() => navigation.goBack()}>
+        <SalonTouchableOpacity style={styles.leftButton} onPress={() => navigation.goBack()}>
           <Text style={styles.headerLeftText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <SalonTouchableOpacity
+          style={styles.rightButton}
           disabled={!canSave}
           onPress={() => {
           if (navigation.state.params.handleDone) {

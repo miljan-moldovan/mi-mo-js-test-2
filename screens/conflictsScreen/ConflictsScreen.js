@@ -100,6 +100,8 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: '500',
   },
+  rightButton: { marginRight: 10 },
+  leftButton: { marginLeft: 10 },
 });
 
 export default class ConflictsScreen extends React.Component {
@@ -118,14 +120,21 @@ export default class ConflictsScreen extends React.Component {
       title: 'Conflicts',
       subTitle: 'Test',
       headerRight: (
-        <SalonTouchableOpacity onPress={onRightPress} disabled={!canPerformAction}>
+        <SalonTouchableOpacity
+          style={styles.rightButton}
+          onPress={onRightPress}
+          disabled={!canPerformAction}
+        >
           <Text style={(canPerformAction && styles.btnHeaderText) || styles.btnHeaderDisabledText}>
             {btnRightText}
           </Text>
         </SalonTouchableOpacity>
       ),
       headerLeft: (
-        <SalonTouchableOpacity onPress={navigation.goBack}>
+        <SalonTouchableOpacity
+          style={styles.leftButton}
+          onPress={navigation.goBack}
+        >
           <Text style={styles.btnHeaderText}>
             Cancel
           </Text>
@@ -177,7 +186,7 @@ export default class ConflictsScreen extends React.Component {
                 )}
                 <Text style={styles.conflictReasonText}>{conflict.reason}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                  { !isNull(conflict.serviceDescription) &&
+                  {!isNull(conflict.serviceDescription) &&
                     <Text style={styles.conflictServiceText}>{`${conflict.serviceDescription} ${conflict.employeeFullName ? 'with ' : ''}`}</Text>
                   }
                   {!isNull(conflict.employeeFullName) &&

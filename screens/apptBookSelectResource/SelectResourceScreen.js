@@ -20,6 +20,7 @@ export default class SelectRoomScreen extends React.Component {
     title: 'Assigned Resource',
     headerLeft: (
       <SalonTouchableOpacity
+        style={{ marginLeft: 10 }}
         onPress={() => navigation.goBack()}
       >
         <Text
@@ -92,19 +93,19 @@ export default class SelectRoomScreen extends React.Component {
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <ActivityIndicator />
           </View>
-      ) : (
-        <View style={{ flex: 1 }}>
-          <FlatList
-            data={this.state.resources}
-            ItemSeparatorComponent={() => (
-              <View style={{ paddingLeft: 16 }}>
-                <InputDivider />
-              </View>
-            )}
-            renderItem={({ item, index }) => this.renderItem(item.name, item)}
-          />
-        </View>
-      )}
+        ) : (
+          <View style={{ flex: 1 }}>
+            <FlatList
+                data={this.state.resources}
+                ItemSeparatorComponent={() => (
+                  <View style={{ paddingLeft: 16 }}>
+                    <InputDivider />
+                  </View>
+                )}
+                renderItem={({ item, index }) => this.renderItem(item.name, item)}
+              />
+          </View>
+          )}
       </View>
     );
   }

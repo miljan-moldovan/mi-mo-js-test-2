@@ -28,7 +28,7 @@ const getProducts = () => (dispatch) => {
   //   .then(response => dispatch(getProductsSuccess(response)))
   //   .catch(error => dispatch(getProductsFailed(error)));
   dispatch({ type: GET_PRODUCTS });
-  Product.getProductTree()
+  Product.getInventoryRetailTree()
     .then(response => dispatch(getProductsSuccess(response)))
     .catch(error => dispatch(getProductsFailed(error)));
 };

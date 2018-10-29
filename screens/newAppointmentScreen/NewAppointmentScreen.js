@@ -64,16 +64,22 @@ export default class NewAppointmentScreen extends React.Component {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
     const canSave = screenProps.isNewApptValid;
+    const leftButtonStyle = { marginLeft: 10 };
+    const rightButtonStyle = { marginRight: 10 };
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return ({
       headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
-        <SalonTouchableOpacity onPress={params.handleCancel}>
+        <SalonTouchableOpacity style={leftButtonStyle} onPress={params.handleCancel}>
           <Text style={styles.headerButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} onPress={params.handleSave}>
+        <SalonTouchableOpacity
+          disabled={!canSave}
+          style={rightButtonStyle}
+          onPress={params.handleSave}
+        >
           <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
         </SalonTouchableOpacity>
       ),

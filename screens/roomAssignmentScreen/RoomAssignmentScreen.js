@@ -40,12 +40,13 @@ export default class RoomAssignmentScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity onPress={navigation.goBack}>
+        <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>
           <Text style={styles.headerButton}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <SalonTouchableOpacity
+          style={styles.rightButton}
           onPress={onPress}
           disabled={!canSave}
         >

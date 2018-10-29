@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   headerButton: { fontSize: 14, lineHeight: 22, color: 'white' },
-
+  leftButton: { marginLeft: 10 },
+  rightButton: { marginRight: 10 },
 });
 export default styles;

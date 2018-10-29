@@ -49,6 +49,7 @@ export default class RecommendProductScreen extends React.Component {
     return {
       headerRight: (
         <SalonTouchableOpacity
+          style={{ marginRight: 10 }}
           onPress={() => {
             if (canSave) {
               params.saveInfo();
@@ -61,6 +62,7 @@ export default class RecommendProductScreen extends React.Component {
       ),
       headerLeft: (
         <SalonTouchableOpacity
+          style={{ marginLeft: 10 }}
           onPress={() => navigation.goBack()}
         >
           <Text style={styles.headerButtons}>Cancel</Text>
@@ -211,33 +213,33 @@ export default class RecommendProductScreen extends React.Component {
             onValidated={this.onValidateEmail}
             onChangeText={email => this.handleChangeText(email)}
           />
-            <InputDivider
-              style={[styles.divider, {
+          <InputDivider
+            style={[styles.divider, {
               backgroundColor: this.isValidEmailRegExp.test(clientEmail) ? null : '#D1242A',
             }]}
-            />
+          />
         </InputGroup>
-          <InputGroup style={styles.inputGroupContainer}>
-            <ProductInput
-              selectedProduct={selectedProduct}
-              placeholder="Select a Product"
-              apptBook
-              onChange={product => this.handleChangeProduct(product)}
-              navigate={this.props.navigation.navigate}
-            />
-            <InputDivider />
-            <ProviderInput
-              apptBook 
-              filterByService
-              client={client}
-              placeholder="Select a Provider"
-              navigate={this.props.navigation.navigate}
-              selectedProvider={selectedProvider}
-              onChange={this.handleSelectProvider}
-              showFirstAvailable = {false}
-              showEstimatedTime = {false}
-              headerProps={{ title: 'Providers', ...this.cancelButton() }}
-            />
+        <InputGroup style={styles.inputGroupContainer}>
+          <ProductInput
+            selectedProduct={selectedProduct}
+            placeholder="Select a Product"
+            apptBook
+            onChange={product => this.handleChangeProduct(product)}
+            navigate={this.props.navigation.navigate}
+          />
+          <InputDivider />
+          <ProviderInput
+            apptBook
+            filterByService
+            client={client}
+            placeholder="Select a Provider"
+            navigate={this.props.navigation.navigate}
+            selectedProvider={selectedProvider}
+            onChange={this.handleSelectProvider}
+            showFirstAvailable={false}
+            showEstimatedTime={false}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+          />
         </InputGroup>
       </View>
     );

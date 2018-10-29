@@ -20,7 +20,7 @@ export default class CancelAppointmentScreen extends React.Component {
       ),
       headerLeft: (
         <SalonTouchableOpacity
-          style={styles.btn}
+          style={[styles.btn, { marginLeft: 10 }]}
           onPress={goBack}
         >
           <Text style={styles.btnText}>Cancel</Text>
@@ -29,7 +29,7 @@ export default class CancelAppointmentScreen extends React.Component {
       headerRight: (
         <SalonTouchableOpacity
           disabled={!isBtnEnabled}
-          style={styles.btn}
+          style={[styles.btn, { marginRight: 10 }]}
           onPress={handleCancel}
         >
           <Text style={btnTextStyle}>Done</Text>
@@ -92,17 +92,19 @@ export default class CancelAppointmentScreen extends React.Component {
   }
 
   measureView = ({ nativeEvent: { layout: { width, height } } }) => {
-    if (!this.state.height1){
-      this.setState((prevState) => ({
-          height1: height,
-      }));}
+    if (!this.state.height1) {
+      this.setState(prevState => ({
+        height1: height,
+      }));
+    }
   }
 
   measureView2 = ({ nativeEvent: { layout: { width, height } } }) => {
-  if(!this.state.height2){
-      this.setState((prevState) => ({
-          height2: height,
-      }));}
+    if (!this.state.height2) {
+      this.setState(prevState => ({
+        height2: height,
+      }));
+    }
   }
 
   renderCard = (appointment) => {

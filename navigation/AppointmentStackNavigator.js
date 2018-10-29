@@ -195,10 +195,12 @@ const AppointmentStackNavigator = StackNavigator(
       navigationOptions: rootProps => ({
         tabBarVisible: false,
         headerStyle: styles.headerStyle,
-        headerTitle: <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
-          <Text style={styles.subTitleText}>Appointment notes</Text>
-        </View>,
+        headerTitle: (
+          <View style={styles.titleContainer}>
+            <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
+            <Text style={styles.subTitleText}>Appointment notes</Text>
+          </View>
+        ),
         headerLeft: HeaderLateral({
           handlePress: () => rootProps.navigation.goBack(),
           button: (
