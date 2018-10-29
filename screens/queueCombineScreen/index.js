@@ -263,6 +263,7 @@ class QueueCombineScreen extends React.Component {
         onChangeLeader={this.onChangeGroupLeader}
         groupLeaders={groupLeadersTmp} // overrides leaders in groupData - used for leader selection
         loading={this.props.loading}
+        {...this.props}
       />
     );
     return (
@@ -302,6 +303,7 @@ class QueueCombineScreen extends React.Component {
             onChangeCombineClients={this.onChangeCombineClients}
             activeTab={this.state.activeTab}
             filterText={searchText}
+            {...this.props}
           />
         }
         {this.state.activeTab === TAB_COMBINED &&

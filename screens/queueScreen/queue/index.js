@@ -36,21 +36,6 @@ import styles from './styles';
 import type { QueueItem } from '../../../models';
 import checkBusyEmploeeInServiceQueue from '../../../utilities/helpers/checkBusyEmploeeInServiceQueue';
 
-const groupColors = [
-  { font: '#00E480', background: '#F1FFF2' },
-  { font: '#A07FCC', background: '#F6F5FF' },
-  { font: '#F6A623', background: '#FDF7EC' },
-  { font: '#F5E000', background: '#FFFEEF' },
-  { font: '#0095F5', background: '#F5FFFE' },
-  { font: '#EB1D1D', background: '#FEF2F2' },
-  { font: '#E007D9', background: '#FDF0FD' },
-  { font: '#B07513', background: '#F2EFE7' },
-  { font: '#00FBFF', background: '#EDFFFD' },
-  { font: '#ACEA56', background: '#F5FFE7' },
-  { font: '#3C58D2', background: '#F1F6FC' },
-  { font: '#3A5674', background: '#F0F4F8' },
-];
-
 const groups = {};
 
 class Queue extends React.Component {
@@ -667,17 +652,7 @@ renderItem = (row) => {
 
   const isBookedByWeb = item.queueType === 3;
 
-  let color = groupColors[Math.floor(Math.random() * groupColors.length)];
-
-  if (item.groupId) {
-    if (groups[item.groupId]) {
-      color = groups[item.groupId];
-    } else {
-      groups[item.groupId] = color;
-    }
-  } else {
-    color = groupColors[0];
-  }
+  const color = item.groupId ? this.props.groups[item.groupId].color : null;
 
   return (
     <SalonTouchableOpacity
