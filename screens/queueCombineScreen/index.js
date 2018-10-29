@@ -36,7 +36,6 @@ class QueueCombineScreen extends React.Component {
       headerTitle: (
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>Group</Text>
-          <Text style={styles.subTitleText}>Select clients to group</Text>
         </View>
       ),
       headerLeft: (
