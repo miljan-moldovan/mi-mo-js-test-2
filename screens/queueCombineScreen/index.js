@@ -32,6 +32,21 @@ class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     const { onPressDone, loading } = params;
+    const showDone = 'showDone' in params ? params.showDone : true;
+    const doneButton = showDone ?
+      (<SalonTouchableOpacity
+        wait={3000}
+        onPress={onPressDone}
+      >
+        <View style={styles.rightButtonContainer}>
+          <Text style={[styles.rightButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+        </View>
+      </SalonTouchableOpacity>)
+      : null;
+    const headerRight = (loading && showDone) ? (
+      <View style={styles.navButton}>
+        <ActivityIndicator />
+      </View>) : (doneButton);
     return {
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -50,22 +65,7 @@ class QueueCombineScreen extends React.Component {
           </View>
         </SalonTouchableOpacity>
       ),
-      headerRight: (
-        loading ? (
-          <View style={styles.navButton}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <SalonTouchableOpacity
-            wait={3000}
-            onPress={onPressDone}
-          >
-            <View style={styles.rightButtonContainer}>
-              <Text style={[styles.rightButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-            </View>
-          </SalonTouchableOpacity>
-        )
-      ),
+      headerRight,
     };
   };
 
@@ -232,7 +232,10 @@ class QueueCombineScreen extends React.Component {
         [groupId]: clientId,
       },
       alertDone: TAB_CHANGE_LEADER,
-    }, this.updateNavButtons);
+    }, () => {
+      this.confirmation();
+    //  this.updateNavButtons
+    });
   }
   toggleSort = () => {
     LayoutAnimation.spring();
@@ -244,6 +247,7 @@ class QueueCombineScreen extends React.Component {
 
   onPressTab = (ev, index) => {
     this.setState({ activeTab: index });
+    this.props.navigation.setParams({ showDone: index === TAB_UNCOMBINED });
   }
 
   render() {
