@@ -267,13 +267,14 @@ class BlockTimeScreen extends React.Component {
               onChange={this.onChangeBlockBy}
             />
             <InputDivider />
+
             <InputDate
               icon={false}
               style={{ flex: 1 }}
               placeholder="Date"
               minDate={moment().toDate()}
               onPress={this.onPressDate}
-              selectedDate={this.state.selectedDate ? this.state.selectedDate : false}
+              selectedDate={this.state.selectedDate ? moment(this.state.selectedDate).format('MM-DD-YYYY') : false}
             />
           </InputGroup>
 
