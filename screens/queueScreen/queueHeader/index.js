@@ -39,7 +39,7 @@ const options = [
 
   <View style={styles.actionItemContainer}>
     <View style={styles.actionItemLeft}>
-      <Text style={styles.actionItemTitle}>Combine</Text>
+      <Text style={styles.actionItemTitle}>Group</Text>
     </View>
     <View style={styles.actionItemRight}>
       <Icon
@@ -80,12 +80,15 @@ class QueueHeader extends React.Component {
         navigation.navigate(
           'TurnAway',
           {
-            date: moment(), employee: null, apptBook: false,
+            transition: 'SlideFromBottom',
+            date: moment(),
+            employee: null,
+            apptBook: false,
           },
         );
         break;
       case 1:
-        navigation.navigate('QueueCombine');
+        navigation.navigate('QueueCombine', { transition: 'SlideFromBottom' });
         break;
       default:
         break;

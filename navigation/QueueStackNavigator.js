@@ -85,20 +85,18 @@ export const MainNavigator = StackNavigator(
       screen: ClientNotes,
       navigationOptions: { tabBarVisible: false },
     },
-    ClientFormulas: {
-      screen: ClientFormulas,
-      navigationOptions: { tabBarVisible: false },
-    },
     ClientNote: {
       screen: ClientNote,
-      navigationOptions: { tabBarVisible: false },
+
     },
     ClientFormula: {
       screen: ClientFormula,
-      navigationOptions: { tabBarVisible: false },
     },
     ClientCopyFormula: {
       screen: ClientCopyFormulaScreen,
+    },
+    ClientFormulas: {
+      screen: ClientFormulas,
       navigationOptions: { tabBarVisible: false },
     },
     ClientDetails: {
@@ -183,6 +181,7 @@ export const MainNavigator = StackNavigator(
     },
   },
   {
+    transitionConfig: TransitionConfiguration,
     headerMode: 'screen',
     navigationOptions: {
       ...headerStyles,

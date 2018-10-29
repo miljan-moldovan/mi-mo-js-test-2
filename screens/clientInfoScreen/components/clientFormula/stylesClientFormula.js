@@ -35,4 +35,27 @@ export default StyleSheet.create({
   inputButton: { flex: 1 },
   inputGroupAssociated: { flex: 1, flexDirection: 'column' },
   topView: { marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 },
+  leftButtonText: {
+    backgroundColor: 'transparent',
+    paddingLeft: 10,
+    fontSize: 14,
+    color: 'white',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    color: 'white',
+  },
+  rightButtonText: {
+    backgroundColor: 'transparent',
+    paddingRight: 10,
+    fontSize: 14,
+    color: 'white',
+  },
 });

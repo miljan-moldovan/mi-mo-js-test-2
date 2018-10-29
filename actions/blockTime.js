@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { showErrorAlert } from './utils';
 
 import { AppointmentBook } from '../utilities/apiWrapper';
 import { appointmentCalendarActions } from './appointmentBook';
@@ -36,7 +37,7 @@ const postBlockTime = (data, callback) => (dispatch) => {
 
   return AppointmentBook.postAppointmentBookBlockTime(data)
     .then((resp) => { dispatch(postBlockTimeSuccess(resp)); callback(true); })
-    .catch((error) => { dispatch(postBlockTimeFailed(error)); callback(false, error); });
+    .catch((error) => { dispatch(postBlockTimeFailed(error)); showErrorAlert(error); callback(false, error); });
 };
 
 const putBlockTimeEditSuccess = blockTime => ({
@@ -54,7 +55,9 @@ const putBlockTimeEdit = (id, data, callback) => (dispatch) => {
 
   return AppointmentBook.putBlockTimeEdit(id, data)
     .then((resp) => { dispatch(putBlockTimeEditSuccess(resp)); callback(true); })
-    .catch((error) => { dispatch(putBlockTimeEditFailed(error)); callback(false, error); });
+    .catch((error) => {
+      dispatch(putBlockTimeEditFailed(error)); showErrorAlert(error); callback(false, error);
+    });
 };
 
 const putBlockTimeMoveSuccess = (blockTime, oldBlockTime) => {

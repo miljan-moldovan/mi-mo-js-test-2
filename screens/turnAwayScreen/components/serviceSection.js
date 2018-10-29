@@ -24,6 +24,7 @@ class ServiceSection extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      services: props.services,
       date: new Date(),
       service: null,
       index: 0,
@@ -31,6 +32,12 @@ class ServiceSection extends Component {
       isDateTimePickerVisible: false,
       minuteInterval: 15,
     };
+  }
+
+  componentWillRecceiveProps(nextPros) {
+    if (nextPros.services.length > 0) {
+      this.setState({ services: nextPros.services });
+    }
   }
 
   hideDateTimePicker = () => {
@@ -144,7 +151,7 @@ class ServiceSection extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {this.props.services.map((service, index) => this.renderService(service, index))}
+        {this.state.services.map((service, index) => this.renderService(service, index))}
         <SalonTouchableOpacity onPress={this.props.onAdd}>
           <View style={styles.addRow}>
             <FontAwesome style={styles.plusIcon}>{Icons.plusCircle}</FontAwesome>

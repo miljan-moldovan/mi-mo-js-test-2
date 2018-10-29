@@ -188,7 +188,7 @@ class BlockTimeScreen extends React.Component {
 
       handleDone = () => {
         const schedule = {
-          date: this.state.selectedDate.format(DateTimes.serverDateTime),
+          date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
           fromTime: this.state.fromTime.format('HH:mm:ss'),
           toTime: this.state.toTime.format('HH:mm:ss'),
           notes: this.state.comments.length > 0 ? this.state.comments : null,
@@ -204,8 +204,6 @@ class BlockTimeScreen extends React.Component {
             if (result) {
               this.props.appointmentCalendarActions.setGridView();
               this.props.navigation.goBack();
-            } else {
-              alert(error.message);
             }
           });
         } else {
@@ -213,8 +211,6 @@ class BlockTimeScreen extends React.Component {
             if (result) {
               this.props.appointmentCalendarActions.setGridView();
               this.props.navigation.goBack();
-            } else {
-              alert(error.message);
             }
           });
         }
@@ -271,13 +267,14 @@ class BlockTimeScreen extends React.Component {
               onChange={this.onChangeBlockBy}
             />
             <InputDivider />
+
             <InputDate
               icon={false}
               style={{ flex: 1 }}
               placeholder="Date"
               minDate={moment().toDate()}
               onPress={this.onPressDate}
-              selectedDate={this.state.selectedDate ? this.state.selectedDate : false}
+              selectedDate={this.state.selectedDate ? moment(this.state.selectedDate).format('MM-DD-YYYY') : false}
             />
           </InputGroup>
 

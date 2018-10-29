@@ -46,6 +46,8 @@ export default StyleSheet.create({
     lineHeight: 12,
     color: 'white',
   },
-  headerLeftText: { marginTop: 20, fontSize: 14, color: 'white' },
-  headerRightText: { marginTop: 20, fontSize: 14 },
+  headerLeftText: {
+    paddingLeft: 10, marginTop: 20, fontSize: 14, color: 'white',
+  },
+  headerRightText: { paddingRight: 10, marginTop: 20, fontSize: 14 },
 });

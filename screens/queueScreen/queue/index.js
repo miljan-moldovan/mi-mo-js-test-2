@@ -314,6 +314,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
 
       if (trackQueueRemoval) {
         this.props.navigation.navigate('RemovalReasonTypes', {
+          transition: 'SlideFromBottom',
           appointment,
           type: 'walkout',
           ...this.props,
@@ -349,6 +350,7 @@ handlePressWalkOut = (isActiveWalkOut) => {
 
     if (trackQueueRemoval) {
       this.props.navigation.navigate('RemovalReasonTypes', {
+        transition: 'SlideFromBottom',
         appointment,
         type: 'noshow',
         ...this.props,
@@ -603,7 +605,8 @@ searchText = (query: string, searchClient: boolean, searchProvider: boolean) => 
   // search by the client full name
   const filteredData = data.filter(({ client, services }) => {
   //  if (searchClient) {
-    const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+    let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+    fullName = fullName.replace(/ +(?= )/g, '');
     // if this row is a match, we don't need to check providers
     if (fullName.toLowerCase().match(text)) { return true; }
 

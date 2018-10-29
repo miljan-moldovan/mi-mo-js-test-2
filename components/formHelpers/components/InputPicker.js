@@ -65,6 +65,7 @@ export default class InputPicker extends React.Component {
   render() {
     const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
     const noValueStyle = this.props.noValueStyle ? this.props.noValueStyle : {};
+    const placeholder = this.props.placeholder !== undefined ? this.props.placeholder : 'Select';
 
     return (
       <React.Fragment>
@@ -72,7 +73,7 @@ export default class InputPicker extends React.Component {
           labelStyle={labelStyle}
           icon={this.props.noIcon ? false : 'default'}
           label={this.props.label}
-          value={this.state.selectedOption ? this.state.selectedOption.value : 'Select'}
+          value={this.state.selectedOption ? this.state.selectedOption.value : placeholder}
           valueStyle={this.state.selectedOption ? {} : noValueStyle}
           onPress={this.pickerToogle}
           style={styles.noPadding}
@@ -82,12 +83,12 @@ export default class InputPicker extends React.Component {
           <SinglePicker
             buttonCancelStyle={{ color: 'transparent' }}
             buttonAcceptStyle={{
- color: '#0076FF', paddingRight: 10, fontSize: 14, fontWeight: '500',
-}}
+             color: '#0076FF', paddingRight: 10, fontSize: 14, fontWeight: '500',
+            }}
             langs={{
-            BTN_CONFIRM: 'Done',
-            BTN_CANCEL: 'Cancel',
-        }}
+              BTN_CONFIRM: 'Done',
+              BTN_CANCEL: 'Cancel',
+            }}
         // leftItem={<Icon name="chevronLeft" color="#D0021B" size={33} />}
         // rightItem={<Icon name="chevronRight" color="#D0021B" size={33} />}
             headerStyle={{ backgroundColor: '#FAFAF8', borderBottomColor: 'transparent' }}
@@ -96,10 +97,10 @@ export default class InputPicker extends React.Component {
             lang="en-US"
             ref={ref => this.singlePicker = ref}
             onConfirm={(option) => {
-          if (option) {
-            this.onChangeOption(option);
-          }
-        }}
+              if (option) {
+                this.onChangeOption(option);
+              }
+            }}
             options={this.state.options}
           />
       : null }

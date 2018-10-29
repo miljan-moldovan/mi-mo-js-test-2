@@ -40,7 +40,7 @@ export default StyleSheet.create({
   },
   titleContainer: {
     flex: 2,
-    paddingTop: 20,
+    // paddingTop: 20,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',

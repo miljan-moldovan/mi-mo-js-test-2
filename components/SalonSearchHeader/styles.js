@@ -52,7 +52,6 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
-    paddingBottom: 7,
   },
   subTitleText: {
     fontFamily: 'Roboto',

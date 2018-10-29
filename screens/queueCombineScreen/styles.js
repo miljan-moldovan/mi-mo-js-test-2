@@ -99,29 +99,24 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    paddingRight: 10,
   },
   leftButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    paddingLeft: 10,
   },
   titleText: {
     fontFamily: 'Roboto',
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
-
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
   },
   titleContainer: {
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 5,
   },
 });

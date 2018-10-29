@@ -40,7 +40,11 @@ class RemovalReasonTypesScreen extends React.Component {
         </View>),
       headerLeft: (
         <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{ fontSize: 14, color: 'white', paddingLeft: 10, paddingTop: 20,}}>Back</Text>
+          <Text style={{
+ fontSize: 14, color: 'white', paddingLeft: 10, paddingTop: 20,
+}}
+          >Back
+          </Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
@@ -205,11 +209,10 @@ class RemovalReasonTypesScreen extends React.Component {
     const {
       otherReason, provider, isOtherReasonSelected,
     } = this.state;
-
-    let canSave = provider;
+    let canSave = !!provider;
 
     if (isOtherReasonSelected) {
-      canSave = otherReason.length > 0;
+      canSave = canSave && otherReason.length > 0;
     }
 
     this.props.navigation.setParams({ canSave });

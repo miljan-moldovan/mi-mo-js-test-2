@@ -161,7 +161,6 @@ export class QueueCombine extends React.Component {
     selected: (new Map(): Map<string, boolean>),
   }
   componentWillMount() {
-
     this.setState({ data: this.props.data });
 
     for (let i = 0; i < this.props.combinedClients.length; i++) {
@@ -169,7 +168,6 @@ export class QueueCombine extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps: Object) {
-
     if (nextProps.data !== this.props.data) {
       this.setState({ data: nextProps.data });
     }
@@ -339,7 +337,7 @@ export class QueueUncombine extends React.Component {
         <SalonTouchableOpacity onPress={loading ? null : () => this.props.onUncombineClients(section.groupId)} style={styles.sectionUncombine}>
           {loading ? <ActivityIndicator /> : null }
           <Icon name="timesCircle" type="solid" size={10} color={loading ? 'gray' : '#1DBF12'} />
-          <Text style={[styles.sectionUncombineText, loading ? { color: 'gray' } : null]}>UNCOMBINE</Text>
+          <Text style={[styles.sectionUncombineText, loading ? { color: 'gray' } : null]}>UNGROUP</Text>
         </SalonTouchableOpacity>
       </View>
     );
