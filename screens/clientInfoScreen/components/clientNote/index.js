@@ -323,13 +323,13 @@ class ClientNote extends Component {
 
           <InputGroup style={styles.inputGroupDate}>
             <InputDate
-              minDate={moment().format('DD MMMM YYYY')}
+              minDate={moment().format('MM-DD-YYYY')}
               style={styles.inputDate}
               placeholder="Expire Date"
               noIcon={!this.state.note.expiration}
               onPress={this.inputDate}
               valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
-              selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('DD MMMM YYYY')}
+              selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('MM-DD-YYYY')}
             />
           </InputGroup>
         </KeyboardAwareScrollView>
