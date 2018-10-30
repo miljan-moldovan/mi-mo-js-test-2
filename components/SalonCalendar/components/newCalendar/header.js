@@ -41,6 +41,9 @@ const styles = StyleSheet.create({
     color: '#110A24',
     flex: 1,
   },
+  roomText: {
+    textAlign: 'center',
+  },
   columnDay: {
     fontFamily: 'Roboto',
     fontSize: 16,
@@ -94,7 +97,7 @@ export default class Header extends Component {
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
     const borderColor = hasBorder ? colors[data.displayColor].dark : colors[4].dark;
-    
+
     return (
       <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)} underlayColor="rgba(0, 0, 0, 0.5)">
         <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
@@ -130,9 +133,10 @@ export default class Header extends Component {
 
   renderStore = (data, index) => {
     const { cellWidth } = this.props;
+    const textStyle = this.props.selectedFilter === 'rooms' ? [styles.columnTitle, styles.roomText] : styles.columnTitle;
     return (
       <View key={data.id} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
-        <Text numberOfLines={1} style={styles.columnTitle}>{data.name}</Text>
+        <Text numberOfLines={1} style={textStyle}>{data.name}</Text>
       </View>
     );
   }
