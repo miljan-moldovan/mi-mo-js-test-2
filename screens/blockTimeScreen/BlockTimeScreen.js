@@ -274,7 +274,7 @@ class BlockTimeScreen extends React.Component {
               placeholder="Date"
               minDate={moment().toDate()}
               onPress={this.onPressDate}
-              selectedDate={this.state.selectedDate ? moment(this.state.selectedDate).format('MM-DD-YYYY') : false}
+              selectedDate={this.state.selectedDate ? moment(this.state.selectedDate).format('ddd, MM/DD/YY') : false}
             />
           </InputGroup>
 
