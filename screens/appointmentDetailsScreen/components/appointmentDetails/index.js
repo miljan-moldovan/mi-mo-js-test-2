@@ -504,6 +504,7 @@ class AppointmentDetails extends React.Component {
 
     const label = this.getLabel();
     const groupLeaderName = this.getGroupLeaderName(appointment);
+    const color = appointment && appointment.groupId ? this.props.queueState.groups[appointment.groupId].color : null;
 
     return (
       <View style={[styles.container]}>
@@ -529,6 +530,7 @@ class AppointmentDetails extends React.Component {
                           align="flex-start"
                           direction="column"
                           groupLeaderName={groupLeaderName}
+                          color={color}
                         />
                       </View>
                     </View>

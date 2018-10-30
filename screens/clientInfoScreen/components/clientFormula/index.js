@@ -79,7 +79,7 @@ class ClientFormula extends React.Component {
         date: null,
         formulaType: null,
         provider: {},
-        enteredBy: {},
+        enteredBy: this.props.userInfoState.currentEmployee,
         text: '',
       },
       isLoading: true,
@@ -387,6 +387,7 @@ class ClientFormula extends React.Component {
 
 const mapStateToProps = state => ({
   clientFormulasState: state.clientFormulasReducer,
+  userInfoState: state.userInfoReducer,
   settingsState: state.settingsReducer,
   groupedSettings: groupedSettingsSelector(state),
 });
