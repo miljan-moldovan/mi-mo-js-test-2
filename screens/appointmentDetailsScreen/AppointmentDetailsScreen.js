@@ -156,19 +156,30 @@ export default class AppointmentDetailsScreen extends React.Component {
   render() {
     const { isLoading } = this.state;
     const tabViewStyle = { flex: 1 };
+    const client = get(this.params, 'appointment.client', null);
     return (
       <View style={styles.container}>
         {isLoading && <LoadingOverlay />}
-        <TabView
-          style={tabViewStyle}
-          navigationState={this.state}
-          renderScene={this.renderScene}
-          renderTabBar={this.renderHeader}
-          onIndexChange={this.handleIndexChange}
-          initialLayout={initialLayout}
-          swipeEnabled={false}
-          useNativeDriver
-        />
+        {(client && client.id > 1) ?
+          <TabView
+            style={tabViewStyle}
+            navigationState={this.state}
+            renderScene={this.renderScene}
+            renderTabBar={this.renderHeader}
+            onIndexChange={this.handleIndexChange}
+            initialLayout={initialLayout}
+            swipeEnabled={false}
+            useNativeDriver
+          />
+          :
+          <AppointmentDetails
+            navigation={this.props.navigation}
+            isWaiting={this.props.navigation.state.params.isWaiting}
+            onChangeClient={this.onChangeClient}
+            onPressSummary={this.props.navigation.state.params.onPressSummary}
+            {...this.props}
+          />
+        }
       </View>
     );
   }

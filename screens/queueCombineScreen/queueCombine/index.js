@@ -16,24 +16,6 @@ import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEU
 import type { QueueItem } from '../../../models';
 import * as helpers from '../../../reducers/helpers';
 
-// const groupColors = [
-//   { font: '#00E480', background: '#F1FFF2' },
-//   { font: '#F6A623', background: '#FDF7EC' },
-//   { font: '#0095F5', background: '#F5FFFE' },
-//   { font: '#F5E000', background: '#FFFEEF' },
-//   { font: '#EB1D1D', background: '#FEF2F2' },
-//   { font: '#E007D9', background: '#FDF0FD' },
-//   { font: '#B07513', background: '#F2EFE7' },
-//   { font: '#00FBFF', background: '#EDFFFD' },
-//   { font: '#A07FCC', background: '#F6F5FF' },
-//   { font: '#ACEA56', background: '#F5FFE7' },
-//   { font: '#3C58D2', background: '#F1F6FC' },
-//   { font: '#3A5674', background: '#F0F4F8' },
-// ];
-//
-//
-// const groups = {};
-// const assignedColors = [];
 
 class QueueCombineItem extends React.PureComponent {
   _onPress = () => {
@@ -173,6 +155,7 @@ export class QueueCombine extends React.Component {
     }
   }
   searchText = (query: string) => {
+    
     const { data } = this.props;
 
     if (query === '') {
@@ -292,32 +275,76 @@ export class QueueUncombine extends React.Component {
     notificationType: '',
     notificationItem: {},
     selected: (new Map(): Map<string, boolean>),
+    data: [],
   }
+  componentWillMount() {
+    this.setState({ data: this.props.data });
+  }
+
+  componentWillReceiveProps(nextProps: Object) {
+
+
+    if (nextProps.data !== this.props.data) {
+      this.setState({ data: nextProps.data });
+    }
+    if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {
+      this.searchText(nextProps.filterText);
+    }
+  }
+
   _onRefresh = () => {
     this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
     setTimeout(() => this.setState({ refreshing: false }), 500);
   }
-  // _onPressItem = (id: string) => {
-  //
-  //   // updater functions are preferred for transactional updates
-  //   this.setState((state) => {
-  //     const selected = new Map(state.selected);
-  //     selected.set(id, !selected.get(id)); // toggle
-  //
-  //     if (this.props.onChangeCombineClients) {
-  //       const selectedArray = [];
-  //       selected.forEach((value, key)=> {
-  //         if (value)
-  //           selectedArray.push(key);
-  //       });
-  //       this.props.onChangeCombineClients(selectedArray);
-  //     }
-  //
-  //     return {selected};
-  //   });
-  // };
+
+  searchText = (query: string) => {
+
+    const { data } = this.props;
+
+    if (query === '') {
+      this.setState({ data });
+    }
+
+    const text = query.toLowerCase();
+
+    const filteredData = data.filter(({ data }) => {
+
+      const filteredList = data.filter(({ queueItem }) => {
+        const { client, services } = queueItem;
+        let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+        fullName = fullName.replace(/ +(?= )/g, '');
+
+        if (fullName.toLowerCase().match(text)) { return true; }
+
+        for (let i = 0; i < services.length; i++) {
+          const service = services[i];
+
+          const employee = service.isFirstAvailable ?
+            {
+              id: 0, isFirstAvailable: true, fullName: 'First Available',
+            } : service.employee;
+
+          const fullNameProvider = `${employee.fullName || ''}`;
+
+          if (fullNameProvider.toLowerCase().match(text)) { return true; }
+          if (service.serviceName.toLowerCase().match(text)) { return true; }
+        }
+        return false;
+      });
+
+      return filteredList.length > 0;
+    });
+
+    // if no match, set empty array
+    if (!filteredData || !filteredData.length) { this.setState({ data: [] }); }
+    // if the matched numbers are equal to the original data, keep it the same
+    else if (filteredData.length === data.length) { this.setState({ data: this.props.data }); }
+    // else, set the filtered data
+    else { this.setState({ data: filteredData }); }
+  };
+
   _onPressSelectLeader = (id: string, groupId: string) => {
     if (this.props.onChangeLeader) { this.props.onChangeLeader(id, groupId); }
   }
@@ -367,7 +394,7 @@ export class QueueUncombine extends React.Component {
         renderSectionHeader={this.renderSectionHeader}
         renderSectionFooter={this.renderSectionFooter}
         renderItem={this.renderItem}
-        sections={this.props.data}
+        sections={this.state.data}
         extraData={this.state}
         keyExtractor={this._keyExtractor}
         refreshControl={

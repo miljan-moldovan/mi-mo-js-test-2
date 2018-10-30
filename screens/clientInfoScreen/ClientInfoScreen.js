@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   headerLeftText: { fontSize: 14, color: 'white' },
-  headerRightText: { fontSize: 14 },
+  headerRightText: { paddingRight: 10, fontSize: 14 },
   titleText: {
     fontFamily: 'Roboto',
     color: '#fff',
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   backContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    paddingLeft: 10,
   },
 });
 

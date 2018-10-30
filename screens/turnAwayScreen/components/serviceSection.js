@@ -34,7 +34,7 @@ class ServiceSection extends Component {
     };
   }
 
-  componentWillRecceiveProps(nextPros) {
+  componentWillReceiveProps(nextPros) {
     if (nextPros.services.length > 0) {
       this.setState({ services: nextPros.services });
     }
@@ -69,7 +69,8 @@ class ServiceSection extends Component {
   handleProviderSelection = (provider, service, index) => {
     const newService = service;
     newService.provider = provider;
-    newService.myEmployeeId = provider.id;
+
+    newService.myEmployeeId = provider.isFirstAvailable ? null : provider.id;
     this.props.onUpdate(index, newService);
   }
 
