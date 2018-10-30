@@ -563,7 +563,7 @@ class ClientDetails extends Component {
     this.setState({ selectedClient });
   }
 
-  isValidEmailRegExp = regexs.email;
+  isValidEmailRegExp = regexs.emailWillNotProvide;
   isValidZipCodeRegExp = regexs.zipcode;
   isValidPhoneRegExp = regexs.phone;
   isValidText = regexs.notemptytext;
@@ -847,7 +847,7 @@ class ClientDetails extends Component {
                   isValid={this.state.isValidEmail}
                   onValidated={this.onValidateEmail}
                   value={this.state.client.email}
-                  onChangeText={(text) => { this.onChangeClientField('email', text); }}
+                  onChangeText={(text) => { this.onChangeClientField('email', text.toLowerCase()); }}
                   placeholder=""
                   inputStyle={this.state.client.email ? {} : styles.inputStyle}
                 />
