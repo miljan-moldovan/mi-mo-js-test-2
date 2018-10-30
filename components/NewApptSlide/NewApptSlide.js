@@ -896,7 +896,7 @@ class NewApptSlide extends React.Component {
         transparent
         animationType="slide"
       >
-        <View style={[styles.container, { height }]}>
+        <View style={styles.container}>
           {
             toast &&
             <SalonToast
