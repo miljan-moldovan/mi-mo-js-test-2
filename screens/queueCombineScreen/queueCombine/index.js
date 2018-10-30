@@ -114,7 +114,7 @@ class QueueCombineItem extends React.PureComponent {
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = !firstService.isFirstAvailable ? (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase() : 'First Available';
+    const employee = !firstService.isFirstAvailable ? (`${firstService.employee.fullName || ''}`).toUpperCase() : 'First Available';
 
     let color = groupColors[Math.floor(Math.random() * groupColors.length)];
 
@@ -186,10 +186,27 @@ export class QueueCombine extends React.Component {
     }
 
     const text = query.toLowerCase();
-    // search by the client full name
-    const filteredData = data.filter(({ client }) => {
-      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-      return fullName.toLowerCase().match(text);
+
+    const filteredData = data.filter(({ client, services }) => {
+      let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+      fullName = fullName.replace(/ +(?= )/g, '');
+
+      if (fullName.toLowerCase().match(text)) { return true; }
+
+      for (let i = 0; i < services.length; i++) {
+        const service = services[i];
+
+        const employee = service.isFirstAvailable ?
+          {
+            id: 0, isFirstAvailable: true, fullName: 'First Available',
+          } : service.employee;
+
+        const fullNameProvider = `${employee.fullName || ''}`;
+
+        if (fullNameProvider.toLowerCase().match(text)) { return true; }
+        if (service.serviceName.toLowerCase().match(text)) { return true; }
+      }
+      return false;
     });
 
     // if no match, set empty array
