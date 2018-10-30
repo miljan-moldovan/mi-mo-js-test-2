@@ -75,6 +75,7 @@ const defaultClient = {
   email: '',
   confirmBy: null,
   requireCard: null,
+  decline: null,
   confirmationNote: null,
   street1: '',
   city: '',
@@ -95,6 +96,7 @@ class ClientDetails extends Component {
       selectedClient: null,
       selectedReferredClient: SelectedReferredClientEnum.NotAssigned,
       requireCard: false,
+      decline: false,
       hasChanged: false,
       isValidEmail: false,
       isValidZipCode: false,
@@ -713,6 +715,12 @@ class ClientDetails extends Component {
     }
   }
 
+  onChangeDeclineInputSwitch = () => {
+    this.onChangeClientField('email', this.state.decline ? '' : 'will-not-provide');
+    this.onValidateEmail(!this.state.decline);
+    this.setState({ decline: !this.state.decline });
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -850,6 +858,15 @@ class ClientDetails extends Component {
                   onChangeText={(text) => { this.onChangeClientField('email', text.toLowerCase()); }}
                   placeholder=""
                   inputStyle={this.state.client.email ? {} : styles.inputStyle}
+                />
+                <InputDivider />
+
+                <InputSwitch
+                  style={styles.inputSwitch}
+                  textStyle={styles.inputSwitchText}
+                  onChange={this.onChangeDeclineInputSwitch}
+                  value={this.state.decline}
+                  text="Decline"
                 />
                 <InputDivider />
                 {this.renderPhones()}
