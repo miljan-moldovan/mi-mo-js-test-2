@@ -86,6 +86,7 @@ export default StyleSheet.create({
     color: '#727A8F',
     marginLeft: 10,
   },
+  willNotProvideText: { color: '#D1242A', fontFamily: 'Roboto-Medium' },
   deleteText: { color: '#D1242A', fontFamily: 'Roboto-Medium' },
   deleteButton: {
     justifyContent: 'center', alignItems: 'center',

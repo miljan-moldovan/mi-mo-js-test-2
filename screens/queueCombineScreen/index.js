@@ -32,11 +32,25 @@ class QueueCombineScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     const { onPressDone, loading } = params;
+    const showDone = 'showDone' in params ? params.showDone : true;
+    const doneButton = showDone ?
+      (<SalonTouchableOpacity
+        wait={3000}
+        onPress={onPressDone}
+      >
+        <View style={styles.rightButtonContainer}>
+          <Text style={[styles.rightButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+        </View>
+      </SalonTouchableOpacity>)
+      : null;
+    const headerRight = (loading && showDone) ? (
+      <View style={styles.navButton}>
+        <ActivityIndicator />
+      </View>) : (doneButton);
     return {
       headerTitle: (
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>Group</Text>
-          <Text style={styles.subTitleText}>Select clients to group</Text>
         </View>
       ),
       headerLeft: (
@@ -51,22 +65,7 @@ class QueueCombineScreen extends React.Component {
           </View>
         </SalonTouchableOpacity>
       ),
-      headerRight: (
-        loading ? (
-          <View style={styles.navButton}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <SalonTouchableOpacity
-            wait={3000}
-            onPress={onPressDone}
-          >
-            <View style={styles.rightButtonContainer}>
-              <Text style={[styles.rightButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-            </View>
-          </SalonTouchableOpacity>
-        )
-      ),
+      headerRight,
     };
   };
 
@@ -233,7 +232,10 @@ class QueueCombineScreen extends React.Component {
         [groupId]: clientId,
       },
       alertDone: TAB_CHANGE_LEADER,
-    }, this.updateNavButtons);
+    }, () => {
+      this.confirmation();
+    //  this.updateNavButtons
+    });
   }
   toggleSort = () => {
     LayoutAnimation.spring();
@@ -245,6 +247,7 @@ class QueueCombineScreen extends React.Component {
 
   onPressTab = (ev, index) => {
     this.setState({ activeTab: index });
+    this.props.navigation.setParams({ showDone: index === TAB_UNCOMBINED });
   }
 
   render() {
@@ -260,6 +263,7 @@ class QueueCombineScreen extends React.Component {
         onChangeLeader={this.onChangeGroupLeader}
         groupLeaders={groupLeadersTmp} // overrides leaders in groupData - used for leader selection
         loading={this.props.loading}
+        {...this.props}
       />
     );
     return (
@@ -299,6 +303,7 @@ class QueueCombineScreen extends React.Component {
             onChangeCombineClients={this.onChangeCombineClients}
             activeTab={this.state.activeTab}
             filterText={searchText}
+            {...this.props}
           />
         }
         {this.state.activeTab === TAB_COMBINED &&

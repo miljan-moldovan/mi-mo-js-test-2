@@ -112,18 +112,11 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
-
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
   },
   titleContainer: {
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 5,
   },
 });

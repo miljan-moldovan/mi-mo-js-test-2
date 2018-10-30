@@ -184,7 +184,8 @@ const Group = ({
   color = color || { font: '#00E480', background: '#F1FFF2' };
   const leaderInitials = names ? names[0][0] + names[names.length - 1][0] : null;
   return (
-    <View style={[styles.clientGroupContainer, { borderColor: color.font, backgroundColor: color.background, marginBottom: direction === 'column' ? marginBottom : 0 }]}>
+
+    <View style={[styles.clientGroupContainer, { borderColor: color.borderColor, backgroundColor: color.backgroundColor, marginBottom: direction === 'column' ? marginBottom : 0 }]}>
       <View style={styles.clientGroupLabelContainer}>
 
         <FontAwesome style={[{
@@ -201,7 +202,7 @@ const Group = ({
         {leaderInitials && !hideInitials && <Text style={styles.clientGroupLabel}>{leaderInitials}</Text>}
       </View>
       { leader ? (<Text style={[styles.dollarSign, {
- height: '100%', fontWeight: '500', color: '#FFFFFF', backgroundColor: color.font,
+ height: '100%', fontWeight: '500', color: '#FFFFFF', backgroundColor: color.borderColor,
 }]}
       >$
                   </Text>) : null }

@@ -14,24 +14,26 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import * as actions from '../../../actions/queue';
 import { QUEUE_ITEM_FINISHED, QUEUE_ITEM_RETURNING, QUEUE_ITEM_NOT_ARRIVED, QUEUE_ITEM_INSERVICE, QUEUE_ITEM_CHECKEDIN } from '../../../constants/QueueStatus';
 import type { QueueItem } from '../../../models';
+import * as helpers from '../../../reducers/helpers';
 
-const groupColors = [
-  { font: '#00E480', background: '#F1FFF2' },
-  { font: '#A07FCC', background: '#F6F5FF' },
-  { font: '#F6A623', background: '#FDF7EC' },
-  { font: '#F5E000', background: '#FFFEEF' },
-  { font: '#0095F5', background: '#F5FFFE' },
-  { font: '#EB1D1D', background: '#FEF2F2' },
-  { font: '#E007D9', background: '#FDF0FD' },
-  { font: '#B07513', background: '#F2EFE7' },
-  { font: '#00FBFF', background: '#EDFFFD' },
-  { font: '#ACEA56', background: '#F5FFE7' },
-  { font: '#3C58D2', background: '#F1F6FC' },
-  { font: '#3A5674', background: '#F0F4F8' },
-];
-
-const groups = {};
-const assignedColors = [];
+// const groupColors = [
+//   { font: '#00E480', background: '#F1FFF2' },
+//   { font: '#F6A623', background: '#FDF7EC' },
+//   { font: '#0095F5', background: '#F5FFFE' },
+//   { font: '#F5E000', background: '#FFFEEF' },
+//   { font: '#EB1D1D', background: '#FEF2F2' },
+//   { font: '#E007D9', background: '#FDF0FD' },
+//   { font: '#B07513', background: '#F2EFE7' },
+//   { font: '#00FBFF', background: '#EDFFFD' },
+//   { font: '#A07FCC', background: '#F6F5FF' },
+//   { font: '#ACEA56', background: '#F5FFE7' },
+//   { font: '#3C58D2', background: '#F1F6FC' },
+//   { font: '#3A5674', background: '#F0F4F8' },
+// ];
+//
+//
+// const groups = {};
+// const assignedColors = [];
 
 class QueueCombineItem extends React.PureComponent {
   _onPress = () => {
@@ -64,17 +66,20 @@ class QueueCombineItem extends React.PureComponent {
   }
   renderPaymentIcon = (color) => {
     const {
-      selected, item, type, groupLeader,
+      selected, item, type, groupLeader, groups,
     } = this.props;
+
+    const itemColor = color || helpers.generateColorForNewGroup(Object.keys(groups).length);
+
     if (type === 'uncombine' || selected) {
       return (
         <SalonTouchableOpacity onPress={this._onPressSelectLeader} style={styles.dollarSignContainerTouchable}>
-          <View style={[styles.dollarSignContainer, groupLeader ? { backgroundColor: color.font, borderColor: color.font } : { backgroundColor: 'transparent', borderColor: color.font }]}>
+          <View style={[styles.dollarSignContainer, groupLeader ? { backgroundColor: itemColor.borderColor, borderColor: itemColor.borderColor } : { backgroundColor: 'transparent', borderColor: itemColor.borderColor }]}>
             <Icon
               name="dollar"
               type="solid"
               size={10}
-              color={groupLeader ? '#FFFFFF' : color.font}
+              color={groupLeader ? '#FFFFFF' : itemColor.borderColor}
               style={styles.dollarSign}
             />
           </View>
@@ -114,23 +119,12 @@ class QueueCombineItem extends React.PureComponent {
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = !firstService.isFirstAvailable ? (`${firstService.employeeFirstName || ''} ${firstService.employeeLastName || ''}`).toUpperCase() : 'First Available';
+    const employee = !firstService.isFirstAvailable ? (`${firstService.employee.fullName || ''}`).toUpperCase() : 'First Available';
 
-    let color = groupColors[Math.floor(Math.random() * groupColors.length)];
-
-
-    if (item.groupId) {
-      if (groups[item.groupId]) {
-        color = groups[item.groupId];
-      } else {
-        groups[item.groupId] = color;
-      }
-    } else {
-      color = groupColors[0];
-    }
+    const color = item.groupId ? this.props.groups[item.groupId].color : null;
 
     return (
-      <SalonTouchableOpacity style={[styles.itemContainer, type == 'uncombine' ? { backgroundColor: color.background } : null, first]} key={item.id} onPress={this._onPress}>
+      <SalonTouchableOpacity style={[styles.itemContainer, type == 'uncombine' ? { backgroundColor: color.backgroundColor } : null, first]} key={item.id} onPress={this._onPress}>
         {this.renderCheckContainer()}
         <View style={[styles.itemSummary, type == 'uncombine' ? (groupLeader ? styles.itemSummaryCombinedFirst : styles.itemSummaryCombined) : null]}>
           <View style={{ width: '100%' }}>
@@ -186,10 +180,27 @@ export class QueueCombine extends React.Component {
     }
 
     const text = query.toLowerCase();
-    // search by the client full name
-    const filteredData = data.filter(({ client }) => {
-      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-      return fullName.toLowerCase().match(text);
+
+    const filteredData = data.filter(({ client, services }) => {
+      let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+      fullName = fullName.replace(/ +(?= )/g, '');
+
+      if (fullName.toLowerCase().match(text)) { return true; }
+
+      for (let i = 0; i < services.length; i++) {
+        const service = services[i];
+
+        const employee = service.isFirstAvailable ?
+          {
+            id: 0, isFirstAvailable: true, fullName: 'First Available',
+          } : service.employee;
+
+        const fullNameProvider = `${employee.fullName || ''}`;
+
+        if (fullNameProvider.toLowerCase().match(text)) { return true; }
+        if (service.serviceName.toLowerCase().match(text)) { return true; }
+      }
+      return false;
     });
 
     // if no match, set empty array
@@ -247,6 +258,7 @@ export class QueueCombine extends React.Component {
       groupLeader={item.id == this.state.groupLeader}
       item={item}
       type="combine"
+      {...this.props}
     />
   );
 
@@ -326,6 +338,7 @@ export class QueueUncombine extends React.Component {
         item={item.queueItem}
         type="uncombine"
         index={index}
+        {...this.props}
       />
     );
   }
