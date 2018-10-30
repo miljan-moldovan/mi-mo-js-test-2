@@ -5,6 +5,7 @@ import AppointmentDetailsScreen from './AppointmentDetailsScreen';
 
 const mapStateToProps = state => ({
   queueDetailState: state.queueDetailReducer,
+  queueState: state.queue,
 });
 
 const mapActionsToProps = dispatch => ({

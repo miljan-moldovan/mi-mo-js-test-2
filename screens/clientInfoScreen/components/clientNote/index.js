@@ -17,7 +17,7 @@ import {
   InputGroup,
   InputDivider,
   InputSwitch,
-  InputDate,
+  SalonTimePicker,
   SectionDivider,
   SectionTitle,
   InputText,
@@ -74,6 +74,7 @@ class ClientNote extends Component {
     forSales: false,
     forQueue: false,
     forAppointment: false,
+    datePickerOpen: false,
   };
 
   componentWillMount() {
@@ -211,6 +212,10 @@ class ClientNote extends Component {
       this.props.navigation.setParams({ canSave: isNoteValid });
     }
 
+    pickerToogleBirthday = () => {
+      this.setState({ datePickerOpen: !this.state.datePickerOpen });
+    };
+
     saveNote() {
       this.props.navigation.setParams({ canSave: false });
       const { client } = this.props.navigation.state.params;
@@ -321,16 +326,22 @@ class ClientNote extends Component {
           </InputGroup>
           <SectionDivider style={styles.sectionDivider} />
 
-          <InputGroup style={styles.inputGroupDate}>
-            <InputDate
-              minDate={moment().format('MM-DD-YYYY')}
-              style={styles.inputDate}
-              placeholder="Expire Date"
-              noIcon={!this.state.note.expiration}
-              onPress={this.inputDate}
+          <InputGroup>
+
+            <SalonTimePicker
+              minimumDate={moment().toDate()}
+              format="MM-DD-YYYY"
+              label="Expire Date"
+              mode="date"
+              placeholder="Optional"
+              noIcon
+              value={this.state.note.expiration}
+              isOpen={this.state.datePickerOpen}
+              onChange={this.inputDate}
+              toggle={this.pickerToogleBirthday}
               valueStyle={this.state.note.expiration == null ? styles.valueStyleDate : {}}
-              selectedDate={this.state.note.expiration == null ? 'Optional' : moment(this.state.note.expiration).format('MM-DD-YYYY')}
             />
+
           </InputGroup>
         </KeyboardAwareScrollView>
 

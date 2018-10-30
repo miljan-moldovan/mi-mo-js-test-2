@@ -133,6 +133,7 @@ export default class AppointmentDetailsScreen extends React.Component {
         isWaiting={this.props.navigation.state.params.isWaiting}
         onChangeClient={this.onChangeClient}
         onPressSummary={this.props.navigation.state.params.onPressSummary}
+        {...this.props}
       />
     ),
     1: () => (
