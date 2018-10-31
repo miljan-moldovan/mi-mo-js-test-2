@@ -67,6 +67,7 @@ class TurnAwayScreen extends Component {
       provider: {
         id: 0, name: 'First', lastName: 'Available', fullName: 'First Available',
       },
+      myEmployeeId: null,
       service: null,
       fromTime,
       toTime: moment(fromTime).add(step, 'm'),
@@ -135,11 +136,11 @@ class TurnAwayScreen extends Component {
       services.forEach((itm) => { hasInvalid = !this.validateServiceItem(itm); });
     }
 
+
     return hasInvalid;
   }
 
   checkCanSave = () => {
-
     const isTextValid = this.state.isEditableOtherReason ? this.state.otherReason.length > 0 : true;
     if (
       isTextValid &&
@@ -198,14 +199,15 @@ class TurnAwayScreen extends Component {
   }
 
   handleAddService = () => {
-    
     const { apptGridSettings: { step } } = this.props;
     const { employee, startTime } = this.params;
     const services = cloneDeep(this.state.services);
     const fromTime = moment(startTime).add(this.totalDuration);
     const service = {
-      provider: employee,
-      service: null,
+      provider: {
+        id: 0, name: 'First', lastName: 'Available', fullName: 'First Available',
+      },
+      myEmployeeId: null,
       fromTime,
       toTime: moment(fromTime).add(step, 'm'),
       length: moment.duration(step, 'minutes'),
@@ -218,11 +220,11 @@ class TurnAwayScreen extends Component {
     const { startTime } = this.params;
     const services = cloneDeep(this.state.services);
     services.splice(index, 1);
+
     this.setState({ services: this.resetTimeForServices(services, index, startTime) }, this.checkCanSave);
   }
 
   handleUpdateService = (index, updatedService) => {
-
     const { startTime } = this.params;
     const services = cloneDeep(this.state.services);
     const { provider, service } = updatedService;
@@ -269,12 +271,15 @@ class TurnAwayScreen extends Component {
 
   handleRemoveClient = () => this.setState({ selectedClient: null }, this.checkCanSave);
 
-  validateServiceItem = serviceItem => (
-    isMoment(get(serviceItem, 'fromTime', null)) &&
-    isMoment(get(serviceItem, 'toTime', null)) &&
-    !isNull(get(serviceItem, 'provider', null)) &&
-    !isNull(get(serviceItem, 'service', null))
-  )
+  validateServiceItem = (serviceItem) => {
+    const valid = (
+      isMoment(get(serviceItem, 'fromTime', null)) &&
+      isMoment(get(serviceItem, 'toTime', null)) &&
+      !isNull(get(serviceItem, 'provider', null)) &&
+      !isNull(get(serviceItem, 'service', null))
+    );
+    return valid;
+  }
 
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,

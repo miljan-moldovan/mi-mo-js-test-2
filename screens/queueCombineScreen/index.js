@@ -258,6 +258,7 @@ class QueueCombineScreen extends React.Component {
     const uncombined = (
       <QueueUncombine
         data={groupData}
+        filterText={searchText}
         navigation={this.props.navigation}
         onUncombineClients={this.onUncombineClients}
         onChangeLeader={this.onChangeGroupLeader}
