@@ -74,8 +74,6 @@ class ChangeDateTimeScreen extends React.Component {
 
   handleSave = () => {
     const { date, startTime } = this.state;
-    this.props.apptBookActions.setProviderScheduleDates(date, date);
-    this.props.apptBookActions.setGridView();
     setTimeout(() => {
       this.props.newApptActions.setDate(moment(date));
       this.props.newApptActions.setStartTime(moment(startTime, 'hh:mm A'));
@@ -122,7 +120,6 @@ const mapStateToProps = state => ({
   newApptState: state.newAppointmentReducer,
 });
 const mapActionToProps = dispatch => ({
-  apptBookActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
   newApptActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
 });
 export default connect(mapStateToProps, mapActionToProps)(ChangeDateTimeScreen);

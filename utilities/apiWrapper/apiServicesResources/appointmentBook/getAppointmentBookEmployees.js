@@ -15,15 +15,22 @@ export default async (date, filterOptions) => {
     cancelToken: new axios.CancelToken((c) => {
       cancellationToken = c;
     }),
-  }).then(({ data: { response } }) => getEmployeesScheduleDates({ startDate: date, endDate: date, ids: response.map(item => item.id) })
-    .then((scheduleResponse) => {
-      const scheduleDictionary = keyBy(scheduleResponse, 'key');
-      return response.map((item) => {
-        const employeeSchedule = get(scheduleDictionary, [item.id, 'value', 0], null);
-        return Object.assign({}, item, {
-          roomAssignments: employeeSchedule.roomAssignment,
-          assistantAssignment: employeeSchedule.assistantAssignment,
+  }).then(({ data: { response } }) => {
+    if (response && response.length) {
+      return getEmployeesScheduleDates({
+        startDate: date, endDate: date, ids: response.map(item => item.id),
+      })
+        .then((scheduleResponse) => {
+          const scheduleDictionary = keyBy(scheduleResponse, 'key');
+          return response.map((item) => {
+            const employeeSchedule = get(scheduleDictionary, [item.id, 'value', 0], null);
+            return Object.assign({}, item, {
+              roomAssignments: employeeSchedule.roomAssignment,
+              assistantAssignment: employeeSchedule.assistantAssignment,
+            });
+          });
         });
-      });
-    }));
+    }
+    return response;
+  });
 };
