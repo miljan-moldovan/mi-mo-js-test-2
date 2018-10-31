@@ -735,6 +735,7 @@ class NewApptSlide extends React.Component {
         startTime,
         endTime: this.getEndTime(),
         handleGoBack: () => this.showPanel(),
+        handleDone: () => this.showPanel(),
       });
     };
     const onPressConflicts = () => this.hidePanel(conflictsCallback);

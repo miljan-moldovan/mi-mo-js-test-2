@@ -762,6 +762,7 @@ class AppointmentScreen extends Component {
         />
         <SalonAppointmentSlide
           appointments={appointments}
+          showToast={this.props.appointmentCalendarActions.setToast}
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}
