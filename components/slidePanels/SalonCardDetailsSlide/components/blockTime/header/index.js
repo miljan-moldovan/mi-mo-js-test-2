@@ -31,8 +31,8 @@ const blockHeader = ({ appointment }) => (
             <Text style={styles.panelTopRemarksTitle}>Comments</Text>
           </View>
         </View>
-        <View style={[styles.panelTopLine, { alignItems: 'center', minHeight: 25, backgroundColor: '#F1F1F1' }]}>
-          <View style={[styles.panelTopLineLeft, { paddingLeft: 10 }]}>
+        <View style={[styles.panelTopLine, { alignItems: 'center', padding: 2, backgroundColor: '#F1F1F1' }]}>
+          <View style={[styles.panelTopLineLeft, { paddingHorizontal: 5 }]}>
             <Text style={styles.panelTopRemarks}>{appointment.notes}</Text>
           </View>
         </View>

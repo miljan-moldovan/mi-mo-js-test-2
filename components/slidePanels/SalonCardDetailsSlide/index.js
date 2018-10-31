@@ -19,7 +19,6 @@ import { Appointment, ScheduleBlocks } from '../../../utilities/apiWrapper';
 import { getSelectedAppt } from '../../../redux/selectors/appointmentSelector';
 import styles from './styles';
 import InputModal from '../../../components/SalonInputModal';
-import SuccessModal from './components/SuccessModal';
 import ActionSheet from './components/CrossedAppointmentsActionSheet';
 import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
@@ -37,7 +36,6 @@ class SalonCardDetailsSlide extends React.Component {
       appointment: props.appointment,
       auditAppt: [],
       showEditRemarks: false,
-      showEditRemarksSuccess: false,
       appointmentHasBeenChanged: false,
       scrollHeight: 0,
       previousHeight: 0,
@@ -216,7 +214,12 @@ class SalonCardDetailsSlide extends React.Component {
           this.setState({
             appointmentHasBeenChanged: true,
             appointment,
-            showEditRemarksSuccess: true,
+          }, () => {
+            this.props.showToast({
+              description: 'Remarks edited',
+              type: 'green',
+              btnRightText: 'DISMISS',
+            });
           });
         }
       })
@@ -342,12 +345,6 @@ class SalonCardDetailsSlide extends React.Component {
     </View>
   );
 
-  hideShowEditRemarksSuccess = () => {
-    this.setState({
-      showEditRemarksSuccess: false,
-    });
-  }
-
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
     return (
@@ -360,12 +357,6 @@ class SalonCardDetailsSlide extends React.Component {
           description={this.remarksMessage}
           title="Edit Appointment Remarks"
           value={appointment.remarks}
-        />
-
-        <SuccessModal
-          text="Remarks Edited"
-          show={this.state.showEditRemarksSuccess}
-          hide={this.hideShowEditRemarksSuccess}
         />
         <View style={styles.panelContainer}>
           <View style={{ height: this.state.scrollHeight }}>

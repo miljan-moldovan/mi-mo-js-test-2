@@ -96,7 +96,6 @@ class AppointmentScreen extends Component {
     selectedAppointment: null,
     bookAnotherEnabled: false,
     rebookAppointmentEnabled: false,
-    screenHeight: 0,
     selectedApptId: -1,
     goToAppointmentId: null,
     crossedAppointments: [],
@@ -539,13 +538,6 @@ class AppointmentScreen extends Component {
     );
   }
 
-  handleLayout = (event) => {
-    const { height } = event.nativeEvent.layout;
-    if (this.state.screenHeight === 0) {
-      this.setState({ screenHeight: height + 49 });
-    }
-  }
-
   hideApptSlide = () => {
     this.setState({
       visibleAppointment: false,
@@ -618,7 +610,6 @@ class AppointmentScreen extends Component {
       bufferVisible,
       bookAnotherEnabled,
       rebookAppointmentEnabled,
-      screenHeight,
       goToAppointmentId,
       alert,
       crossedAppointmentsIdAfter,
@@ -665,7 +656,6 @@ class AppointmentScreen extends Component {
     return (
       <View
         style={styles.mainContainer}
-        onLayout={this.handleLayout}
       >
         <BarsActionSheet
           ref={item => this.BarsActionSheet = item}
@@ -739,8 +729,6 @@ class AppointmentScreen extends Component {
           />
         )}
         <NewApptSlide
-          ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
-          maxHeight={screenHeight}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           startTime={this.state.newApptStartTime}
@@ -774,6 +762,7 @@ class AppointmentScreen extends Component {
         />
         <SalonAppointmentSlide
           appointments={appointments}
+          showToast={this.props.appointmentCalendarActions.setToast}
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}

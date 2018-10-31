@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000040',
     justifyContent: 'flex-end',
     flex: 1,
+    height: '100%',
   },
   header: {
     backgroundColor: Colors.defaultBlue,
