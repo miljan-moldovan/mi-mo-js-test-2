@@ -58,9 +58,6 @@ export const MainNavigator = createStackNavigator(
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
-      // navigationOptions: {
-      //   tabBarVisible: false,
-      // },
     },
     ApptBookViewOptions: {
       screen: apptBookViewOptions,
@@ -169,14 +166,15 @@ export const MainNavigator = createStackNavigator(
     },
     WalkIn: {
       screen: WalkInScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInHeader rootProps={rootProps} />,
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-        tabBarVisible: false,
-      }),
+      // navigationOptions: rootProps => ({
+      //   ...headerStyles,
+      //   headerTitle: <WalkInHeader rootProps={rootProps} />,
+      //   headerLeft: HeaderLeftText({
+      //     ...rootProps,
+      //     handlePress: () => rootProps.navigation.goBack(),
+      //   }),
+      //   tabBarVisible: false,
+      // }),
     },
     Providers: {
       screen: ProvidersScreen,
@@ -201,11 +199,11 @@ export const MainNavigator = createStackNavigator(
     },
     ClientInfo: {
       screen: ClientInfoScreen,
-      navigationOptions: {
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
     Settings: { screen: SettingsScreen },
     RemovalReasonTypes: {
@@ -347,14 +345,14 @@ const QueueStackNavigator = createStackNavigator(
     },
     WalkIn: {
       screen: WalkInScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInHeader rootProps={rootProps} />,
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-        tabBarVisible: false,
-      }),
+      // navigationOptions: rootProps => ({
+      //   headerTitle: <WalkInHeader rootProps={rootProps} />,
+      //   headerLeft: HeaderLeftText({
+      //     ...rootProps,
+      //     handlePress: () => rootProps.navigation.goBack(),
+      //   }),
+      //   tabBarVisible: false,
+      // }),
     },
     Providers: {
       screen: ProvidersScreen,
@@ -379,11 +377,11 @@ const QueueStackNavigator = createStackNavigator(
     },
     ClientInfo: {
       screen: ClientInfoScreen,
-      navigationOptions: {
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
     Settings: { screen: SettingsScreen },
     RemovalReasonTypes: {
@@ -427,21 +425,21 @@ const QueueStackNavigator = createStackNavigator(
     },
     ModalWalkIn: {
       screen: WalkInScreen,
-      navigationOptions: {
-        headerStyle: {
-          backgroundColor: '#115ECD',
-          paddingBottom: 10,
-          paddingHorizontal: 10,
-        },
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   headerStyle: {
+      //     backgroundColor: '#115ECD',
+      //     paddingBottom: 10,
+      //     paddingHorizontal: 10,
+      //   },
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
   },
   {
     transitionConfig: TransitionConfiguration,
-    headerMode: 'screen', // This ensures we don't get two top bars.
+    headerMode: 'float', // This ensures we don't get two top bars.
   },
 );
 

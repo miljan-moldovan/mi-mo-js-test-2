@@ -14,6 +14,7 @@ import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Colors from '../../constants/Colors';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 const ITEM_HEIGHT = 44;
 const NoneButton = props => (
@@ -35,9 +36,10 @@ NoneButton.propTypes = {
 
 class PromotionsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     title: 'Promotions',
     headerLeft: (
-      <SalonTouchableOpacity onPress={navigation.goBack}>
+      <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
         <Text style={styles.headerButton}>Cancel</Text>
       </SalonTouchableOpacity>
     ),

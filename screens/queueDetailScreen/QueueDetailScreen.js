@@ -8,6 +8,7 @@ import { Button } from 'native-base';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 import styles from './style';
+import headerStyles from '../../constants/headerStyles';
 
 class QueueDetailScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -16,8 +17,8 @@ class QueueDetailScreen extends React.Component {
     const canSave = get(params, 'canSave', true);
     const handleDone = get(params, 'save', (() => null));
     return {
+      ...headerStyles,
       headerTitle: `${name} ${lastName}`,
-      headerTintColor: 'white',
       headerBackTitleStyle: styles.headerButton,
       headerRight: (
         <SalonTouchableOpacity onPress={handleDone} disabled={!canSave}>

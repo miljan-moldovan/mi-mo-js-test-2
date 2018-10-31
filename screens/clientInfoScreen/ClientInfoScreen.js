@@ -13,6 +13,7 @@ import ClientFormulas from './components/clientFormulas';
 import ClientNotes from './components/clientNotes';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import headerStyles from '../../constants/headerStyles';
 
 
 const initialLayout = {
@@ -101,6 +102,7 @@ export default class ClientInfoScreen extends React.Component {
       navigation.goBack;
 
     return ({
+      ...headerStyles,
       headerTitle: (
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>{title}</Text>
@@ -126,7 +128,7 @@ export default class ClientInfoScreen extends React.Component {
           <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
           Done
           </Text>
-        </SalonTouchableOpacity> : null
+                         </SalonTouchableOpacity> : null
       ),
     });
   };

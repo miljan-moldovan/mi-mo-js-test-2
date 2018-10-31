@@ -5,6 +5,7 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 
 // import ApptBookSetEmployeeOrderHeader from './apptBookSetEmployeeOrderHeader';
 import Row from './rowComponent';
+import headerStyles from '../../../constants/headerStyles';
 
 const window = Dimensions.get('window');
 
@@ -20,7 +21,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-
+  leftButton: { paddingLeft: 10 },
+  rightButton: { paddingRight: 10 },
   contentContainer: {
     width: window.width,
   },
@@ -56,6 +58,7 @@ export default class setEmployeesOrder extends React.PureComponent {
 
 
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     headerTitle: (
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
@@ -64,12 +67,12 @@ export default class setEmployeesOrder extends React.PureComponent {
       </View>
     ),
     headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+      <SalonTouchableOpacity wait={3000} style={styles.leftButton} onPress={() => navigation.goBack()}>
         <Text style={styles.leftButtonText}>Cancel</Text>
       </SalonTouchableOpacity>
     ),
     headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+      <SalonTouchableOpacity wait={3000} style={styles.rightButton} onPress={navigation.getParam('handlePress', () => {})}>
         <Text style={styles.rightButtonText}>Done</Text>
       </SalonTouchableOpacity>
     ),

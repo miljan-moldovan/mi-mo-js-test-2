@@ -19,6 +19,7 @@ import {
 } from '../../components/formHelpers';
 import { find, remove } from 'lodash';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 
 class RebookDialogScreen extends Component {
@@ -32,6 +33,7 @@ class RebookDialogScreen extends Component {
     const fullName = 'fullName' in client ? client.fullName : `${client.name} ${client.lastName}`;
 
     return {
+      ...headerStyles,
       headerTitle: (
         <View style={styles.headerTitle}>
           <Text style={styles.headerTitleTitle}>

@@ -35,8 +35,8 @@ export default class ModifyServiceScreen extends React.Component {
     const clientName = params.clientName || '';
     const canSave = get(params, 'canSave', false);
     return {
-      tabBarVisible: false,
       ...headerStyles,
+      tabBarVisible: false,
       headerTitle: (
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>
@@ -60,6 +60,7 @@ export default class ModifyServiceScreen extends React.Component {
       headerRight: (
         <SalonTouchableOpacity
           disabled={!canSave}
+          style={{ paddingRight: 10 }}
           onPress={() => params.handleSave()}
         >
           <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>

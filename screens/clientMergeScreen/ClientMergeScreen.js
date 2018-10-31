@@ -21,8 +21,8 @@ class ClientMergeScreen extends React.Component {
     return {
       header: (
         <SafeAreaView style={{
-justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
-}}
+          justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
+        }}
         >
           <SalonTouchableOpacity style={styles.navButton} onPress={goBack}>
             <Text style={styles.navButtonText}>Cancel</Text>
@@ -35,10 +35,10 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
             <View style={styles.navButton}>
               <ActivityIndicator />
             </View>
-            ) : (
-              <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
-                <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
-              </SalonTouchableOpacity>
+          ) : (
+            <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
+              <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+            </SalonTouchableOpacity>
             )}
 
         </SafeAreaView>
@@ -57,7 +57,7 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
   loadClients() {
     const { params = {} } = this.props.navigation.state;
     const clientId = params.clientId;
-    this.props.clientsActions.getMergeableClients(clientId, (response) => {});
+    this.props.clientsActions.getMergeableClients(clientId, (response) => { });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -102,7 +102,7 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
           this.props.navigation.goBack();
         }
       } else {
-      //  Alert.alert('Error', 'Error merging clients. Please try again.');
+        //  Alert.alert('Error', 'Error merging clients. Please try again.');
       }
     });
   }

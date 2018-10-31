@@ -24,6 +24,7 @@ import {
 } from '../../../components/formHelpers';
 
 import styles from './styles';
+import headerStyles from '../../../constants/headerStyles';
 
 class TurnAwayScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -32,6 +33,7 @@ class TurnAwayScreen extends Component {
     const handleDone = params.handleDone || (() => null);
     const doneButtonStyle = { color: canSave ? '#FFFFFF' : '#19428A' };
     return {
+      ...headerStyles,
       title: 'Turn Away',
       headerLeft: (
         <SalonTouchableOpacity

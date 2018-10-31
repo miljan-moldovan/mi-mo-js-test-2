@@ -11,13 +11,13 @@ export default StyleSheet.create({
   },
   header: {
     backgroundColor: '#115ECD',
-    height: 64,
+    height: 44,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 35,
-    paddingHorizontal: 10,
-    paddingBottom: 8,
+    // paddingTop: 35,
+
+    // paddingBottom: 8,
   },
   topSearchBar: {
     flex: 1,
@@ -68,8 +68,7 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingBottom: 7,
+    // justifyContent: 'flex-start',
   },
   rightButton: {
     flex: 1,

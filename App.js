@@ -95,7 +95,7 @@ export default class App extends Component {
       );
     }
     return (
-      <SafeAreaView style={styles.safeArea} forceInset={{ bottom: 'always' }}>
+      <SafeAreaView style={styles.safeArea} forceInset={{ bottom: 'never' }}>
         <Provider store={store}>
           <View style={styles.container}>
             <OfflineNotice />

@@ -13,8 +13,8 @@ export default StyleSheet.create({
     fontSize: 14,
   },
   sideButtons: {
-    paddingTop: 18,
-    paddingHorizontal: 10,
+    // paddingTop: 18,
+    // paddingHorizontal: 10,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -54,7 +54,6 @@ export default StyleSheet.create({
     fontSize: 10,
   },
   titleContainer: {
-    paddingTop: 25,
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',

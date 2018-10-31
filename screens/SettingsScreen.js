@@ -61,7 +61,7 @@ export default class SettingsScreen extends React.Component {
       Alert.alert('Settings saved!');
       // Keyboard.dismiss();
       // this.refs.secondTextInput.unFocus();
-    //  this.refs.secondTextInput.setNativeProps({ focus: false });
+      //  this.refs.secondTextInput.setNativeProps({ focus: false });
     } catch (error) {
       Alert.alert('Error saving data', JSON.stringify(error));
     }
@@ -92,8 +92,8 @@ export default class SettingsScreen extends React.Component {
           >
 
             <Text style={{
-marginTop: 60, marginBottom: 20, fontSize: 22, fontWeight: '600',
-}}
+              marginTop: 60, marginBottom: 20, fontSize: 22, fontWeight: '600',
+            }}
             >API Settings
             </Text>
             <Item>

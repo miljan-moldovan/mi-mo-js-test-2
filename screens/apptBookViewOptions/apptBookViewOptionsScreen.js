@@ -21,6 +21,7 @@ import Icon from '../../components/UI/Icon';
 import fetchFormCache from '../../utilities/fetchFormCache';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import headerStyles from '../../constants/headerStyles';
 
 const styles = StyleSheet.create({
   modal: {
@@ -37,6 +38,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  leftButton: { paddingLeft: 10 },
+  rightButton: { paddingRight: 10 },
   container: {
     flex: 1,
     width: '100%',
@@ -94,6 +97,7 @@ const SelectedWithRemove = props => (
 
 class ApptBookViewOptionsScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     headerTitle: (
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
@@ -102,12 +106,12 @@ class ApptBookViewOptionsScreen extends Component {
       </View>
     ),
     headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+      <SalonTouchableOpacity wait={3000} style={styles.leftButton} onPress={() => navigation.goBack()}>
         <Text style={styles.leftButtonText}>Cancel</Text>
       </SalonTouchableOpacity>
     ),
     headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+      <SalonTouchableOpacity wait={3000} style={styles.rightButton} onPress={navigation.getParam('handlePress', () => {})}>
         <Text style={styles.rightButtonText}>Done</Text>
       </SalonTouchableOpacity>
     ),

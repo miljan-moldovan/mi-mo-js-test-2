@@ -42,6 +42,7 @@ import { Store, Client, Services } from '../../utilities/apiWrapper';
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 export const SubTitle = props => (
   <View style={[styles.subTitleContainer, props.style || {}]}>
@@ -64,10 +65,11 @@ export default class NewAppointmentScreen extends React.Component {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
     const canSave = screenProps.isNewApptValid;
-    const leftButtonStyle = { marginLeft: 10 };
-    const rightButtonStyle = { marginRight: 10 };
+    const leftButtonStyle = { paddingLeft: 10 };
+    const rightButtonStyle = { paddingRight: 10 };
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return ({
+      ...headerStyles,
       headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
         <SalonTouchableOpacity style={leftButtonStyle} onPress={params.handleCancel}>

@@ -1,8 +1,9 @@
 // @flow
 import React from 'react';
-import { TabNavigator, createBottomTabNavigator,TabBarBottom } from 'react-navigation';
+import { TabNavigator, createBottomTabNavigator, TabBarBottom } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from './../components/UI/Icon';
 
@@ -23,12 +24,11 @@ import getActiveRouteName from '../utilities/helpers/getActiveRouteName';
 import navigationActions from '../actions/navigation';
 import headerStyles from '../constants/headerStyles';
 
-const RootDrawerNavigator = createBottomTabNavigator(
+const RootDrawerNavigator = TabNavigator(
   {
     Queue: { screen: QueueStackNavigator },
     ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
     Clients: { screen: ClientsStackNavigator },
-    //  Settings: { screen: SettingsScreen },
   },
   {
     navigationOptions: ({ navigation, screenProps }) => ({
@@ -65,12 +65,10 @@ const RootDrawerNavigator = createBottomTabNavigator(
         if (previousScene.routeName === 'Clients' && previousScene.route !== scene.route) {
           screenProps.clientsActions.setClients([]);
         }
-        jumpToIndex(scene.index);
+        if (get(scene, 'index', false)) {
+          jumpToIndex(scene.index);
+        }
       },
-      ...headerStyles,
-
-      // header: null,
-      // tabBarVisible: true//screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
       activeTintColor: '#2560C6',
@@ -88,7 +86,7 @@ const RootDrawerNavigator = createBottomTabNavigator(
         zIndex: 0,
       },
     },
-    // tabBarComponent: TabBarBottom,
+    tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: true,
     swipeEnabled: false,

@@ -19,6 +19,7 @@ import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from '../modifyServiceScreen/styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
+import headerStyles from '../../constants/headerStyles';
 
 class ModifyProductScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -27,6 +28,7 @@ class ModifyProductScreen extends React.Component {
     const clientName = params.clientName || '';
     const canSave = true;
     return {
+      ...headerStyles,
       tabBarVisible: false,
       headerTitle: (
         <View style={styles.titleContainer}>
@@ -39,13 +41,14 @@ class ModifyProductScreen extends React.Component {
         </View>
       ),
       headerLeft: (
-        <SalonTouchableOpacity onPress={navigation.goBack}>
+        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
           <Text style={styles.leftButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <SalonTouchableOpacity
           disabled={!canSave}
+          style={{ paddingRight: 10 }}
           onPress={() => params.handleSave()}
         >
           <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>

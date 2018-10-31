@@ -16,6 +16,7 @@ import CategoryServicesList from './components/categoryServicesList';
 import ServiceCategoryList from './components/serviceCategoryList';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 class ServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -51,6 +52,7 @@ class ServicesScreen extends React.Component {
       !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
 
     return {
+      ...headerStyles,
       header: () => (
         <SalonSearchHeader
           title={title}
@@ -60,9 +62,9 @@ class ServicesScreen extends React.Component {
           rightButton={rightButton}
           rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
           hasFilter={false}
-          containerStyle={{
-            paddingHorizontal: 20,
-          }}
+          // containerStyle={{
+          //   paddingHorizontal: 20,
+          // }}
         />
       ),
     };
