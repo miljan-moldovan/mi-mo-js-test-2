@@ -21,6 +21,7 @@ import {
 } from '../../components/formHelpers';
 
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 export default class RoomAssignmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -31,6 +32,7 @@ export default class RoomAssignmentScreen extends React.Component {
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     const employee = params.employee || { name: 'First', lastName: 'Available' };
     return {
+      ...headerStyles,
       headerTitle: (
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitleText}>Room Assignment</Text>

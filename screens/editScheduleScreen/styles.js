@@ -31,6 +31,6 @@ export default StyleSheet.create({
   inputSwitch: { height: 43 },
   inputSwitchText: { color: '#727A8F' },
   sectionTitle: { height: 38 },
-  leftButton: { marginLeft: 10 },
-  rightButton: { marginRight: 10 },
+  leftButton: { paddingLeft: 10 },
+  rightButton: { paddingRight: 10 },
 });

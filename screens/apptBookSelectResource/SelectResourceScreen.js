@@ -14,13 +14,15 @@ import {
   InputLabel,
   InputDivider,
 } from '../../components/formHelpers';
+import headerStyles from '../../constants/headerStyles';
 
 export default class SelectRoomScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     title: 'Assigned Resource',
     headerLeft: (
       <SalonTouchableOpacity
-        style={{ marginLeft: 10 }}
+        style={{ paddingLeft: 10 }}
         onPress={() => navigation.goBack()}
       >
         <Text
@@ -96,14 +98,14 @@ export default class SelectRoomScreen extends React.Component {
         ) : (
           <View style={{ flex: 1 }}>
             <FlatList
-                data={this.state.resources}
-                ItemSeparatorComponent={() => (
-                  <View style={{ paddingLeft: 16 }}>
+              data={this.state.resources}
+              ItemSeparatorComponent={() => (
+                <View style={{ paddingLeft: 16 }}>
                     <InputDivider />
                   </View>
                 )}
-                renderItem={({ item, index }) => this.renderItem(item.name, item)}
-              />
+              renderItem={({ item, index }) => this.renderItem(item.name, item)}
+            />
           </View>
           )}
       </View>

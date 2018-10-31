@@ -11,6 +11,7 @@ import {
   ValidatableInput,
   ProviderInput,
 } from '../../../components/formHelpers';
+import headerStyles from '../../../constants/headerStyles';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,9 +48,10 @@ export default class RecommendProductScreen extends React.Component {
       canSave = params.isValidInfo();
     }
     return {
+      ...headerStyles,
       headerRight: (
         <SalonTouchableOpacity
-          style={{ marginRight: 10 }}
+          style={{ paddingRight: 10 }}
           onPress={() => {
             if (canSave) {
               params.saveInfo();
@@ -62,7 +64,7 @@ export default class RecommendProductScreen extends React.Component {
       ),
       headerLeft: (
         <SalonTouchableOpacity
-          style={{ marginLeft: 10 }}
+          style={{ paddingLeft: 10 }}
           onPress={() => navigation.goBack()}
         >
           <Text style={styles.headerButtons}>Cancel</Text>

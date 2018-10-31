@@ -22,12 +22,54 @@ import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import styles from './stylesClientNotes';
+import Icon from '../../../../components/UI/Icon';
+import HeaderLateral from '../../../../components/HeaderLateral';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
+import headerStyles from '../../../../constants/headerStyles';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
 
 class ClientNotesScreen extends Component {
+  static navigationOptions = rootProps => ({
+    tabBarVisible: false,
+    ...headerStyles,
+    headerTitle: (
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
+        <Text style={styles.subTitleText}>Appointment notes</Text>
+      </View>
+    ),
+    headerLeft: HeaderLateral({
+      handlePress: () => rootProps.navigation.goBack(),
+      button: (
+        <View style={styles.leftButtonContainer}>
+          <Icon
+            name="angleLeft"
+            size={28}
+            style={{ paddingHorizontal: 2 }}
+            color="#fff"
+            type="light"
+          />
+        </View>
+      ),
+    }),
+    headerRight: HeaderLateral({
+      handlePress: () => { alert('Not implemented'); },
+      button: (
+        <View style={styles.rightButtonContainer}>
+          <Icon
+            name="infoCircle"
+            size={20}
+            style={{ paddingHorizontal: 2 }}
+            color="#fff"
+            type="regular"
+          />
+        </View>
+      ),
+    }),
+  })
+
   static flexFilter(list, info) {
     let matchesFilter = [];
     const matches = [];

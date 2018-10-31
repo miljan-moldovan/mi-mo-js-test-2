@@ -10,6 +10,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SelectableServiceList from '../../components/SelectableServiceList';
 
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 const PHONE_WIDTH = Dimensions.get('window').width;
 
@@ -26,6 +27,7 @@ export default class RecommendedServicesScreen extends React.Component {
     };
     const title = PHONE_WIDTH < 375 ? 'Req. Services' : 'Required Services';
     return ({
+      ...headerStyles,
       headerTitle: (
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitleText}>

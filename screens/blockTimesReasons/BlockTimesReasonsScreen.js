@@ -14,10 +14,12 @@ import {
   SectionDivider,
   SectionTitle,
 } from '../../components/formHelpers';
+import headerStyles from '../../constants/headerStyles';
 
 
 class BlockTimesReasonsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     headerTitle: (
       <View style={{
         flexDirection: 'column',
@@ -36,17 +38,17 @@ class BlockTimesReasonsScreen extends React.Component {
         </Text>
       </View>
     ),
-
     headerLeft: (
-      <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={{ paddingLeft: 10, fontSize: 14, color: 'white' }}>Back</Text>
+      <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigation.goBack()}>
+        <Text style={{ fontSize: 14, color: 'white' }}>Back</Text>
       </SalonTouchableOpacity>
     ),
     headerRight: (
       <SalonTouchableOpacity
         onPress={() => {}}
+        style={{ paddingRight: 10 }}
       >
-        <Text style={{ paddingRight: 10, fontSize: 14, color: 'white' }}>
+        <Text style={{ fontSize: 14, color: 'white' }}>
           Modify List
         </Text>
       </SalonTouchableOpacity>

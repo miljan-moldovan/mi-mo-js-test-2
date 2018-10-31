@@ -17,6 +17,7 @@ import {
 import newAppointmentActions from '../../../actions/newAppointment';
 import { appointmentCalendarActions } from '../../../actions/appointmentBook';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
+import headerStyles from '../../../constants/headerStyles';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,14 +29,15 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   mediumBold: { fontFamily: 'Roboto-Medium' },
-  rightButton: { marginRight: 10 },
-  leftButton: { marginLeft: 10 },
+  rightButton: { paddingRight: 10 },
+  leftButton: { paddingLeft: 10 },
 });
 
 class ChangeDateTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const rightButtonOnPress = () => navigation.state.params.handleSave();
     return {
+      ...headerStyles,
       headerTitle: 'Change Date/Time',
       headerLeft: (
         <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>

@@ -91,7 +91,7 @@ class SalonSearchHeader extends React.Component {
                   this.props.rightButton ?
                     (
                       <SalonTouchableOpacity
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, paddingRight: 10 }}
                         onPress={this.props.rightButtonOnPress}
                       >
                         {this.props.rightButton}

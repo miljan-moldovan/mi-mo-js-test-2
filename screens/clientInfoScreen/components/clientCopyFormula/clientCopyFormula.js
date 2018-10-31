@@ -15,6 +15,7 @@ import {
   InputGroup,
   InputRadioGroup,
 } from '../../../../components/formHelpers';
+import headerStyles from '../../../../constants/headerStyles';
 
 const formulaTypes = [
   { id: formulaTypesEnum.Color, name: 'Color' },
@@ -41,6 +42,7 @@ class ClientCopyFormula extends Component {
       () => { alert('Not Implemented'); };
 
     return ({
+      ...headerStyles,
       headerTitle: (
         <View style={styles.headerTitle}>
           <Text style={styles.headerTitleTitle}>Copy Formula</Text>
@@ -50,6 +52,7 @@ class ClientCopyFormula extends Component {
       headerLeft: (
         <SalonTouchableOpacity
           onPress={navigation.goBack}
+          style={{ paddingLeft: 10 }}
         >
           <Text style={styles.headerLeftText}>
               Cancel
@@ -58,6 +61,7 @@ class ClientCopyFormula extends Component {
       ),
       headerRight: (
         <SalonTouchableOpacity
+          style={{ paddingRight: 10 }}
           disabled={!canSave}
           onPress={handleDone}
         >

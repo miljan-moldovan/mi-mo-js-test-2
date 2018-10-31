@@ -21,6 +21,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import OthersTab from './components/OthersTab';
 import DeskStaffTab from './components/DeskStaffTab';
 import { InputButton, DefaultAvatar } from '../../components/formHelpers';
+import headerStyles from '../../constants/headerStyles';
 
 
 const TAB_PROVIDERS = 0;
@@ -97,9 +98,10 @@ const ViewAllProviders = ({
 
 export default class FilterOptionsScreen extends React.Component {
   static navigationOptions = rootProps => ({
+    ...headerStyles,
     title: 'Filter Options',
     headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => rootProps.navigation.state.params.handleReset()}>
+      <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => rootProps.navigation.state.params.handleReset()}>
         <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
           Reset
         </Text>

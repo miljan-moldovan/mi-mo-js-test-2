@@ -86,102 +86,101 @@ const AppointmentStackNavigator = createStackNavigator(
     },
     EditSchedule: {
       screen: EditScheduleScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     RecommendProduct: {
       screen: RecommendProductScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <RecommendProductHeader rootProps={rootProps} />,
-        tabBarVisible: false,
-      }),
+      // navigationOptions: rootProps => ({
+      //   headerTitle: <RecommendProductHeader rootProps={rootProps} />,
+      //   tabBarVisible: false,
+      // }),
     },
     BlockTime: {
       screen: BlockTimeScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     BlockTimesReasons: {
       screen: BlockTimesReasonsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     TurnAway: {
       screen: TurnAwayScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     AddonServices: {
       screen: AddonServicesScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     RecommendedServices: {
       screen: RecommendedServicesScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     RequiredServices: {
       screen: RequiredServicesScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     RepeatsOn: {
       screen: RepeatsOnScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     FilterOptions: {
       screen: FilterOptionsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     FilterByPosition: {
       screen: FilterByPositionScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     FilterByCompany: {
       screen: FilterByCompanyScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ServiceCheck: {
       screen: ServiceCheckScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ServiceCheckResult: {
       screen: ServiceCheckResultScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     Appointments: {
       screen: AppointmentScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     RebookDialog: {
       screen: RebookDialogScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     Conflicts: {
       screen: ConflictsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ChangeNewApptDateTime: {
       screen: ChangeDateTimeScreen,
-      navigationOptions: { tabBarVisible: false },
     },
     RoomAssignment: {
       screen: RoomAssignmentScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ApptBookClient: {
       screen: ClientsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ApptBookService: {
       screen: ServicesScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ApptBookProvider: {
       screen: ProvidersScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     SelectRoom: {
       screen: SelectRoomScreen,
@@ -192,73 +191,34 @@ const AppointmentStackNavigator = createStackNavigator(
     ClientNotes: {
       screen: ClientNotes,
       // navigationOptions: { tabBarVisible: false },
-      navigationOptions: rootProps => ({
-        tabBarVisible: false,
-        headerStyle: styles.headerStyle,
-        headerTitle: (
-          <View style={styles.titleContainer}>
-            <Text style={styles.titleText}>{`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}</Text>
-            <Text style={styles.subTitleText}>Appointment notes</Text>
-          </View>
-        ),
-        headerLeft: HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={styles.leftButtonContainer}>
-              <Icon
-                name="angleLeft"
-                size={28}
-                style={{ paddingHorizontal: 2 }}
-                color="#fff"
-                type="light"
-              />
-            </View>
-          ),
-        }),
-        headerRight: HeaderLateral({
-          handlePress: () => { alert('Not implemented'); },
-          button: (
-            <View style={styles.rightButtonContainer}>
-              <Icon
-                name="infoCircle"
-                size={20}
-                style={{ paddingHorizontal: 2 }}
-                color="#fff"
-                type="regular"
-              />
-            </View>
-          ),
-        }),
-      }),
-
     },
     ClientFormulas: {
       screen: ClientFormulas,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ClientNote: {
       screen: ClientNote,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ClientFormula: {
       screen: ClientFormula,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ClientCopyFormula: {
       screen: ClientCopyFormulaScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ClientInfo: {
       screen: ClientInfoScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     NewClient: {
       screen: NewClientScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     Services: {
       screen: ServicesScreen,
@@ -285,7 +245,7 @@ const AppointmentStackNavigator = createStackNavigator(
     },
     CancelAppointmentScreen: {
       screen: CancelAppointmentScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: { tabBarVisible: false },
     },
     ShowApptScreen: {
       screen: ShowApptScreen,
@@ -293,7 +253,7 @@ const AppointmentStackNavigator = createStackNavigator(
   },
   {
     transitionConfig: TransitionConfiguration,
-    headerMode: 'none',
+    headerMode: 'float',
   },
 );
 
@@ -301,7 +261,6 @@ AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
   const { state } = navigation;
 
   let tabBarVisible = true;
-
 
 
   const hideTabBar = state.routes[state.routes.length - 1].params ?

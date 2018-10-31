@@ -28,6 +28,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { Label } from '../../node_modules/native-base';
 
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 export default class ModifyApptServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -43,14 +44,16 @@ export default class ModifyApptServiceScreen extends React.Component {
     const buttonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,.3)' };
     const buttonOnPress = () => (canSave ? handleSave() : null);
     return {
+      ...headerStyles,
       title,
       headerLeft: (
-        <SalonTouchableOpacity onPress={navigation.goBack}>
+        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
           <Text style={styles.headerButton}>Cancel</Text>
         </SalonTouchableOpacity>
       ),
       headerRight: (
         <SalonTouchableOpacity
+          style={{ paddingRight: 10 }}
           onPress={buttonOnPress}
           disabled={!canSave}
         >

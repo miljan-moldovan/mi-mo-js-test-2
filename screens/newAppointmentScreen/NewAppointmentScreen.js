@@ -822,7 +822,7 @@ export default class NewAppointmentScreen extends React.Component {
               noAvatar
               label="Booked by"
               placeholder={false}
-              showFirstAvailable={editType === 'new'}
+              showFirstAvailable={false}
               icon={isBookedByFieldEnabled ? 'default' : false}
               selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
               selectedProvider={bookedByEmployee}

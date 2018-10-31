@@ -14,6 +14,7 @@ import {
   InputButton,
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
+import headerStyles from '../../constants/headerStyles';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
 
 export default class RepeatsOnScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     title: 'Repeats On',
   });
 

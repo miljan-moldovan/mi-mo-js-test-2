@@ -20,6 +20,7 @@ import {
 import SchedulePicker from '../../components/formHelpers/components/SchedulePicker';
 import styles from './styles';
 import ScheduleTypesEnum from '../../constants/ScheduleTypes';
+import headerStyles from '../../constants/headerStyles';
 
 const scheduleTypes = [
   { id: ScheduleTypesEnum.Personal, name: 'Personal' },
@@ -36,6 +37,7 @@ class EditScheduleScreen extends React.Component {
     const employee = params.employee || { name: 'First', lastName: 'Available' };
 
     return {
+      ...headerStyles,
       headerTitle: (
         <View style={styles.headerTitle}>
           <Text style={styles.headerTitleTitle}>
@@ -46,7 +48,6 @@ class EditScheduleScreen extends React.Component {
           </Text>
         </View>
       ),
-
       headerLeft: (
         <SalonTouchableOpacity style={styles.leftButton} onPress={() => navigation.goBack()}>
           <Text style={styles.headerLeftText}>Cancel</Text>

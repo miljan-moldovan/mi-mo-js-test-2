@@ -17,6 +17,7 @@ import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSour
 import LoadingOverlay from '../../components/LoadingOverlay';
 
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
 
 export default class ServiceCheckResultScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -25,6 +26,7 @@ export default class ServiceCheckResultScreen extends React.Component {
     const serviceName = params.selectedService.name;
     const doneFunc = () => navigation.state.params.handleDone();
     return ({
+      ...headerStyles,
       headerTitle: (
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitleText}>{employeeName}</Text>

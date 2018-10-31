@@ -13,6 +13,7 @@ import { Store } from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import headerStyles from '../../constants/headerStyles';
 
 
 const styles = StyleSheet.create({
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
   },
   leftButtonText: {
     backgroundColor: 'transparent',
-    paddingLeft: 10,
     fontSize: 14,
     color: 'white',
   },
@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
   },
   rightButtonText: {
     backgroundColor: 'transparent',
-    paddingRight: 10,
     fontSize: 14,
     color: 'white',
   },
@@ -89,6 +88,7 @@ const styles = StyleSheet.create({
 
 export default class FilterByCompanyScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
+    ...headerStyles,
     headerTitle: (
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
@@ -97,12 +97,12 @@ export default class FilterByCompanyScreen extends React.Component {
       </View>
     ),
     headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
+      <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => navigation.goBack()}>
         <Text style={styles.leftButtonText}>Cancel</Text>
       </SalonTouchableOpacity>
     ),
     headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleSave', () => {})}>
+      <SalonTouchableOpacity style={{ paddingRight: 10 }} wait={3000} onPress={navigation.getParam('handleSave', () => {})}>
         <Text style={styles.rightButtonText}>Done</Text>
       </SalonTouchableOpacity>
     ),
