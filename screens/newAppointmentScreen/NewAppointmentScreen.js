@@ -592,6 +592,13 @@ export default class NewAppointmentScreen extends React.Component {
         type: 'green',
         btnRightText: 'DISMISS',
       });
+
+      const params = this.props.navigation.state.params || {};
+      const rebook = params.rebook || false;
+
+      if (rebook) {
+        params.onFinishRebook();
+      }
     };
     const errorCallback = () => this.checkConflicts();
     this.shouldUpdateClientInfo();

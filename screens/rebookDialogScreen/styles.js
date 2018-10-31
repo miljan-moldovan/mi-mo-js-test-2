@@ -33,8 +33,8 @@ export default StyleSheet.create({
     lineHeight: 12,
     color: 'white',
   },
-  headerLeftText: { fontSize: 14, color: 'white' },
-  headerRightText: { fontSize: 14 },
+  headerLeftText: { paddingLeft: 10, fontSize: 14, color: 'white' },
+  headerRightText: { paddingRight: 10, fontSize: 14 },
   activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   container: {
     flex: 1,

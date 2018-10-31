@@ -113,10 +113,19 @@ class AppointmentScreen extends Component {
 
     this.props.appointmentCalendarActions.setGridView();
 
+    this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.loadRebookData();
+      },
+    );
+  }
 
+  loadRebookData = () => {
     const { params } = this.props.navigation.state;
 
-    if (params && 'rebookAppointment' in params) {
+
+    if (params && 'rebookAppointment' in params && params.rebookAppointment) {
       this.selectFilter('providers', 'all');
 
       const { newAppointmentActions, appointmentCalendarActions } = this.props;
@@ -205,6 +214,10 @@ class AppointmentScreen extends Component {
   }
 
   onCardPressed = (appointment) => {
+    if (this.state.rebookAppointmentEnabled) {
+      return;
+    }
+
     const { allCrossedAppointments, appointmentAfter } = appointmentOverlapHelper(
       this.props.appointments,
       this.props.blockTimes,
@@ -277,7 +290,13 @@ class AppointmentScreen extends Component {
 
       newAppointmentActions.cleanForm();
       newAppointmentActions.populateStateFromRebookAppt(selectedAppointment, services, mainEmployee, date, startTime);
-      this.props.navigation.navigate('NewAppointment', { rebook: true });
+      this.props.navigation.navigate('NewAppointment', {
+        rebook: true,
+        onFinishRebook: () => {
+          this.setRebookAppointment(false);
+          this.props.navigation.setParams({ hideTabBar: false });
+        },
+      });
       newAppointmentActions.isBookingQuickAppt(false);
     } else {
       newAppointmentActions.isBookingQuickAppt(true);
@@ -305,9 +324,11 @@ class AppointmentScreen extends Component {
   setBookAnother = () => this.setState({ bookAnotherEnabled: false });
 
   setRebookAppointment = () => {
+    this.props.navigation.setParams({ hideTabBar: false, rebookAppointment: false });
+
     this.setState({ rebookAppointmentEnabled: false }, () => {
       this.selectFilter('providers', 'all');
-      // this.props.appointmentCalendarActions.setGridView();
+      this.props.appointmentCalendarActions.setGridView();
     });
   };
 
@@ -348,11 +369,15 @@ class AppointmentScreen extends Component {
     this.setState({
       rebookAppointmentEnabled,
     });
+    this.props.appointmentCalendarActions.setGridView();
+
+    this.props.navigation.setParams({ hideTabBar: false });
   }
 
   handleRebookAppt = (appointment) => {
     if (appointment !== null) {
       this.hideApptSlide();
+
       this.props.navigation.setParams({ hideTabBar: false });
       this.props.navigation.navigate('RebookDialog', {
         appointment,
