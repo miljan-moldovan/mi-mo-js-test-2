@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Picker, DatePicker } from 'react-native-wheel-datepicker';
@@ -799,7 +800,7 @@ export default class NewAppointmentScreen extends React.Component {
     return (
       <View style={styles.container}>
         {(isLoading || isBooking) ? <LoadingOverlay /> : null}
-        <ScrollView style={styles.container}>
+        <KeyboardAwareScrollView style={styles.container}>
           <InputGroup style={{ marginTop: 15 }}>
             <ProviderInput
               apptBook
@@ -1075,7 +1076,7 @@ export default class NewAppointmentScreen extends React.Component {
               onChangeText={this.onChangeRemarks}
             />
           </InputGroup>
-        </ScrollView>
+        </KeyboardAwareScrollView>
         {
           toast ? (
             <SalonToast
