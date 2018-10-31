@@ -96,7 +96,6 @@ class AppointmentScreen extends Component {
     selectedAppointment: null,
     bookAnotherEnabled: false,
     rebookAppointmentEnabled: false,
-    screenHeight: 0,
     selectedApptId: -1,
     goToAppointmentId: null,
     crossedAppointments: [],
@@ -114,7 +113,15 @@ class AppointmentScreen extends Component {
 
     this.props.appointmentCalendarActions.setGridView();
 
+    this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.loadRebookData();
+      },
+    );
+  }
 
+  loadRebookData = () => {
     const { params } = this.props.navigation.state;
 
     if (params && 'rebookAppointment' in params) {
@@ -206,6 +213,10 @@ class AppointmentScreen extends Component {
   }
 
   onCardPressed = (appointment) => {
+    if (this.state.rebookAppointmentEnabled) {
+      return;
+    }
+
     const { allCrossedAppointments, appointmentAfter } = appointmentOverlapHelper(
       this.props.appointments,
       this.props.blockTimes,
@@ -278,7 +289,13 @@ class AppointmentScreen extends Component {
 
       newAppointmentActions.cleanForm();
       newAppointmentActions.populateStateFromRebookAppt(selectedAppointment, services, mainEmployee, date, startTime);
-      this.props.navigation.navigate('NewAppointment', { rebook: true });
+      this.props.navigation.navigate('NewAppointment', {
+        rebook: true,
+        onFinishRebook: () => {
+          this.setRebookAppointment(false);
+          this.props.navigation.setParams({ hideTabBar: false });
+        },
+      });
       newAppointmentActions.isBookingQuickAppt(false);
     } else {
       newAppointmentActions.isBookingQuickAppt(true);
@@ -306,8 +323,10 @@ class AppointmentScreen extends Component {
   setBookAnother = () => this.setState({ bookAnotherEnabled: false });
 
   setRebookAppointment = () => {
+    this.props.navigation.setParams({ hideTabBar: false });
+
     this.setState({ rebookAppointmentEnabled: false }, () => {
-      this.selectFilter('providers', 'all');
+      // this.selectFilter('providers', 'all');
       // this.props.appointmentCalendarActions.setGridView();
     });
   };
@@ -349,11 +368,15 @@ class AppointmentScreen extends Component {
     this.setState({
       rebookAppointmentEnabled,
     });
+    this.props.appointmentCalendarActions.setGridView();
+
+    this.props.navigation.setParams({ hideTabBar: false });
   }
 
   handleRebookAppt = (appointment) => {
     if (appointment !== null) {
       this.hideApptSlide();
+
       this.props.navigation.setParams({ hideTabBar: false });
       this.props.navigation.navigate('RebookDialog', {
         appointment,
@@ -539,13 +562,6 @@ class AppointmentScreen extends Component {
     );
   }
 
-  handleLayout = (event) => {
-    const { height } = event.nativeEvent.layout;
-    if (this.state.screenHeight === 0) {
-      this.setState({ screenHeight: height + 49 });
-    }
-  }
-
   hideApptSlide = () => {
     this.setState({
       visibleAppointment: false,
@@ -618,7 +634,6 @@ class AppointmentScreen extends Component {
       bufferVisible,
       bookAnotherEnabled,
       rebookAppointmentEnabled,
-      screenHeight,
       goToAppointmentId,
       alert,
       crossedAppointmentsIdAfter,
@@ -665,7 +680,6 @@ class AppointmentScreen extends Component {
     return (
       <View
         style={styles.mainContainer}
-        onLayout={this.handleLayout}
       >
         <BarsActionSheet
           ref={item => this.BarsActionSheet = item}
@@ -739,8 +753,6 @@ class AppointmentScreen extends Component {
           />
         )}
         <NewApptSlide
-          ref={(newApptSlide) => { this.newApptSlide = newApptSlide; }}
-          maxHeight={screenHeight}
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}
           startTime={this.state.newApptStartTime}
@@ -774,6 +786,7 @@ class AppointmentScreen extends Component {
         />
         <SalonAppointmentSlide
           appointments={appointments}
+          showToast={this.props.appointmentCalendarActions.setToast}
           navigation={this.props.navigation}
           visible={this.state.visibleAppointment}
           appointmentId={this.state.selectedApptId}

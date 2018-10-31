@@ -735,6 +735,7 @@ class NewApptSlide extends React.Component {
         startTime,
         endTime: this.getEndTime(),
         handleGoBack: () => this.showPanel(),
+        handleDone: () => this.showPanel(),
       });
     };
     const onPressConflicts = () => this.hidePanel(conflictsCallback);
@@ -896,7 +897,7 @@ class NewApptSlide extends React.Component {
         transparent
         animationType="slide"
       >
-        <View style={[styles.container, { height }]}>
+        <View style={styles.container}>
           {
             toast &&
             <SalonToast

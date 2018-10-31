@@ -38,4 +38,10 @@ export default {
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
   },
+  panelTopRemarks: {
+    color: '#727A8F',
+    fontSize: 11,
+    fontFamily: 'Roboto',
+    backgroundColor: 'transparent',
+  },
 };

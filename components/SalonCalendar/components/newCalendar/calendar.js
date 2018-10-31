@@ -679,7 +679,7 @@ export default class Calendar extends Component {
           startTime: fromTime,
           endTime: toTime,
           conflicts,
-          handleGoBack: () => this.props.onResize(id, params, oldAppointment),
+          handleDone: () => this.props.onResize(id, params, oldAppointment),
           headerProps: {
             btnRightText: 'Resize anyway',
           },
@@ -714,7 +714,7 @@ export default class Calendar extends Component {
           startTime: fromTime,
           endTime: toTime,
           conflicts,
-          handleGoBack: () => this.props.onResizeBlock(id, params, oldAppointment),
+          handleDone: () => this.props.onResizeBlock(id, params, oldAppointment),
           headerProps: {
             btnRightText: 'Resize anyway',
           },
@@ -793,7 +793,7 @@ export default class Calendar extends Component {
           startTime: newTime,
           endTime: newToTime,
           conflicts,
-          handleGoBack: () => onDrop(
+          handleDone: () => onDrop(
             id,
             {
               date,
@@ -867,7 +867,7 @@ export default class Calendar extends Component {
           startTime: newTime,
           endTime: newToTime,
           conflicts,
-          handleGoBack: () => onDropBlock(
+          handleDone: () => onDropBlock(
             id,
             {
               date,

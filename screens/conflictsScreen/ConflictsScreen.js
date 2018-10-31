@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: '500',
   },
-  rightButton: { marginRight: 10 },
-  leftButton: { marginLeft: 10 },
+  rightButton: { paddingRight: 10 },
+  leftButton: { paddingLeft: 10 },
 });
 
 export default class ConflictsScreen extends React.Component {
@@ -109,6 +109,12 @@ export default class ConflictsScreen extends React.Component {
     const { params } = navigation.state;
     const hasheaderProps = params && params.headerProps;
     const onRightPress = () => {
+      if (navigation.state.params.handleDone) {
+        navigation.state.params.handleDone();
+      }
+      navigation.goBack();
+    };
+    const onLeftPress = () => {
       if (navigation.state.params.handleGoBack) {
         navigation.state.params.handleGoBack();
       }
@@ -148,17 +154,12 @@ export default class ConflictsScreen extends React.Component {
 
     const { params } = this.props.navigation.state;
 
-    this.props.navigation.setParams({ handleDone: this.handleDone });
     this.state = {
       date: params.date,
       startTime: params.startTime,
       endTime: params.endTime,
       conflicts: params.conflicts,
     };
-  }
-
-  handleDone = () => {
-    this.props.navigation.state.params.handleGoBack();
   }
 
   renderSeparator = () => (
