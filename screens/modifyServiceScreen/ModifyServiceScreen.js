@@ -27,6 +27,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import Icon from '../../components/UI/Icon';
+import headerStyles from '../../constants/headerStyles';
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -35,6 +36,7 @@ export default class ModifyServiceScreen extends React.Component {
     const canSave = get(params, 'canSave', false);
     return {
       tabBarVisible: false,
+      ...headerStyles,
       headerTitle: (
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>

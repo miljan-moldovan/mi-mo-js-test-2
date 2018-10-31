@@ -1,4 +1,5 @@
 import React from 'react';
+import { Header } from 'react-navigation';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { get } from 'lodash';
@@ -11,6 +12,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '../../components/UI/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
+import headerStyles from '../../constants/headerStyles';
 import styles from './styles';
 
 const initialLayout = {
@@ -25,6 +27,7 @@ export default class AppointmentDetailsScreen extends React.Component {
     const title = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
     const infoButtonStyle = { fontSize: 18, color: 'white' };
     return {
+      ...headerStyles,
       title,
       headerLeft: (
         <SalonTouchableOpacity

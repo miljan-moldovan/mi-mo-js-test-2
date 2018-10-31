@@ -37,7 +37,7 @@ export default class RecommendedServicesScreen extends React.Component {
         </View>
       ),
       headerLeft: showCancelButton ? (
-        <SalonTouchableOpacity onPress={() => handleGoBack()}>
+        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => handleGoBack()}>
           <Text style={styles.headerButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
       ) : null,

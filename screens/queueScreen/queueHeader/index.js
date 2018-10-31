@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { SafeAreaView } from 'react-navigation';
+// import { View } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -122,8 +122,11 @@ class QueueHeader extends React.Component {
     this.BarsActionSheet = item;
   }
   render() {
+    if (this.props.navigationState.currentRoute !== 'Main') {
+      return null;
+    }
     return this.props.searchMode ? (
-      <SafeAreaView style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
+      <View style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
 
         <View style={styles.searchContainer}>
           {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
@@ -134,9 +137,9 @@ class QueueHeader extends React.Component {
           <Text style={[styles.navButtonText, { color: 'white', marginRight: 6, marginLeft: 6 }]}>Cancel</Text>
         </SalonTouchableOpacity>
 
-      </SafeAreaView>
+      </View>
     ) : (
-      <SafeAreaView style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
+      <View style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
 
         <SalonActionSheet
           ref={o => this.SalonActionSheet = o}
@@ -177,7 +180,7 @@ class QueueHeader extends React.Component {
           <QueueNavButton type="solid" icon="ellipsisH" onPress={this.showActionSheet} style={{ marginRight: 20, paddingTop: 5 }} />
           <QueueNavButton type="solid" icon="search" onPress={this.onSearchPress} style={{ marginRight: 2, paddingTop: 5 }} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }
@@ -196,11 +199,16 @@ QueueHeader.propTypes = {
   storeActions: PropTypes.shape({
     reselectMainStore: PropTypes.func.isRequired,
   }).isRequired,
+  navigationState: PropTypes.shape({
+    currentRoute: PropTypes.string,
+  }).isRequired,
 };
 
+const mapStateToProps = state => ({
+  navigationState: state.navigationReducer,
+});
 const mapActionToProps = dispatch => ({
   auth: bindActionCreators({ ...loginActions }, dispatch),
   storeActions: bindActionCreators({ ...storeActions }, dispatch),
 });
-
-export default connect(null, mapActionToProps)(QueueHeader);
+export default connect(mapStateToProps, mapActionToProps)(QueueHeader);

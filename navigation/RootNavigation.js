@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { TabNavigator, TabBarBottom } from 'react-navigation';
+import { TabNavigator, createBottomTabNavigator,TabBarBottom } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
@@ -19,8 +19,11 @@ import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
 import SelectStoreStackNavigator from './SelectStoreStackNavigator';
 import rootDrawerNavigatorAction from '../actions/rootDrawerNavigator';
+import getActiveRouteName from '../utilities/helpers/getActiveRouteName';
+import navigationActions from '../actions/navigation';
+import headerStyles from '../constants/headerStyles';
 
-const RootDrawerNavigator = TabNavigator(
+const RootDrawerNavigator = createBottomTabNavigator(
   {
     Queue: { screen: QueueStackNavigator },
     ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
@@ -28,7 +31,6 @@ const RootDrawerNavigator = TabNavigator(
     //  Settings: { screen: SettingsScreen },
   },
   {
-
     navigationOptions: ({ navigation, screenProps }) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
@@ -49,13 +51,15 @@ const RootDrawerNavigator = TabNavigator(
 
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
-        return (<Icon
-          name={iconName}
-          size={23}
-          color={tintColor}
-          type={type}
-          fontWeight={fontWeight}
-        />);
+        return (
+          <Icon
+            name={iconName}
+            size={23}
+            color={tintColor}
+            type={type}
+            fontWeight={fontWeight}
+          />
+        );
       },
       tabBarOnPress: ({ previousScene, scene, jumpToIndex }) => {
         if (previousScene.routeName === 'Clients' && previousScene.route !== scene.route) {
@@ -63,6 +67,9 @@ const RootDrawerNavigator = TabNavigator(
         }
         jumpToIndex(scene.index);
       },
+      ...headerStyles,
+
+      // header: null,
       // tabBarVisible: true//screenProps.drawerOptions.showTabBar,
     }),
     tabBarOptions: {
@@ -81,10 +88,11 @@ const RootDrawerNavigator = TabNavigator(
         zIndex: 0,
       },
     },
-    tabBarComponent: TabBarBottom,
+    // tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: true,
     swipeEnabled: false,
+    headerMode: 'none',
   },
 );
 
@@ -106,6 +114,11 @@ class RootNavigator extends React.Component {
       }
       return (
         <RootDrawerNavigator
+          onNavigationStateChange={(prevState, currentState) => {
+            const currentScreen = getActiveRouteName(currentState);
+            const prevScreen = getActiveRouteName(prevState);
+            this.props.navigationActions.setCurrentRoute(currentScreen);
+          }}
           screenProps={{
             isNewApptValid: this.props.isNewApptValid,
             clientsActions: this.props.clientsActions,
@@ -147,10 +160,14 @@ RootNavigator.propTypes = {
   rootDrawerNavigatorAction: PropTypes.shape({
     changeShowTabBar: PropTypes.func.isRequired,
   }).isRequired,
+  navigationActions: PropTypes.shape({
+    setCurrentRoute: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  navigationState: state.navigationReducer,
   userInfo: state.userInfoReducer,
   walkInState: state.walkInReducer,
   clientsState: state.clientsReducer,
@@ -161,6 +178,7 @@ const mapStateToProps = state => ({
   store: state.storeReducer,
 });
 const mapActionsToProps = dispatch => ({
+  navigationActions: bindActionCreators({ ...navigationActions }, dispatch),
   userActions: bindActionCreators({ ...userActions }, dispatch),
   walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
   clientsActions: bindActionCreators({ ...clientsActions }, dispatch),

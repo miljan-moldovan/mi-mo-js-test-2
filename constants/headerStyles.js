@@ -1,11 +1,9 @@
 import Colors from './Colors';
 
 export default {
+  headerForceInset: { top: 'never' },
   headerStyle: {
     backgroundColor: Colors.defaultBlue,
-    justifyContent: 'center',
-    paddingLeft: 10,
-    paddingRight: 10,
     height: 44,
     borderWidth: 0,
     shadowColor: 'transparent',

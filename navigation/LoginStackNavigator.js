@@ -1,10 +1,10 @@
 // @flow
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
 import LoginScreen from '../screens/loginScreen';
 import ForgotPasswordScreen from '../screens/forgotPasswordScreen';
 
-const LoginStackNavigator = StackNavigator(
+const LoginStackNavigator = createStackNavigator(
   {
     Login: {
       screen: LoginScreen,

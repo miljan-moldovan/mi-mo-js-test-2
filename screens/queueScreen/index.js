@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+// import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { bindActionCreators } from 'redux';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -43,7 +44,7 @@ class QueueScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     const {
-      searchMode, searchText, onChangeSearchMode, onChangeSearchText,
+      shouldShow = false, searchMode, searchText, onChangeSearchMode, onChangeSearchText,
     } = params;
     return {
       header: (
@@ -57,13 +58,12 @@ class QueueScreen extends React.Component {
       ),
       tabBarVisible: true,
     };
-  };
+  }
 
   constructor(props) {
     super(props);
     this.animateText();
   }
-
 
   state = {
     index: '0',

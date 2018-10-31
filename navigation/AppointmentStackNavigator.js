@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
 import Icon from '../components/UI/Icon';
 import headerStyles from '../constants/headerStyles';
@@ -64,7 +64,7 @@ import TransitionConfiguration from './transitionConfiguration';
 
 import styles from './styles';
 
-const AppointmentStackNavigator = StackNavigator(
+const AppointmentStackNavigator = createStackNavigator(
   {
     Main: {
       screen: AppointmentCalendarScreen,
@@ -293,10 +293,7 @@ const AppointmentStackNavigator = StackNavigator(
   },
   {
     transitionConfig: TransitionConfiguration,
-    navigationOptions: {
-      tabBarVisible: false,
-      ...headerStyles,
-    },
+    headerMode: 'none',
   },
 );
 

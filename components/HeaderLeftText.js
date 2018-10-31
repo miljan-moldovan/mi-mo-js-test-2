@@ -8,13 +8,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 14,
     color: '#fff',
-    marginLeft: 5,
   },
 });
 
-const headerLeftText = props => (<SalonTouchableOpacity onPress={props.handlePress}>
-  <Text style={styles.text}>Cancel</Text>
-</SalonTouchableOpacity>);
+const headerLeftText = props => (
+  <SalonTouchableOpacity onPress={props.handlePress}>
+    <Text style={styles.text}>Cancel</Text>
+  </SalonTouchableOpacity>
+);
 
 headerLeftText.propTypes = {
   handlePress: PropTypes.func,

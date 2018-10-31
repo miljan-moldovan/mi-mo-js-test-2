@@ -12,4 +12,6 @@ const mapActionsToProps = dispatch => ({
   queueDetailActions: bindActionCreators({ ...queueDetailActions }, dispatch),
 });
 
-export default connect(mapStateToProps, mapActionsToProps)(AppointmentDetailsScreen);
+const ConnectedScreen = connect(mapStateToProps, mapActionsToProps)(AppointmentDetailsScreen);
+ConnectedScreen.navigationOptions = AppointmentDetailsScreen.navigationOptions;
+export default ConnectedScreen;
