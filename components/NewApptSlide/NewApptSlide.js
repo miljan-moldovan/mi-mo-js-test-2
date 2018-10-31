@@ -596,7 +596,7 @@ class NewApptSlide extends React.Component {
               label="Block Time"
             >
               <View style={styles.iconContainer}>
-                <Icon name="clockO" size={16} color={Colors.defaultBlack} type="regular" />
+                <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular" />
                 <View style={styles.banIconContainer}>
                   <Icon
                     style={styles.subIcon}
@@ -624,7 +624,7 @@ class NewApptSlide extends React.Component {
               label="Edit Schedule"
             >
               <View style={styles.iconContainer}>
-                <Icon name="calendarEdit" size={16} color={Colors.defaultBlack} type="regular" />
+                <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
               </View>
             </InputButton>
 
@@ -636,7 +636,7 @@ class NewApptSlide extends React.Component {
               label="Room Assignment"
             >
               <View style={styles.iconContainer}>
-                <Icon name="streetView" size={16} color={Colors.defaultBlack} type="solid" />
+                <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
               </View>
             </InputButton>
 
@@ -654,7 +654,7 @@ class NewApptSlide extends React.Component {
               label="Turn Away"
             >
               <View style={styles.iconContainer}>
-                <Icon name="ban" size={16} color={Colors.defaultBlack} type="solid" />
+                <Icon name="ban" size={16} color={Colors.defaultBlue} type="solid" />
               </View>
             </InputButton>
 
@@ -666,7 +666,7 @@ class NewApptSlide extends React.Component {
               label="Message Provider's Clients"
             >
               <View style={styles.iconContainer}>
-                <Icon name="userAlt" size={16} color={Colors.defaultBlack} type="regular" />
+                <Icon name="userAlt" size={16} color={Colors.defaultBlue} type="regular" />
               </View>
             </InputButton>
             <InputButton
@@ -677,7 +677,7 @@ class NewApptSlide extends React.Component {
               label="Message All Clients"
             >
               <View style={styles.iconContainer}>
-                <Icon name="group" size={16} color={Colors.defaultBlack} type="regular" />
+                <Icon name="group" size={16} color={Colors.defaultBlue} type="regular" />
               </View>
             </InputButton>
           </React.Fragment>}

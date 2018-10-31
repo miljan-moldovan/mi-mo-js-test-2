@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   banIconContainer: {
     position: 'absolute',
     paddingTop: 10,
-    paddingRight: 15,
+    paddingRight: 12,
     backgroundColor: 'transparent',
   },
   bookApptContainer: {
