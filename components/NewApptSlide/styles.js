@@ -44,10 +44,27 @@ const styles = StyleSheet.create({
   },
   otherOptionsBtn: { height: 67, paddingRight: 0 },
   subIcon: {
-    backgroundColor: Colors.gray90,
     width: 10,
     height: 10,
-    borderRadius: 10 / 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.gray90,
+  },
+  iconContainer: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    borderColor: Colors.gray90,
+    backgroundColor: Colors.gray90,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  otherOptionsLabels: {
+    color: Colors.defaultBlue,
   },
   clockIconContainer: {
     flexDirection: 'row',
@@ -61,9 +78,9 @@ const styles = StyleSheet.create({
   },
   banIconContainer: {
     position: 'absolute',
-    backgroundColor: 'transparent',
     paddingTop: 10,
     paddingRight: 15,
+    backgroundColor: 'transparent',
   },
   bookApptContainer: {
     flex: 1,
