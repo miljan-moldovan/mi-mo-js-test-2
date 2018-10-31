@@ -49,7 +49,7 @@ class LoginScreen extends React.Component {
       this.handleFingerprintPress();
     }
 
-    TouchID.isSupported()
+    /*TouchID.isSupported()
       .then((biometryType) => {
         // Success code
         if (biometryType === 'FaceID' || biometryType === 'TouchID') {
@@ -61,7 +61,7 @@ class LoginScreen extends React.Component {
       .catch(() => {
         // Failure code
         this.setState({ hasFingerprint: false });
-      });
+      });*/
   }
 
   handleFingerprintPress = () => {
