@@ -82,6 +82,22 @@ const newAppointmentInfoSelector = createSelector(
   }),
 );
 
+const getGuestServices = (guestId, serviceItems) => serviceItems
+  .filter(item => item.guestId === guestId && !item.parentId);
+
+const validateGuests = (guests, serviceItems) => {
+  if (guests.length) {
+    for (let i = 0; i < guests.length; i += 1) {
+      const guest = guests[i];
+      if (!guest.client || !getGuestServices(guest.guestId, serviceItems).length) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+};
+
 const isValidAppointment = createSelector(
   [
     loadingStateSelector,
@@ -90,7 +106,7 @@ const isValidAppointment = createSelector(
   (
     { isLoading, isBooking },
     {
-      date, bookedByEmployee, mainEmployee, client, serviceItems, conflicts,
+      date, bookedByEmployee, mainEmployee, client, serviceItems, conflicts, guests
     },
   ) => (
     date &&
@@ -100,7 +116,7 @@ const isValidAppointment = createSelector(
       serviceItems.length > 0 &&
       !conflicts.length > 0 &&
       !isLoading &&
-      !isBooking
+      !isBooking && validateGuests(guests, serviceItems)
   ),
 );
 

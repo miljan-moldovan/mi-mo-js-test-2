@@ -582,7 +582,9 @@ export default class NewAppointmentScreen extends React.Component {
     const { editType } = this.props.newAppointmentState;
 
     const successCallback = () => {
+      const { date } = this.props.newAppointmentState;
       this.props.navigation.goBack();
+      this.props.apptBookActions.setProviderScheduleDates(date, date);
       this.props.apptBookActions.setGridView();
       this.props.apptBookActions.setToast({
         description: editType === 'edit' ? 'Appointment Modified' : 'Appointment Booked',
