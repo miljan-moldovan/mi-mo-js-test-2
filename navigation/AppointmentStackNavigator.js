@@ -301,11 +301,12 @@ const AppointmentStackNavigator = StackNavigator(
 AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
   const { state } = navigation;
 
-  const hideTabBar = navigation.state.routes[0].params ?
-    navigation.state.routes[0].params.hideTabBar : false;
-
   let tabBarVisible = true;
-  if (state.index > 0 || hideTabBar) {
+
+  const hideTabBar = state.index > 0 && navigation.state.routes[1].params ?
+    navigation.state.routes[1].params.hideTabBar : false;
+
+  if (state.index > 1 || hideTabBar) {
     tabBarVisible = false;
   }
 

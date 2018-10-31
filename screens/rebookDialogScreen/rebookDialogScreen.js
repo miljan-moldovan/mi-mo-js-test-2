@@ -82,8 +82,11 @@ class RebookDialogScreen extends Component {
       handleDone: () => this.saveRebook(),
     });
 
+
+
     const { appointment } = this.props.navigation.state.params;
 
+    let { date } = this.state;
 
     if ('service' in appointment && !('services' in appointment)) {
       const { service } = appointment;
@@ -91,10 +94,11 @@ class RebookDialogScreen extends Component {
       service.employee = appointment.employee;
       service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
       appointment.services = [service];
+      date = moment(appointment.date);
     }
 
     if (appointment.services.length === 1) {
-      this.setState({ rebookServices: appointment.services }, this.checkCanSave);
+      this.setState({ rebookServices: appointment.services, date }, this.checkCanSave);
     }
   }
 
