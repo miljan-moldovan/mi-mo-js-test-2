@@ -113,7 +113,15 @@ class AppointmentScreen extends Component {
 
     this.props.appointmentCalendarActions.setGridView();
 
+    this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.loadRebookData();
+      },
+    );
+  }
 
+  loadRebookData = () => {
     const { params } = this.props.navigation.state;
 
     if (params && 'rebookAppointment' in params) {
@@ -284,7 +292,6 @@ class AppointmentScreen extends Component {
       this.props.navigation.navigate('NewAppointment', {
         rebook: true,
         onFinishRebook: () => {
-
           this.setRebookAppointment(false);
           this.props.navigation.setParams({ hideTabBar: false });
         },
@@ -361,6 +368,8 @@ class AppointmentScreen extends Component {
     this.setState({
       rebookAppointmentEnabled,
     });
+    this.props.appointmentCalendarActions.setGridView();
+
     this.props.navigation.setParams({ hideTabBar: false });
   }
 
