@@ -99,6 +99,8 @@ class RebookDialogScreen extends Component {
     if (appointment.services.length === 1) {
       this.setState({ rebookServices: appointment.services, date }, this.checkCanSave);
     }
+
+    this.setShouldRebook(appointment.services[0]);
   }
 
   onChangeWeeks = (operation, weeks) => {
@@ -124,8 +126,6 @@ class RebookDialogScreen extends Component {
   }
 
   saveRebook() {
-
-
     const { appointment } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
@@ -255,7 +255,7 @@ class RebookDialogScreen extends Component {
           <InputGroup>
             {appointment.services && appointment.services.map((service, index) => this.renderService(service, index))}
           </InputGroup>
-          <SectionDivider />
+          {/*  <SectionDivider />
           <InputGroup >
             <InputSwitch
               style={{ height: 43 }}
@@ -264,7 +264,7 @@ class RebookDialogScreen extends Component {
               value={this.state.updateRebookingPref}
               text="Update rebooking pref."
             />
-          </InputGroup>
+          </InputGroup> */}
         </React.Fragment>
       : null}
     </KeyboardAwareScrollView>)}
