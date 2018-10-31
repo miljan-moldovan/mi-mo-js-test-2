@@ -145,17 +145,12 @@ export default class ConflictsScreen extends React.Component {
 
     const { params } = this.props.navigation.state;
 
-    this.props.navigation.setParams({ handleDone: this.handleDone });
     this.state = {
       date: params.date,
       startTime: params.startTime,
       endTime: params.endTime,
       conflicts: params.conflicts,
     };
-  }
-
-  handleDone = () => {
-    this.props.navigation.state.params.handleGoBack();
   }
 
   renderSeparator = () => (
