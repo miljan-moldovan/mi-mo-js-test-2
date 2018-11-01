@@ -64,27 +64,31 @@ class ClientsScreen extends React.Component {
 
       leftButtonOnPress = defaultProps.defaultLeftButtonOnPress;
     }
+    const { routeName } = navigation.state;
     return {
       header: () => (
-        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
-        <SalonSearchHeader
-          clearSearch={clearSearch}
-          title={title}
-          subTitle={subTitle}
-          leftButton={leftButton}
-          leftButtonOnPress={() => {
-            if (clearSearch) {
-              clearSearch();
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <SalonSearchHeader
+            clearSearch={clearSearch}
+            title={title}
+            subTitle={subTitle}
+            leftButton={
+              routeName === 'ClientsMain' || routeName === 'ClientsStack'
+                ? null : leftButton
             }
-            leftButtonOnPress(navigation);
-          }}
-          rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
-          rightButtonOnPress={() => {
-            rightButtonOnPress(navigation);
-          }}
-          hasFilter
-          containerStyle={styles.headerContainer}
-        />
+            leftButtonOnPress={() => {
+              if (clearSearch) {
+                clearSearch();
+              }
+              leftButtonOnPress(navigation);
+            }}
+            rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
+            rightButtonOnPress={() => {
+              rightButtonOnPress(navigation);
+            }}
+            hasFilter
+            containerStyle={styles.headerContainer}
+          />
         </SafeAreaView>
       ),
     };

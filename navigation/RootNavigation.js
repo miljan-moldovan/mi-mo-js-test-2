@@ -28,7 +28,7 @@ const RootDrawerNavigator = TabNavigator(
   {
     Queue: { screen: QueueStackNavigator },
     ApptBook: { screen: AppointmentStackNavigator, navigationOptions: { title: 'Appt. Book' } },
-    Clients: { screen: ClientsStackNavigator },
+    ClientsStack: { screen: ClientsStackNavigator, navigationOptions: { title: 'Clients' } },
   },
   {
     navigationOptions: ({ navigation, screenProps }) => ({
@@ -43,7 +43,7 @@ const RootDrawerNavigator = TabNavigator(
         } else if (routeName === 'Queue') {
           iconName = 'signIn';
           type = 'regular';
-        } else if (routeName === 'Clients') {
+        } else if (routeName === 'ClientsStack') {
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {
           iconName = 'calendar';
