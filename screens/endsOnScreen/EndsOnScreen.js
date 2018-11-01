@@ -14,6 +14,7 @@ import {
 import Icon from '../../components/UI/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,8 +30,7 @@ const styles = StyleSheet.create({
 
 export default class EndsOnScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    ...headerStyles,
-    title: 'Ends On',
+    header: <SalonHeader title="Ends On" />,
   });
 
   constructor(props) {

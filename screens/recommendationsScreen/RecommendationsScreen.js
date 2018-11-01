@@ -13,6 +13,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { SectionTitle } from '../../components/formHelpers';
 import SalonActionSheet from '../../components/SalonActionSheet';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 const styles = StyleSheet.create({
@@ -239,23 +240,25 @@ export default class RecommendationsScreen extends React.Component {
     headerTitle: 'Recommendations',
   });
 
-  static navigationOptions = rootProps => ({
-    ...headerStyles,
-    headerTitle: <Text style={styles.titleText}>Recommended</Text>,
-    headerLeft: (
-      <SalonTouchableOpacity
-        onPress={() => { rootProps.navigation.goBack(); }}
-        style={{ paddingLeft: 10 }}
-      >
-        <Icon
-          name="angleLeft"
-          type="regular"
-          color="white"
-          size={24}
-        />
-      </SalonTouchableOpacity>
+  static navigationOptions = ({ navigation }) => ({
+    header: (
+      <SalonHeader
+        title="Recommended"
+        headerLeft={
+          <SalonTouchableOpacity
+            onPress={navigation.goBack}
+            style={{ paddingLeft: 10 }}
+          >
+            <Icon
+              name="angleLeft"
+              type="regular"
+              color="white"
+              size={24}
+            />
+          </SalonTouchableOpacity>
+        }
+      />
     ),
-
   });
 
   constructor(props) {

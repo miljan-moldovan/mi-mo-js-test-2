@@ -3,6 +3,7 @@ import React from 'react';
 import {
   View,
   Text,
+  SafeAreaView,
   ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -17,6 +18,7 @@ import ServiceCategoryList from './components/serviceCategoryList';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import Colors from '../../constants/Colors';
 
 class ServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -52,20 +54,21 @@ class ServicesScreen extends React.Component {
       !ignoreNav ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
 
     return {
-      ...headerStyles,
       header: () => (
-        <SalonSearchHeader
-          title={title}
-          subTitle={subTitle}
-          leftButton={leftButton}
-          leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
-          rightButton={rightButton}
-          rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-          hasFilter={false}
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <SalonSearchHeader
+            title={title}
+            subTitle={subTitle}
+            leftButton={leftButton}
+            leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+            rightButton={rightButton}
+            rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+            hasFilter={false}
           // containerStyle={{
           //   paddingHorizontal: 20,
           // }}
-        />
+          />
+        </SafeAreaView>
       ),
     };
   };
@@ -401,15 +404,15 @@ class ServicesScreen extends React.Component {
         <View style={styles.servicesList}>
 
           {(!hasCategories
-            && this.services.length > 0) &&
-            <SelectableServiceList
-              services={this.services}
-              selected={[this.props.servicesState.selectedService ? this.props.servicesState.selectedService.serviceId : null]}
-              hidePrice
-              returnFullObject
-              onChangeSelected={this.handleOnChangeService}
-            />
-          }
+              && this.services.length > 0) &&
+              <SelectableServiceList
+                services={this.services}
+                selected={[this.props.servicesState.selectedService ? this.props.servicesState.selectedService.serviceId : null]}
+                hidePrice
+                returnFullObject
+                onChangeSelected={this.handleOnChangeService}
+              />
+            }
 
 
           {hasCategories && (!servicesState.showCategoryServices

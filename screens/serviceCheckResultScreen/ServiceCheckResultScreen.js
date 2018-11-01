@@ -4,7 +4,7 @@ import {
   Text,
 } from 'react-native';
 import moment from 'moment';
-
+import { get } from 'lodash';
 import {
   InputGroup,
   DefaultAvatar,
@@ -22,10 +22,11 @@ import SalonHeader from '../../components/SalonHeader';
 
 export default class ServiceCheckResultScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const { params } = navigation.state;
-    const employeeName = `${params.selectedProvider.name} ${params.selectedProvider.lastName}`;
-    const serviceName = params.selectedService.name;
-    const doneFunc = () => navigation.state.params.handleDone();
+    const selectedProvider = navigation.getParam('selectedProvider', null);
+    const selectedService = navigation.getParam('selectedService', null);
+    const handleDone = navigation.getParam('handleDone', (() => {}));
+    const employeeName = `${get(selectedProvider, 'name', '')} ${get(selectedProvider, 'lastName', '')}`;
+    const serviceName = get(selectedService, 'name', '');
     return ({
       header: (
         <SalonHeader
@@ -42,7 +43,7 @@ export default class ServiceCheckResultScreen extends React.Component {
             </SalonTouchableOpacity>
           )}
           headerRight={(
-            <SalonTouchableOpacity style={styles.headerRightButton} wait={3000} onPress={doneFunc}>
+            <SalonTouchableOpacity style={styles.headerRightButton} wait={3000} onPress={handleDone}>
               <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
             </SalonTouchableOpacity>
           )}

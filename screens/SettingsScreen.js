@@ -11,6 +11,9 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Form, Item, Input, Button, Label } from 'native-base';
+import SalonHeader from '../components/SalonHeader';
+import Colors from '../constants/Colors';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 const URLKEY = '@APISettings:url';
 const STOREKEY = '@APISettings:store';
@@ -18,6 +21,27 @@ const USERKEY = '@APISettings:user';
 const PASSWORDKEY = '@APISettings:password';
 
 export default class SettingsScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    header: (
+      <SalonHeader
+        title="Settings"
+        headerLeft={
+          <SalonTouchableOpacity
+            style={{ paddingLeft: 10 }}
+            onPress={navigation.goBack}
+          >
+            <Text style={{
+              color: Colors.white,
+              fontSize: 14,
+            }}
+            >Close
+            </Text>
+          </SalonTouchableOpacity>
+        }
+      />
+    ),
+  })
+
   state = {
     loaded: false,
     store: '4',

@@ -19,6 +19,7 @@ import {
   InputText,
 } from '../../components/formHelpers';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 class RemovalReasonTypesScreen extends React.Component {
@@ -34,30 +35,30 @@ class RemovalReasonTypesScreen extends React.Component {
     const title = params.type === 'noshow' ? 'No Show' : 'Walk-out';
 
     return {
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{title}</Text>
-          <Text style={styles.subTitleText}>{`${name} ${lastName}`}</Text>
-        </View>),
-      headerLeft: (
-        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigation.goBack()}>
-          <Text style={{
-            fontSize: 14, color: 'white',
-          }}
-          >Back
-          </Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          wait={3000}
-          onPress={handlePress}
-          disabled={!canSave}
-          style={styles.rightButtonContainer}
-        >
-          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={title}
+          subTitle={`${name} ${lastName}`}
+          headerLeft={(
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigation.goBack()}>
+              <Text style={{
+                fontSize: 14, color: 'white',
+              }}
+              >Back
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              wait={3000}
+              onPress={handlePress}
+              disabled={!canSave}
+              style={styles.rightButtonContainer}
+            >
+              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   };

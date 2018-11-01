@@ -34,10 +34,14 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   headerLeft: {
+    flex: 1,
   },
   headerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   headerTitle: {
+    flex: 3,
     alignItems: 'center',
     justifyContent: 'center',
   },

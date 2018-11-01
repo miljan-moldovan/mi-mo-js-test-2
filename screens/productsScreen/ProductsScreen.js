@@ -4,6 +4,7 @@ import {
   View,
   FlatList,
   SectionList,
+  SafeAreaView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { get, sortBy, isNumber } from 'lodash';
@@ -39,13 +40,15 @@ class ProductsScreen extends React.Component {
     const leftButtonOnPress = selectedCategory ? clearCategory : navigation.goBack;
     return {
       header: props => (
-        <SalonSearchHeader
-          title={title}
-          hasFilter={false}
-          leftButton={leftButton}
-          leftButtonOnPress={leftButtonOnPress}
-          containerStyle={styles.headerContainer}
-        />
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <SalonSearchHeader
+            title={title}
+            hasFilter={false}
+            leftButton={leftButton}
+            leftButtonOnPress={leftButtonOnPress}
+            containerStyle={styles.headerContainer}
+          />
+        </SafeAreaView>
       ),
     };
   };
