@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 32,
   },
   circle: {
     width: 100,
@@ -84,19 +83,19 @@ class emptyClientList extends PureComponent {
         <View style={styles.circle}>
           <Icon color="#C0C1C6" size={50} name="search" type="regular" />
         </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.textTitle}>Search for clients above.</Text>
-              <Text style={styles.textDesc}>Type name, code, phone number or email</Text>
-          </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.textTitle}>Search for clients above.</Text>
+          <Text style={styles.textDesc}>Type name, code, phone number or email</Text>
+        </View>
         {
           !this.props.hideAddButton && !hideBtn ?
-          (
-            <View style={styles.buttonContainer}>
-              <SalonTouchableOpacity onPress={btnPress} style={styles.buttonStyle}>
-                <Text style={styles.textButton}>{btnText}</Text>
-              </SalonTouchableOpacity>
-            </View>
-          ) : null
+            (
+              <View style={styles.buttonContainer}>
+                <SalonTouchableOpacity onPress={btnPress} style={styles.buttonStyle}>
+                  <Text style={styles.textButton}>{btnText}</Text>
+                </SalonTouchableOpacity>
+              </View>
+            ) : null
         }
       </SalonTouchableOpacity>
     );

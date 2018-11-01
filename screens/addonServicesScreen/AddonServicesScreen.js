@@ -8,6 +8,8 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SelectableServiceList from '../../components/SelectableServiceList';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class AddonServicesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -21,25 +23,23 @@ export default class AddonServicesScreen extends React.Component {
       navigation.goBack();
     };
     return ({
-      headerTitle: (
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitleText}>
-            Add-on Services
-          </Text>
-          <Text style={styles.headerSubtitleText}>
-            {serviceTitle}
-          </Text>
-        </View>
-      ),
-      headerLeft: showCancelButton ? (
-        <SalonTouchableOpacity onPress={() => handleGoBack()}>
-          <Text style={styles.headerButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ) : null,
-      headerRight: (
-        <SalonTouchableOpacity onPress={() => handleSave()}>
-          <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Add-on Services"
+          subTitle={serviceTitle}
+          headerLeft={
+            showCancelButton ? (
+              <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => handleGoBack()}>
+                <Text style={styles.headerButtonText}>Cancel</Text>
+              </SalonTouchableOpacity>
+            ) : null
+          }
+          headerRight={
+            <SalonTouchableOpacity style={{ paddingRight: 10 }} onPress={() => handleSave()}>
+              <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     });
   };

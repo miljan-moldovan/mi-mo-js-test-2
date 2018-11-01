@@ -75,6 +75,7 @@ class ServiceCategoryList extends React.Component {
           data={this.state.serviceCategories}
           extraData={this.props}
           ItemSeparatorComponent={this.renderSeparator}
+          ListFooterComponent={this.renderSeparator}
           keyExtractor={this.keyExtractor}
           renderItem={elem => this.renderItem(elem)}
         />

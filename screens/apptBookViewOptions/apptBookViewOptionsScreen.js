@@ -21,6 +21,8 @@ import Icon from '../../components/UI/Icon';
 import fetchFormCache from '../../utilities/fetchFormCache';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   modal: {
@@ -37,6 +39,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  leftButton: { paddingLeft: 10 },
+  rightButton: { paddingRight: 10 },
   container: {
     flex: 1,
     width: '100%',
@@ -94,22 +98,20 @@ const SelectedWithRemove = props => (
 
 class ApptBookViewOptionsScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>
-            View Options
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
-        <Text style={styles.leftButtonText}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
-        <Text style={styles.rightButtonText}>Done</Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="View Options"
+        headerLeft={
+          <SalonTouchableOpacity wait={3000} style={styles.leftButton} onPress={() => navigation.goBack()}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </SalonTouchableOpacity>
+        }
+        headerRight={
+          <SalonTouchableOpacity wait={3000} style={styles.rightButton} onPress={navigation.getParam('handlePress', () => { })}>
+            <Text style={styles.rightButtonText}>Done</Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   })
 
@@ -193,22 +195,22 @@ class ApptBookViewOptionsScreen extends Component {
               style={{ flex: 1 }}
               labelStyle={{ color: '#110A24' }}
               onPress={() => {
-                  this.props.navigation.navigate(
-                    'FilterByPosition',
-                    {
-                      transition: 'SlideFromBottom',
-                      onChangePosition: this.handleChangePosition,
-dismissOnSelect: true,
-                    },
-                  );
-                }}
+                this.props.navigation.navigate(
+                  'FilterByPosition',
+                  {
+                    transition: 'SlideFromBottom',
+                    onChangePosition: this.handleChangePosition,
+                    dismissOnSelect: true,
+                  },
+                );
+              }}
               label="Filter By Position"
               value={position === null ? null : (
                 <SelectedWithRemove
                   onPressRemove={this.handleRemovePosition}
                   value={position.name}
                 />
-                )}
+              )}
             />,
               <InputDivider key={Math.random()} />,
               <InputButton
@@ -216,22 +218,22 @@ dismissOnSelect: true,
                 style={{ flex: 1 }}
                 labelStyle={{ color: '#110A24' }}
                 onPress={() => {
-                    this.props.navigation.navigate(
-                      'FilterByCompany',
-                      {
-                        transition: 'SlideFromBottom',
-                        onChangeCompany: this.handleChangeCompany,
-dismissOnSelect: true,
-                      },
-                    );
-                    }}
+                this.props.navigation.navigate(
+                  'FilterByCompany',
+                  {
+                    transition: 'SlideFromBottom',
+                    onChangeCompany: this.handleChangeCompany,
+                    dismissOnSelect: true,
+                  },
+                );
+              }}
                 label="Filter By Company"
                 value={company === null ? null : (
                   <SelectedWithRemove
-                    onPressRemove={this.handleRemoveCompany}
-                    value={company.name}
-                  />
-                  )}
+                  onPressRemove={this.handleRemoveCompany}
+                  value={company.name}
+                />
+              )}
               />,
               <InputDivider key={Math.random()} />,
               <InputButton
@@ -248,13 +250,13 @@ dismissOnSelect: true,
                 style={{ flex: 1 }}
                 labelStyle={{ color: '#110A24' }}
                 onPress={() => {
-                    this.props.navigation.navigate(
-                      'ServiceCheck',
-                      {
-                        transition: 'SlideFromBottom', dismissOnSelect: true,
-                      },
-                    );
-                  }}
+                this.props.navigation.navigate(
+                  'ServiceCheck',
+                  {
+                    transition: 'SlideFromBottom', dismissOnSelect: true,
+                  },
+                );
+              }}
                 label="Service Check"
                 value={this.state.options.serviceCheck}
               />]}
@@ -266,11 +268,11 @@ dismissOnSelect: true,
               style={{ height: 43 }}
               textStyle={{ color: '#000000' }}
               onChange={(state) => {
-                  const { options } = this.state;
-                  options.showRoomAssignments = !options.showRoomAssignments;
-                  this.shouldSave = true;
-                  this.setState({ options });
-                }}
+                const { options } = this.state;
+                options.showRoomAssignments = !options.showRoomAssignments;
+                this.shouldSave = true;
+                this.setState({ options });
+              }}
               value={this.state.options.showRoomAssignments}
               text="Room Assigments"
             />,
@@ -280,11 +282,11 @@ dismissOnSelect: true,
                 style={{ height: 43 }}
                 textStyle={{ color: '#000000' }}
                 onChange={(state) => {
-                    const { options } = this.state;
-                    options.showAssistantAssignments = !options.showAssistantAssignments;
-                    this.shouldSave = true;
-                    this.setState({ options });
-                  }}
+                const { options } = this.state;
+                options.showAssistantAssignments = !options.showAssistantAssignments;
+                this.shouldSave = true;
+                this.setState({ options });
+              }}
                 value={this.state.options.showAssistantAssignments}
                 text="Assistant Assigments"
               />,
@@ -294,11 +296,11 @@ dismissOnSelect: true,
                 style={{ height: 43 }}
                 textStyle={{ color: '#000000' }}
                 onChange={(state) => {
-                      const { options } = this.state;
-                      options.showMultiBlock = !options.showMultiBlock;
-                      this.shouldSave = true;
-                      this.setState({ options });
-                    }}
+                const { options } = this.state;
+                options.showMultiBlock = !options.showMultiBlock;
+                this.shouldSave = true;
+                this.setState({ options });
+              }}
                 value={this.state.options.showMultiBlock}
                 text="Client name in every blocks"
               />,
@@ -308,11 +310,11 @@ dismissOnSelect: true,
                 style={{ height: 43 }}
                 textStyle={{ color: '#000000' }}
                 onChange={(state) => {
-                        const { options } = this.state;
-                        options.showOffEmployees = !options.showOffEmployees;
-                        this.shouldSave = true;
-                        this.setState({ options });
-                      }}
+                const { options } = this.state;
+                options.showOffEmployees = !options.showOffEmployees;
+                this.shouldSave = true;
+                this.setState({ options });
+              }}
                 value={this.state.options.showOffEmployees}
                 text="Show employees that are off"
               />]}

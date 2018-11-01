@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
-import { StackNavigator } from 'react-navigation';
+import { Header, StackNavigator, createStackNavigator } from 'react-navigation';
+import { get } from 'lodash';
 
 import headerStyles from '../constants/headerStyles';
-
 import QueueScreen from './../screens/queueScreen';
 import QueueCombineScreen from './../screens/queueCombineScreen';
 import ClientMergeScreen from './../screens/clientMergeScreen';
@@ -49,45 +49,51 @@ import SettingsScreen from './../screens/SettingsScreen';
 
 
 import TransitionConfiguration from './transitionConfiguration';
+import QueueHeader from '../screens/queueScreen/queueHeader';
 
-export const MainNavigator = StackNavigator(
+export const MainNavigator = createStackNavigator(
   {
     Main: {
       screen: QueueScreen,
-      navigationOptions: {
-        gesturesEnabled: false,
-      },
     },
     ApptBookSetEmployeeOrder: {
       screen: apptBookSetEmployeeOrder,
-      navigationOptions: { tabBarVisible: false },
     },
     ApptBookViewOptions: {
       screen: apptBookViewOptions,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Products: {
       screen: ProductsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Services: {
       screen: ServicesScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Appointment: {
       screen: AppointmentScreen,
     },
     NewClient: {
       screen: NewClientScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     ClientNotes: {
       screen: ClientNotes,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     ClientNote: {
       screen: ClientNote,
-
     },
     ClientFormula: {
       screen: ClientFormula,
@@ -97,187 +103,362 @@ export const MainNavigator = StackNavigator(
     },
     ClientFormulas: {
       screen: ClientFormulas,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     AppointmentDetails: {
       screen: AppointmentDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Service: {
       screen: ModifyServiceScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Product: {
       screen: ModifyProductScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Recommendations: {
       screen: RecommendationsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     RebookDialog: {
       screen: RebookDialogScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
     },
     QueueDetail: {
       screen: QueueDetailScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     QueueCombine: {
       screen: QueueCombineScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     ClientMerge: {
       screen: ClientMergeScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     WalkIn: {
       screen: WalkInScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInHeader rootProps={rootProps} />,
-        headerLeft: HeaderLeftText({
-          ...rootProps,
-          handlePress: () => rootProps.navigation.goBack(),
-        }),
-        tabBarVisible: false,
-      }),
+      // navigationOptions: rootProps => ({
+      //   ...headerStyles,
+      //   headerTitle: <WalkInHeader rootProps={rootProps} />,
+      //   headerLeft: HeaderLeftText({
+      //     ...rootProps,
+      //     handlePress: () => rootProps.navigation.goBack(),
+      //   }),
+      //   tabBarVisible: false,
+      // }),
     },
     Providers: {
       screen: ProvidersScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     Promotions: {
       screen: PromotionsScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     ChangeClient: {
       screen: ClientsScreen,
     },
     TurnAway: {
       screen: TurnAwayScreen,
-      navigationOptions: { tabBarVisible: false },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     ClientInfo: {
       screen: ClientInfoScreen,
-      navigationOptions: {
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
     Settings: { screen: SettingsScreen },
     RemovalReasonTypes: {
       screen: RemovalReasonTypesScreen,
-      navigationOptions: {
-        tabBarVisible: false,
-      },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
   },
   {
     transitionConfig: TransitionConfiguration,
     headerMode: 'screen',
-    navigationOptions: {
-      ...headerStyles,
-    },
   },
 );
 
 
-const QueueStackNavigator = StackNavigator(
+const QueueStackNavigator = createStackNavigator(
   {
+    // Main: {
+    //   screen: MainNavigator,
+    //   // headerMode: 'none',
+    //   // navigationOptions: {
+    //   //   headerMode: 'float',
+    //   // },
+    // },
     Main: {
-      screen: MainNavigator,
-      navigationOptions: { headerMode: 'none', header: null },
+      screen: QueueScreen,
+    },
+    ApptBookSetEmployeeOrder: {
+      screen: apptBookSetEmployeeOrder,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ApptBookViewOptions: {
+      screen: apptBookViewOptions,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Products: {
+      screen: ProductsScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Services: {
+      screen: ServicesScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Appointment: {
+      screen: AppointmentScreen,
+    },
+    NewClient: {
+      screen: NewClientScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ClientNotes: {
+      screen: ClientNotes,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ClientNote: {
+      screen: ClientNote,
+    },
+    ClientFormula: {
+      screen: ClientFormula,
+    },
+    ClientCopyFormula: {
+      screen: ClientCopyFormulaScreen,
+    },
+    ClientFormulas: {
+      screen: ClientFormulas,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ClientDetails: {
+      screen: ClientDetailsScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    AppointmentDetails: {
+      screen: AppointmentDetailsScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Service: {
+      screen: ModifyServiceScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Product: {
+      screen: ModifyProductScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Recommendations: {
+      screen: RecommendationsScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    RebookDialog: {
+      screen: RebookDialogScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    NewAppointment: {
+      screen: NewAppointmentScreen,
+    },
+    QueueDetail: {
+      screen: QueueDetailScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    QueueCombine: {
+      screen: QueueCombineScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ClientMerge: {
+      screen: ClientMergeScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    WalkIn: {
+      screen: WalkInScreen,
+      // navigationOptions: rootProps => ({
+      //   headerTitle: <WalkInHeader rootProps={rootProps} />,
+      //   headerLeft: HeaderLeftText({
+      //     ...rootProps,
+      //     handlePress: () => rootProps.navigation.goBack(),
+      //   }),
+      //   tabBarVisible: false,
+      // }),
+    },
+    Providers: {
+      screen: ProvidersScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    Promotions: {
+      screen: PromotionsScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ChangeClient: {
+      screen: ClientsScreen,
+    },
+    TurnAway: {
+      screen: TurnAwayScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
+    },
+    ClientInfo: {
+      screen: ClientInfoScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
+    },
+    Settings: { screen: SettingsScreen },
+    RemovalReasonTypes: {
+      screen: RemovalReasonTypesScreen,
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      // },
     },
     /** MODAL SCREENS GO HERE * */
     ModalServices: {
       screen: ServicesScreen,
-      navigationOptions: {
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
     ModalProviders: {
       screen: ProvidersScreen,
-      navigationOptions: {
-        headerStyle: {
-          backgroundColor: '#115ECD',
-          paddingHorizontal: 10,
-          paddingTop: 18,
-          borderWidth: 0,
-          shadowColor: 'transparent',
-          justifyContent: 'center',
-        },
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   headerStyle: {
+      //     backgroundColor: '#115ECD',
+      //     paddingHorizontal: 10,
+      //     paddingTop: 18,
+      //     borderWidth: 0,
+      //     shadowColor: 'transparent',
+      //     justifyContent: 'center',
+      //   },
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
     ModalClients: {
       screen: ClientsScreen,
-      navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
+      // navigationOptions: { tabBarVisible: false, headerMode: 'screen', gesturesEnabled: false },
     },
     ModalNewClient: {
       screen: NewClientScreen,
-      navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
+      // navigationOptions: { tabBarVisible: false, gesturesEnabled: false },
     },
     ModalWalkIn: {
       screen: WalkInScreen,
-      navigationOptions: {
-        headerStyle: {
-          backgroundColor: '#115ECD',
-          paddingBottom: 10,
-          paddingHorizontal: 10,
-        },
-        tabBarVisible: false,
-        headerMode: 'screen',
-        gesturesEnabled: false,
-      },
+      // navigationOptions: {
+      //   headerStyle: {
+      //     backgroundColor: '#115ECD',
+      //     paddingBottom: 10,
+      //     paddingHorizontal: 10,
+      //   },
+      //   tabBarVisible: false,
+      //   headerMode: 'screen',
+      //   gesturesEnabled: false,
+      // },
     },
   },
   {
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#115ECD',
-        paddingLeft: 10,
-        paddingRight: 10,
-        height: 44,
-        borderWidth: 0,
-        shadowColor: 'transparent',
-        elevation: 0,
-        borderBottomWidth: 0,
-      },
-      headerTitleStyle: {
-        fontFamily: 'Roboto-Regular',
-        fontSize: 17,
-        color: '#fff',
-      },
-    },
     transitionConfig: TransitionConfiguration,
-    mode: 'modal', // Remember to set the root navigator to display modally.
-    //  headerMode: 'none', // This ensures we don't get two top bars.
+    headerMode: 'float', // This ensures we don't get two top bars.
   },
 );
 
+// MainNavigator.navigationOptions = ({ navigation }) => {
+//   return {
+//     header: null,
+//   };
+// };
 QueueStackNavigator.navigationOptions = ({ navigation }) => {
   const { state } = navigation;
   let tabBarVisible = true;
-
-  if (state.index > 0 || state.routes[0].routes.length > 1) {
+  const routes = get(state, 'routes[0].routes', []);
+  if (state.index > 0 || routes.length > 1) {
     tabBarVisible = false;
   }
 
   return {
-    ...headerStyles,
     tabBarVisible,
+    ...headerStyles,
   };
 };
 

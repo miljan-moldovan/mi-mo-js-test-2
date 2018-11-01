@@ -8,6 +8,9 @@ import { Button } from 'native-base';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 import styles from './style';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
+import Colors from '../../constants/Colors';
 
 class QueueDetailScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -16,13 +19,20 @@ class QueueDetailScreen extends React.Component {
     const canSave = get(params, 'canSave', true);
     const handleDone = get(params, 'save', (() => null));
     return {
-      headerTitle: `${name} ${lastName}`,
-      headerTintColor: 'white',
-      headerBackTitleStyle: styles.headerButton,
-      headerRight: (
-        <SalonTouchableOpacity onPress={handleDone} disabled={!canSave}>
-          <Text style={styles.headerButton}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={`${name} ${lastName}`}
+          headerLeft={
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
+              <Text style={{ fontSize: 14, color: Colors.white }}>Back</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity onPress={handleDone} disabled={!canSave}>
+              <Text style={styles.headerButton}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     };
   };

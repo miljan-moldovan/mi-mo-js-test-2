@@ -6,7 +6,6 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
-import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get, includes, isArray } from 'lodash';
 import PropTypes from 'prop-types';
@@ -17,10 +16,11 @@ import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { DefaultAvatar } from '../../components/formHelpers';
 import LoadingOverlay from '../../components/LoadingOverlay';
-import groupedSettingsSelector from '../../redux/selectors/settingsSelector';
 
 import Colors from '../../constants/Colors';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 const FirstAvailableRow = (props) => {
   const firstAvProvider = {
@@ -90,18 +90,17 @@ class ProviderScreen extends React.Component {
     const headerLeftOnPress = customLeftButton
       ? () => leftButtonOnPress(navigation) : leftButtonOnPress;
     return {
-      headerTitle: (
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>{title}</Text>
-          {subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null}
-        </View>
+      header: (
+        <SalonHeader
+          title={title}
+          subTitle={subTitle || null}
+          headerLeft={
+            <SalonTouchableOpacity style={styles.leftHeaderButton} onPress={headerLeftOnPress}>
+              {leftButton}
+            </SalonTouchableOpacity>
+          }
+        />
       ),
-      headerLeft: (
-        <SalonTouchableOpacity style={styles.leftHeaderButton} onPress={headerLeftOnPress}>
-          {leftButton}
-        </SalonTouchableOpacity>
-      ),
-      headerRight: null,
     };
   };
 
@@ -412,9 +411,4 @@ ProviderScreen.propTypes = {
     setSelectedProvider: PropTypes.func,
   }).isRequired,
 };
-
-const mapStateToProps = state => ({
-  groupedSettings: groupedSettingsSelector(state),
-});
-
-export default connect(mapStateToProps, null)(ProviderScreen);
+export default ProviderScreen;

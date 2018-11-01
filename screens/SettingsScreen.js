@@ -11,6 +11,9 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Form, Item, Input, Button, Label } from 'native-base';
+import SalonHeader from '../components/SalonHeader';
+import Colors from '../constants/Colors';
+import SalonTouchableOpacity from '../components/SalonTouchableOpacity';
 
 const URLKEY = '@APISettings:url';
 const STOREKEY = '@APISettings:store';
@@ -18,6 +21,27 @@ const USERKEY = '@APISettings:user';
 const PASSWORDKEY = '@APISettings:password';
 
 export default class SettingsScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    header: (
+      <SalonHeader
+        title="Settings"
+        headerLeft={
+          <SalonTouchableOpacity
+            style={{ paddingLeft: 10 }}
+            onPress={navigation.goBack}
+          >
+            <Text style={{
+              color: Colors.white,
+              fontSize: 14,
+            }}
+            >Close
+            </Text>
+          </SalonTouchableOpacity>
+        }
+      />
+    ),
+  })
+
   state = {
     loaded: false,
     store: '4',
@@ -61,7 +85,7 @@ export default class SettingsScreen extends React.Component {
       Alert.alert('Settings saved!');
       // Keyboard.dismiss();
       // this.refs.secondTextInput.unFocus();
-    //  this.refs.secondTextInput.setNativeProps({ focus: false });
+      //  this.refs.secondTextInput.setNativeProps({ focus: false });
     } catch (error) {
       Alert.alert('Error saving data', JSON.stringify(error));
     }
@@ -92,8 +116,8 @@ export default class SettingsScreen extends React.Component {
           >
 
             <Text style={{
-marginTop: 60, marginBottom: 20, fontSize: 22, fontWeight: '600',
-}}
+              marginTop: 60, marginBottom: 20, fontSize: 22, fontWeight: '600',
+            }}
             >API Settings
             </Text>
             <Item>

@@ -14,42 +14,31 @@ import {
   SectionDivider,
   SectionTitle,
 } from '../../components/formHelpers';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 class BlockTimesReasonsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={{
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      >
-        <Text style={{
-          fontFamily: 'Roboto-Medium',
-          fontSize: 17,
-          lineHeight: 22,
-          color: 'white',
-        }}
-        >
-          Reason
-        </Text>
-      </View>
-    ),
-
-    headerLeft: (
-      <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={{ paddingLeft: 10, fontSize: 14, color: 'white' }}>Back</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity
-        onPress={() => {}}
-      >
-        <Text style={{ paddingRight: 10, fontSize: 14, color: 'white' }}>
-          Modify List
-        </Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="Reason"
+        headerLeft={
+          <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigation.goBack()}>
+            <Text style={{ fontSize: 14, color: 'white' }}>Back</Text>
+          </SalonTouchableOpacity>
+        }
+        headerRight={
+          <SalonTouchableOpacity
+            onPress={() => { }}
+            style={{ paddingRight: 10 }}
+          >
+            <Text style={{ fontSize: 14, color: 'white' }}>
+              Modify List
+            </Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   })
 

@@ -19,6 +19,8 @@ import {
 } from '../../components/formHelpers';
 import { find, remove } from 'lodash';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 class RebookDialogScreen extends Component {
@@ -32,39 +34,34 @@ class RebookDialogScreen extends Component {
     const fullName = 'fullName' in client ? client.fullName : `${client.name} ${client.lastName}`;
 
     return {
-      headerTitle: (
-        <View style={styles.headerTitle}>
-          <Text style={styles.headerTitleTitle}>
-          Rebook
-          </Text>
-          <Text style={styles.headerTitleSubTitle}>
-            {`${fullName}`}
-          </Text>
-        </View>
-      ),
-
-      headerLeft: (
-        <View style={styles.leftButtonContainer}>
-          <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.headerLeftText}>Cancel</Text>
-          </SalonTouchableOpacity>
-        </View>
-      ),
-      headerRight: (
-        <View style={styles.rightButtonContainer}>
-          <SalonTouchableOpacity
-            disabled={!canSave}
-            onPress={() => {
-            if (navigation.state.params.handleDone) {
-              navigation.state.params.handleDone();
-            }
-          }}
-          >
-            <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-            Done
-            </Text>
-          </SalonTouchableOpacity>
-        </View>
+      header: (
+        <SalonHeader
+          title="Rebook"
+          subTitle={fullName}
+          headerLeft={(
+            <View style={styles.leftButtonContainer}>
+              <SalonTouchableOpacity onPress={() => navigation.goBack()}>
+                <Text style={styles.headerLeftText}>Cancel</Text>
+              </SalonTouchableOpacity>
+            </View>
+          )}
+          headerRight={(
+            <View style={styles.rightButtonContainer}>
+              <SalonTouchableOpacity
+                disabled={!canSave}
+                onPress={() => {
+                if (navigation.state.params.handleDone) {
+                  navigation.state.params.handleDone();
+                }
+              }}
+              >
+                <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+                Done
+                </Text>
+              </SalonTouchableOpacity>
+            </View>
+          )}
+        />
       ),
     };
   }

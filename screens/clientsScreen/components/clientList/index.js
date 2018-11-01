@@ -1,11 +1,13 @@
 import React from 'react';
-import { View,
+import {
+  View,
   Text,
   SectionList,
   StyleSheet,
   ActivityIndicator,
   Keyboard,
-  Animated } from 'react-native';
+  Animated,
+} from 'react-native';
 import { connect } from 'react-redux';
 import ClientListItem from './clientListItem';
 import ClientListHeader from './clientListHeader';
@@ -62,10 +64,10 @@ class ClientList extends React.Component {
   static renderSeparator() {
     return (<View
       style={{
-            height: 1,
-            width: '100%',
-            backgroundColor: '#C0C1C6',
-          }}
+        height: 1,
+        width: '100%',
+        backgroundColor: '#C0C1C6',
+      }}
     />);
   }
 
@@ -191,9 +193,11 @@ class ClientList extends React.Component {
 
   renderMoreLoading = () => {
     if (this.props.isLoadingMore || this.props.isLoading) {
-      return (<View style={styles.container}>
-        <ActivityIndicator size="small" />
-      </View>);
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="small" />
+        </View>
+      );
     }
     return null;
   }
@@ -201,13 +205,15 @@ class ClientList extends React.Component {
   renderEmptyView = () => {
     const { isLoadingMore, isLoading } = this.props;
     if (!isLoadingMore && !isLoading) {
-      return (<EmptyList
-        onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : () => {}}
-        navigate={this.props.navigate}
-        hideAddButton={this.props.hideAddButton}
-        isWalkin={this.props.isWalkin}
-        onWalkinPress={this.props.onChangeClient}
-      />);
+      return (
+        <EmptyList
+          onChangeClient={this.props.onChangeClient ? this.props.onChangeClient : (() => { })}
+          navigate={this.props.navigate}
+          hideAddButton={this.props.hideAddButton}
+          isWalkin={this.props.isWalkin}
+          onWalkinPress={this.props.onChangeClient}
+        />
+      );
     }
     return null;
   }
@@ -215,31 +221,28 @@ class ClientList extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Animated.View style={{ marginBottom: this.keyboardHeight }}>
-          <SectionList
-            onEndReached={this.props.fetchMore}
-            enableEmptySections
-            keyboardShouldPersistTaps="always"
-            initialNumToRender={this.props.clients.length}
-            ref={(ref) => { this.sectionListRef = ref; }}
-            sections={this.props.clients}
-            renderItem={this.renderItem}
-            stickySectionHeadersEnabled
-            getItemLayout={(data, index) => (
-                { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
-              )}
-            renderSectionHeader={ClientList.renderSection}
-            ItemSeparatorComponent={ClientList.renderSeparator}
-            ListEmptyComponent={this.renderEmptyView}
-            refreshing={this.props.refreshing}
-            ListFooterComponent={this.renderMoreLoading}
-          />
-
-
-          {/* this.props.clients.length > 0 ? <ListLetterFilter
-              onPress={(letter) => { this.scrollToIndex(letter); }}
-            /> : null */}
-
+        <Animated.View style={{ flex: 1, marginBottom: this.keyboardHeight }}>
+          {
+            this.props.clients.length ? (
+              <SectionList
+                onEndReached={this.props.fetchMore}
+                enableEmptySections
+                keyboardShouldPersistTaps="always"
+                initialNumToRender={this.props.clients.length}
+                ref={(ref) => { this.sectionListRef = ref; }}
+                sections={this.props.clients}
+                renderItem={this.renderItem}
+                stickySectionHeadersEnabled
+                getItemLayout={(data, index) => (
+                  { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
+                )}
+                renderSectionHeader={ClientList.renderSection}
+                ItemSeparatorComponent={ClientList.renderSeparator}
+                refreshing={this.props.refreshing}
+                ListFooterComponent={this.renderMoreLoading}
+              />
+            ) : this.renderEmptyView()
+          }
         </Animated.View>
       </View>
     );

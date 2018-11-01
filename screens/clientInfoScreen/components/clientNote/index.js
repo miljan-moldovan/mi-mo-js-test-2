@@ -26,6 +26,7 @@ import {
 
 import fetchFormCache from '../../../../utilities/fetchFormCache';
 import styles from './stylesClientNote';
+import SalonHeader from '../../../../components/SalonHeader';
 
 
 class ClientNote extends Component {
@@ -35,22 +36,20 @@ class ClientNote extends Component {
     const title = params.actionType === 'update' ? 'Edit Note' : 'New Note';
 
     return {
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>
-            {title}
-          </Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleGoBack', () => {})}>
-          <Text style={styles.leftButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
-          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Save</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={title}
+          headerLeft={(
+            <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleGoBack', () => { })}>
+              <Text style={styles.leftButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity disabled={!canSave} wait={3000} onPress={navigation.getParam('handlePress', () => { })}>
+              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Save</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   }
@@ -144,12 +143,12 @@ class ClientNote extends Component {
     this.setState({ note }, this.checkCanSave);
   }
 
-    onChangeText = (txtNote) => {
-      const { note } = this.state;
-      note.text = txtNote;
-      this.shouldSave = true;
-      this.setState({ note }, this.checkCanSave);
-    }
+  onChangeText = (txtNote) => {
+    const { note } = this.state;
+    note.text = txtNote;
+    this.shouldSave = true;
+    this.setState({ note }, this.checkCanSave);
+  }
 
 
   inputDate = (selectedDate) => {
@@ -181,12 +180,12 @@ class ClientNote extends Component {
   }
 
 
-    handlePressProvider = () => {
-      const { navigate } = this.props.navigation;
-      const { selectedProvider } = this.props.clientNotesState;
+  handlePressProvider = () => {
+    const { navigate } = this.props.navigation;
+    const { selectedProvider } = this.props.clientNotesState;
 
-      this.shouldSave = true;
-    }
+    this.shouldSave = true;
+  }
 
 
   cancelButton = () => ({
@@ -196,69 +195,69 @@ class ClientNote extends Component {
     },
     dismissOnSelect: true,
   });
-    checkCanSave = () => {
-      let isNoteValid = false;
-      if (this.props.navigation.state.params.actionType === 'update') {
-        const { text } = this.state.note;
-        isNoteValid = text && text.length;
-      } else {
-        const { note } = this.state;
-        isNoteValid = note.text &&
-          note.text.length > 0 &&
-          // note.expiration &&
-          note.enteredBy;
-      }
-
-      this.props.navigation.setParams({ canSave: isNoteValid });
+  checkCanSave = () => {
+    let isNoteValid = false;
+    if (this.props.navigation.state.params.actionType === 'update') {
+      const { text } = this.state.note;
+      isNoteValid = text && text.length;
+    } else {
+      const { note } = this.state;
+      isNoteValid = note.text &&
+        note.text.length > 0 &&
+        // note.expiration &&
+        note.enteredBy;
     }
 
-    pickerToogleBirthday = () => {
-      this.setState({ datePickerOpen: !this.state.datePickerOpen });
-    };
+    this.props.navigation.setParams({ canSave: isNoteValid });
+  }
 
-    saveNote() {
-      this.props.navigation.setParams({ canSave: false });
+  pickerToogleBirthday = () => {
+    this.setState({ datePickerOpen: !this.state.datePickerOpen });
+  };
+
+  saveNote() {
+    this.props.navigation.setParams({ canSave: false });
+    const { client } = this.props.navigation.state.params;
+
+    const note = Object.assign({}, this.state.note);
+    note.notes = note.text;
+    delete note.text;
+
+
+    if (this.props.navigation.state.params.actionType === 'new') {
+      delete note.id;
+      delete note.isDeleted;
+
+      this.props.clientNotesActions.postClientNotes(client.id, note)
+        .then((response) => {
+          this.props.clientNotesActions.selectProvider(null);
+          this.props.navigation.goBack();
+          this.props.navigation.state.params.onNavigateBack();
+        }).catch((error) => {
+        });
+    } else if (this.props.navigation.state.params.actionType === 'update') {
+      this.props.clientNotesActions.putClientNotes(client.id, note)
+        .then((response) => {
+          this.props.clientNotesActions.selectProvider(null);
+          this.props.navigation.goBack();
+          this.props.navigation.state.params.onNavigateBack();
+        }).catch((error) => {
+        });
+    }
+  }
+
+  goBack() {
+    if (this.props.navigation.state.params.actionType === 'new') {
       const { client } = this.props.navigation.state.params;
-
-      const note = Object.assign({}, this.state.note);
-      note.notes = note.text;
-      delete note.text;
-
-
-      if (this.props.navigation.state.params.actionType === 'new') {
-        delete note.id;
-        delete note.isDeleted;
-
-        this.props.clientNotesActions.postClientNotes(client.id, note)
-          .then((response) => {
-            this.props.clientNotesActions.selectProvider(null);
-            this.props.navigation.goBack();
-            this.props.navigation.state.params.onNavigateBack();
-          }).catch((error) => {
-          });
-      } else if (this.props.navigation.state.params.actionType === 'update') {
-        this.props.clientNotesActions.putClientNotes(client.id, note)
-          .then((response) => {
-            this.props.clientNotesActions.selectProvider(null);
-            this.props.navigation.goBack();
-            this.props.navigation.state.params.onNavigateBack();
-          }).catch((error) => {
-          });
-      }
+      this.props.clientNotesActions.purgeClientNoteNewForm(
+        client.id.toString(),
+        this.state.note,
+      );
+    } else {
+      this.props.clientNotesActions.purgeClientNoteUpdateForm(this.state.note);
     }
-
-    goBack() {
-      if (this.props.navigation.state.params.actionType === 'new') {
-        const { client } = this.props.navigation.state.params;
-        this.props.clientNotesActions.purgeClientNoteNewForm(
-          client.id.toString(),
-          this.state.note,
-        );
-      } else {
-        this.props.clientNotesActions.purgeClientNoteUpdateForm(this.state.note);
-      }
-      this.props.navigation.goBack();
-    }
+    this.props.navigation.goBack();
+  }
 
   shouldSave = false
 
@@ -268,9 +267,9 @@ class ClientNote extends Component {
     return (
 
       <View style={styles.container}>
-        { this.props.clientNotesState.isLoading &&
+        {this.props.clientNotesState.isLoading &&
           <LoadingOverlay />
-                }
+        }
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
           <View style={styles.topSeparator} />
           <InputGroup style={styles.providerInputGroup}>

@@ -13,6 +13,8 @@ import ClientFormulas from './components/clientFormulas';
 import ClientNotes from './components/clientNotes';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 const initialLayout = {
@@ -101,32 +103,34 @@ export default class ClientInfoScreen extends React.Component {
       navigation.goBack;
 
     return ({
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{title}</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity onPress={handleBack}>
-          <View style={styles.backContainer}>
-            <FontAwesome style={styles.backIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
-            <Text style={styles.leftButtonText}>
-                    Back
-            </Text>
-          </View>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        showDoneButton ? <SalonTouchableOpacity
-          disabled={!canSave}
-          onPress={handleDone}
-        >
-          <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-          Done
-          </Text>
-        </SalonTouchableOpacity> : null
+      header: (
+        <SalonHeader
+          title={title}
+          headerLeft={(
+            <SalonTouchableOpacity onPress={handleBack}>
+              <View style={styles.backContainer}>
+                <FontAwesome style={styles.backIcon}>
+                  {Icons.angleLeft}
+                </FontAwesome>
+                <Text style={styles.leftButtonText}>
+                  Back
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            showDoneButton ? (
+              <SalonTouchableOpacity
+                disabled={!canSave}
+                onPress={handleDone}
+              >
+                <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+                  Done
+                </Text>
+              </SalonTouchableOpacity>
+            ) : null
+          )}
+        />
       ),
     });
   };
@@ -186,10 +190,10 @@ export default class ClientInfoScreen extends React.Component {
 
     <Text
       style={
-          this.state.index === index
+        this.state.index === index
           ? [styles.tabLabelText, styles.tabLabelActive]
           : styles.tabLabelText
-        }
+      }
     >
       {` ${route.title}`}
     </Text>

@@ -16,6 +16,8 @@ import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 const styles = StyleSheet.create({
@@ -92,22 +94,20 @@ const styles = StyleSheet.create({
 
 export default class FilterByPositionScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTitle: (
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>
-          Filter By Position
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity wait={3000} onPress={() => navigation.goBack()}>
-        <Text style={styles.leftButtonText}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleSave', () => {})}>
-        <Text style={styles.rightButtonText}>Done</Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="Filter By Position"
+        headerLeft={
+          <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => navigation.goBack()}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </SalonTouchableOpacity>
+        }
+        headerRight={
+          <SalonTouchableOpacity style={{ paddingRight: 10 }} wait={3000} onPress={navigation.getParam('handleSave', () => { })}>
+            <Text style={styles.rightButtonText}>Done</Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   });
 
@@ -182,7 +182,7 @@ export default class FilterByPositionScreen extends React.Component {
   handleChangePosition = (item) => {
     const selectedPosition =
       this.state.selectedPosition !== null &&
-      this.state.selectedPosition.id === item.id ?
+        this.state.selectedPosition.id === item.id ?
         null : item;
     this.setState({ selectedPosition });
   };

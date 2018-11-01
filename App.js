@@ -4,7 +4,8 @@
  * @flow
  */
 import React, { Component } from 'react';
-import { Provider } from 'react-redux';
+import PropTypes from 'prop-types';
+import { connect, Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import {
   Platform,
@@ -13,11 +14,13 @@ import {
   AsyncStorage,
   StatusBar,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 
 import OfflineNotice from './components/OfflineNotice';
 import RootNavigation from './navigation/RootNavigation';
 import store from './store';
+import Colors from './constants/Colors';
 
 console.disableYellowBox = true;
 
@@ -35,8 +38,19 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.defaultBlue,
+  },
+  fixBackground: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    height: 100,
+    zIndex: -1000,
+  },
 });
-
 
 export default class App extends Component {
   state = {
@@ -64,12 +78,14 @@ export default class App extends Component {
           'userInfoReducer',
           'productsReducer',
           'queueDetailReducer',
+          'navigationReducer',
           'salonSearchHeaderReducer',
         ],
       },
       () => { this.setState({ storeIsReady: true }); },
     ); // .purge(); use to prevent log in
   }
+
   render() {
     if (!this.state.isLoadingComplete || !this.state.storeIsReady) {
       return (

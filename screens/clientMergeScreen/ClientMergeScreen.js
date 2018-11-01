@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-navigation';
 import { ClientMerge } from './ClientMerge';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
+import SalonHeader from '../../components/SalonHeader';
 
 class ClientMergeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -20,28 +21,26 @@ class ClientMergeScreen extends React.Component {
 
     return {
       header: (
-        <SafeAreaView style={{
-justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
-}}
-        >
-          <SalonTouchableOpacity style={styles.navButton} onPress={goBack}>
-            <Text style={styles.navButtonText}>Cancel</Text>
-          </SalonTouchableOpacity>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={styles.headerTitle}>Duplicated Clients</Text>
-            <Text style={styles.headerSubtitle}>Select clients to merge</Text>
-          </View>
-          {isLoading ? (
-            <View style={styles.navButton}>
-              <ActivityIndicator />
-            </View>
+        <SalonHeader
+          title="Duplicated Clients"
+          subTitle="Select clients to merge"
+          headerLeft={
+            <SalonTouchableOpacity style={styles.navButton} onPress={goBack}>
+              <Text style={styles.navButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            isLoading ? (
+              <View style={styles.navButton}>
+                <ActivityIndicator />
+              </View>
             ) : (
               <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
                 <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
               </SalonTouchableOpacity>
-            )}
-
-        </SafeAreaView>
+              )
+          }
+        />
       ),
     };
   };
@@ -57,7 +56,7 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
   loadClients() {
     const { params = {} } = this.props.navigation.state;
     const clientId = params.clientId;
-    this.props.clientsActions.getMergeableClients(clientId, (response) => {});
+    this.props.clientsActions.getMergeableClients(clientId, (response) => { });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -102,7 +101,7 @@ justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD
           this.props.navigation.goBack();
         }
       } else {
-      //  Alert.alert('Error', 'Error merging clients. Please try again.');
+        //  Alert.alert('Error', 'Error merging clients. Please try again.');
       }
     });
   }

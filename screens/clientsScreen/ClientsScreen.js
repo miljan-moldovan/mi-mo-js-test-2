@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, SafeAreaView } from 'react-native';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 import { SafeAreaView } from 'react-navigation';
@@ -10,6 +10,7 @@ import SalonSearchHeader from '../../components/SalonSearchHeader';
 import Icon from '../../components/UI/Icon';
 import styles from './styles';
 import BarsActionSheet from '../../components/BarsActionSheet';
+import Colors from '../../constants/Colors';
 
 const query = {
   fromAllStores: false,
@@ -64,26 +65,31 @@ class ClientsScreen extends React.Component {
 
       leftButtonOnPress = defaultProps.defaultLeftButtonOnPress;
     }
+    const { routeName } = navigation.state;
     return {
       header: () => (
-        <SafeAreaView style={styles.safeAreaView}><SalonSearchHeader
-          clearSearch={clearSearch}
-          title={title}
-          subTitle={subTitle}
-          leftButton={leftButton}
-          leftButtonOnPress={() => {
-            if (clearSearch) {
-              clearSearch();
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <SalonSearchHeader
+            clearSearch={clearSearch}
+            title={title}
+            subTitle={subTitle}
+            leftButton={
+              routeName === 'ClientsMain' || routeName === 'ClientsStack'
+                ? null : leftButton
             }
-            leftButtonOnPress(navigation);
-          }}
-          rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
-          rightButtonOnPress={() => {
-            rightButtonOnPress(navigation);
-          }}
-          hasFilter
-          containerStyle={styles.headerContainer}
-        />
+            leftButtonOnPress={() => {
+              if (clearSearch) {
+                clearSearch();
+              }
+              leftButtonOnPress(navigation);
+            }}
+            rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
+            rightButtonOnPress={() => {
+              rightButtonOnPress(navigation);
+            }}
+            hasFilter
+            containerStyle={styles.headerContainer}
+          />
         </SafeAreaView>
       ),
     };

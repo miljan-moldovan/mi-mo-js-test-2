@@ -60,30 +60,7 @@ const ClientsStackNavigator = StackNavigator(
       screen: ProvidersScreen,
     },
   },
-  {
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#115ECD',
-        paddingHorizontal: 10,
-        paddingVertical: 14,
-        paddingTop: 20,
-        // height: 44,
-        // height: 35,
-        borderWidth: 0,
-        shadowColor: 'transparent',
-        elevation: 0,
-        borderBottomWidth: 0,
-        justifyContent: 'center',
-        // alignItems: 'center'
-      },
-      header: props => <ImageHeader {...props} />,
-      headerTitleStyle: {
-        fontFamily: 'OpenSans-Regular',
-        fontSize: 20,
-        color: '#fff',
-      },
-    },
-  },
+  {},
 );
 
 export default ClientsStackNavigator;

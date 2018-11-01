@@ -12,6 +12,8 @@ import Icon from '../../components/UI/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { SectionTitle } from '../../components/formHelpers';
 import SalonActionSheet from '../../components/SalonActionSheet';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 const styles = StyleSheet.create({
@@ -163,7 +165,7 @@ const ProductCard = props => (
       <View
         key={Math.random()}
         style={{
-        flex: 1, alignSelf: 'flex-start', justifyContent: 'flex-end', flexDirection: 'row',
+          flex: 1, alignSelf: 'flex-start', justifyContent: 'flex-end', flexDirection: 'row',
         }}
       >
         <View>
@@ -238,21 +240,25 @@ export default class RecommendationsScreen extends React.Component {
     headerTitle: 'Recommendations',
   });
 
-  static navigationOptions = rootProps => ({
-    headerTitle: <Text style={styles.titleText}>Recommended</Text>,
-    headerLeft:
-  <SalonTouchableOpacity
-    onPress={() => { rootProps.navigation.goBack(); }}
-    style={{ marginLeft: 10 }}
-  >
-    <Icon
-      name="angleLeft"
-      type="regular"
-      color="white"
-      size={24}
-    />
-  </SalonTouchableOpacity>,
-
+  static navigationOptions = ({ navigation }) => ({
+    header: (
+      <SalonHeader
+        title="Recommended"
+        headerLeft={
+          <SalonTouchableOpacity
+            onPress={navigation.goBack}
+            style={{ paddingLeft: 10 }}
+          >
+            <Icon
+              name="angleLeft"
+              type="regular"
+              color="white"
+              size={24}
+            />
+          </SalonTouchableOpacity>
+        }
+      />
+    ),
   });
 
   constructor(props) {
