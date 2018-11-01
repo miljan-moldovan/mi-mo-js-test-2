@@ -87,6 +87,6 @@ export default StyleSheet.create({
   providerWrapper: { marginRight: 5 },
   providerRootStyle: { paddingRight: smallDevice ? 10 : 16 },
   providerRequestedStyle: { paddingRight: smallDevice ? 10 : 16 },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
   inputGroupStyle: { paddingLeft: smallDevice ? 10 : 16 },
 });

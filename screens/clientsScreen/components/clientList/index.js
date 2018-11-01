@@ -185,7 +185,7 @@ class ClientList extends React.Component {
         onPress={() => { this.scrollToIndex((i), letter); }}
       >
         <View style={styles.letterContainer}>{letterComponent}</View>
-      </SalonTouchableHighlight>);
+                       </SalonTouchableHighlight>);
     }
 
     return (letterGuide);
@@ -238,7 +238,6 @@ class ClientList extends React.Component {
                 )}
                 renderSectionHeader={ClientList.renderSection}
                 ItemSeparatorComponent={ClientList.renderSeparator}
-                ListEmptyComponent={this.renderEmptyView}
                 refreshing={this.props.refreshing}
                 ListFooterComponent={this.renderMoreLoading}
               />

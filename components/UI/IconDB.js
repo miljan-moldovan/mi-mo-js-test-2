@@ -798,6 +798,8 @@ const Icons = {
   youtube: '\uf167',
   youtubePlay: '\uf16a',
   youtubeSquare: '\uf166',
+  calendarEdit: '\uf333',
+  userAlt: '\uf406',
 };
 
 export default Icons;

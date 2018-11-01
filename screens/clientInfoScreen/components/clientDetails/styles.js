@@ -93,7 +93,7 @@ export default StyleSheet.create({
   },
   referredClientView: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
   inputDivider: { marginBottom: 10 },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
   clientReferralTypeContainer: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
   inputStyle: { fontFamily: 'Roboto-Light' },
   dateValueStyle: { color: '#727A8F', fontFamily: 'Roboto-Light' },

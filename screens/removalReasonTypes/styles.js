@@ -52,5 +52,5 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   rightButtonContainer: { paddingTop: 20, paddingRight: 10 },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
 });

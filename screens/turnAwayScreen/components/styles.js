@@ -134,5 +134,5 @@ export default StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
   },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
 });
