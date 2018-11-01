@@ -3,7 +3,6 @@ import React from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
-import { SafeAreaView } from 'react-navigation';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';

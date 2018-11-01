@@ -1,6 +1,5 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 
 export default StyleSheet.create({
   container: {
@@ -25,6 +24,9 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 17,
     paddingTop: 15,
+    ...ifIphoneX({
+      paddingBottom: 30,
+    }, {}),
   },
   btnText: {
     color: '#fff',

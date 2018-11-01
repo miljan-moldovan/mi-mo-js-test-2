@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 
 const styles = StyleSheet.create({
   container: {
@@ -217,7 +218,12 @@ const styles = StyleSheet.create({
     paddingRight: 0,
     justifyContent: 'flex-start',
   },
-  bottomButtonsRoot: { minHeight: 44 },
+  bottomButtonsRoot: {
+    minHeight: 44,
+    ...ifIphoneX({
+      paddingBottom: 30,
+    }, {}),
+  },
   bottomButtonsContainer: { height: 44, paddingHorizontal: 0, paddingVertical: 0 },
   itemIcons: {
     flexDirection: 'column',

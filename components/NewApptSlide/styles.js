@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 import Colors from '../../constants/Colors';
 
 const styles = StyleSheet.create({
@@ -24,6 +25,9 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: 15,
+    ...ifIphoneX({
+      paddingBottom: 30,
+    }, {}),
   },
   dateText: {
     fontFamily: 'Roboto-Medium',
