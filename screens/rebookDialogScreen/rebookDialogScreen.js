@@ -79,6 +79,7 @@ class RebookDialogScreen extends Component {
       handleDone: () => this.saveRebook(),
     });
 
+    this.props.navigation.setParams({ hideTabBar: true });
 
     const { appointment } = this.props.navigation.state.params;
 
@@ -123,7 +124,7 @@ class RebookDialogScreen extends Component {
   }
 
   saveRebook() {
-    const { appointment } = this.props.navigation.state.params;
+    const { appointment, mustGoBack } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
     const rebookProviders = [];
@@ -139,24 +140,19 @@ class RebookDialogScreen extends Component {
 
     const { navigate } = this.props.navigation;
 
-    this.goBack();
+    if (mustGoBack) {
+      this.goBack();
+    }
 
-    navigate('SalonCalendar', {
+    this.props.rebookDialogActions.setRebookData({
       rebookAppointment: true,
       date: this.state.date,
-      // client: appointment.client,
       selectedAppointment: appointment,
       rebookProviders,
       rebookServices,
     });
-  }
 
-  finishedRebooking = (result, error) => {
-    if (result) {
-      this.props.navigation.goBack();
-    } else {
-      alert(error.message);
-    }
+    navigate('SalonCalendar', {});
   }
 
 
@@ -212,47 +208,41 @@ class RebookDialogScreen extends Component {
     return (
       <View style={styles.container}>
 
-        {this.props.rebookState.isLoading ? (
-          <View style={styles.activityIndicator}>
-            <ActivityIndicator />
-          </View>
-  ) : (
-
-    <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-      <SectionTitle value="HOW MANY WEEKS AHEAD TO REBOOK?" style={{ height: 37 }} />
-      <InputGroup >
-        <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={0} />
-        <InputDivider />
-        <InputLabel
-          label={this.state.date.format('DD MMMM YYYY')}
-        />
-
-        {appointment.services.length === 1 ?
-
-          <React.Fragment>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
+          <SectionTitle value="HOW MANY WEEKS AHEAD TO REBOOK?" style={{ height: 37 }} />
+          <InputGroup >
+            <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={0} />
             <InputDivider />
-            <InputSwitch
-              style={{ height: 43 }}
-              textStyle={{ color: '#000000' }}
-              onChange={this.OnChanageUpdateRebookingPref}
-              value={this.state.updateRebookingPref}
-              text="Update rebooking pref."
+            <InputLabel
+              label={this.state.date.format('DD MMMM YYYY')}
             />
-          </React.Fragment>
+
+            {appointment.services.length === 1 ?
+
+              <React.Fragment>
+                <InputDivider />
+                <InputSwitch
+                  style={{ height: 43 }}
+                  textStyle={{ color: '#000000' }}
+                  onChange={this.OnChanageUpdateRebookingPref}
+                  value={this.state.updateRebookingPref}
+                  text="Update rebooking pref."
+                />
+              </React.Fragment>
 
           : null
 
         }
-      </InputGroup>
-
-
-      {appointment.services.length > 1 ?
-        <React.Fragment>
-          <SectionTitle value="SERVICES TO REBOOK" style={{ height: 37 }} />
-          <InputGroup>
-            {appointment.services && appointment.services.map((service, index) => this.renderService(service, index))}
           </InputGroup>
-          {/*  <SectionDivider />
+
+
+          {appointment.services.length > 1 ?
+            <React.Fragment>
+              <SectionTitle value="SERVICES TO REBOOK" style={{ height: 37 }} />
+              <InputGroup>
+                {appointment.services && appointment.services.map((service, index) => this.renderService(service, index))}
+              </InputGroup>
+              {/*  <SectionDivider />
           <InputGroup >
             <InputSwitch
               style={{ height: 43 }}
@@ -262,9 +252,9 @@ class RebookDialogScreen extends Component {
               text="Update rebooking pref."
             />
           </InputGroup> */}
-        </React.Fragment>
+            </React.Fragment>
       : null}
-    </KeyboardAwareScrollView>)}
+        </KeyboardAwareScrollView>
       </View>
     );
   }
