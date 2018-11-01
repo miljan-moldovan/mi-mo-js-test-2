@@ -102,8 +102,11 @@ class QueueCombineScreen extends React.Component {
     }
   }
   prepareQueueData = (nextProps = {}) => {
-    const waitingQueue = nextProps.waitingQueue || this.props.waitingQueue;
-    const serviceQueue = nextProps.serviceQueue || this.props.serviceQueue;
+    let waitingQueue = nextProps.waitingQueue || this.props.waitingQueue;
+    waitingQueue = waitingQueue ? waitingQueue.filter(({ services }) => services.length > 0) : {};
+    let serviceQueue = nextProps.serviceQueue || this.props.serviceQueue;
+    serviceQueue = serviceQueue ? serviceQueue.filter(({ services }) => services.length > 0) : {};
+
     const queueData = [...waitingQueue, ...serviceQueue];
     const groups = nextProps.groups || this.props.groups || [];
     const groupData = [];

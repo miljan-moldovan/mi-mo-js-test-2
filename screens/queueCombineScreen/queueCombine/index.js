@@ -101,7 +101,7 @@ class QueueCombineItem extends React.PureComponent {
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
     const firstService = item.services[0] || {};
     const serviceName = (firstService.serviceName || '').toUpperCase();
-    const employee = !firstService.isFirstAvailable ? (`${firstService.employee.fullName || ''}`).toUpperCase() : 'First Available';
+    const employee = item.services.length > 0 && !firstService.isFirstAvailable ? (`${firstService.employee.fullName || ''}`).toUpperCase() : 'First Available';
 
     const color = item.groupId ? this.props.groups[item.groupId].color : null;
 
@@ -155,7 +155,6 @@ export class QueueCombine extends React.Component {
     }
   }
   searchText = (query: string) => {
-    
     const { data } = this.props;
 
     if (query === '') {
@@ -282,8 +281,6 @@ export class QueueUncombine extends React.Component {
   }
 
   componentWillReceiveProps(nextProps: Object) {
-
-
     if (nextProps.data !== this.props.data) {
       this.setState({ data: nextProps.data });
     }
@@ -300,7 +297,6 @@ export class QueueUncombine extends React.Component {
   }
 
   searchText = (query: string) => {
-
     const { data } = this.props;
 
     if (query === '') {
@@ -310,7 +306,6 @@ export class QueueUncombine extends React.Component {
     const text = query.toLowerCase();
 
     const filteredData = data.filter(({ data }) => {
-
       const filteredList = data.filter(({ queueItem }) => {
         const { client, services } = queueItem;
         let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;

@@ -67,7 +67,8 @@ componentWillReceiveProps({
   data, searchClient, searchProvider, filterText,
 }) {
   if (data !== this.props.data) {
-    const sortedItems = this.sortItems(this.state.sortItemsBy, data);
+    let sortedItems = this.sortItems(this.state.sortItemsBy, data);
+    sortedItems = sortedItems.filter(({ services }) => services.length > 0);
     this.setState({ data: sortedItems });
   }
   // if (nextProps.filterText !== null && nextProps.filterText !== this.props.filterText) {

@@ -119,8 +119,7 @@ class EditScheduleScreen extends React.Component {
     } else {
       // normal schedule for that day
       const employeeSchedules = this.props.employeeScheduleState.employeeSchedule.scheduledIntervals || false;
-      employeeScheduleOne = employeeSchedules.length > 0 ? employeeSchedules[0] : {};
-      employeeScheduleTwo = {};
+      [employeeScheduleOne, employeeScheduleTwo] = employeeSchedules;
     }
 
 
