@@ -7,11 +7,8 @@ let cancellationToken = null;
 
 export default async (includeWaitTimes = true) => {
   const apiInstance = await getApiInstance();
-  const query = qs.stringify({
-    includeWaitTimes,
-  });
   cancelRequest(cancellationToken);
-  return apiInstance.get(`Queue/Employees?${query}`, {
+  return apiInstance.get(`Queue/Employees`, {
     cancelToken: new axios.CancelToken((c) => {
       cancellationToken = c;
     }),
