@@ -10,7 +10,7 @@ import Icon from '../../../components/UI/Icon';
 
 const styles = StyleSheet.create({
   container: {
-    height: 63,
+    height: 44,
     paddingBottom: 10,
     backgroundColor: '#115ECD',
     flexDirection: 'row',

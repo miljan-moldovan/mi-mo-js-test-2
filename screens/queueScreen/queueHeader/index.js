@@ -139,7 +139,7 @@ class QueueHeader extends React.Component {
 
       </View>
     ) : (
-      <View style={[styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
+      <View style={[styles.headerContainer, { height: 44, paddingBottom: 10 }]}>
 
         <SalonActionSheet
           ref={o => this.SalonActionSheet = o}
