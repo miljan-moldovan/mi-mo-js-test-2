@@ -95,16 +95,14 @@ export default class App extends Component {
       );
     }
     return (
-      <SafeAreaView style={styles.safeArea} forceInset={{ bottom: 'never' }}>
-        <Provider store={store}>
-          <View style={styles.container}>
-            <OfflineNotice />
-            {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-            {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-            <RootNavigation />
-          </View>
-        </Provider>
-      </SafeAreaView>
+      <Provider store={store}>
+        <View style={styles.container}>
+          <OfflineNotice />
+          {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+          {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+          <RootNavigation />
+        </View>
+      </Provider>
     );
   }
 }

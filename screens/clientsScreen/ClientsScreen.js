@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, SafeAreaView } from 'react-native';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 
@@ -9,6 +9,7 @@ import SalonSearchHeader from '../../components/SalonSearchHeader';
 import Icon from '../../components/UI/Icon';
 import styles from './styles';
 import BarsActionSheet from '../../components/BarsActionSheet';
+import Colors from '../../constants/Colors';
 
 const query = {
   fromAllStores: false,
@@ -65,6 +66,7 @@ class ClientsScreen extends React.Component {
     }
     return {
       header: () => (
+        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
         <SalonSearchHeader
           clearSearch={clearSearch}
           title={title}
@@ -83,6 +85,7 @@ class ClientsScreen extends React.Component {
           hasFilter
           containerStyle={styles.headerContainer}
         />
+        </SafeAreaView>
       ),
     };
   };

@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
@@ -44,6 +45,7 @@ import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import Colors from '../../constants/Colors';
 
 export const SubTitle = props => (
   <View style={[styles.subTitleContainer, props.style || {}]}>
@@ -71,13 +73,16 @@ export default class NewAppointmentScreen extends React.Component {
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return ({
       ...headerStyles,
-      headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
+      title: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
       headerLeft: (
+        <SafeAreaView>
         <SalonTouchableOpacity style={leftButtonStyle} onPress={params.handleCancel}>
           <Text style={styles.headerButtonText}>Cancel</Text>
         </SalonTouchableOpacity>
+        </SafeAreaView>
       ),
       headerRight: (
+        <SafeAreaView>
         <SalonTouchableOpacity
           disabled={!canSave}
           style={rightButtonStyle}
@@ -85,6 +90,7 @@ export default class NewAppointmentScreen extends React.Component {
         >
           <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
         </SalonTouchableOpacity>
+        </SafeAreaView>
       ),
     });
   }

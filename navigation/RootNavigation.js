@@ -65,9 +65,7 @@ const RootDrawerNavigator = TabNavigator(
         if (previousScene.routeName === 'Clients' && previousScene.route !== scene.route) {
           screenProps.clientsActions.setClients([]);
         }
-        if (get(scene, 'index', false)) {
-          jumpToIndex(scene.index);
-        }
+        jumpToIndex(scene.index);
       },
     }),
     tabBarOptions: {

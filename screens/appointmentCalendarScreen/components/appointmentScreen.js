@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, SafeAreaView } from 'react-native';
 import moment from 'moment';
 import { filter, map, find } from 'lodash';
 
@@ -20,6 +20,8 @@ import BookAnother from './bookAnother';
 import RebookAppointment from './rebookAppointment';
 import SalonAlert from '../../../components/SalonAlert';
 import BarsActionSheet from '../../../components/BarsActionSheet';
+import Colors from '../../../constants/Colors';
+
 
 import styles from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
@@ -73,6 +75,7 @@ class AppointmentScreen extends Component {
 
     return {
       header: (
+        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
         <ApptCalendarHeader
           title={title}
           onPressMenu={params ? params.onPressMenu : null}
@@ -80,6 +83,7 @@ class AppointmentScreen extends Component {
           onPressEllipsis={params ? params.onPressEllipsis : null}
           onPressCalendar={params ? params.onPressCalendar : null}
         />
+        </SafeAreaView>
       ),
       tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
     };

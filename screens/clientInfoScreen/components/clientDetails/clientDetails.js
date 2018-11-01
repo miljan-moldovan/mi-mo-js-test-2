@@ -1000,6 +1000,7 @@ class ClientDetails extends Component {
                 </View>
               </InputGroup>
               <SectionDivider />
+              {/*
               {this.props.actionType === 'update' && this.props.canDelete ?
                 <React.Fragment>
                   <InputGroup>
@@ -1013,6 +1014,7 @@ class ClientDetails extends Component {
                   </InputGroup>
                   <SectionDivider />
                 </React.Fragment> : null }
+              */}
             </View>
           </KeyboardAwareScrollView>}
       </View>

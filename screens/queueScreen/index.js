@@ -6,6 +6,7 @@ import {
   View,
   Dimensions,
   Animated,
+  SafeAreaView
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -28,6 +29,7 @@ import Icon from '../../components/UI/Icon';
 import SalonModal from '../../components/SalonModal';
 import SalonTextInput from '../../components/SalonTextInput';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import Colors from '../../constants/Colors';
 
 const walkoutImage = require('../../assets/images/walkoutModal/icon_walkout.png');
 
@@ -48,6 +50,7 @@ class QueueScreen extends React.Component {
     } = params;
     return {
       header: (
+        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
         <QueueHeader
           navigation={navigation}
           onChangeSearchMode={onChangeSearchMode}
@@ -55,6 +58,7 @@ class QueueScreen extends React.Component {
           searchMode={searchMode}
           searchText={searchText}
         />
+        </SafeAreaView>
       ),
       tabBarVisible: true,
     };
