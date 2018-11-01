@@ -14,7 +14,6 @@ import {
   AsyncStorage,
   StatusBar,
   ActivityIndicator,
-  SafeAreaView,
 } from 'react-native';
 
 import OfflineNotice from './components/OfflineNotice';

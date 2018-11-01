@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { View, Text, ActivityIndicator, SafeAreaView, FlatList, AppState } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList, AppState } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import PropTypes from 'prop-types';
 import { filter } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';

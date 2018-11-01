@@ -3,9 +3,9 @@ import React from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get, isFunction } from 'lodash';

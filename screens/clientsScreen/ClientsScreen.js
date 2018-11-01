@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import { View, Text } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 

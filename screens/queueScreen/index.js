@@ -6,8 +6,8 @@ import {
   View,
   Dimensions,
   Animated,
-  SafeAreaView
 } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 // import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
