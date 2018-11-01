@@ -8,6 +8,7 @@
     "bundle:ios": "react-native bundle --entry-file ./index.js --platform ios --bundle-output ios/SalonUltimateRN/main.jsbundle"
   },
   "dependencies": {
+    "@mypharma/react-native-text-input-mask": "git+https://github.com/aprados/react-native-text-input-mask.git#master",
     "@yfuks/react-native-action-sheet": "0.0.4",
     "axios": "^0.18.0",
     "lodash": "4.17.5",
@@ -40,7 +41,7 @@
     "react-native-svg-uri": "1.2.3",
     "react-native-swiper": "1.5.13",
     "react-native-tab-view": "^1.0.2",
-    "react-native-text-input-mask": "0.5.2",
+    "react-native-text-input-mask": "git+https://github.com/aprados/react-native-text-input-mask#master",
     "react-native-touch-id": "^4.0.0",
     "react-native-wheel-datepicker": "^2.2.2",
     "react-native-wheel-picker": "^1.2.0",
