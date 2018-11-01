@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { ProviderInput, InputGroup, InputDivider, InputText } from '../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -136,39 +137,47 @@ export default class CancelAppointmentScreen extends React.Component {
     const scrollViewHeight = 86.5 * appointments.length;
     const height = scrollViewHeight > maxHeight ? maxHeight : scrollViewHeight;
     return (
-      <View
-        style={styles.container}
-        onLayout={this.measureView}
+      <KeyboardAwareScrollView
+        scrollEnabled={false}
+        showsVerticalScrollIndicator={false}
+        alwaysBounceVertical={false}
+        keyboardShouldPersistTaps="always"
+        enableAutoAutomaticScroll
       >
-        <ScrollView contentContainerStyle={{ maxHeight: height }} style={{ maxHeight: height }}>
-          {appointments.map(this.renderCard)}
-        </ScrollView>
-        <View style={styles.bottomContainer} onLayout={this.measureView2}>
-          <InputGroup>
-            <ProviderInput
-              placeholder="Select Employee"
-              labelText="Employee"
-              selectedProvider={selectedProvider}
-              avatarSize={20}
-              navigate={this.props.navigation.navigate}
-              headerProps={{ title: 'Providers', ...this.cancelButton() }}
-              onChange={this.setProvider}
-              apptBook
-            />
-            <InputDivider />
-            <Text style={styles.label}>Reason</Text>
-            <InputText
-              isEditable
-              placeholder="Please specify"
-              onChangeText={this.handleChange}
-              value={reason}
-            />
-          </InputGroup>
-          <Text style={styles.footer}>IN ORDER TO CANCEL THIS APPOINTMENT, PLEASE ENTER
-          YOUR REASON FOR CANCELING THE APPOINTMENT.
-          </Text>
+        <View
+          style={styles.container}
+          onLayout={this.measureView}
+        >
+          <ScrollView contentContainerStyle={{ maxHeight: height }} style={{ maxHeight: height }}>
+            {appointments.map(this.renderCard)}
+          </ScrollView>
+          <View style={styles.bottomContainer} onLayout={this.measureView2}>
+            <InputGroup>
+              <ProviderInput
+                placeholder="Select Employee"
+                labelText="Employee"
+                selectedProvider={selectedProvider}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+                onChange={this.setProvider}
+                apptBook
+              />
+              <InputDivider />
+              <Text style={styles.label}>Reason</Text>
+              <InputText
+                isEditable
+                placeholder="Please specify"
+                onChangeText={this.handleChange}
+                value={reason}
+              />
+            </InputGroup>
+            <Text style={styles.footer}>IN ORDER TO CANCEL THIS APPOINTMENT, PLEASE ENTER
+            YOUR REASON FOR CANCELING THE APPOINTMENT.
+            </Text>
+          </View>
         </View>
-      </View>
+      </KeyboardAwareScrollView>
     );
   }
 }
