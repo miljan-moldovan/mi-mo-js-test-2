@@ -38,6 +38,7 @@ import PromotionType from '../../../../constants/PromotionType';
 import { ServiceCard, ProductCard } from '../Cards';
 import styles from './styles';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
+import Colors from '../../../../constants/Colors';
 
 
 const CircularIcon = props => (

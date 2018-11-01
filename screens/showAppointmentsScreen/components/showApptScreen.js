@@ -10,6 +10,7 @@ import Icon from '../../../components/UI/Icon';
 import { Navigation } from '../../../models/propTypes';
 import { Client, AppointmentBook } from '../../../utilities/apiWrapper';
 import ClientInfoButton from '../../../components/ClientInfoButton';
+import SalonHeader from '../../../components/SalonHeader';
 
 const query = {
   SortOrder: 1,
@@ -23,37 +24,40 @@ class ShowApptScreen extends React.Component {
     const title = client ? `${client.name} ${client.lastName}` : '';
     const sendEmail = navigation.state.params.sendEmail ? navigation.state.params.sendEmail : null;
     return {
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{title}</Text>
-          <Text style={styles.subTitleText}>Appointment List</Text>
-        </View>),
-      headerLeft: (
-        <View style={styles.leftBtnContainer}>
-          <SalonTouchableOpacity
-            onPress={navigation.goBack}
-            style={styles.leftButton}
-          >
-            <Icon name="chevronLeft" style={styles.goBackIcon} type="regular" />
-          </SalonTouchableOpacity>
-        </View>),
-      headerRight: (
-        <View style={styles.rightBtnContainer}>
-          <ClientInfoButton
-            client={client}
-            navigation={navigation}
-            onDonePress={() => {}}
-            apptBook
-            style={styles.leftButton}
-            iconStyle={styles.infoIcon}
-          />
-          <SalonTouchableOpacity
-            onPress={sendEmail}
-            style={styles.leftButton}
-          >
-            <Icon name="envelope" style={styles.envelopeIcon} type="regular" />
-          </SalonTouchableOpacity>
-        </View>),
+      header: (
+        <SalonHeader
+          title={title}
+          subTitle="Appointment List"
+          headerLeft={(
+            <View style={styles.leftBtnContainer}>
+              <SalonTouchableOpacity
+                onPress={navigation.goBack}
+                style={styles.leftButton}
+              >
+                <Icon name="chevronLeft" style={styles.goBackIcon} type="regular" />
+              </SalonTouchableOpacity>
+            </View>
+          )}
+          headerRight={(
+            <View style={styles.rightBtnContainer}>
+              <ClientInfoButton
+                client={client}
+                navigation={navigation}
+                onDonePress={() => { }}
+                apptBook
+                style={styles.leftButton}
+                iconStyle={styles.infoIcon}
+              />
+              <SalonTouchableOpacity
+                onPress={sendEmail}
+                style={styles.leftButton}
+              >
+                <Icon name="envelope" style={styles.envelopeIcon} type="regular" />
+              </SalonTouchableOpacity>
+            </View>
+          )}
+        />
+      ),
     };
   };
   state = {

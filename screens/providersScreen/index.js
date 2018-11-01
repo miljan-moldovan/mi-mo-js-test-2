@@ -4,6 +4,7 @@ import providersActions from '../../actions/providers';
 import ProvidersScreen from './ProvidersScreen';
 import queueListSelector from '../../redux/selectors/providers/queueListSelector';
 import receptionistListSelector from '../../redux/selectors/providers/receptionistListSelector';
+import groupedSettingsSelector from '../../redux/selectors/settingsSelector';
 
 const mapStateToProps = state => ({
   settings: state.settingsReducer.settings,
@@ -12,6 +13,7 @@ const mapStateToProps = state => ({
   quickQueueEmployees: state.providersReducer.quickQueueEmployees,
   providersState: state.providersReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
+  groupedSettings: groupedSettingsSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({

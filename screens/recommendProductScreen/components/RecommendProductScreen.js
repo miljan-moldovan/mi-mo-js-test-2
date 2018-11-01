@@ -11,6 +11,8 @@ import {
   ValidatableInput,
   ProviderInput,
 } from '../../../components/formHelpers';
+import headerStyles from '../../../constants/headerStyles';
+import SalonHeader from '../../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,24 +49,31 @@ export default class RecommendProductScreen extends React.Component {
       canSave = params.isValidInfo();
     }
     return {
-      headerRight: (
-        <SalonTouchableOpacity
-          onPress={() => {
-            if (canSave) {
-              params.saveInfo();
-              navigation.goBack();
-            }
-          }}
-        >
-          <Text style={[styles.headerButtons, headerRightButtonStyle(canSave)]}>Done</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.headerButtons}>Cancel</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Recommend Product"
+          headerLeft={
+            <SalonTouchableOpacity
+              style={{ paddingLeft: 10 }}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.headerButtons}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity
+              style={{ paddingRight: 10 }}
+              onPress={() => {
+                if (canSave) {
+                  params.saveInfo();
+                  navigation.goBack();
+                }
+              }}
+            >
+              <Text style={[styles.headerButtons, headerRightButtonStyle(canSave)]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     };
   };
@@ -211,33 +220,33 @@ export default class RecommendProductScreen extends React.Component {
             onValidated={this.onValidateEmail}
             onChangeText={email => this.handleChangeText(email)}
           />
-            <InputDivider
-              style={[styles.divider, {
+          <InputDivider
+            style={[styles.divider, {
               backgroundColor: this.isValidEmailRegExp.test(clientEmail) ? null : '#D1242A',
             }]}
-            />
+          />
         </InputGroup>
-          <InputGroup style={styles.inputGroupContainer}>
-            <ProductInput
-              selectedProduct={selectedProduct}
-              placeholder="Select a Product"
-              apptBook
-              onChange={product => this.handleChangeProduct(product)}
-              navigate={this.props.navigation.navigate}
-            />
-            <InputDivider />
-            <ProviderInput
-              apptBook 
-              filterByService
-              client={client}
-              placeholder="Select a Provider"
-              navigate={this.props.navigation.navigate}
-              selectedProvider={selectedProvider}
-              onChange={this.handleSelectProvider}
-              showFirstAvailable = {false}
-              showEstimatedTime = {false}
-              headerProps={{ title: 'Providers', ...this.cancelButton() }}
-            />
+        <InputGroup style={styles.inputGroupContainer}>
+          <ProductInput
+            selectedProduct={selectedProduct}
+            placeholder="Select a Product"
+            apptBook
+            onChange={product => this.handleChangeProduct(product)}
+            navigate={this.props.navigation.navigate}
+          />
+          <InputDivider />
+          <ProviderInput
+            apptBook
+            filterByService
+            client={client}
+            placeholder="Select a Provider"
+            navigate={this.props.navigation.navigate}
+            selectedProvider={selectedProvider}
+            onChange={this.handleSelectProvider}
+            showFirstAvailable={false}
+            showEstimatedTime={false}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+          />
         </InputGroup>
       </View>
     );

@@ -8,33 +8,34 @@ import { ProviderInput, InputGroup, InputDivider, InputText } from '../../../com
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import styles from './cancelApptStyles';
 import Card from './card';
+import SalonHeader from '../../../components/SalonHeader';
 
 export default class CancelAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { state: { params: { isBtnEnabled, handleCancel } }, goBack } = navigation;
     const btnTextStyle = isBtnEnabled ? styles.btnText : styles.btnTextDisabled;
     return {
-      headerTitle: (
-        <View style={styles.headerTitle}>
-          <Text style={styles.title}>Confirm Cancelling Appt.</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          style={styles.btn}
-          onPress={goBack}
-        >
-          <Text style={styles.btnText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          disabled={!isBtnEnabled}
-          style={styles.btn}
-          onPress={handleCancel}
-        >
-          <Text style={btnTextStyle}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Confirm Cancelling Appt."
+          headerLeft={(
+            <SalonTouchableOpacity
+              style={[styles.btn, { marginLeft: 10 }]}
+              onPress={goBack}
+            >
+              <Text style={styles.btnText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              disabled={!isBtnEnabled}
+              style={[styles.btn, { marginRight: 10 }]}
+              onPress={handleCancel}
+            >
+              <Text style={btnTextStyle}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   };
@@ -93,17 +94,19 @@ export default class CancelAppointmentScreen extends React.Component {
   }
 
   measureView = ({ nativeEvent: { layout: { width, height } } }) => {
-    if (!this.state.height1){
-      this.setState((prevState) => ({
-          height1: height,
-      }));}
+    if (!this.state.height1) {
+      this.setState(prevState => ({
+        height1: height,
+      }));
+    }
   }
 
   measureView2 = ({ nativeEvent: { layout: { width, height } } }) => {
-  if(!this.state.height2){
-      this.setState((prevState) => ({
-          height2: height,
-      }));}
+    if (!this.state.height2) {
+      this.setState(prevState => ({
+        height2: height,
+      }));
+    }
   }
 
   renderCard = (appointment) => {

@@ -22,12 +22,53 @@ import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import styles from './stylesClientNotes';
+import Icon from '../../../../components/UI/Icon';
+import HeaderLateral from '../../../../components/HeaderLateral';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
+import headerStyles from '../../../../constants/headerStyles';
+import SalonHeader from '../../../../components/SalonHeader';
 
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
 
 class ClientNotesScreen extends Component {
+  static navigationOptions = rootProps => ({
+    header: (
+      <SalonHeader
+        title={`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}
+        subTitle="Appointment notes"
+        headerLeft={HeaderLateral({
+          handlePress: () => rootProps.navigation.goBack(),
+          button: (
+            <View style={styles.leftButtonContainer}>
+              <Icon
+                name="angleLeft"
+                size={28}
+                style={{ paddingHorizontal: 2 }}
+                color="#fff"
+                type="light"
+              />
+            </View>
+          ),
+        })}
+        headerRight={HeaderLateral({
+          handlePress: () => { alert('Not implemented'); },
+          button: (
+            <View style={styles.rightButtonContainer}>
+              <Icon
+                name="infoCircle"
+                size={20}
+                style={{ paddingHorizontal: 2 }}
+                color="#fff"
+                type="regular"
+              />
+            </View>
+          ),
+        })}
+      />
+    ),
+  })
+
   static flexFilter(list, info) {
     let matchesFilter = [];
     const matches = [];
@@ -93,7 +134,7 @@ class ClientNotesScreen extends Component {
     showDeleted: false,
     options: [
       'Edit Note',
-       'Delete Note',
+      'Delete Note',
       'Cancel',
     ],
     forAppointment: false,
@@ -419,9 +460,9 @@ class ClientNotesScreen extends Component {
     return (
       <View style={styles.container}>
 
-        { this.props.clientNotesState.isLoading &&
-        <LoadingOverlay />
-            }
+        {this.props.clientNotesState.isLoading &&
+          <LoadingOverlay />
+        }
 
 
         <SalonActionSheet
@@ -502,16 +543,16 @@ class ClientNotesScreen extends Component {
                         <View style={styles.noteHeaderRight}>
 
                           {this.state.editionMode &&
-                          <SalonTouchableOpacity
-                            style={styles.dotsButton}
-                            onPress={() => { this.showActionSheet(item); }}
-                          >
-                            <SalonIcon
-                              size={16}
-                              icon="dots"
-                              style={styles.dotsIcon}
-                            />
-                          </SalonTouchableOpacity>}
+                            <SalonTouchableOpacity
+                              style={styles.dotsButton}
+                              onPress={() => { this.showActionSheet(item); }}
+                            >
+                              <SalonIcon
+                                size={16}
+                                icon="dots"
+                                style={styles.dotsIcon}
+                              />
+                            </SalonTouchableOpacity>}
                         </View>
                       </View>]}
 
@@ -527,11 +568,11 @@ class ClientNotesScreen extends Component {
                           {item.text}
                         </Text>
                       </SalonViewMoreText>,
-                  ]}
+                    ]}
 
                     footerChildren={this.setNoteTags(item)}
                   />
-            )}
+                )}
               />
 
               <View style={styles.showDeletedButtonContainer}>
@@ -542,7 +583,7 @@ class ClientNotesScreen extends Component {
                   >
                     <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted/expired notes' : 'Show Deleted/expired notes'}</Text>
                   </SalonTouchableOpacity> : null
-              }
+                }
               </View>
 
             </View>
@@ -554,16 +595,16 @@ class ClientNotesScreen extends Component {
           <FloatingButton
             rootStyle={styles.floatingButtonRoot}
             handlePress={() => {
-            const { navigate } = this.props.navigation;
-            navigate('ClientNote', {
-            transition: 'SlideFromBottom',
-            actionType: 'new',
-            ...this.props,
-            apptBook,
-            client: this.props.client,
-             onNavigateBack: this.getNotes,
-            });
-          }}
+              const { navigate } = this.props.navigation;
+              navigate('ClientNote', {
+                transition: 'SlideFromBottom',
+                actionType: 'new',
+                ...this.props,
+                apptBook,
+                client: this.props.client,
+                onNavigateBack: this.getNotes,
+              });
+            }}
           >
             <SalonIcon
               size={24}

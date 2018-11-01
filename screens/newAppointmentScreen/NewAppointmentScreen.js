@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
@@ -35,6 +36,7 @@ import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails';
 import Icon from '../../components/UI/Icon';
+import SalonHeader from '../../components/SalonHeader';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -43,6 +45,8 @@ import { Store, Client, Services } from '../../utilities/apiWrapper';
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
+import Colors from '../../constants/Colors';
 
 export const SubTitle = props => (
   <View style={[styles.subTitleContainer, props.style || {}]}>
@@ -65,18 +69,28 @@ export default class NewAppointmentScreen extends React.Component {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
     const canSave = screenProps.isNewApptValid;
+    const leftButtonStyle = { paddingLeft: 10 };
+    const rightButtonStyle = { paddingRight: 10 };
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return ({
-      headerTitle: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
-      headerLeft: (
-        <SalonTouchableOpacity onPress={params.handleCancel}>
-          <Text style={styles.headerButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} onPress={params.handleSave}>
-          <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={editType === 'new' ? 'New Appointment' : 'Modify Appointment'}
+          headerLeft={
+            <SalonTouchableOpacity style={leftButtonStyle} onPress={params.handleCancel}>
+              <Text style={styles.headerButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity
+              disabled={!canSave}
+              style={rightButtonStyle}
+              onPress={params.handleSave}
+            >
+              <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     });
   }
@@ -813,7 +827,7 @@ export default class NewAppointmentScreen extends React.Component {
               noAvatar
               label="Booked by"
               placeholder={false}
-              showFirstAvailable={editType === 'new'}
+              showFirstAvailable={false}
               icon={isBookedByFieldEnabled ? 'default' : false}
               selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
               selectedProvider={bookedByEmployee}

@@ -2,11 +2,13 @@ import rebookActions, {
   POST_REBOOK,
   POST_REBOOK_SUCCESS,
   POST_REBOOK_FAILED,
+  SET_REBOOK_DATA,
 } from '../actions/rebookDialog';
 
 const initialState = {
   isLoading: false,
   error: null,
+  rebookData: {},
 };
 
 export default function rebookReducer(state = initialState, action) {
@@ -28,6 +30,11 @@ export default function rebookReducer(state = initialState, action) {
         ...state,
         isLoading: false,
         error: data.error,
+      };
+    case SET_REBOOK_DATA:
+      return {
+        ...state,
+        rebookData: data.rebookData,
       };
     default:
       return state;

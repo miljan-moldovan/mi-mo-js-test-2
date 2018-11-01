@@ -10,6 +10,7 @@ import { isNull, find } from 'lodash';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonCard from '../../components/SalonCard';
 import { AppointmentTime } from '../../components/slidePanels/SalonNewAppointmentSlide';
+import SalonHeader from '../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -100,6 +101,8 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: '500',
   },
+  rightButton: { paddingRight: 10 },
+  leftButton: { paddingLeft: 10 },
 });
 
 export default class ConflictsScreen extends React.Component {
@@ -121,21 +124,31 @@ export default class ConflictsScreen extends React.Component {
     const btnRightText = (hasheaderProps && params.headerProps.btnRightText) || 'Done';
     const canPerformAction = !find(navigation.state.params.conflicts, ['canBeSkipped', false]);
     return {
-      title: 'Conflicts',
-      subTitle: 'Test',
-      headerRight: (
-        <SalonTouchableOpacity onPress={onRightPress} disabled={!canPerformAction}>
-          <Text style={(canPerformAction && styles.btnHeaderText) || styles.btnHeaderDisabledText}>
-            {btnRightText}
-          </Text>
-        </SalonTouchableOpacity>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity onPress={onLeftPress}>
-          <Text style={styles.btnHeaderText}>
-            Cancel
-          </Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Conflicts"
+          headerRight={(
+            <SalonTouchableOpacity
+              style={styles.rightButton}
+              onPress={onRightPress}
+              disabled={!canPerformAction}
+            >
+              <Text style={(canPerformAction && styles.btnHeaderText) || styles.btnHeaderDisabledText}>
+                {btnRightText}
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+          headerLeft={(
+            <SalonTouchableOpacity
+              style={styles.leftButton}
+              onPress={navigation.goBack}
+            >
+              <Text style={styles.btnHeaderText}>
+                Cancel
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   }
@@ -178,7 +191,7 @@ export default class ConflictsScreen extends React.Component {
                 )}
                 <Text style={styles.conflictReasonText}>{conflict.reason}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                  { !isNull(conflict.serviceDescription) &&
+                  {!isNull(conflict.serviceDescription) &&
                     <Text style={styles.conflictServiceText}>{`${conflict.serviceDescription} ${conflict.employeeFullName ? 'with ' : ''}`}</Text>
                   }
                   {!isNull(conflict.employeeFullName) &&

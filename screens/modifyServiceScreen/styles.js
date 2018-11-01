@@ -30,7 +30,9 @@ export default StyleSheet.create({
     backgroundColor: 'transparent',
     textAlign: 'center',
   },
-  leftButtonContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  leftButtonContainer: {
+    paddingLeft: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+  },
   leftButtonText: { fontSize: 14, color: 'white', marginLeft: 5 },
   removeButton: { height: 44, alignItems: 'center', justifyContent: 'center' },
   removeButtonText: {

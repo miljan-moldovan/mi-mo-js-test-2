@@ -59,7 +59,4 @@ export default StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  sideButton: {
-    marginHorizontal: 10,
-  },
 });

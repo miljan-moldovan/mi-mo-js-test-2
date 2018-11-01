@@ -35,6 +35,7 @@ import agesEnum from '../../../../constants/Ages';
 import confirmByTypesEnum from '../../../../constants/ClientConfirmByTypes';
 import regexs from '../../../../constants/Regexs';
 import styles from './styles';
+import SalonHeader from '../../../../components/SalonHeader';
 
 const genders = [
   { key: gendersEnum.Unspecified, value: 'unspecified' },
@@ -87,6 +88,58 @@ const defaultClient = {
 };
 
 class ClientDetails extends Component {
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+    let title = 'Client Info';
+    if (params && params.client) {
+      title = `${params.client.name} ${params.client.lastName}`;
+    }
+
+    const props = this.props;
+
+    const canSave = params.canSave || false;
+    const showDoneButton = params.showDoneButton;
+    const handleDone = navigation.state.params.handleDone ?
+      navigation.state.params.handleDone :
+      () => { alert('Not Implemented'); };
+
+    const handleBack = params.handleBack ?
+      () => { params.handleBack(); navigation.goBack(); } :
+      navigation.goBack;
+
+    return ({
+      header: (
+        <SalonHeader
+          title={title}
+          headerLeft={(
+            <SalonTouchableOpacity onPress={handleBack}>
+              <View style={styles.backContainer}>
+                <FontAwesome style={styles.backIcon}>
+                  {Icons.angleLeft}
+                </FontAwesome>
+                <Text style={styles.leftButtonText}>
+                  Back
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            showDoneButton ? (
+              <SalonTouchableOpacity
+                disabled={!canSave}
+                onPress={handleDone}
+              >
+                <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+                  Done
+                </Text>
+              </SalonTouchableOpacity>
+            ) : null
+          )}
+        />
+      ),
+    });
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -725,11 +778,11 @@ class ClientDetails extends Component {
     return (
       <View style={styles.container}>
 
-        { (this.props.clientInfoState.isLoading || this.state.loadingClient) ?
+        {(this.props.clientInfoState.isLoading || this.state.loadingClient) ?
           <View style={styles.loadingContainer}>
             <ActivityIndicator />
           </View>
-        :
+          :
 
           <KeyboardAwareScrollView extraHeight={300} enableAutoAutomaticScroll={false}>
             <View pointerEvents={this.state.pointerEvents}>
@@ -848,7 +901,7 @@ class ClientDetails extends Component {
               <SectionTitle value="CONTACTS" style={styles.sectionTitle} />
               <InputGroup>
                 <ValidatableInput
-                    // validateOnChange
+                  // validateOnChange
                   keyboardType="email-address"
                   validation={this.isValidEmailRegExp}
                   label="Email"
@@ -953,7 +1006,7 @@ class ClientDetails extends Component {
                       <ActivityIndicator />
                     </View>
 
-                  : null}
+                    : null}
                 />
               </InputGroup>
 
@@ -991,7 +1044,7 @@ class ClientDetails extends Component {
                       placeholder=""
                       noValueStyle={!this.state.client.clientReferralType ? styles.dateValueStyle : {}}
                       value={this.state.client.clientReferralType ?
-                          this.state.client.clientReferralType : null}
+                        this.state.client.clientReferralType : null}
                       onChange={this.onChangeClientReferralTypes}
                       defaultOption={this.state.client.clientReferralType}
                       options={this.props.clientInfoState.clientReferralTypes}
@@ -1000,6 +1053,7 @@ class ClientDetails extends Component {
                 </View>
               </InputGroup>
               <SectionDivider />
+              {/*
               {this.props.actionType === 'update' && this.props.canDelete ?
                 <React.Fragment>
                   <InputGroup>
@@ -1013,6 +1067,7 @@ class ClientDetails extends Component {
                   </InputGroup>
                   <SectionDivider />
                 </React.Fragment> : null }
+              */}
             </View>
           </KeyboardAwareScrollView>}
       </View>

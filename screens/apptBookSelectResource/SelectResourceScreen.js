@@ -14,23 +14,30 @@ import {
   InputLabel,
   InputDivider,
 } from '../../components/formHelpers';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class SelectRoomScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Assigned Resource',
-    headerLeft: (
-      <SalonTouchableOpacity
-        onPress={() => navigation.goBack()}
-      >
-        <Text
-          style={{
+    header: (
+      <SalonHeader
+        title="Assigned Resource"
+        headerLeft={
+          <SalonTouchableOpacity
+            style={{ paddingLeft: 10 }}
+            onPress={() => navigation.goBack()}
+          >
+            <Text
+              style={{
             fontSize: 14,
             color: 'white',
           }}
-        >
+            >
           Cancel
-        </Text>
-      </SalonTouchableOpacity>
+            </Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   })
   state = {
@@ -92,19 +99,19 @@ export default class SelectRoomScreen extends React.Component {
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <ActivityIndicator />
           </View>
-      ) : (
-        <View style={{ flex: 1 }}>
-          <FlatList
-            data={this.state.resources}
-            ItemSeparatorComponent={() => (
-              <View style={{ paddingLeft: 16 }}>
-                <InputDivider />
-              </View>
-            )}
-            renderItem={({ item, index }) => this.renderItem(item.name, item)}
-          />
-        </View>
-      )}
+        ) : (
+          <View style={{ flex: 1 }}>
+            <FlatList
+              data={this.state.resources}
+              ItemSeparatorComponent={() => (
+                <View style={{ paddingLeft: 16 }}>
+                  <InputDivider />
+                </View>
+                )}
+              renderItem={({ item, index }) => this.renderItem(item.name, item)}
+            />
+          </View>
+          )}
       </View>
     );
   }

@@ -18,6 +18,8 @@ import SalonFlatPicker from '../../components/SalonFlatPicker';
 import styles from './styles';
 import * as actions from '../../actions/queue.js';
 import { QueueCombine, QueueUncombine } from './queueCombine';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -33,39 +35,39 @@ class QueueCombineScreen extends React.Component {
     const { params = {} } = navigation.state;
     const { onPressDone, loading } = params;
     const showDone = 'showDone' in params ? params.showDone : true;
-    const doneButton = showDone ?
-      (<SalonTouchableOpacity
+    const doneButton = showDone ? (
+      <SalonTouchableOpacity
         wait={3000}
         onPress={onPressDone}
       >
         <View style={styles.rightButtonContainer}>
           <Text style={[styles.rightButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
         </View>
-      </SalonTouchableOpacity>)
-      : null;
+      </SalonTouchableOpacity>
+    ) : null;
     const headerRight = (loading && showDone) ? (
       <View style={styles.navButton}>
         <ActivityIndicator />
       </View>) : (doneButton);
     return {
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Group</Text>
-        </View>
+      header: (
+        <SalonHeader
+          title="Group"
+          headerLeft={
+            <SalonTouchableOpacity
+              style={styles.leftButton}
+              onPress={() => { navigation.goBack(); }}
+            >
+              <View style={styles.leftButtonContainer}>
+                <Text style={styles.leftButtonText}>
+                  Close
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          }
+          headerRight={headerRight}
+        />
       ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          style={styles.leftButton}
-          onPress={() => { navigation.goBack(); }}
-        >
-          <View style={styles.leftButtonContainer}>
-            <Text style={styles.leftButtonText}>
-            Close
-            </Text>
-          </View>
-        </SalonTouchableOpacity>
-      ),
-      headerRight,
     };
   };
 
@@ -234,7 +236,7 @@ class QueueCombineScreen extends React.Component {
       alertDone: TAB_CHANGE_LEADER,
     }, () => {
       this.confirmation();
-    //  this.updateNavButtons
+      //  this.updateNavButtons
     });
   }
   toggleSort = () => {
@@ -308,7 +310,7 @@ class QueueCombineScreen extends React.Component {
           />
         }
         {this.state.activeTab === TAB_COMBINED &&
-        <View style={{ marginTop: 23 }}>{uncombined}</View>
+          <View style={{ marginTop: 23 }}>{uncombined}</View>
         }
 
       </KeyboardAwareScrollView>

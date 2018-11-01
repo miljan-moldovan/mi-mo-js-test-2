@@ -25,6 +25,8 @@ import {
 import ServiceSection from './components/serviceSection';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 class WalkInScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -43,30 +45,30 @@ class WalkInScreen extends Component {
     }
 
     return ({
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Walk-in</Text>
-          <Text style={styles.subTitleText}>{waitTime}m Est. wait</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity style={styles.sideButtons} onPress={() => { navigation.goBack(); }}>
-          <View style={styles.leftButtonContainer}>
-            <FontAwesome style={styles.headerLeftIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
-            <Text style={styles.leftButtonText}>
-              Back
-            </Text>
-          </View>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} style={styles.sideButtons} onPress={handlePress}>
-          <View style={styles.rightButtonContainer}>
-            <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
-          </View>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Walk-in"
+          subTitle={`${waitTime}m Est. wait`}
+          headerLeft={(
+            <SalonTouchableOpacity style={[styles.sideButtons, { paddingLeft: 10 }]} onPress={() => { navigation.goBack(); }}>
+              <View style={styles.leftButtonContainer}>
+                <FontAwesome style={styles.headerLeftIcon}>
+                  {Icons.angleLeft}
+                </FontAwesome>
+                <Text style={styles.leftButtonText}>
+                  Back
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity disabled={!canSave} style={[styles.sideButtons, { paddingRight: 10 }]} onPress={handlePress}>
+              <View style={styles.rightButtonContainer}>
+                <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     });
   };
@@ -98,7 +100,7 @@ class WalkInScreen extends Component {
       }];
       this.setState({ services }, this.setStateClientInfo(client));
     }
-    
+
     const { navigation } = this.props;
     // We can only set the function after the component has been initialized
     navigation.setParams({
@@ -118,7 +120,7 @@ class WalkInScreen extends Component {
   componentWillReceiveProps(nextProps) {
     const prevClientInfo = this.state.client;
     const newClientInfo = nextProps.clientInfoState.client;
-    if (prevClientInfo.id === newClientInfo.id && 
+    if (prevClientInfo.id === newClientInfo.id &&
       !isEqual(prevClientInfo, newClientInfo)) {
       this.setStateClientInfo(newClientInfo);
     }
@@ -131,7 +133,9 @@ class WalkInScreen extends Component {
     const clientPhone = phones.find(item => (get(item, 'type', null) === ClientPhoneTypes.cell));
     const phone = get(clientPhone, 'value', '');
 
-    this.setState({ client, email, phone, currentPhone });
+    this.setState({
+      client, email, phone, currentPhone,
+    });
   }
 
 
@@ -228,8 +232,8 @@ class WalkInScreen extends Component {
         this.saving = false;
         const params = this.props.navigation.state.params || {};
         params.loadQueueData();
-        this.props.navigation.popToTop({immediate: true});
-      });  
+        this.props.navigation.popToTop({ immediate: true });
+      });
     }
   }
 
@@ -305,7 +309,7 @@ class WalkInScreen extends Component {
     if (email) {
       updateObject.email = newEmail;
     }
-    
+
     const updated = await Client.putContactInformation(
       client.id,
       updateObject,
@@ -382,7 +386,7 @@ class WalkInScreen extends Component {
       if (email === '' || isNull(email)) {
         return true;
       }
-      
+
       const result = this.isValidEmailRegExp.test(email);
       return result;
     }
@@ -398,7 +402,7 @@ class WalkInScreen extends Component {
     onValidateEmail = isValid => this.setState((state) => {
       const newState = state;
       newState.isValidEmail = isValid || (isNull(state.client.email) && state.email === '');
-  
+
       return newState;
     });
 
@@ -428,40 +432,40 @@ class WalkInScreen extends Component {
         ) : (
           <View style={styles.container}>
             <SectionTitle value="CLIENT" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
-              <InputGroup style={styles.inputGroupStyle}>
-                <ClientInput
-                  walkin
-                  style={styles.rootStyle}
-                  navigate={this.props.navigation.navigate}
-                  push={this.props.navigation.push}
-                  label={this.state.client === null ? 'Client' : 'Client'}
-                  headerProps={{
+            <InputGroup style={styles.inputGroupStyle}>
+              <ClientInput
+                walkin
+                style={styles.rootStyle}
+                navigate={this.props.navigation.navigate}
+                push={this.props.navigation.push}
+                label={this.state.client === null ? 'Client' : 'Client'}
+                headerProps={{
                 title: 'Clients',
                 leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
                   leftButtonOnPress: (navigation) => {
                     navigation.goBack();
                   },
                 }}
-                  selectedClient={client}
-                  onChange={this.onChangeClient}
-                  extraComponents={client !== null && this.renderExtraClientButtons()}
-                />
-                  <InputDivider />
-                {this.renderEmailField(client)}
-                  <InputDivider />
-                {this.renderPhoneField(client)}
-              </InputGroup>
-                <SectionTitle value="SERVICE AND PROVIDER" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
-                  <ServiceSection
-                    services={this.state.services}
-                    onAdd={this.handleAddService}
-                    onRemove={this.handleRemoveService}
-                    onUpdate={this.handleUpdateService}
-                    cancelButton={this.cancelButton}
-                    navigate={this.props.navigation.navigate}
-                    push={this.props.navigation.push}
-                    walkin
-                  />
+                selectedClient={client}
+                onChange={this.onChangeClient}
+                extraComponents={client !== null && this.renderExtraClientButtons()}
+              />
+              <InputDivider />
+              {this.renderEmailField(client)}
+              <InputDivider />
+              {this.renderPhoneField(client)}
+            </InputGroup>
+            <SectionTitle value="SERVICE AND PROVIDER" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
+            <ServiceSection
+              services={this.state.services}
+              onAdd={this.handleAddService}
+              onRemove={this.handleRemoveService}
+              onUpdate={this.handleUpdateService}
+              cancelButton={this.cancelButton}
+              navigate={this.props.navigation.navigate}
+              push={this.props.navigation.push}
+              walkin
+            />
           </View>)}
         </ScrollView>
       );

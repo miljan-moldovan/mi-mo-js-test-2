@@ -40,6 +40,7 @@ import promotionsReducer from './promotions';
 import scheduleReducer from './schedule';
 import { AT } from '../actions/login';
 import removalReasonTypesReducer from './removalReasonTypes';
+import navigationReducer from './navigation';
 
 const appReducer = combineReducers({
   auth,
@@ -79,6 +80,7 @@ const appReducer = combineReducers({
   promotionsReducer,
   removalReasonTypesReducer,
   scheduleReducer,
+  navigationReducer,
 });
 
 const rootReducer = (state, action) => {

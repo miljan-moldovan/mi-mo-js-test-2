@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { View, Text, ActivityIndicator, FlatList, AppState } from 'react-native';
+import { View, Text, ActivityIndicator, SafeAreaView, FlatList, AppState } from 'react-native';
 import PropTypes from 'prop-types';
 import { filter } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -14,6 +14,7 @@ import * as authAction from '../../actions/login';
 import ErrorsView from '../../components/ErrorsView';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import salonSearchHeaderActions from '../../reducers/searchHeader';
+import Colors from '../../constants/Colors';
 
 class SelectStoreScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -26,17 +27,21 @@ class SelectStoreScreen extends React.Component {
 
     const rightButtonOnPress = () => {};
     return {
-      header: () => (<SalonSearchHeader
-        title="Stores"
-        leftButton={leftButton}
-        leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
-        rightButton={null}
-        rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
-        hasFilter={false}
-        containerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />),
+      header: () => (
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <SalonSearchHeader
+            title="Stores"
+            leftButton={leftButton}
+            leftButtonOnPress={() => { leftButtonOnPress(navigation); }}
+            rightButton={null}
+            rightButtonOnPress={() => { rightButtonOnPress(navigation); }}
+            hasFilter={false}
+        //     containerStyle={{
+        //   paddingHorizontal: 20,
+        // }}
+          />
+        </SafeAreaView>
+      ),
     };
   }
 

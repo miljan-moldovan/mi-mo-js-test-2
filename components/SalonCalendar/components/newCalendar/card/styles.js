@@ -88,5 +88,6 @@ export default StyleSheet.create({
   badgesContainer: {
     flexDirection: 'row',
     marginTop: 2,
+    marginRight: 2,
   },
 });

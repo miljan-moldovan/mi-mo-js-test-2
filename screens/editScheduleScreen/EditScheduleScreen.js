@@ -20,6 +20,7 @@ import {
 import SchedulePicker from '../../components/formHelpers/components/SchedulePicker';
 import styles from './styles';
 import ScheduleTypesEnum from '../../constants/ScheduleTypes';
+import SalonHeader from '../../components/SalonHeader';
 
 const scheduleTypes = [
   { id: ScheduleTypesEnum.Personal, name: 'Personal' },
@@ -36,35 +37,31 @@ class EditScheduleScreen extends React.Component {
     const employee = params.employee || { name: 'First', lastName: 'Available' };
 
     return {
-      headerTitle: (
-        <View style={styles.headerTitle}>
-          <Text style={styles.headerTitleTitle}>
-          Edit Schedule
-          </Text>
-          <Text style={styles.headerTitleSubTitle}>
-            {`${employee.name} ${employee.lastName[0]}`}
-          </Text>
-        </View>
-      ),
-
-      headerLeft: (
-        <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.headerLeftText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          disabled={!canSave}
-          onPress={() => {
-          if (navigation.state.params.handleDone) {
-            navigation.state.params.handleDone();
+      header: (
+        <SalonHeader
+          title="Edit Schedule"
+          subTitle={`${employee.name} ${employee.lastName[0]}`}
+          headerLeft={
+            <SalonTouchableOpacity style={styles.leftButton} onPress={() => navigation.goBack()}>
+              <Text style={styles.headerLeftText}>Cancel</Text>
+            </SalonTouchableOpacity>
           }
-        }}
-        >
-          <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-          Done
-          </Text>
-        </SalonTouchableOpacity>
+          headerRight={
+            <SalonTouchableOpacity
+              style={styles.rightButton}
+              disabled={!canSave}
+              onPress={() => {
+                if (navigation.state.params.handleDone) {
+                  navigation.state.params.handleDone();
+                }
+              }}
+            >
+              <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+                Done
+              </Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     };
   }
@@ -134,7 +131,7 @@ class EditScheduleScreen extends React.Component {
     otherReason = otherReason !== null ? otherReason : '';
 
     const hoursWorking = employeeScheduleOne ? ((!!employeeScheduleOne.start && !!employeeScheduleOne.end) ||
-    (!!employeeScheduleTwo.start && !!employeeScheduleTwo.end)) : false;
+      (!!employeeScheduleTwo.start && !!employeeScheduleTwo.end)) : false;
 
     let selectedScheduleExceptionReason = scheduleTypes.find(_scheduleType =>
       _scheduleType.id === scheduleTypeId);
@@ -170,58 +167,58 @@ class EditScheduleScreen extends React.Component {
   }
 
 
-    handleDone = () => {
-      let {
-        startTimeScheduleOne, endTimeScheduleOne, startTimeScheduleTwo, endTimeScheduleTwo,
-        otherReason, selectedScheduleExceptionReason,
-      } = this.state;
+  handleDone = () => {
+    let {
+      startTimeScheduleOne, endTimeScheduleOne, startTimeScheduleTwo, endTimeScheduleTwo,
+      otherReason, selectedScheduleExceptionReason,
+    } = this.state;
 
-      const params = this.props.navigation.state.params || {};
-      const employee = params.employee || { name: 'First', lastName: 'Available' };
+    const params = this.props.navigation.state.params || {};
+    const employee = params.employee || { name: 'First', lastName: 'Available' };
 
-      const formatedDate = moment(this.props.date).format('YYYY-MM-DD');
+    const formatedDate = moment(this.props.date).format('YYYY-MM-DD');
 
-      if (!this.state.hoursWorking) {
-        startTimeScheduleOne = null;
-        endTimeScheduleOne = null;
-        startTimeScheduleTwo = null;
-        endTimeScheduleTwo = null;
-      } else {
-        startTimeScheduleOne = startTimeScheduleOne ? startTimeScheduleOne.format('HH:mm:ss') : null;
-        endTimeScheduleOne = endTimeScheduleOne ? endTimeScheduleOne.format('HH:mm:ss') : null;
-        startTimeScheduleTwo = startTimeScheduleTwo && endTimeScheduleTwo ? startTimeScheduleTwo.format('HH:mm:ss') : null;
-        endTimeScheduleTwo = endTimeScheduleTwo && startTimeScheduleTwo ? endTimeScheduleTwo.format('HH:mm:ss') : null;
-      }
-
-      const employeeSchedule = this.props.employeeScheduleState.employeeScheduleException
-        ?
-        this.props.employeeScheduleState.employeeScheduleException :
-        this.props.employeeScheduleState.employeeSchedule;
-
-      const schedule = {
-        existingExceptionId: employeeSchedule.id,
-        startDate: formatedDate,
-        endDate: formatedDate,
-        start1: startTimeScheduleOne,
-        end1: endTimeScheduleOne,
-        start2: startTimeScheduleTwo,
-        end2: endTimeScheduleTwo,
-        period: 0,
-        periodType: 0,
-        weekday: moment(this.props.date).isoWeekday(),
-        comments: selectedScheduleExceptionReason.id === ScheduleTypesEnum.Regular && otherReason.length > 0 ? otherReason : '',
-        scheduleType: selectedScheduleExceptionReason.id,
-        offType: 1,
-      };
-
-
-      this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formatedDate, (result) => {
-        if (result) {
-          this.props.appointmentCalendarActions.setGridView();
-          this.props.navigation.goBack();
-        }
-      });
+    if (!this.state.hoursWorking) {
+      startTimeScheduleOne = null;
+      endTimeScheduleOne = null;
+      startTimeScheduleTwo = null;
+      endTimeScheduleTwo = null;
+    } else {
+      startTimeScheduleOne = startTimeScheduleOne ? startTimeScheduleOne.format('HH:mm:ss') : null;
+      endTimeScheduleOne = endTimeScheduleOne ? endTimeScheduleOne.format('HH:mm:ss') : null;
+      startTimeScheduleTwo = startTimeScheduleTwo && endTimeScheduleTwo ? startTimeScheduleTwo.format('HH:mm:ss') : null;
+      endTimeScheduleTwo = endTimeScheduleTwo && startTimeScheduleTwo ? endTimeScheduleTwo.format('HH:mm:ss') : null;
     }
+
+    const employeeSchedule = this.props.employeeScheduleState.employeeScheduleException
+      ?
+      this.props.employeeScheduleState.employeeScheduleException :
+      this.props.employeeScheduleState.employeeSchedule;
+
+    const schedule = {
+      existingExceptionId: employeeSchedule.id,
+      startDate: formatedDate,
+      endDate: formatedDate,
+      start1: startTimeScheduleOne,
+      end1: endTimeScheduleOne,
+      start2: startTimeScheduleTwo,
+      end2: endTimeScheduleTwo,
+      period: 0,
+      periodType: 0,
+      weekday: moment(this.props.date).isoWeekday(),
+      comments: selectedScheduleExceptionReason.id === ScheduleTypesEnum.Regular && otherReason.length > 0 ? otherReason : '',
+      scheduleType: selectedScheduleExceptionReason.id,
+      offType: 1,
+    };
+
+
+    this.props.employeeScheduleActions.putEmployeeSchedule(employee.id, schedule, formatedDate, (result) => {
+      if (result) {
+        this.props.appointmentCalendarActions.setGridView();
+        this.props.navigation.goBack();
+      }
+    });
+  }
 
   handleChangestartTimeScheduleOne = (startTimeScheduleOneDateObj) => {
     const startTimeScheduleOne = moment(startTimeScheduleOneDateObj);
@@ -240,229 +237,229 @@ class EditScheduleScreen extends React.Component {
   }
 
 
-    handleChangestartTimeScheduleTwo = (startTimeScheduleTwoDateObj) => {
-      const startTimeScheduleTwo = moment(startTimeScheduleTwoDateObj);
+  handleChangestartTimeScheduleTwo = (startTimeScheduleTwoDateObj) => {
+    const startTimeScheduleTwo = moment(startTimeScheduleTwoDateObj);
 
-      return this.setState({
-        startTimeScheduleTwo,
-      }, this.checkCanSave);
+    return this.setState({
+      startTimeScheduleTwo,
+    }, this.checkCanSave);
+  }
+
+  handleChangeendTimeScheduleTwo = (endTimeScheduleTwoDateObj) => {
+    const endTimeScheduleTwo = moment(endTimeScheduleTwoDateObj);
+
+    return this.setState({
+      endTimeScheduleTwo,
+    }, this.checkCanSave);
+  }
+
+  onChangeOtherReason = (text) => {
+    this.setState({ otherReason: text }, this.checkCanSave);
+  }
+
+  onChangeInputSwitch = (state) => {
+    const hoursWorking = !this.state.hoursWorking;
+
+    if (hoursWorking) {
+      this.onPressRadioGroup(scheduleTypes.find(_scheduleType =>
+        _scheduleType.id === ScheduleTypesEnum.Regular));
     }
 
-    handleChangeendTimeScheduleTwo = (endTimeScheduleTwoDateObj) => {
-      const endTimeScheduleTwo = moment(endTimeScheduleTwoDateObj);
+    this.setState({
+      hoursWorking,
+    }, this.checkCanSave);
+  }
 
-      return this.setState({
-        endTimeScheduleTwo,
-      }, this.checkCanSave);
+  pickerToogleStartTimeOne = () => {
+    if (this.state.startTimeScheduleOnePickerOpen) {
+      if (this.state.startTimeScheduleOne.isAfter(this.state.endTimeScheduleOne)) {
+        return alert("Start time can't be after end time");
+      }
     }
 
-    onChangeOtherReason = (text) => {
-      this.setState({ otherReason: text }, this.checkCanSave);
+    this.setState({ startTimeScheduleOnePickerOpen: !this.state.startTimeScheduleOnePickerOpen });
+  };
+
+  pickerToogleEndTimeOne = () => {
+    if (this.state.endTimeScheduleOnePickerOpen) {
+      if (this.state.startTimeScheduleOne.isAfter(this.state.endTimeScheduleOne)) {
+        return alert("Start time can't be after end time");
+      }
     }
 
-    onChangeInputSwitch = (state) => {
-      const hoursWorking = !this.state.hoursWorking;
+    this.setState({ endTimeScheduleOnePickerOpen: !this.state.endTimeScheduleOnePickerOpen });
+  };
 
-      if (hoursWorking) {
-        this.onPressRadioGroup(scheduleTypes.find(_scheduleType =>
-          _scheduleType.id === ScheduleTypesEnum.Regular));
+  pickerToogleStartTimeTwo = () => {
+    if (this.state.startTimeScheduleTwoPickerOpen) {
+      if (this.state.startTimeScheduleTwo.isAfter(this.state.endTimeScheduleTwo)) {
+        return alert("Start time can't be after end time");
+      } else if (this.state.endTimeScheduleOne.isAfter(this.state.startTimeScheduleTwo)) {
+        return alert("Start time schedule two can't be before end time schedule one");
       }
-
-      this.setState({
-        hoursWorking,
-      }, this.checkCanSave);
     }
 
-    pickerToogleStartTimeOne = () => {
-      if (this.state.startTimeScheduleOnePickerOpen) {
-        if (this.state.startTimeScheduleOne.isAfter(this.state.endTimeScheduleOne)) {
-          return alert("Start time can't be after end time");
-        }
+    this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen });
+  };
+
+  pickerToogleEndTimeTwo = () => {
+    if (this.state.endTimeScheduleTwoPickerOpen) {
+      if (this.state.startTimeScheduleTwo.isAfter(this.state.endTimeScheduleTwo)) {
+        return alert("Start time can't be after end time");
       }
+    }
+    this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen });
+  };
 
-      this.setState({ startTimeScheduleOnePickerOpen: !this.state.startTimeScheduleOnePickerOpen });
-    };
+  onPressRadioGroup = (option, index) => {
+    const isEditableOtherReason = option.id === ScheduleTypesEnum.Regular;
+    let { hoursWorking, otherReason } = this.state;
 
-    pickerToogleEndTimeOne = () => {
-      if (this.state.endTimeScheduleOnePickerOpen) {
-        if (this.state.startTimeScheduleOne.isAfter(this.state.endTimeScheduleOne)) {
-          return alert("Start time can't be after end time");
-        }
-      }
-
-      this.setState({ endTimeScheduleOnePickerOpen: !this.state.endTimeScheduleOnePickerOpen });
-    };
-
-    pickerToogleStartTimeTwo = () => {
-      if (this.state.startTimeScheduleTwoPickerOpen) {
-        if (this.state.startTimeScheduleTwo.isAfter(this.state.endTimeScheduleTwo)) {
-          return alert("Start time can't be after end time");
-        } else if (this.state.endTimeScheduleOne.isAfter(this.state.startTimeScheduleTwo)) {
-          return alert("Start time schedule two can't be before end time schedule one");
-        }
-      }
-
-      this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen });
-    };
-
-    pickerToogleEndTimeTwo = () => {
-      if (this.state.endTimeScheduleTwoPickerOpen) {
-        if (this.state.startTimeScheduleTwo.isAfter(this.state.endTimeScheduleTwo)) {
-          return alert("Start time can't be after end time");
-        }
-      }
-      this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen });
-    };
-
-    onPressRadioGroup = (option, index) => {
-      const isEditableOtherReason = option.id === ScheduleTypesEnum.Regular;
-      let { hoursWorking, otherReason } = this.state;
-
-      if (!isEditableOtherReason) {
-        hoursWorking = false;
-        otherReason = '';
-      }
-
-      this.setState({
-        otherReason, hoursWorking, selectedScheduleExceptionReason: option, isEditableOtherReason,
-      }, this.checkCanSave);
+    if (!isEditableOtherReason) {
+      hoursWorking = false;
+      otherReason = '';
     }
 
-    checkCanSave = () => {
-      const {
-        startTimeScheduleOne, endTimeScheduleOne,
-        startTimeScheduleTwo, endTimeScheduleTwo,
-      } = this.state;
+    this.setState({
+      otherReason, hoursWorking, selectedScheduleExceptionReason: option, isEditableOtherReason,
+    }, this.checkCanSave);
+  }
 
-      let canSave = true;
+  checkCanSave = () => {
+    const {
+      startTimeScheduleOne, endTimeScheduleOne,
+      startTimeScheduleTwo, endTimeScheduleTwo,
+    } = this.state;
 
-      const format = 'hh:mm:ss';
+    let canSave = true;
 
-      if (this.state.hoursWorking) {
-        if ((!!startTimeScheduleOne && !!endTimeScheduleOne) &&
-          startTimeScheduleOne.length > 0 && endTimeScheduleOne.length > 0) {
-          canSave = (!!startTimeScheduleOne && !!endTimeScheduleOne) &&
+    const format = 'hh:mm:ss';
+
+    if (this.state.hoursWorking) {
+      if ((!!startTimeScheduleOne && !!endTimeScheduleOne) &&
+        startTimeScheduleOne.length > 0 && endTimeScheduleOne.length > 0) {
+        canSave = (!!startTimeScheduleOne && !!endTimeScheduleOne) &&
           endTimeScheduleOne.isAfter(startTimeScheduleOne);
-        }
-
-        if (!!startTimeScheduleTwo && !!endTimeScheduleTwo) {
-          if (startTimeScheduleTwo.length > 0 && endTimeScheduleTwo.length > 0) {
-            canSave = endTimeScheduleTwo.isAfter(startTimeScheduleTwo) &&
-            startTimeScheduleTwo.isAfter(endTimeScheduleOne);
-          }
-        } else if ((!!endTimeScheduleTwo && startTimeScheduleTwo === '')
-          ||
-          (!!startTimeScheduleTwo && endTimeScheduleTwo === '')) {
-          canSave = false;
-        }
       }
 
-      this.props.navigation.setParams({ canSave });
+      if (!!startTimeScheduleTwo && !!endTimeScheduleTwo) {
+        if (startTimeScheduleTwo.length > 0 && endTimeScheduleTwo.length > 0) {
+          canSave = endTimeScheduleTwo.isAfter(startTimeScheduleTwo) &&
+            startTimeScheduleTwo.isAfter(endTimeScheduleOne);
+        }
+      } else if ((!!endTimeScheduleTwo && startTimeScheduleTwo === '')
+        ||
+        (!!startTimeScheduleTwo && endTimeScheduleTwo === '')) {
+        canSave = false;
+      }
     }
 
-    render() {
-      const {
-        startTimeScheduleOne,
-        endTimeScheduleOne,
-        startTimeScheduleTwo,
-        endTimeScheduleTwo,
-      } = this.state;
+    this.props.navigation.setParams({ canSave });
+  }
 
-      const params = this.props.navigation.state.params || {};
-      const date = params.date || moment();
+  render() {
+    const {
+      startTimeScheduleOne,
+      endTimeScheduleOne,
+      startTimeScheduleTwo,
+      endTimeScheduleTwo,
+    } = this.state;
 
-      return (
-        <View style={styles.container}>
+    const params = this.props.navigation.state.params || {};
+    const date = params.date || moment();
 
-          {this.props.employeeScheduleState.isLoading ? (
-            <View style={styles.activityIndicator}>
-              <ActivityIndicator />
-            </View>
-      ) : (
+    return (
+      <View style={styles.container}>
 
-        <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={70} enableAutoAutomaticScroll>
-          <InputGroup style={styles.inputGroup}>
-            <InputSwitch
-              style={styles.inputSwitch}
-              textStyle={styles.inputSwitchText}
-              onChange={this.onChangeInputSwitch}
-              value={this.state.hoursWorking}
-              text="Hours Working"
-            />
-          </InputGroup>
+        {this.props.employeeScheduleState.isLoading ? (
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View>
+        ) : (
 
-          {this.state.hoursWorking ?
-            <React.Fragment>
-              <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle} />
-              <InputGroup>
-                <SchedulePicker
-                  date={date}
-                  format="hh:mm A"
-                  label="Start"
-                  icon={false}
-                  value={startTimeScheduleOne}
-                  isOpen={this.state.startTimeScheduleOnePickerOpen}
-                  onChange={this.handleChangestartTimeScheduleOne}
-                  toggle={this.pickerToogleStartTimeOne}
+          <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={70} enableAutoAutomaticScroll>
+            <InputGroup style={styles.inputGroup}>
+              <InputSwitch
+                  style={styles.inputSwitch}
+                  textStyle={styles.inputSwitchText}
+                  onChange={this.onChangeInputSwitch}
+                  value={this.state.hoursWorking}
+                  text="Hours Working"
                 />
-                <InputDivider />
-                <SchedulePicker
-                  date={date}
-                  format="hh:mm A"
-                  label="Ends"
-                  icon={false}
-                  value={endTimeScheduleOne}
-                  isOpen={this.state.endTimeScheduleOnePickerOpen}
-                  onChange={this.handleChangeendTimeScheduleOne}
-                  toggle={this.pickerToogleEndTimeOne}
-                />
-              </InputGroup>
-              <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle} />
-              <InputGroup>
-                <SchedulePicker
-                  date={date}
-                  format="hh:mm A"
-                  label="Start"
-                  icon={false}
-                  value={startTimeScheduleTwo}
-                  isOpen={this.state.startTimeScheduleTwoPickerOpen}
-                  onChange={this.handleChangestartTimeScheduleTwo}
-                  toggle={this.pickerToogleStartTimeTwo}
-                />
-                <InputDivider />
-                <SchedulePicker
-                  date={date}
-                  format="hh:mm A"
-                  label="Ends"
-                  icon={false}
-                  value={endTimeScheduleTwo}
-                  isOpen={this.state.endTimeScheduleTwoPickerOpen}
-                  onChange={this.handleChangeendTimeScheduleTwo}
-                  toggle={this.pickerToogleEndTimeTwo}
-                />
-              </InputGroup>
-            </React.Fragment>
-              : null
-            }
+            </InputGroup>
 
-          <SectionTitle value="SCHEDULE EXCEPTION REASON" style={styles.sectionTitle} />
-          <InputGroup>
-            <InputRadioGroup
-              options={scheduleTypes}
-              defaultOption={this.state.selectedScheduleExceptionReason}
-              onPress={this.onPressRadioGroup}
-            />
-            <InputText
-              value={this.state.otherReason}
-              isEditable={this.state.isEditableOtherReason}
-              onChangeText={this.onChangeOtherReason}
-              placeholder="Please specify"
-            />
-          </InputGroup>
-        </KeyboardAwareScrollView>)}
-        </View>
-      );
-    }
+            {this.state.hoursWorking ?
+              <React.Fragment>
+                  <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle} />
+                  <InputGroup>
+                    <SchedulePicker
+                      date={date}
+                      format="hh:mm A"
+                      label="Start"
+                      icon={false}
+                      value={startTimeScheduleOne}
+                      isOpen={this.state.startTimeScheduleOnePickerOpen}
+                      onChange={this.handleChangestartTimeScheduleOne}
+                      toggle={this.pickerToogleStartTimeOne}
+                    />
+                    <InputDivider />
+                    <SchedulePicker
+                      date={date}
+                      format="hh:mm A"
+                      label="Ends"
+                      icon={false}
+                      value={endTimeScheduleOne}
+                      isOpen={this.state.endTimeScheduleOnePickerOpen}
+                      onChange={this.handleChangeendTimeScheduleOne}
+                      toggle={this.pickerToogleEndTimeOne}
+                    />
+                  </InputGroup>
+                  <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle} />
+                  <InputGroup>
+                    <SchedulePicker
+                      date={date}
+                      format="hh:mm A"
+                      label="Start"
+                      icon={false}
+                      value={startTimeScheduleTwo}
+                      isOpen={this.state.startTimeScheduleTwoPickerOpen}
+                      onChange={this.handleChangestartTimeScheduleTwo}
+                      toggle={this.pickerToogleStartTimeTwo}
+                    />
+                    <InputDivider />
+                    <SchedulePicker
+                      date={date}
+                      format="hh:mm A"
+                      label="Ends"
+                      icon={false}
+                      value={endTimeScheduleTwo}
+                      isOpen={this.state.endTimeScheduleTwoPickerOpen}
+                      onChange={this.handleChangeendTimeScheduleTwo}
+                      toggle={this.pickerToogleEndTimeTwo}
+                    />
+                  </InputGroup>
+                </React.Fragment>
+                : null
+              }
+
+            <SectionTitle value="SCHEDULE EXCEPTION REASON" style={styles.sectionTitle} />
+            <InputGroup>
+              <InputRadioGroup
+                  options={scheduleTypes}
+                  defaultOption={this.state.selectedScheduleExceptionReason}
+                  onPress={this.onPressRadioGroup}
+                />
+              <InputText
+                  value={this.state.otherReason}
+                  isEditable={this.state.isEditableOtherReason}
+                  onChangeText={this.onChangeOtherReason}
+                  placeholder="Please specify"
+                />
+            </InputGroup>
+          </KeyboardAwareScrollView>)}
+      </View>
+    );
+  }
 }
 
 

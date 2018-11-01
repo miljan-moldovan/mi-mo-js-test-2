@@ -18,14 +18,16 @@ import {
   ProviderInput,
   InputText,
 } from '../../components/formHelpers';
+import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 class RemovalReasonTypesScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const handlePress = navigation.state.params &&
-    navigation.state.params.handlePress
+      navigation.state.params.handlePress
       ? navigation.state.params.handlePress
-      : () => {};
+      : () => { };
     const { name, lastName } = navigation.state.params.appointment.client;
 
     const params = navigation.state.params || {};
@@ -33,31 +35,30 @@ class RemovalReasonTypesScreen extends React.Component {
     const title = params.type === 'noshow' ? 'No Show' : 'Walk-out';
 
     return {
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{title}</Text>
-          <Text style={styles.subTitleText}>{`${name} ${lastName}`}</Text>
-        </View>),
-      headerLeft: (
-        <SalonTouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{
- fontSize: 14, color: 'white', paddingLeft: 10, paddingTop: 20,
-}}
-          >Back
-          </Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <View style={styles.rightButtonContainer}>
-          <SalonTouchableOpacity
-            wait={3000}
-            onPress={handlePress}
-            style={styles.rightButton}
-            disabled={!canSave}
-          >
-            <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
-          </SalonTouchableOpacity>
-        </View>
+      header: (
+        <SalonHeader
+          title={title}
+          subTitle={`${name} ${lastName}`}
+          headerLeft={(
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigation.goBack()}>
+              <Text style={{
+                fontSize: 14, color: 'white',
+              }}
+              >Back
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              wait={3000}
+              onPress={handlePress}
+              disabled={!canSave}
+              style={styles.rightButtonContainer}
+            >
+              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   };
@@ -224,9 +225,9 @@ class RemovalReasonTypesScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        { this.props.loading &&
-        <LoadingOverlay />
-            }
+        {this.props.loading &&
+          <LoadingOverlay />
+        }
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={80} enableAutoAutomaticScroll>
           <SectionDivider style={styles.sectionDivider} />
           <InputGroup>

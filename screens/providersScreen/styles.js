@@ -64,7 +64,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  leftHeaderButton: { flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
+  leftHeaderButton: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 10,
+  },
   headerSubTitle: {
     fontFamily: 'Roboto',
     color: Colors.white,

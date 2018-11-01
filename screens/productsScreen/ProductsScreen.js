@@ -4,6 +4,7 @@ import {
   View,
   FlatList,
   SectionList,
+  SafeAreaView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { get, sortBy, isNumber } from 'lodash';
@@ -18,7 +19,7 @@ import Colors from '../../constants/Colors';
 import styles from './styles';
 
 const PRODUCT_ITEM_HEIGHT = 48; // 12 (paddingVertical) + (18 (lineHeight) * 2)
-const CATEGORY_ITEM_HEIGHT = 24;
+const CATEGORY_ITEM_HEIGHT = 44;
 
 class ProductsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -39,13 +40,15 @@ class ProductsScreen extends React.Component {
     const leftButtonOnPress = selectedCategory ? clearCategory : navigation.goBack;
     return {
       header: props => (
-        <SalonSearchHeader
-          title={title}
-          hasFilter={false}
-          leftButton={leftButton}
-          lreftButtonOnPress={leftButtonOnPress}
-          containerStyle={styles.headerContainer}
-        />
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <SalonSearchHeader
+            title={title}
+            hasFilter={false}
+            leftButton={leftButton}
+            leftButtonOnPress={leftButtonOnPress}
+            containerStyle={styles.headerContainer}
+          />
+        </SafeAreaView>
       ),
     };
   };
@@ -187,7 +190,7 @@ class ProductsScreen extends React.Component {
     return (
       <SalonTouchableOpacity
         onPress={onPress}
-        style={styles.itemRow}
+        style={[styles.itemRow, { height: 44 }]}
       >
         <WordHighlighter
           numberOfLines={1}
@@ -238,10 +241,7 @@ class ProductsScreen extends React.Component {
             {name}
           </WordHighlighter>
           <View style={[styles.container, styles.info]}>
-            {
-              size &&
-              <Text style={styles.sizeText}>{size}</Text>
-            }
+            <Text style={styles.sizeText}>{size || ''}</Text>
             <Text style={styles.priceText}>{`$ ${price}`}</Text>
           </View>
         </View>

@@ -79,44 +79,35 @@ class SalonSearchHeader extends React.Component {
 
   render() {
     return (
-      <View
-        style={[
-          styles.headerContainer,
-          this.props.headerContainerStyle,
-          {
-            height:
-              this.props.salonSearchHeaderState.showFilter && !this.props.hasFilter ? 70 : 115,
-          },
-        ]}
-      >
-        {!this.props.salonSearchHeaderState.showFilter && (
-          <View style={styles.header}>
-            <View style={styles.leftButton}>
-              <SalonTouchableOpacity style={{ flex: 1 }} onPress={this.props.leftButtonOnPress}>
+      <View style={[styles.headerContainer, this.props.headerContainerStyle]}>
+        {
+          !this.props.salonSearchHeaderState.showFilter && (
+            <View style={styles.header}>
+              <SalonTouchableOpacity style={{ flex: 1, paddingLeft: 10 }} onPress={this.props.leftButtonOnPress}>
                 {this.props.leftButton}
               </SalonTouchableOpacity>
+              <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>{this.props.title}</Text>
+                {this.props.subTitle && (
+                  <Text style={styles.subTitleText}>{this.props.subTitle}</Text>
+                )}
+              </View>
+              <View style={styles.rightButton}>
+                {
+                  this.props.rightButton ?
+                    (
+                      <SalonTouchableOpacity
+                        style={{ flex: 1, paddingRight: 10 }}
+                        onPress={this.props.rightButtonOnPress}
+                      >
+                        {this.props.rightButton}
+                      </SalonTouchableOpacity>
+                    ) : null
+                }
+              </View>
             </View>
-            <View style={styles.titleContainer}>
-              <Text style={styles.titleText}>{this.props.title}</Text>
-              {this.props.subTitle && (
-                <Text style={styles.subTitleText}>{this.props.subTitle}</Text>
-              )}
-            </View>
-            <View style={styles.rightButton}>
-              {
-                this.props.rightButton ?
-                  (
-                    <SalonTouchableOpacity
-                      style={{ flex: 1 }}
-                      onPress={this.props.rightButtonOnPress}
-                    >
-                      {this.props.rightButton}
-                    </SalonTouchableOpacity>
-                  ) : null
-              }
-            </View>
-          </View>
-        )}
+          )
+        }
 
         <View
           style={[

@@ -30,6 +30,8 @@ import {
   ProviderInput,
 } from '../../../../components/formHelpers';
 import styles from './stylesClientFormula';
+import headerStyles from '../../../../constants/headerStyles';
+import SalonHeader from '../../../../components/SalonHeader';
 
 class ClientFormula extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -38,22 +40,20 @@ class ClientFormula extends React.Component {
     const title = params.actionType === 'update' ? 'Edit Formula' : 'New Formula';
 
     return {
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>
-            {title}
-          </Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity wait={3000} onPress={navigation.getParam('handleGoBack', () => {})}>
-          <Text style={styles.leftButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
-          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Save</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={title}
+          headerLeft={(
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={navigation.getParam('handleGoBack', () => {})}>
+              <Text style={styles.leftButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity style={{ paddingRight: 10 }} disabled={!canSave} wait={3000} onPress={navigation.getParam('handlePress', () => {})}>
+              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Save</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   }

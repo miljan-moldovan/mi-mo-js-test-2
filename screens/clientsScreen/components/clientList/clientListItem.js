@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   topContainer: {
-    paddingTop: 10,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -136,7 +135,7 @@ class ClientListItem extends React.PureComponent {
               </View>
             </View>
 
-            <View style={[styles.bottomContainer, { paddingTop: 10 }]}>
+            <View style={[styles.bottomContainer, { paddingTop: 5 }]}>
               {store &&
               <FontAwesome style={styles.homeIconLeft}>{Icons.home}</FontAwesome>}
               {store &&
