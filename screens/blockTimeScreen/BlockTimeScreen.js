@@ -187,8 +187,8 @@ class BlockTimeScreen extends React.Component {
   handleDone = () => {
     const schedule = {
       date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
-      fromTime: this.state.fromTime.format('HH:mm:ss'),
-      toTime: this.state.toTime.format('HH:mm:ss'),
+      fromTime: this.state.fromTime.format('h:mm A'),
+      toTime: this.state.toTime.format('h:mm A'),
       notes: this.state.comments.length > 0 ? this.state.comments : null,
       reasonId: this.state.blockTimesReason.id,
       employeeId: this.state.provider.id,
@@ -249,98 +249,100 @@ class BlockTimeScreen extends React.Component {
         ) : (
 
           <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
-              <InputGroup style={styles.inputGroup}>
-                <ProviderInput
-                  apptBook
-                  noPlaceholder
-                  showFirstAvailable={false}
-                  filterByService
-                  style={styles.innerRow}
-                  selectedProvider={blockedBy}
-                  label="Blocked By"
-                  iconStyle={styles.carretIcon}
-                  avatarSize={20}
-                  navigate={this.props.navigation.navigate}
-                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                  onChange={this.onChangeBlockBy}
-                />
-                <InputDivider />
+            <InputGroup style={styles.inputGroup}>
+              <ProviderInput
+                apptBook
+                noPlaceholder
+                showFirstAvailable={false}
+                filterByService
+                style={styles.innerRow}
+                selectedProvider={blockedBy}
+                label="Blocked By"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+                onChange={this.onChangeBlockBy}
+              />
+              <InputDivider />
 
-                <InputDate
-                  icon={false}
-                  style={{ flex: 1 }}
-                  placeholder="Date"
-                  minDate={moment().toDate()}
-                  onPress={this.onPressDate}
-                  selectedDate={this.state.selectedDate ? moment(this.state.selectedDate).format('ddd, MM/DD/YY') : false}
-                />
-              </InputGroup>
+              <InputDate
+                icon={false}
+                style={{ flex: 1 }}
+                placeholder="Date"
+                minDate={moment().toDate()}
+                onPress={this.onPressDate}
+                selectedDate={this.state.selectedDate ? moment(this.state.selectedDate).format('ddd, MM/DD/YY') : false}
+              />
+            </InputGroup>
 
-              <SectionDivider style={styles.sectionDivider} />
-              <InputGroup>
-                <ProviderInput
-                  apptBook
-                  noPlaceholder
-                  filterByService
-                  style={styles.innerRow}
-                  selectedProvider={provider}
-                  label="Employee"
-                  iconStyle={styles.carretIcon}
-                  avatarSize={20}
-                  navigate={this.props.navigation.navigate}
-                  headerProps={{ title: 'Providers', ...this.cancelButton() }}
-                  onChange={this.onChangeEmployee}
-                />
-              </InputGroup>
+            <SectionDivider style={styles.sectionDivider} />
+            <InputGroup>
+              <ProviderInput
+                apptBook
+                noPlaceholder
+                filterByService
+                style={styles.innerRow}
+                selectedProvider={provider}
+                label="Employee"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                headerProps={{ title: 'Providers', ...this.cancelButton() }}
+                onChange={this.onChangeEmployee}
+              />
+            </InputGroup>
 
 
-              <SectionDivider style={styles.sectionDivider} />
-              <InputGroup>
-                <BlockTimesReasonInput
-                  apptBook
-                  noPlaceholder
-                  style={styles.innerRow}
-                  selectedBlockTimesReason={blockTimesReason}
-                  labelText="Reason"
-                  iconStyle={styles.carretIcon}
-                  avatarSize={20}
-                  navigate={this.props.navigation.navigate}
-                  headerProps={{ title: 'Reason', ...this.cancelButton() }}
-                  onChange={this.onChangeBlockTimeReason}
-                />
-              </InputGroup>
+            <SectionDivider style={styles.sectionDivider} />
+            <InputGroup>
+              <BlockTimesReasonInput
+                apptBook
+                noPlaceholder
+                style={styles.innerRow}
+                selectedBlockTimesReason={blockTimesReason}
+                labelText="Reason"
+                iconStyle={styles.carretIcon}
+                avatarSize={20}
+                navigate={this.props.navigation.navigate}
+                headerProps={{ title: 'Reason', ...this.cancelButton() }}
+                onChange={this.onChangeBlockTimeReason}
+              />
+            </InputGroup>
 
-              <SectionDivider style={styles.sectionDivider} />
-              <InputGroup>
-                <SalonTimePicker
-                  label="Start"
-                  icon={false}
-                  value={fromTime}
-                  isOpen={this.state.fromTimePickerOpen}
-                  onChange={this.handleChangefromTime}
-                  toggle={this.tooglefromTime}
-                />
-                <InputDivider />
-                <SalonTimePicker
-                  label="Ends"
-                  icon={false}
-                  value={toTime}
-                  isOpen={this.state.toTimePickerOpen}
-                  onChange={this.handleChangetoTime}
-                  toggle={this.toogletoTime}
-                />
-              </InputGroup>
-              <SectionDivider style={styles.sectionDivider} />
-              <InputGroup>
-                <Text style={[styles.sectionTitle]}>Comments</Text>
-                <InputText
-                  placeholder="Please insert here your comments"
-                  onChangeText={this.onChangeTextComments}
-                  value={this.state.comments}
-                />
-              </InputGroup>
+            <SectionDivider style={styles.sectionDivider} />
+            <InputGroup>
+              <SalonTimePicker
+                label="Start"
+                icon={false}
+                format="h:mm A"
+                value={fromTime}
+                isOpen={this.state.fromTimePickerOpen}
+                onChange={this.handleChangefromTime}
+                toggle={this.tooglefromTime}
+              />
+              <InputDivider />
+              <SalonTimePicker
+                label="Ends"
+                icon={false}
+                format="h:mm A"
+                value={toTime}
+                isOpen={this.state.toTimePickerOpen}
+                onChange={this.handleChangetoTime}
+                toggle={this.toogletoTime}
+              />
+            </InputGroup>
+            <SectionDivider style={styles.sectionDivider} />
+            <InputGroup>
+              <Text style={[styles.sectionTitle]}>Comments</Text>
+              <InputText
+                placeholder="Please insert here your comments"
+                onChangeText={this.onChangeTextComments}
+                value={this.state.comments}
+              />
+            </InputGroup>
 
-            </KeyboardAwareScrollView>)}
+          </KeyboardAwareScrollView>)}
       </View>
     );
   }
