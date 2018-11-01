@@ -4,8 +4,8 @@ import {
   View,
   FlatList,
   SectionList,
+  SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import PropTypes from 'prop-types';
 import { get, sortBy, isNumber } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';

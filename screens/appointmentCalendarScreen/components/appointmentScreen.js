@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { View, Text, ActivityIndicator, SafeAreaView } from 'react-native';
 import moment from 'moment';
 import { filter, map, find } from 'lodash';
 
