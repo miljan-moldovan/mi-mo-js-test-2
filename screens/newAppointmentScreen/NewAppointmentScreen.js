@@ -36,6 +36,7 @@ import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails';
 import Icon from '../../components/UI/Icon';
+import SalonHeader from '../../components/SalonHeader';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -72,25 +73,24 @@ export default class NewAppointmentScreen extends React.Component {
     const rightButtonStyle = { paddingRight: 10 };
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return ({
-      ...headerStyles,
-      title: editType === 'new' ? 'New Appointment' : 'Modify Appointment',
-      headerLeft: (
-        <SafeAreaView>
-        <SalonTouchableOpacity style={leftButtonStyle} onPress={params.handleCancel}>
-          <Text style={styles.headerButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-        </SafeAreaView>
-      ),
-      headerRight: (
-        <SafeAreaView>
-        <SalonTouchableOpacity
-          disabled={!canSave}
-          style={rightButtonStyle}
-          onPress={params.handleSave}
-        >
-          <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
-        </SalonTouchableOpacity>
-        </SafeAreaView>
+      header: (
+        <SalonHeader
+          title={editType === 'new' ? 'New Appointment' : 'Modify Appointment'}
+          headerLeft={
+            <SalonTouchableOpacity style={leftButtonStyle} onPress={params.handleCancel}>
+              <Text style={styles.headerButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity
+              disabled={!canSave}
+              style={rightButtonStyle}
+              onPress={params.handleSave}
+            >
+              <Text style={[styles.headerButtonText, doneButtonStyle]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     });
   }
