@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import { SafeAreaView } from 'react-navigation';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
@@ -65,7 +66,7 @@ class ClientsScreen extends React.Component {
     }
     return {
       header: () => (
-        <SalonSearchHeader
+        <SafeAreaView style={styles.safeAreaView}><SalonSearchHeader
           clearSearch={clearSearch}
           title={title}
           subTitle={subTitle}
@@ -83,6 +84,7 @@ class ClientsScreen extends React.Component {
           hasFilter
           containerStyle={styles.headerContainer}
         />
+        </SafeAreaView>
       ),
     };
   };

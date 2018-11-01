@@ -9,7 +9,7 @@ export default StyleSheet.create({
   },
   activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   inputGroup: { marginTop: 16 },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
   optionContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   formulaType: {
     fontSize: 10,

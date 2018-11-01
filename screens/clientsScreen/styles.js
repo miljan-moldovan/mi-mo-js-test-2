@@ -90,4 +90,10 @@ export default StyleSheet.create({
   headerContainer: {
     paddingHorizontal: 20,
   },
+  safeAreaView: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#115ECD',
+    flexDirection: 'row',
+  },
 });

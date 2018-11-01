@@ -90,6 +90,6 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Roboto',
   },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
 
 });

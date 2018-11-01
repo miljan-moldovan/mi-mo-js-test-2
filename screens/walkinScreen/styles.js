@@ -67,7 +67,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
   inputGroupStyle: { paddingLeft: smallDevice ? 10 : 16 },
   rootStyle: { paddingRight: smallDevice ? 10 : 16 },
   sectionTitleRootStyle: { marginLeft: 0 },

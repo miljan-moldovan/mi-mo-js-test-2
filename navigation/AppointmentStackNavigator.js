@@ -260,23 +260,23 @@ const AppointmentStackNavigator = StackNavigator(
     },
     Services: {
       screen: ServicesScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
-      }),
+      // navigationOptions: rootProps => ({
+      //   headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
+      // }),
     },
     Providers: {
       screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-        header: props => (
-          <ImageHeader
-            {...props}
-          />),
-      }),
+    //   navigationOptions: rootProps => ({
+    //     headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+    //     headerStyle: {
+    //       backgroundColor: 'transparent',
+    //     },
+    //     headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
+    //     header: props => (
+    //       <ImageHeader
+    //         {...props}
+    //       />),
+    //   }),
     },
     ChangeClient: {
       screen: ClientsScreen,
@@ -302,7 +302,6 @@ AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
   const { state } = navigation;
 
   let tabBarVisible = true;
-
 
 
   const hideTabBar = state.routes[state.routes.length - 1].params ?

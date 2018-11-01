@@ -23,7 +23,7 @@ export default StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
   topSeparator: { marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 },
   providerInputGroup: { height: 44 },
   sectionTitle: { height: 38 },

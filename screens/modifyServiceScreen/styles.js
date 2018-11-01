@@ -23,7 +23,7 @@ export default StyleSheet.create({
     lineHeight: 12,
     color: 'white',
   },
-  cancelButton: { fontSize: 14, color: 'white' },
+  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
   rightButtonText: {
     fontSize: 14,
     fontFamily: 'Roboto',
