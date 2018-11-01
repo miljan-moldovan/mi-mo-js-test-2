@@ -4,6 +4,7 @@ import { appointmentCalendarActions } from '../../actions/appointmentBook';
 import blockTimeActions from '../../actions/blockTime';
 import appointmentActions from '../../actions/appointment';
 import newAppointmentActions from '../../actions/newAppointment';
+import rebookDialogActions from '../../actions/rebookDialog';
 import rootDrawerNavigatorAction from '../../actions/rootDrawerNavigator';
 import modifyApptActions from '../modifyAppointmentScreen/redux';
 import AppointmentScreen from './components/appointmentScreen';
@@ -28,9 +29,11 @@ const mapStateToProps = state => ({
   availability: getAvailabilityWithGaps(state),
   apptGridSettings: apptGridSettingsSelector(state),
   storeScheduleExceptions: state.storeReducer.scheduleExceptions,
+  rebookState: state.rebookReducer,
 });
 
 const mapActionsToProps = dispatch => ({
+  rebookDialogActions: bindActionCreators({ ...rebookDialogActions }, dispatch),
   appointmentCalendarActions: bindActionCreators({ ...appointmentCalendarActions }, dispatch),
   appointmentActions: bindActionCreators({ ...appointmentActions }, dispatch),
   newAppointmentActions: bindActionCreators({ ...newAppointmentActions }, dispatch),

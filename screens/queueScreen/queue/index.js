@@ -265,6 +265,7 @@ handlePressRebook = () => {
   this.hideDialog();
   if (appointment !== null) {
     this.props.navigation.navigate('RebookDialog', {
+      mustGoBack: true,
       appointment,
       ...this.props,
     });

@@ -130,6 +130,7 @@ class ApptBookViewOptionsScreen extends Component {
 
     // this.props.employeeOrderActions.setOrderInitials();
     this.props.employeeOrderActions.getEmployees();
+    this.props.navigation.setParams({ hideTabBar: true });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -157,6 +158,7 @@ class ApptBookViewOptionsScreen extends Component {
   }
 
   goBack = () => {
+    this.props.navigation.setParams({ hideTabBar: false });
     this.props.navigation.goBack();
   }
 
