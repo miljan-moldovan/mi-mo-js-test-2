@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-navigation';
 import { ClientMerge } from './ClientMerge';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
+import SalonHeader from '../../components/SalonHeader';
 
 class ClientMergeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -20,28 +21,26 @@ class ClientMergeScreen extends React.Component {
 
     return {
       header: (
-        <SafeAreaView style={{
-          justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#115ECD', flexDirection: 'row', paddingHorizontal: 19,
-        }}
-        >
-          <SalonTouchableOpacity style={styles.navButton} onPress={goBack}>
-            <Text style={styles.navButtonText}>Cancel</Text>
-          </SalonTouchableOpacity>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={styles.headerTitle}>Duplicated Clients</Text>
-            <Text style={styles.headerSubtitle}>Select clients to merge</Text>
-          </View>
-          {isLoading ? (
-            <View style={styles.navButton}>
-              <ActivityIndicator />
-            </View>
-          ) : (
-            <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
-              <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+        <SalonHeader
+          title="Duplicated Clients"
+          subTitle="Select clients to merge"
+          headerLeft={
+            <SalonTouchableOpacity style={styles.navButton} onPress={goBack}>
+              <Text style={styles.navButtonText}>Cancel</Text>
             </SalonTouchableOpacity>
-            )}
-
-        </SafeAreaView>
+          }
+          headerRight={
+            isLoading ? (
+              <View style={styles.navButton}>
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <SalonTouchableOpacity style={styles.navButton} onPress={onPressDone}>
+                <Text style={[styles.navButtonText, onPressDone ? null : { color: '#0B418F' }]}>Done</Text>
+              </SalonTouchableOpacity>
+              )
+          }
+        />
       ),
     };
   };

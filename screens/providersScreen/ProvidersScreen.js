@@ -20,6 +20,7 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 import Colors from '../../constants/Colors';
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 const FirstAvailableRow = (props) => {
   const firstAvProvider = {
@@ -89,19 +90,17 @@ class ProviderScreen extends React.Component {
     const headerLeftOnPress = customLeftButton
       ? () => leftButtonOnPress(navigation) : leftButtonOnPress;
     return {
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>{title}</Text>
-          {subTitle ? <Text style={styles.headerSubTitle}>{subTitle}</Text> : null}
-        </View>
+      header: (
+        <SalonHeader
+          title={title}
+          subTitle={subTitle || null}
+          headerLeft={
+            <SalonTouchableOpacity style={styles.leftHeaderButton} onPress={headerLeftOnPress}>
+              {leftButton}
+            </SalonTouchableOpacity>
+          }
+        />
       ),
-      headerLeft: (
-        <SalonTouchableOpacity style={styles.leftHeaderButton} onPress={headerLeftOnPress}>
-          {leftButton}
-        </SalonTouchableOpacity>
-      ),
-      headerRight: null,
     };
   };
 

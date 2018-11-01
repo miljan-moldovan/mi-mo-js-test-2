@@ -22,6 +22,7 @@ import OthersTab from './components/OthersTab';
 import DeskStaffTab from './components/DeskStaffTab';
 import { InputButton, DefaultAvatar } from '../../components/formHelpers';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 const TAB_PROVIDERS = 0;
@@ -85,27 +86,30 @@ const ViewAllProviders = ({
   icon, onPress, isSelected, separator,
 }) => (
   <React.Fragment>
-    <InputButton
-      icon={icon}
-      style={styles.viewAllButton}
-      onPress={onPress}
-      label="View all providers"
-      labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
-    />
-    {separator}
-  </React.Fragment>
+      <InputButton
+        icon={icon}
+        style={styles.viewAllButton}
+        onPress={onPress}
+        label="View all providers"
+        labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
+      />
+      {separator}
+    </React.Fragment>
 );
 
 export default class FilterOptionsScreen extends React.Component {
   static navigationOptions = rootProps => ({
-    ...headerStyles,
-    title: 'Filter Options',
-    headerLeft: (
-      <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => rootProps.navigation.state.params.handleReset()}>
-        <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
-          Reset
-        </Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="Filter Options"
+        headerLeft={
+          <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => rootProps.navigation.state.params.handleReset()}>
+            <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
+              Reset
+            </Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   });
 

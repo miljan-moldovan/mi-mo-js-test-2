@@ -15,6 +15,7 @@ import {
 } from '../../components/formHelpers';
 import Icon from '../../components/UI/Icon';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,8 +31,7 @@ const styles = StyleSheet.create({
 
 export default class RepeatsOnScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    ...headerStyles,
-    title: 'Repeats On',
+    header: <SalonHeader title="Repeats On" />,
   });
 
   constructor(props) {

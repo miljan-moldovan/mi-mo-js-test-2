@@ -15,25 +15,29 @@ import {
   InputDivider,
 } from '../../components/formHelpers';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class SelectRoomScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    ...headerStyles,
-    title: 'Assigned Room',
-    headerLeft: (
-      <SalonTouchableOpacity
-        style={{ paddingLeft: 10 }}
-        onPress={() => navigation.goBack()}
-      >
-        <Text
-          style={{
-            fontSize: 14,
-            color: 'white',
-          }}
-        >
-          Cancel
-        </Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="Assigned Room"
+        headerLeft={
+          <SalonTouchableOpacity
+            style={{ paddingLeft: 10 }}
+            onPress={() => navigation.goBack()}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: 'white',
+              }}
+            >
+              Cancel
+            </Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   })
   state = {
@@ -97,16 +101,16 @@ export default class SelectRoomScreen extends React.Component {
           </View>
         ) : (
           <View style={{ flex: 1 }}>
-            <FlatList
-              data={this.state.rooms}
-              ItemSeparatorComponent={() => (
+              <FlatList
+                data={this.state.rooms}
+                ItemSeparatorComponent={() => (
                   <View style={{ paddingLeft: 16 }}>
                     <InputDivider />
                   </View>
                 )}
-              renderItem={({ item, index }) => this.renderItem(item.name, item)}
-            />
-          </View>
+                renderItem={({ item, index }) => this.renderItem(item.name, item)}
+              />
+            </View>
           )}
       </View>
     );

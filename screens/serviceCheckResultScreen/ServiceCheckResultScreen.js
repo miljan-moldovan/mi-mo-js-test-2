@@ -18,6 +18,7 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class ServiceCheckResultScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -26,27 +27,26 @@ export default class ServiceCheckResultScreen extends React.Component {
     const serviceName = params.selectedService.name;
     const doneFunc = () => navigation.state.params.handleDone();
     return ({
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitleText}>{employeeName}</Text>
-          <Text style={styles.headerSubtitleText}>{serviceName}</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          style={styles.headerLeftButton}
-          wait={3000}
-          onPress={navigation.goBack}
-        >
-          <Icon name="angleLeft" type="regular" color="white" size={22} />
-          <Text style={[styles.headerButtonText, styles.marginLeft]}>Back</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity style={styles.headerRightButton} wait={3000} onPress={doneFunc}>
-          <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={employeeName}
+          subTitle={serviceName}
+          headerLeft={(
+            <SalonTouchableOpacity
+              style={styles.headerLeftButton}
+              wait={3000}
+              onPress={navigation.goBack}
+            >
+              <Icon name="angleLeft" type="regular" color="white" size={22} />
+              <Text style={[styles.headerButtonText, styles.marginLeft]}>Back</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity style={styles.headerRightButton} wait={3000} onPress={doneFunc}>
+              <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     });
   };

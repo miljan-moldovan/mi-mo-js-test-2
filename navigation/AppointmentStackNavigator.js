@@ -1,21 +1,10 @@
-import React from 'react';
-import { View, Text } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
-
-import Icon from '../components/UI/Icon';
 import headerStyles from '../constants/headerStyles';
 
 import AppointmentScreen from '../screens/AppointmentsScreen';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/servicesScreen';
-
-import ImageHeader from '../components/ImageHeader';
-import WalkInStepHeader from '../screens/walkinScreen/components/WalkInStepHeader';
-import HeaderLeftText from '../components/HeaderLeftText';
-
-import HeaderLateral from '../components/HeaderLateral';
-import SalonSearchBar from '../components/SalonSearchBar';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
 import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
@@ -25,11 +14,9 @@ import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/cl
 import ClientInfoScreen from '../screens/clientInfoScreen';
 import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
 import NewClientScreen from '../screens/newClientScreen';
-
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from './../screens/apptBookViewOptions';
-
 import ModifyApptServiceScreen from './../screens/apptBookModifyService';
 import FilterOptionsScreen from './../screens/filterOptionsScreen';
 import FilterByPositionScreen from './../screens/filterByPositionScreen';
@@ -48,21 +35,14 @@ import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
 import RequiredServicesScreen from '../screens/requiredServicesScreen';
 import ProductsScreen from './../screens/productsScreen';
 import RecommendProductScreen from '../screens/recommendProductScreen';
-import RecommendProductHeader from '../screens/recommendProductScreen/components/RecommendProductHeader';
-
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
-
 import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
 import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
-
 import RebookDialogScreen from './../screens/rebookDialogScreen';
 import TransitionConfiguration from './transitionConfiguration';
-
-
-import styles from './styles';
 
 const AppointmentStackNavigator = createStackNavigator(
   {
@@ -222,23 +202,23 @@ const AppointmentStackNavigator = createStackNavigator(
     },
     Services: {
       screen: ServicesScreen,
-      navigationOptions: rootProps => ({
-        headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
-      }),
+      // navigationOptions: rootProps => ({
+      //   headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
+      // }),
     },
     Providers: {
       screen: ProvidersScreen,
-      navigationOptions: rootProps => ({
-        headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-        header: props => (
-          <ImageHeader
-            {...props}
-          />),
-      }),
+      // navigationOptions: rootProps => ({
+      //   headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
+      //   headerStyle: {
+      //     backgroundColor: 'transparent',
+      //   },
+      //   headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
+      //   header: props => (
+      //     <ImageHeader
+      //       {...props}
+      //     />),
+      // }),
     },
     ChangeClient: {
       screen: ClientsScreen,

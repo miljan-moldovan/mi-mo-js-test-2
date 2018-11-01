@@ -20,6 +20,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from '../modifyServiceScreen/styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 class ModifyProductScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -28,31 +29,25 @@ class ModifyProductScreen extends React.Component {
     const clientName = params.clientName || '';
     const canSave = true;
     return {
-      ...headerStyles,
-      tabBarVisible: false,
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>
-            {'productItem' in params ? 'Modify Product' : 'Add Product'}
-          </Text>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.subTitleText}>
-            {clientName}
-          </Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
-          <Text style={styles.leftButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          disabled={!canSave}
-          style={{ paddingRight: 10 }}
-          onPress={() => params.handleSave()}
-        >
-          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={'productItem' in params ? 'Modify Product' : 'Add Product'}
+          subTitle={clientName}
+          headerLeft={(
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
+              <Text style={styles.leftButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              disabled={!canSave}
+              style={{ paddingRight: 10 }}
+              onPress={() => params.handleSave()}
+            >
+              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   }

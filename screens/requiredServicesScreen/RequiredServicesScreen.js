@@ -11,6 +11,7 @@ import SelectableServiceList from '../../components/SelectableServiceList';
 
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 const PHONE_WIDTH = Dimensions.get('window').width;
 
@@ -27,27 +28,22 @@ export default class RecommendedServicesScreen extends React.Component {
     };
     const title = PHONE_WIDTH < 375 ? 'Req. Services' : 'Required Services';
     return ({
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitleText}>
-            {title}
-          </Text>
-          <Text style={styles.headerSubtitleText}>
-            {serviceTitle}
-          </Text>
-        </View>
+      header: (
+        <SalonHeader
+          title={title}
+          subTitle={serviceTitle}
+          headerLeft={
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => handleGoBack()}>
+              <Text style={styles.headerButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity onPress={() => handleSave()}>
+              <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
-      headerLeft: showCancelButton ? (
-        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={() => handleGoBack()}>
-          <Text style={styles.headerButtonText}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ) : null,
-      // headerRight: (
-      //   <SalonTouchableOpacity onPress={() => handleSave()}>
-      //     <Text style={[styles.headerButtonText, styles.robotoMedium]}>Done</Text>
-      //   </SalonTouchableOpacity>
-      // ),
     });
   };
 

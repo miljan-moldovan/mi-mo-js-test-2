@@ -26,6 +26,7 @@ import ServiceSection from './components/serviceSection';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 class WalkInScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -44,31 +45,30 @@ class WalkInScreen extends Component {
     }
 
     return ({
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Walk-in</Text>
-          <Text style={styles.subTitleText}>{waitTime}m Est. wait</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity style={[styles.sideButtons, { paddingLeft: 10 }]} onPress={() => { navigation.goBack(); }}>
-          <View style={styles.leftButtonContainer}>
-            <FontAwesome style={styles.headerLeftIcon}>
-              {Icons.angleLeft}
-            </FontAwesome>
-            <Text style={styles.leftButtonText}>
-              Back
-            </Text>
-          </View>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity disabled={!canSave} style={[styles.sideButtons, { paddingRight: 10 }]} onPress={handlePress}>
-          <View style={styles.rightButtonContainer}>
-            <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
-          </View>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Walk-in"
+          subTitle={`${waitTime}m Est. wait`}
+          headerLeft={(
+            <SalonTouchableOpacity style={[styles.sideButtons, { paddingLeft: 10 }]} onPress={() => { navigation.goBack(); }}>
+              <View style={styles.leftButtonContainer}>
+                <FontAwesome style={styles.headerLeftIcon}>
+                  {Icons.angleLeft}
+                </FontAwesome>
+                <Text style={styles.leftButtonText}>
+                  Back
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity disabled={!canSave} style={[styles.sideButtons, { paddingRight: 10 }]} onPress={handlePress}>
+              <View style={styles.rightButtonContainer}>
+                <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     });
   };

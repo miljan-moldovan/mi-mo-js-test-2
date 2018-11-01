@@ -19,6 +19,7 @@ import styles from './styles';
 import * as actions from '../../actions/queue.js';
 import { QueueCombine, QueueUncombine } from './queueCombine';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -49,25 +50,24 @@ class QueueCombineScreen extends React.Component {
         <ActivityIndicator />
       </View>) : (doneButton);
     return {
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Group</Text>
-        </View>
+      header: (
+        <SalonHeader
+          title="Group"
+          headerLeft={
+            <SalonTouchableOpacity
+              style={styles.leftButton}
+              onPress={() => { navigation.goBack(); }}
+            >
+              <View style={styles.leftButtonContainer}>
+                <Text style={styles.leftButtonText}>
+                  Close
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          }
+          headerRight={headerRight}
+        />
       ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          style={styles.leftButton}
-          onPress={() => { navigation.goBack(); }}
-        >
-          <View style={styles.leftButtonContainer}>
-            <Text style={styles.leftButtonText}>
-              Close
-            </Text>
-          </View>
-        </SalonTouchableOpacity>
-      ),
-      headerRight,
     };
   };
 

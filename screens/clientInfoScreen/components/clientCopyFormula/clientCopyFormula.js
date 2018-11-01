@@ -16,6 +16,7 @@ import {
   InputRadioGroup,
 } from '../../../../components/formHelpers';
 import headerStyles from '../../../../constants/headerStyles';
+import SalonHeader from '../../../../components/SalonHeader';
 
 const formulaTypes = [
   { id: formulaTypesEnum.Color, name: 'Color' },
@@ -42,33 +43,32 @@ class ClientCopyFormula extends Component {
       () => { alert('Not Implemented'); };
 
     return ({
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.headerTitle}>
-          <Text style={styles.headerTitleTitle}>Copy Formula</Text>
-          <Text style={styles.headerTitleSubTitle}>{subtitle}</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          onPress={navigation.goBack}
-          style={{ paddingLeft: 10 }}
-        >
-          <Text style={styles.headerLeftText}>
-              Cancel
-          </Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          style={{ paddingRight: 10 }}
-          disabled={!canSave}
-          onPress={handleDone}
-        >
-          <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-          Copy
-          </Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Copy Formula"
+          subTitle={subtitle}
+          headerLeft={(
+            <SalonTouchableOpacity
+              onPress={navigation.goBack}
+              style={{ paddingLeft: 10 }}
+            >
+              <Text style={styles.headerLeftText}>
+                  Cancel
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              style={{ paddingRight: 10 }}
+              disabled={!canSave}
+              onPress={handleDone}
+            >
+              <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+              Copy
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     });
   };

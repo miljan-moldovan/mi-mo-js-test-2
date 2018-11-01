@@ -22,6 +22,7 @@ import {
 
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class RoomAssignmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -32,28 +33,25 @@ export default class RoomAssignmentScreen extends React.Component {
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     const employee = params.employee || { name: 'First', lastName: 'Available' };
     return {
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitleText}>Room Assignment</Text>
-          <Text style={styles.headerSubtitleText}>
-            {`${employee.name} ${employee.lastName[0]}. - ${moment(date).format(DateTime.dateWithMonthShort)}`}
-          </Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>
-          <Text style={styles.headerButton}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          style={styles.rightButton}
-          onPress={onPress}
-          disabled={!canSave}
-        >
-          <Text style={[styles.headerButton, doneButtonStyle]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Room Assignment"
+          subTitle={`${employee.name} ${employee.lastName[0]}. - ${moment(date).format(DateTime.dateWithMonthShort)}`}
+          headerLeft={(
+            <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>
+              <Text style={styles.headerButton}>Cancel</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              style={styles.rightButton}
+              onPress={onPress}
+              disabled={!canSave}
+            >
+              <Text style={[styles.headerButton, doneButtonStyle]}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   }

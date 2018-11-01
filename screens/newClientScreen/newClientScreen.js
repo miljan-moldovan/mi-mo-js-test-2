@@ -7,6 +7,7 @@ import styles from './styles';
 import ClientDetails from '../clientInfoScreen/components/clientDetails';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class NewClientScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -29,31 +30,30 @@ export default class NewClientScreen extends React.Component {
       navigation.goBack;
 
     return ({
-      ...headerStyles,
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{title}</Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={handleBack}>
-          <View style={styles.backContainer}>
-            <Text style={styles.leftButtonText}>
-              Cancel
-            </Text>
-          </View>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          disabled={!canSave}
-          onPress={handleDone}
-          style={{ paddingRight: 10 }}
-        >
-          <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-          Save
-          </Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={title}
+          headerLeft={(
+            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={handleBack}>
+              <View style={styles.backContainer}>
+                <Text style={styles.leftButtonText}>
+                  Cancel
+                </Text>
+              </View>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              disabled={!canSave}
+              onPress={handleDone}
+              style={{ paddingRight: 10 }}
+            >
+              <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
+              Save
+              </Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     });
   };

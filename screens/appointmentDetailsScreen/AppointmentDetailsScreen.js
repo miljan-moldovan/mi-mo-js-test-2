@@ -14,6 +14,7 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 
 import headerStyles from '../../constants/headerStyles';
 import styles from './styles';
+import SalonHeader from '../../components/SalonHeader';
 
 const initialLayout = {
   height: 0,
@@ -27,30 +28,33 @@ export default class AppointmentDetailsScreen extends React.Component {
     const title = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
     const infoButtonStyle = { fontSize: 18, color: 'white' };
     return {
-      ...headerStyles,
-      title,
-      headerLeft: (
-        <SalonTouchableOpacity
-          style={{ paddingLeft: 10 }}
-          onPress={() => {
-            if (params.loadQueueData) {
-              params.loadQueueData();
-            }
+      header: (
+        <SalonHeader
+          title={title}
+          headerLeft={(
+            <SalonTouchableOpacity
+              style={{ paddingLeft: 10 }}
+              onPress={() => {
+                if (params.loadQueueData) {
+                  params.loadQueueData();
+                }
 
-            navigation.goBack();
-          }}
-        >
-          <Icon name="angleLeft" size={35} color="white" type="regular" />
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <ClientInfoButton
-          client={client}
-          navigation={navigation}
-          onDonePress={() => {}}
-          buttonStyle={styles.rightButton}
-          apptBook={false}
-          iconStyle={infoButtonStyle}
+                navigation.goBack();
+              }}
+            >
+              <Icon name="angleLeft" size={35} color="white" type="regular" />
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <ClientInfoButton
+              client={client}
+              navigation={navigation}
+              onDonePress={() => { }}
+              buttonStyle={styles.rightButton}
+              apptBook={false}
+              iconStyle={infoButtonStyle}
+            />
+          )}
         />
       ),
     };

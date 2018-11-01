@@ -28,6 +28,7 @@ import styles from './styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import Icon from '../../components/UI/Icon';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 export default class ModifyServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -35,36 +36,30 @@ export default class ModifyServiceScreen extends React.Component {
     const clientName = params.clientName || '';
     const canSave = get(params, 'canSave', false);
     return {
-      ...headerStyles,
-      tabBarVisible: false,
-      headerTitle: (
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>
-            {'serviceItem' in params ? 'Modify Service' : 'Add Service'}
-          </Text>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.subTitleText}>
-            {clientName}
-          </Text>
-        </View>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity style={styles.leftButtonContainer} onPress={navigation.goBack}>
-          <Icon
-            name="angleLeft"
-            size={24}
-            color="white"
-          />
-          <Text style={styles.leftButtonText}>Back</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity
-          disabled={!canSave}
-          style={{ paddingRight: 10 }}
-          onPress={() => params.handleSave()}
-        >
-          <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title={'serviceItem' in params ? 'Modify Service' : 'Add Service'}
+          subTitle={clientName}
+          headerLeft={(
+            <SalonTouchableOpacity style={styles.leftButtonContainer} onPress={navigation.goBack}>
+              <Icon
+                name="angleLeft"
+                size={24}
+                color="white"
+              />
+              <Text style={styles.leftButtonText}>Back</Text>
+            </SalonTouchableOpacity>
+          )}
+          headerRight={(
+            <SalonTouchableOpacity
+              disabled={!canSave}
+              style={{ paddingRight: 10 }}
+              onPress={() => params.handleSave()}
+            >
+              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+            </SalonTouchableOpacity>
+          )}
+        />
       ),
     };
   }

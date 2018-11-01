@@ -14,6 +14,7 @@ import WordHighlighter from '../../components/wordHighlighter';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import headerStyles from '../../constants/headerStyles';
+import SalonHeader from '../../components/SalonHeader';
 
 
 const styles = StyleSheet.create({
@@ -88,23 +89,20 @@ const styles = StyleSheet.create({
 
 export default class FilterByCompanyScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    ...headerStyles,
-    headerTitle: (
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>
-          Filter By Company
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => navigation.goBack()}>
-        <Text style={styles.leftButtonText}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity style={{ paddingRight: 10 }} wait={3000} onPress={navigation.getParam('handleSave', () => {})}>
-        <Text style={styles.rightButtonText}>Done</Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="Filter By Company"
+        headerLeft={(
+          <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => navigation.goBack()}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </SalonTouchableOpacity>
+        )}
+        headerRight={(
+          <SalonTouchableOpacity style={{ paddingRight: 10 }} wait={3000} onPress={navigation.getParam('handleSave', () => { })}>
+            <Text style={styles.rightButtonText}>Done</Text>
+          </SalonTouchableOpacity>
+        )}
+      />
     ),
   });
 
@@ -179,7 +177,7 @@ export default class FilterByCompanyScreen extends React.Component {
   handleChangeCompany = (item) => {
     const selectedCompany =
       this.state.selectedCompany !== null &&
-      this.state.selectedCompany.id === item.id ?
+        this.state.selectedCompany.id === item.id ?
         null : item;
     this.setState({ selectedCompany });
   };
