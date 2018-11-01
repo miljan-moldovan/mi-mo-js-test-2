@@ -80,6 +80,7 @@ export default class App extends Component {
           'queueDetailReducer',
           'navigationReducer',
           'salonSearchHeaderReducer',
+          'rebookReducer',
         ],
       },
       () => { this.setState({ storeIsReady: true }); },

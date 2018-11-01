@@ -243,10 +243,10 @@ AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
 
 
-  const hideTabBar = state.routes[state.routes.length - 1].params ?
-    state.routes[state.routes.length - 1].params.hideTabBar : false;
+  const hideTabBar = state.routes[state.index].params ?
+    state.routes[state.index].params.hideTabBar : false;
 
-  if (state.index > 1 || hideTabBar) {
+  if (hideTabBar) {
     tabBarVisible = false;
   }
 
