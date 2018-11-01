@@ -184,7 +184,7 @@ class ServicesScreen extends React.Component {
 
     return this.props.servicesState.filtered.map(cat => ({
       ...cat,
-      services: cat.services.filter(itm => !itm.isAddon),
+      services: cat.services.filter(itm => !itm.isAddon && itm.canBePerformed),
     }));
   }
 
