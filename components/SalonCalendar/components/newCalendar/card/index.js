@@ -249,10 +249,10 @@ class Card extends Component {
 
   renderBadges = () => {
     const { appointment, hiddenAddonsLength } = this.props;
-    const badges = getBadges(appointment, hiddenAddonsLength);
+    const badges = getBadges(appointment, hiddenAddonsLength, true);
     return (
       <View style={styles.badgesContainer}>
-        { badges }
+        { badges.slice(0, 1) }
       </View>
     );
   }

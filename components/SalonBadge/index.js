@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 2,
   },
   textStyle: {
     fontFamily: 'Roboto',
