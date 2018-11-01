@@ -111,7 +111,6 @@ class EditScheduleScreen extends React.Component {
 
 
   getState = (isException) => {
-    debugger
     let employeeScheduleOne = {};
     let employeeScheduleTwo = {};
 
