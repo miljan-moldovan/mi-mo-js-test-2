@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ViewPropTypes, Text } from 'react-native';
+import { View, ViewPropTypes, Text, LayoutAnimation } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
@@ -8,6 +8,17 @@ import SalonFlatPicker from '../SalonFlatPicker';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 
 import styles from './styles';
+
+const CustomLayoutAnimation = {
+  duration: 200,
+  create: {
+    type: LayoutAnimation.Types.linear,
+    property: LayoutAnimation.Properties.opacity,
+  },
+  update: {
+    type: LayoutAnimation.Types.curveEaseInEaseOut,
+  },
+};
 
 class SalonSearchHeader extends React.Component {
   constructor(props) {
@@ -29,6 +40,7 @@ class SalonSearchHeader extends React.Component {
     }
     if (searchText && searchText.length > 0) {
       this.props.salonSearchHeaderActions.setShowFilter(true);
+      LayoutAnimation.configureNext(CustomLayoutAnimation);
     } else {
       if (this.searchBar) {
         this.searchBar.blurInput();
@@ -38,6 +50,7 @@ class SalonSearchHeader extends React.Component {
       if (this.props.clearSearch) {
         this.props.clearSearch();
       }
+      LayoutAnimation.configureNext(CustomLayoutAnimation);
     }
   };
 
@@ -51,6 +64,7 @@ class SalonSearchHeader extends React.Component {
     } = this.props;
     if (searchText.length === 0 && showFilter) {
       setShowFilter(false);
+      LayoutAnimation.configureNext(CustomLayoutAnimation);
     }
   }
 
@@ -60,6 +74,7 @@ class SalonSearchHeader extends React.Component {
 
   showSuggestions = () => {
     this.props.salonSearchHeaderActions.setShowFilter(!this.props.salonSearchHeaderState.showFilter);
+    LayoutAnimation.configureNext(CustomLayoutAnimation);
   }
 
   render() {

@@ -202,6 +202,8 @@ const ServiceCard = (props) => {
                 {showSelectExtras && (
                   <SetExtras onPress={props.onSetExtras} />
                 )}
+                {
+                !props.hideDelete &&
                 <SalonTouchableOpacity onPress={props.onPressDelete}>
                   <Icon
                     name="trashAlt"
@@ -210,6 +212,7 @@ const ServiceCard = (props) => {
                     type="regular"
                   />
                 </SalonTouchableOpacity>
+              }
               </View>
             </View>
           }

@@ -10,7 +10,7 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Picker, DatePicker } from 'react-native-wheel-datepicker';
+import { Picker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
 import { get, debounce, isNull } from 'lodash';
 import ClientInfoButton from '../../components/ClientInfoButton';
@@ -87,7 +87,6 @@ export default class NewAppointmentScreen extends React.Component {
 
   constructor(props) {
     super(props);
-
     const {
       client,
       editType,
@@ -210,7 +209,7 @@ export default class NewAppointmentScreen extends React.Component {
 
   selectExtraServices = (serviceItem) => {
     const { service: { service = null }, itemId } = serviceItem;
-    const extras = this.getAddonsForService(itemId);
+    const extras = this.getAddonsForService(itemId, this.props.newAppointmentState.serviceItems);
     const addonIds = extras.filter(itm => itm.type === 'addon').map(itm => itm.service.service.id);
     const recommendedIds = extras.filter(itm => itm.type === 'recommended').map(itm => itm.service.service.id);
     const requiredIds = extras.filter(itm => itm.type === 'required').map(itm => itm.service.service.id);
@@ -440,11 +439,10 @@ export default class NewAppointmentScreen extends React.Component {
       .catch(err => reject(err));
   })
 
-  getMainServices = () => this.props.newAppointmentState
-    .serviceItems.filter(item => !item.guestId && !item.parentId)
+  getMainServices = serviceItems => serviceItems.filter(item => !item.guestId && !item.parentId)
 
-  getAddonsForService = serviceId => this.props.newAppointmentState
-    .serviceItems.filter(item => item.parentId === serviceId)
+  getAddonsForService = (serviceId, serviceItems) => serviceItems
+    .filter(item => item.parentId === serviceId)
 
   getConflictsForService = serviceId => this.props.newAppointmentState
     .conflicts.filter(conf => conf.associativeKey === serviceId)
@@ -783,6 +781,7 @@ export default class NewAppointmentScreen extends React.Component {
       remarks,
       isBookedByFieldEnabled,
       editType,
+      serviceItems,
     } = this.props.newAppointmentState;
     const {
       clientEmail,
@@ -794,7 +793,6 @@ export default class NewAppointmentScreen extends React.Component {
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
     const dividerWithErrorStyle = { backgroundColor: '#D1242A' };
-
     // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const disabledLabelStyle = {
       fontSize: 14,
@@ -804,6 +802,7 @@ export default class NewAppointmentScreen extends React.Component {
     const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
+    const mainServices = this.getMainServices(serviceItems);
     return (
       <View style={styles.container}>
         {(isLoading || isBooking) ? <LoadingOverlay /> : null}
@@ -885,20 +884,21 @@ export default class NewAppointmentScreen extends React.Component {
           </InputGroup>
           <View>
             <SubTitle title={guests.length > 0 ? 'Main Client' : 'Services'} />
-            {this.getMainServices().map((item, itemIndex) => [
+            {mainServices.map(item => [
               (
                 <ServiceCard
                   key={item.itemId}
                   data={item.service}
-                  addons={this.getAddonsForService(item.itemId)}
+                  addons={this.getAddonsForService(item.itemId, serviceItems)}
                   onPress={() => this.onPressService(item.itemId)}
                   onSetExtras={() => this.selectExtraServices(item)}
                   conflicts={this.getConflictsForService(item.itemId)}
                   onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                  hideDelete={mainServices.length === 1}
                   onPressConflicts={() => this.onPressConflicts(item.itemId)}
                 />
               ),
-              this.getAddonsForService(item.itemId).map(addon => (
+              this.getAddonsForService(item.itemId, serviceItems).map(addon => (
                 <ServiceCard
                   isAddon
                   key={addon.itemId}
@@ -939,7 +939,7 @@ export default class NewAppointmentScreen extends React.Component {
                           <ServiceCard
                             key={item.itemId}
                             data={item.service}
-                            addons={this.getAddonsForService(item.itemId)}
+                            addons={this.getAddonsForService(item.itemId, serviceItems)}
                             onSetExtras={() => this.selectExtraServices(item)}
                             conflicts={this.getConflictsForService(item.itemId)}
                             onPressDelete={() => this.removeServiceAlert(item.itemId)}
@@ -947,7 +947,7 @@ export default class NewAppointmentScreen extends React.Component {
                             onPress={() => this.onPressService(item.itemId, guest.guestId)}
                           />
                         ),
-                        this.getAddonsForService(item.itemId).map(addon => (
+                        this.getAddonsForService(item.itemId, serviceItems).map(addon => (
                           <ServiceCard
                             isAddon
                             key={addon.itemId}
