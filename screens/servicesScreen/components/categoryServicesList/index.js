@@ -109,6 +109,7 @@ class CategoryServicesList extends React.Component {
           keyExtractor={this._keyExtractor}
           renderItem={elem => this.renderItem(elem)}
           ItemSeparatorComponent={this.renderSeparator}
+          ListFooterComponent={this.renderSeparator}
         />
       </View>
     );

@@ -251,11 +251,7 @@ class ServiceList extends React.Component {
             extraData={this.props}
             renderSectionHeader={item => ServiceList.renderSection(item)}
             ItemSeparatorComponent={ServiceList.renderSeparator}
-          />
-          <ListLetterFilter
-            onPress={(letter) => {
-              this.scrollToIndex(letter);
-            }}
+            ListFooterComponent={ServiceList.renderSeparator}
           />
         </Animated.View>
       </View>
