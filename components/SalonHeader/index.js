@@ -25,13 +25,22 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 17,
     lineHeight: 22,
+    fontFamily: 'Roboto-Medium',
+  },
+  subTitleText: {
     fontFamily: 'Roboto',
+    fontSize: 10,
+    lineHeight: 12,
+    color: Colors.white,
   },
   headerLeft: {
   },
   headerRight: {
   },
-  headerTitle: {},
+  headerTitle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 const SalonHeader = (props) => {
   const {

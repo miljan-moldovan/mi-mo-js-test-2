@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   headerContainer: {
     backgroundColor: '#115ECD',
-    height: 115,
     width: '100%',
     flexDirection: 'column',
     alignItems: 'center',
@@ -15,12 +14,8 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    // paddingTop: 35,
-
-    // paddingBottom: 8,
   },
   topSearchBar: {
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -43,6 +38,7 @@ export default StyleSheet.create({
   filterBar: {
     flex: 1,
     paddingHorizontal: 10,
+    paddingBottom: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

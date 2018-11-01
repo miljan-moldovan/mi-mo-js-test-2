@@ -6,6 +6,7 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 // import ApptBookSetEmployeeOrderHeader from './apptBookSetEmployeeOrderHeader';
 import Row from './rowComponent';
 import headerStyles from '../../../constants/headerStyles';
+import SalonHeader from '../../../components/SalonHeader';
 
 const window = Dimensions.get('window');
 
@@ -58,23 +59,20 @@ export default class setEmployeesOrder extends React.PureComponent {
 
 
   static navigationOptions = ({ navigation }) => ({
-    ...headerStyles,
-    headerTitle: (
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>
-            Set Employee Order
-        </Text>
-      </View>
-    ),
-    headerLeft: (
-      <SalonTouchableOpacity wait={3000} style={styles.leftButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.leftButtonText}>Cancel</Text>
-      </SalonTouchableOpacity>
-    ),
-    headerRight: (
-      <SalonTouchableOpacity wait={3000} style={styles.rightButton} onPress={navigation.getParam('handlePress', () => {})}>
-        <Text style={styles.rightButtonText}>Done</Text>
-      </SalonTouchableOpacity>
+    header: (
+      <SalonHeader
+        title="Set Employee Order"
+        headerLeft={
+          <SalonTouchableOpacity wait={3000} style={styles.leftButton} onPress={() => navigation.goBack()}>
+            <Text style={styles.leftButtonText}>Cancel</Text>
+          </SalonTouchableOpacity>
+        }
+        headerRight={
+          <SalonTouchableOpacity wait={3000} style={styles.rightButton} onPress={navigation.getParam('handlePress', () => { })}>
+            <Text style={styles.rightButtonText}>Done</Text>
+          </SalonTouchableOpacity>
+        }
+      />
     ),
   })
 
@@ -131,7 +129,7 @@ export default class setEmployeesOrder extends React.PureComponent {
             contentContainerStyle={styles.contentContainer}
             data={employees}
             renderRow={this._renderRow}
-          // order={this.state.order}
+            // order={this.state.order}
             onChangeOrder={this.handleChangeOrder}
           />
         }

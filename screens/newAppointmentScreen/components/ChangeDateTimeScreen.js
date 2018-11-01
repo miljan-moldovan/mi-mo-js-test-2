@@ -18,6 +18,7 @@ import newAppointmentActions from '../../../actions/newAppointment';
 import { appointmentCalendarActions } from '../../../actions/appointmentBook';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import headerStyles from '../../../constants/headerStyles';
+import SalonHeader from '../../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,17 +38,20 @@ class ChangeDateTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const rightButtonOnPress = () => navigation.state.params.handleSave();
     return {
-      ...headerStyles,
-      headerTitle: 'Change Date/Time',
-      headerLeft: (
-        <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>
-          <Text style={styles.headerButton}>Cancel</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerRight: (
-        <SalonTouchableOpacity style={styles.rightButton} onPress={rightButtonOnPress}>
-          <Text style={[styles.headerButton, styles.mediumBold]}>Done</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Change Date/Time"
+          headerLeft={
+            <SalonTouchableOpacity style={styles.leftButton} onPress={navigation.goBack}>
+              <Text style={styles.headerButton}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity style={styles.rightButton} onPress={rightButtonOnPress}>
+              <Text style={[styles.headerButton, styles.mediumBold]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     };
   };

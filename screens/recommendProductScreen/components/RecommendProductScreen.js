@@ -12,6 +12,7 @@ import {
   ProviderInput,
 } from '../../../components/formHelpers';
 import headerStyles from '../../../constants/headerStyles';
+import SalonHeader from '../../../components/SalonHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,27 +49,31 @@ export default class RecommendProductScreen extends React.Component {
       canSave = params.isValidInfo();
     }
     return {
-      ...headerStyles,
-      headerRight: (
-        <SalonTouchableOpacity
-          style={{ paddingRight: 10 }}
-          onPress={() => {
-            if (canSave) {
-              params.saveInfo();
-              navigation.goBack();
-            }
-          }}
-        >
-          <Text style={[styles.headerButtons, headerRightButtonStyle(canSave)]}>Done</Text>
-        </SalonTouchableOpacity>
-      ),
-      headerLeft: (
-        <SalonTouchableOpacity
-          style={{ paddingLeft: 10 }}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.headerButtons}>Cancel</Text>
-        </SalonTouchableOpacity>
+      header: (
+        <SalonHeader
+          title="Recommend Product"
+          headerLeft={
+            <SalonTouchableOpacity
+              style={{ paddingLeft: 10 }}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.headerButtons}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity
+              style={{ paddingRight: 10 }}
+              onPress={() => {
+                if (canSave) {
+                  params.saveInfo();
+                  navigation.goBack();
+                }
+              }}
+            >
+              <Text style={[styles.headerButtons, headerRightButtonStyle(canSave)]}>Done</Text>
+            </SalonTouchableOpacity>
+          }
+        />
       ),
     };
   };
