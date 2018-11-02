@@ -6,7 +6,7 @@ import {
   View,
   Dimensions,
   Animated,
-  SafeAreaView,
+  SafeAreaView
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -50,18 +50,17 @@ class QueueScreen extends React.Component {
     } = params;
     return {
       header: (
-        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
-          <QueueHeader
-            navigation={navigation}
-            onChangeSearchMode={onChangeSearchMode}
-            onChangeSearchText={onChangeSearchText}
-            searchMode={searchMode}
-            searchText={searchText}
-          />
+        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
+        <QueueHeader
+          navigation={navigation}
+          onChangeSearchMode={onChangeSearchMode}
+          onChangeSearchText={onChangeSearchText}
+          searchMode={searchMode}
+          searchText={searchText}
+        />
         </SafeAreaView>
       ),
       tabBarVisible: true,
-      gesturesEnabled: false,
     };
   }
 
