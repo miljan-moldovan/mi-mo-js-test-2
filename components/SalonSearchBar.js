@@ -4,6 +4,7 @@ import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from './../components/UI/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
+import { NavigationEvents } from 'react-navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,12 +75,6 @@ class SalonSearchBar extends Component {
     searchText: '',
   };
 
-  componentDidMount() {
-    if (this.props.focusOnMount) {
-      this.textInput.focus();
-    }
-  }
-
   blurInput = () => {
     this.textInput.blur();
   }
@@ -94,6 +89,7 @@ class SalonSearchBar extends Component {
 
   handleCancel = () => {
     this.handleChange('');
+    this.textInput.blur()
     if (isFunction(this.props.handleCancel)) {
       this.props.handleCancel();
     }
@@ -118,11 +114,14 @@ class SalonSearchBar extends Component {
     const searchIconStyle = { color: iconsColor };
     const textInputStyle = { color: fontColor };
     const clearSearchText = () => {
-      this.handleChange('');
       this.textInput.blur();
+      this.handleChange('');
     };
     return (
       <View style={[styles.container, this.props.containerStyle]}>
+        <NavigationEvents
+    onWillFocus={payload => this.props.focusOnMount && this.textInput.focus()}
+  />
         <View style={[styles.searchBar, searchBarStyle]}>
           <View style={styles.searchBarItems}>
             {
@@ -134,7 +133,6 @@ class SalonSearchBar extends Component {
             }
             <TextInput
               ref={(ref) => { this.textInput = ref; }}
-              focusOnMount={focusOnMount}
               style={[styles.searchBarInput, textInputStyle]}
               placeholder={this.props.placeHolderText}
               placeholderTextColor={this.props.placeholderTextColor}

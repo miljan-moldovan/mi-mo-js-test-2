@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, ViewPropTypes, Text, LayoutAnimation } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
@@ -40,17 +39,15 @@ class SalonSearchHeader extends React.Component {
     }
     if (searchText && searchText.length > 0) {
       this.props.salonSearchHeaderActions.setShowFilter(true);
-      LayoutAnimation.configureNext(CustomLayoutAnimation);
     } else {
-      if (this.searchBar) {
-        this.searchBar.blurInput();
-      }
-      this.props.salonSearchHeaderActions.setShowFilter(false);
-      this.props.salonSearchHeaderActions.setSearchText('');
-      if (this.props.clearSearch) {
-        this.props.clearSearch();
-      }
-      LayoutAnimation.configureNext(CustomLayoutAnimation);
+      // if (this.searchBar) {
+      //   this.searchBar.blurInput();
+      // }
+      // this.props.salonSearchHeaderActions.setShowFilter(false);
+      // this.props.salonSearchHeaderActions.setSearchText('');
+      // if (this.props.clearSearch) {
+      //   this.props.clearSearch();
+      // }
     }
   };
 
@@ -62,9 +59,11 @@ class SalonSearchHeader extends React.Component {
       },
       salonSearchHeaderActions: { setShowFilter },
     } = this.props;
+    if (showFilter) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    }
     if (searchText.length === 0 && showFilter) {
       setShowFilter(false);
-      LayoutAnimation.configureNext(CustomLayoutAnimation);
     }
   }
 
@@ -73,8 +72,20 @@ class SalonSearchHeader extends React.Component {
   };
 
   showSuggestions = () => {
-    this.props.salonSearchHeaderActions.setShowFilter(!this.props.salonSearchHeaderState.showFilter);
-    LayoutAnimation.configureNext(CustomLayoutAnimation);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.props.salonSearchHeaderActions.setShowFilter(true);
+  }
+
+  handleCancel = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.props.salonSearchHeaderActions.setShowFilter(false);
+    this.props.salonSearchHeaderActions.setSearchText('');
+    if (this.props.clearSearch) {
+      this.props.clearSearch();
+    }
+    // if (this.props.leftButtonOnPress) {
+    //   this.props.leftButtonOnPress();
+    // }
   }
 
   render() {
@@ -144,8 +155,9 @@ class SalonSearchHeader extends React.Component {
             onChangeText={this.debouncedOnChange}
             onFocus={this.showSuggestions}
             onBlur={this.onInputBlur}
-            handleCancel={this.props.leftButtonOnPress}
+            handleCancel={this.handleCancel}
             onClear={this.onInputBlur}
+            focusOnMount={this.props.focusOnMount}
             ref={(ref) => { this.searchBar = ref; }}
           />
         </View>
