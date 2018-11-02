@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import { NavigationEvents } from 'react-navigation';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
@@ -69,14 +70,12 @@ class ClientsScreen extends React.Component {
       header: () => (
         <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
           <SalonSearchHeader
+            focusOnMount
             clearSearch={clearSearch}
             title={title}
             subTitle={subTitle}
             leftButton={leftButton}
             leftButtonOnPress={() => {
-              if (clearSearch) {
-                clearSearch();
-              }
               leftButtonOnPress(navigation);
             }}
             rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
@@ -123,10 +122,6 @@ class ClientsScreen extends React.Component {
       clearSearch: this.clearSearch,
       ignoreNav: false,
     });
-
-    this.props.salonSearchHeaderActions.setShowFilter(false);
-
-    this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
   }
 
   state = {
@@ -264,6 +259,12 @@ class ClientsScreen extends React.Component {
 
     return (
       <View style={styles.container}>
+        <NavigationEvents
+          onWillFocus={() => {
+            this.props.salonSearchHeaderActions.setShowFilter(true);
+            this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
+          }}
+        />
         <BarsActionSheet
           ref={item => this.BarsActionSheet = item}
           onLogout={this.props.auth.logout}
