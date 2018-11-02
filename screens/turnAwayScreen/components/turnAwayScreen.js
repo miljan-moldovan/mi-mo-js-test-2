@@ -336,10 +336,10 @@ render() {
         keyboardShouldPersistTaps="always"
         ref={(ref) => { this.scroll = ref; }}
       >
-        <InputGroup>
+        <InputGroup style={styles.inputGroup}>
           <InputButton
             label="Date"
-            value={date.format('DD MMMM YYYY')}
+            value={date.format('ddd, MM/DD/YYYY')}
             onPress={this.handleDateModal}
           />
           <InputDivider />

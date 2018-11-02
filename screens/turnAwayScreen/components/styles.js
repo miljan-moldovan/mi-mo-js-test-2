@@ -4,7 +4,6 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
-    paddingTop: 18,
   },
   row: {
     height: 44,
@@ -13,6 +12,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 16,
     paddingRight: 16,
+  },
+  inputGroup: { 
+    marginTop: 16 
   },
   rowFirst: {
     borderTopWidth: StyleSheet.hairlineWidth,
