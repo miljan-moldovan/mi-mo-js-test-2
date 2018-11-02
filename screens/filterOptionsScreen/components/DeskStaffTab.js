@@ -122,6 +122,7 @@ export default class DeskStaffTab extends React.Component {
       style={{
         height: StyleSheet.hairlineWidth,
         width: '100%',
+        paddingLeft: 15,
         backgroundColor: '#C0C1C6',
       }}
     />

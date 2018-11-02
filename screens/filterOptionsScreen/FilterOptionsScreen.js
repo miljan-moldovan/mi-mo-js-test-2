@@ -86,15 +86,15 @@ const ViewAllProviders = ({
   icon, onPress, isSelected, separator,
 }) => (
   <React.Fragment>
-      <InputButton
+    <InputButton
         icon={icon}
         style={styles.viewAllButton}
         onPress={onPress}
         label="View all providers"
         labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
       />
-      {separator}
-    </React.Fragment>
+    {separator}
+  </React.Fragment>
 );
 
 export default class FilterOptionsScreen extends React.Component {
@@ -339,6 +339,7 @@ export default class FilterOptionsScreen extends React.Component {
       style={{
         height: StyleSheet.hairlineWidth,
         width: '100%',
+        paddingLeft: 15,
         backgroundColor: '#C0C1C6',
       }}
     />

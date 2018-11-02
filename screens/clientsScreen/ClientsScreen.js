@@ -19,6 +19,7 @@ const query = {
 
 class ClientsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
+    const onPressMenu = navigation.getParam('onPressMenu', (() => {}));
     const isModal = get(navigation.state.params, 'isModal', false);
     const headerProps = get(navigation.state.params, 'headerProps', {});
     const stateProps = get(navigation.state.params, 'defaultProps', {});
@@ -51,20 +52,19 @@ class ClientsScreen extends React.Component {
 
     const clearSearch = navigation.state.params &&
       navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
-
-    if (!leftButton) {
+    const { routeName } = navigation.state;
+    const isMainClients = routeName === 'ClientsMain' || routeName === 'ClientsStack';
+    if (isMainClients) {
       leftButton = (
         <Icon
           name="bars"
           type="solid"
           color="white"
-          size={19}
+          size={17}
         />
       );
-
-      leftButtonOnPress = defaultProps.defaultLeftButtonOnPress;
+      leftButtonOnPress = onPressMenu;
     }
-    const { routeName } = navigation.state;
     return {
       header: () => (
         <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
@@ -72,10 +72,7 @@ class ClientsScreen extends React.Component {
             clearSearch={clearSearch}
             title={title}
             subTitle={subTitle}
-            leftButton={
-              routeName === 'ClientsMain' || routeName === 'ClientsStack'
-                ? null : leftButton
-            }
+            leftButton={leftButton}
             leftButtonOnPress={() => {
               if (clearSearch) {
                 clearSearch();
@@ -121,6 +118,7 @@ class ClientsScreen extends React.Component {
     super(props);
     this.clearSearch();
     this.props.navigation.setParams({
+      onPressMenu: this.handleLeftButton,
       defaultProps: this.state.headerProps,
       clearSearch: this.clearSearch,
       ignoreNav: false,

@@ -19,12 +19,13 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    borderRightWidth: 1,
+    borderLeftWidth: 1,
     alignItems: 'center',
     flexDirection: 'column',
   },
   btnLast: {
     flex: 1,
+    borderRightWidth: 1,
     alignItems: 'center',
   },
   text: {
@@ -57,19 +58,16 @@ function renderBtn(
 ) {
   let btnStyle = styles.btn;
   let textStyle = styles.text;
-  if (isLast) {
-    btnStyle = styles.btnLast;
-  }
-
   if (isSelected) {
     btnStyle = [btnStyle, { backgroundColor: selectedColor, borderColor: selectedColor }];
     textStyle = [textStyle, { color: selectedTextColor }];
   } else {
     textStyle = [textStyle, { color: unSelectedTextColor }];
-    btnStyle = [btnStyle, { borderColor: 'transparent' }];
+    btnStyle = [btnStyle, { borderColor: selectedColor }];
   }
-
-
+  if (isLast) {
+    btnStyle = [btnStyle, styles.btnLast];
+  }
   return (
     <SalonTouchableOpacity
       style={btnStyle}
