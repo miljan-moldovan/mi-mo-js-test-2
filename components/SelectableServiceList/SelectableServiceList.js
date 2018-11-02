@@ -53,7 +53,7 @@ class SelectableServiceList extends React.Component {
         onPress={() => this.onPressItem(item)}
       >
         <View style={styles.listItemContainer}>
-          <Text style={styles.listItemText}>{item.name}</Text>
+          <Text style={styles.listItemText} numberOfLines={1} ellipsizeMode="tail">{item.name.slice(0,30)}{item.name.length > 30 ? '...' : ''}</Text>
           {
             !item.isNone && !this.props.hidePrice && (
               <Text style={styles.priceText}>{`$${price.toFixed(2)}`}</Text>

@@ -40,9 +40,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2F3142',
   },
-  priceText: { fontSize: 12, color: '#115ECD' },
+  priceText: { 
+    fontSize: 12, 
+    color: '#115ECD' 
+  },
   iconContainer: {
-    flexDirection: 'row', flex: 1 / 10, alignItems: 'flex-end', justifyContent: 'center',
+    flexDirection: 'row', 
+    flex: 1 / 10, 
+    alignItems: 'flex-end', 
+    justifyContent: 'center',
   },
   icon: { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
   listItemSeparator: {
