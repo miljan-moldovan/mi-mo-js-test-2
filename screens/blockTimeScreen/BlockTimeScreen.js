@@ -187,8 +187,8 @@ class BlockTimeScreen extends React.Component {
   handleDone = () => {
     const schedule = {
       date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
-      fromTime: this.state.fromTime.format('h:mm A'),
-      toTime: this.state.toTime.format('h:mm A'),
+      fromTime: this.state.fromTime.format('hh:mm'),
+      toTime: this.state.toTime.format('hh:mm'),
       notes: this.state.comments.length > 0 ? this.state.comments : null,
       reasonId: this.state.blockTimesReason.id,
       employeeId: this.state.provider.id,
