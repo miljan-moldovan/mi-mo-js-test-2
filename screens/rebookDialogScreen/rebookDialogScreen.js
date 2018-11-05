@@ -109,7 +109,9 @@ class RebookDialogScreen extends Component {
       this.setState({ rebookServices: appointment.services, date }, this.checkCanSave);
     }
 
-    this.setShouldRebook(appointment.services[0]);
+    for (let i = 0; i < appointment.services.length; i++) {
+      this.setShouldRebook(appointment.services[i]);
+    }
   }
 
   onChangeWeeks = (operation, weeks) => {
