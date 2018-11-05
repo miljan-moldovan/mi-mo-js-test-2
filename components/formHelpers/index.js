@@ -11,7 +11,7 @@ import {
 import PropTypes from 'prop-types';
 import { get, isString } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import TextInputMask from '../TextInputMask';
+import TextInputMask from 'react-native-text-input-mask';
 import ValidatableInput from './components/ValidatableInput';
 import ClientInput from './components/ClientInput';
 import InputDate from './components/InputDate';

@@ -40,7 +40,7 @@
     "react-native-svg-uri": "1.2.3",
     "react-native-swiper": "1.5.13",
     "react-native-tab-view": "^1.0.2",
-    "react-native-text-input-mask": "0.5.2",
+    "react-native-text-input-mask": "git+https://github.com/aprados/react-native-text-input-mask.git#POS_0.5.2",
     "react-native-touch-id": "^4.0.0",
     "react-native-wheel-datepicker": "^2.2.2",
     "react-native-wheel-picker": "^1.2.0",

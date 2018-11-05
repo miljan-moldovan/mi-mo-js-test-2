@@ -81,7 +81,18 @@ class RebookDialogScreen extends Component {
 
     this.props.navigation.setParams({ hideTabBar: true });
 
+    this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.loadRebookData();
+      },
+    );
+  }
+
+  loadRebookData = () => {
     const { appointment } = this.props.navigation.state.params;
+
+    debugger //eslint-disable-line
 
     let { date } = this.state;
 

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   panelInfoTitle: {
-    marginTop: 5,
+    // marginTop: 5,
     color: '#000000',
     fontSize: 14,
     fontFamily: 'Roboto',
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: 100,
     position: 'absolute',
-    bottom: 12,
+    bottom: 6,
   },
 });
 
