@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
+import deepEqual from 'deep-equal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -68,7 +70,7 @@ export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
-    const canSave = screenProps.isNewApptValid;
+    const canSave = params.canSave;
     const leftButtonStyle = { paddingLeft: 10 };
     const rightButtonStyle = { paddingRight: 10 };
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
@@ -133,6 +135,15 @@ export default class NewAppointmentScreen extends React.Component {
 
   componentDidMount() {
     this.checkConflicts();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { isValidAppointment } = this.props;
+    const { canSave } = this.props.navigation.state.params;
+    const remarksChanged = prevProps.newAppointmentState.remarks !== this.props.newAppointmentState.remarks;
+    if (remarksChanged || (isValidAppointment !== prevProps.isValidAppointment && isValidAppointment !== canSave)) {
+      this.validate();
+    }
   }
 
   addService = (service, guestId = false) => {
@@ -632,12 +643,16 @@ export default class NewAppointmentScreen extends React.Component {
     let alertBody = '';
     let alertTitle = '';
     switch (editType) {
-      case 'edit':
-        alertTitle = 'Discard Changes?';
-        alertBody = serviceTitle ?
-          `Are you sure you want to discard this appointment for service ${serviceTitle} w/ ${employeeName}?` :
-          `Are you sure you want to discard this appointment with ${employeeName}?`;
+      case 'edit': {
+        const hasChanges = this.lookForChanges();
+        if (hasChanges) {
+          alertTitle = 'Discard Changes?';
+          alertBody = serviceTitle ?
+            `Are you sure you want to discard this appointment for service ${serviceTitle} w/ ${employeeName}?` :
+            `Are you sure you want to discard this appointment with ${employeeName}?`;
+        }
         break;
+      }
       case 'new':
       default:
         alertTitle = 'Discard New Appointment?';
@@ -646,21 +661,25 @@ export default class NewAppointmentScreen extends React.Component {
           `Are you sure you want to discard this new appointment with ${employeeName}?`;
         break;
     }
-
-    Alert.alert(
-      alertTitle,
-      alertBody,
-      [
-        { text: 'No, Thank You', onPress: () => null },
-        {
-          text: 'Yes, Discard',
-          onPress: () => {
-            this.props.navigation.goBack();
-            this.props.apptBookActions.setGridView();
+    if (alertTitle) {
+      Alert.alert(
+        alertTitle,
+        alertBody,
+        [
+          { text: 'No, Thank You', onPress: () => null },
+          {
+            text: 'Yes, Discard',
+            onPress: () => {
+              this.props.navigation.goBack();
+              this.props.apptBookActions.setGridView();
+            },
           },
-        },
-      ],
-    );
+        ],
+      );
+    } else {
+      this.props.navigation.goBack();
+      this.props.apptBookActions.setGridView();
+    }
   }
 
   emailValidation = (email) => {
@@ -685,9 +704,9 @@ export default class NewAppointmentScreen extends React.Component {
     return isValid;
   }
 
-  onChangeEmail = clientEmail => this.setState({ clientEmail })
+  onChangeEmail = clientEmail => this.setState({ clientEmail }, this.validate)
 
-  onChangePhone = clientPhone => this.setState({ clientPhone })
+  onChangePhone = clientPhone => this.setState({ clientPhone }, this.validate)
 
   onValidateEmail = (isValid, isFirstValidation) => this.setState((state) => {
     const newState = state;
@@ -717,8 +736,43 @@ export default class NewAppointmentScreen extends React.Component {
     return newState;
   }, this.shouldUpdateClientInfo)
 
+  lookForChanges = () => {
+    const {
+      initialState,
+      startTime,
+      date,
+      client,
+      remarks,
+      bookedByEmployee,
+      guests,
+      serviceItems,
+    } = this.props.newAppointmentState;
+    const {
+      clientEmail,
+      clientPhone,
+    } = this.state;
+    const diffDate = date.format('MM/DD/YYYY') !== initialState.date.format('MM/DD/YYYY');
+    const diffTime = startTime.format('hh:mm A') !== initialState.startTime.format('hh:mm A');
+    const diffRemarks = remarks !== initialState.remarks;
+    const diffClient = get(client, 'id', -1) !== get(initialState.client, 'id', -1);
+    const diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
+    const diffPhone = clientPhone !== this.getClientInfo(initialState.client).clientPhone;
+    const diffBookedByEmployee = get(bookedByEmployee, 'id', -1) !== get(initialState.bookedByEmployee, 'id', -1);
+    const diffGuests = !deepEqual(guests, initialState.guests, { strict: true });
+    const diffServices = !deepEqual(serviceItems, initialState.serviceItems, { strict: true });
+    return diffDate || diffEmail || diffPhone || diffTime || diffRemarks || diffClient
+      || diffServices || diffGuests || diffBookedByEmployee;
+  };
+
   validate = () => {
-    const canSave = this.props.isValidAppointment;
+    let canSave = this.props.isValidAppointment;
+    if (this.props.newAppointmentState.editType === 'edit') {
+      if (this.props.newAppointmentState.initialState) {
+        canSave = canSave && this.lookForChanges();
+      } else {
+        canSave = false;
+      }
+    }
     this.props.navigation.setParams({ canSave });
   }
 
@@ -819,6 +873,9 @@ export default class NewAppointmentScreen extends React.Component {
     const mainServices = this.getMainServices(serviceItems);
     return (
       <View style={styles.container}>
+        <NavigationEvents
+          onDidFocus={this.validate}
+        />
         {(isLoading || isBooking) ? <LoadingOverlay /> : null}
         <KeyboardAwareScrollView style={styles.container}>
           <InputGroup style={{ marginTop: 15 }}>

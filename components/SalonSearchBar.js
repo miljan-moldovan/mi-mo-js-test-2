@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from './../components/UI/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
-import { NavigationEvents } from 'react-navigation';
 
 const styles = StyleSheet.create({
   container: {
