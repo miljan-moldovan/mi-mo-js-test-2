@@ -23,7 +23,7 @@ export default async (date, filterOptions) => {
         .then((scheduleResponse) => {
           const scheduleDictionary = keyBy(scheduleResponse, 'key');
           return response.map((item) => {
-            const employeeSchedule = get(scheduleDictionary, [item.id, 'value', 0], null);
+            const employeeSchedule = get(scheduleDictionary, [item.id, 'value', 0], {});
             return Object.assign({}, item, {
               roomAssignments: employeeSchedule.roomAssignment,
               assistantAssignment: employeeSchedule.assistantAssignment,
