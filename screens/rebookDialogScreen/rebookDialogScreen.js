@@ -77,6 +77,7 @@ class RebookDialogScreen extends Component {
 
     this.props.navigation.setParams({ hideTabBar: true });
 
+
     this.props.navigation.addListener(
       'willFocus',
       () => {
@@ -108,17 +109,20 @@ class RebookDialogScreen extends Component {
   }
 
   loadRebookData = () => {
+
+
+
     const { appointment } = this.props.navigation.state.params;
 
-    let { date } = this.state;
+    const date = moment(appointment.date).add(1, 'weeks');
 
-    if ('service' in appointment && !('services' in appointment)) {
+    // if ('service' in appointment && !('services' in appointment)) {
+    if ('service' in appointment) {
       const { service } = appointment;
       service.serviceId = service.id;
       service.employee = appointment.employee;
       service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
       appointment.services = [service];
-      date = moment(appointment.date).add(1, 'weeks');
     }
 
     if (appointment.services.length === 1) {
@@ -136,7 +140,8 @@ class RebookDialogScreen extends Component {
 
     const rebookProviders = [];
     for (let i = 0; i < rebookServices.length; i += 1) {
-      rebookServices[i].id = rebookServices[i].serviceId;
+      rebookServices[i].id = rebookServices[i].serviceId || rebookServices[i].id;
+
       if (rebookServices[i].employee) {
         const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
         if (!provider) {
@@ -146,6 +151,8 @@ class RebookDialogScreen extends Component {
     }
 
     const { push } = this.props.navigation;
+
+
 
     push('SalonCalendar');
 
@@ -216,7 +223,7 @@ class RebookDialogScreen extends Component {
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
           <SectionTitle value="HOW MANY WEEKS AHEAD TO REBOOK?" style={{ height: 37 }} />
           <InputGroup >
-            <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={0} />
+            <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={1} />
             <InputDivider />
             <InputLabel
               label={this.state.date.format('DD MMMM YYYY')}

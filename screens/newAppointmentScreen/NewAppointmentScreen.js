@@ -872,6 +872,7 @@ export default class NewAppointmentScreen extends React.Component {
     const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
+
     const mainServices = this.getMainServices(serviceItems);
     return (
       <SwipeableComponent onSwipeRight={this.handleCancel}>

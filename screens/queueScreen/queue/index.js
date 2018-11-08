@@ -548,7 +548,7 @@ handleStartService = () => {
     ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
 
-  debugger //eslint-disable-line
+  
 
   if (modalBusyEmployee) {
     this.setState({ modalBusyEmployee });
