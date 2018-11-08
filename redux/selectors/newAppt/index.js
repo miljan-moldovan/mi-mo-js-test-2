@@ -1,11 +1,7 @@
 import { createSelector } from 'reselect';
-import {
-  get,
-  isNil,
-} from 'lodash';
+import { get } from 'lodash';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
-import { clientsSelector } from '../clientsSelector';
 
 const moment = extendMoment(Moment);
 
@@ -98,6 +94,20 @@ const validateGuests = (guests, serviceItems) => {
   return true;
 };
 
+const validateAppointment = ({
+  isLoading, isBooking, date, bookedByEmployee,
+  mainEmployee, client, serviceItems, conflicts, guests,
+}) => (
+  date &&
+    bookedByEmployee !== null &&
+    mainEmployee !== null &&
+    client !== null &&
+    serviceItems.length > 0 &&
+    !conflicts.length > 0 &&
+    !isLoading &&
+    !isBooking && validateGuests(guests, serviceItems)
+);
+
 const isValidAppointment = createSelector(
   [
     loadingStateSelector,
@@ -106,18 +116,20 @@ const isValidAppointment = createSelector(
   (
     { isLoading, isBooking },
     {
-      date, bookedByEmployee, mainEmployee, client, serviceItems, conflicts, guests
+      date,
+      bookedByEmployee, mainEmployee, client, serviceItems, conflicts, guests,
     },
-  ) => (
-    date &&
-      bookedByEmployee !== null &&
-      mainEmployee !== null &&
-      client !== null &&
-      serviceItems.length > 0 &&
-      !conflicts.length > 0 &&
-      !isLoading &&
-      !isBooking && validateGuests(guests, serviceItems)
-  ),
+  ) => validateAppointment({
+    isLoading,
+    isBooking,
+    date,
+    bookedByEmployee,
+    mainEmployee,
+    client,
+    serviceItems,
+    conflicts,
+    guests,
+  }),
 );
 
 const appointmentLength = createSelector(
