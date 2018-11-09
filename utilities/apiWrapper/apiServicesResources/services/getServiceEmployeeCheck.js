@@ -4,12 +4,14 @@ import { getApiInstance } from '../../api';
 
 let cancellationToken = null;
 
-export default async ({ serviceId, employeeId }) => {
+export default async ({ serviceId, employeeId, setCancelToken = true }) => {
   const apiInstance = await getApiInstance();
+  let cancelToken = { cancelToken: new axios.CancelToken((c) => { cancellationToken = c; }) };
+  cancelToken = setCancelToken ? cancelToken : {};
+
   cancelRequest(cancellationToken);
-  return apiInstance.get(`Services/${serviceId}/Check/Employee/${employeeId}`, {
-    cancelToken: new axios.CancelToken((c) => {
-      cancellationToken = c;
-    }),
-  }).then(({ data: { response } }) => response);
+  return apiInstance.get(
+    `Services/${serviceId}/Check/Employee/${employeeId}`,
+    cancelToken,
+  ).then(({ data: { response } }) => response);
 };

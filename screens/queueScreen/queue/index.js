@@ -547,11 +547,29 @@ handleStartService = () => {
   const modalBusyEmployee = settingAllowMultiService
     ? null : checkBusyEmploeeInServiceQueue(appointment, null, this.props.serviceQueue);
   this.hideAll();
+
+  debugger //eslint-disable-line
+
   if (modalBusyEmployee) {
     this.setState({ modalBusyEmployee });
   } else {
-    this.startService();
+    // this.startService();
+    this.checkIfProviderCanHandleService();
   }
+}
+
+checkIfProviderCanHandleService = () => {
+  const { appointment } = this.state;
+  this.props.getQueueItemProviderStatus(appointment)
+    .then((messages) => {
+      if (messages.length > 0) {
+        const message = messages.join('. ');
+        alert(message);
+        this.props.setLoading(false);
+      } else {
+        this.startService();
+      }
+    });
 }
 
 handleToWaiting = () => {
@@ -770,7 +788,7 @@ handleBusyModalOk = () => {
   const { itemsId } = this.state.modalBusyEmployee;
   this.setState({ modalBusyEmployee: null });
   this.props.finishService(itemsId, null).then(() => {
-    this.startService();
+    this.checkIfProviderCanHandleService();
   });
 }
 
@@ -878,6 +896,7 @@ Queue.propTypes = {
   returned: PropTypes.func.isRequired,
   returnLater: PropTypes.func.isRequired,
   startService: PropTypes.func.isRequired,
+  getQueueItemProviderStatus: PropTypes.func.isRequired,
   toWaiting: PropTypes.func.isRequired,
   undoFinishService: PropTypes.func.isRequired,
   finishService: PropTypes.func.isRequired,

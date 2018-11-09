@@ -155,7 +155,7 @@ class ClientNote extends Component {
     const { note } = this.state;
     note.expiration = selectedDate;
     this.shouldSave = true;
-    this.setState({ note }, this.checkCanSave);
+    this.setState({ note }, () => { this.checkCanSave(true); });
   }
 
   inputSwitchQueue = () => {
@@ -195,7 +195,11 @@ class ClientNote extends Component {
     },
     dismissOnSelect: true,
   });
-  checkCanSave = () => {
+
+  checkCanSave = (isDate = false) => {
+    if (!isDate) {
+      this.setState({ datePickerOpen: false });
+    }
     let isNoteValid = false;
     if (this.props.navigation.state.params.actionType === 'update') {
       const { text } = this.state.note;
