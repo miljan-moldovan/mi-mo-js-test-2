@@ -109,24 +109,21 @@ class RebookDialogScreen extends Component {
   }
 
   loadRebookData = () => {
-
-
-
     const { appointment } = this.props.navigation.state.params;
 
     const date = moment(appointment.date).add(1, 'weeks');
 
-    // if ('service' in appointment && !('services' in appointment)) {
-    if ('service' in appointment) {
-      const { service } = appointment;
-      service.serviceId = service.id;
+    const { services } = appointment;
+    for (let i = 0; i < services.length; i += 1) {
+      const service = services[i];
+      service.serviceId = service.id || service.serviceId;
       service.employee = appointment.employee;
-      service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
-      appointment.services = [service];
+      service.serviceLength = service.serviceLength || service.duration;
+      service.serviceName = service.serviceName || service.name || service.description;
     }
 
     if (appointment.services.length === 1) {
-      this.setState({ rebookServices: appointment.services, date }, this.checkCanSave);
+      this.setState({ rebookServices: services, date }, this.checkCanSave);
     }
 
     for (let i = 0; i < appointment.services.length; i += 1) {
@@ -151,7 +148,6 @@ class RebookDialogScreen extends Component {
     }
 
     const { push } = this.props.navigation;
-
 
 
     push('SalonCalendar');

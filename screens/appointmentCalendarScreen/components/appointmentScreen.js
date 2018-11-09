@@ -370,6 +370,16 @@ class AppointmentScreen extends Component {
     if (appointment !== null) {
       this.props.navigation.setParams({ hideTabBar: true });
 
+      const {
+        appointments,
+      } = this.props;
+
+      const allAppointments = appointments.filter(appt =>
+        appt.clientId === appointment.clientId &&
+        appt.date === appointment.date);
+      const allServices = map(allAppointments, 'service');
+      appointment.services = allServices.length > 1 ? allServices : [appointment.service];
+
       setTimeout(() => {
         this.props.navigation.navigate('RebookDialog', {
           appointment,
