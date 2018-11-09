@@ -56,7 +56,7 @@ export default class extends React.PureComponent {
 
   isValidVerticalSwipe = (gestureState) => {
     const { vy, dx } = gestureState;
-    const { velocityThreshold, directionalOffsetThreshold } = this.swipeConfig;
+    const { velocityThreshold, directionalOffsetThreshold } = swipeConfig;
     return isValidSwipe(vy, velocityThreshold, dx, directionalOffsetThreshold);
   }
 

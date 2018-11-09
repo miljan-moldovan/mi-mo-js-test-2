@@ -466,13 +466,15 @@ export default class NewAppointmentScreen extends React.Component {
       .catch(err => reject(err));
   })
 
-  getMainServices = serviceItems => serviceItems.filter(item => !item.guestId && !item.parentId)
+  getMainServices = serviceItems => serviceItems.filter(item => this.isMainService(item))
 
   getAddonsForService = (serviceId, serviceItems) => serviceItems
     .filter(item => item.parentId === serviceId)
 
   getConflictsForService = serviceId => this.props.newAppointmentState
     .conflicts.filter(conf => conf.associativeKey === serviceId)
+
+  isMainService = item => !item.guestId && !item.parentId;
 
   hideToast = () => this.setState({ toast: null })
 
@@ -482,20 +484,32 @@ export default class NewAppointmentScreen extends React.Component {
   }
 
   removeServiceAlert = (serviceId) => {
+    const { serviceItems } = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem(serviceId);
+    const isOnlyMainService = this.isMainService(serviceItem) && this.getMainServices(serviceItems);
     const serviceTitle = get(get(serviceItem.service, 'service', null), 'name', '');
     const employee = get(serviceItem, 'service.employee', null);
     const employeeName = employee.isFirstAvailable ?
       'First Available' :
       `${get(employee, 'name', employee.firstName || '')} ${get(employee, 'lastName', '')[0]}.`;
-    Alert.alert(
-      'Remove Service',
-      `Are you sure you want to remove service ${serviceTitle} w/ ${employeeName}?`,
-      [
-        { text: 'No, Thank You', onPress: () => null },
-        { text: 'Yes, Discard', onPress: () => this.removeService(serviceId) },
-      ],
-    );
+    if (isOnlyMainService) {
+      Alert.alert(
+        'Something went wrong',
+        'You need minimum 1 service',
+        [
+          { text: 'Ok, got it', onPress: () => null },
+        ],
+      );
+    } else {
+      Alert.alert(
+        'Remove Service',
+        `Are you sure you want to remove service ${serviceTitle} w/ ${employeeName}?`,
+        [
+          { text: 'No, Thank You', onPress: () => null },
+          { text: 'Yes, Discard', onPress: () => this.removeService(serviceId) },
+        ],
+      );
+    }
   }
 
   removeService = (serviceId) => {
