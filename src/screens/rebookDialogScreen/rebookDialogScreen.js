@@ -3,8 +3,8 @@ import moment from 'moment';
 import {
   View,
   Text,
-  ActivityIndicator,
 } from 'react-native';
+import { find, remove } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -15,13 +15,9 @@ import {
   InputDivider,
   SectionTitle,
   InputLabel,
-  SectionDivider,
 } from '../../components/formHelpers';
-import { find, remove } from 'lodash';
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
-
 
 class RebookDialogScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -81,24 +77,13 @@ class RebookDialogScreen extends Component {
 
     this.props.navigation.setParams({ hideTabBar: true });
 
-    const { appointment } = this.props.navigation.state.params;
 
-    let { date } = this.state;
-
-    if ('service' in appointment && !('services' in appointment)) {
-      const { service } = appointment;
-      service.serviceId = service.id;
-      service.employee = appointment.employee;
-      service.serviceLength = service.serviceLength ? service.serviceLength : service.duration;
-      appointment.services = [service];
-      date = moment(appointment.date).add(1, 'weeks');
-    }
-
-    if (appointment.services.length === 1) {
-      this.setState({ rebookServices: appointment.services, date }, this.checkCanSave);
-    }
-
-    this.setShouldRebook(appointment.services[0]);
+    this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.loadRebookData();
+      },
+    );
   }
 
   onChangeWeeks = (operation, weeks) => {
@@ -123,13 +108,37 @@ class RebookDialogScreen extends Component {
     this.setState({ shouldRebookServices, rebookServices }, this.checkCanSave);
   }
 
+  loadRebookData = () => {
+    const { appointment } = this.props.navigation.state.params;
+
+    const date = moment(appointment.date).add(1, 'weeks');
+
+    const { services } = appointment;
+    for (let i = 0; i < services.length; i += 1) {
+      const service = services[i];
+      service.serviceId = service.id || service.serviceId;
+      service.employee = appointment.employee;
+      service.serviceLength = service.serviceLength || service.duration;
+      service.serviceName = service.serviceName || service.name || service.description;
+    }
+
+    if (appointment.services.length === 1) {
+      this.setState({ rebookServices: services, date }, this.checkCanSave);
+    }
+
+    for (let i = 0; i < appointment.services.length; i += 1) {
+      this.setShouldRebook(appointment.services[i]);
+    }
+  }
+
   saveRebook() {
     const { appointment, mustGoBack } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
     const rebookProviders = [];
     for (let i = 0; i < rebookServices.length; i += 1) {
-      rebookServices[i].id = rebookServices[i].serviceId;
+      rebookServices[i].id = rebookServices[i].serviceId || rebookServices[i].id;
+
       if (rebookServices[i].employee) {
         const provider = find(rebookProviders, { id: rebookServices[i].employee.id });
         if (!provider) {
@@ -138,11 +147,10 @@ class RebookDialogScreen extends Component {
       }
     }
 
-    const { navigate } = this.props.navigation;
+    const { push } = this.props.navigation;
 
-    if (mustGoBack) {
-      this.goBack();
-    }
+
+    push('SalonCalendar');
 
     this.props.rebookDialogActions.setRebookData({
       rebookAppointment: true,
@@ -152,7 +160,9 @@ class RebookDialogScreen extends Component {
       rebookServices,
     });
 
-    navigate('SalonCalendar', {});
+    if (mustGoBack) {
+      this.goBack();
+    }
   }
 
 
@@ -172,8 +182,6 @@ class RebookDialogScreen extends Component {
 
 
   OnChanageUpdateRebookingPref = (state) => {
-    let { updateRebookingPref } = this.state;
-    updateRebookingPref = !this.state.updateRebookingPref;
     this.setState({ updateRebookingPref: !this.state.updateRebookingPref }, this.checkCanSave);
   }
 
@@ -211,7 +219,7 @@ class RebookDialogScreen extends Component {
         <KeyboardAwareScrollView keyboardShouldPersistTaps="always" ref="scroll" extraHeight={300} enableAutoAutomaticScroll>
           <SectionTitle value="HOW MANY WEEKS AHEAD TO REBOOK?" style={{ height: 37 }} />
           <InputGroup >
-            <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={0} />
+            <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={1} />
             <InputDivider />
             <InputLabel
               label={this.state.date.format('DD MMMM YYYY')}

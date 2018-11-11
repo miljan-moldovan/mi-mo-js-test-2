@@ -18,14 +18,14 @@ import {
   Client,
   AppointmentBook,
   Appointment,
-} from '../../utilities/apiWrapper';
+} from '../utilities/apiWrapper';
 import {ADD_APPOINTMENT} from './appointmentBook';
 import {
   appointmentLength,
   serializeApptToRequestData,
   primaryClientForSelectedAppt,
   getBookedByEmployee,
-} from '../selectors/newAppt';
+} from '../redux/selectors/newAppt';
 import {showErrorAlert} from './utils';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
@@ -561,17 +561,20 @@ const populateStateFromRebookAppt = (
 
   let serviceItems = [];
 
-  for (let i = 0; i < services.length; i++) {
+  for (let i = 0; i < services.length; i += 1) {
     const service = services[i];
 
     const fromTime = moment (service.fromTime, 'HH:mm:ss');
     const toTime = moment (service.toTime, 'HH:mm:ss');
-    const length = moment.duration (service.serviceLength, 'HH:mm:ss');
+    const serviceLength = service.serviceLength || service.duration;
+    const length = moment.duration (serviceLength, 'HH:mm:ss');
     const serviceClient = mainClient;
     service.name = service.serviceName;
+    service.serviceId = service.id || service.serviceId;
 
     const newService = {
       id: get (service, 'serviceId', null),
+      serviceId: get (service, 'serviceId', null),
       length,
       service,
       requested: get (service, 'isProviderRequested', true),

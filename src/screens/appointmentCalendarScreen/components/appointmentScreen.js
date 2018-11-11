@@ -75,14 +75,14 @@ class AppointmentScreen extends Component {
 
     return {
       header: (
-        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
-        <ApptCalendarHeader
-          title={title}
-          onPressMenu={params ? params.onPressMenu : null}
-          onPressTitle={params ? params.onPressTitle : null}
-          onPressEllipsis={params ? params.onPressEllipsis : null}
-          onPressCalendar={params ? params.onPressCalendar : null}
-        />
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+          <ApptCalendarHeader
+            title={title}
+            onPressMenu={params ? params.onPressMenu : null}
+            onPressTitle={params ? params.onPressTitle : null}
+            onPressEllipsis={params ? params.onPressEllipsis : null}
+            onPressCalendar={params ? params.onPressCalendar : null}
+          />
         </SafeAreaView>
       ),
       tabBarVisible: params && params.hasOwnProperty('tabBarVisible') ? params.tabBarVisible : true,
@@ -130,7 +130,8 @@ class AppointmentScreen extends Component {
     const { rebookData } = this.props.rebookState;
 
     if (rebookData && 'rebookAppointment' in rebookData && rebookData.rebookAppointment) {
-      this.selectFilter('providers', 'all');
+      // this.selectFilter('providers', 'all');
+
 
       const { newAppointmentActions, appointmentCalendarActions } = this.props;
       const { rebookProviders, selectedAppointment } = rebookData;
@@ -140,6 +141,7 @@ class AppointmentScreen extends Component {
       newAppointmentActions.setClient(selectedAppointment.client);
       appointmentCalendarActions.setProviderScheduleDates(rebookData.date, rebookData.date);
       appointmentCalendarActions.setGridView();
+
 
       if (rebookProviders.length === 0) {
         this.selectFilter('providers', 'all');
@@ -294,6 +296,8 @@ class AppointmentScreen extends Component {
         onFinishRebook: () => {
           this.setRebookAppointment(false);
           this.props.navigation.setParams({ hideTabBar: false });
+
+          this.selectFilter('providers', rebookProviders[0]);
         },
       });
       newAppointmentActions.isBookingQuickAppt(false);
@@ -365,6 +369,16 @@ class AppointmentScreen extends Component {
   handleRebookAppt = (appointment) => {
     if (appointment !== null) {
       this.props.navigation.setParams({ hideTabBar: true });
+
+      const {
+        appointments,
+      } = this.props;
+
+      const allAppointments = appointments.filter(appt =>
+        appt.clientId === appointment.clientId &&
+        appt.date === appointment.date);
+      const allServices = map(allAppointments, 'service');
+      appointment.services = allServices.length > 1 ? allServices : [appointment.service];
 
       setTimeout(() => {
         this.props.navigation.navigate('RebookDialog', {

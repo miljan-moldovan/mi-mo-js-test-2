@@ -1,6 +1,6 @@
 import {isFunction} from 'lodash';
-import {QueueStatus, Queue, Employees} from '../../utilities/apiWrapper';
-import {showErrorAlert} from './utils';
+import {QueueStatus, Queue, Employees, Services} from '../utilities/apiWrapper';
+import {showErrorAlert, executeAllPromises} from './utils';
 
 export const QUEUE = 'queue/QUEUE';
 export const QUEUE_RECEIVED = 'queue/QUEUE_RECEIVED';
@@ -64,6 +64,14 @@ export const GET_QUEUE_STATE = 'queue/GET_QUEUE_STATE';
 export const GET_QUEUE_STATE_SUCCESS = 'queue/GET_QUEUE_STATE_SUCCESS';
 export const GET_QUEUE_STATE_FAILED = 'queue/GET_QUEUE_STATE_FAILED';
 export const SET_LOADING = 'queue/SET_LOADING';
+
+export const GET_QUEUE_ITEM_PROVIDER_STATUS =
+  'queue/GET_QUEUE_ITEM_PROVIDER_STATUS';
+export const GET_QUEUE_ITEM_PROVIDER_STATUS_SUCCESS =
+  'queue/GET_QUEUE_ITEM_PROVIDER_STATUS_SUCCESS';
+export const GET_QUEUE_ITEM_PROVIDER_STATUS_FAILED =
+  'queue/GET_QUEUE_ITEM_PROVIDER_STATUS_FAILED';
+
 // export const QUEUE_EMPLOYEES = 'queue/QUEUE_EMPLOYEES';
 // export const QUEUE_EMPLOYEES_SUCCESS = 'queue/QUEUE_EMPLOYEES_SUCCESS';
 // export const QUEUE_EMPLOYEES_FAILED = 'queue/QUEUE_EMPLOYEES_FAILED';
@@ -120,6 +128,79 @@ export const startService = (id, serviceData, callback) => dispatch => {
       dispatch (startServiceFailed (error));
       callback (false, error);
     });
+};
+
+const getQueueItemProviderStatusSuccess = response => ({
+  type: GET_QUEUE_ITEM_PROVIDER_STATUS_SUCCESS,
+  data: {response},
+});
+
+const getQueueItemProviderStatusFailed = error => ({
+  type: GET_QUEUE_ITEM_PROVIDER_STATUS_FAILED,
+  data: {error},
+});
+
+export const getQueueItemProviderStatus = (queueItem, callback) => dispatch => {
+  const promises = [];
+
+  for (let i = 0; i < queueItem.services.length; i += 1) {
+    if (!queueItem.services[i].isFirstAvailable) {
+      promises.push (
+        executeAllPromises ([
+          Services.getServiceEmployeeCheck ({
+            serviceId: queueItem.services[i].serviceId,
+            employeeId: queueItem.services[i].employee.id,
+            setCancelToken: false,
+          }),
+          Employees.getEmployeeStatus (
+            queueItem.services[i].employee.id,
+            false
+          ),
+          Promise.resolve (queueItem.services[i]),
+        ])
+      );
+    }
+  }
+
+  return executeAllPromises (promises)
+    .then (promises => {
+      const {results} = promises;
+      const messages = [];
+      const servicesWithEmployeeNotStarted = [];
+
+      for (let i = 0; i < results.length; i += 1) {
+        const employeeDoesService = results[i].results[0] !== undefined;
+        const employeeStatus = results[i].results[1];
+        const service = results[i].results[2];
+        const {isWorking} = employeeStatus;
+        if (!isWorking) {
+          servicesWithEmployeeNotStarted.push (service.employee.fullName);
+        }
+        if (!employeeDoesService) {
+          const employeeNamesString = service.employee.fullName;
+          const serviceNameString = service.serviceName;
+
+          const msg = `${employeeNamesString} doesn't perform the service '${serviceNameString}'`;
+
+          messages.push (msg);
+        }
+      }
+
+      if (servicesWithEmployeeNotStarted.length > 0) {
+        const coupleEmpl = servicesWithEmployeeNotStarted.length > 1;
+        const employeeNamesArray = [
+          ...new Set (servicesWithEmployeeNotStarted),
+        ]; // remove duplicates
+        const employeeNamesString = employeeNamesArray.join (', ');
+        const msg = `${employeeNamesString} ${coupleEmpl ? 'are' : 'is'} currently not working,
+      please punch in ${employeeNamesString} in order to start ${coupleEmpl ? 'these services' : 'this service'}.`;
+
+        messages.push (msg);
+      }
+
+      return messages;
+    })
+    .catch (ex => false);
 };
 
 const receiveQueueSuccess = resp => ({

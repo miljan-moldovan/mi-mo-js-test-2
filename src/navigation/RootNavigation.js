@@ -191,7 +191,6 @@ const mapStateToProps = state => ({
   appointmentNoteState: state.appointmentNoteReducer,
   salonSearchHeaderState: state.salonSearchHeaderReducer,
   drawerOptions: state.rootDrawerNavigator,
-  isNewApptValid: isValidAppointment (state),
   store: state.storeReducer,
 });
 const mapActionsToProps = dispatch => ({

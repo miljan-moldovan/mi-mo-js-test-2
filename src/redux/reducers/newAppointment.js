@@ -48,6 +48,7 @@ const defaultState = {
   mainEmployee: null,
   remarks: '',
   rebooked: true,
+  initialState: null,
 };
 
 export default function newAppointmentReducer (state = defaultState, action) {
@@ -63,6 +64,7 @@ export default function newAppointmentReducer (state = defaultState, action) {
         serviceItems: [],
         rebooked: true,
         editType: 'new',
+        initialState: null,
       };
     case SET_SELECTED_APPT:
       return {
@@ -71,6 +73,7 @@ export default function newAppointmentReducer (state = defaultState, action) {
         bookedByEmployee: data.appt.bookedByEmployee,
         remarks: data.appt.remarks,
         selectedAppt: data.appt,
+        initialState: null,
       };
     case POPULATE_STATE_FROM_REBOOKED_APPT:
       return {
@@ -110,6 +113,16 @@ export default function newAppointmentReducer (state = defaultState, action) {
         conflicts: data.newState.conflicts,
         serviceItems: data.newState.serviceItems,
         remarks: data.newState.remarks,
+        initialState: {
+          date: data.newState.date,
+          startTime: data.newState.startTime,
+          client: data.newState.client,
+          bookedByEmployee: data.newState.bookedByEmployee,
+          mainEmployee: data.newState.mainEmployee,
+          guests: data.newState.guests,
+          serviceItems: data.newState.serviceItems,
+          remarks: data.newState.remarks,
+        },
       };
     case IS_BOOKING_QUICK_APPT:
       return {
