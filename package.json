@@ -8,6 +8,12 @@
     "bundle:ios": "react-native bundle --entry-file ./index.js --platform ios --bundle-output ios/SalonUltimateRN/main.jsbundle"
   },
   "dependencies": {
+    "@types/jest": "^23.3.9",
+    "@types/react": "^16.4.18",
+    "@types/react-native": "^0.57.7",
+    "@types/react-native-tab-view": "^1.0.2",
+    "@types/react-redux": "^6.0.9",
+    "@types/react-test-renderer": "^16.0.3",
     "@yfuks/react-native-action-sheet": "0.0.4",
     "axios": "^0.18.0",
     "lodash": "4.17.5",
@@ -42,6 +48,7 @@
     "react-native-tab-view": "^1.0.2",
     "react-native-text-input-mask": "0.5.2",
     "react-native-touch-id": "^4.0.0",
+    "react-native-typescript-transformer": "^1.2.10",
     "react-native-wheel-datepicker": "^2.2.2",
     "react-native-wheel-picker": "^1.2.0",
     "react-navigation": "^2.17.0",
@@ -53,20 +60,20 @@
     "reselect": "3.0.1",
     "rn-sliding-up-panel": "git+https://github.com/igor-slotin/rn-sliding-up-panel.git#default-y-position",
     "shouldcomponentupdate-children": "1.1.0",
+    "typescript": "^3.1.6",
     "url-parse": "^1.4.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "babel-eslint": "8.2.1",
     "babel-jest": "22.1.0",
     "babel-preset-react-native": "4.0.0",
-    "eslint": "4.16.0",
-    "eslint-config-airbnb": "16.1.0",
-    "eslint-plugin-import": "2.8.0",
-    "eslint-plugin-jsx-a11y": "6.0.3",
-    "eslint-plugin-react": "7.6.0",
     "jest": "22.1.4",
-    "react-test-renderer": "16.2.0"
+    "prettier": "1.15.2",
+    "react-test-renderer": "16.2.0",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-standard": "^8.0.1",
+    "tslint-react": "^3.6.0"
   },
   "jest": {
     "preset": "react-native"

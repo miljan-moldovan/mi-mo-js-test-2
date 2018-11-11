@@ -1,0 +1,24 @@
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import roomAssignmentActions from '../../redux/actions/roomAssignment';
+import {appointmentCalendarActions} from '../../redux/actions/appointmentBook';
+import RoomAssignmentScreen from './RoomAssignmentScreen';
+import {employeeScheduleChunkedSelector} from '../../redux/selectors/newAppt';
+
+const mapStateToProps = state => ({
+  roomAssignmentState: state.roomAssignmentReducer,
+  chunkedSchedule: employeeScheduleChunkedSelector (state),
+});
+const mapActionsToProps = dispatch => ({
+  roomAssignmentActions: bindActionCreators (
+    {...roomAssignmentActions},
+    dispatch
+  ),
+  appointmentCalendarActions: bindActionCreators (
+    {...appointmentCalendarActions},
+    dispatch
+  ),
+});
+export default connect (mapStateToProps, mapActionsToProps) (
+  RoomAssignmentScreen
+);
