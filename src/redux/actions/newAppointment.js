@@ -18,14 +18,14 @@ import {
   Client,
   AppointmentBook,
   Appointment,
-} from '../utilities/apiWrapper';
+} from '../../utilities/apiWrapper';
 import {ADD_APPOINTMENT} from './appointmentBook';
 import {
   appointmentLength,
   serializeApptToRequestData,
   primaryClientForSelectedAppt,
   getBookedByEmployee,
-} from '../redux/selectors/newAppt';
+} from '../selectors/newAppt';
 import {showErrorAlert} from './utils';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';

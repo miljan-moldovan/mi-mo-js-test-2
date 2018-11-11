@@ -1,5 +1,10 @@
 import {isFunction} from 'lodash';
-import {QueueStatus, Queue, Employees, Services} from '../utilities/apiWrapper';
+import {
+  QueueStatus,
+  Queue,
+  Employees,
+  Services,
+} from '../../utilities/apiWrapper';
 import {showErrorAlert, executeAllPromises} from './utils';
 
 export const QUEUE = 'queue/QUEUE';
