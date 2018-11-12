@@ -7,7 +7,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get, includes, isArray, map, filter } from 'lodash';
+import { get, includes, isArray, map, filter, find } from 'lodash';
 import PropTypes from 'prop-types';
 import { getEmployeePhotoSource } from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
@@ -122,6 +122,8 @@ class ProviderScreen extends React.Component {
         leftButtonOnPress: props.navigation.goBack,
       },
     };
+
+    this.props.settingsActions.getSettings();
   }
 
   componentDidMount() {
@@ -198,11 +200,20 @@ class ProviderScreen extends React.Component {
       case 'quickQueue':
         let filtereQueueList = queueList;
 
-        filtereQueueList = filtereQueueList.length > 0 ?
-          filtereQueueList.filter(item => item.state.isClockedIn === true) : filtereQueueList;
+        const { settings } = this.props.settingsState;
+        const ShowOnlyClockedInEmployeesInClientQueue = find(settings, { settingName: 'ShowOnlyClockedInEmployeesInClientQueue' }).settingValue;
 
-        const filteredIds = map(filtereQueueList, 'id');
-        currentData = filter(quickQueueEmployees, p => includes(filteredIds, p.id));
+        if(ShowOnlyClockedInEmployeesInClientQueue){
+          filtereQueueList = filtereQueueList.length > 0 ?
+            filtereQueueList.filter(item => item.state.isClockedIn === true) : filtereQueueList;
+
+          const filteredIds = map(filtereQueueList, 'id');
+          currentData = filter(quickQueueEmployees, p => includes(filteredIds, p.id));
+
+        }else{
+          currentData = quickQueueEmployees
+        }
+
 
         break;
       case 'receptionists':
