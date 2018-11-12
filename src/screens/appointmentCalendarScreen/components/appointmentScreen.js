@@ -3,6 +3,9 @@ import { View, Text, ActivityIndicator, SafeAreaView } from 'react-native';
 import moment from 'moment';
 import { filter, map, find } from 'lodash';
 
+import { StackActions, NavigationActions } from 'react-navigation';
+
+
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import { Client } from '../../../utilities/apiWrapper';
 import SalonCalendar from '../../../components/SalonCalendar';
@@ -381,10 +384,19 @@ class AppointmentScreen extends Component {
       appointment.services = allServices.length > 1 ? allServices : [appointment.service];
 
       setTimeout(() => {
-        this.props.navigation.navigate('RebookDialog', {
-          appointment,
-          ...this.props,
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [NavigationActions.navigate({
+            routeName: 'RebookDialog',
+            params: {
+              appointment,
+              ...this.props,
+            },
+          })],
+          key: null,
         });
+
+        this.props.navigation.dispatch(resetAction);
       }, 500);
     }
   }
