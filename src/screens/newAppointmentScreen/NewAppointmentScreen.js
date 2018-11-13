@@ -133,17 +133,21 @@ export default class NewAppointmentScreen extends React.Component {
       isValidPhone,
       clientPhoneType,
     };
+
+    this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        const {
+          client,
+          editType
+        } = this.props.newAppointmentState;
+        if(editType !== 'new'){
+          this.props.formulaActions.getFormulasAndNotes(client.id);
+        }
+      },
+    );
   }
 
-  componentWillMount() {
-    const {
-      client,
-      editType
-    } = this.props.newAppointmentState;
-    if(editType !== 'new'){
-      this.props.formulaActions.getFormulasAndNotes(client.id);
-    }
-  }
 
   componentDidMount() {
     this.checkConflicts();
@@ -877,6 +881,8 @@ export default class NewAppointmentScreen extends React.Component {
       editType,
       serviceItems,
     } = this.props.newAppointmentState;
+
+    const isLoadingNotes = this.props.formulasAndNotesState.isLoading;
     const {
       clientEmail,
       clientPhone,
@@ -893,7 +899,7 @@ export default class NewAppointmentScreen extends React.Component {
       lineHeight: 18,
       color: '#727A8F',
     };
-    const isDisabled = this.props.formulasAndNotesState.notes.length < 1;
+    const isDisabled = this.props.formulasAndNotesState.notes.filter(itm => itm.isDeleted === false).length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
 
@@ -904,7 +910,7 @@ export default class NewAppointmentScreen extends React.Component {
           <NavigationEvents
             onDidFocus={this.validate}
           />
-          {(isLoading || isBooking) ? <LoadingOverlay /> : null}
+          {(isLoading || isBooking || isLoadingNotes) ? <LoadingOverlay /> : null}
           <KeyboardAwareScrollView style={styles.container}>
             <InputGroup style={{ marginTop: 15 }}>
               <ProviderInput
