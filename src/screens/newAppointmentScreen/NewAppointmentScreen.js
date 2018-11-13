@@ -135,6 +135,16 @@ export default class NewAppointmentScreen extends React.Component {
     };
   }
 
+  componentWillMount() {
+    const {
+      client,
+      editType
+    } = this.props.newAppointmentState;
+    if(editType !== 'new'){
+      this.props.formulaActions.getFormulasAndNotes(client.id);
+    }
+  }
+
   componentDidMount() {
     this.checkConflicts();
   }
