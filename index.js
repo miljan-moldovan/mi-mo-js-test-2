@@ -1,10 +1,10 @@
-const _XHR = GLOBAL.originalXMLHttpRequest ?
-  GLOBAL.originalXMLHttpRequest :
-  GLOBAL.XMLHttpRequest;
+const _XHR = GLOBAL.originalXMLHttpRequest
+  ? GLOBAL.originalXMLHttpRequest
+  : GLOBAL.XMLHttpRequest;
 
 XMLHttpRequest = _XHR;
 
-import { AppRegistry } from 'react-native';
-import App from './App';
+import {AppRegistry} from 'react-native';
+import App from './src/App';
 
-AppRegistry.registerComponent('SalonUltimateRN', () => App);
+AppRegistry.registerComponent ('SalonUltimateRN', () => App);

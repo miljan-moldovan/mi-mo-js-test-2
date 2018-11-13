@@ -1,0 +1,15 @@
+<svg width="17px" height="8px" viewBox="0 0 17 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Atoms-/-Appt.-slots" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Providers-related" transform="translate(-1299.000000, -87.000000)" fill="#2E3042">
+            <g id="Multi---alt" transform="translate(762.000000, 28.000000)">
+                <g id="multiple_provid" transform="translate(166.000000, 59.000000)">
+                    <g id="icon_multi_prov" transform="translate(371.000000, 0.000000)">
+                        <circle id="Oval-3" cx="13" cy="4" r="4"></circle>
+                        <path d="M5.5,0.290758524 C4.03408483,0.8841459 3,2.32131122 3,4 C3,5.67868878 4.03408483,7.1158541 5.5,7.70924148 C5.03678428,7.89674643 4.53045022,8 4,8 C1.790861,8 0,6.209139 0,4 C0,1.790861 1.790861,0 4,0 C4.53045022,0 5.03678428,0.103253567 5.5,0.290758524 Z" id="Oval-3"></path>
+                        <path d="M10,0.290758524 C8.53408483,0.8841459 7.5,2.32131122 7.5,4 C7.5,5.67868878 8.53408483,7.1158541 10,7.70924148 C9.53678428,7.89674643 9.03045022,8 8.5,8 C6.290861,8 4.5,6.209139 4.5,4 C4.5,1.790861 6.290861,0 8.5,0 C9.03045022,0 9.53678428,0.103253567 10,0.290758524 Z" id="Oval-3"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
