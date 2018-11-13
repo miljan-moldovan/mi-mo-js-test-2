@@ -71,8 +71,6 @@ class QueueScreen extends React.Component {
 
   state = {
     index: '0',
-    isWalkoutVisible: false,
-    walkoutText: '',
     searchMode: false,
     searchText: '',
     searchType: '',
@@ -239,18 +237,6 @@ class QueueScreen extends React.Component {
       },
     });
   }
-
-  handleWalkOutPress = () => {
-    this.setState({ isWalkoutVisible: true });
-  }
-
-  closeWalkOut = () => {
-    this.setState({ isWalkoutVisible: false });
-  }
-
-  handleWalkOutTextChange = (ev) => {
-    this.setState({ walkoutText: ev.nativeEvent.text });
-  };
 
   animateText = () => {
     Animated.loop(Animated.timing(this.state.colorAnimActive, {
@@ -446,41 +432,6 @@ class QueueScreen extends React.Component {
             </SalonTouchableOpacity>
           )
         }
-        <SalonModal isVisible={this.state.isWalkoutVisible} closeModal={this.closeWalkOut}>
-          <View style={styles.walkoutContainer}>
-            <View style={styles.walkoutImageContainer}>
-              <Image style={styles.walkoutImage} source={walkoutImage} />
-            </View>
-            <Text style={styles.walkoutText}>Walk-out reason:
-              <Text style={styles.walkoutTextBold}>Other</Text>
-            </Text>
-            <View style={styles.walkoutTextContainer}>
-              <SalonTextInput
-                multiline
-                placeholder="Please insert other reasons"
-                placeholderColor="#0A274A"
-                style={styles.walkoutInput}
-                placeholderStyle={styles.walkoutPlaceholder}
-                text={this.state.walkoutText}
-                onChange={this.handleWalkOutTextChange}
-              />
-            </View>
-            <View style={styles.walkoutButtonContainer}>
-              <SalonTouchableOpacity
-                onPress={this.closeWalkOut}
-                style={styles.walkoutButtonCancel}
-              >
-                <Text style={styles.walkoutTextCancel}>Cancel</Text>
-              </SalonTouchableOpacity>
-              <SalonTouchableOpacity
-                onPress={this.closeWalkOut}
-                style={styles.walkoutButtonOk}
-              >
-                <Text style={styles.walkoutTextOk}>Ok</Text>
-              </SalonTouchableOpacity>
-            </View>
-          </View>
-        </SalonModal>
       </View>
     );
   }
