@@ -131,7 +131,7 @@ class RebookDialogScreen extends Component {
     for (let i = 0; i < services.length; i += 1) {
       const service = services[i];
       service.serviceId = service.id || service.serviceId;
-      service.employee = appointment.employee;
+      //service.employee = appointment.employee;
       service.serviceLength = service.serviceLength || service.duration;
       service.serviceName = service.serviceName || service.name || service.description;
     }
@@ -163,7 +163,7 @@ class RebookDialogScreen extends Component {
     const { appointment, mustGoBack } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
-    const rebookProviders = [];
+    let rebookProviders = [];
     for (let i = 0; i < rebookServices.length; i += 1) {
       rebookServices[i].id = rebookServices[i].serviceId || rebookServices[i].id;
 
@@ -174,6 +174,9 @@ class RebookDialogScreen extends Component {
         }
       }
     }
+
+    rebookProviders = rebookProviders.length > 1 ? [appointment.employee] : rebookProviders
+
 
     const { push } = this.props.navigation;
 

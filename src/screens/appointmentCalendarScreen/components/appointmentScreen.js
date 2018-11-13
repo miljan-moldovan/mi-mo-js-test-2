@@ -377,6 +377,12 @@ class AppointmentScreen extends Component {
       const allAppointments = appointments.filter(appt =>
         appt.clientId === appointment.clientId &&
         appt.date === appointment.date);
+
+      for (var i = 0; i < allAppointments.length; i++) {
+       const appointment =  allAppointments[i]
+       appointment.service.provider = appointment.provider
+       appointment.service.employee = appointment.employee
+      }
       const allServices = map(allAppointments, 'service');
       appointment.services = allServices.length > 1 ? allServices : [appointment.service];
 
