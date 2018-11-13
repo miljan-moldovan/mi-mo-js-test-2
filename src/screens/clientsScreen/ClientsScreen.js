@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
+import {View, Text, SafeAreaView} from 'react-native';
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
-import { NavigationEvents } from 'react-navigation';
+import {get} from 'lodash';
+import {NavigationEvents} from 'react-navigation';
 
 import ClientList from './components/clientList';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
@@ -19,56 +19,53 @@ const query = {
 };
 
 class ClientsScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const onPressMenu = navigation.getParam('onPressMenu', (() => {}));
-    const isModal = get(navigation.state.params, 'isModal', false);
-    const headerProps = get(navigation.state.params, 'headerProps', {});
-    const stateProps = get(navigation.state.params, 'defaultProps', {});
-    const hideAddButton = get(navigation.state.params, 'hideAddButton', false);
+  static navigationOptions = ({navigation}) => {
+    const onPressMenu = navigation.getParam ('onPressMenu', () => {});
+    const isModal = get (navigation.state.params, 'isModal', false);
+    const headerProps = get (navigation.state.params, 'headerProps', {});
+    const stateProps = get (navigation.state.params, 'defaultProps', {});
+    const hideAddButton = get (navigation.state.params, 'hideAddButton', false);
     const defaultProps = {
       title: 'Clients',
       subTitle: null,
-      leftButtonOnPress: () => { navigation.goBack(); },
+      leftButtonOnPress: () => {
+        navigation.goBack ();
+      },
       leftButton: navigation.state.routeName === 'ClientsMain'
-        ? <Text style={styles.leftButtonText}>Cancel</Text> : null,
-      rightButton: hideAddButton ? null : <Text style={styles.rightButtonText}>Add Client</Text>,
-      rightButtonOnPress: () => { navigation.navigate(isModal ? 'ModalNewClient' : 'NewClient', { onChangeClient: navigation.state.params.onChangeClient }); },
+        ? <Text style={styles.leftButtonText}>Cancel</Text>
+        : null,
+      rightButton: hideAddButton
+        ? null
+        : <Text style={styles.rightButtonText}>Add Client</Text>,
+      rightButtonOnPress: () => {
+        navigation.navigate (isModal ? 'ModalNewClient' : 'NewClient', {
+          onChangeClient: navigation.state.params.onChangeClient,
+        });
+      },
     };
     const mergedProps = {
       ...defaultProps,
       ...stateProps,
       ...headerProps,
     };
-    const {
-      rightButton,
-      rightButtonOnPress,
-      title,
-      subTitle,
-    } = mergedProps;
+    const {rightButton, rightButtonOnPress, title, subTitle} = mergedProps;
 
-    let {
-      leftButton,
-      leftButtonOnPress,
-    } = mergedProps;
+    let {leftButton, leftButtonOnPress} = mergedProps;
 
     const clearSearch = navigation.state.params &&
-      navigation.state.params.clearSearch ? navigation.state.params.clearSearch : null;
-    const { routeName } = navigation.state;
-    const isMainClients = routeName === 'ClientsMain' || routeName === 'ClientsStack';
+      navigation.state.params.clearSearch
+      ? navigation.state.params.clearSearch
+      : null;
+    const {routeName} = navigation.state;
+    const isMainClients =
+      routeName === 'ClientsMain' || routeName === 'ClientsStack';
     if (isMainClients) {
-      leftButton = (
-        <Icon
-          name="bars"
-          type="solid"
-          color="white"
-          size={17}
-        />
-      );
+      leftButton = <Icon name="bars" type="solid" color="white" size={17} />;
       leftButtonOnPress = onPressMenu;
     }
     return {
       header: () => (
-        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
           <SalonSearchHeader
             focusOnMount
             clearSearch={clearSearch}
@@ -76,11 +73,15 @@ class ClientsScreen extends React.Component {
             subTitle={subTitle}
             leftButton={leftButton}
             leftButtonOnPress={() => {
-              leftButtonOnPress(navigation);
+              leftButtonOnPress (navigation);
             }}
-            rightButton={navigation.state.params && navigation.state.params.hideAddButton ? null : rightButton}
+            rightButton={
+              navigation.state.params && navigation.state.params.hideAddButton
+                ? null
+                : rightButton
+            }
             rightButtonOnPress={() => {
-              rightButtonOnPress(navigation);
+              rightButtonOnPress (navigation);
             }}
             hasFilter
             containerStyle={styles.headerContainer}
@@ -90,14 +91,17 @@ class ClientsScreen extends React.Component {
     };
   };
 
-  static flexFilter(list, info) {
+  static flexFilter (list, info) {
     let matchesFilter = [];
     const matches = [];
 
-    matchesFilter = function match(item) {
+    matchesFilter = function match (item) {
       let count = 0;
       for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+        if (
+          item[info[n].Field] &&
+          item[info[n].Field].toLowerCase ().indexOf (info[n].Values) > -1
+        ) {
           count += 1;
         }
       }
@@ -105,18 +109,18 @@ class ClientsScreen extends React.Component {
     };
 
     for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
+      if (matchesFilter (list[i])) {
+        matches.push (list[i]);
       }
     }
 
     return matches;
   }
 
-  constructor(props) {
-    super(props);
-    this.clearSearch();
-    this.props.navigation.setParams({
+  constructor (props) {
+    super (props);
+    this.clearSearch ();
+    this.props.navigation.setParams ({
       onPressMenu: this.handleLeftButton,
       defaultProps: this.state.headerProps,
       clearSearch: this.clearSearch,
@@ -128,116 +132,136 @@ class ClientsScreen extends React.Component {
     headerProps: {
       title: 'Clients',
       subTitle: null,
-      defaultLeftButtonOnPress: () => { this.handleLeftButton(); },
-      rightButtonOnPress: () => { this.props.navigation.navigate(this.props.navigation.state.params.isModal ? 'ModalNewClient' : 'NewClient', { onChangeClient: this._handleOnChangeClient }); },
+      defaultLeftButtonOnPress: () => {
+        this.handleLeftButton ();
+      },
+      rightButtonOnPress: () => {
+        this.props.navigation.navigate (
+          this.props.navigation.state.params.isModal
+            ? 'ModalNewClient'
+            : 'NewClient',
+          {onChangeClient: this._handleOnChangeClient}
+        );
+      },
     },
-  }
+  };
 
-  componentDidUpdate(prevProps) {
-    const { salonSearchHeaderState } = prevProps;
-    if (this.props.salonSearchHeaderState.selectedFilter !==
-      salonSearchHeaderState.selectedFilter) {
-      if (salonSearchHeaderState.searchText && salonSearchHeaderState.searchText.length > 0) {
+  componentDidUpdate (prevProps) {
+    const {salonSearchHeaderState} = prevProps;
+    if (
+      this.props.salonSearchHeaderState.selectedFilter !==
+      salonSearchHeaderState.selectedFilter
+    ) {
+      if (
+        salonSearchHeaderState.searchText &&
+        salonSearchHeaderState.searchText.length > 0
+      ) {
         const params = {
           ...query,
           'nameFilter.FilterValue': salonSearchHeaderState.searchText,
           fromAllStores: !!salonSearchHeaderState.selectedFilter,
         };
-        this.props.clientsActions.getClients(params);
+        this.props.clientsActions.getClients (params);
       }
     }
   }
 
-  getSuggestionsList = (clients) => {
+  getSuggestionsList = clients => {
     let suggestions = [];
 
     for (let i = 0; i < clients.length; i += 1) {
       const client = clients[i];
-      if (suggestions.indexOf(client.name) === -1 && client.name) {
-        suggestions.push(client.name);
-      } else if (suggestions.indexOf(client.lastName) === -1 && client.lastName) {
-        suggestions.push(client.lastName);
+      if (suggestions.indexOf (client.name) === -1 && client.name) {
+        suggestions.push (client.name);
+      } else if (
+        suggestions.indexOf (client.lastName) === -1 &&
+        client.lastName
+      ) {
+        suggestions.push (client.lastName);
       }
     }
 
-    suggestions = suggestions.sort((a, b) => {
+    suggestions = suggestions.sort ((a, b) => {
       if (a < b) return -1;
       else if (a > b) return 1;
       return 0;
     });
 
     return suggestions;
-  }
+  };
 
   handleLeftButton = () => {
     if (this.BarsActionSheet) {
-      this.BarsActionSheet.show();
+      this.BarsActionSheet.show ();
     }
-  }
-
-  clearSearch = () => {
-    this.props.clientsActions.setClients([]);
   };
 
-  _handleOnChangeClient = (client) => {
+  clearSearch = () => {
+    this.props.clientsActions.setClients ([]);
+  };
+
+  _handleOnChangeClient = client => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
 
-    const { onChangeClient, dismissOnSelect } = this.props.navigation.state.params;
+    const {
+      onChangeClient,
+      dismissOnSelect,
+    } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeClient) {
-      onChangeClient(client);
+      onChangeClient (client);
     }
     if (dismissOnSelect) {
-      this.props.salonSearchHeaderActions.setShowFilter(false);
-      this.props.navigation.goBack();
+      this.props.salonSearchHeaderActions.setShowFilter (false);
+      this.props.navigation.goBack ();
     }
   };
 
-  filterClients = (searchText) => {
+  filterClients = searchText => {
     if (searchText && searchText.length > 0) {
       const params = {
         ...query,
         'nameFilter.FilterValue': searchText,
         fromAllStores: !!this.props.salonSearchHeaderState.selectedFilter,
       };
-      this.props.clientsActions.getClients(params);
+      this.props.clientsActions.getClients (params);
     }
   };
 
-  filterSuggestions = (searchText) => {
+  filterSuggestions = searchText => {
     if (searchText && searchText.length > 0) {
       const filtered = [];
-      for (let i = 0; i < this.props.clientsState.suggestionsList.length; i += 1) {
+      for (
+        let i = 0;
+        i < this.props.clientsState.suggestionsList.length;
+        i += 1
+      ) {
         const item = this.props.clientsState.suggestionsList[i];
 
-        if (item.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-          filtered.push(item);
+        if (item.toLowerCase ().indexOf (searchText.toLowerCase ()) > -1) {
+          filtered.push (item);
         }
       }
 
-      this.props.clientsActions.setFilteredSuggestions(filtered);
+      this.props.clientsActions.setFilteredSuggestions (filtered);
     } else {
-      this.props.clientsActions.setFilteredSuggestions(this.props.clientsState.suggestionsList);
+      this.props.clientsActions.setFilteredSuggestions (
+        this.props.clientsState.suggestionsList
+      );
     }
   };
 
-  filterList = (searchText) => {
+  filterList = searchText => {
     if (!this.props.salonSearchHeaderState.showFilter) {
-      this.filterClients(searchText);
+      this.filterClients (searchText);
     } else {
-      this.filterSuggestions(searchText);
+      this.filterSuggestions (searchText);
     }
   };
 
   fetchMore = () => {
-    const {
-      total,
-      showing,
-      salonSearchHeaderState: {
-        searchText,
-      },
-    } = this.props;
+    const {total, showing, salonSearchHeaderState: {searchText}} = this.props;
     if (total > showing && searchText && searchText.length > 0) {
       const params = {
         ...query,
@@ -245,13 +269,13 @@ class ClientsScreen extends React.Component {
         'nameFilter.Skip': showing,
         fromAllStores: !!this.props.salonSearchHeaderState.selectedFilter,
       };
-      this.props.clientsActions.getMoreClients(params);
+      this.props.clientsActions.getMoreClients (params);
     }
-  }
+  };
 
-  render() {
+  render () {
     let onChangeClient = null;
-    const { state } = this.props.navigation;
+    const {state} = this.props.navigation;
     // make sure we only pass a callback to the component if we have one for the screen
     if (state.params && state.params.onChangeClient) {
       onChangeClient = this._handleOnChangeClient;
@@ -261,19 +285,25 @@ class ClientsScreen extends React.Component {
       <View style={styles.container}>
         <NavigationEvents
           onWillFocus={() => {
-            this.props.salonSearchHeaderActions.setShowFilter(true);
-            this.props.salonSearchHeaderActions.setFilterAction(this.filterClients);
+            this.props.salonSearchHeaderActions.setShowFilter (true);
+            this.props.salonSearchHeaderActions.setFilterAction (
+              this.filterClients
+            );
           }}
         />
         <BarsActionSheet
-          ref={item => this.BarsActionSheet = item}
+          ref={item => (this.BarsActionSheet = item)}
           onLogout={this.props.auth.logout}
           navigation={this.props.navigation}
           onChangeStore={this.props.storeActions.reselectMainStore}
         />
         <View style={styles.clientsList}>
           <ClientList
-            isWalkin={get(this.props.navigation.state, 'params.isWalkin', false)}
+            isWalkin={get (
+              this.props.navigation.state,
+              'params.isWalkin',
+              false
+            )}
             isLoadingMore={this.props.isLoadingMore}
             fetchMore={this.fetchMore}
             navigate={this.props.navigation.navigate}
@@ -283,7 +313,11 @@ class ClientsScreen extends React.Component {
             onChangeClient={onChangeClient}
             refreshing={this.props.salonSearchHeaderState.isLoading}
             isLoading={this.props.clientsState.isLoading}
-            hideAddButton={this.props.navigation.state.params ? this.props.navigation.state.params.hideAddButton : true}
+            hideAddButton={
+              this.props.navigation.state.params
+                ? this.props.navigation.state.params.hideAddButton
+                : true
+            }
           />
         </View>
       </View>
@@ -295,20 +329,20 @@ ClientsScreen.propTypes = {
   isLoadingMore: PropTypes.bool.isRequired,
   total: PropTypes.number.isRequired,
   showing: PropTypes.number.isRequired,
-  clientsActions: PropTypes.shape({
+  clientsActions: PropTypes.shape ({
     getClients: PropTypes.func,
     getMoreClients: PropTypes.func,
   }).isRequired,
-  navigation: PropTypes.shape({
+  navigation: PropTypes.shape ({
     goBack: PropTypes.func,
-    state: PropTypes.shape({
-      params: PropTypes.shape({
+    state: PropTypes.shape ({
+      params: PropTypes.shape ({
         onChangeClient: PropTypes.func,
         dismissOnSelect: PropTypes.bool,
       }),
     }),
   }),
-  storeActions: PropTypes.shape({
+  storeActions: PropTypes.shape ({
     reselectMainStore: PropTypes.func.isRequired,
   }).isRequired,
 };
