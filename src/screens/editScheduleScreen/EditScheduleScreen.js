@@ -253,6 +253,15 @@ class EditScheduleScreen extends React.Component {
     }, this.checkCanSave);
   }
 
+  closeAllPickers = () => {
+    this.setState ({
+      endTimeScheduleTwoPickerOpen: false,
+      startTimeScheduleTwoPickerOpen: false,
+      endTimeScheduleOnePickerOpen: false,
+      startTimeScheduleOnePickerOpen: false
+    });
+  }
+
   onChangeOtherReason = (text) => {
     this.setState({ otherReason: text }, this.checkCanSave);
   }
@@ -277,7 +286,10 @@ class EditScheduleScreen extends React.Component {
       }
     }
 
-    this.setState({ startTimeScheduleOnePickerOpen: !this.state.startTimeScheduleOnePickerOpen });
+    this.setState({ startTimeScheduleOnePickerOpen: !this.state.startTimeScheduleOnePickerOpen,
+      endTimeScheduleTwoPickerOpen: false,
+      startTimeScheduleTwoPickerOpen: false,
+      endTimeScheduleOnePickerOpen: false});
   };
 
   pickerToogleEndTimeOne = () => {
@@ -287,7 +299,10 @@ class EditScheduleScreen extends React.Component {
       }
     }
 
-    this.setState({ endTimeScheduleOnePickerOpen: !this.state.endTimeScheduleOnePickerOpen });
+    this.setState({ endTimeScheduleOnePickerOpen: !this.state.endTimeScheduleOnePickerOpen,
+      endTimeScheduleTwoPickerOpen: false,
+      startTimeScheduleTwoPickerOpen: false,
+      startTimeScheduleOnePickerOpen: false });
   };
 
   pickerToogleStartTimeTwo = () => {
@@ -299,7 +314,10 @@ class EditScheduleScreen extends React.Component {
       }
     }
 
-    this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen });
+    this.setState({ startTimeScheduleTwoPickerOpen: !this.state.startTimeScheduleTwoPickerOpen,
+      endTimeScheduleTwoPickerOpen: false,
+      endTimeScheduleOnePickerOpen: false,
+      startTimeScheduleOnePickerOpen: false });
   };
 
   pickerToogleEndTimeTwo = () => {
@@ -308,7 +326,10 @@ class EditScheduleScreen extends React.Component {
         return alert("Start time can't be after end time");
       }
     }
-    this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen });
+    this.setState({ endTimeScheduleTwoPickerOpen: !this.state.endTimeScheduleTwoPickerOpen,
+      startTimeScheduleTwoPickerOpen: false,
+      endTimeScheduleOnePickerOpen: false,
+      startTimeScheduleOnePickerOpen: false });
   };
 
   onPressRadioGroup = (option, index) => {
@@ -326,6 +347,8 @@ class EditScheduleScreen extends React.Component {
   }
 
   checkCanSave = () => {
+
+
     const {
       startTimeScheduleOne, endTimeScheduleOne,
       startTimeScheduleTwo, endTimeScheduleTwo,
@@ -352,6 +375,10 @@ class EditScheduleScreen extends React.Component {
         (!!startTimeScheduleTwo && endTimeScheduleTwo === '')) {
         canSave = false;
       }
+    }
+
+    if (canSave) {
+      this.closeAllPickers();
     }
 
     this.props.navigation.setParams({ canSave });
