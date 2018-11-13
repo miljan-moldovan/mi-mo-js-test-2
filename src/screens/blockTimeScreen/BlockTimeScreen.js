@@ -315,7 +315,7 @@ class BlockTimeScreen extends React.Component {
               <SalonTimePicker
                 label="Start"
                 icon={false}
-                format="h:mm A"
+                format="hh:mm A"
                 value={fromTime}
                 isOpen={this.state.fromTimePickerOpen}
                 onChange={this.handleChangefromTime}
@@ -325,7 +325,7 @@ class BlockTimeScreen extends React.Component {
               <SalonTimePicker
                 label="Ends"
                 icon={false}
-                format="h:mm A"
+                format="hh:mm A"
                 value={toTime}
                 isOpen={this.state.toTimePickerOpen}
                 onChange={this.handleChangetoTime}
