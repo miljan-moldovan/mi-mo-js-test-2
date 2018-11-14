@@ -2,6 +2,7 @@ const tintColor = '#2f95dc';
 
 export default {
   tintColor,
+  doneButtonDisabled: 'rgba(0,0,0,0.3)',
   white: '#FFFFFF',
   tabIconDefault: '#ccc',
   tabIconSelected: tintColor,
