@@ -22,6 +22,7 @@ export default StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     color: 'white',
+    paddingHorizontal: 10,
   },
   activityIndicator: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 

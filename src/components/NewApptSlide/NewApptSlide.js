@@ -554,7 +554,7 @@ class NewApptSlide extends React.Component {
   renderOthersTab = () => {
     const { mainEmployee: employee } = this.props.newApptState;
 
-    const { isFirstAvailable } = employee;
+    const isFirstAvailable = get(employee, 'isFirstAvailable', true);
 
     const messageAllClientsButton = (
       <InputButton
