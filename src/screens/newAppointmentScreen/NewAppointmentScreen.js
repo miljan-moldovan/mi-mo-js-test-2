@@ -899,7 +899,8 @@ export default class NewAppointmentScreen extends React.Component {
       lineHeight: 18,
       color: '#727A8F',
     };
-    const isDisabled = this.props.formulasAndNotesState.notes.filter(itm => itm.isDeleted === false).length < 1;
+    const isDisabled = this.props.formulasAndNotesState.notes.filter(itm => itm.isDeleted === false &&
+    !(itm.expiration ? moment(itm.expiration).isSameOrBefore(moment().startOf('day')) : false)).length < 1;
     const displayDuration = moment.duration(totalDuration).asMilliseconds() === 0 ? '0 min' : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1 ? `${guests.length} Guests` : `${guests.length} Guest`;
 
