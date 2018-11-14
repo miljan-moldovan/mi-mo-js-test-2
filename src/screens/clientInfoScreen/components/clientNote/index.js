@@ -311,7 +311,7 @@ class ClientNote extends Component {
       <View style={styles.container}>
         {this.props.clientNotesState.isLoading && <LoadingOverlay />}
         <KeyboardAwareScrollView
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="never"
           ref="scroll"
           extraHeight={300}
           enableAutoAutomaticScroll

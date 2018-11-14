@@ -2,6 +2,7 @@ import React from 'react';
 import {
   TextInput,
   View,
+  Keyboard
 } from 'react-native';
 
 import { styles } from '../index';
@@ -43,6 +44,7 @@ export default class InputText extends React.Component {
           ref={(input) => { this.input = input; }}
           {...this.props}
           style={styles.textArea}
+          onSubmitEditing={() => this.input.blur()}
           multiline
           autoGrow
           numberOfLines={2}
