@@ -22,6 +22,7 @@ import DateTimes from '../../constants/DateTime';
 import EditTypes from '../../constants/EditTypes';
 import styles from './styles';
 import SalonHeader from '../../components/SalonHeader';
+import {ScheduleBlocks} from '../../utilities/apiWrapper';
 
 class BlockTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -183,8 +184,7 @@ class BlockTimeScreen extends React.Component {
     this.setState({ toTimePickerOpen: !this.state.toTimePickerOpen }, this.checkCanSave);
   }
 
-
-  handleDone = () => {
+  saveBlockTime = () => {
     const schedule = {
       date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
       fromTime: this.state.fromTime.format('hh:mm'),
@@ -212,6 +212,45 @@ class BlockTimeScreen extends React.Component {
         }
       });
     }
+  }
+
+  handleDone = () => {
+    let conflictData = {
+      date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
+      fromTime: this.state.fromTime.format('hh:mm'),
+      toTime: this.state.toTime.format('hh:mm'),
+      employeeId: this.state.provider.id,
+      blockTypeId: this.state.blockTimesReason.id,
+    };
+    if (this.state.id > 0) {
+      conflictData = {
+        ...conflictData,
+        scheduleBlockId: this.state.id,
+      }
+    } else {
+      conflictData = {
+        ...conflictData,
+        bookedByEmployeeId: this.state.blockedBy.id,
+      }
+    }
+
+    ScheduleBlocks.postCheckConflictsBlocks(conflictData).then((conflicts) => {
+      if (conflicts && conflicts.length) {
+        const navParams = {
+          date: conflictData.date,
+          startTime: conflictData.fromTime,
+          endTime: conflictData.toTime,
+          conflicts,
+          handleDone: this.saveBlockTime,
+          headerProps: {
+            btnRightText: 'Save anyway',
+          },
+        };
+        this.props.navigation.navigate ('Conflicts', navParams);
+      } else {
+        this.saveBlockTime();
+      }
+    }).catch(error => console.log('bacon', error));
   }
 
   checkCanSave = () => {
