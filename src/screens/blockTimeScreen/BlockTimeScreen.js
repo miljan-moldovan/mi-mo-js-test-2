@@ -18,6 +18,8 @@ import {
   InputText,
 } from '../../components/formHelpers';
 import SalonTimePicker from '../../components/formHelpers/components/SalonTimePicker';
+import SchedulePicker from '../../components/formHelpers/components/SchedulePicker';
+
 import DateTimes from '../../constants/DateTime';
 import EditTypes from '../../constants/EditTypes';
 import styles from './styles';
@@ -73,10 +75,12 @@ class BlockTimeScreen extends React.Component {
       editType,
     } = params;
 
+    let toTimeVal = toTime ? moment(toTime, 'hh:mm:ss A') : moment(fromTime, 'hh:mm:ss A').add(15, 'minutes')
+
     this.state = {
       editType: editType || EditTypes.new,
       fromTime: moment(fromTime, 'hh:mm:ss A'),
-      toTime: moment(toTime, 'hh:mm:ss A') || moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
+      toTime: toTimeVal,
       provider: employee,
       selectedDate: date,
       blockedBy: bookedByEmployee,
@@ -276,6 +280,7 @@ class BlockTimeScreen extends React.Component {
       provider,
       blockedBy,
       blockTimesReason,
+      selectedDate
     } = this.state;
 
     return (
@@ -351,7 +356,8 @@ class BlockTimeScreen extends React.Component {
 
             <SectionDivider style={styles.sectionDivider} />
             <InputGroup>
-              <SalonTimePicker
+              <SchedulePicker
+                date={selectedDate}
                 label="Start"
                 icon={false}
                 format="hh:mm A"
@@ -361,7 +367,8 @@ class BlockTimeScreen extends React.Component {
                 toggle={this.tooglefromTime}
               />
               <InputDivider />
-              <SalonTimePicker
+              <SchedulePicker
+                date={selectedDate}
                 label="Ends"
                 icon={false}
                 format="hh:mm A"

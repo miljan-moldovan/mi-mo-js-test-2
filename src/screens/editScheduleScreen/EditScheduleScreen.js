@@ -480,6 +480,7 @@ class EditScheduleScreen extends React.Component {
                   value={this.state.otherReason}
                   isEditable={this.state.isEditableOtherReason}
                   onChangeText={this.onChangeOtherReason}
+                  onFocus={this.closeAllPickers}
                   placeholder="Please specify"
                 />
             </InputGroup>

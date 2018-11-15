@@ -63,6 +63,11 @@ const styles = StyleSheet.create ({
 });
 
 class emptyClientList extends PureComponent {
+  state = {walkInModeSetting: false};
+
+  componentDidMount () {
+    this.props.getRelatedSettings ('WalkInMode');
+  }
   addNewClient = () => {
     this.props.navigate ('NewClient', {
       onChangeClient: this.props.onChangeClient,
@@ -76,10 +81,9 @@ class emptyClientList extends PureComponent {
   };
 
   render () {
-    const walkInModeSetting = this.props.getRelatedSettings ('WalkInMode');
     const hideBtn =
       this.props.isWalkin &&
-      get (this.props.settings, '[WalkInMode][0].settingValue', -1) !== 1;
+      get (this.props.settings, 'data.WalkInMode', -1) !== 1;
     const btnText = this.props.isWalkin ? 'WALK-IN CLIENT' : 'ADD NEW CLIENT';
     const btnPress = this.props.isWalkin
       ? this.walkinClient
@@ -111,7 +115,7 @@ class emptyClientList extends PureComponent {
 }
 
 const mapStateToProps = state => ({
-  settings: groupedSettingsSelector (state),
+  settings: state.settingsReducer,
   walkinClient: state.settingsReducer.walkinClient,
 });
 const mapDispatchToProps = dispatch => ({

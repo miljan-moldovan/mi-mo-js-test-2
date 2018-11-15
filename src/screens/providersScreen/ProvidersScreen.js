@@ -201,7 +201,8 @@ class ProviderScreen extends React.Component {
         let filtereQueueList = queueList;
 
         const { settings } = this.props.settingsState;
-        const ShowOnlyClockedInEmployeesInClientQueue = find(settings, { settingName: 'ShowOnlyClockedInEmployeesInClientQueue' }).settingValue;
+        let ShowOnlyClockedInEmployeesInClientQueue = find(settings, { settingName: 'ShowOnlyClockedInEmployeesInClientQueue' });
+        ShowOnlyClockedInEmployeesInClientQueue = ShowOnlyClockedInEmployeesInClientQueue ? ShowOnlyClockedInEmployeesInClientQueue.settingValue : false
 
         if(ShowOnlyClockedInEmployeesInClientQueue){
           filtereQueueList = filtereQueueList.length > 0 ?
