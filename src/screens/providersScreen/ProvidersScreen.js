@@ -316,9 +316,11 @@ class ProviderScreen extends React.Component {
     const { searchText } = this.state;
     const image = getEmployeePhotoSource(item);
 
+    const checked = selectedProvider && selectedProvider.id === item.id
 
-    const highlightStyle = selectedProvider === item.id
+    const highlightStyle = checked
       ? [styles.providerName, styles.selectedGreen] : styles.providerName;
+
     return (
       <SalonTouchableOpacity
         style={styles.itemRow}
@@ -356,7 +358,7 @@ class ProviderScreen extends React.Component {
         </View>
         <View style={styles.selectedIconContainer}>
           {
-            selectedProvider === item.id &&
+            checked &&
             <FontAwesome style={styles.selectedGreen}>{Icons.checkCircle}</FontAwesome>
           }
         </View>
