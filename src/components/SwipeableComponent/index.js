@@ -38,7 +38,7 @@ export default class extends React.PureComponent {
   getSwipeDirection = gestureState => {
     const {SWIPE_LEFT, SWIPE_RIGHT, SWIPE_UP, SWIPE_DOWN} = swipeDirections;
     const {dx, dy} = gestureState;
-    if (thisisValidHorizontalSwipe (gestureState)) {
+    if (this.isValidHorizontalSwipe (gestureState)) {
       return dx > 0 ? SWIPE_RIGHT : SWIPE_LEFT;
     } else if (this.isValidVerticalSwipe (gestureState)) {
       return dy > 0 ? SWIPE_DOWN : SWIPE_UP;
