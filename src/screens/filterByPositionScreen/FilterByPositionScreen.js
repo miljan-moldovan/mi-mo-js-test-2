@@ -141,12 +141,15 @@ export default class FilterByPositionScreen extends React.Component {
       handleSave: this.handleSave,
       goBack: this.goBack,
     });
+
+    const {selectedPosition} = this.props.navigation.state.params;
+
     this.state = {
       isLoading: false,
       refreshing: false,
       positions: [],
       activeData: [],
-      selectedPosition: null,
+      selectedPosition,
     };
   }
 
