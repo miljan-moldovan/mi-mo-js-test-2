@@ -7,7 +7,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { get, sortBy, isNumber } from 'lodash';
+import { get, sortBy, isNumber, filter } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import Icon from '../../components/UI/Icon';
@@ -187,6 +187,17 @@ class ProductsScreen extends React.Component {
     const { searchHeaderState: { searchText } } = this.props;
     const name = get(item, 'name', '');
     const onPress = () => this.onChangeCategory(item);
+    const { selectedProduct } = this.state;
+
+    const productCategory = selectedProduct ?
+    filter(this.currentData, { inventoryItems: [ { id: selectedProduct.id } ]})[0] : {};
+
+    const checked = productCategory.id === item.id
+
+    const highlightStyle = checked
+      ?  [styles.itemText, styles.container, { color: Colors.selectedGreen }] : [styles.itemText, styles.container];
+
+
     return (
       <SalonTouchableOpacity
         onPress={onPress}
@@ -196,10 +207,17 @@ class ProductsScreen extends React.Component {
           numberOfLines={1}
           highlight={searchText}
           highlightStyle={styles.highlightText}
-          style={[styles.itemText, styles.container]}
+          style={highlightStyle}
         >
           {name}
         </WordHighlighter>
+
+        { checked &&
+          <FontAwesome style={styles.checkIcon}>
+            {Icons.checkCircle}
+          </FontAwesome>
+        }
+
         <Icon name="angleRight" size={20} color={Colors.defaultGrey} style={styles.caretIcon} />
       </SalonTouchableOpacity>
     );

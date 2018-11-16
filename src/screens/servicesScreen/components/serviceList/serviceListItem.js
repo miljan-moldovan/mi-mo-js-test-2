@@ -70,7 +70,12 @@ class ServiceListItem extends React.PureComponent {
   }
 
   render() {
-    return (
+      const checked = this.props.servicesState.selectedService && this.props.service.id === this.props.servicesState.selectedService.id;
+
+      const highlightStyle = checked
+        ? [styles.serviceName, { color: Colors.selectedGreen }] : styles.serviceName;
+
+      return (
 
       <InputGroup style={{
         flexDirection: 'row',
@@ -89,11 +94,11 @@ class ServiceListItem extends React.PureComponent {
             <WordHighlighter
               highlight={this.props.boldWords}
               highlightStyle={styles.highlightStyle}
-              style={styles.serviceName}
+              style={highlightStyle}
             >
               {this.state.name}
             </WordHighlighter>
-            {this.props.service === this.props.servicesState.selectedService &&
+            { checked &&
               <FontAwesome style={styles.checkIcon}>
                 {Icons.checkCircle}
               </FontAwesome>

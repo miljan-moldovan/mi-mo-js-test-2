@@ -203,6 +203,7 @@ class ApptBookViewOptionsScreen extends Component {
                     transition: 'SlideFromBottom',
                     onChangePosition: this.handleChangePosition,
                     dismissOnSelect: true,
+                    selectedPosition: position
                   },
                 );
               }}
@@ -226,6 +227,7 @@ class ApptBookViewOptionsScreen extends Component {
                     transition: 'SlideFromBottom',
                     onChangeCompany: this.handleChangeCompany,
                     dismissOnSelect: true,
+                    selectedCompany: company
                   },
                 );
               }}
