@@ -175,7 +175,8 @@ class RebookDialogScreen extends Component {
       }
     }
 
-    rebookProviders = rebookProviders.length > 1 ? [appointment.employee] : rebookProviders
+    const employee = appointment.employee ? appointment.employee : rebookProviders[0]
+    rebookProviders = rebookProviders.length > 1 ? [employee] : rebookProviders
 
 
     const { push } = this.props.navigation;
