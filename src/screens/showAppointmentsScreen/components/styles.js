@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flex: 1,
   },
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 1,
@@ -109,11 +109,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 12,
   },
-  goBackIcon: {
-    fontSize: 20,
-    color: '#fff',
-    paddingRight: 30,
-  },
   infoIcon: {
     fontSize: 17,
     color: '#fff',
@@ -128,6 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
+  leftButton: {paddingLeft: 10},
   rightBtnContainer: {
     flexDirection: 'row',
     alignItems: 'center',
