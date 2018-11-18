@@ -1,18 +1,13 @@
-import React, { Component } from 'react';
-import { StackActions, NavigationActions } from 'react-navigation';
-import {
-  ScrollView,
-  Text,
-  View,
-  ActivityIndicator,
-} from 'react-native';
-import { get, isEqual, isNull, isUndefined } from 'lodash';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import React, {Component} from 'react';
+import {StackActions, NavigationActions} from 'react-navigation';
+import {ScrollView, Text, View, ActivityIndicator} from 'react-native';
+import {get, isEqual, isNull, isUndefined} from 'lodash';
+import FontAwesome, {Icons} from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import ClientInfoButton from '../../components/ClientInfoButton';
 import regexs from '../../constants/Regexs';
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
-import { Client } from '../../utilities/apiWrapper';
+import {Client} from '../../utilities/apiWrapper';
 
 import {
   InputLabel,
@@ -29,28 +24,30 @@ import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 
 class WalkInScreen extends Component {
-  static navigationOptions = ({ navigation }) => {
-    const { params = {} } = navigation.state;
-    const handlePress = params &&
-      params.handleSave ?
-      params.handleSave : () => {};
+  static navigationOptions = ({navigation}) => {
+    const {params = {}} = navigation.state;
+    const handlePress = params && params.handleSave
+      ? params.handleSave
+      : () => {};
 
-    const waitTime = params &&
-      params.waitTime ?
-      params.waitTime : 0;
+    const handleGoBack = navigation.getParam ('handleGoBack', () => {});
+    const waitTime = params && params.waitTime ? params.waitTime : 0;
 
     let canSave;
     if (params && params.isValidInfo) {
-      canSave = params.isValidInfo();
+      canSave = params.isValidInfo ();
     }
 
-    return ({
+    return {
       header: (
         <SalonHeader
           title="Walk-in"
           subTitle={`${waitTime}m Est. wait`}
-          headerLeft={(
-            <SalonTouchableOpacity style={[styles.sideButtons, { paddingLeft: 10 }]} onPress={() => { navigation.goBack(); }}>
+          headerLeft={
+            <SalonTouchableOpacity
+              style={[styles.sideButtons, {paddingLeft: 10}]}
+              onPress={handleGoBack}
+            >
               <View style={styles.leftButtonContainer}>
                 <FontAwesome style={styles.headerLeftIcon}>
                   {Icons.angleLeft}
@@ -60,21 +57,32 @@ class WalkInScreen extends Component {
                 </Text>
               </View>
             </SalonTouchableOpacity>
-          )}
-          headerRight={(
-            <SalonTouchableOpacity disabled={!canSave} style={[styles.sideButtons, { paddingRight: 10 }]} onPress={handlePress}>
+          }
+          headerRight={
+            <SalonTouchableOpacity
+              disabled={!canSave}
+              style={[styles.sideButtons, {paddingRight: 10}]}
+              onPress={handlePress}
+            >
               <View style={styles.rightButtonContainer}>
-                <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+                <Text
+                  style={[
+                    styles.rightButtonText,
+                    {color: canSave ? '#FFFFFF' : '#19428A'},
+                  ]}
+                >
+                  Done
+                </Text>
               </View>
             </SalonTouchableOpacity>
-          )}
+          }
         />
       ),
-    });
+    };
   };
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {
       client: null,
       email: '',
@@ -85,62 +93,69 @@ class WalkInScreen extends Component {
     };
   }
 
-  componentWillMount() {
-    this.props.queueActions.getQueueState(this.setWaitMins);
-    this.props.settingsActions.getSettings();
+  componentDidMount () {
+    this.props.queueActions.getQueueState (this.setWaitMins);
+    this.props.settingsActions.getSettings ();
 
-    const { newAppointment } = this.props.navigation.state.params;
+    const {newAppointment} = this.props.navigation.state.params;
     if (newAppointment) {
-      const { client, provider, service } = newAppointment;
+      const {client, provider, service} = newAppointment;
 
-      const services = [{
-        service,
-        provider,
-        isProviderRequested: false, //! provider.isFirstAvailable,
-      }];
-      this.setState({ services }, this.setStateClientInfo(client));
+      const services = [
+        {
+          service,
+          provider,
+          isProviderRequested: false, //! provider.isFirstAvailable,
+        },
+      ];
+      this.setState ({services}, () => this.setStateClientInfo (client));
     }
 
-    const { navigation } = this.props;
+    const {navigation} = this.props;
     // We can only set the function after the component has been initialized
-    navigation.setParams({
-      handleSave: () => {
-        this.handleSave();
-      },
-    });
-  }
-
-  componentDidMount() {
-    this.props.navigation.setParams({
+    navigation.setParams ({
       isValidInfo: this.validateFields,
       handleSave: this.handleSave,
+      handleGoBack: this.handleGoBack,
     });
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const prevClientInfo = this.state.client;
     const newClientInfo = nextProps.clientInfoState.client;
-    if (prevClientInfo.id === newClientInfo.id &&
-      !isEqual(prevClientInfo, newClientInfo)) {
-      this.setStateClientInfo(newClientInfo);
+    if (
+      prevClientInfo &&
+      newClientInfo &&
+      get (prevClientInfo, 'id') === get (newClientInfo, 'id') &&
+      !isEqual (prevClientInfo, newClientInfo)
+    ) {
+      this.setStateClientInfo (newClientInfo);
     }
   }
 
-  setStateClientInfo = (client) => {
+  setStateClientInfo = client => {
     const email = client.id === 1 ? '' : client.email;
-    const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
-    const phones = get(client, 'phones', []);
-    const clientPhone = phones.find(item => (get(item, 'type', null) === ClientPhoneTypes.cell));
-    const phone = get(clientPhone, 'value', '');
+    const currentPhone = client.phones.find (
+      phone => phone.type === ClientPhoneTypes.cell
+    );
+    const phones = get (client, 'phones', []);
+    const clientPhone = phones.find (
+      item => get (item, 'type', null) === ClientPhoneTypes.cell
+    );
+    const phone = get (clientPhone, 'value', '');
 
-    this.setState({
-      client, email, phone, currentPhone,
+    this.setState ({
+      client,
+      email,
+      phone,
+      currentPhone,
     });
-  }
-
+  };
 
   setWaitMins = () => {
-    const { guestWaitMins } = this.props.queue.queueState ? this.props.queue.queueState : {};
+    const {guestWaitMins} = this.props.queue.queueState
+      ? this.props.queue.queueState
+      : {};
     let waitTime = '-';
     if (guestWaitMins > 0) {
       waitTime = `${guestWaitMins}`;
@@ -148,72 +163,80 @@ class WalkInScreen extends Component {
       waitTime = '0';
     }
 
-    const { navigation } = this.props;
-    navigation.setParams({ waitTime });
-  }
+    const {navigation} = this.props;
+    navigation.setParams ({waitTime});
+  };
 
   getFullName = () => {
     let fullName = '';
-    const { client } = this.state;
+    const {client} = this.state;
     if (client) {
       if (client.name) {
         fullName = client.name;
       }
       if (client.lastName) {
-        fullName = fullName ? `${fullName} ${client.lastName}` : client.lastName;
+        fullName = fullName
+          ? `${fullName} ${client.lastName}`
+          : client.lastName;
       }
     }
     return fullName;
-  }
+  };
 
   handleSave = async () => {
-    if (this.validateFields()) {
-      this.shouldUpdateClientInfo();
-      this.handleWalkin();
+    if (this.validateFields ()) {
+      this.shouldUpdateClientInfo ();
+      this.handleWalkin ();
     }
   };
 
+  handleGoBack = () => {
+    this.shouldUpdateClientInfo ();
+    this.props.navigation.goBack ();
+  };
   validateFields = () => {
-    const {
-      email,
-      phone,
-      currentPhone,
-      services,
-      client,
-    } = this.state;
+    const {email, phone, currentPhone, services, client} = this.state;
+    if (!client) {
+      return false;
+    }
     let canSave = client.id === 1;
     if (!canSave) {
-      canSave = this.isValidEmailRegExp.test(email) || (isNull(client.email) && (isNull(email) || email === ''));
-      canSave = canSave && (this.isValidPhoneRegExp.test(phone) ||
-        (isUndefined(currentPhone.phone) && (isNull(phone) || phone === '')));
+      canSave =
+        this.isValidEmailRegExp.test (email) ||
+        (isNull (client.email) && (isNull (email) || email === ''));
+      canSave =
+        canSave &&
+        (this.isValidPhoneRegExp.test (phone) ||
+          (isUndefined (currentPhone.phone) &&
+            (isNull (phone) || phone === '')));
     }
     for (let i = 0; i < services.length; i += 1) {
       const serviceBlock = services[i];
-      canSave = canSave && serviceBlock.service !== null && serviceBlock.provider !== undefined;
+      canSave =
+        canSave &&
+        serviceBlock.service !== null &&
+        serviceBlock.provider !== undefined;
     }
-
+    this.shouldUpdateClientInfo ();
     return canSave;
   };
 
-  saving = false
+  saving = false;
 
   handleWalkin = async () => {
     if (!this.saving) {
       this.saving = true;
-      const {
-        services,
-        client,
-      } = this.state;
+      const {services, client} = this.state;
 
       const servicesBlock = [];
       for (let i = 0; i < services.length; i += 1) {
         const serviceContainer = services[i];
 
-        const providerBlock =
-        serviceContainer.provider.isFirstAvailable ?
-          {} : { providerId: serviceContainer.provider.id };
+        const providerBlock = serviceContainer.provider.isFirstAvailable
+          ? {}
+          : {providerId: serviceContainer.provider.id};
 
-        servicesBlock.push({
+        servicesBlock.push ({
           serviceId: serviceContainer.service.id,
           ...providerBlock,
           isProviderRequested: serviceContainer.isProviderRequested,
@@ -228,47 +251,50 @@ class WalkInScreen extends Component {
         services: servicesBlock,
       };
 
-      this.props.walkInActions.postWalkinClient(params).then(() => {
+      this.props.walkInActions.postWalkinClient (params).then (() => {
         this.saving = false;
         const params = this.props.navigation.state.params || {};
-        params.loadQueueData();
-        this.props.navigation.popToTop({ immediate: true });
+        params.loadQueueData ();
+        this.props.navigation.popToTop ({immediate: true});
       });
     }
-  }
+  };
 
-  handleUpdateClient= (client) => {
-    this.setState({ client }, this.checkCanSave);
-  }
+  handleUpdateClient = client => {
+    this.setState ({client}, this.validateFields);
+  };
 
-  onChangeClient = (client) => {
-    this.setState({
-      client,
-    }, this.checkCanSave);
-  }
+  onChangeClient = client => {
+    this.setState (
+      {
+        client,
+      },
+      this.validateFields
+    );
+  };
 
-  renderExtraClientButtons = isDisabled => (<ClientInfoButton
-    client={this.state.client}
-    navigation={this.props.navigation}
-    onDonePress={() => {}}
-    apptBook={false}
-    buttonStyle={{ marginHorizontal: 5 }}
-    iconStyle={{ fontSize: 20, color: '#115ECD' }}
-  />)
-  ;
+  renderExtraClientButtons = isDisabled => (
+    <ClientInfoButton
+      client={this.state.client}
+      navigation={this.props.navigation}
+      onDonePress={() => {}}
+      apptBook={false}
+      buttonStyle={{marginHorizontal: 5}}
+      iconStyle={{fontSize: 20, color: '#115ECD'}}
+    />
+  );
 
+  handleRemoveService = index => {
+    const {services} = this.state;
+    services.splice (index, 1);
+    this.setState ({services}, this.validateFields);
+  };
 
-  handleRemoveService= (index) => {
-    const { services } = this.state;
-    services.splice(index, 1);
-    this.setState({ services }, this.checkCanSave);
-  }
-
-  handleUpdateService= (index, service) => {
-    const { services } = this.state;
+  handleUpdateService = (index, service) => {
+    const {services} = this.state;
     services[index] = service;
-    this.setState({ services }, this.checkCanSave);
-  }
+    this.setState ({services}, this.validateFields);
+  };
 
   shouldUpdateClientInfo = async () => {
     const {
@@ -278,7 +304,9 @@ class WalkInScreen extends Component {
       isValidPhone: phoneValid,
       client,
     } = this.state;
-    const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
+    const currentPhone = client.phones.find (
+      phone => phone.type === ClientPhoneTypes.cell
+    );
     const hasEmailChanged = email !== client.email;
     const hasPhoneChanged = phone !== currentPhone.value;
     const isValidEmail = emailValid && email !== '' && hasEmailChanged;
@@ -286,20 +314,22 @@ class WalkInScreen extends Component {
     if (!isValidEmail && !isValidPhone) {
       return false;
     }
-    const phones = isValidPhone && hasPhoneChanged ? [
-      {
-        type: ClientPhoneTypes.cell,
-        value: phone,
-      },
-      ...client.phones.filter(phone => (
-        phone.value &&
-        phone.type !== ClientPhoneTypes.cell &&
-        this.isValidPhoneRegExp.test(phone.value)
-      )),
-    ] : client.phones.filter(phone => (
-      phone.value &&
-      this.isValidPhoneRegExp.test(phone.value)
-    ));
+    const phones = isValidPhone && hasPhoneChanged
+      ? [
+          {
+            type: ClientPhoneTypes.cell,
+            value: phone,
+          },
+          ...client.phones.filter (
+            phone =>
+              phone.value &&
+              phone.type !== ClientPhoneTypes.cell &&
+              this.isValidPhoneRegExp.test (phone.value)
+          ),
+        ]
+      : client.phones.filter (
+          phone => phone.value && this.isValidPhoneRegExp.test (phone.value)
+        );
     const newEmail = isValidEmail ? email : client.email;
     const updateObject = {
       id: client.id,
@@ -310,180 +340,196 @@ class WalkInScreen extends Component {
       updateObject.email = newEmail;
     }
 
-    const updated = await Client.putContactInformation(
+    const updated = await Client.putContactInformation (
       client.id,
-      updateObject,
+      updateObject
     );
     return updated;
-  }
+  };
 
-    handleAddService= () => {
-      const params = this.props.navigation.state.params || {};
+  handleAddService = () => {
+    const params = this.props.navigation.state.params || {};
 
-      const {
-        employee,
-      } = params;
+    const {employee} = params;
 
-      const service = {
-        provider: employee,
-        service: null,
-        isProviderRequested: false,
-      };
-
-      const { services } = this.state;
-      services.push(service);
-      this.setState({ services }, this.checkCanSave);
-    }
-
-    isValidEmailRegExp = regexs.email;
-    isValidPhoneRegExp = regexs.phone;
-
-    renderEmailField = (client) => {
-      const { email } = this.state;
-      if (client.id === 1) {
-        return <InputLabel style={styles.rootStyle} label="Email" value="" />;
-      }
-      return (
-        <ValidatableInput
-          keyboardType="email-address"
-          validation={this.emailValidation}
-          label="Email"
-          isValid={this.isValidEmailRegExp.test(email) || (isNull(client.email) && (isNull(email) || email === ''))}
-          onValidated={this.onValidateEmail}
-          value={email}
-          onChangeText={this.onChangeEmail}
-        />);
+    const service = {
+      provider: employee,
+      service: null,
+      isProviderRequested: false,
     };
 
-    renderPhoneField = (client) => {
-      const { phone, currentPhone } = this.state;
-      if (client.id === 1) {
-        return <InputLabel style={styles.rootStyle} label="Phone" value="" />;
-      }
-      return (
-        <ValidatableInput
-          label="Phone"
-          mask="[000]-[000]-[0000]"
-          isValid={this.isValidPhoneRegExp.test(phone) ||
-            (isUndefined(currentPhone.phone) && (isNull(phone) || phone === ''))}
-          value={phone}
-          validation={this.isValidPhoneRegExp}
-          onValidated={this.onValidatePhone}
-          onChangeText={this.onChangePhone}
-        />
-      );
-    }
+    const {services} = this.state;
+    services.push (service);
+    this.setState ({services}, this.validateFields);
+  };
 
-    onChangeEmail = (email) => {
-      this.setState({ email }, () => {
-        this.props.navigation.setParams({
-          isValidInfo: this.validateFields,
-        });
+  isValidEmailRegExp = regexs.email;
+  isValidPhoneRegExp = regexs.phone;
+
+  renderEmailField = client => {
+    const {email} = this.state;
+    if (!client || get (client, 'id') === 1) {
+      return <InputLabel style={styles.rootStyle} label="Email" value="" />;
+    }
+    return (
+      <ValidatableInput
+        keyboardType="email-address"
+        validation={this.emailValidation}
+        label="Email"
+        isValid={
+          this.isValidEmailRegExp.test (email) ||
+            (isNull (client.email) && (isNull (email) || email === ''))
+        }
+        onValidated={this.onValidateEmail}
+        value={email}
+        onChangeText={this.onChangeEmail}
+      />
+    );
+  };
+
+  renderPhoneField = client => {
+    const {phone, currentPhone} = this.state;
+    if (!client || get (client, 'id') === 1) {
+      return <InputLabel style={styles.rootStyle} label="Phone" value="" />;
+    }
+    return (
+      <ValidatableInput
+        label="Phone"
+        mask="[000]-[000]-[0000]"
+        isValid={
+          this.isValidPhoneRegExp.test (phone) ||
+            (isUndefined (currentPhone.phone) &&
+              (isNull (phone) || phone === ''))
+        }
+        value={phone}
+        validation={this.isValidPhoneRegExp}
+        onValidated={this.onValidatePhone}
+        onChangeText={this.onChangePhone}
+      />
+    );
+  };
+
+  onChangeEmail = email => {
+    this.setState ({email}, () => {
+      this.props.navigation.setParams ({
+        isValidInfo: this.validateFields,
       });
-    };
+    });
+  };
 
-    emailValidation = (email) => {
-      if (email === '' || isNull(email)) {
-        return true;
-      }
-
-      const result = this.isValidEmailRegExp.test(email);
-      return result;
+  emailValidation = email => {
+    if (email === '' || isNull (email)) {
+      return true;
     }
 
-    onChangePhone = (phone) => {
-      this.setState({ phone }, () => {
-        this.props.navigation.setParams({
-          isValidInfo: this.validateFields,
-        });
-      });
-    };
+    const result = this.isValidEmailRegExp.test (email);
+    return result;
+  };
 
-    onValidateEmail = isValid => this.setState((state) => {
+  onChangePhone = phone => {
+    this.setState ({phone}, () => {
+      this.props.navigation.setParams ({
+        isValidInfo: this.validateFields,
+      });
+    });
+  };
+
+  onValidateEmail = isValid =>
+    this.setState (state => {
       const newState = state;
-      newState.isValidEmail = isValid || (isNull(state.client.email) && state.email === '');
+      newState.isValidEmail =
+        isValid || (isNull (state.client.email) && state.email === '');
 
       return newState;
-    });
+    }, this.shouldUpdateClientInfo);
 
-    onValidatePhone = isValid => this.setState((state) => {
+  onValidatePhone = isValid =>
+    this.setState (state => {
       const newState = state;
       newState.isValidPhone = newState.phone === '' ? true : isValid;
       return newState;
-    });
+    }, this.shouldUpdateClientInfo);
 
+  cancelButton = () => ({
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButtonOnPress: navigation => {
+      navigation.goBack ();
+    },
+  });
 
-    cancelButton = () => ({
-      leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
-      leftButtonOnPress: (navigation) => {
-        navigation.goBack();
-      },
-    })
+  render () {
+    const {client} = this.state;
+    return (
+      <ScrollView style={styles.container}>
 
-    render() {
-      const { client } = this.state;
-      return (
-        <ScrollView style={styles.container}>
-
-          {this.props.walkInState.isLoading ? (
-            <View style={styles.activityIndicator}>
+        {this.props.walkInState.isLoading
+          ? <View style={styles.activityIndicator}>
               <ActivityIndicator />
             </View>
-        ) : (
-          <View style={styles.container}>
-            <SectionTitle value="CLIENT" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
-            <InputGroup style={styles.inputGroupStyle}>
-              <ClientInput
-                walkin
-                style={styles.rootStyle}
+          : <View style={styles.container}>
+              <SectionTitle
+                value="CLIENT"
+                style={styles.sectionTitleRootStyle}
+                sectionTitleStyle={styles.sectionTitleStyle}
+              />
+              <InputGroup style={styles.inputGroupStyle}>
+                <ClientInput
+                  walkin
+                  style={styles.rootStyle}
+                  navigate={this.props.navigation.navigate}
+                  push={this.props.navigation.push}
+                  label={this.state.client === null ? 'Client' : 'Client'}
+                  headerProps={{
+                    title: 'Clients',
+                    leftButton: (
+                      <Text style={{fontSize: 14, color: 'white'}}>Cancel</Text>
+                    ),
+                    leftButtonOnPress: navigation => {
+                      navigation.goBack ();
+                    },
+                  }}
+                  selectedClient={client}
+                  onChange={this.onChangeClient}
+                  extraComponents={
+                    client !== null && this.renderExtraClientButtons ()
+                  }
+                />
+                <InputDivider />
+                {this.renderEmailField (client)}
+                <InputDivider />
+                {this.renderPhoneField (client)}
+              </InputGroup>
+              <SectionTitle
+                value="SERVICE AND PROVIDER"
+                style={styles.sectionTitleRootStyle}
+                sectionTitleStyle={styles.sectionTitleStyle}
+              />
+              <ServiceSection
+                services={this.state.services}
+                onAdd={this.handleAddService}
+                onRemove={this.handleRemoveService}
+                onUpdate={this.handleUpdateService}
+                cancelButton={this.cancelButton}
                 navigate={this.props.navigation.navigate}
                 push={this.props.navigation.push}
-                label={this.state.client === null ? 'Client' : 'Client'}
-                headerProps={{
-                title: 'Clients',
-                leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
-                  leftButtonOnPress: (navigation) => {
-                    navigation.goBack();
-                  },
-                }}
-                selectedClient={client}
-                onChange={this.onChangeClient}
-                extraComponents={client !== null && this.renderExtraClientButtons()}
+                walkin
               />
-              <InputDivider />
-              {this.renderEmailField(client)}
-              <InputDivider />
-              {this.renderPhoneField(client)}
-            </InputGroup>
-            <SectionTitle value="SERVICE AND PROVIDER" style={styles.sectionTitleRootStyle} sectionTitleStyle={styles.sectionTitleStyle} />
-            <ServiceSection
-              services={this.state.services}
-              onAdd={this.handleAddService}
-              onRemove={this.handleRemoveService}
-              onUpdate={this.handleUpdateService}
-              cancelButton={this.cancelButton}
-              navigate={this.props.navigation.navigate}
-              push={this.props.navigation.push}
-              walkin
-            />
-          </View>)}
-        </ScrollView>
-      );
-    }
+            </View>}
+      </ScrollView>
+    );
+  }
 }
 
-WalkInScreen.defaultProps = {
-
-};
+WalkInScreen.defaultProps = {};
 
 WalkInScreen.propTypes = {
-  walkInActions: PropTypes.shape({
+  walkInActions: PropTypes.shape ({
     postWalkinClient: PropTypes.func.isRequired,
   }).isRequired,
-  settingsActions: PropTypes.shape({
+  settingsActions: PropTypes.shape ({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
-  queueActions: PropTypes.shape({
+  queueActions: PropTypes.shape ({
     getQueueState: PropTypes.func.isRequired,
   }).isRequired,
   queue: PropTypes.any.isRequired,
