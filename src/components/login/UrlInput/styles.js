@@ -24,7 +24,7 @@ export default StyleSheet.create({
   },
   input: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '500',
     paddingTop: 0,
     marginTop: 0,
@@ -39,7 +39,7 @@ export default StyleSheet.create({
   },
   inputLabel: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 16,
     paddingRight: 10,
     fontFamily: 'Roboto-Medium',
   },

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '500',
     paddingTop: 0,
     marginTop: 0,
