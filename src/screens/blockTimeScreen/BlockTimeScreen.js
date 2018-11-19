@@ -191,8 +191,8 @@ class BlockTimeScreen extends React.Component {
   saveBlockTime = () => {
     const schedule = {
       date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
-      fromTime: this.state.fromTime.format('hh:mm'),
-      toTime: this.state.toTime.format('hh:mm'),
+      fromTime: this.state.fromTime.format('HH:mm:ss'),
+      toTime: this.state.toTime.format('HH:mm:ss'),
       notes: this.state.comments.length > 0 ? this.state.comments : null,
       reasonId: this.state.blockTimesReason.id,
       employeeId: this.state.provider.id,
@@ -221,8 +221,8 @@ class BlockTimeScreen extends React.Component {
   handleDone = () => {
     let conflictData = {
       date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
-      fromTime: this.state.fromTime.format('hh:mm'),
-      toTime: this.state.toTime.format('hh:mm'),
+      fromTime: this.state.fromTime.format('HH:mm:ss'),
+      toTime: this.state.toTime.format('HH:mm:ss'),
       employeeId: this.state.provider.id,
       blockTypeId: this.state.blockTimesReason.id,
     };

@@ -136,12 +136,15 @@ export default class FilterByCompanyScreen extends React.Component {
       handleSave: this.handleSave,
       goBack: this.goBack,
     });
+
+    const {selectedCompany} = this.props.navigation.state.params;
+
     this.state = {
       isLoading: false,
       refreshing: false,
       companies: [],
       activeData: [],
-      selectedCompany: null,
+      selectedCompany,
     };
   }
 

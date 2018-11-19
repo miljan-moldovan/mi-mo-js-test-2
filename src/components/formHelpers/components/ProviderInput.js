@@ -55,6 +55,7 @@ export default class ProviderInput extends React.Component {
   }
 
   render() {
+
     const {
       label = 'Provider',
       selectedProvider = null,

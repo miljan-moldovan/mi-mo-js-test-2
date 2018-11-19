@@ -114,5 +114,11 @@ const styles = StyleSheet.create({
     color: '#727A8F',
     marginHorizontal: 10,
   },
+  checkIcon: {
+    fontSize: 15,
+    marginLeft: 10,
+    textAlign: 'center',
+    color: '#1DBF12',
+  },
 });
 export default styles;
