@@ -18,6 +18,9 @@ const apptBookSettingsSelector = state => ({
   step: state.appointmentBookReducer.apptGridSettings.step,
 });
 
+const filterOptionsSelector = state =>
+  state.appointmentBookReducer.filterOptions;
+
 const createSchedule = ({index, step, minStartTime}) =>
   moment (minStartTime, 'HH:mm').add (index * step, 'm');
 
@@ -26,8 +29,9 @@ export const apptGridSettingsSelector = createSelector (
     storeInfoSelector,
     storeScheduleExceptionsSelector,
     apptBookSettingsSelector,
+    filterOptionsSelector,
   ],
-  (storeInfo, scheduleExceptions, apptBookSettings) => {
+  (storeInfo, scheduleExceptions, apptBookSettings, filterOptions) => {
     const {
       selectedFilter,
       selectedProvider,
@@ -162,6 +166,7 @@ export const apptGridSettingsSelector = createSelector (
       schedule,
       weeklySchedule: storeInfo ? storeInfo.weeklySchedules : [],
       step,
+      filterOptions,
     };
   }
 );

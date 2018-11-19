@@ -14,6 +14,15 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import {showErrorAlert} from '../../redux/actions/utils';
+
+const initialState = {
+  isLoading: false,
+  price: 0,
+  duration: 0,
+  employeeFirstName: '',
+  employeeLastName: '',
+};
 
 export default class ServiceCheckResultScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -57,13 +66,7 @@ export default class ServiceCheckResultScreen extends React.Component {
 
   constructor (props) {
     super (props);
-    this.state = {
-      isLoading: false,
-      price: 0,
-      duration: 0,
-      employeeFirstName: '',
-      employeeLastName: '',
-    };
+    this.state = {...initialState};
     props.navigation.setParams ({handleDone: this.handleDone});
     props.navigation.addListener ('willFocus', this.refresh);
     props.navigation.addListener ('willBlur', this.refresh);
@@ -97,10 +100,9 @@ export default class ServiceCheckResultScreen extends React.Component {
               employeeLastName,
             });
           })
-          .catch (err => {
-            console.warn (err);
-            this.setState ({isLoading: false});
-          });
+          .catch (err =>
+            this.setState ({...initialState}, () => showErrorAlert (err))
+          );
       });
     }
   }
