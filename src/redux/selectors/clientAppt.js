@@ -15,9 +15,11 @@ const dateFormater = date => {
   const dateMoment = moment (date, 'YYYY-MM-DD');
   const dateFormated = dateMoment.format ('YYYY-MM-DD');
   if (todayFormated === dateFormated) {
-    return `Today, ${dateMoment.format ('MM YYYY')}`;
-  } else if (dateMoment.diff (today) === 1) {
-    return `Tomorrow, ${dateMoment.format ('MM YYYY')}`;
+    return `Today, ${dateMoment.format ('MMMM DD')}`;
+  } else if (
+    dateMoment.startOf ('day').diff (today.startOf ('day'), 'days') === 1
+  ) {
+    return `Tomorrow, ${dateMoment.format ('MMMM DD')}`;
   }
   return dateMoment.format ('dddd, MMMM DD');
 };

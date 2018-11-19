@@ -7,9 +7,9 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import FontAwesome, {Icons} from 'react-native-fontawesome';
 
-import { Employees } from '../../utilities/apiWrapper';
+import {Employees} from '../../utilities/apiWrapper';
 import WordHighlighter from '../../components/wordHighlighter';
 import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
@@ -19,8 +19,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 
-
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -69,7 +68,6 @@ const styles = StyleSheet.create({
   },
   leftButtonText: {
     backgroundColor: 'transparent',
-    paddingLeft: 10,
     fontSize: 14,
     color: 'white',
   },
@@ -86,24 +84,31 @@ const styles = StyleSheet.create({
   },
   rightButtonText: {
     backgroundColor: 'transparent',
-    paddingRight: 10,
     fontSize: 14,
     color: 'white',
   },
 });
 
 export default class FilterByPositionScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = ({navigation}) => ({
     header: (
       <SalonHeader
         title="Filter By Position"
         headerLeft={
-          <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => navigation.goBack()}>
+          <SalonTouchableOpacity
+            style={{paddingLeft: 10}}
+            wait={3000}
+            onPress={() => navigation.goBack ()}
+          >
             <Text style={styles.leftButtonText}>Cancel</Text>
           </SalonTouchableOpacity>
         }
         headerRight={
-          <SalonTouchableOpacity style={{ paddingRight: 10 }} wait={3000} onPress={navigation.getParam('handleSave', () => { })}>
+          <SalonTouchableOpacity
+            style={{paddingRight: 10}}
+            wait={3000}
+            onPress={navigation.getParam ('handleSave', () => {})}
+          >
             <Text style={styles.rightButtonText}>Done</Text>
           </SalonTouchableOpacity>
         }
@@ -111,14 +116,17 @@ export default class FilterByPositionScreen extends React.Component {
     ),
   });
 
-  static flexFilter(list, info) {
+  static flexFilter (list, info) {
     let matchesFilter = [];
     const matches = [];
 
-    matchesFilter = function match(item) {
+    matchesFilter = function match (item) {
       let count = 0;
       for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+        if (
+          item[info[n].Field] &&
+          item[info[n].Field].toLowerCase ().indexOf (info[n].Values) > -1
+        ) {
           count += 1;
         }
       }
@@ -126,18 +134,18 @@ export default class FilterByPositionScreen extends React.Component {
     };
 
     for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
+      if (matchesFilter (list[i])) {
+        matches.push (list[i]);
       }
     }
 
     return matches;
   }
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
 
-    this.props.navigation.setParams({
+    this.props.navigation.setParams ({
       handleSave: this.handleSave,
       goBack: this.goBack,
     });
@@ -153,81 +161,104 @@ export default class FilterByPositionScreen extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.getData();
+  componentDidMount () {
+    this.getData ();
   }
 
-  onRefresh = () => this.getData();
+  onRefresh = () => this.getData ();
 
   getData = () => {
-    this.setState({ isLoading: true });
-    Employees.getEmployeePositions()
-      .then(positions => this.setState({ isLoading: false, positions, activeData: positions }))
-      .catch((err) => {
-        console.warn(err);
-        this.setState({ isLoading: false });
+    this.setState ({isLoading: true});
+    Employees.getEmployeePositions ()
+      .then (positions =>
+        this.setState ({isLoading: false, positions, activeData: positions})
+      )
+      .catch (err => {
+        console.warn (err);
+        this.setState ({isLoading: false});
       });
-  }
+  };
 
-  filter = (searchText) => {
+  filter = searchText => {
     if (searchText && searchText.length > 0) {
-      const criteria = [
-        { Field: 'name', Values: [searchText.toLowerCase()] },
-      ];
+      const criteria = [{Field: 'name', Values: [searchText.toLowerCase ()]}];
 
-      const filtered = FilterByPositionScreen.flexFilter(this.state.positions, criteria);
-      this.setState({ activeData: filtered });
+      const filtered = FilterByPositionScreen.flexFilter (
+        this.state.positions,
+        criteria
+      );
+      this.setState ({activeData: filtered});
     } else {
-      this.setState({ activeData: this.state.positions });
+      this.setState ({activeData: this.state.positions});
     }
-  }
+  };
 
-  handleChangePosition = (item) => {
-    const selectedPosition =
-      this.state.selectedPosition !== null &&
-        this.state.selectedPosition.id === item.id ?
-        null : item;
-    this.setState({ selectedPosition });
+  handleChangePosition = item => {
+    const selectedPosition = this.state.selectedPosition !== null &&
+      this.state.selectedPosition.id === item.id
+      ? null
+      : item;
+    this.setState ({selectedPosition});
   };
 
   handleSave = () => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onChangePosition, onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangePosition) { onChangePosition(this.state.selectedPosition); }
-    if (dismissOnSelect) { this.props.navigation.goBack(); }
-  }
+    const {
+      onChangePosition,
+      onNavigateBack,
+      dismissOnSelect,
+    } = this.props.navigation.state.params;
+    if (this.props.navigation.state.params && onChangePosition) {
+      onChangePosition (this.state.selectedPosition);
+    }
+    if (dismissOnSelect) {
+      this.props.navigation.goBack ();
+    }
+  };
 
   goBack = () => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
       return;
     }
-    const { onNavigateBack, dismissOnSelect } = this.props.navigation.state.params;
-    if (dismissOnSelect) { onNavigateBack(); }
-  }
+    const {
+      onNavigateBack,
+      dismissOnSelect,
+    } = this.props.navigation.state.params;
+    if (dismissOnSelect) {
+      onNavigateBack ();
+    }
+  };
 
-  renderItem = ({ item, index }) => {
-    const isSelected = this.state.selectedPosition !== null && this.state.selectedPosition.id === item.id;
+  renderItem = ({item, index}) => {
+    const isSelected =
+      this.state.selectedPosition !== null &&
+      this.state.selectedPosition.id === item.id;
     return (
       <SalonTouchableOpacity
         style={styles.itemRow}
-        onPress={() => this.handleChangePosition(item)}
+        onPress={() => this.handleChangePosition (item)}
         key={index}
       >
         <View style={styles.inputRow}>
           <WordHighlighter
             highlight={this.state.searchText}
-            style={isSelected ? [styles.providerName, { color: '#1DBF12' }] : styles.providerName}
-            highlightStyle={{ color: '#1DBF12' }}
+            style={
+              isSelected
+                ? [styles.providerName, {color: '#1DBF12'}]
+                : styles.providerName
+            }
+            highlightStyle={{color: '#1DBF12'}}
           >
             {item.name}
           </WordHighlighter>
         </View>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          {isSelected && (
-            <FontAwesome style={{ color: '#1DBF12' }}>{Icons.checkCircle}</FontAwesome>
-          )}
+        <View style={{flex: 1, alignItems: 'center'}}>
+          {isSelected &&
+            <FontAwesome style={{color: '#1DBF12'}}>
+              {Icons.checkCircle}
+            </FontAwesome>}
         </View>
       </SalonTouchableOpacity>
     );
@@ -243,7 +274,7 @@ export default class FilterByPositionScreen extends React.Component {
     />
   );
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         <View style={styles.searchBarContainer}>
@@ -258,12 +289,12 @@ export default class FilterByPositionScreen extends React.Component {
           />
         </View>
         {this.state.isLoading
-          ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          ? <View
+              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+            >
               <ActivityIndicator />
             </View>
-          ) : (
-            <FlatList
+          : <FlatList
               data={this.state.activeData}
               ItemSeparatorComponent={this.renderSeparator}
               renderItem={this.renderItem}
@@ -273,9 +304,7 @@ export default class FilterByPositionScreen extends React.Component {
                   onRefresh={this.onRefresh}
                 />
               }
-            />
-          )
-        }
+            />}
       </View>
     );
   }
