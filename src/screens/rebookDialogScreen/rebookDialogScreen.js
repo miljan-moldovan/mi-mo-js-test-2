@@ -153,10 +153,8 @@ class RebookDialogScreen extends Component {
     if(resetToApptBook){
       this.props.navigation.navigate ('SalonCalendar');
     }else{
-      this.props.navigation.goBack()
+      this.props.navigation.goBack();
     }
-
-
   }
 
   saveRebook() {
@@ -179,6 +177,11 @@ class RebookDialogScreen extends Component {
     rebookProviders = rebookProviders.length > 1 ? [employee] : rebookProviders
 
 
+    if (mustGoBack) {
+      this.props.navigation.goBack();
+    }
+
+
     const { push } = this.props.navigation;
 
 
@@ -191,10 +194,6 @@ class RebookDialogScreen extends Component {
       rebookProviders,
       rebookServices,
     });
-
-    if (mustGoBack) {
-      this.goBack();
-    }
   }
 
 
