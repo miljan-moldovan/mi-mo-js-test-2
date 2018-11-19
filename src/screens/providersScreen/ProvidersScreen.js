@@ -316,7 +316,7 @@ class ProviderScreen extends React.Component {
     const { searchText } = this.state;
     const image = getEmployeePhotoSource(item);
 
-    const checked = selectedProvider && selectedProvider.id === item.id
+    const checked = selectedProvider && ( selectedProvider.id === item.id || selectedProvider.fullName.toLowerCase() === item.fullName.toLowerCase())
 
     const highlightStyle = checked
       ? [styles.providerName, styles.selectedGreen] : styles.providerName;

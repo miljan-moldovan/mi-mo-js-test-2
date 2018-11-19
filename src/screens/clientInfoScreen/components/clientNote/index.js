@@ -133,7 +133,8 @@ class ClientNote extends Component {
 
         note.enteredBy = providerName;
       } else {
-        this.props.clientNotesActions.selectProvider (null);
+        this.onChangeProvider(this.props.userInfoState.currentEmployee)
+        this.props.clientNotesActions.selectProvider (this.props.userInfoState.currentEmployee);
       }
     }
 
@@ -415,6 +416,7 @@ ClientNote.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  userInfoState: state.userInfoReducer,
   clientNotesState: state.clientNotesReducer,
 });
 
