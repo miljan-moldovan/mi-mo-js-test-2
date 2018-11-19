@@ -222,7 +222,7 @@ class ClientNote extends Component {
   handlePressProvider = () => {
     const {navigate} = this.props.navigation;
     const {selectedProvider} = this.props.clientNotesState;
-
+    this.checkCanSave(false)
     this.shouldSave = true;
   };
 
@@ -338,6 +338,7 @@ class ClientNote extends Component {
           <SectionTitle value="NOTE" style={styles.sectionTitle} />
           <InputGroup>
             <InputText
+              onFocus={() => { this.checkCanSave(false)}}
               placeholder="Write Note"
               onChangeText={this.onChangeText}
               value={this.state.note.text}
