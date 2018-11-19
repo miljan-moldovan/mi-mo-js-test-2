@@ -254,7 +254,7 @@ class BlockTimeScreen extends React.Component {
       } else {
         this.saveBlockTime();
       }
-    }).catch(error => console.log('bacon', error));
+    }).catch(error => console.log('Error', error));
   }
 
   checkCanSave = () => {
