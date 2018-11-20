@@ -555,7 +555,7 @@ export default class NewAppointmentScreen extends React.Component {
     const employeeName = employee.isFirstAvailable
       ? 'First Available'
       : `${get (employee, 'name', employee.firstName || '')} ${get (employee, 'lastName', '')[0]}.`;
-      debugger
+
     if (isOnlyMainService) {
       Alert.alert ('Something went wrong', 'You need minimum 1 service', [
         {text: 'Ok, got it', onPress: () => null},
