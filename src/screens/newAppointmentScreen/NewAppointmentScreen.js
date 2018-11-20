@@ -545,7 +545,7 @@ export default class NewAppointmentScreen extends React.Component {
     const {serviceItems} = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem (serviceId);
     const isOnlyMainService =
-      this.isMainService (serviceItem) && this.getMainServices (serviceItems);
+      this.isMainService (serviceItem) && this.getMainServices (serviceItems).length === 1;
     const serviceTitle = get (
       get (serviceItem.service, 'service', null),
       'name',
@@ -555,6 +555,7 @@ export default class NewAppointmentScreen extends React.Component {
     const employeeName = employee.isFirstAvailable
       ? 'First Available'
       : `${get (employee, 'name', employee.firstName || '')} ${get (employee, 'lastName', '')[0]}.`;
+      debugger
     if (isOnlyMainService) {
       Alert.alert ('Something went wrong', 'You need minimum 1 service', [
         {text: 'Ok, got it', onPress: () => null},
@@ -1113,7 +1114,6 @@ export default class NewAppointmentScreen extends React.Component {
                   onSetExtras={() => this.selectExtraServices (item)}
                   conflicts={this.getConflictsForService (item.itemId)}
                   onPressDelete={() => this.removeServiceAlert (item.itemId)}
-                  hideDelete={mainServices.length === 1}
                   onPressConflicts={() => this.onPressConflicts (item.itemId)}
                 />,
                 this.getAddonsForService (
