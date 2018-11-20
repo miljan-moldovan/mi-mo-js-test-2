@@ -133,7 +133,8 @@ class ClientNote extends Component {
 
         note.enteredBy = providerName;
       } else {
-        this.props.clientNotesActions.selectProvider (null);
+        this.onChangeProvider(this.props.userInfoState.currentEmployee)
+        this.props.clientNotesActions.selectProvider (this.props.userInfoState.currentEmployee);
       }
     }
 
@@ -221,7 +222,7 @@ class ClientNote extends Component {
   handlePressProvider = () => {
     const {navigate} = this.props.navigation;
     const {selectedProvider} = this.props.clientNotesState;
-
+    this.checkCanSave(false)
     this.shouldSave = true;
   };
 
@@ -311,7 +312,7 @@ class ClientNote extends Component {
       <View style={styles.container}>
         {this.props.clientNotesState.isLoading && <LoadingOverlay />}
         <KeyboardAwareScrollView
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="never"
           ref="scroll"
           extraHeight={300}
           enableAutoAutomaticScroll
@@ -337,6 +338,7 @@ class ClientNote extends Component {
           <SectionTitle value="NOTE" style={styles.sectionTitle} />
           <InputGroup>
             <InputText
+              onFocus={() => { this.checkCanSave(false)}}
               placeholder="Write Note"
               onChangeText={this.onChangeText}
               value={this.state.note.text}
@@ -415,6 +417,7 @@ ClientNote.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  userInfoState: state.userInfoReducer,
   clientNotesState: state.clientNotesReducer,
 });
 

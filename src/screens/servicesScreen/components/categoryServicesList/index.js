@@ -62,25 +62,32 @@ class CategoryServicesList extends React.Component {
 
   _keyExtractor = (item, index) => item.id;
 
-  renderItem = elem => (
-    <InputButton
-      icon={false}
-      key={Math.random().toString()}
-      style={{ height: 44, paddingLeft: 16 }}
-      labelStyle={{ color: '#110A24' }}
-      onPress={this.props.onChangeService ? () => { this.props.servicesActions.setSelectedService(elem.item); this.props.onChangeService(elem.item); } : () => { }}
-      label={elem.item.name}
-    >
-      <View style={styles.inputRow}>
-        {
-          elem.item === this.props.servicesState.selectedService &&
-          <FontAwesome style={styles.checkIcon}>
-            {Icons.checkCircle}
-          </FontAwesome>
-        }
-      </View>
-    </InputButton>
-  )
+  renderItem = elem => {
+    const checked = this.props.servicesState.selectedService &&  elem.item.id === this.props.servicesState.selectedService.id;
+
+    const highlightStyle = checked
+      ? { color: Colors.selectedGreen } : { color: '#110A24' };
+
+    return (
+      <InputButton
+        icon={false}
+        key={Math.random().toString()}
+        style={{ height: 44, paddingLeft: 16 }}
+        labelStyle={highlightStyle}
+        onPress={this.props.onChangeService ? () => { this.props.servicesActions.setSelectedService(elem.item); this.props.onChangeService(elem.item); } : () => { }}
+        label={elem.item.name}
+      >
+        <View style={styles.inputRow}>
+          {
+           checked &&
+            <FontAwesome style={styles.checkIcon}>
+              {Icons.checkCircle}
+            </FontAwesome>
+          }
+        </View>
+      </InputButton>
+    )
+  }
 
   onRefreshFinish = () => {
     this.setState({ refreshing: false });

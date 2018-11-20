@@ -28,4 +28,10 @@ export default StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     color: Colors.divider,
   },
+  checkIcon: {
+    fontSize: 15,
+    marginLeft: 10,
+    textAlign: 'center',
+    color: '#1DBF12',
+  },
 });

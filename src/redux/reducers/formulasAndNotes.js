@@ -6,7 +6,7 @@ import {
 } from '../actions/formulasAndNotes';
 
 const initialState = {
-  isLodaing: false,
+  isLoading: false,
   notes: [],
   formulas: [],
 };

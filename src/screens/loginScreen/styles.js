@@ -41,11 +41,11 @@ export default StyleSheet.create({
   inputLabel: {
     color: 'white',
     fontFamily: 'Roboto-Regular',
-    fontSize: 12,
+    fontSize: 16,
   },
   input: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '500',
     paddingTop: 0,
     marginTop: 0,
@@ -86,7 +86,7 @@ export default StyleSheet.create({
     color: 'white',
     height: 20,
     width: 20,
-    fontSize: 20,
+    fontSize: 16,
     marginLeft: '5%',
     marginTop: '10%',
     marginBottom: '10%',
@@ -102,7 +102,7 @@ export default StyleSheet.create({
   },
   loginButtonText: {
     color: 'rgba(48,120,164,1)',
-    fontSize: 12,
+    fontSize: 16,
     fontFamily: 'Roboto-Bold',
     textAlign: 'center',
     marginLeft: 'auto',
@@ -120,7 +120,7 @@ export default StyleSheet.create({
   },
   touchIdButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'OpenSans-Regular',
     textAlign: 'center',
     marginLeft: 'auto',
@@ -135,14 +135,14 @@ export default StyleSheet.create({
   },
   bodyText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 16,
     fontFamily: 'OpenSans-Regular',
     backgroundColor: 'transparent',
     textAlign: 'center',
   },
   footerText: {
     color: 'rgba(103,163,199,1)',
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Roboto-Regular',
     backgroundColor: 'transparent',
   },
@@ -172,7 +172,7 @@ export default StyleSheet.create({
     marginTop: 40,
   },
   fingerprintText: {
-    fontSize: 22,
+    fontSize: 16,
     fontFamily: 'Roboto-Regular',
     color: 'rgba(10,39,74,1)',
     textAlign: 'center',
@@ -190,7 +190,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
   },
   fingerprintAcceptText: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'Roboto-Regular',
     color: 'white',
     textAlign: 'center',
@@ -205,7 +205,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
   },
   fingerprintDenyText: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'Roboto-Regular',
     color: 'rgba(107,103,99,1)',
     textDecorationLine: 'underline',

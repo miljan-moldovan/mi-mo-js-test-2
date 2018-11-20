@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { filter } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import {
   InputGroup,
@@ -41,16 +43,31 @@ class ServiceCategoryList extends React.Component {
 
   updateServiceCategories = serviceCategories => this.setState({ serviceCategories })
 
-  renderItem(elem) {
+  renderItem = (elem) => {
+    const serviceCategory = this.props.servicesState.selectedService ?
+    filter(this.state.serviceCategories, { services: [ { id: this.props.servicesState.selectedService.id } ]})[0] : {};
+
+    const checked = serviceCategory.id === elem.item.id
+
+    const highlightStyle = checked
+      ?  { color: Colors.selectedGreen } :{ color: '#110A24' };
+
+
     return (
       <InputButton
         icon="default"
         key={Math.random().toString()}
         style={{ height: 44, paddingLeft: 16 }}
-        labelStyle={{ color: '#110A24' }}
+        labelStyle={highlightStyle}
         onPress={() => { this.props.handlePressServiceCategory(elem.item); }}
         label={elem.item.name}
-      />
+      >
+      { checked &&
+        <FontAwesome style={styles.checkIcon}>
+          {Icons.checkCircle}
+        </FontAwesome>
+      }
+      </InputButton>
     );
   }
 

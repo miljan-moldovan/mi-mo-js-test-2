@@ -14,7 +14,7 @@ import {isFunction} from 'lodash';
 
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import Icon from '../UI/Icon';
-import Picker from 'react-native-wheel-datepicker';
+import { Picker } from 'react-native-wheel-datepicker';
 
 const styles = StyleSheet.create ({
   container: {

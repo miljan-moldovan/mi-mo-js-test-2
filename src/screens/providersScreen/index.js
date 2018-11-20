@@ -7,9 +7,11 @@ import queueListSelector
 import receptionistListSelector
   from '../../redux/selectors/providers/receptionistListSelector';
 import groupedSettingsSelector from '../../redux/selectors/settingsSelector';
+import settingsActions from '../../redux/actions/settings';
+
 
 const mapStateToProps = state => ({
-  settings: state.settingsReducer.settings,
+  settingsState: state.settingsReducer,
   queueList: queueListSelector (state),
   receptionistList: receptionistListSelector (state),
   quickQueueEmployees: state.providersReducer.quickQueueEmployees,
@@ -20,6 +22,7 @@ const mapStateToProps = state => ({
 
 const mapActionsToProps = dispatch => ({
   providersActions: bindActionCreators ({...providersActions}, dispatch),
+  settingsActions: bindActionCreators ({...settingsActions}, dispatch),
 });
 
 export default connect (mapStateToProps, mapActionsToProps) (ProvidersScreen);

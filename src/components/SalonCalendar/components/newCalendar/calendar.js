@@ -23,6 +23,7 @@ import {
 } from 'lodash';
 import moment from 'moment';
 
+import CardGrid from '../cardGrid';
 import Board from './board';
 import Header from './header';
 import TimeColumn from './timeColumn';
@@ -235,6 +236,29 @@ export default class Calendar extends Component {
       this.props.clearGoToAppointment ();
       this.goToPosition = null;
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // {
+    //   cardsArray: [],
+    //   overlappingCardsMap: null,
+    //   alert: null,
+    //   calendarMeasure: {
+    //     width: 0,
+    //     height: 0,
+    //   },
+    //   calendarOffset: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   buffer: [],
+    //   pan: new Animated.ValueXY ({x: 0, y: 0}),
+    //   pan2: new Animated.ValueXY ({x: 0, y: 0}),
+    //   isResizeing: false,
+    // }
+    return nextProps.displayMode !== this.props.displayMode || this.props.isLoading !== nextProps.isLoading ||
+      this.state.alert !== nextState.alert || this.state.activeCard !== nextState.activeCard ||
+      this.state.activeBlock !== nextState.activeBlock || this.props.bufferVisible !== nextProps.bufferVisible;
   }
 
   setGroupedAppointments = ({
@@ -1679,7 +1703,7 @@ export default class Calendar extends Component {
     }
     return null;
   };
-
+  
   render () {
     const {
       isLoading,
@@ -1701,7 +1725,7 @@ export default class Calendar extends Component {
       storeScheduleExceptions,
       rooms,
     } = this.props;
-
+    debugger
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader =
       displayMode === 'week' ||
@@ -1781,30 +1805,10 @@ export default class Calendar extends Component {
               hideAlert={this.hideAlert}
               storeScheduleExceptions={storeScheduleExceptions}
             />
-            {headerData.map ((item, index) => {
-              let headerId = item.id;
-              if (
-                selectedFilter === 'providers' &&
-                selectedProvider !== 'all'
-              ) {
-                headerId = item.format (DateTime.date);
-              }
-              return this.renderCards (
-                chain (cardsArray[headerId])
-                  .orderBy (
-                    card =>
-                      get (
-                        overlappingCardsMap,
-                        [headerId, card.id, 'overlappingCardsLength'],
-                        0
-                      ),
-                    'asc'
-                  )
-                  .value (),
-                index,
-                headerId
-              );
-            })}
+            <CardGrid cardsArray={cardsArray} isLoading={isLoading} headerData={headerData}
+              selectedFilter={selectedFilter} selectedProvider={selectedProvider} renderCard={this.renderCard}
+              renderBlock={this.renderBlock} cardActive={this.state.activeBlock || this.state.activeCard}
+            />
             {this.renderResizeCard ()}
             {this.renderResizeBlock ()}
           </ScrollViewChild>

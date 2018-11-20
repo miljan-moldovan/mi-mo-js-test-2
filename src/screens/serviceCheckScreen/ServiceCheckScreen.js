@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-  ActivityIndicator,
-} from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import {View, Text, StyleSheet} from 'react-native';
+import {get} from 'lodash';
 
 import {
   InputGroup,
@@ -15,18 +8,11 @@ import {
   ServiceInput,
   InputDivider,
 } from '../../components/formHelpers';
-import apiWrapper from '../../utilities/apiWrapper';
-import WordHighlighter from '../../components/wordHighlighter';
-import HeaderLateral from '../../components/HeaderLateral';
-import SalonSearchBar from '../../components/SalonSearchBar';
-import SalonFlatPicker from '../../components/SalonFlatPicker';
-import SalonAvatar from '../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import Colors from '../../constants/Colors';
 
-
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
@@ -77,11 +63,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  headerButton: { fontSize: 14, color: 'white', fontFamily: 'Roboto' },
-  robotoMedium: { fontFamily: 'Roboto-Medium' },
+  headerButton: {fontSize: 14, color: 'white', fontFamily: 'Roboto'},
+  robotoMedium: {fontFamily: 'Roboto-Medium'},
   leftButtonText: {
     backgroundColor: 'transparent',
-    paddingLeft: 10,
     fontSize: 14,
     color: 'white',
   },
@@ -98,79 +83,108 @@ const styles = StyleSheet.create({
   },
   rightButtonText: {
     backgroundColor: 'transparent',
-    paddingRight: 10,
     fontSize: 14,
     color: 'white',
   },
 });
 
 export default class ServiceCheckScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    header: (
-      <SalonHeader
-        title="Service Check"
-        headerLeft={(
-          <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => navigation.goBack()}>
-            <Text style={styles.leftButtonText}>Cancel</Text>
-          </SalonTouchableOpacity>
-        )}
-        headerRight={(
-          <SalonTouchableOpacity style={{ paddingRight: 10 }} wait={3000} onPress={navigation.getParam('handleCheck', () => {})}>
-            <Text style={styles.rightButtonText}>Check</Text>
-          </SalonTouchableOpacity>
-        )}
-      />
-    ),
-  });
+  static navigationOptions = ({navigation}) => {
+    const canCheck = navigation.getParam ('canCheck', false);
+    const rightBtnStyle = {
+      color: canCheck ? Colors.white : 'rgba(0,0,0,0.3)',
+    };
+    return {
+      header: (
+        <SalonHeader
+          title="Service Check"
+          headerLeft={
+            <SalonTouchableOpacity
+              style={{paddingLeft: 10}}
+              wait={3000}
+              onPress={() => navigation.goBack ()}
+            >
+              <Text style={styles.leftButtonText}>Cancel</Text>
+            </SalonTouchableOpacity>
+          }
+          headerRight={
+            <SalonTouchableOpacity
+              wait={3000}
+              disabled={!canCheck}
+              style={{paddingRight: 10}}
+              onPress={navigation.getParam ('handleCheck', () => {})}
+            >
+              <Text style={[styles.rightButtonText, rightBtnStyle]}>Check</Text>
+            </SalonTouchableOpacity>
+          }
+        />
+      ),
+    };
+  };
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
 
-    this.props.navigation.setParams({ handleCheck: this.handleCheck });
+    props.navigation.setParams ({
+      handleCheck: this.handleCheck,
+      canCheck: false,
+    });
     this.state = {
       selectedProvider: null,
       selectedService: null,
     };
+    props.navigation.addListener ('willFocus', this.validate);
+    props.navigation.addListener ('willBlur', this.validate);
   }
 
-  onChangeProvider = provider => this.setState({ selectedProvider: provider })
+  componentDidMount () {
+    this.validate ();
+  }
 
-  onChangeService = service => this.setState({ selectedService: service })
+  onChangeProvider = provider => this.setState ({selectedProvider: provider});
+
+  onChangeService = service => this.setState ({selectedService: service});
+
+  validate = () => {
+    const {selectedProvider, selectedService} = this.state;
+    const canCheck =
+      get (selectedProvider, 'id', false) && get (selectedService, 'id', false);
+    this.props.navigation.setParams ({canCheck});
+    return canCheck;
+  };
 
   handleCheck = () => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
+    if (this.validate ()) {
+      const {navigation: {navigate, setParams}} = this.props;
+      const {selectedProvider, selectedService} = this.state;
+      setParams ({canCheck: false});
+      navigate ('ServiceCheckResult', {
+        selectedService,
+        selectedProvider,
+      });
     }
-    const { dismissOnSelect } = this.props.navigation.state.params;
-
-    const { selectedProvider, selectedService } = this.state;
-    this.props.navigation.navigate('ServiceCheckResult', {
-      dismissOnSelect,
-      selectedService,
-      selectedProvider,
-    });
-  }
+  };
 
   cancelButton = () => ({
     leftButton: <Text style={styles.navButton}>Cancel</Text>,
-    leftButtonOnPress: navigation => navigation.goBack(),
-  })
+    leftButtonOnPress: navigation => navigation.goBack (),
+  });
 
-
-  render() {
-    const { navigate } = this.props.navigation;
-    const { selectedProvider, selectedService } = this.state;
+  render () {
+    const {navigate} = this.props.navigation;
+    const {selectedProvider, selectedService} = this.state;
     return (
       <View style={styles.container}>
-        <InputGroup style={{ marginTop: 17 }}>
+        <InputGroup style={{marginTop: 17}}>
           <ProviderInput
             apptBook
             noPlaceholder
             filterByService
             navigate={navigate}
+            showFirstAvailable={false}
             selectedService={selectedService}
             selectedProvider={selectedProvider}
-            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            headerProps={{title: 'Providers', ...this.cancelButton ()}}
             onChange={this.onChangeProvider}
           />
           <InputDivider />
@@ -180,7 +194,7 @@ export default class ServiceCheckScreen extends React.Component {
             navigate={navigate}
             selectedService={selectedService}
             selectedProvider={selectedProvider}
-            headerProps={{ title: 'Services', ...this.cancelButton() }}
+            headerProps={{title: 'Services', ...this.cancelButton ()}}
             onChange={this.onChangeService}
           />
         </InputGroup>

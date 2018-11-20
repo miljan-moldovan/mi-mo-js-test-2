@@ -4,7 +4,7 @@ import {
   View,
   Text,
 } from 'react-native';
-import { find, remove } from 'lodash';
+import { find, remove, pull } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
@@ -36,7 +36,15 @@ class RebookDialogScreen extends Component {
           subTitle={fullName}
           headerLeft={(
             <View style={styles.leftButtonContainer}>
-              <SalonTouchableOpacity onPress={() => navigation.goBack()}>
+              <SalonTouchableOpacity
+
+                onPress={() => {
+                  if (navigation.state.params.goBack) {
+                    navigation.state.params.goBack();
+                  }
+                }}>
+
+
                 <Text style={styles.headerLeftText}>Cancel</Text>
               </SalonTouchableOpacity>
             </View>
@@ -63,7 +71,7 @@ class RebookDialogScreen extends Component {
   }
 
   state = {
-    date: moment().add(1, 'weeks'),
+    date: null,
     weeks: 1,
     updateRebookingPref: false,
     shouldRebookServices: {},
@@ -73,9 +81,12 @@ class RebookDialogScreen extends Component {
   componentWillMount() {
     this.props.navigation.setParams({
       handleDone: () => this.saveRebook(),
+      goBack: () => this.goBack(),
     });
 
     this.props.navigation.setParams({ hideTabBar: true });
+
+    this.props.rebookDialogActions.setRebookData({});
 
 
     this.props.navigation.addListener(
@@ -98,12 +109,15 @@ class RebookDialogScreen extends Component {
     const { shouldRebookServices } = this.state;
     let { rebookServices } = this.state;
 
-    shouldRebookServices[service.id] = !shouldRebookServices[service.id];
+    shouldRebookServices[service.listId] = !shouldRebookServices[service.listId];
+    const rebookService = find(rebookServices, { listId: service.listId });
 
-    if (shouldRebookServices[service.id]) {
+    if (shouldRebookServices[service.listId] && !rebookService) {
       rebookServices.push(service);
     } else {
-      rebookServices = remove(rebookServices, { id: service.id });
+      rebookServices = rebookServices.filter(function(item){
+        return [service.listId].indexOf(item.listId) === -1;
+      });
     }
     this.setState({ shouldRebookServices, rebookServices }, this.checkCanSave);
   }
@@ -117,17 +131,29 @@ class RebookDialogScreen extends Component {
     for (let i = 0; i < services.length; i += 1) {
       const service = services[i];
       service.serviceId = service.id || service.serviceId;
-      service.employee = appointment.employee;
+      //service.employee = appointment.employee;
       service.serviceLength = service.serviceLength || service.duration;
       service.serviceName = service.serviceName || service.name || service.description;
     }
 
-    if (appointment.services.length === 1) {
-      this.setState({ rebookServices: services, date }, this.checkCanSave);
-    }
+    this.setState({ date }, this.checkCanSave);
 
     for (let i = 0; i < appointment.services.length; i += 1) {
+      appointment.services[i].listId = i
       this.setShouldRebook(appointment.services[i]);
+    }
+
+
+  }
+
+
+  goBack = () => {
+    const { resetToApptBook } = this.props.navigation.state.params;
+
+    if(resetToApptBook){
+      this.props.navigation.navigate ('SalonCalendar');
+    }else{
+      this.props.navigation.goBack();
     }
   }
 
@@ -135,7 +161,7 @@ class RebookDialogScreen extends Component {
     const { appointment, mustGoBack } = this.props.navigation.state.params;
     const { rebookServices } = this.state;
 
-    const rebookProviders = [];
+    let rebookProviders = [];
     for (let i = 0; i < rebookServices.length; i += 1) {
       rebookServices[i].id = rebookServices[i].serviceId || rebookServices[i].id;
 
@@ -146,6 +172,15 @@ class RebookDialogScreen extends Component {
         }
       }
     }
+
+    const employee = appointment.employee ? appointment.employee : rebookProviders[0]
+    rebookProviders = rebookProviders.length > 1 ? [employee] : rebookProviders
+
+
+    if (mustGoBack) {
+      this.props.navigation.goBack();
+    }
+
 
     const { push } = this.props.navigation;
 
@@ -159,10 +194,6 @@ class RebookDialogScreen extends Component {
       rebookProviders,
       rebookServices,
     });
-
-    if (mustGoBack) {
-      this.goBack();
-    }
   }
 
 
@@ -186,14 +217,14 @@ class RebookDialogScreen extends Component {
   }
 
   renderService = (service, index) => (
-    <React.Fragment>
+    <React.Fragment key={index}>
       <InputSwitch
         style={{ height: 60 }}
         textStyle={{ color: '#000000' }}
         onChange={() => {
           this.setShouldRebook(service);
         }}
-        value={this.state.shouldRebookServices[service.id]}
+        value={this.state.shouldRebookServices[service.listId]}
         text={
           <View style={styles.serviceContainer}>
             <Text style={styles.serviceNameText}>{service.serviceName}</Text>
@@ -221,11 +252,14 @@ class RebookDialogScreen extends Component {
           <InputGroup >
             <InputNumber onChange={(operation, weeks) => { this.onChangeWeeks(operation, weeks); }} textStyle={styles.weeksTextSyle} value={this.state.weeks} singularText="week" pluralText="weeks" min={1} />
             <InputDivider />
-            <InputLabel
+            {this.state.date?
+              <InputLabel
               label={this.state.date.format('DD MMMM YYYY')}
             />
+            :
+            null}
 
-            {appointment.services.length === 1 ?
+            {/*appointment.services.length === 1 ?
 
               <React.Fragment>
                 <InputDivider />
@@ -240,7 +274,7 @@ class RebookDialogScreen extends Component {
 
           : null
 
-        }
+        */}
           </InputGroup>
 
 

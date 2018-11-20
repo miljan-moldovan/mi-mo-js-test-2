@@ -1,6 +1,7 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+import Colors from '../../../constants/Colors';
 
-export default StyleSheet.create({
+export default StyleSheet.create ({
   mainContainer: {
     flex: 1,
   },
@@ -9,6 +10,13 @@ export default StyleSheet.create({
     lineHeight: 22,
     fontFamily: 'Roboto-Medium',
     color: '#FFFFFF',
+  },
+  headerSubTitleText: {
+    fontSize: 10,
+    lineHeight: 12,
+    fontFamily: 'Roboto',
+    textAlign: 'center',
+    color: Colors.white,
   },
   salonAvatarWrapperContainer: {
     flexDirection: 'row',
@@ -37,7 +45,8 @@ export default StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '700',
     color: '#1DBF12',
-  }, leftButtonText: {
+  },
+  leftButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Roboto',
@@ -49,5 +58,51 @@ export default StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'right',
+  },
+});
+
+export const headerStyles = StyleSheet.create ({
+  container: {
+    height: 44,
+    backgroundColor: '#115ECD',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  btn: {
+    flex: 1 / 5,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    marginLeft: 16,
+  },
+  btnTitle: {
+    flex: 3 / 5,
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconCaretDown: {
+    marginLeft: 5,
+  },
+  rightContainer: {
+    flex: 1 / 5,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 16,
+    flexDirection: 'row',
+  },
+  btnElipsis: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnCalendar: {
+    marginLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconSearch: {
+    position: 'absolute',
+    top: 3.5,
   },
 });

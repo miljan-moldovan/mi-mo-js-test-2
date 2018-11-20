@@ -92,10 +92,20 @@ export default class ModifyApptServiceScreen extends React.Component {
     const serviceItem = params.serviceItem || false;
     const client = params.client || null;
     const date = params.date || moment ();
+    const startTime = get (serviceItem.service, 'fromTime', moment ());
+    const endTime = get (
+      serviceItem.service,
+      'toTime',
+      moment ().add (15, 'm')
+    );
+    const length = moment.duration (endTime.diff (startTime));
     const price = get (serviceItem.service.service || {}, 'price', '0');
     const state = {
       date,
       price,
+      startTime,
+      endTime,
+      length,
       toast: null,
       canSave: false,
       endTimePickerOpen: false,
@@ -107,8 +117,6 @@ export default class ModifyApptServiceScreen extends React.Component {
         : client,
       selectedProvider: get (serviceItem.service, 'employee', null),
       selectedService: get (serviceItem.service, 'service', null),
-      startTime: get (serviceItem.service, 'fromTime', moment ()),
-      endTime: get (serviceItem.service, 'toTime', moment ().add (15, 'm')),
       requested: get (serviceItem.service, 'requested', true),
       bookBetween: get (serviceItem.service, 'bookBetween', false),
       gapTime: moment.duration (get (serviceItem.service, 'gapTime', 0)),
@@ -343,7 +351,6 @@ export default class ModifyApptServiceScreen extends React.Component {
             selectedProvider={selectedProvider}
             onChange={this.handleSelectProvider}
             navigate={this.props.navigation.navigate}
-            filterList={this.props.apptBookState.providers.map (itm => itm.id)}
             headerProps={{title: 'Providers', ...this.cancelButton ()}}
           />
           <InputDivider />

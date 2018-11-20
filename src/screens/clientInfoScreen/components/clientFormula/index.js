@@ -97,7 +97,7 @@ class ClientFormula extends React.Component {
         date: null,
         formulaType: null,
         provider: {},
-        enteredBy: this.props.userInfoState.currentEmployee,
+        enteredBy:{},
         text: '',
       },
       isLoading: true,
@@ -288,6 +288,7 @@ class ClientFormula extends React.Component {
       }
     } else if (this.props.navigation.state.params.actionType === 'new') {
       formula.formulaType = this.state.defaultFormulaType;
+      formula.enteredBy = this.props.userInfoState.currentEmployee
     }
 
     this.setState ({formula, isLoading: false}, this.checkCanSave);

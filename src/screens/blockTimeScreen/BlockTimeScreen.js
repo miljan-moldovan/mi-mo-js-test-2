@@ -18,10 +18,13 @@ import {
   InputText,
 } from '../../components/formHelpers';
 import SalonTimePicker from '../../components/formHelpers/components/SalonTimePicker';
+import SchedulePicker from '../../components/formHelpers/components/SchedulePicker';
+
 import DateTimes from '../../constants/DateTime';
 import EditTypes from '../../constants/EditTypes';
 import styles from './styles';
 import SalonHeader from '../../components/SalonHeader';
+import {ScheduleBlocks} from '../../utilities/apiWrapper';
 
 class BlockTimeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -72,10 +75,12 @@ class BlockTimeScreen extends React.Component {
       editType,
     } = params;
 
+    let toTimeVal = toTime ? moment(toTime, 'hh:mm:ss A') : moment(fromTime, 'hh:mm:ss A').add(15, 'minutes')
+
     this.state = {
       editType: editType || EditTypes.new,
       fromTime: moment(fromTime, 'hh:mm:ss A'),
-      toTime: moment(toTime, 'hh:mm:ss A') || moment(fromTime, 'hh:mm:ss A').add(15, 'minutes'),
+      toTime: toTimeVal,
       provider: employee,
       selectedDate: date,
       blockedBy: bookedByEmployee,
@@ -183,12 +188,11 @@ class BlockTimeScreen extends React.Component {
     this.setState({ toTimePickerOpen: !this.state.toTimePickerOpen }, this.checkCanSave);
   }
 
-
-  handleDone = () => {
+  saveBlockTime = () => {
     const schedule = {
       date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
-      fromTime: this.state.fromTime.format('hh:mm'),
-      toTime: this.state.toTime.format('hh:mm'),
+      fromTime: this.state.fromTime.format('HH:mm:ss'),
+      toTime: this.state.toTime.format('HH:mm:ss'),
       notes: this.state.comments.length > 0 ? this.state.comments : null,
       reasonId: this.state.blockTimesReason.id,
       employeeId: this.state.provider.id,
@@ -214,6 +218,45 @@ class BlockTimeScreen extends React.Component {
     }
   }
 
+  handleDone = () => {
+    let conflictData = {
+      date: moment(this.state.selectedDate).format(DateTimes.serverDateTime),
+      fromTime: this.state.fromTime.format('HH:mm:ss'),
+      toTime: this.state.toTime.format('HH:mm:ss'),
+      employeeId: this.state.provider.id,
+      blockTypeId: this.state.blockTimesReason.id,
+    };
+    if (this.state.id > 0) {
+      conflictData = {
+        ...conflictData,
+        scheduleBlockId: this.state.id,
+      }
+    } else {
+      conflictData = {
+        ...conflictData,
+        bookedByEmployeeId: this.state.blockedBy.id,
+      }
+    }
+
+    ScheduleBlocks.postCheckConflictsBlocks(conflictData).then((conflicts) => {
+      if (conflicts && conflicts.length) {
+        const navParams = {
+          date: conflictData.date,
+          startTime: conflictData.fromTime,
+          endTime: conflictData.toTime,
+          conflicts,
+          handleDone: this.saveBlockTime,
+          headerProps: {
+            btnRightText: 'Save anyway',
+          },
+        };
+        this.props.navigation.navigate ('Conflicts', navParams);
+      } else {
+        this.saveBlockTime();
+      }
+    }).catch(error => console.log('Error', error));
+  }
+
   checkCanSave = () => {
     const {
       selectedDate, fromTime, toTime,
@@ -237,6 +280,7 @@ class BlockTimeScreen extends React.Component {
       provider,
       blockedBy,
       blockTimesReason,
+      selectedDate
     } = this.state;
 
     return (
@@ -312,20 +356,22 @@ class BlockTimeScreen extends React.Component {
 
             <SectionDivider style={styles.sectionDivider} />
             <InputGroup>
-              <SalonTimePicker
+              <SchedulePicker
+                date={selectedDate}
                 label="Start"
                 icon={false}
-                format="h:mm A"
+                format="hh:mm A"
                 value={fromTime}
                 isOpen={this.state.fromTimePickerOpen}
                 onChange={this.handleChangefromTime}
                 toggle={this.tooglefromTime}
               />
               <InputDivider />
-              <SalonTimePicker
+              <SchedulePicker
+                date={selectedDate}
                 label="Ends"
                 icon={false}
-                format="h:mm A"
+                format="hh:mm A"
                 value={toTime}
                 isOpen={this.state.toTimePickerOpen}
                 onChange={this.handleChangetoTime}
