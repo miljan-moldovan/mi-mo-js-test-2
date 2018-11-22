@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,
@@ -137,3 +137,5 @@ export default StyleSheet.create({
   bookedbyWebText: { fontWeight: '700', color: '#FFFFFF', fontSize: 8 },
   clientIcon: { marginLeft: 5 },
 });
+
+export default createStyleSheet;

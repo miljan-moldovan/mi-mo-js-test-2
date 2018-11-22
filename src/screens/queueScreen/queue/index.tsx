@@ -11,7 +11,6 @@ import {connect} from 'react-redux';
 
 import moment from 'moment';
 import _, {get} from 'lodash';
-import PropTypes from 'prop-types';
 
 import LoadingOverlay from '../../../components/LoadingOverlay';
 
@@ -19,7 +18,7 @@ import QueueItemSummary from '../queueItemSummary';
 import * as actions from '../../../redux/actions/queue';
 import SalonInputModal from '../../../components/SalonInputModal';
 import SalonAlert from '../../../components/SalonAlert';
-import {Client, QueueStatus} from '../../../utilities/apiWrapper';
+import {Client } from '../../../utilities/apiWrapper';
 import regexs from '../../../constants/Regexs';
 
 import {
@@ -38,30 +37,89 @@ import Icon from '../../../components/UI/Icon';
 import QueueTimeNote from '../queueTimeNote';
 import {shortenTitle} from '../../../utilities/helpers';
 import groupedSettingsSelector from '../../../redux/selectors/settingsSelector';
-import styles from './styles';
+import createStyleSheet from './styles';
 
-import type {QueueItem} from '../../../models';
+import {QueueItem} from '../../../models';
 import checkBusyEmploeeInServiceQueue
   from '../../../utilities/helpers/checkBusyEmploeeInServiceQueue';
 
 const groups = {};
 
-class Queue extends React.Component {
-  state = {
-    refreshing: false,
-    notificationVisible: false,
-    notificationType: '',
-    notificationItem: {},
-    appointment: null,
-    isVisible: false,
-    client: null,
-    services: null,
-    data: [],
-    isEmailVisible: false,
-    email: '',
-    sortItemsBy: {value: 'FIRST_ARRIVED', label: 'First Arrived'},
-    modalBusyEmployee: null,
-  };
+interface Props {
+  data: any;
+  searchClient?: any;
+  searchProvider?: any;
+  filterText?: any;
+  onChangeFilterResultCount?: any;
+  error: any;
+  loadQueueData: any;
+  groups: any;
+  setLoading: any;
+  navigation: any;
+  settings: any;
+  uncheckInClient: any;
+  checkInClient: any;
+  walkOut: any;
+  noShow: any;
+  returned: any;
+  returnLater: any;
+  clientsActions?: any;
+  clientsState?: any;
+  startService: any;
+  groupedSettings: any;
+  serviceQueue: any;
+  toWaiting: any;
+  checkOut: any;
+  undoFinishService: any;
+  finishService: any;
+  headerTitle?: any;
+  searchText?: any;
+  isWaiting?: any;
+  loading: any;
+}
+
+interface State {
+  styles: any;
+  refreshing: any;
+  notificationVisible: any;
+  notificationType: any;
+  notificationItem: any;
+  appointment: any;
+  isVisible: any;
+  client: any;
+  services: any;
+  data: any;
+  isEmailVisible: any;
+  email: any;
+  sortItemsBy: any;
+  modalBusyEmployee: any;
+  appointmentId: any;
+}
+
+
+class Queue extends React.Component<Props, State> {
+  
+  constructor(props: Props) {
+    super(props);
+    this.setState({
+      styles: createStyleSheet(),
+      refreshing: false,
+      notificationVisible: false,
+      notificationType: '',
+      notificationItem: {},
+      appointment: null,
+      isVisible: false,
+      client: null,
+      services: null,
+      data: [],
+      isEmailVisible: false,
+      email: '',
+      sortItemsBy: {value: 'FIRST_ARRIVED', label: 'First Arrived'},
+      modalBusyEmployee: null,
+    });
+  }
+
+
   componentWillMount () {
     const {data, searchClient, searchProvider, filterText} = this.props;
 
@@ -71,7 +129,8 @@ class Queue extends React.Component {
       this.searchText (filterText, searchClient, searchProvider);
     }
   }
-  componentWillReceiveProps({data, searchClient, searchProvider, filterText}) {
+  componentWillReceiveProps(nextProps) {
+    const {data, searchClient, searchProvider, filterText} = nextProps;
     if (data !== this.props.data) {
       let sortedItems = this.sortItems (this.state.sortItemsBy, data);
       sortedItems = sortedItems.filter (({services}) => services.length > 0);
@@ -99,77 +158,77 @@ class Queue extends React.Component {
     }
   }
 
-  searchText = (
-    query: string,
-    searchClient: boolean,
-    searchProvider: boolean
-  ) => {
-    const {data} = this.props;
-    const prevCount = this.state.data.length;
-    if (query === '' || (!searchClient && !searchProvider)) {
-      this.setState (
-        {data},
-        prevCount != data.length ? this.onChangeFilterResultCount : undefined
-      );
-    }
-    const text = query.toLowerCase ();
-    // search by the client full name
-    const filteredData = data.filter (({client, services}) => {
-      //  if (searchClient) {
-      const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-      // if this row is a match, we don't need to check providers
-      if (fullName.toLowerCase ().match (text)) {
-        return true;
-      }
-      //  }
-      //    if (searchProvider) {
-      for (let i = 0; i < services.length; i++) {
-        const service = services[i];
+  // searchText = (
+  //   query: string,
+  //   searchClient: boolean,
+  //   searchProvider: boolean
+  // ) => {
+  //   const {data} = this.props;
+  //   const prevCount = this.state.data.length;
+  //   if (query === '' || (!searchClient && !searchProvider)) {
+  //     this.setState (
+  //       {data},
+  //       prevCount != data.length ? this.onChangeFilterResultCount : undefined
+  //     );
+  //   }
+  //   const text = query.toLowerCase ();
+  //   // search by the client full name
+  //   const filteredData = data.filter (({client, services}) => {
+  //     //  if (searchClient) {
+  //     const fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
+  //     // if this row is a match, we don't need to check providers
+  //     if (fullName.toLowerCase ().match (text)) {
+  //       return true;
+  //     }
+  //     //  }
+  //     //    if (searchProvider) {
+  //     for (let i = 0; i < services.length; i++) {
+  //       const service = services[i];
 
-        const employee = service.isFirstAvailable
-          ? {
-              id: 0,
-              isFirstAvailable: true,
-              fullName: 'First Available',
-            }
-          : service.employee;
+  //       const employee = service.isFirstAvailable
+  //         ? {
+  //             id: 0,
+  //             isFirstAvailable: true,
+  //             fullName: 'First Available',
+  //           }
+  //         : service.employee;
 
-        const fullNameProvider = `${employee.name || ''} ${employee.lastName || ''}`;
+  //       const fullNameProvider = `${employee.name || ''} ${employee.lastName || ''}`;
 
-        if (fullNameProvider.toLowerCase ().match (text)) {
-          return true;
-        }
-        if (service.serviceName.toLowerCase ().match (text)) {
-          return true;
-        }
-      }
-      //  }
-      return false;
-    });
-    // if no match, set empty array
-    if (!filteredData || !filteredData.length) {
-      this.setState (
-        {data: []},
-        prevCount != 0 ? this.onChangeFilterResultCount : undefined
-      );
-    } else if (filteredData.length === data.length) {
-      // if the matched numbers are equal to the original data, keep it the same
-      this.setState (
-        {data: this.props.data},
-        prevCount != this.props.data.length
-          ? this.onChangeFilterResultCount
-          : undefined
-      );
-    } else {
-      // else, set the filtered data
-      this.setState (
-        {data: filteredData},
-        prevCount != filteredData.length
-          ? this.onChangeFilterResultCount
-          : undefined
-      );
-    }
-  };
+  //       if (fullNameProvider.toLowerCase ().match (text)) {
+  //         return true;
+  //       }
+  //       if (service.serviceName.toLowerCase ().match (text)) {
+  //         return true;
+  //       }
+  //     }
+  //     //  }
+  //     return false;
+  //   });
+  //   // if no match, set empty array
+  //   if (!filteredData || !filteredData.length) {
+  //     this.setState (
+  //       {data: []},
+  //       prevCount != 0 ? this.onChangeFilterResultCount : undefined
+  //     );
+  //   } else if (filteredData.length === data.length) {
+  //     // if the matched numbers are equal to the original data, keep it the same
+  //     this.setState (
+  //       {data: this.props.data},
+  //       prevCount != this.props.data.length
+  //         ? this.onChangeFilterResultCount
+  //         : undefined
+  //     );
+  //   } else {
+  //     // else, set the filtered data
+  //     this.setState (
+  //       {data: filteredData},
+  //       prevCount != filteredData.length
+  //         ? this.onChangeFilterResultCount
+  //         : undefined
+  //     );
+  //   }
+  // };
 
   handlePressSummary = {
     checkIn: isActiveCheckin => this.handlePressCheckIn (isActiveCheckin),
@@ -222,18 +281,18 @@ class Queue extends React.Component {
     switch (item.status) {
       case QUEUE_ITEM_FINISHED:
         return (
-          <View style={styles.finishedContainer}>
+          <View style={this.state.styles.finishedContainer}>
 
-            <View style={styles.finishedTime}>
+            <View style={this.state.styles.finishedTime}>
               <View
                 style={[
-                  styles.finishedTimeFlag,
+                  this.state.styles.finishedTimeFlag,
                   item.processTime > item.estimatedTime
                     ? {backgroundColor: '#D1242A'}
                     : null,
                 ]}
               />
-              <Text style={styles.finishedTimeText}>
+              <Text style={this.state.styles.finishedTimeText}>
                 {this.getprocessMinutes (item)}min /
                 <Text style={{fontFamily: 'Roboto-Regular'}}>
                   {this.getprogressMaxMinutes (item)}min est.{' '}
@@ -243,11 +302,11 @@ class Queue extends React.Component {
 
             <View
               style={[
-                styles.waitingTime,
+                this.state.styles.waitingTime,
                 {backgroundColor: 'black', marginRight: 0},
               ]}
             >
-              <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>
+              <Text style={[this.state.styles.waitingTimeTextTop, {color: 'white'}]}>
                 FINISHED
               </Text>
             </View>
@@ -256,14 +315,14 @@ class Queue extends React.Component {
         break;
       case QUEUE_ITEM_RETURNING:
         return (
-          <View style={styles.returningContainer}>
+          <View style={this.state.styles.returningContainer}>
             <View
               style={[
-                styles.waitingTime,
+                this.state.styles.waitingTime,
                 {marginRight: 0, backgroundColor: 'black'},
               ]}
             >
-              <Text style={[styles.waitingTimeTextTop, {color: 'white'}]}>
+              <Text style={[this.state.styles.waitingTimeTextTop, {color: 'white'}]}>
                 RETURNING
               </Text>
             </View>
@@ -271,10 +330,10 @@ class Queue extends React.Component {
         );
       case QUEUE_ITEM_NOT_ARRIVED:
         return (
-          <View style={styles.notArrivedContainer}>
+          <View style={this.state.styles.notArrivedContainer}>
             <View
               style={[
-                styles.waitingTime,
+                this.state.styles.waitingTime,
                 {
                   marginRight: 0,
                   flexDirection: 'row',
@@ -282,7 +341,7 @@ class Queue extends React.Component {
                 },
               ]}
             >
-              <Text style={[styles.waitingTimeTextTop, {color: '#555'}]}>
+              <Text style={[this.state.styles.waitingTimeTextTop, {color: '#555'}]}>
                 NOT ARRIVED{' '}
               </Text>
               <Icon
@@ -290,7 +349,7 @@ class Queue extends React.Component {
                 style={{fontSize: 2, color: '#555'}}
                 type="solid"
               />
-              <Text style={[styles.waitingTimeTextTop, {color: '#D1242A'}]}>
+              <Text style={[this.state.styles.waitingTimeTextTop, {color: '#D1242A'}]}>
                 {' '}LATE
               </Text>
             </View>
@@ -298,11 +357,11 @@ class Queue extends React.Component {
         );
       default:
         return (
-          <View style={styles.circularCountdownContainer}>
+          <View style={this.state.styles.circularCountdownContainer}>
             <CircularCountdown
               size={46}
               item={item}
-              style={[styles.circularCountdown, customStyle]}
+              style={[this.state.styles.circularCountdown, customStyle]}
             />
           </View>
         );
@@ -605,7 +664,7 @@ class Queue extends React.Component {
           });
         }
       } else {
-        alert ('error');
+        Alert.alert('error')
       }
     });
   };
@@ -822,7 +881,7 @@ class Queue extends React.Component {
 
     const label = this.getLabelForItem (item);
     const groupLeaderName = this.getGroupLeaderName (item);
-    const firstService = item.services[0] || {};
+    const firstService = item.services[0] || {serviceName:'', isFirstAvailable: false, employee: {fullName:''}};
     const serviceName = (firstService.serviceName || '').toUpperCase ();
     const employee = !firstService.isFirstAvailable &&
       firstService.employee &&
@@ -836,11 +895,11 @@ class Queue extends React.Component {
 
     return (
       <SalonTouchableOpacity
-        style={styles.itemContainer}
+        style={this.state.styles.itemContainer}
         onPress={() => this.handlePress (item)}
         key={item.id}
       >
-        <View style={styles.itemSummary}>
+        <View style={this.state.styles.itemSummary}>
           <View
             style={{
               flexDirection: 'column',
@@ -849,24 +908,25 @@ class Queue extends React.Component {
             }}
           >
             <Text
-              style={styles.clientName}
+              style={this.state.styles.clientName}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {item.client.name} {item.client.lastName}{' '}
             </Text>
             <ServiceIcons
-              wrapperStyle={styles.wrapperStyle}
+              wrapperStyle={this.state.styles.wrapperStyle}
               badgeData={item.badgeData}
               color={color}
               item={item}
+              hideInitials={false}
               groupLeaderName={groupLeaderName}
             />
           </View>
 
           <View style={{flexDirection: 'column', alignItems: 'flex-start'}}>
             <Text
-              style={styles.serviceName}
+              style={this.state.styles.serviceName}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -881,11 +941,11 @@ class Queue extends React.Component {
           </View>
           <QueueTimeNote item={item} type="short" />
         </View>
-        <View style={styles.itemIcons}>
+        <View style={this.state.styles.itemIcons}>
           {label}
         </View>
 
-        <Icon name="chevronRight" style={styles.chevron} type="solid" />
+        <Icon name="chevronRight" style={this.state.styles.chevron} type="solid" />
 
       </SalonTouchableOpacity>
     );
@@ -971,11 +1031,11 @@ class Queue extends React.Component {
       } else {
         const client = {...this.state.client, email};
         Client.putClientEmail (client.id, email)
-          .then (() => this.setState ({client}, this.hideEmailModal ()))
-          .catch (ex => alert (ex));
+          .then (() => this.setState ({client}, this.hideEmailModal))
+          .catch (ex => Alert.alert(ex));
       }
     } else {
-      alert ('Please enter a valid Email');
+      Alert.alert('Please enter a valid Email');
     }
   };
 
@@ -998,15 +1058,15 @@ class Queue extends React.Component {
     const numResult = this.state.data.length;
 
     const {appointment} = this.state;
-    const {client} = appointment || {email: ''};
+    const client = appointment.client || {email: ''};
     const fullName = client
       ? `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`
       : '';
 
     const header = headerTitle
-      ? <View style={styles.header}>
-          <Text style={styles.headerTitle}>{headerTitle}</Text>
-          <Text style={styles.headerCount}>
+      ? <View style={this.state.styles.header}>
+          <Text style={this.state.styles.headerTitle}>{headerTitle}</Text>
+          <Text style={this.state.styles.headerCount}>
             {numResult} {numResult === 1 ? 'Result' : 'Results'}
           </Text>
         </View>
@@ -1016,7 +1076,7 @@ class Queue extends React.Component {
       item => item.id === this.state.appointmentId
     );
     return (
-      <View style={styles.container}>
+      <View style={this.state.styles.container}>
 
         <SalonInputModal
           visible={this.state.isEmailVisible}
@@ -1076,42 +1136,6 @@ class Queue extends React.Component {
     );
   }
 }
-
-Queue.defaultProps = {};
-
-Queue.propTypes = {
-  clientsActions: PropTypes.shape ({
-    getMergeableClients: PropTypes.func.isRequired,
-  }).isRequired,
-  clientsState: PropTypes.shape ({
-    mergeableClients: PropTypes.any.isRequired,
-  }).isRequired,
-  serviceActions: PropTypes.shape ({
-    setSelectedService: PropTypes.func.isRequired,
-  }).isRequired,
-  settingsActions: PropTypes.shape ({
-    getSettingsByName: PropTypes.func.isRequired,
-  }).isRequired,
-  loadQueueData: PropTypes.func.isRequired,
-  checkInClient: PropTypes.func.isRequired,
-  uncheckInClient: PropTypes.func.isRequired,
-  noShow: PropTypes.func.isRequired,
-  returned: PropTypes.func.isRequired,
-  returnLater: PropTypes.func.isRequired,
-  startService: PropTypes.func.isRequired,
-  toWaiting: PropTypes.func.isRequired,
-  undoFinishService: PropTypes.func.isRequired,
-  finishService: PropTypes.func.isRequired,
-  walkOut: PropTypes.func.isRequired,
-  checkOut: PropTypes.func.isRequired,
-  data: PropTypes.any.isRequired,
-  settings: PropTypes.any.isRequired,
-  searchClient: PropTypes.any.isRequired,
-  searchProvider: PropTypes.any.isRequired,
-  filterText: PropTypes.any.isRequired,
-  isWaiting: PropTypes.any.isRequired,
-  onChangeFilterResultCount: PropTypes.any.isRequired,
-};
 
 const mapStateToProps = state => ({
   settings: state.settingsReducer,

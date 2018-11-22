@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   headerContainer: {
     paddingTop: 25,
     alignItems: 'center',
@@ -78,3 +78,5 @@ export default StyleSheet.create({
   actionItemTitle: { fontSize: 21, fontWeight: '500', color: '#115ECD' },
   cancelTitle: { fontSize: 20, color: '#0C4699' },
 });
+
+export default createStyleSheet;

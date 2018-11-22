@@ -4,7 +4,7 @@ import {
 
 const smallDevice = Dimensions.get('window').width === 320;
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -336,3 +336,5 @@ export default StyleSheet.create({
     borderWidth: 0,
   },
 });
+
+export default createStyleSheet;

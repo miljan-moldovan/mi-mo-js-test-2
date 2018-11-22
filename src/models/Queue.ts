@@ -1,8 +1,11 @@
 // @flow
-import type {
+import  {
   Client,
+} from './Client';
+
+import  {
   ServiceQueue
-} from '.';
+} from './ServiceQueue';
 
 export type QueueItem = {
   checkedIn: boolean;
@@ -43,4 +46,5 @@ export type QueueItem = {
   servicedTimeAt: string;
   queueType: number;
   totalPrice: number;
+  badgeData ?: any;
 }

@@ -10,10 +10,37 @@ import * as actions from '../../../redux/actions/queue';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import Icon from '../../../components/UI/Icon';
-import styles from './styles';
+import createStyleSheet from './styles';
 import {DefaultAvatar} from '../../../components/formHelpers';
 
-class queueListItemSummary extends Component {
+
+interface Props {
+  putQueueServiceEmployeeService: any;
+  appointment: any;
+  loadQueueData: any;
+  putQueueServiceEmployeeEmployee: any;
+  showDialog: any;
+  onDonePress: any;
+  navigation: any;
+  item: any;
+  service: any;
+  isWaiting: any;
+}
+
+interface State {
+  styles: any
+}
+
+class queueListItemSummary extends React.Component<Props, State> {
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      styles: createStyleSheet()
+    };
+  }
+
+
   saveQueueService = (service, serviceEmployeeId) => {
     this.props.putQueueServiceEmployeeService (
       this.props.appointment.id,
@@ -63,7 +90,7 @@ class queueListItemSummary extends Component {
   };
 
   cancelButton = () => ({
-    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButton: <Text style={this.state.styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: navigation => {
       navigation.goBack ();
       this.props.showDialog ();
@@ -99,29 +126,29 @@ class queueListItemSummary extends Component {
     const image = getEmployeePhotoSource (employee);
     return (
       <View>
-        <View style={styles.serviceContainer}>
+        <View style={this.state.styles.serviceContainer}>
           <SalonTouchableOpacity
             onPress={() => this.handlePressService (this.props.service)}
           >
-            <View style={[styles.row, styles.rowBorderBottom]}>
-              <Text style={styles.textMedium}>
+            <View style={[this.state.styles.row, this.state.styles.rowBorderBottom]}>
+              <Text style={this.state.styles.textMedium}>
                 {this.props.service.serviceName}
               </Text>
-              <View style={styles.iconContainer}>
-                <FontAwesome style={styles.angleIcon}>
+              <View style={this.state.styles.iconContainer}>
+                <FontAwesome style={this.state.styles.angleIcon}>
                   {Icons.angleRight}
                 </FontAwesome>
               </View>
             </View>
           </SalonTouchableOpacity>
           <SalonTouchableOpacity
-            onPress={() => this.handlePressProvider (this.props.service)}
+            onPress={() => this.handlePressProvider()}
           >
-            <View style={styles.row}>
+            <View style={this.state.styles.row}>
               <SalonAvatar
                 borderColor="#FFFFFF"
                 borderWidth={2}
-                wrapperStyle={styles.providerRound}
+                wrapperStyle={this.state.styles.providerRound}
                 width={26}
                 image={image}
                 hasBadge={isProviderRequested}
@@ -137,14 +164,14 @@ class queueListItemSummary extends Component {
                 }
                 defaultComponent={<DefaultAvatar provider={employee} />}
               />
-              <Text style={styles.textNormal}>
+              <Text style={this.state.styles.textNormal}>
                 {!this.props.service.isFirstAvailable &&
                   this.props.service.employee.fullName
                   ? `${this.props.service.employee.fullName}`
                   : 'First Available'}
               </Text>
-              <View style={styles.iconContainer}>
-                <FontAwesome style={styles.angleIcon}>
+              <View style={this.state.styles.iconContainer}>
+                <FontAwesome style={this.state.styles.angleIcon}>
                   {Icons.angleRight}
                 </FontAwesome>
               </View>
@@ -155,18 +182,5 @@ class queueListItemSummary extends Component {
     );
   }
 }
-
-queueListItemSummary.defaultProps = {};
-
-queueListItemSummary.propTypes = {
-  isWaiting: PropTypes.bool.isRequired,
-  services: PropTypes.any.isRequired,
-  service: PropTypes.any.isRequired,
-  appointment: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
-  putQueueServiceEmployeeEmployee: PropTypes.any.isRequired,
-  putQueueServiceEmployeeService: PropTypes.any.isRequired,
-  onDonePress: PropTypes.any.isRequired,
-};
 
 export default connect (null, actions) (queueListItemSummary);

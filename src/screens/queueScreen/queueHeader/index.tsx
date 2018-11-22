@@ -2,14 +2,13 @@ import React from 'react';
 import {Text, View, TextInput} from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-// import { View } from 'react-navigation';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import Icon from '../../../components/UI/Icon';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonActionSheet from '../../../components/SalonActionSheet';
-import styles from './styles';
+import createStyleSheet from './styles';
 import QueueNavButton from './queueNavButton';
 import BarsActionSheet from '../../../components/BarsActionSheet';
 import * as loginActions from '../../../redux/actions/login';
@@ -18,43 +17,55 @@ import storeActions from '../../../redux/actions/store';
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 2;
 const options = [
-  <View style={styles.actionItemContainer}>
-    <View style={styles.actionItemLeft}>
-      <Text style={styles.actionItemTitle}>Turn Away</Text>
+  <View style={createStyleSheet().actionItemContainer}>
+    <View style={createStyleSheet().actionItemLeft}>
+      <Text style={createStyleSheet().actionItemTitle}>Turn Away</Text>
     </View>
-    <View style={styles.actionItemRight}>
+    <View style={createStyleSheet().actionItemRight}>
       <Icon name="ban" type="solid" color="#115ECD" size={16} />
     </View>
   </View>,
 
-  <View style={styles.actionItemContainer}>
-    <View style={styles.actionItemLeft}>
-      <Text style={styles.actionItemTitle}>Group</Text>
+  <View style={createStyleSheet().actionItemContainer}>
+    <View style={createStyleSheet().actionItemLeft}>
+      <Text style={createStyleSheet().actionItemTitle}>Group</Text>
     </View>
-    <View style={styles.actionItemRight}>
+    <View style={createStyleSheet().actionItemRight}>
       <Icon name="userPlus" type="solid" color="#115ECD" size={16} />
     </View>
   </View>,
-
-  /*  <View style={styles.actionItemContainer}>
-    <View style={styles.actionItemLeft}>
-      <Text style={styles.actionItemTitle}>[DEV] Client Merge</Text>
-    </View>
-    <View style={styles.actionItemRight}>
-      <Icon
-        name="compressAlt"
-        type="solid"
-        color="#115ECD"
-        size={16}
-      />
-    </View>
-  </View>, */
-  <Text style={styles.cancelTitle}>
+  <Text style={createStyleSheet().cancelTitle}>
     Cancel
   </Text>,
 ];
 
-class QueueHeader extends React.Component {
+interface Props {
+  onChangeSearchMode: any;
+  onChangeSearchText: any;
+  navigation: any;
+  storeActions: any;
+  auth: any;
+  searchText: any;
+  searchMode: any;
+  navigationState: any;
+}
+
+interface State {
+  styles: any;
+  salonActionSheet?: any;
+  barsActionSheet?: any;
+}
+
+class QueueHeader extends React.Component<Props, State>  {
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      styles: createStyleSheet()
+    };
+  }
+
+
   onSearchPress = () => this.props.onChangeSearchMode (true);
   onSearchCancel = () => this.props.onChangeSearchMode (false);
   onChangeSearchText = (searchText: String) =>
@@ -89,11 +100,11 @@ class QueueHeader extends React.Component {
   };
 
   showActionSheet = () => {
-    this.SalonActionSheet.show ();
+    this.state.salonActionSheet.show ();
   };
 
   showBarsActionSheet = () => {
-    this.BarsActionSheet.show ();
+    this.state.barsActionSheet.show ();
   };
 
   onLogoutPressed = () => this.props.auth.logout ();
@@ -102,21 +113,21 @@ class QueueHeader extends React.Component {
     this.props.storeActions.reselectMainStore ();
   };
   assignBarsActionSheet = item => {
-    this.BarsActionSheet = item;
+    this.setState({barsActionSheet: item});
   };
   render () {
     if (this.props.navigationState.currentRoute !== 'Main') {
       return null;
     }
     return this.props.searchMode
-      ? <View style={[styles.headerContainer, {height: 52, paddingBottom: 10}]}>
+      ? <View style={[this.state.styles.headerContainer, {height: 52, paddingBottom: 10}]}>
 
-          <View style={styles.searchContainer}>
-            {/* <FontAwesome style={styles.searchIcon}>{Icons.search}</FontAwesome> */}
-            <Icon name="search" type="light" style={styles.searchIcon} />
+          <View style={this.state.styles.searchContainer}>
+            {/* <FontAwesome style={this.state.styles.searchIcon}>{Icons.search}</FontAwesome> */}
+            <Icon name="search" type="light" style={this.state.styles.searchIcon} />
             <TextInput
               autoFocus
-              style={styles.search}
+              style={this.state.styles.search}
               placeholderTextColor="rgba(76,134,217,1)"
               onChangeText={this.onChangeSearchText}
               value={this.props.searchText}
@@ -127,7 +138,7 @@ class QueueHeader extends React.Component {
           <SalonTouchableOpacity onPress={this.onSearchCancel}>
             <Text
               style={[
-                styles.navButtonText,
+                this.state.styles.navButtonText,
                 {color: 'white', marginRight: 6, marginLeft: 6},
               ]}
             >
@@ -136,10 +147,10 @@ class QueueHeader extends React.Component {
           </SalonTouchableOpacity>
 
         </View>
-      : <View style={[styles.headerContainer, {height: 44, paddingBottom: 10}]}>
+      : <View style={[this.state.styles.headerContainer, {height: 44, paddingBottom: 10}]}>
 
           <SalonActionSheet
-            ref={o => (this.SalonActionSheet = o)}
+            ref={o => (this.setState({salonActionSheet:o}))}
             options={options}
             cancelButtonIndex={CANCEL_INDEX}
             destructiveButtonIndex={DESTRUCTIVE_INDEX}
@@ -175,7 +186,7 @@ class QueueHeader extends React.Component {
               paddingRight: 6,
             }}
           >
-            <Text style={styles.headerTitle}>Queue</Text>
+            <Text style={this.state.styles.headerTitle}>Queue</Text>
           </View>
           <View
             style={{
@@ -201,29 +212,13 @@ class QueueHeader extends React.Component {
   }
 }
 
-QueueHeader.defaultProps = {};
-
-QueueHeader.propTypes = {
-  searchText: PropTypes.any.isRequired,
-  searchMode: PropTypes.any.isRequired,
-  onChangeSearchMode: PropTypes.any.isRequired,
-  onChangeSearchText: PropTypes.any.isRequired,
-  auth: PropTypes.shape ({
-    logout: PropTypes.func.isRequired,
-  }).isRequired,
-  storeActions: PropTypes.shape ({
-    reselectMainStore: PropTypes.func.isRequired,
-  }).isRequired,
-  navigationState: PropTypes.shape ({
-    currentRoute: PropTypes.string,
-  }).isRequired,
-};
-
 const mapStateToProps = state => ({
   navigationState: state.navigationReducer,
 });
 const mapActionToProps = dispatch => ({
-  auth: bindActionCreators ({...loginActions}, dispatch),
+  auth: bindActionCreators ({...loginActions as any}, dispatch),
   storeActions: bindActionCreators ({...storeActions}, dispatch),
 });
 export default connect (mapStateToProps, mapActionToProps) (QueueHeader);
+
+

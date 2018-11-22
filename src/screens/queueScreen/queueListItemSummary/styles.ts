@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   row: {
     flexDirection: 'row',
     height: 40,
@@ -93,3 +93,5 @@ export default StyleSheet.create({
   cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
 
 });
+
+export default createStyleSheet;

@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 
 const smallDevice = Dimensions.get('window').width === 320;
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f1f1f1',
@@ -204,3 +204,5 @@ export default StyleSheet.create({
     color: '#111415',
   },
 });
+
+export default createStyleSheet;

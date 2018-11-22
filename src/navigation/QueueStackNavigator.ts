@@ -7,7 +7,7 @@ import QueueScreen from './../screens/queueScreen';
 import QueueCombineScreen from './../screens/queueCombineScreen';
 import ClientMergeScreen from './../screens/clientMergeScreen';
 import QueueDetailScreen from './../screens/queueDetailScreen';
-import WalkInScreen from '../screens/WalkInScreen';
+import WalkInScreen from '../screens/walkinScreen';
 import ClientsScreen from './../screens/clientsScreen';
 import RemovalReasonTypesScreen from './../screens/removalReasonTypes';
 import ProvidersScreen from '../screens/providersScreen';

@@ -6,6 +6,7 @@ import {
   Services,
 } from '../../utilities/apiWrapper';
 import {showErrorAlert, executeAllPromises} from './utils';
+import { string } from 'prop-types';
 
 export const QUEUE = 'queue/QUEUE';
 export const QUEUE_RECEIVED = 'queue/QUEUE_RECEIVED';
@@ -77,50 +78,23 @@ export const GET_QUEUE_ITEM_PROVIDER_STATUS_SUCCESS =
 export const GET_QUEUE_ITEM_PROVIDER_STATUS_FAILED =
   'queue/GET_QUEUE_ITEM_PROVIDER_STATUS_FAILED';
 
-// export const QUEUE_EMPLOYEES = 'queue/QUEUE_EMPLOYEES';
-// export const QUEUE_EMPLOYEES_SUCCESS = 'queue/QUEUE_EMPLOYEES_SUCCESS';
-// export const QUEUE_EMPLOYEES_FAILED = 'queue/QUEUE_EMPLOYEES_FAILED';
 
-export const setLoading = loading => ({
+export const setLoading = (loading: boolean): any  => ({
   type: SET_LOADING,
   data: {loading},
 });
-//
-// const getQueueEmployeesSuccess = data => ({
-//   type: QUEUE_EMPLOYEES_SUCCESS,
-//   data: { data },
-// });
-//
-// const getQueueEmployeesFailed = error => ({
-//   type: QUEUE_EMPLOYEES_FAILED,
-//   data: { error },
-// });
-//
-//
-// export const getQueueEmployees = callback => (dispatch) => {
-//   dispatch({ type: QUEUE_EMPLOYEES });
-//
-//   return Employees.getQueueEmployees()
-//     .then((resp) => {
-//       dispatch(getQueueEmployeesSuccess(resp)); callback(true);
-//     })
-//     .catch((error) => {
-//       showErrorAlert(error);
-//       dispatch(getQueueEmployeesFailed(error)); callback(false, error);
-//     });
-// };
 
-const startServiceSuccess = data => ({
+const startServiceSuccess = (data: any): any  => ({
   type: CLIENT_START_SERVICE_RECEIVED,
   data: {data},
 });
 
-const startServiceFailed = error => ({
+const startServiceFailed = (error: any): any  => ({
   type: CLIENT_START_SERVICE_FAILED,
   data: {error},
 });
 
-export const startService = (id, serviceData, callback) => dispatch => {
+export const startService = (id:number, serviceData:any, callback?: (...args: any) => any)  => dispatch => {
   dispatch ({type: CLIENT_START_SERVICE, data: {id}});
 
   return QueueStatus.putStartService (id, serviceData)
@@ -135,17 +109,17 @@ export const startService = (id, serviceData, callback) => dispatch => {
     });
 };
 
-const getQueueItemProviderStatusSuccess = response => ({
+const getQueueItemProviderStatusSuccess = (response: any): any  => ({
   type: GET_QUEUE_ITEM_PROVIDER_STATUS_SUCCESS,
   data: {response},
 });
 
-const getQueueItemProviderStatusFailed = error => ({
+const getQueueItemProviderStatusFailed =  (error: any): any  => ({
   type: GET_QUEUE_ITEM_PROVIDER_STATUS_FAILED,
   data: {error},
 });
 
-export const getQueueItemProviderStatus = (queueItem, callback) => dispatch => {
+export const getQueueItemProviderStatus = (queueItem: any, callback?: (...args: any) => any): any  => dispatch => {
   const promises = [];
 
   for (let i = 0; i < queueItem.services.length; i += 1) {
@@ -179,7 +153,7 @@ export const getQueueItemProviderStatus = (queueItem, callback) => dispatch => {
         const service = results[i].results[2];
         const {isWorking} = employeeStatus;
         if (!isWorking) {
-          servicesWithEmployeeNotStarted.push (service.employee.fullName);
+          servicesWithEmployeeNotStarted.push(service.employee.fullName);
         }
         if (!employeeDoesService) {
           const employeeNamesString = service.employee.fullName;
@@ -193,9 +167,7 @@ export const getQueueItemProviderStatus = (queueItem, callback) => dispatch => {
 
       if (servicesWithEmployeeNotStarted.length > 0) {
         const coupleEmpl = servicesWithEmployeeNotStarted.length > 1;
-        const employeeNamesArray = [
-          ...new Set (servicesWithEmployeeNotStarted),
-        ]; // remove duplicates
+        const employeeNamesArray = Array.from(new Set(servicesWithEmployeeNotStarted)) ;
         const employeeNamesString = employeeNamesArray.join (', ');
         const msg = `${employeeNamesString} ${coupleEmpl ? 'are' : 'is'} currently not working,
       please punch in ${employeeNamesString} in order to start ${coupleEmpl ? 'these services' : 'this service'}.`;
@@ -208,17 +180,17 @@ export const getQueueItemProviderStatus = (queueItem, callback) => dispatch => {
     .catch (ex => false);
 };
 
-const receiveQueueSuccess = resp => ({
+const receiveQueueSuccess = (resp: any): any  => ({
   type: QUEUE_RECEIVED,
   data: {resp},
 });
 
-const receiveQueueFailed = error => ({
+const receiveQueueFailed =  (error: any): any  => ({
   type: QUEUE_FAILED,
   data: {error},
 });
 
-export const receiveQueue = (callback, showError) => dispatch => {
+export const receiveQueue = (callback?: (...args: any) => any, showError: boolean = false): any  => dispatch => {
   dispatch ({type: QUEUE});
 
   return Queue.getQueue ()
@@ -235,30 +207,30 @@ export const receiveQueue = (callback, showError) => dispatch => {
     });
 };
 
-export function deleteQueueItem (id) {
+export const deleteQueueItem = (id: number): any  => {
   return {
     type: QUEUE_DELETE_ITEM,
     data: {id},
   };
 }
-export function saveQueueItem (queueItem) {
+export const saveQueueItem = (queueItem: any): any  => {
   return {
     type: QUEUE_UPDATE_ITEM,
     data: {queueItem},
   };
 }
 
-const checkInClientSuccess = data => ({
+const checkInClientSuccess = (data: any): any  => ({
   type: CLIENT_CHECKED_IN_RECEIVED,
   data: {data},
 });
 
-const checkInClientFailed = error => ({
+const checkInClientFailed =  (error: any): any  => ({
   type: CLIENT_CHECKED_IN_FAILED,
   data: {error},
 });
 
-export const checkInClient = (id, callback) => dispatch => {
+export const checkInClient = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_CHECKED_IN, data: {id}});
   return QueueStatus.putCheckIn (id)
     .then (resp => {
@@ -272,17 +244,17 @@ export const checkInClient = (id, callback) => dispatch => {
     });
 };
 
-const uncheckInClientSuccess = data => ({
+const uncheckInClientSuccess = (data: any): any  => ({
   type: CLIENT_UNCHECKED_IN_RECEIVED,
   data: {data},
 });
 
-const uncheckInClientFailed = error => ({
+const uncheckInClientFailed =  (error: any): any  => ({
   type: CLIENT_UNCHECKED_IN_FAILED,
   data: {error},
 });
 
-export const uncheckInClient = (id, callback) => dispatch => {
+export const uncheckInClient = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_UNCHECKED_IN, data: {id}});
   return QueueStatus.putUncheckIn (id)
     .then (resp => {
@@ -295,18 +267,18 @@ export const uncheckInClient = (id, callback) => dispatch => {
       callback (false, error);
     });
 };
-
-const returnLaterSuccess = data => ({
+  
+const returnLaterSuccess = (data: any): any  => ({
   type: CLIENT_RETURNED_LATER_RECEIVED,
   data: {data},
 });
 
-const returnLaterFailed = error => ({
+const returnLaterFailed =  (error: any): any  => ({
   type: CLIENT_RETURNED_LATER_FAILED,
   data: {error},
 });
 
-export const returnLater = (id, callback) => dispatch => {
+export const returnLater = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_RETURNED_LATER, data: {id}});
   return QueueStatus.putReturnLater (id)
     .then (resp => {
@@ -320,17 +292,17 @@ export const returnLater = (id, callback) => dispatch => {
     });
 };
 
-const returnedSuccess = data => ({
+const returnedSuccess = (data: any): any  => ({
   type: CLIENT_RETURNED_RECEIVED,
   data: {data},
 });
 
-const returnedFailed = error => ({
+const returnedFailed =  (error: any): any  => ({
   type: CLIENT_RETURNED_FAILED,
   data: {error},
 });
 
-export const returned = (id, callback) => dispatch => {
+export const returned = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_RETURNED, data: {id}});
   return QueueStatus.putReturned (id)
     .then (resp => {
@@ -344,17 +316,18 @@ export const returned = (id, callback) => dispatch => {
     });
 };
 
-const walkOutSuccess = data => ({
+const walkOutSuccess = (data: boolean): any  => ({
   type: CLIENT_WALKED_OUT_RECEIVED,
   data: {data},
 });
 
-const walkOutFailed = error => ({
+const walkOutFailed =  (error: any): any  => ({
   type: CLIENT_WALKED_OUT_FAILED,
   data: {error},
 });
 
-export const walkOut = (id, params, callback) => dispatch => {
+export const walkOut = (id: number, params:[], callback?: (...args: any) => any): any  => dispatch => {
+
   dispatch ({type: CLIENT_WALKED_OUT, data: {id}});
   return QueueStatus.putWalkOut (id, params)
     .then (resp => {
@@ -368,18 +341,18 @@ export const walkOut = (id, params, callback) => dispatch => {
     });
 };
 
-const noShowSuccess = data => ({
+const noShowSuccess = (data: any): any  => ({
   type: CLIENT_NO_SHOW_RECEIVED,
   data: {data},
 });
 
-const noShowFailed = error => ({
+const noShowFailed =  (error: any): any  => ({
   type: CLIENT_NO_SHOW_FAILED,
   data: {error},
 });
 
-export const noShow = (id, params, callback) => dispatch => {
-  dispatch ({type: CLIENT_NO_SHOW, data: {id}});
+export const noShow = (id: number, params:[], callback?: (...args: any) => any): any  => dispatch => {
+  dispatch ({type: CLIENT_NO_SHOW, data: {id}}); 
   return QueueStatus.putNoShow (id, params)
     .then (resp => {
       dispatch (noShowSuccess (resp));
@@ -391,18 +364,18 @@ export const noShow = (id, params, callback) => dispatch => {
       callback (false, error);
     });
 };
-
-const finishServiceSuccess = data => ({
+ 
+const finishServiceSuccess = (data: any): any  => ({
   type: CLIENT_FINISH_SERVICE_RECEIVED,
   data: {data},
 });
 
-const finishServiceFailed = error => ({
+const finishServiceFailed =  (error: any): any  => ({
   type: CLIENT_FINISH_SERVICE_FAILED,
   data: {error},
 });
 
-export const finishService = (ids, callback) => dispatch => {
+export const finishService = (ids: any, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_FINISH_SERVICE, data: {ids}});
   const promisees = [];
   ids.forEach (id => promisees.push (QueueStatus.putFinish (id)));
@@ -422,17 +395,17 @@ export const finishService = (ids, callback) => dispatch => {
     });
 };
 
-const undoFinishServiceSuccess = data => ({
+const undoFinishServiceSuccess = (data: any): any  => ({
   type: CLIENT_UNDOFINISH_SERVICE_RECEIVED,
   data: {data},
 });
 
-const undoFinishServiceFailed = error => ({
+const undoFinishServiceFailed =  (error: any): any  => ({
   type: CLIENT_UNDOFINISH_SERVICE_FAILED,
   data: {error},
 });
 
-export const undoFinishService = (id, callback) => dispatch => {
+export const undoFinishService = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_UNDOFINISH_SERVICE, data: {id}});
   return QueueStatus.putUndoFinish (id)
     .then (resp => {
@@ -446,17 +419,17 @@ export const undoFinishService = (id, callback) => dispatch => {
     });
 };
 
-const toWaitingSuccess = data => ({
+const toWaitingSuccess = (data: any): any  => ({
   type: CLIENT_TO_WAITING_RECEIVED,
   data: {data},
 });
-
-const toWaitingFailed = error => ({
+ 
+const toWaitingFailed =  (error: any): any  => ({
   type: CLIENT_TO_WAITING_FAILED,
   data: {error},
 });
 
-export const toWaiting = (id, callback) => dispatch => {
+export const toWaiting = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_TO_WAITING, data: {id}});
   return QueueStatus.putToWaiting (id)
     .then (resp => {
@@ -470,35 +443,35 @@ export const toWaiting = (id, callback) => dispatch => {
     });
 };
 
-export function updateTime () {
+export const updateTime = (): any  => {
   return {
     type: TIME_UPDATE,
   };
 }
 
-export function expandRow (id) {
+export const expandRow = (id: number): any  => {
   return {
     type: ROW_EXPANDED,
     data: {id},
   };
 }
 
-export function startCombine () {
+export const startCombine = (): any  => {
   return {
     type: START_COMBINE,
   };
 }
 
-export function cancelCombine () {
+export const cancelCombine = (): any  => {
   return {
     type: CANCEL_COMBINE,
   };
 }
 
-export const finishCombine = (
-  combiningClients: Array<Object>,
+export const finishCombine = (   
+  combiningClients: Array<any>,
   callback
-) => async (dispatch: Object => void) => {
+) => async function(dispatch) {
   try {
     dispatch ({type: QUEUE});
     const data = {
@@ -514,7 +487,7 @@ export const finishCombine = (
 
     const response = await Queue.postQueueGroup (data);
 
-    dispatch (receiveQueue ());
+    dispatch (receiveQueue());
 
     if (isFunction (callback)) {
       callback (true);
@@ -527,9 +500,7 @@ export const finishCombine = (
     }
   }
 };
-export const updateGroupLeaders = (groups: Object) => async (
-  dispatch: Object => void
-) => {
+export const updateGroupLeaders = (groups: Object) => async function(dispatch) {
   try {
     dispatch ({type: QUEUE});
 
@@ -547,16 +518,14 @@ export const updateGroupLeaders = (groups: Object) => async (
   }
 };
 
-export function combineClient (data) {
+export const combineClient = (data: any): any  => {
   return {
     type: COMBINE_CLIENT,
     data,
   };
 }
 
-export const uncombine = (groupId: number) => async (
-  dispatch: Object => void
-) => {
+export const uncombine = (groupId: number) => async function(dispatch) {
   try {
     dispatch ({type: QUEUE});
 
@@ -568,23 +537,24 @@ export const uncombine = (groupId: number) => async (
   }
 };
 
-export function updateGroups () {
+export const updateGroups = (): any  => {
   return {
     type: UPDATE_GROUPS,
   };
 }
 
-export const putQueueSuccess = notes => ({
+export const putQueueSuccess = (notes: any): any  => ({
   type: PUT_QUEUE_SUCCESS,
   data: {notes},
 });
 
-export const putQueueFailed = error => ({
+export const putQueueFailed =  (error: any): any  => ({
   type: PUT_QUEUE_FAILED,
   data: {error},
 });
 
-export const putQueue = (queueId, queue, callback) => dispatch => {
+export const putQueue = (queueId: number, queue, callback?: (...args: any) => any): any  => dispatch => {
+
   callback = callback || (() => {});
   dispatch ({type: PUT_QUEUE});
   return Queue.putQueue (queueId, queue)
@@ -599,22 +569,22 @@ export const putQueue = (queueId, queue, callback) => dispatch => {
     });
 };
 
-export const putQueueServiceEmployeeEmployeeSuccess = notes => ({
+export const putQueueServiceEmployeeEmployeeSuccess = (notes: any): any  => ({
   type: PUT_QUEUE_SUCCESS,
   data: {notes},
 });
 
-export const putQueueServiceEmployeeEmployeeFailed = error => ({
+export const putQueueServiceEmployeeEmployeeFailed =  (error: any): any  => ({
   type: PUT_QUEUE_FAILED,
   data: {error},
 });
 
-export const putQueueServiceEmployeeEmployee = (
-  queueId,
-  serviceEmployeeId,
-  queue,
-  callback
-) => dispatch => {
+export const putQueueServiceEmployeeEmployee = 
+  (queueId:number,
+    serviceEmployeeId:number,
+    queue:any,
+    callback?: (...args: any) => any
+    ): any  => dispatch =>  {
   callback = callback || (() => {});
   dispatch ({type: PUT_QUEUE});
   return Queue.putQueueServiceEmployeeEmployee (
@@ -633,22 +603,22 @@ export const putQueueServiceEmployeeEmployee = (
     });
 };
 
-export const putQueueServiceEmployeeServiceSuccess = notes => ({
+export const putQueueServiceEmployeeServiceSuccess = (notes: any): any  => ({
   type: PUT_QUEUE_SUCCESS,
   data: {notes},
 });
 
-export const putQueueServiceEmployeeServiceFailed = error => ({
+export const putQueueServiceEmployeeServiceFailed =  (error: any): any  => ({
   type: PUT_QUEUE_FAILED,
   data: {error},
 });
 
-export const putQueueServiceEmployeeService = (
-  queueId,
-  serviceEmployeeId,
-  queue,
-  callback
-) => dispatch => {
+export const putQueueServiceEmployeeService = 
+  (queueId:number,
+    serviceEmployeeId:number,
+    queue:any,
+    callback?: (...args: any) => any
+    ): any => dispatch =>  {
   callback = callback || (() => {});
   dispatch ({type: PUT_QUEUE});
   return Queue.putQueueServiceEmployeeService (
@@ -667,17 +637,17 @@ export const putQueueServiceEmployeeService = (
     });
 };
 
-export const getQueueStateSuccess = response => ({
+export const getQueueStateSuccess = (response: any): any  => ({
   type: GET_QUEUE_STATE_SUCCESS,
   data: {response},
 });
 
-export const getQueueStateFailed = error => ({
+export const getQueueStateFailed =  (error: any): any  => ({
   type: GET_QUEUE_STATE_FAILED,
   data: {error},
 });
 
-export const getQueueState = callback => dispatch => {
+export const getQueueState = (callback?: (...args: any) => any): any  => dispatch => {
   callback = callback || (() => {});
   dispatch ({type: GET_QUEUE_STATE});
   return Queue.getQueueState ()
@@ -691,7 +661,7 @@ export const getQueueState = callback => dispatch => {
     });
 };
 
-export const checkOut = (id, callback = false) => dispatch => {
+export const checkOut = (id: number, callback?: (...args: any) => any): any  => dispatch => {
   dispatch ({type: CLIENT_CHECKOUT, data: {id}});
   return QueueStatus.putCheckOut (id)
     .then (res => {

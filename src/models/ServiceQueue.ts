@@ -5,4 +5,6 @@ export type ServiceQueue = {
     employeeLastName: string;
     serviceId: number;
     serviceName: string;
+    isFirstAvailable?: boolean;
+    employee ?: any;
 }

@@ -24,7 +24,6 @@ const QueueTimeNote = (props) => {
     : 0;
 
   if (item.estimatedTime && item.estimatedTime[0] === '-') {
-    // estimatedTime = estimatedTime * (-1);
     showAgo = true;
   }
 
@@ -80,16 +79,9 @@ const QueueTimeNote = (props) => {
     width: smallDevice ? 120 : '100%',
   } : { flexDirection: 'row', width: '100%' };
 
-  // const serviceTimeRightStyle = type === 'short' ?
-  //   { marginLeft: smallDevice ? 20 : 0 } : { marginLeft: 0 };
-
   const serviceTimeRightStyle = { marginLeft: 0 };
 
-
-  // todo: (Malakhov) Temp fix for demo need check with Back
-  // const enteredTime = moment(getTypeTime(item), 'hh:mm:ss').format('LT');
   const startTime = moment(item.startTime, 'hh:mm:ss').format('LT');
-
 
   return (
     <View style={[styles.serviceTimeContainer, props.containerStyles, serviceContainerStyle]}>

@@ -2,6 +2,8 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View, Alert } from 'react-native';
 import SalonTouchableHighlight from '../../../components/SalonTouchableHighlight';
+import createStyleSheet from './styles';
+const styles = createStyleSheet();
 
 export const QueueButton = (props) => {
   const {
@@ -22,7 +24,13 @@ export const QueueButton = (props) => {
           backgroundColor: color,
         }}
       >
-        <Image source={image} style={styles.queueButtonImage} />
+        <Image source={image} 
+          style={{
+            width: 40,
+            height: 40,
+            marginBottom: 4,
+          }} 
+        />
         <Text style={styles.queueButtonText}>{title}</Text>
       </View>
     </SalonTouchableHighlight>
@@ -96,27 +104,3 @@ export const QueueButtonTypes = {
     color: '#8A9295',
   },
 };
-
-const styles = StyleSheet.create({
-  leftSwipeItem: {
-    flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    paddingRight: 0,
-  },
-  rightSwipeItem: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: 0,
-  },
-  queueButtonText: {
-    color: 'white',
-    fontFamily: 'OpenSans-Regular',
-    fontSize: 12,
-  },
-  queueButtonImage: {
-    width: 40,
-    height: 40,
-    marginBottom: 4,
-  },
-});
