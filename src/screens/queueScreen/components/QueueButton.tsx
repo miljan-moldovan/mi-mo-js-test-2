@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import { Image, StyleSheet, Text, View, Alert } from 'react-native';
 import SalonTouchableHighlight from '../../../components/SalonTouchableHighlight';
 import createStyleSheet from './styles';
