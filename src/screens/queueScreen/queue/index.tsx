@@ -93,7 +93,7 @@ interface State {
   email: any;
   sortItemsBy: any;
   modalBusyEmployee: any;
-  appointmentId: any;
+  appointmentId?: any;
 }
 
 
@@ -101,13 +101,13 @@ class Queue extends React.Component<Props, State> {
   
   constructor(props: Props) {
     super(props);
-    this.setState({
+    this.state = {
       styles: createStyleSheet(),
       refreshing: false,
       notificationVisible: false,
       notificationType: '',
       notificationItem: {},
-      appointment: null,
+      appointment: {},
       isVisible: false,
       client: null,
       services: null,
@@ -116,7 +116,7 @@ class Queue extends React.Component<Props, State> {
       email: '',
       sortItemsBy: {value: 'FIRST_ARRIVED', label: 'First Arrived'},
       modalBusyEmployee: null,
-    });
+    };
   }
 
 

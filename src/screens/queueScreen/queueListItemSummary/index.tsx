@@ -1,9 +1,7 @@
 import * as React from 'react';
 import {View, Text} from 'react-native';
 import {connect} from 'react-redux';
-import PropTypes from 'prop-types';
 import FontAwesome, {Icons} from 'react-native-fontawesome';
-import {get} from 'lodash';
 import getEmployeePhotoSource
   from '../../../utilities/helpers/getEmployeePhotoSource';
 import * as actions from '../../../redux/actions/queue';

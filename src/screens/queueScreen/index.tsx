@@ -8,7 +8,6 @@ import {
   Animated,
   SafeAreaView,
 } from 'react-native';
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {TabView, TabBar} from 'react-native-tab-view';
@@ -107,9 +106,8 @@ class QueueScreen extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super (props);
-    this.animateText ();
-
-    this.setState({
+  
+    this.state = {
       styles: createStyleSheet(),
       index:0,
       isWalkoutVisible: false,
@@ -131,8 +129,9 @@ class QueueScreen extends React.Component<Props, State> {
       colorAnimActive: new Animated.Value (0),
       colorAnimInactive: new Animated.Value (0),
       receiveQueueRetries: 0,
-  
-    });
+    };
+
+    this.animateText ();
   }
 
 
@@ -484,11 +483,11 @@ class QueueScreen extends React.Component<Props, State> {
           {!searchWaitingCount && !searchServiceCount
             ? <View style={this.state.styles.searchEmpty}>
                 <View style={this.state.styles.searchEmptyIconContainer}>
-                  <Icon
+                 <Icon
                     name="search"
                     style={this.state.styles.searchEmptyIcon}
                     color="#E3E4E5"
-                  />
+                />
                 </View>
                 <Text style={this.state.styles.searchEmptyText}>
                   Results matching

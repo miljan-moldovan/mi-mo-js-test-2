@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Text, View, TextInput} from 'react-native';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -61,7 +60,8 @@ class QueueHeader extends React.Component<Props, State>  {
   constructor(props: Props) {
     super(props);
     this.state = {
-      styles: createStyleSheet()
+      styles: createStyleSheet(),
+      salonActionSheet: null
     };
   }
 
@@ -149,8 +149,14 @@ class QueueHeader extends React.Component<Props, State>  {
         </View>
       : <View style={[this.state.styles.headerContainer, {height: 44, paddingBottom: 10}]}>
 
-          <SalonActionSheet
-            ref={o => (this.setState({salonActionSheet:o}))}
+         <SalonActionSheet
+            ref={
+              o => { 
+                if(!this.state.salonActionSheet){
+                  this.setState({salonActionSheet:o}) 
+                }
+              }
+            }
             options={options}
             cancelButtonIndex={CANCEL_INDEX}
             destructiveButtonIndex={DESTRUCTIVE_INDEX}

@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { View, Animated, Text, ScrollView, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
-import PropTypes from 'prop-types';
 import Icon from '../../../components/UI/Icon';
-import ListItem from '../queueListItemSummary';
-import SalonIcon from '../../../components/SalonIcon';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../queueTimeNote';
 import StatusEnum from '../../../constants/Status';

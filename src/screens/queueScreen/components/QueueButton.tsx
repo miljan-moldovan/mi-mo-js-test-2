@@ -1,13 +1,13 @@
 // @flow
 import * as React from 'react';
-import { Image, StyleSheet, Text, View, Alert } from 'react-native';
+import { Image, Text, View, Alert } from 'react-native';
 import SalonTouchableHighlight from '../../../components/SalonTouchableHighlight';
 import createStyleSheet from './styles';
 const styles = createStyleSheet();
 
 export const QueueButton = (props) => {
   const {
-    onPress, left, right, type,
+    onPress, left, type,
   } = props;
   const { title, image, color } = type;
   const _onPress = onPress || (() => Alert.alert(title, '[Not Implemented]'));
