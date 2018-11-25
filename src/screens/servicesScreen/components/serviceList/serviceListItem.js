@@ -10,6 +10,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
   InputGroup,
 } from '../../../../components/formHelpers';
+import Colors from '../../../../constants/Colors';
 
 import WordHighlighter from '../../../../components/wordHighlighter';
 import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
