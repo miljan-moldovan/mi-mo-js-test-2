@@ -39,17 +39,17 @@ export const UNDELETE_CLIENT_FORMULA_FAILED =
 
 export const SET_CLIENT_FORMULA_FORM = 'clientFormulas/SET_CLIENT_FORMULA_FORM';
 
-const putClientFormulasSuccess = formulas => ({
+const putClientFormulasSuccess = (formulas: any) => ({
   type: PUT_CLIENT_FORMULA_SUCCESS,
   data: {formulas},
 });
 
-const putClientFormulasFailed = error => ({
+const putClientFormulasFailed = (error: any) => ({
   type: PUT_CLIENT_FORMULA_FAILED,
   data: {error},
 });
 
-const putClientFormulas = (clientId, formula) => dispatch => {
+const putClientFormulas = (clientId: number, formula: any) => dispatch => {
   dispatch ({type: PUT_CLIENT_FORMULA});
   return Formula.putClientFormula ({clientId, id: formula.id}, formula)
     .then (response => {
@@ -72,69 +72,69 @@ const putClientFormulas = (clientId, formula) => dispatch => {
     });
 };
 
-const setClientFormulaUpdateForm = formula => dispatch =>
+const setClientFormulaUpdateForm = (formula: any) => dispatch =>
   dispatch (
     storeForm ('ClientFormulaScreenUpdate', formula.id.toString (), formula)
   );
-const setClientFormulaNewForm = (clientId, formula) => dispatch =>
+const setClientFormulaNewForm = (clientId: number, formula: any) => dispatch =>
   dispatch (
     storeForm ('ClientFormulaScreenNew', clientId.toString (), formula)
   );
 
-const purgeClientFormulaUpdateForm = formula => dispatch =>
+const purgeClientFormulaUpdateForm = (formula: any) => dispatch =>
   dispatch (
-    purgeForm ('ClientFormulaScreenUpdate', formula.id.toString (), formula)
+    purgeForm ('ClientFormulaScreenUpdate', formula.id.toString ()/*, formula*/)
   );
-const purgeClientFormulaNewForm = (clientId, formula) => dispatch =>
+const purgeClientFormulaNewForm = (clientId: number, formula: any) => dispatch =>
   dispatch (
-    purgeForm ('ClientFormulaScreenNew', clientId.toString (), formula)
+    purgeForm ('ClientFormulaScreenNew', clientId.toString ()/*, formula*/)
   );
 
-const undeleteClientFormulasSuccess = formulas => ({
+const undeleteClientFormulasSuccess = (formulas: any) => ({
   type: UNDELETE_CLIENT_FORMULA_SUCCESS,
   data: {formulas},
 });
 
-const undeleteClientFormulasFailed = error => ({
+const undeleteClientFormulasFailed = (error: any) => ({
   type: UNDELETE_CLIENT_FORMULA_FAILED,
   data: {error},
 });
 
-const undeleteClientFormulas = (clientId, id) => dispatch => {
+const undeleteClientFormulas = (clientId:number, id: number) => dispatch => {
   dispatch ({type: UNDELETE_CLIENT_FORMULA});
   return Formula.postUndeleteClientFormula ({clientId, id})
     .then (response => dispatch (undeleteClientFormulasSuccess (response)))
     .catch (error => dispatch (undeleteClientFormulasFailed (error)));
 };
 
-const deleteClientFormulasSuccess = formulas => ({
+const deleteClientFormulasSuccess = (formulas: any) => ({
   type: DELETE_CLIENT_FORMULA_SUCCESS,
   data: {formulas},
 });
 
-const deleteClientFormulasFailed = error => ({
+const deleteClientFormulasFailed = (error: any) => ({
   type: DELETE_CLIENT_FORMULA_FAILED,
   data: {error},
 });
 
-const deleteClientFormulas = (clientId, formulaId) => dispatch => {
+const deleteClientFormulas = (clientId: number, formulaId: number) => dispatch => {
   dispatch ({type: DELETE_CLIENT_FORMULA});
   return Formula.deleteClientFormula ({clientId, formulaId})
     .then (response => dispatch (deleteClientFormulasSuccess (response)))
     .catch (error => dispatch (deleteClientFormulasFailed (error)));
 };
 
-const postClientFormulasSuccess = formulas => ({
+const postClientFormulasSuccess = (formulas: any) => ({
   type: POST_CLIENT_FORMULA_SUCCESS,
   data: {formulas},
 });
 
-const postClientFormulasFailed = error => ({
+const postClientFormulasFailed = (error: any) => ({
   type: POST_CLIENT_FORMULA_FAILED,
   data: {error},
 });
 
-const postClientFormulas = (clientId, formula) => dispatch => {
+const postClientFormulas = (clientId: number, formula: any) => dispatch => {
   dispatch ({type: POST_CLIENT_FORMULA});
   return Formula.postClientFormula (clientId, formula)
     .then (response => {
@@ -151,47 +151,47 @@ const postClientFormulas = (clientId, formula) => dispatch => {
     });
 };
 
-function getClientFormulasSuccess (formulas) {
+function getClientFormulasSuccess (formulas: any) {
   return {
     type: GET_CLIENT_FORMULAS_SUCCESS,
     data: {formulas},
   };
 }
 
-const getClientFormulasFailed = error => ({
+const getClientFormulasFailed = (error: any) => ({
   type: GET_CLIENT_FORMULAS_FAILED,
   data: {error},
 });
 
-const getClientFormulas = clientId => dispatch => {
+const getClientFormulas = (clientId: number) => dispatch => {
   dispatch ({type: GET_CLIENT_FORMULAS});
   return Formula.getClientFormulas (clientId)
     .then (response => dispatch (getClientFormulasSuccess (response)))
     .catch (error => dispatch (getClientFormulasFailed (error)));
 };
 
-function setFormulas (formulas) {
+function setFormulas (formulas: any) {
   return {
     type: SET_FORMULAS,
     data: {formulas},
   };
 }
 
-function setFilteredFormulas (filtered) {
+function setFilteredFormulas (filtered: any) {
   return {
     type: SET_FILTERED_FORMULAS,
     data: {filtered},
   };
 }
 
-function selectProvider (provider) {
+function selectProvider (provider: any) {
   return {
     type: SELECTED_PROVIDER,
     data: {provider},
   };
 }
 
-function setOnEditionFormula (onEditionFormula) {
+function setOnEditionFormula (onEditionFormula: any) {
   return {
     type: SET_ON_EDITION_FORMULA,
     data: {onEditionFormula},

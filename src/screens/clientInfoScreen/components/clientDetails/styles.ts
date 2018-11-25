@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
@@ -125,4 +125,11 @@ export default StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  backContainer: {},
+  backIcon: {},
+  leftButtonText: {},
+  headerRightText: {}
+  
 });
+
+export default createStyleSheet;

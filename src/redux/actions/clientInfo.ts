@@ -27,17 +27,17 @@ export const GET_ZIP_CODE = 'clientInfo/GET_ZIP_CODE';
 export const GET_ZIP_CODE_SUCCESS = 'clientInfo/GET_ZIP_CODE_SUCCESS';
 export const GET_ZIP_CODE_FAILED = 'clientInfo/GET_ZIP_CODE_FAILED';
 
-const postClientInfoSuccess = client => ({
+const postClientInfoSuccess = (client: any) => ({
   type: POST_CLIENT_SUCCESS,
   data: {client},
 });
 
-const postClientInfoFailed = error => ({
+const postClientInfoFailed = (error: any) => ({
   type: POST_CLIENT_FAILED,
   data: {error},
 });
 
-const postClientInfo = (client, callback) => dispatch => {
+const postClientInfo = ( client: any, callback?: (...args: any) => any) => dispatch => {
   dispatch ({type: POST_CLIENT});
   return Client.postClient (client)
     .then (response => {
@@ -52,17 +52,17 @@ const postClientInfo = (client, callback) => dispatch => {
     });
 };
 
-const putClientInfoSuccess = client => ({
+const putClientInfoSuccess = (client: any) => ({
   type: PUT_CLIENT_SUCCESS,
   data: {client},
 });
 
-const putClientInfoFailed = error => ({
+const putClientInfoFailed = (error: any) => ({
   type: PUT_CLIENT_FAILED,
   data: {error},
 });
 
-const putClientInfo = (clientId, client, callback) => dispatch => {
+const putClientInfo = (clientId: number, client: any, callback?: (...args: any) => any) => dispatch => {
   dispatch ({type: PUT_CLIENT});
   return Client.putClient (clientId, client)
     .then (response => {
@@ -77,17 +77,17 @@ const putClientInfo = (clientId, client, callback) => dispatch => {
     });
 };
 
-const deleteClientInfoSuccess = client => ({
+const deleteClientInfoSuccess = (client: any) => ({
   type: DELETE_CLIENT_SUCCESS,
   data: {client},
 });
 
-const deleteClientInfoFailed = error => ({
+const deleteClientInfoFailed = (error: any) => ({
   type: DELETE_CLIENT_FAILED,
   data: {error},
 });
 
-const deleteClientInfo = (clientId, callback) => dispatch => {
+const deleteClientInfo = (clientId: number, callback?: (...args: any) => any) => dispatch => {
   dispatch ({type: DELETE_CLIENT});
   return Client.deleteClient ({clientId})
     .then (response => {
@@ -101,19 +101,19 @@ const deleteClientInfo = (clientId, callback) => dispatch => {
     });
 };
 
-function getClientInfoSuccess (client) {
+function getClientInfoSuccess (client: any) {
   return {
     type: GET_CLIENT_SUCCESS,
     data: {client},
   };
 }
 
-const getClientInfoFailed = error => ({
+const getClientInfoFailed = (error: any) => ({
   type: GET_CLIENT_FAILED,
   data: {error},
 });
 
-const getClientInfo = (clientId, callback) => dispatch => {
+const getClientInfo = (clientId: number, callback?: (...args: any) => any) => dispatch => {
   dispatch ({type: GET_CLIENT});
   return Client.getClient (clientId)
     .then (response => {
@@ -127,19 +127,19 @@ const getClientInfo = (clientId, callback) => dispatch => {
     });
 };
 
-function getClientReferralTypesSuccess (clientReferralTypes) {
+function getClientReferralTypesSuccess (clientReferralTypes: any) {
   return {
     type: GET_CLIENT_REFERRAL_TYPES_SUCCESS,
     data: {clientReferralTypes},
   };
 }
 
-const getClientReferralTypesFailed = error => ({
+const getClientReferralTypesFailed = (error: any) => ({
   type: GET_CLIENT_REFERRAL_TYPES_FAILED,
   data: {error},
 });
 
-const getClientReferralTypes = callback => dispatch => {
+const getClientReferralTypes = (callback?: (...args: any) => any) => dispatch => {
   dispatch ({type: GET_CLIENT_REFERRAL_TYPES});
   return Store.getClientReferralTypes ()
     .then (response => {
@@ -153,19 +153,19 @@ const getClientReferralTypes = callback => dispatch => {
     });
 };
 
-function getZipCodeSuccess (zipCode) {
+function getZipCodeSuccess (zipCode: string) {
   return {
     type: GET_ZIP_CODE_SUCCESS,
     data: {zipCode},
   };
 }
 
-const getZipCodeFailed = error => ({
+const getZipCodeFailed = (error: any) => ({
   type: GET_ZIP_CODE_FAILED,
   data: {error},
 });
 
-const getZipCode = (zipCode, callback) => dispatch => {
+const getZipCode = (zipCode: string, callback?: (...args: any) => any) => dispatch => {
   dispatch ({type: GET_ZIP_CODE});
   return Client.getZipCode (zipCode)
     .then (response => {

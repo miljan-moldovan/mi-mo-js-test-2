@@ -33,17 +33,17 @@ export const UNDELETE_CLIENT_NOTE_FAILED =
 
 export const SET_CLIENT_NOTE_FORM = 'clientNotes/SET_CLIENT_NOTE_FORM';
 
-const putClientNotesSuccess = notes => ({
+const putClientNotesSuccess = (notes: any) => ({
   type: PUT_CLIENT_NOTE_SUCCESS,
   data: {notes},
 });
 
-const putClientNotesFailed = error => ({
+const putClientNotesFailed = (error: any) => ({
   type: PUT_CLIENT_NOTE_FAILED,
   data: {error},
 });
 
-const putClientNotes = (clientId, note) => dispatch => {
+const putClientNotes = (clientId: number, note: any) => dispatch => {
   dispatch ({type: PUT_CLIENT_NOTE});
   return Note.putClientNote ({clientId, id: note.id}, note)
     .then (response => {
@@ -60,61 +60,63 @@ const putClientNotes = (clientId, note) => dispatch => {
     });
 };
 
-const setClientNoteUpdateForm = note => dispatch =>
+const setClientNoteUpdateForm = (note: any) => dispatch =>
   dispatch (storeForm ('ClientNoteScreenUpdate', note.id.toString (), note));
-const setClientNoteNewForm = (clientId, note) => dispatch =>
+
+const setClientNoteNewForm = (clientId: number, note: any) => dispatch =>
   dispatch (storeForm ('ClientNoteScreenNew', clientId.toString (), note));
 
-const purgeClientNoteUpdateForm = note => dispatch =>
-  dispatch (purgeForm ('ClientNoteScreenUpdate', note.id.toString (), note));
-const purgeClientNoteNewForm = (clientId, note) => dispatch =>
-  dispatch (purgeForm ('ClientNoteScreenNew', clientId.toString (), note));
+const purgeClientNoteUpdateForm = (note: any) => dispatch =>
+  dispatch (purgeForm ('ClientNoteScreenUpdate', note.id.toString ()/*, note*/));
 
-const undeleteClientNotesSuccess = notes => ({
+const purgeClientNoteNewForm = (clientId: number, note: any) => dispatch =>
+  dispatch (purgeForm ('ClientNoteScreenNew', clientId.toString ()/*, note*/));
+
+const undeleteClientNotesSuccess = (notes: any) => ({
   type: UNDELETE_CLIENT_NOTE_SUCCESS,
   data: {notes},
 });
 
-const undeleteClientNotesFailed = error => ({
+const undeleteClientNotesFailed = (error: any) => ({
   type: UNDELETE_CLIENT_NOTE_FAILED,
   data: {error},
 });
 
-const undeleteClientNotes = (clientId, id) => dispatch => {
+const undeleteClientNotes = (clientId: number, id: number) => dispatch => {
   dispatch ({type: UNDELETE_CLIENT_NOTE});
   return Note.postUndeleteClientNote ({clientId, id})
     .then (response => dispatch (undeleteClientNotesSuccess (response)))
     .catch (error => dispatch (undeleteClientNotesFailed (error)));
 };
 
-const deleteClientNotesSuccess = notes => ({
+const deleteClientNotesSuccess = (notes: any) => ({
   type: DELETE_CLIENT_NOTE_SUCCESS,
   data: {notes},
 });
 
-const deleteClientNotesFailed = error => ({
+const deleteClientNotesFailed = (error: any) => ({
   type: DELETE_CLIENT_NOTE_FAILED,
   data: {error},
 });
 
-const deleteClientNotes = (clientId, noteId) => dispatch => {
+const deleteClientNotes = (clientId: number, noteId: number) => dispatch => {
   dispatch ({type: DELETE_CLIENT_NOTE});
   return Note.deleteClientNote ({clientId, noteId})
     .then (response => dispatch (deleteClientNotesSuccess (response)))
     .catch (error => dispatch (deleteClientNotesFailed (error)));
 };
 
-const postClientNotesSuccess = notes => ({
+const postClientNotesSuccess = (notes: any) => ({
   type: POST_CLIENT_NOTE_SUCCESS,
   data: {notes},
 });
 
-const postClientNotesFailed = error => ({
+const postClientNotesFailed = (error: any) => ({
   type: POST_CLIENT_NOTE_FAILED,
   data: {error},
 });
 
-const postClientNotes = (clientId, note) => dispatch => {
+const postClientNotes = (clientId:number, note: any) => dispatch => {
   dispatch ({type: POST_CLIENT_NOTE});
   return Note.postClientNote (clientId, note)
     .then (response => {
@@ -131,47 +133,47 @@ const postClientNotes = (clientId, note) => dispatch => {
     });
 };
 
-function getClientNotesSuccess (notes) {
+function getClientNotesSuccess (notes: any) {
   return {
     type: GET_CLIENT_NOTES_SUCCESS,
     data: {notes},
   };
 }
 
-const getClientNotesFailed = error => ({
+const getClientNotesFailed = (error: any) => ({
   type: GET_CLIENT_NOTES_FAILED,
   data: {error},
 });
 
-const getClientNotes = clientId => dispatch => {
+const getClientNotes = (clientId:number) => dispatch => {
   dispatch ({type: GET_CLIENT_NOTES});
   return Note.getClientNotes (clientId)
     .then (response => dispatch (getClientNotesSuccess (response)))
     .catch (error => dispatch (getClientNotesFailed (error)));
 };
 
-function setNotes (notes) {
+function setNotes (notes: any) {
   return {
     type: SET_NOTES,
     data: {notes},
   };
 }
 
-function setFilteredNotes (filtered) {
+function setFilteredNotes (filtered: any) {
   return {
     type: SET_FILTERED_NOTES,
     data: {filtered},
   };
 }
 
-function selectProvider (provider) {
+function selectProvider (provider: any) {
   return {
     type: SELECTED_PROVIDER,
     data: {provider},
   };
 }
 
-function setOnEditionNote (onEditionNote) {
+function setOnEditionNote (onEditionNote: any) {
   return {
     type: SET_ON_EDITION_NOTE,
     data: {onEditionNote},
