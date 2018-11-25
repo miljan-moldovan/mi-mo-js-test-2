@@ -1,10 +1,7 @@
 import React from 'react';
-import {
-  View,
-  Text,
-} from 'react-native';
+import {View, Text} from 'react-native';
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
+import {get} from 'lodash';
 
 import {
   InputGroup,
@@ -21,155 +18,179 @@ import styles from '../modifyServiceScreen/styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import Colors from '../../constants/Colors';
 
 class ModifyProductScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const params = navigation.state.params || {};
-    // const canSave = params.canSave || false;
-    const clientName = params.clientName || '';
-    const canSave = true;
+  static navigationOptions = ({navigation}) => {
+    const canSave = navigation.getParam ('canSave', false);
+    const productItem = navigation.getParam ('productItem', false);
+    const handleSave = navigation.getParam ('handleSave', () => null);
+    const clientName = navigation.getParam ('clientName', '');
     return {
       header: (
         <SalonHeader
-          title={'productItem' in params ? 'Modify Product' : 'Add Product'}
+          title={productItem ? 'Modify Product' : 'Add Product'}
           subTitle={clientName}
-          headerLeft={(
-            <SalonTouchableOpacity style={{ paddingLeft: 10 }} onPress={navigation.goBack}>
+          headerLeft={
+            <SalonTouchableOpacity
+              style={{paddingLeft: 10}}
+              onPress={navigation.goBack}
+            >
               <Text style={styles.leftButtonText}>Cancel</Text>
             </SalonTouchableOpacity>
-          )}
-          headerRight={(
+          }
+          headerRight={
             <SalonTouchableOpacity
               disabled={!canSave}
-              style={{ paddingRight: 10 }}
-              onPress={() => params.handleSave()}
+              style={{paddingRight: 10}}
+              onPress={handleSave}
             >
-              <Text style={[styles.rightButtonText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>Done</Text>
+              <Text
+                style={[
+                  styles.rightButtonText,
+                  {color: canSave ? Colors.white : '#19428A'},
+                ]}
+              >
+                Done
+              </Text>
             </SalonTouchableOpacity>
-          )}
+          }
         />
       ),
     };
+  };
+
+  constructor (props) {
+    super (props);
+    this.state = this.getStateFromParams ();
+    // this.props.navigation.addListener ('willFocus', () =>
+    //   this.setState ({...this.getStateFromParams ()})
+    // );
+    const canSave = this.state.employee && this.state.product;
+    this.props.navigation.setParams ({handleSave: this.handleSave, canSave});
   }
 
-  constructor(props) {
-    super(props);
-    const { params } = this.props.navigation.state;
-    this.state = this.getStateFromParams();
-    this.props.navigation.setParams({ ...params, handleSave: this.handleSave });
-  }
-
-  get canRemove() {
+  // componentWillReceiveProps (nextProps) {
+  //   const nextParams = nextProps.navigation.state.params || null;
+  //   const currentParams = this.props.navigation.state.params || null;
+  //   if (nextParams !== currentParams) {
+  //     this.setState ({...this.getStateFromParams ()}, this.canSave);
+  //   }
+  // }
+  get canRemove () {
     const params = this.props.navigation.state.params || {};
     return 'onRemove' in params;
   }
 
   getStateFromParams = () => {
-    const params = this.props.navigation.state.params || {};
-    const productItem = params.productItem || {};
-    const product = get(productItem, 'product', null);
-    const employee = get(productItem, 'employee', null);
-    const promotion = get(productItem, 'promotion', null);
+    const {getParam} = this.props.navigation;
+    const productItem = getParam ('productItem', {});
+    const product = get (productItem, 'product', null);
+    const employee = get (productItem, 'employee', null);
+    const promotion = get (productItem, 'promotion', null);
     return {
       product,
       employee,
       promotion,
     };
-  }
+  };
 
   getDiscountAmount = () => {
-    const { promotion } = this.state;
-    switch (get(promotion, 'promotionType', null)) {
+    const {promotion} = this.state;
+    switch (get (promotion, 'promotionType', null)) {
       case PromotionType.ServiceProductPercentOff:
       case PromotionType.GiftCardPercentOff:
-        return `${get(promotion, 'retailDiscountAmount', 0)} %`;
+        return `${get (promotion, 'retailDiscountAmount', 0)} %`;
       case PromotionType.ServiceProductDollarOff:
       case PromotionType.GiftCardDollarOff:
       case PromotionType.ServiceProductFixedPrice:
-        return `$ ${get(promotion, 'retailDiscountAmount', 0)}`;
-      default: return '';
+        return `$ ${get (promotion, 'retailDiscountAmount', 0)}`;
+      default:
+        return '';
     }
-  }
+  };
+
+  canSave = () => {
+    const {product, employee} = this.state;
+    const canSave = product && employee;
+    this.props.navigation.setParams ({canSave});
+    return canSave;
+  };
 
   calculatePercentFromPrice = (price, percent) =>
-    Number((percent ? price - percent / 100 * price : price).toFixed(2))
+    Number ((percent ? price - percent / 100 * price : price).toFixed (2));
 
   calculatePriceDiscount = (promo, prop, price = null) => {
-    if (price === null) { return 0; }
+    if (price === null) {
+      return 0;
+    }
 
-    switch (get(promo, 'promotionType', null)) {
+    switch (get (promo, 'promotionType', null)) {
       case PromotionType.ServiceProductPercentOff:
       case PromotionType.GiftCardPercentOff:
-        return this.calculatePercentFromPrice(price, get(promo, prop, 0));
+        return this.calculatePercentFromPrice (price, get (promo, prop, 0));
       case PromotionType.ServiceProductDollarOff:
       case PromotionType.GiftCardDollarOff:
-        return price - get(promo, prop, 0);
+        return price - get (promo, prop, 0);
       case PromotionType.ServiceProductFixedPrice:
-        return get(promo, prop, 0);
-      default: return price;
+        return get (promo, prop, 0);
+      default:
+        return price;
     }
-  }
+  };
 
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
-    leftButtonOnPress: (navigation) => {
-      navigation.goBack();
+    leftButtonOnPress: navigation => {
+      navigation.goBack ();
     },
-  })
+  });
 
-  handleChangeProduct = product => this.setState({ product })
+  handleChangeProduct = product => this.setState ({product}, this.canSave);
 
-  handleChangeEmployee = employee => this.setState({ employee })
+  handleChangeEmployee = employee => this.setState ({employee}, this.canSave);
 
-  handleChangePromotion = promotion => this.setState({ promotion })
+  handleChangePromotion = promotion =>
+    this.setState ({promotion}, this.canSave);
 
   handleRemove = () => {
-    const { onRemove = (itm => itm) } = this.props.navigation.state.params || {};
-    onRemove();
-    this.props.navigation.goBack();
-  }
+    const {onRemove = itm => itm} = this.props.navigation.state.params || {};
+    onRemove ();
+    this.props.navigation.goBack ();
+  };
 
   handleSave = () => {
-    const {
-      product,
-      employee,
-      promotion,
-    } = this.state;
-    if (!product || !employee) {
+    const {product, employee, promotion} = this.state;
+    if (!this.canSave ()) {
       return;
     }
-    const { onSave = (itm => itm) } = this.props.navigation.state.params || {};
-    onSave({
-      product,
-      employee,
-      promotion,
-    }, this.props.navigation.goBack);
-  }
+    this.props.navigation.setParams ({canSave: false});
+    const {onSave = itm => itm} = this.props.navigation.state.params || {};
+    onSave (
+      {
+        product,
+        employee,
+        promotion,
+      },
+      this.props.navigation.goBack
+    );
+    this.canSave ();
+  };
 
-  render() {
-    const {
-      navigation: { navigate },
-      queueDetailState: { isLoading },
-    } = this.props;
-    const {
-      product,
-      employee,
-      promotion,
-    } = this.state;
-    const price = get(product, 'price', 0);
-    const priceText = `$ ${this.calculatePriceDiscount(promotion, 'retailDiscountAmount', price)}`;
+  render () {
+    const {navigation: {navigate}, queueDetailState: {isLoading}} = this.props;
+    const {product, employee, promotion} = this.state;
+    const price = get (product, 'price', 0);
+    const priceText = `$ ${this.calculatePriceDiscount (promotion, 'retailDiscountAmount', price)}`;
     return (
       <View style={styles.container}>
-        {
-          isLoading &&
-          <LoadingOverlay />
-        }
+        {isLoading && <LoadingOverlay />}
         <InputGroup style={styles.marginTop}>
           <ProductInput
             navigate={navigate}
             selectedProduct={product}
             onChange={this.handleChangeProduct}
-            headerProps={{ title: 'Products', ...this.cancelButton() }}
+            headerProps={{title: 'Products', ...this.cancelButton ()}}
           />
           <InputDivider />
           <ProviderInput
@@ -179,7 +200,7 @@ class ModifyProductScreen extends React.Component {
             showFirstAvailable={false}
             selectedProvider={employee}
             onChange={this.handleChangeEmployee}
-            headerProps={{ title: 'Providers', ...this.cancelButton() }}
+            headerProps={{title: 'Providers', ...this.cancelButton ()}}
           />
         </InputGroup>
         <SectionDivider />
@@ -191,13 +212,12 @@ class ModifyProductScreen extends React.Component {
             onChange={this.handleChangePromotion}
           />
           <InputDivider />
-          <InputLabel label="Discount" value={this.getDiscountAmount()} />
+          <InputLabel label="Discount" value={this.getDiscountAmount ()} />
           <InputDivider />
           <InputLabel label="Price" value={priceText} />
         </InputGroup>
         <SectionDivider />
-        {
-          this.canRemove &&
+        {this.canRemove &&
           <InputGroup>
             <SalonTouchableOpacity
               style={styles.removeButton}
@@ -205,8 +225,7 @@ class ModifyProductScreen extends React.Component {
             >
               <Text style={styles.removeButtonText}>Remove Product</Text>
             </SalonTouchableOpacity>
-          </InputGroup>
-        }
+          </InputGroup>}
       </View>
     );
   }

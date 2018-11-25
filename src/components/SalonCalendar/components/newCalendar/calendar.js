@@ -1725,7 +1725,6 @@ export default class Calendar extends Component {
       storeScheduleExceptions,
       rooms,
     } = this.props;
-    debugger
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader =
       displayMode === 'week' ||
