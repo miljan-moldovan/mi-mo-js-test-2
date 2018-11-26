@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import * as React from 'react';
+import {View, Text, Alert} from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -28,17 +28,52 @@ import {
   InputPicker,
   ProviderInput,
 } from '../../../../components/formHelpers';
-import styles from './stylesClientFormula';
+import createStyleSheet from './stylesClientFormula';
 import headerStyles from '../../../../constants/headerStyles';
 import SalonHeader from '../../../../components/SalonHeader';
 
-class ClientFormula extends React.Component {
+
+
+interface Props {
+  navigation: any;
+  client: any;
+  settingsActions: any;
+  settingsState: any;
+  formCache: any;
+  userInfoState: any;
+  clientFormulasActions: any;
+  clientFormulasState: any;
+}
+
+interface State {
+  styles: any;
+  client: any;
+  formula: {
+    date: any;
+    formulaType: any;
+    provider: any;
+    enteredBy: any;
+    text: string;
+    stylistName: string;
+    store: any
+  },
+  isLoading: boolean;
+  defaultFormulaType: any;
+  formulaTypes: any;
+  datePickerOpen: boolean;
+  shouldSave: boolean;
+}
+
+class ClientFormula extends React.Component<Props, State> {
   static navigationOptions = ({navigation}) => {
     const {params} = navigation.state;
     const canSave = params.canSave || false;
     const title = params.actionType === 'update'
       ? 'Edit Formula'
       : 'New Formula';
+
+
+    const styles = createStyleSheet()
 
     return {
       header: (
@@ -75,8 +110,8 @@ class ClientFormula extends React.Component {
     };
   };
 
-  constructor (props) {
-    super (props);
+  constructor(props: Props) {
+    super(props);
 
     const {client} = props.navigation.state.params;
     props.settingsActions.getSettingsByName (
@@ -92,6 +127,7 @@ class ClientFormula extends React.Component {
     );
 
     this.state = {
+      styles: createStyleSheet(),
       client,
       formula: {
         date: null,
@@ -99,11 +135,14 @@ class ClientFormula extends React.Component {
         provider: {},
         enteredBy:{},
         text: '',
+        stylistName: '',
+        store: null
       },
       isLoading: true,
       defaultFormulaType: null,
       formulaTypes: [],
       datePickerOpen: false,
+      shouldSave: false,
     };
   }
 
@@ -189,7 +228,7 @@ class ClientFormula extends React.Component {
   };
 
   goToAssociatedAppt = () => {
-    alert ('Not Implemented');
+    Alert.alert ('Not Implemented');
   };
 
   checkCanSave = () => {
@@ -205,8 +244,7 @@ class ClientFormula extends React.Component {
   onChangeText = txtFormula => {
     const {formula} = this.state;
     formula.text = txtFormula;
-    this.shouldSave = true;
-    this.setState ({formula}, this.checkCanSave);
+    this.setState ({formula, shouldSave: true}, this.checkCanSave);
   };
 
   loadFormulaTypes = (
@@ -344,13 +382,12 @@ class ClientFormula extends React.Component {
   handleChangedate = dateDateObj => {
     const {formula} = this.state;
     formula.date = moment (dateDateObj);
-    this.shouldSave = true;
-    this.setState ({formula}, this.checkCanSave);
+    this.setState ({formula, shouldSave: true}, this.checkCanSave);
   };
 
   render () {
     return (
-      <View style={styles.container}>
+      <View style={this.state.styles.container}>
         {(this.props.clientFormulasState.isLoading ||
           this.props.settingsState.isLoading ||
           this.state.isLoading) &&
@@ -359,17 +396,17 @@ class ClientFormula extends React.Component {
           keyboardShouldPersistTaps="always"
           ref="scroll"
           extraHeight={300}
-          enableAutoAutomaticScroll
+          /*enableAutoAutomaticScroll*/
         >
-          <View style={styles.topView} />
+          <View style={this.state.styles.topView} />
           <InputGroup>
             <ProviderInput
               showFirstAvailable={false}
               placeholder={false}
-              style={styles.innerRow}
+              style={this.state.styles.innerRow}
               selectedProvider={this.state.formula.enteredBy}
               label="Added By"
-              iconStyle={styles.carretIcon}
+              iconStyle={this.state.styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
               onChange={this.onChangeEnteredBy}
@@ -396,9 +433,9 @@ class ClientFormula extends React.Component {
             />
           </InputGroup>
           <SectionDivider />
-          <InputGroup style={styles.inputGroupAssociated}>
+          <InputGroup style={this.state.styles.inputGroupAssociated}>
             <InputButton
-              style={styles.inputButton}
+              style={this.state.styles.inputButton}
               onPress={this.goToAssociatedAppt}
               label="Associated appt."
             />
@@ -416,7 +453,7 @@ class ClientFormula extends React.Component {
               mode="date"
               placeholder="Optional"
               valueStyle={
-                this.state.formula.date == null ? styles.dateValueStyle : {}
+                this.state.formula.date == null ? this.state.styles.dateValueStyle : {}
               }
               value={this.state.formula.date}
               isOpen={this.state.datePickerOpen}
@@ -428,10 +465,10 @@ class ClientFormula extends React.Component {
             <ProviderInput
               showFirstAvailable={false}
               placeholder={false}
-              style={styles.innerRow}
+              style={this.state.styles.innerRow}
               selectedProvider={this.state.formula.provider}
               label="Provider"
-              iconStyle={styles.carretIcon}
+              iconStyle={this.state.styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
               onChange={this.onChangeProvider}
@@ -440,9 +477,9 @@ class ClientFormula extends React.Component {
             />
           </InputGroup>
           <SectionDivider />
-          <InputGroup style={styles.inputGroupCopy}>
+          <InputGroup style={this.state.styles.inputGroupCopy}>
             <InputButton
-              style={styles.inputGroupCopyButton}
+              style={this.state.styles.inputGroupCopyButton}
               onPress={this.goToCopy}
               label="Copy formula to"
             />
@@ -468,23 +505,5 @@ const mapActionsToProps = dispatch => ({
     dispatch
   ),
 });
-
-ClientFormula.defaultProps = {};
-
-ClientFormula.propTypes = {
-  groupedSettings: PropTypes.any.isRequired,
-  settingsState: PropTypes.any.isRequired,
-  clientFormulasActions: PropTypes.shape ({
-    postClientFormulas: PropTypes.func.isRequired,
-    putClientFormulas: PropTypes.func.isRequired,
-    selectProvider: PropTypes.func.isRequired,
-  }).isRequired,
-  clientFormulasState: PropTypes.any.isRequired,
-  // client: PropTypes.any.isRequired,
-  navigation: PropTypes.any.isRequired,
-  settingsActions: PropTypes.shape ({
-    getSettingsByName: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
 export default connect (mapStateToProps, mapActionsToProps) (ClientFormula);

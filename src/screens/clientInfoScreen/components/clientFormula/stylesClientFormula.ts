@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   modal: {
     width: '100%',
     height: '100%',
@@ -59,3 +59,6 @@ export default StyleSheet.create({
     color: 'white',
   },
 });
+
+
+export default createStyleSheet;

@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import {
   View,
   ScrollView,
   Text,
+  Alert,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { find } from 'lodash';
 import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import styles from './styles';
+import createStyleSheet from './styles';
 import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 
 import {
@@ -28,7 +29,21 @@ const formulaTypes = [
   { id: formulaTypesEnum.NULL, name: 'NULL' },
 ];
 
-class ClientCopyFormula extends Component {
+
+
+interface Props {
+  navigation: any;
+  clientFormulasActions: any;
+  clientFormulasState: any;
+}
+
+interface State {
+  styles: any;
+  client: any;
+  selectedFormula: any;
+}
+
+class ClientCopyFormula extends React.Component<Props, State> {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     let subtitle = 'Client Info';
@@ -36,11 +51,13 @@ class ClientCopyFormula extends Component {
       subtitle = `${params.client.name} ${params.client.lastName}`;
     }
 
-    const props = this.props;
     const canSave = params.canSave || false;
     const handleDone = navigation.state.params.handleDone ?
       navigation.state.params.handleDone :
-      () => { alert('Not Implemented'); };
+      () => { Alert.alert('Not Implemented'); };
+
+
+    const styles = createStyleSheet();
 
     return ({
       header: (
@@ -86,6 +103,7 @@ class ClientCopyFormula extends Component {
     const { client } = props.navigation.state.params;
 
     this.state = {
+      styles: createStyleSheet(),
       client,
       selectedFormula: null,
     };
@@ -113,7 +131,7 @@ class ClientCopyFormula extends Component {
   }
 
   renderOption = option => (
-    <View style={styles.optionContainer}>
+    <View style={this.state.styles.optionContainer}>
       <SalonDateTxt
         dateFormat="MMM. DD YYYY"
         value={option.date}
@@ -121,8 +139,8 @@ class ClientCopyFormula extends Component {
         valueSize={12}
         fontWeight="500"
       />
-      <Text style={styles.formulaType}>{this.getFormulaTypeName(option.formulaType)}</Text>
-      <Text style={styles.italicText}> by {option.stylistName}</Text>
+      <Text style={this.state.styles.formulaType}>{this.getFormulaTypeName(option.formulaType)}</Text>
+      <Text style={this.state.styles.italicText}> by {option.stylistName}</Text>
     </View>
   )
 
@@ -135,13 +153,13 @@ class ClientCopyFormula extends Component {
     this.props.navigation.state.params.handleSaveCopy ?
       this.props.navigation.state.params.handleSaveCopy(this.state.selectedFormula)
       :
-      navigation.goBack();
+      this.props.navigation.navigation.goBack();
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.formulasScroller}>
+      <View style={this.state.styles.container}>
+        <View style={this.state.styles.formulasScroller}>
           <ScrollView style={{ alignSelf: 'stretch' }}>
             <View style={{ marginTop: 15.5, borderColor: 'transparent', borderWidth: 0 }} />
             <InputGroup>
@@ -158,21 +176,5 @@ class ClientCopyFormula extends Component {
     );
   }
 }
-
-
-ClientCopyFormula.defaultProps = {
-
-};
-
-ClientCopyFormula.propTypes = {
-  clientFormulasActions: PropTypes.shape({
-    getClientFormulas: PropTypes.func.isRequired,
-    setFilteredFormulas: PropTypes.func.isRequired,
-    setFormulas: PropTypes.func.isRequired,
-  }).isRequired,
-  clientFormulasState: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
-  navigation: PropTypes.any.isRequired,
-};
 
 export default ClientCopyFormula;

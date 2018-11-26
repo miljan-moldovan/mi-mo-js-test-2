@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
@@ -23,14 +23,44 @@ import {
 } from '../../../../components/formHelpers';
 
 import fetchFormCache from '../../../../utilities/fetchFormCache';
-import styles from './stylesClientNote';
+import createStyleSheet from './stylesClientNote';
 import SalonHeader from '../../../../components/SalonHeader';
 
-class ClientNote extends Component {
+
+interface Props {
+  navigation: any;
+  clientNotesState: any;
+  formCache: any;
+  clientNotesActions: any;
+  userInfoState: any;
+}
+
+interface State {
+  styles: any;
+  note: {
+    id: string
+    text: string,
+    expiration: string,
+    forAppointment: boolean,
+    forQueue: boolean,
+    forSales: boolean,
+    isDeleted: boolean,
+    enteredBy: any;
+    notes: any;
+  },
+  forSales: boolean,
+  forQueue: boolean,
+  forAppointment: boolean,
+  datePickerOpen: boolean,
+}
+
+class ClientNote extends React.Component<Props, State> {
   static navigationOptions = ({navigation}) => {
     const {params} = navigation.state;
     const canSave = params.canSave || false;
     const title = params.actionType === 'update' ? 'Edit Note' : 'New Note';
+
+    const styles = createStyleSheet()
 
     return {
       header: (
@@ -65,6 +95,30 @@ class ClientNote extends Component {
     };
   };
 
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      styles: createStyleSheet(),
+      note: {
+        id: Math.random ().toString (),
+        text: '',
+        expiration: null,
+        forAppointment: false,
+        forQueue: false,
+        forSales: false,
+        isDeleted: false,
+        enteredBy: null,
+        notes: null
+      },
+      forSales: false,
+      forQueue: false,
+      forAppointment: false,
+      datePickerOpen: false,
+    };
+
+  }
+
+
   static compareByDate (a, b) {
     if (a.enterTime < b.enterTime) {
       return 1;
@@ -74,22 +128,6 @@ class ClientNote extends Component {
     }
     return 0;
   }
-
-  state = {
-    note: {
-      id: Math.random ().toString (),
-      text: '',
-      expiration: null,
-      forAppointment: false,
-      forQueue: false,
-      forSales: false,
-      isDeleted: false,
-    },
-    forSales: false,
-    forQueue: false,
-    forAppointment: false,
-    datePickerOpen: false,
-  };
 
   componentWillMount () {
     let {note} = this.state;
@@ -227,7 +265,7 @@ class ClientNote extends Component {
   };
 
   cancelButton = () => ({
-    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
+    leftButton: <Text style={this.state.styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: navigation => {
       navigation.goBack ();
     },
@@ -241,7 +279,7 @@ class ClientNote extends Component {
     let isNoteValid = false;
     if (this.props.navigation.state.params.actionType === 'update') {
       const {text} = this.state.note;
-      isNoteValid = text && text.length;
+      isNoteValid = text && text.length > 0;
     } else {
       const {note} = this.state;
       isNoteValid =
@@ -309,25 +347,25 @@ class ClientNote extends Component {
     const params = this.props.navigation.state.params || {};
     const {apptBook = false} = params;
     return (
-      <View style={styles.container}>
+      <View style={this.state.styles.container}>
         {this.props.clientNotesState.isLoading && <LoadingOverlay />}
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="never"
           ref="scroll"
           extraHeight={300}
-          enableAutoAutomaticScroll
+          /*enableAutoAutomaticScroll*/
         >
-          <View style={styles.topSeparator} />
-          <InputGroup style={styles.providerInputGroup}>
+          <View style={this.state.styles.topSeparator} />
+          <InputGroup style={this.state.styles.providerInputGroup}>
             <ProviderInput
               apptBook={apptBook}
               placeholder={false}
               showFirstAvailable={false}
               filterByService
-              style={styles.innerRow}
+              style={this.state.styles.innerRow}
               selectedProvider={this.props.clientNotesState.selectedProvider}
               label="Added By"
-              iconStyle={styles.carretIcon}
+              iconStyle={this.state.styles.carretIcon}
               avatarSize={20}
               navigate={this.props.navigation.navigate}
               onChange={this.onChangeProvider}
@@ -335,7 +373,7 @@ class ClientNote extends Component {
               headerProps={{title: 'Providers', ...this.cancelButton ()}}
             />
           </InputGroup>
-          <SectionTitle value="NOTE" style={styles.sectionTitle} />
+          <SectionTitle value="NOTE" style={this.state.styles.sectionTitle} />
           <InputGroup>
             <InputText
               onFocus={() => { this.checkCanSave(false)}}
@@ -344,33 +382,33 @@ class ClientNote extends Component {
               value={this.state.note.text}
             />
           </InputGroup>
-          <SectionTitle value="TYPES" style={styles.sectionTitle} />
+          <SectionTitle value="TYPES" style={this.state.styles.sectionTitle} />
           <InputGroup>
             <InputSwitch
-              style={styles.inputSwitchSales}
-              textStyle={styles.inputSwitchTextStyle}
+              style={this.state.styles.inputSwitchSales}
+              textStyle={this.state.styles.inputSwitchTextStyle}
               onChange={this.inputSwitchSales}
               value={this.state.forSales}
               text="Sales"
             />
             <InputDivider />
             <InputSwitch
-              style={styles.inputSwitchAppointment}
-              textStyle={styles.inputSwitchTextStyle}
+              style={this.state.styles.inputSwitchAppointment}
+              textStyle={this.state.styles.inputSwitchTextStyle}
               onChange={this.inputSwitchAppointment}
               value={this.state.forAppointment}
               text="Appointment"
             />
             <InputDivider />
             <InputSwitch
-              style={styles.inputSwitchQueue}
-              textStyle={styles.inputSwitchTextStyle}
+              style={this.state.styles.inputSwitchQueue}
+              textStyle={this.state.styles.inputSwitchTextStyle}
               onChange={this.inputSwitchQueue}
               value={this.state.forQueue}
               text="Queue"
             />
           </InputGroup>
-          <SectionDivider style={styles.sectionDivider} />
+          <SectionDivider style={this.state.styles.sectionDivider} />
 
           <InputGroup>
 
@@ -386,7 +424,7 @@ class ClientNote extends Component {
               onChange={this.inputDate}
               toggle={this.pickerToogleBirthday}
               valueStyle={
-                this.state.note.expiration == null ? styles.valueStyleDate : {}
+                this.state.note.expiration == null ? this.state.styles.valueStyleDate : {}
               }
             />
 
@@ -398,23 +436,6 @@ class ClientNote extends Component {
   }
 }
 
-ClientNote.defaultProps = {};
-
-ClientNote.propTypes = {
-  clientNotesActions: PropTypes.shape ({
-    setClientNoteNewForm: PropTypes.func.isRequired,
-    setClientNoteUpdateForm: PropTypes.func.isRequired,
-    selectProvider: PropTypes.func.isRequired,
-    purgeClientNoteNewForm: PropTypes.func.isRequired,
-    purgeClientNoteUpdateForm: PropTypes.func.isRequired,
-    postClientNotes: PropTypes.func.isRequired,
-    putClientNotes: PropTypes.func.isRequired,
-  }).isRequired,
-  clientNotesState: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
-  navigation: PropTypes.any.isRequired,
-  formCache: PropTypes.any.isRequired,
-};
 
 const mapStateToProps = state => ({
   userInfoState: state.userInfoReducer,
@@ -422,7 +443,7 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  clientNotesActions: bindActionCreators ({...clientNotesActions}, dispatch),
+  clientNotesActions: bindActionCreators ({...clientNotesActions as any}, dispatch),
 });
 
 export default connect (mapStateToProps, mapActionsToProps) (ClientNote);

@@ -1,9 +1,10 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
+  Alert
 } from 'react-native';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -15,6 +16,7 @@ import ClientNotes from './components/clientNotes';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import createStyleSheet from './styles';
 
 
 const initialLayout = {
@@ -22,67 +24,22 @@ const initialLayout = {
   width: Dimensions.get('window').width,
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  tabLabel: {
-    height: 39.5,
-    // paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabLabelText: {
-    color: '#4D5067',
-    fontFamily: 'Roboto-Medium',
-    fontSize: 12,
-    lineHeight: 14,
-  },
-  tabLabelActive: {
-    color: '#1DBF12',
-  },
-  tabIcon: {
-    marginRight: 5,
-  },
-  headerLeftText: { fontSize: 14, color: 'white' },
-  headerRightText: { paddingRight: 10, fontSize: 14 },
-  titleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  subTitleText: {
-    fontFamily: 'Roboto',
-    color: '#fff',
-    fontSize: 10,
-  },
-  titleContainer: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  leftButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-  },
-  backIcon: {
-    fontSize: 24,
-    color: '#fff',
-    marginRight: 8,
-  },
-  backContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingLeft: 10,
-  },
-});
 
-export default class ClientInfoScreen extends React.Component {
+interface Props {
+  navigation: any;
+}
+
+interface State {
+  styles: any;
+  index: number;
+  loading: boolean;
+  editionMode: boolean;
+  client:any;
+  canDelete:boolean;
+  routes: any
+}
+
+export default class ClientInfoScreen extends React.Component<Props, State> {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     let title = 'Client Info';
@@ -90,13 +47,13 @@ export default class ClientInfoScreen extends React.Component {
       title = `${params.client.name} ${params.client.lastName}`;
     }
 
-    const props = this.props;
+    const styles = createStyleSheet();
 
     const canSave = params.canSave || false;
     const showDoneButton = params.showDoneButton;
     const handleDone = navigation.state.params.handleDone ?
       navigation.state.params.handleDone :
-      () => { alert('Not Implemented'); };
+      () => { Alert.alert('Not Implemented'); };
 
     const handleBack = params.handleBack ?
       () => { params.handleBack(); navigation.goBack(); } :
@@ -139,7 +96,7 @@ export default class ClientInfoScreen extends React.Component {
     super(props);
     const { params } = this.props.navigation.state;
 
-    this.props.navigation.setParams({ handleDone: this.handleDone, canSave: false, showDoneButton: true });
+    this.props.navigation.setParams({ handleDone: ()=>{}, canSave: false, showDoneButton: true });
 
     const client = params && params.client ? params.client : null;
     const canDelete = params && params.canDelete ? params.canDelete : false;
@@ -148,6 +105,7 @@ export default class ClientInfoScreen extends React.Component {
     editionMode = editionMode && !isWalkIn;
 
     this.state = {
+      styles: createStyleSheet(),
       index: 0,
       loading: true,
       editionMode,
@@ -191,8 +149,8 @@ export default class ClientInfoScreen extends React.Component {
     <Text
       style={
         this.state.index === index
-          ? [styles.tabLabelText, styles.tabLabelActive]
-          : styles.tabLabelText
+          ? [this.state.styles.tabLabelText, this.state.styles.tabLabelActive]
+          : this.state.styles.tabLabelText
       }
     >
       {` ${route.title}`}
@@ -203,7 +161,7 @@ export default class ClientInfoScreen extends React.Component {
   renderTabBar = props => (
     <TabBar
       {...props}
-      tabStyle={[styles.tabLabel, { backgroundColor: 'transparent' }]}
+      tabStyle={[this.state.styles.tabLabel, { backgroundColor: 'transparent' }]}
       style={{ backgroundColor: 'transparent', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#C0C1C6' }}
       renderLabel={this.renderLabel(props)}
       indicatorStyle={{ backgroundColor: '#1DBF12', height: 2 }}
@@ -220,6 +178,7 @@ export default class ClientInfoScreen extends React.Component {
       editionMode={this.state.editionMode}
       client={this.state.client}
       navigation={this.props.navigation}
+      onDismiss={()=>{}}
       {...this.props}
     />),
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
@@ -228,7 +187,7 @@ export default class ClientInfoScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={this.state.styles.container}>
         <TabView
           style={{ flex: 1 }}
           navigationState={this.state}
@@ -237,7 +196,7 @@ export default class ClientInfoScreen extends React.Component {
           onIndexChange={this.handleIndexChange}
           initialLayout={initialLayout}
           swipeEnabled={false}
-          useNativeDriver
+          /*useNativeDriver*/
         />
       </View>
     );

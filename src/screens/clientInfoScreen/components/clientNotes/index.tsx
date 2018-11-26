@@ -10,8 +10,8 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  clientNotesActions: bindActionCreators ({...clientNotesActions}, dispatch),
-  clientInfoActions: bindActionCreators ({...clientInfoActions}, dispatch),
+  clientNotesActions: bindActionCreators ({...clientNotesActions as any}, dispatch),
+  clientInfoActions: bindActionCreators ({...clientInfoActions as any}, dispatch),
 });
 
 export default connect (mapStateToProps, mapActionsToProps) (ClientNotesScreen);

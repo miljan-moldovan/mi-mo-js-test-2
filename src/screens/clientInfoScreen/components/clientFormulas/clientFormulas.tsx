@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import {
   View,
   ScrollView,
@@ -15,7 +15,7 @@ import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import FloatingButton from '../../../../components/FloatingButton';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import styles from './stylesClientFormulas';
+import createStyleSheet from './stylesClientFormulas';
 import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
 
@@ -29,9 +29,27 @@ const formulaTypes = [
   { id: formulaTypesEnum.NULL, name: 'NULL' },
 ];
 
-class ClientFormulas extends Component {
+
+interface Props {
+  navigation: any;
+  editionMode: any;
+  client: any;
+  clientFormulasActions: any;
+  clientFormulasState: any;
+  handleOnNavigateBack?: any;
+}
+
+interface State {
+  styles: any;
+  client: any;
+  activeTypes: any;
+  existingTypes: any;
+  showDeleted: boolean;
+}
+
+class ClientFormulas extends React.Component<Props, State> {
   static flexFilter(list, info) {
-    let matchesFilter = [];
+    let matchesFilter: { (item:any) : boolean};
     const matches = [];
 
     matchesFilter = function match(item) {
@@ -72,12 +90,13 @@ class ClientFormulas extends Component {
     return 0;
   }
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     const { client } = this.props;
 
     this.state = {
+      styles: createStyleSheet(),
       client,
       activeTypes: [],
       existingTypes: [],
@@ -138,7 +157,7 @@ class ClientFormulas extends Component {
     return existing;
   }
 
-  filterFormulas(searchText, showDeleted) {
+  filterFormulas(searchText: string, showDeleted?: boolean) {
     const baseFormulas = showDeleted ? this.props.clientFormulasState.formulas :
       this.props.clientFormulasState.formulas.filter(el => !el.isDeleted);
 
@@ -209,12 +228,12 @@ class ClientFormulas extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={this.state.styles.container}>
         { this.props.clientFormulasState.isLoading &&
         <LoadingOverlay />
             }
-        <View style={styles.header}>
-          <View style={styles.topSearchBar}>
+        <View style={this.state.styles.header}>
+          <View style={this.state.styles.topSearchBar}>
             <SalonSearchBar
               containerStyle={{ paddingHorizontal: 8 }}
               placeHolderText="Search"
@@ -228,9 +247,9 @@ class ClientFormulas extends Component {
               onChangeText={searchText => this.filterFormulas(searchText)}
             />
           </View>
-          <View style={styles.tagsBar} >
+          <View style={this.state.styles.tagsBar} >
             {this.state.existingTypes.map(item => (
-              <View style={styles.tag} key={Math.random().toString()}>
+              <View style={this.state.styles.tag} key={Math.random().toString()}>
                 <SalonBtnTag
                   onPress={this.onPressTagFilter}
                   tagHeight={24}
@@ -256,21 +275,21 @@ class ClientFormulas extends Component {
             ))}
           </View>
         </View>
-        <View style={styles.formulasScroller}>
+        <View style={this.state.styles.formulasScroller}>
           <ScrollView style={{ alignSelf: 'stretch' }}>
             <FlatList
               extraData={this.props}
-              keyExtractor={(item, index) => index}
+              keyExtractor={({ item, index }: { item: any, index: any }) => index}
               style={{ alignSelf: 'stretch', marginTop: 4 }}
               data={this.props.clientFormulasState.filtered}
-              renderItem={({ item, index }) => (
+              renderItem={({ item, index }: { item: any, index: any },) => (
                 <SalonCard
                   key={index}
                   containerStyles={{ marginVertical: 2, marginHorizontal: 8 }}
                   backgroundColor="#FFFFFF"
                   headerChildren={[
-                    <View style={styles.formulaTags} key={Math.random().toString()}>
-                      <View style={styles.formulaHeaderLeft}>
+                    <View style={this.state.styles.formulaTags} key={Math.random().toString()}>
+                      <View style={this.state.styles.formulaHeaderLeft}>
                         <SalonDateTxt
                           dateFormat="MMM. DD"
                           value={item.date}
@@ -286,8 +305,8 @@ class ClientFormulas extends Component {
                           fontWeight="normal"
                         />
                       </View>
-                      <View style={styles.formulaTypeTag}>
-                        <Text style={styles.formulaType}>{this.getFormulaTypeName(item.formulaType)}</Text>
+                      <View style={this.state.styles.formulaTypeTag}>
+                        <Text style={this.state.styles.formulaType}>{this.getFormulaTypeName(item.formulaType)}</Text>
                       </View>
                       <SalonTouchableOpacity
                         onPress={() => this.editFormula(item)}
@@ -305,23 +324,23 @@ class ClientFormulas extends Component {
                     </View>]}
                   bodyChildren={[
                     <View style={{ flexDirection: 'column', height: 33 }} key={Math.random().toString()}>
-                      <Text style={styles.formulaTextTitle}>
-                        <Text style={[styles.formulaTextTitle, styles.boldText]}>{item.service.name}</Text>
-                        <Text style={styles.italicText}> by</Text> {item.stylistName}
+                      <Text style={this.state.styles.formulaTextTitle}>
+                        <Text style={[this.state.styles.formulaTextTitle, this.state.styles.boldText]}>{item.service.name}</Text>
+                        <Text style={this.state.styles.italicText}> by</Text> {item.stylistName}
                       </Text>
-                      <Text style={styles.formulaText}>{item.store.name}</Text>
+                      <Text style={this.state.styles.formulaText}>{item.store.name}</Text>
                     </View>]}
                 />
               )}
             />
-            <View style={styles.showDeletedButtonContainer}>
+            <View style={this.state.styles.showDeletedButtonContainer}>
               <SalonTouchableOpacity
-                style={styles.showDeletedButton}
+                style={this.state.styles.showDeletedButton}
                 onPress={() => {
                   this.setState({ showDeleted: !this.state.showDeleted });
                 }}
               >
-                <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
+                <Text style={this.state.styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
               </SalonTouchableOpacity>
             </View>
           </ScrollView>
@@ -352,22 +371,5 @@ class ClientFormulas extends Component {
     );
   }
 }
-
-
-ClientFormulas.defaultProps = {
-
-};
-
-ClientFormulas.propTypes = {
-  clientFormulasActions: PropTypes.shape({
-    getClientFormulas: PropTypes.func.isRequired,
-    setFilteredFormulas: PropTypes.func.isRequired,
-    setFormulas: PropTypes.func.isRequired,
-  }).isRequired,
-  clientFormulasState: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
-  navigation: PropTypes.any.isRequired,
-  handleOnNavigateBack: PropTypes.func.isRequired,
-};
 
 export default ClientFormulas;

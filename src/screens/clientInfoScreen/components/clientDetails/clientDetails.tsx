@@ -99,6 +99,7 @@ interface Props {
   onDismiss: any;
   appointmentCalendarActions: any;
   editionMode: any;
+  canDelete: boolean;
 }
 
 interface State {

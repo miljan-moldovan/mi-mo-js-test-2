@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default StyleSheet.create({
+const createStyleSheet = () => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
@@ -51,3 +51,6 @@ export default StyleSheet.create({
   },
   headerRightText: { paddingRight: 10, marginTop: 20, fontSize: 14 },
 });
+
+
+export default createStyleSheet;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
+import PropTypes, { bool } from 'prop-types';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SalonActionSheet from '../../../../components/SalonActionSheet';
 import SalonSearchBar from '../../../../components/SalonSearchBar';
@@ -21,7 +21,7 @@ import SalonDateTxt from '../../../../components/SalonDateTxt';
 import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
-import styles from './stylesClientNotes';
+import createStyleSheet from './stylesClientNotes';
 import Icon from '../../../../components/UI/Icon';
 import HeaderLateral from '../../../../components/HeaderLateral';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
@@ -31,46 +31,77 @@ import SalonHeader from '../../../../components/SalonHeader';
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 1;
 
-class ClientNotesScreen extends Component {
-  static navigationOptions = rootProps => ({
-    header: (
-      <SalonHeader
-        title={`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}
-        subTitle="Appointment notes"
-        headerLeft={HeaderLateral({
-          handlePress: () => rootProps.navigation.goBack(),
-          button: (
-            <View style={styles.leftButtonContainer}>
-              <Icon
-                name="angleLeft"
-                size={28}
-                style={{ paddingHorizontal: 2 }}
-                color="#fff"
-                type="light"
-              />
-            </View>
-          ),
-        })}
-        headerRight={HeaderLateral({
-          handlePress: () => { alert('Not implemented'); },
-          button: (
-            <View style={styles.rightButtonContainer}>
-              <Icon
-                name="infoCircle"
-                size={20}
-                style={{ paddingHorizontal: 2 }}
-                color="#fff"
-                type="regular"
-              />
-            </View>
-          ),
-        })}
-      />
-    ),
-  })
+
+
+interface Props {
+  navigation: any;
+  client: any;
+  clientNotesState: any;
+  clientNotesActions: any;
+  editionMode: any;
+}
+
+interface State {
+  styles: any;
+  showTagBar: boolean;
+  editionMode: boolean;
+  showDeleted: boolean
+  options: any;
+  forAppointment: boolean;
+  forQueue: boolean;
+  forSales: boolean;
+  client: any;
+  refreshing: boolean;
+  searchText: string;
+  note: any;
+  salonActionSheet: any;
+}
+
+class ClientNotesScreen extends React.Component<Props, State> {
+  static navigationOptions = (rootProps) => {
+
+    const styles = createStyleSheet()
+    
+    return { 
+      header: (
+        <SalonHeader
+          title={`${rootProps.navigation.state.params.client.name} ${rootProps.navigation.state.params.client.lastName}`}
+          subTitle="Appointment notes"
+          headerLeft={HeaderLateral({
+            handlePress: () => rootProps.navigation.goBack(),
+            button: (
+              <View style={styles.leftButtonContainer}>
+                <Icon
+                  name="angleLeft"
+                  size={28}
+                  style={{ paddingHorizontal: 2 }}
+                  color="#fff"
+                  type="light"
+                />
+              </View>
+            ),
+          })}
+          headerRight={HeaderLateral({
+            handlePress: () => { Alert.alert('Not implemented'); },
+            button: (
+              <View style={styles.rightButtonContainer}>
+                <Icon
+                  name="infoCircle"
+                  size={20}
+                  style={{ paddingHorizontal: 2 }}
+                  color="#fff"
+                  type="regular"
+                />
+              </View>
+            ),
+          })}
+        />
+      ),
+    }
+  }
 
   static flexFilter(list, info) {
-    let matchesFilter = [];
+    let matchesFilter: { (item:any) : boolean};
     const matches = [];
 
     matchesFilter = function match(item) {
@@ -98,7 +129,7 @@ class ClientNotesScreen extends Component {
     return 0;
   }
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     let { client } = this.props;
     const { params } = this.props.navigation.state;
@@ -113,6 +144,7 @@ class ClientNotesScreen extends Component {
     const forAppointment = 'forAppointment' in params ? params.forAppointment : true;
 
     this.state = {
+      styles: createStyleSheet(),
       showTagBar,
       editionMode,
       client,
@@ -123,30 +155,13 @@ class ClientNotesScreen extends Component {
       showDeleted: false,
       forAppointment,
       searchText: '',
+      salonActionSheet: null,
+      note: null,
+
     };
 
     this.getNotes();
   }
-
-  state: {
-    showTagBar: false,
-    editionMode: true,
-    showDeleted: false,
-    options: [
-      'Edit Note',
-      'Delete Note',
-      'Cancel',
-    ],
-    forAppointment: false,
-    forQueue: false,
-    forSales: false,
-    client: {}
-  }
-
-  // componentWillMount() {
-  //
-  //   this.getNotes();
-  // }
 
   onPressSalonBtnAppointment = () => {
     this.setState({ forAppointment: !this.state.forAppointment });
@@ -220,7 +235,7 @@ class ClientNotesScreen extends Component {
     };
 
     const tags = [
-      <View key={Math.random().toString()} style={styles.tag}>
+      <View key={Math.random().toString()} style={this.state.styles.tag}>
         <SalonBtnTag
           iconSize={13}
           onPress={this.onPressSalonBtnAppointment}
@@ -232,7 +247,7 @@ class ClientNotesScreen extends Component {
           inactiveStyle={inactiveStyle}
         />
       </View>,
-      <View key={Math.random().toString()} style={styles.tag}>
+      <View key={Math.random().toString()} style={this.state.styles.tag}>
         <SalonBtnTag
           iconSize={13}
           onPress={this.onPressSalonBtnSales}
@@ -244,7 +259,7 @@ class ClientNotesScreen extends Component {
           inactiveStyle={inactiveStyle}
         />
       </View>,
-      <View key={Math.random().toString()} style={styles.tag}>
+      <View key={Math.random().toString()} style={this.state.styles.tag}>
         <SalonBtnTag
           iconSize={13}
           onPress={this.onPressSalonBtnQueue}
@@ -342,8 +357,8 @@ class ClientNotesScreen extends Component {
     this.filterNotes(this.state.searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue);
   }
 
-  showActionSheet = (note) => {
-    this.setState({ note, options: this.getOptions(note) }, () => { this.SalonActionSheet.show(); });
+  showActionSheet = (note:any) => {
+    this.setState({ note, options: this.getOptions(note) }, () => { this.state.salonActionSheet.show(); });
   };
 
   handlePress = (i) => {
@@ -435,7 +450,7 @@ class ClientNotesScreen extends Component {
   }
 
   renderViewMore = onPress => (
-    <Text style={styles.moreText} onPress={onPress}>... more</Text>
+    <Text style={this.state.styles.moreText} onPress={onPress}>... more</Text>
   )
 
   onPressDelete = () => {
@@ -458,7 +473,7 @@ class ClientNotesScreen extends Component {
     const { apptBook = false } = params;
 
     return (
-      <View style={styles.container}>
+      <View style={this.state.styles.container}>
 
         {this.props.clientNotesState.isLoading &&
           <LoadingOverlay />
@@ -466,7 +481,13 @@ class ClientNotesScreen extends Component {
 
 
         <SalonActionSheet
-          ref={o => this.SalonActionSheet = o}
+           ref={
+            o => { 
+              if(!this.state.salonActionSheet){
+                this.setState({salonActionSheet:o}) 
+              }
+            }
+          }
           options={this.state.options}
           cancelButtonIndex={CANCEL_INDEX}
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
@@ -481,8 +502,8 @@ class ClientNotesScreen extends Component {
             />
           }
         >
-          <View style={styles.header}>
-            <View style={styles.topSearchBar}>
+          <View style={this.state.styles.header}>
+            <View style={this.state.styles.topSearchBar}>
               <SalonSearchBar
                 placeHolderText="Search"
                 marginVertical={0}
@@ -490,33 +511,33 @@ class ClientNotesScreen extends Component {
                 searchIconPosition="left"
                 iconsColor="#727A8F"
                 fontColor="#727A8F"
-                containerStyle={styles.salonSearchBarContainer}
+                containerStyle={this.state.styles.salonSearchBarContainer}
                 borderColor="transparent"
                 backgroundColor="rgba(142, 142, 147, 0.24)"
                 onChangeText={searchText => this.filterNotes(searchText, this.state.showDeleted, this.state.forSales, this.state.forAppointment, this.state.forQueue)}
               />
             </View>
             {this.state.showTagBar &&
-              <View style={styles.tagsBar} >
+              <View style={this.state.styles.tagsBar} >
                 {this.setTagsBar()}
               </View>
             }
           </View>
-          <View style={styles.notesScroller}>
-            <View style={styles.notesView}>
+          <View style={this.state.styles.notesScroller}>
+            <View style={this.state.styles.notesView}>
               <FlatList
                 extraData={this.props}
-                keyExtractor={(item, index) => index}
+                keyExtractor={({ item, index }: { item: any, index: any }) => index}
                 data={this.props.clientNotesState.filtered}
-                renderItem={({ item, index }) => (
+                renderItem={({ item, index }: { item: any, index: any },) => (
                   <SalonCard
-                    containerStyles={styles.salonCardContainer}
-                    bodyStyles={styles.salonCardBody}
+                    containerStyles={this.state.styles.salonCardContainer}
+                    bodyStyles={this.state.styles.salonCardBody}
                     key={index}
                     backgroundColor={!this.isExpiredOrDelete(item) ? '#FFFFFF' : '#F8F8F8'}
                     headerChildren={[
-                      <View style={styles.noteTags}>
-                        <View style={styles.noteHeaderLeft}>
+                      <View style={this.state.styles.noteTags}>
+                        <View style={this.state.styles.noteHeaderLeft}>
 
                           <SalonDateTxt
                             dateFormat="MMM. DD"
@@ -536,21 +557,21 @@ class ClientNotesScreen extends Component {
                             fontWeight="normal"
                           />
 
-                          <Text style={styles.noteBy}>by</Text>
-                          <Text style={styles.noteAuthor}>{item.enteredBy}</Text>
+                          <Text style={this.state.styles.noteBy}>by</Text>
+                          <Text style={this.state.styles.noteAuthor}>{item.enteredBy}</Text>
 
                         </View>
-                        <View style={styles.noteHeaderRight}>
+                        <View style={this.state.styles.noteHeaderRight}>
 
                           {this.state.editionMode &&
                             <SalonTouchableOpacity
-                              style={styles.dotsButton}
+                              style={this.state.styles.dotsButton}
                               onPress={() => { this.showActionSheet(item); }}
                             >
                               <SalonIcon
                                 size={16}
                                 icon="dots"
-                                style={styles.dotsIcon}
+                                style={this.state.styles.dotsIcon}
                               />
                             </SalonTouchableOpacity>}
                         </View>
@@ -563,7 +584,7 @@ class ClientNotesScreen extends Component {
                       //  renderViewLess={this.renderViewLess}
                       >
                         <Text
-                          style={[styles.noteText, { color: !this.isExpiredOrDelete(item) ? '#2E3032' : '#58595B' }]}
+                          style={[this.state.styles.noteText, { color: !this.isExpiredOrDelete(item) ? '#2E3032' : '#58595B' }]}
                         >
                           {item.text}
                         </Text>
@@ -575,13 +596,13 @@ class ClientNotesScreen extends Component {
                 )}
               />
 
-              <View style={styles.showDeletedButtonContainer}>
+              <View style={this.state.styles.showDeletedButtonContainer}>
                 {this.state.editionMode ?
                   <SalonTouchableOpacity
-                    style={styles.showDeletedButton}
+                    style={this.state.styles.showDeletedButton}
                     onPress={this.onPressDelete}
                   >
-                    <Text style={styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted/expired notes' : 'Show Deleted/expired notes'}</Text>
+                    <Text style={this.state.styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted/expired notes' : 'Show Deleted/expired notes'}</Text>
                   </SalonTouchableOpacity> : null
                 }
               </View>
@@ -593,7 +614,7 @@ class ClientNotesScreen extends Component {
 
         {this.state.editionMode ?
           <FloatingButton
-            rootStyle={styles.floatingButtonRoot}
+            rootStyle={this.state.styles.floatingButtonRoot}
             handlePress={() => {
               const { navigate } = this.props.navigation;
               navigate('ClientNote', {
@@ -609,29 +630,12 @@ class ClientNotesScreen extends Component {
             <SalonIcon
               size={24}
               icon="plus"
-              style={styles.plusIcon}
+              style={this.state.styles.plusIcon}
             />
           </FloatingButton> : null}
       </View>
     );
   }
 }
-
-ClientNotesScreen.defaultProps = {
-};
-
-ClientNotesScreen.propTypes = {
-  clientNotesActions: PropTypes.shape({
-    getClientNotes: PropTypes.func.isRequired,
-    setFilteredNotes: PropTypes.func.isRequired,
-    setNotes: PropTypes.func.isRequired,
-    deleteClientNotes: PropTypes.func.isRequired,
-    undeleteClientNotes: PropTypes.func.isRequired,
-    setOnEditionNote: PropTypes.func.isRequired,
-  }).isRequired,
-  clientNotesState: PropTypes.any.isRequired,
-  client: PropTypes.any.isRequired,
-  navigation: PropTypes.any.isRequired,
-};
 
 export default ClientNotesScreen;
