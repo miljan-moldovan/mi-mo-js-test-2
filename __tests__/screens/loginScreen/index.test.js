@@ -22,11 +22,12 @@ const initialState = {
   }
 };
 
-
-it ('renders correctly', () => {
-  const wrapper = shallow(
-      <LoginScreen />,
-      { context: { store: mockStore(initialState) } },
-    );
-    expect(wrapper.dive()).toMatchSnapshot();
-});
+describe('LoginScreen', () => {
+  it ('renders correctly', () => {
+    const wrapper = shallow(
+        <LoginScreen />,
+        { context: { store: mockStore(initialState) } },
+      );
+      expect(wrapper.dive()).toMatchSnapshot();
+  });
+})
