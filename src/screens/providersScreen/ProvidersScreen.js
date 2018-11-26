@@ -340,8 +340,8 @@ class ProviderScreen extends React.Component {
     const checked =
       selectedProvider &&
       (selectedProvider.id === item.id ||
-        selectedProvider.fullName.toLowerCase () ===
-          item.fullName.toLowerCase ());
+        get (selectedProvider, 'fullName', '').toLowerCase () ===
+          get (item, 'fullName', '').toLowerCase ());
 
     const highlightStyle = checked
       ? [styles.providerName, styles.selectedGreen]
