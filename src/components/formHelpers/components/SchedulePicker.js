@@ -40,7 +40,10 @@ class SchedulePicker extends React.Component {
 
   componentWillReceiveProps (newProps) {
     const {date, getSchedule} = this.props;
-    if (date !== newProps.date) {
+    if (
+      moment (date).format ('YYYY-MM-DD') !==
+      moment (newProps.date).format ('YYYY-MM-DD')
+    ) {
       getSchedule (moment (newProps.date).format ('YYYY-MM-DD'));
     }
   }

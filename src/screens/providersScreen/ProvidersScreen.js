@@ -1,20 +1,16 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-} from 'react-native';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get, includes, isArray, map, filter, find } from 'lodash';
+import {View, Text, FlatList, StyleSheet, RefreshControl} from 'react-native';
+import FontAwesome, {Icons} from 'react-native-fontawesome';
+import {get, includes, isFunction, isArray, map, filter, find} from 'lodash';
 import PropTypes from 'prop-types';
-import { getEmployeePhotoSource } from '../../utilities/helpers/getEmployeePhotoSource';
+import {
+  getEmployeePhotoSource,
+} from '../../utilities/helpers/getEmployeePhotoSource';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import { DefaultAvatar } from '../../components/formHelpers';
+import {DefaultAvatar} from '../../components/formHelpers';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/Colors';
@@ -22,14 +18,14 @@ import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 
-const FirstAvailableRow = (props) => {
+const FirstAvailableRow = props => {
   const firstAvProvider = {
     id: 0,
     isFirstAvailable: true,
     name: 'First',
     lastName: 'Available',
   };
-  const onPress = () => props.onPress(firstAvProvider);
+  const onPress = () => props.onPress (firstAvProvider);
   return (
     <SalonTouchableOpacity
       onPress={onPress}
@@ -37,11 +33,7 @@ const FirstAvailableRow = (props) => {
       key="firstAvailableRow"
     >
       <View style={styles.inputRow}>
-        <DefaultAvatar
-          size={22}
-          fontSize={9}
-          provider={firstAvProvider}
-        />
+        <DefaultAvatar size={22} fontSize={9} provider={firstAvProvider} />
         <Text style={styles.providerName}>First Available</Text>
       </View>
     </SalonTouchableOpacity>
@@ -49,53 +41,73 @@ const FirstAvailableRow = (props) => {
 };
 
 class ProviderScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const defaultProps = navigation.state.params && navigation.state.params.defaultProps
-      ? navigation.state.params.defaultProps : {
-        title: 'Providers',
-        subTitle: null,
-        leftButtonOnPress: navigation.goBack,
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
-      };
+  static navigationOptions = ({navigation}) => {
+    const defaultProps = navigation.state.params &&
+      navigation.state.params.defaultProps
+      ? navigation.state.params.defaultProps
+      : {
+          title: 'Providers',
+          subTitle: null,
+          leftButtonOnPress: navigation.goBack,
+          leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        };
 
-    const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
-    const { leftButton } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav
-      ? navigation.state.params.headerProps : { leftButton: defaultProps.leftButton };
-    const { rightButton } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav
-      ? navigation.state.params.headerProps : { rightButton: defaultProps.rightButton };
-    const { leftButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav
-      ? navigation.state.params.headerProps : { leftButtonOnPress: defaultProps.leftButtonOnPress };
-    const { rightButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav
+    const ignoreNav = navigation.state.params
+      ? navigation.state.params.ignoreNav
+      : false;
+    const {leftButton} = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
-      : { rightButtonOnPress: defaultProps.rightButtonOnPress };
+      : {leftButton: defaultProps.leftButton};
+    const {rightButton} = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav
+      ? navigation.state.params.headerProps
+      : {rightButton: defaultProps.rightButton};
+    const {leftButtonOnPress} = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav
+      ? navigation.state.params.headerProps
+      : {leftButtonOnPress: defaultProps.leftButtonOnPress};
+    const {rightButtonOnPress} = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav
+      ? navigation.state.params.headerProps
+      : {rightButtonOnPress: defaultProps.rightButtonOnPress};
 
-    const { title } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav
-      ? navigation.state.params.headerProps : { title: defaultProps.title };
-    const { subTitle } = navigation.state.params &&
-      navigation.state.params.headerProps && !ignoreNav
-      ? navigation.state.params.headerProps : { subTitle: defaultProps.subTitle };
+    const {title} = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav
+      ? navigation.state.params.headerProps
+      : {title: defaultProps.title};
+    const {subTitle} = navigation.state.params &&
+      navigation.state.params.headerProps &&
+      !ignoreNav
+      ? navigation.state.params.headerProps
+      : {subTitle: defaultProps.subTitle};
     let customLeftButton = false;
     if (navigation.state.params) {
       if (
-        navigation.state.params.headerProps && navigation.state.params.headerProps.leftButtonOnPress
+        navigation.state.params.headerProps &&
+        navigation.state.params.headerProps.leftButtonOnPress
       ) {
         customLeftButton = true;
       }
     }
     const headerLeftOnPress = customLeftButton
-      ? () => leftButtonOnPress(navigation) : leftButtonOnPress;
+      ? () => leftButtonOnPress (navigation)
+      : leftButtonOnPress;
     return {
       header: (
         <SalonHeader
           title={title}
           subTitle={subTitle || null}
           headerLeft={
-            <SalonTouchableOpacity style={styles.leftHeaderButton} onPress={headerLeftOnPress}>
+            <SalonTouchableOpacity
+              style={styles.leftHeaderButton}
+              onPress={headerLeftOnPress}
+            >
               {leftButton}
             </SalonTouchableOpacity>
           }
@@ -104,13 +116,13 @@ class ProviderScreen extends React.Component {
     };
   };
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     if (this.params.selectedService) {
-      props.providersActions.setSelectedService(this.params.selectedService);
+      props.providersActions.setSelectedService (this.params.selectedService);
     }
     if (this.params.selectedProvider) {
-      props.providersActions.setSelectedProvider(this.params.selectedProvider);
+      props.providersActions.setSelectedProvider (this.params.selectedProvider);
     }
     this.state = {
       refreshing: false,
@@ -123,18 +135,18 @@ class ProviderScreen extends React.Component {
       },
     };
 
-    this.props.settingsActions.getSettings();
+    this.props.settingsActions.getSettings ();
   }
 
-  componentDidMount() {
-    this.props.navigation.setParams({ defaultProps: this.state.headerProps });
-    this.onRefresh();
+  componentDidMount () {
+    this.props.navigation.setParams ({defaultProps: this.state.headerProps});
+    this.onRefresh ();
   }
 
-  onChangeSearchText = searchText => this.setState({ searchText });
+  onChangeSearchText = searchText => this.setState ({searchText});
 
   onRefresh = () => {
-    const { selectedService, queueItem } = this.params;
+    const {selectedService, queueItem} = this.params;
     const {
       providersActions: {
         getProviders,
@@ -144,7 +156,6 @@ class ProviderScreen extends React.Component {
       },
     } = this.props;
 
-
     const req = {
       filterRule: 3,
       maxCount: 1000,
@@ -152,45 +163,39 @@ class ProviderScreen extends React.Component {
       sortField: 'FirstName,LastName',
     };
 
-
     switch (this.mode) {
       case 'queue':
-        getQueueEmployees(req);
+        getQueueEmployees (req);
         break;
       case 'quickQueue':
-        getQueueEmployees(req);
-        getQuickQueueEmployees({ ...req, queueItemId: queueItem.id });
+        getQueueEmployees (req);
+        getQuickQueueEmployees ({...req, queueItemId: queueItem.id});
         break;
       case 'receptionists':
-        getReceptionists({
+        getReceptionists ({
           ...req,
           sortField: 'Name,LastName',
         });
         break;
       case 'employees':
       default:
-        getProviders(req, selectedService);
+        getProviders (req, selectedService);
         break;
     }
-  }
+  };
 
-  get currentData() {
+  get currentData () {
     const {
-      providersState: {
-        employees,
-        providers,
-        currentData: allProviders,
-      },
+      providersState: {employees, providers, currentData: allProviders},
       queueList,
       receptionistList,
       quickQueueEmployees,
     } = this.props;
-    const { searchText } = this.state;
-    const { filterList } = this.params;
+    const {searchText} = this.state;
+    const {filterList} = this.params;
     // if (this.props.navigation.state.routeName !== 'ModalProviders') {
     //   return currentData;
     // }
-
 
     let currentData = [];
     switch (this.mode) {
@@ -200,21 +205,26 @@ class ProviderScreen extends React.Component {
       case 'quickQueue':
         let filtereQueueList = queueList;
 
-        const { settings } = this.props.settingsState;
-        let ShowOnlyClockedInEmployeesInClientQueue = find(settings, { settingName: 'ShowOnlyClockedInEmployeesInClientQueue' });
-        ShowOnlyClockedInEmployeesInClientQueue = ShowOnlyClockedInEmployeesInClientQueue ? ShowOnlyClockedInEmployeesInClientQueue.settingValue : false
+        const {settings} = this.props.settingsState;
+        let ShowOnlyClockedInEmployeesInClientQueue = find (settings, {
+          settingName: 'ShowOnlyClockedInEmployeesInClientQueue',
+        });
+        ShowOnlyClockedInEmployeesInClientQueue = ShowOnlyClockedInEmployeesInClientQueue
+          ? ShowOnlyClockedInEmployeesInClientQueue.settingValue
+          : false;
 
-        if(ShowOnlyClockedInEmployeesInClientQueue){
-          filtereQueueList = filtereQueueList.length > 0 ?
-            filtereQueueList.filter(item => item.state.isClockedIn === true) : filtereQueueList;
+        if (ShowOnlyClockedInEmployeesInClientQueue) {
+          filtereQueueList = filtereQueueList.length > 0
+            ? filtereQueueList.filter (item => item.state.isClockedIn === true)
+            : filtereQueueList;
 
-          const filteredIds = map(filtereQueueList, 'id');
-          currentData = filter(quickQueueEmployees, p => includes(filteredIds, p.id));
-
-        }else{
-          currentData = quickQueueEmployees
+          const filteredIds = map (filtereQueueList, 'id');
+          currentData = filter (quickQueueEmployees, p =>
+            includes (filteredIds, p.id)
+          );
+        } else {
+          currentData = quickQueueEmployees;
         }
-
 
         break;
       case 'receptionists':
@@ -228,39 +238,46 @@ class ProviderScreen extends React.Component {
         currentData = allProviders;
         break;
     }
-    if (isArray(filterList) && filterList.length > 0) {
-      currentData = currentData.filter(itm => includes(filterList, itm.id));
+    if (isArray (filterList) && filterList.length > 0) {
+      currentData = currentData.filter (itm => includes (filterList, itm.id));
     }
-    return searchText.length > 0 ? currentData.filter((employee) => {
-      const isProviderFoundByName = [employee.name, employee.lastName, employee.middleName]
-        .filter(item => !!item)
-        .map(item => item.toLowerCase())
-        .some(item => item.indexOf(searchText.toLowerCase()) >= 0);
-      return isProviderFoundByName || employee.code === searchText;
-    }) : currentData;
+    return searchText.length > 0
+      ? currentData.filter (employee => {
+          const isProviderFoundByName = [
+            employee.name,
+            employee.lastName,
+            employee.middleName,
+          ]
+            .filter (item => !!item)
+            .map (item => item.toLowerCase ())
+            .some (item => item.indexOf (searchText.toLowerCase ()) >= 0);
+          return isProviderFoundByName || employee.code === searchText;
+        })
+      : currentData;
   }
 
-  get mode() {
+  get mode () {
     if (this.params.queueList) {
       return 'queue';
     }
     return this.params.mode || 'employees';
   }
 
-  get params() {
-    const { navigation: { state } } = this.props;
+  get params () {
+    const {navigation: {state}} = this.props;
     const params = state.params || {};
-    const showFirstAvailable = get(params, 'showFirstAvailable', true);
-    const checkProviderStatus = get(params, 'checkProviderStatus', false);
-    const showEstimatedTime = get(params, 'showEstimatedTime', true);
-    const selectedService = get(params, 'selectedService', null);
-    const queueItem = get(params, 'queueItem', null);
-    const filterList = get(params, 'filterList', false);
-    const selectedProvider = get(params, 'selectedProvider', null);
-    const onChangeProvider = get(params, 'onChangeProvider', null);
-    const dismissOnSelect = get(params, 'dismissOnSelect', null);
-    const queueList = get(params, 'queueList', false);
-    const mode = get(params, 'mode', false);
+    const showFirstAvailable = get (params, 'showFirstAvailable', true);
+    const checkProviderStatus = get (params, 'checkProviderStatus', false);
+    const showEstimatedTime = get (params, 'showEstimatedTime', true);
+    const selectedService = get (params, 'selectedService', null);
+    const queueItem = get (params, 'queueItem', null);
+    const filterList = get (params, 'filterList', false);
+    const selectedProvider = get (params, 'selectedProvider', null);
+    const onChangeProvider = get (params, 'onChangeProvider', null);
+    const onChangeWithNavigation = get (params, 'onChangeWithNavigation', null);
+    const dismissOnSelect = get (params, 'dismissOnSelect', null);
+    const queueList = get (params, 'queueList', false);
+    const mode = get (params, 'mode', false);
     return {
       mode,
       queueList,
@@ -273,58 +290,67 @@ class ProviderScreen extends React.Component {
       showEstimatedTime,
       showFirstAvailable,
       checkProviderStatus,
+      onChangeWithNavigation,
     };
   }
 
-  getItemLayout = (data, index) => (
-    { length: 43, offset: (43 + StyleSheet.hairlineWidth) * index, index }
-  )
+  getItemLayout = (data, index) => ({
+    length: 43,
+    offset: (43 + StyleSheet.hairlineWidth) * index,
+    index,
+  });
 
-  getFirstItemForLetter = (letter) => {
-    const { currentData } = this.props.providersState;
+  getFirstItemForLetter = letter => {
+    const {currentData} = this.props.providersState;
     for (let i = 0; i < currentData.length; i += 1) {
-      if (currentData[i].fullName.indexOf(letter) === 0) {
+      if (currentData[i].fullName.indexOf (letter) === 0) {
         return i;
       }
     }
     return false;
-  }
+  };
 
-  scrollToIndex = (index) => {
-    this.flatListRef.scrollToIndex({ animated: true, index });
-  }
+  scrollToIndex = index => {
+    this.flatListRef.scrollToIndex ({animated: true, index});
+  };
 
-  handleOnChangeProvider = async (provider) => {
+  handleOnChangeProvider = async provider => {
     const {
       dismissOnSelect,
       onChangeProvider,
+      onChangeWithNavigation,
     } = this.params;
-    const {
-      providersActions,
-      navigation: { goBack },
-    } = this.props;
-    providersActions.setSelectedProvider(provider);
-    onChangeProvider(provider);
-    if (dismissOnSelect) { goBack(); }
-  }
+    const {providersActions, navigation} = this.props;
+    providersActions.setSelectedProvider (provider);
+    if (isFunction (onChangeWithNavigation)) {
+      onChangeWithNavigation (provider, navigation);
+    } else if (isFunction (onChangeProvider)) {
+      onChangeProvider (provider);
+      if (dismissOnSelect) {
+        navigation.goBack ();
+      }
+    }
+  };
 
-  renderItem = ({ item, index }) => {
-    const {
-      selectedProvider,
-      showEstimatedTime,
-    } = this.params;
-    const { searchText } = this.state;
-    const image = getEmployeePhotoSource(item);
+  renderItem = ({item, index}) => {
+    const {selectedProvider, showEstimatedTime} = this.params;
+    const {searchText} = this.state;
+    const image = getEmployeePhotoSource (item);
 
-    const checked = selectedProvider && ( selectedProvider.id === item.id || selectedProvider.fullName.toLowerCase() === item.fullName.toLowerCase())
+    const checked =
+      selectedProvider &&
+      (selectedProvider.id === item.id ||
+        get (selectedProvider, 'fullName', '').toLowerCase () ===
+          get (item, 'fullName', '').toLowerCase ());
 
     const highlightStyle = checked
-      ? [styles.providerName, styles.selectedGreen] : styles.providerName;
+      ? [styles.providerName, styles.selectedGreen]
+      : styles.providerName;
 
     return (
       <SalonTouchableOpacity
         style={styles.itemRow}
-        onPress={() => this.handleOnChangeProvider(item)}
+        onPress={() => this.handleOnChangeProvider (item)}
         key={index}
       >
         <View style={styles.inputRow}>
@@ -334,13 +360,9 @@ class ProviderScreen extends React.Component {
             borderWidth={1}
             borderColor="transparent"
             image={image}
-            defaultComponent={(
-              <DefaultAvatar
-                size={22}
-                fontSize={9}
-                provider={item}
-              />
-            )}
+            defaultComponent={
+              <DefaultAvatar size={22} fontSize={9} provider={item} />
+            }
           />
           <WordHighlighter
             highlight={searchText}
@@ -357,25 +379,22 @@ class ProviderScreen extends React.Component {
           }
         </View>
         <View style={styles.selectedIconContainer}>
-          {
-            checked &&
-            <FontAwesome style={styles.selectedGreen}>{Icons.checkCircle}</FontAwesome>
-          }
+          {checked &&
+            <FontAwesome style={styles.selectedGreen}>
+              {Icons.checkCircle}
+            </FontAwesome>}
         </View>
       </SalonTouchableOpacity>
     );
   };
 
-  renderSeparator = () => <View style={styles.listItemSeparator} />
+  renderSeparator = () => <View style={styles.listItemSeparator} />;
 
-  render() {
-    const { showFirstAvailable } = this.params;
+  render () {
+    const {showFirstAvailable} = this.params;
     return (
       <View style={styles.container}>
-        {
-          this.props.providersState.isLoading &&
-          <LoadingOverlay />
-        }
+        {this.props.providersState.isLoading && <LoadingOverlay />}
         <SalonSearchBar
           backgroundColor={Colors.searchBarBackground}
           fontColor={Colors.defaultGrey}
@@ -387,19 +406,19 @@ class ProviderScreen extends React.Component {
           onChangeText={this.onChangeSearchText}
         />
 
-        {
-          showFirstAvailable &&
+        {showFirstAvailable &&
           <React.Fragment>
             <FirstAvailableRow onPress={this.handleOnChangeProvider} />
-            {this.renderSeparator()}
-          </React.Fragment>
-        }
+            {this.renderSeparator ()}
+          </React.Fragment>}
         <FlatList
           style={styles.whiteBackground}
           data={this.currentData}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          ref={(ref) => { this.flatListRef = ref; }}
+          ref={ref => {
+            this.flatListRef = ref;
+          }}
           ListFooterComponent={this.renderSeparator}
           ItemSeparatorComponent={this.renderSeparator}
           refreshControl={
@@ -417,14 +436,14 @@ ProviderScreen.propTypes = {
   queueList: PropTypes.node.isRequired,
   quickQueueEmployees: PropTypes.array.isRequired,
   receptionistList: PropTypes.array.isRequired,
-  providersState: PropTypes.shape({
+  providersState: PropTypes.shape ({
     employees: PropTypes.array,
     providers: PropTypes.array,
     currentData: PropTypes.array,
     receptionists: PropTypes.array,
     queueEmployees: PropTypes.array,
   }).isRequired,
-  providersActions: PropTypes.shape({
+  providersActions: PropTypes.shape ({
     getProviders: PropTypes.func,
     getReceptionists: PropTypes.func,
     getQueueEmployees: PropTypes.func,

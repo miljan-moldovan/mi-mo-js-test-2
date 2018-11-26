@@ -9,6 +9,7 @@ const {postAppointmentCancel} = appointmentActions;
 const {cancelBlockTime} = blockActions;
 
 const mapStateToProps = state => ({
+  currentUserEmployee: state.userInfoReducer.currentEmployee,
   isCancelling: state.appointmentReducer.isCancelling ||
     state.blockTimeReducer.isCancelling,
 });

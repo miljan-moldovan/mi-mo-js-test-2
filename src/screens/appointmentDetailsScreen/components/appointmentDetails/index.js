@@ -161,7 +161,7 @@ class AppointmentDetails extends React.Component {
       }
       return total + price;
     }, 0);
-    return servicesTotal + productsTotal;
+    return Number (servicesTotal + productsTotal).toFixed (2);
   }
 
   getStateFromProps = props => {
@@ -190,9 +190,9 @@ class AppointmentDetails extends React.Component {
       isProviderRequested: get (service, 'isProviderRequested', false),
       employee: service.isFirstAvailable
         ? {
-            isFirstAvailable: true,
             name: 'First',
             lastName: 'Available',
+            isFirstAvailable: true,
           }
         : get (service, 'employee', null),
       isFirstAvailable: service.isFirstAvailable,
@@ -309,38 +309,130 @@ class AppointmentDetails extends React.Component {
   handleAddService = () => {
     const {client} = this.state;
     const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Service', {
-      clientName,
-      dismissOnSelect: true,
-      updateQueue: this.updateQueue,
-      isInService: !this.props.isWaiting,
-      onSave: (data, onSuccess = false, onFailed = false) =>
-        this.addServiceItem (data, onSuccess, onFailed),
+    this.props.navigation.navigate ('Services', {
+      mode: 'queue',
+      onChangeWithNavigation: (service, serviceNav) => {
+        serviceNav.navigate ('Providers', {
+          selectedService: service,
+          showFirstAvailable: !!this.props.isWaiting,
+          checkProviderStatus: true,
+          mode: 'queue',
+          headerProps: {title: 'Providers', ...this.cancelButton ()},
+          onChangeWithNavigation: (employee, employeeNav) => {
+            employeeNav.goBack ();
+            serviceNav.goBack ();
+            const isFirstAvailable = get (employee, 'isFirstAvailable', false);
+            const price = get (service, 'price', 0);
+            const serviceItem = {
+              service,
+              employee,
+              price,
+              isFirstAvailable,
+              isProviderRequested: !isFirstAvailable,
+            };
+            this.props.navigation.navigate ('Service', {
+              clientName,
+              serviceItem,
+              dismissOnSelect: true,
+              updateQueue: this.updateQueue,
+              isInService: !this.props.isWaiting,
+              onSave: (data, onSuccess = false, onFailed = false) =>
+                this.addServiceItem (data, onSuccess, onFailed),
+            });
+          },
+        });
+      },
+      headerProps: {
+        title: 'Services',
+        rightButton: null,
+        rightButtonOnPress: navigation => null,
+        ...this.cancelButton (),
+      },
     });
   };
 
   handlePressService = serviceItem => {
     const {client} = this.state;
     const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Service', {
-      clientName,
-      serviceItem,
-      dismissOnSelect: true,
-      onSave: (data, onSuccess, onFailed) =>
-        this.updateServiceItem (serviceItem.itemId, data, onSuccess, onFailed),
-      onRemove: () => this.removeServiceItem (serviceItem.itemId),
-      updateQueue: this.updateQueue,
+    this.props.navigation.navigate ('Services', {
+      mode: 'queue',
+      selectedService: get (serviceItem, 'service', null),
+      onChangeWithNavigation: (service, serviceNav) => {
+        serviceNav.navigate ('Providers', {
+          selectedService: service,
+          selectedProvider: get (serviceItem, 'employee', null),
+          showFirstAvailable: !!this.props.isWaiting,
+          checkProviderStatus: true,
+          mode: 'queue',
+          headerProps: {title: 'Providers', ...this.cancelButton ()},
+          onChangeWithNavigation: (employee, employeeNav) => {
+            employeeNav.goBack ();
+            serviceNav.goBack ();
+            const isFirstAvailable = get (employee, 'isFirstAvailable', false);
+            const price = get (service, 'price', 0);
+            const newServiceItem = {
+              ...serviceItem,
+              service,
+              employee,
+              price,
+              isFirstAvailable,
+              isProviderRequested: isFirstAvailable ||
+                get (serviceItem, 'isProviderRequested', false),
+            };
+            this.props.navigation.navigate ('Service', {
+              clientName,
+              serviceItem: newServiceItem,
+              dismissOnSelect: true,
+              onSave: (data, onSuccess, onFailed) =>
+                this.updateServiceItem (
+                  serviceItem.itemId,
+                  data,
+                  onSuccess,
+                  onFailed
+                ),
+              onRemove: () => this.removeServiceItem (serviceItem.itemId),
+              updateQueue: this.updateQueue,
+            });
+          },
+        });
+      },
+      headerProps: {
+        title: 'Services',
+        rightButton: null,
+        rightButtonOnPress: navigation => null,
+        ...this.cancelButton (),
+      },
     });
   };
 
   handleAddProduct = () => {
     const {client} = this.state;
     const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Product', {
-      clientName,
-      dismissOnSelect: true,
-      onSave: (data, onSuccess, onFailed) =>
-        this.addProductItem (data, onSuccess, onFailed),
+    this.props.navigation.navigate ('Products', {
+      onChangeWithNavigation: (product, productsNav) => {
+        productsNav.navigate ('Providers', {
+          showFirstAvailable: false,
+          checkProviderStatus: true,
+          mode: 'employees',
+          onChangeWithNavigation: (employee, employeeNav) => {
+            employeeNav.goBack ();
+            productsNav.goBack ();
+            const productItem = {
+              product,
+              employee,
+            };
+            this.props.navigation.navigate ('Product', {
+              clientName,
+              productItem,
+              dismissOnSelect: true,
+              updateQueue: this.updateQueue,
+              isInService: !this.props.isWaiting,
+              onSave: (data, onSuccess, onFailed) =>
+                this.addProductItem (data, onSuccess, onFailed),
+            });
+          },
+        });
+      },
     });
   };
 
@@ -357,13 +449,37 @@ class AppointmentDetails extends React.Component {
   handlePressProduct = productItem => {
     const {client} = this.state;
     const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Product', {
-      clientName,
-      productItem,
-      dismissOnSelect: true,
-      onSave: (data, onSuccess, onFailed) =>
-        this.updateProductItem (productItem.itemId, data, onSuccess, onFailed),
-      onRemove: () => this.removeProductItem (productItem.itemId),
+    this.props.navigation.navigate ('Products', {
+      onChangeWithNavigation: (product, productsNav) => {
+        productsNav.navigate ('Providers', {
+          showFirstAvailable: false,
+          checkProviderStatus: true,
+          mode: 'employees',
+          onChangeWithNavigation: (employee, employeeNav) => {
+            employeeNav.goBack ();
+            productsNav.goBack ();
+            this.props.navigation.navigate ('Product', {
+              clientName,
+              productItem: {
+                ...productItem,
+                product,
+                employee,
+              },
+              dismissOnSelect: true,
+              updateQueue: this.updateQueue,
+              isInService: !this.props.isWaiting,
+              onSave: (data, onSuccess, onFailed) =>
+                this.updateProductItem (
+                  productItem.itemId,
+                  data,
+                  onSuccess,
+                  onFailed
+                ),
+              onRemove: () => this.removeProductItem (productItem.itemId),
+            });
+          },
+        });
+      },
     });
   };
 
@@ -691,12 +807,12 @@ class AppointmentDetails extends React.Component {
                       isProviderRequested={item.isProviderRequested}
                       onPress={() => this.handlePressService (item)}
                       discount={this.getDiscountAmount (item.promotion)}
-                      price={item.price}
+                      price={item.price.toFixed (2)}
                       withDiscount={this.calculatePriceDiscount (
                         item.promotion,
                         'serviceDiscountAmount',
                         item.price
-                      )}
+                      ).toFixed (2)}
                     />
                   ))}
                   <AddButton
@@ -707,7 +823,7 @@ class AppointmentDetails extends React.Component {
                   {productItems.map ((item, index) => (
                     <ProductCard
                       key={item.itemId}
-                      onPress={() => this.handlePressProduct (item, index)}
+                      onPress={() => this.handlePressProduct (item)}
                       product={item.product}
                       employee={item.employee}
                       promotion={item.promotion}
@@ -716,7 +832,7 @@ class AppointmentDetails extends React.Component {
                         item.promotion,
                         'retailDiscountAmount',
                         item.product.price
-                      )}
+                      ).toFixed (2)}
                     />
                   ))}
                   <AddButton
