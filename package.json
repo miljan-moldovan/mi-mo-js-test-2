@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
+    "test:watch": "jest --watch",
     "bundle:ios": "react-native bundle --entry-file ./index.js --platform ios --bundle-output ios/SalonUltimateRN/main.jsbundle"
   },
   "dependencies": {
@@ -68,16 +69,31 @@
   "devDependencies": {
     "babel-jest": "22.1.0",
     "babel-preset-react-native": "4.0.0",
+    "enzyme": "3.7.0",
+    "enzyme-adapter-react-16": "1.7.0",
     "jest": "22.1.4",
+    "jest-enzyme": "7.0.1",
+    "jest-serializer-enzyme": "1.0.0",
     "prettier": "1.15.2",
+    "react-addons-test-utils": "15.6.2",
+    "react-dom": "16.6.3",
     "react-test-renderer": "16.2.0",
+    "redux-mock-store": "1.5.3",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-react": "^3.6.0"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "transformIgnorePatterns": [
+      "/node_modules/(?!native-base)/"
+    ],
+    "setupTestFrameworkScriptFile": "./__tests__/setup/setupEnzyme.js",
+    "testPathIgnorePatterns": [
+      "<rootDir>/__tests__/setup/",
+      "<rootDir>/node_modules"
+    ]
   },
   "rnpm": {
     "assets": [

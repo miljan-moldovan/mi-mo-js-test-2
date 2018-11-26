@@ -216,9 +216,11 @@ export default class Calendar extends Component {
       this.state.buffer = [];
       nextProps.manageBuffer (false);
     }
-
     if (nextProps.isLoading) {
       this.clearActive ();
+    }
+    if (nextProps.startDate.format('YYYY-MM-DD') !== this.props.startDate.format('YYYY-MM-DD')) {
+      this.board.scrollTo({ x: 0, y: 0 });
     }
   }
 
@@ -239,23 +241,6 @@ export default class Calendar extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // {
-    //   cardsArray: [],
-    //   overlappingCardsMap: null,
-    //   alert: null,
-    //   calendarMeasure: {
-    //     width: 0,
-    //     height: 0,
-    //   },
-    //   calendarOffset: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   buffer: [],
-    //   pan: new Animated.ValueXY ({x: 0, y: 0}),
-    //   pan2: new Animated.ValueXY ({x: 0, y: 0}),
-    //   isResizeing: false,
-    // }
     return nextProps.displayMode !== this.props.displayMode || this.props.isLoading !== nextProps.isLoading ||
       this.state.alert !== nextState.alert || this.state.activeCard !== nextState.activeCard ||
       this.state.activeBlock !== nextState.activeBlock || this.props.bufferVisible !== nextProps.bufferVisible;
@@ -1703,7 +1688,7 @@ export default class Calendar extends Component {
     }
     return null;
   };
-  
+
   render () {
     const {
       isLoading,

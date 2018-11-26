@@ -1,0 +1,456 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "rgb(17.85, 94.35, 204)",
+      "flex": 1,
+      "flexDirection": "column",
+      "height": "100%",
+    }
+  }
+>
+  <_class
+    contentContainerStyle={Object {}}
+    enableAutomaticScroll={true}
+    enableResetScrollToCoords={true}
+    extraHeight={75}
+    extraScrollHeight={0}
+    keyboardOpeningTime={250}
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+    viewIsInsideTabBar={false}
+  >
+    <Component
+      animationType="slide"
+      hardwareAccelerated={false}
+      onRequestClose={[Function]}
+      transparent={true}
+      visible={false}
+    >
+      <View
+        style={
+          Object {
+            "backgroundColor": "rgba(0,0,0,0.2)",
+            "flex": 1,
+            "justifyContent": "center",
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "alignItems": "center",
+              "alignSelf": "center",
+              "backgroundColor": "white",
+              "borderRadius": 6,
+              "justifyContent": "center",
+            }
+          }
+        >
+          <Image
+            source={
+              Object {
+                "testUri": "../../../src/assets/images/login/touch-icon.png",
+              }
+            }
+            style={
+              Object {
+                "height": 130,
+                "marginTop": 40,
+                "width": 130,
+              }
+            }
+          />
+          <Text
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            style={
+              Object {
+                "color": "rgba(10,39,74,1)",
+                "fontFamily": "Roboto-Regular",
+                "fontSize": 16,
+                "marginTop": 41,
+                "paddingLeft": 10,
+                "paddingRight": 10,
+                "textAlign": "center",
+                "width": 300,
+              }
+            }
+          >
+            Would you like to use
+             
+            <Text
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
+              style={
+                Object {
+                  "fontFamily": "OpenSans-Bold",
+                }
+              }
+            >
+              Touch ID
+            </Text>
+             
+            on future logins?
+          </Text>
+          <Styled(Button)
+            bordered={true}
+            onPress={[Function]}
+            rounded={true}
+            style={
+              Object {
+                "alignSelf": "center",
+                "backgroundColor": "rgba(103,163,199,1)",
+                "borderColor": "white",
+                "height": 58,
+                "marginTop": 52,
+                "width": 220,
+              }
+            }
+          >
+            <Text
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
+              style={
+                Object {
+                  "color": "white",
+                  "fontFamily": "Roboto-Regular",
+                  "fontSize": 16,
+                  "marginLeft": "auto",
+                  "marginRight": "auto",
+                  "textAlign": "center",
+                }
+              }
+            >
+              Yes, please!
+            </Text>
+          </Styled(Button)>
+          <Styled(Button)
+            onPress={[Function]}
+            style={
+              Object {
+                "alignSelf": "center",
+                "height": 58,
+                "marginBottom": 30,
+                "marginTop": 27,
+                "width": 220,
+              }
+            }
+            transparent={true}
+          >
+            <Text
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
+              style={
+                Object {
+                  "color": "rgba(107,103,99,1)",
+                  "fontFamily": "Roboto-Regular",
+                  "fontSize": 16,
+                  "marginLeft": "auto",
+                  "marginRight": "auto",
+                  "textAlign": "center",
+                  "textDecorationLine": "underline",
+                }
+              }
+            >
+              No, thank you
+            </Text>
+          </Styled(Button)>
+        </View>
+      </View>
+    </Component>
+    <AnimatedHideView
+      animate={true}
+      duration={300}
+      style={Object {}}
+      unmountOnHide={true}
+      visible={true}
+    >
+      <Image
+        source={
+          Object {
+            "testUri": "../../../src/assets/images/login/logo-with-text.png",
+          }
+        }
+        style={
+          Object {
+            "height": 139,
+            "marginBottom": "10%",
+            "marginLeft": "auto",
+            "marginRight": "auto",
+            "marginTop": "25%",
+            "width": 122,
+          }
+        }
+      />
+    </AnimatedHideView>
+    <AnimatedHideView
+      animate={true}
+      duration={300}
+      style={Object {}}
+      unmountOnHide={true}
+      visible={false}
+    >
+      <Text
+        accessible={true}
+        allowFontScaling={true}
+        ellipsizeMode="tail"
+        onPress={[Function]}
+        style={
+          Object {
+            "color": "white",
+            "fontSize": 16,
+            "height": 20,
+            "marginBottom": "10%",
+            "marginLeft": "5%",
+            "marginTop": "10%",
+            "width": 20,
+          }
+        }
+      >
+        <Icon
+          style={
+            Object {
+              "color": "white",
+              "fontSize": 16,
+              "height": 20,
+              "marginBottom": "10%",
+              "marginLeft": "5%",
+              "marginTop": "10%",
+              "width": 20,
+            }
+          }
+        >
+          
+        </Icon>
+      </Text>
+    </AnimatedHideView>
+    <View
+      style={
+        Object {
+          "marginBottom": "20%",
+          "minHeight": 120,
+        }
+      }
+    >
+      <UrlInput
+        handleURLChange={[Function]}
+        loggedIn={false}
+        showFail={false}
+        showSuccess={false}
+        url=""
+      />
+      <UserNameInput
+        handleUsernameChange={[Function]}
+        loggedIn={false}
+        userNameError={false}
+        username=""
+      />
+      <View
+        style={
+          Array [
+            Object {
+              "alignItems": "center",
+              "backgroundColor": "rgba(0, 0, 0, 0.15)",
+              "borderRadius": 4,
+              "flexDirection": "row",
+              "justifyContent": "center",
+              "marginBottom": 3,
+              "marginLeft": "auto",
+              "marginRight": "auto",
+              "maxWidth": 311,
+              "paddingLeft": 20,
+              "paddingRight": 20,
+            },
+            null,
+          ]
+        }
+      >
+        <Icon
+          style={
+            Object {
+              "alignSelf": "center",
+              "color": "rgba(255, 255, 255, 0.25)",
+              "fontSize": 16,
+              "height": 16,
+              "resizeMode": "contain",
+              "width": 16,
+            }
+          }
+        >
+          
+        </Icon>
+        <Styled(Input)
+          autoCapitalize="none"
+          autoCorrect={false}
+          blurOnSubmit={true}
+          onChangeText={[Function]}
+          placeholder="Password"
+          placeholderTextColor="rgb(76.15, 135.15, 216.75)"
+          secureTextEntry={true}
+          style={
+            Array [
+              Object {
+                "color": "white",
+                "fontSize": 16,
+                "fontWeight": "500",
+                "marginLeft": 22,
+                "marginTop": 0,
+                "paddingLeft": 0,
+                "paddingTop": 0,
+              },
+              Object {
+                "fontFamily": "Roboto-Italic",
+              },
+            ]
+          }
+        />
+      </View>
+      <Styled(Button)
+        bordered={true}
+        disabled={false}
+        onPress={[Function]}
+        style={
+          Object {
+            "alignItems": "center",
+            "alignSelf": "center",
+            "backgroundColor": "white",
+            "borderColor": "white",
+            "height": 44,
+            "marginTop": 20,
+            "width": 194,
+          }
+        }
+      >
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          style={
+            Object {
+              "color": "rgba(48,120,164,1)",
+              "fontFamily": "Roboto-Bold",
+              "fontSize": 16,
+              "letterSpacing": 2,
+              "marginLeft": "auto",
+              "marginRight": "auto",
+              "textAlign": "center",
+            }
+          }
+        >
+          LOGIN
+           
+        </Text>
+      </Styled(Button)>
+      <Text
+        accessible={true}
+        allowFontScaling={true}
+        ellipsizeMode="tail"
+        onPress={[Function]}
+        style={
+          Array [
+            Object {
+              "backgroundColor": "transparent",
+              "color": "white",
+              "fontFamily": "OpenSans-Regular",
+              "fontSize": 16,
+              "textAlign": "center",
+            },
+            Object {
+              "color": "white",
+              "fontFamily": "Roboto-Bold",
+              "textDecorationLine": "underline",
+            },
+            Object {
+              "marginTop": 20,
+            },
+          ]
+        }
+      >
+        Forgot your Password?
+      </Text>
+    </View>
+    <View
+      style={
+        Object {
+          "height": 80,
+          "marginBottom": 0,
+          "marginLeft": "auto",
+          "marginRight": "auto",
+          "paddingHorizontal": 20,
+        }
+      }
+    >
+      <Text
+        accessible={true}
+        allowFontScaling={true}
+        ellipsizeMode="tail"
+        style={
+          Object {
+            "backgroundColor": "transparent",
+            "color": "rgba(103,163,199,1)",
+            "fontFamily": "Roboto-Regular",
+            "fontSize": 14,
+          }
+        }
+      >
+        Don't have an account? Contact our Support at
+      </Text>
+      <Text
+        accessible={true}
+        allowFontScaling={true}
+        ellipsizeMode="tail"
+        style={
+          Object {
+            "backgroundColor": "transparent",
+            "color": "rgba(103,163,199,1)",
+            "fontFamily": "Roboto-Regular",
+            "fontSize": 14,
+          }
+        }
+      >
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          onPress={[Function]}
+          style={
+            Object {
+              "color": "white",
+              "fontFamily": "Roboto-Bold",
+              "textDecorationLine": "underline",
+            }
+          }
+        >
+          (855) 466-9332
+        </Text>
+         or 
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          onPress={[Function]}
+          style={
+            Object {
+              "color": "white",
+              "fontFamily": "Roboto-Bold",
+              "textDecorationLine": "underline",
+            }
+          }
+        >
+          support@salonultimate.com
+        </Text>
+      </Text>
+    </View>
+  </_class>
+</View>
+`;

@@ -12,7 +12,7 @@ const getSessionInfoSuccess = info => dispatch => {
     type: GET_SESSION_DATA_SUCCESS,
     data: {info},
   });
-  Employees.getEmployee (info.employeeId).then (employee =>
+  Employees.getEmployee (info.employeeId || info.centralEmployeeId).then (employee =>
     dispatch ({
       type: GET_EMPLOYEE_DATA_SUCCESS,
       data: {employee},
