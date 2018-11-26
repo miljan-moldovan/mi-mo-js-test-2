@@ -161,7 +161,7 @@ class AppointmentDetails extends React.Component {
       }
       return total + price;
     }, 0);
-    return servicesTotal + productsTotal;
+    return Number (servicesTotal + productsTotal).toFixed (2);
   }
 
   getStateFromProps = props => {
@@ -807,12 +807,12 @@ class AppointmentDetails extends React.Component {
                       isProviderRequested={item.isProviderRequested}
                       onPress={() => this.handlePressService (item)}
                       discount={this.getDiscountAmount (item.promotion)}
-                      price={item.price}
+                      price={item.price.toFixed (2)}
                       withDiscount={this.calculatePriceDiscount (
                         item.promotion,
                         'serviceDiscountAmount',
                         item.price
-                      )}
+                      ).toFixed (2)}
                     />
                   ))}
                   <AddButton
@@ -823,7 +823,7 @@ class AppointmentDetails extends React.Component {
                   {productItems.map ((item, index) => (
                     <ProductCard
                       key={item.itemId}
-                      onPress={() => this.handlePressProduct (item, index)}
+                      onPress={() => this.handlePressProduct (item)}
                       product={item.product}
                       employee={item.employee}
                       promotion={item.promotion}
@@ -832,7 +832,7 @@ class AppointmentDetails extends React.Component {
                         item.promotion,
                         'retailDiscountAmount',
                         item.product.price
-                      )}
+                      ).toFixed (2)}
                     />
                   ))}
                   <AddButton

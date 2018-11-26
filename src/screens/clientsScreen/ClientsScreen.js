@@ -2,7 +2,7 @@
 import React from 'react';
 import {View, Text, SafeAreaView} from 'react-native';
 import PropTypes from 'prop-types';
-import {get} from 'lodash';
+import {get, isFunction} from 'lodash';
 import {NavigationEvents} from 'react-navigation';
 
 import ClientList from './components/clientList';
@@ -201,20 +201,22 @@ class ClientsScreen extends React.Component {
   };
 
   _handleOnChangeClient = client => {
-    if (!this.props.navigation.state || !this.props.navigation.state.params) {
-      return;
-    }
-
     const {
-      onChangeClient,
-      dismissOnSelect,
-    } = this.props.navigation.state.params;
-    if (this.props.navigation.state.params && onChangeClient) {
+      navigation: {getParam, goBack, ...navigation},
+      salonSearchHeaderActions: {setShowFilter},
+    } = this.props;
+    const onChangeClient = getParam ('onChangeClient', null);
+    const onChangeWithNavigation = getParam ('onChangeWithNavigation', null);
+    const dismissOnSelect = getParam ('dismissOnSelect', false);
+    if (isFunction (onChangeWithNavigation)) {
+      onChangeWithNavigation (client, navigation);
+      setShowFilter (false);
+    } else if (isFunction (onChangeClient)) {
       onChangeClient (client);
-    }
-    if (dismissOnSelect) {
-      this.props.salonSearchHeaderActions.setShowFilter (false);
-      this.props.navigation.goBack ();
+      if (dismissOnSelect) {
+        setShowFilter (false);
+        goBack ();
+      }
     }
   };
 

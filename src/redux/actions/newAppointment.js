@@ -225,13 +225,12 @@ const addServiceItemExtras = (parentId, type, services) => (
     guests,
     startTime,
     serviceItems,
-    bookedByEmployee,
     mainEmployee: employee,
   } = getState ().newAppointmentReducer;
   const [parentService] = serviceItems.filter (
     item => item.itemId === parentId
   );
-  const {guestId} = parentService;
+  const {guestId, service: {employee: parentEmployee}} = parentService;
   const serializeServiceItem = service => {
     if (!service) {
       return null;
@@ -254,7 +253,7 @@ const addServiceItemExtras = (parentId, type, services) => (
       client: serviceClient,
       requested: true,
       service,
-      employee,
+      employee: parentEmployee || employee,
       fromTime,
       toTime,
       bookBetween: get (service, 'bookBetween', false),

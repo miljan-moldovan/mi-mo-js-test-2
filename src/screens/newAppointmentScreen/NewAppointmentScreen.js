@@ -165,7 +165,7 @@ export default class NewAppointmentScreen extends React.Component {
     }
   }
 
-  addService = (service, guestId = false) => {
+  addService = (service, provider = null, guestId = false) => {
     const {
       client,
       startTime,
@@ -181,7 +181,7 @@ export default class NewAppointmentScreen extends React.Component {
       length: serviceLength,
       client: guestId ? get (this.getGuest (guestId), 'client', null) : client,
       requested: true,
-      employee,
+      employee: provider || employee,
       fromTime,
       toTime,
       bookBetween: get (service, 'bookBetween', false),
@@ -545,11 +545,12 @@ export default class NewAppointmentScreen extends React.Component {
     const {serviceItems} = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem (serviceId);
     const isOnlyMainService =
-      this.isMainService (serviceItem) && this.getMainServices (serviceItems);
+      this.isMainService (serviceItem) &&
+      this.getMainServices (serviceItems).length <= 1;
     const serviceTitle = get (
-      get (serviceItem.service, 'service', null),
-      'name',
-      ''
+      serviceItem,
+      'service.service.name',
+      get (serviceItem, 'service.service.description', '')
     );
     const employee = get (serviceItem, 'service.employee', null);
     const employeeName = employee.isFirstAvailable
@@ -623,15 +624,6 @@ export default class NewAppointmentScreen extends React.Component {
 
   handleAddMainService = () => {
     const {client, mainEmployee} = this.props.newAppointmentState;
-    const selectServiceCallback = employee =>
-      this.props.navigation.navigate ('ApptBookService', {
-        dismissOnSelect: true,
-        selectExtraServices: true,
-        filterByProvider: true,
-        clientId: client.id,
-        employeeId: employee.id,
-        onChangeService: this.addService,
-      });
     if (isNull (client)) {
       return this.setState ({
         toast: {
@@ -641,13 +633,27 @@ export default class NewAppointmentScreen extends React.Component {
         },
       });
     }
-    if (isNull (mainEmployee)) {
-      return this.selectMainEmployee ().then (employee => {
-        this.props.newAppointmentActions.setMainEmployee (employee);
-        return selectServiceCallback (employee);
-      });
-    }
-    return selectServiceCallback (mainEmployee);
+    this.props.navigation.navigate ('ApptBookService', {
+      dismissOnSelect: true,
+      selectExtraServices: true,
+      filterByProvider: true,
+      clientId: client.id,
+      selectedEmployee: mainEmployee,
+      onChangeWithNavigation: (service, nav) => {
+        nav.navigate ('ApptBookProvider', {
+          dismissOnSelect: true,
+          selectedService: service,
+          selectedProvider: mainEmployee,
+          onChangeProvider: provider => {
+            if (!mainEmployee) {
+              this.props.newAppointmentActions.setMainEmployee (provider);
+            }
+            this.addService (service, provider);
+            nav.goBack ();
+          },
+        });
+      },
+    });
   };
 
   changeDateTime = () =>
@@ -671,7 +677,20 @@ export default class NewAppointmentScreen extends React.Component {
         filterByProvider: true,
         clientId: get (client, 'id', null),
         employeeId: mainEmployee.id,
-        onChangeService: service => this.addService (service, guestId),
+        onChangeWithNavigation: (service, nav) => {
+          nav.navigate ('ApptBookProvider', {
+            dismissOnSelect: true,
+            selectedService: service,
+            selectedProvider: mainEmployee,
+            onChangeProvider: provider => {
+              if (!mainEmployee) {
+                this.props.newAppointmentActions.setMainEmployee (provider);
+              }
+              this.addService (service, provider, guestId);
+              nav.goBack ();
+            },
+          });
+        },
       });
     }
     return this.setState ({
@@ -1068,7 +1087,6 @@ export default class NewAppointmentScreen extends React.Component {
               />
               <InputDivider />
               <ValidatableInput
-                validateOnChange
                 label="Email"
                 value={clientEmail}
                 isValid={isValidEmail || !client}
@@ -1080,7 +1098,6 @@ export default class NewAppointmentScreen extends React.Component {
                 style={isValidEmail || !client ? {} : dividerWithErrorStyle}
               />
               <ValidatableInput
-                validateOnChange
                 label="Phone"
                 mask="[000]-[000]-[0000]"
                 isValid={isValidPhone || !client}

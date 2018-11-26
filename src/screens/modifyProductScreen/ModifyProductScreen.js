@@ -181,7 +181,7 @@ class ModifyProductScreen extends React.Component {
     const {navigation: {navigate}, queueDetailState: {isLoading}} = this.props;
     const {product, employee, promotion} = this.state;
     const price = get (product, 'price', 0);
-    const priceText = `$ ${this.calculatePriceDiscount (promotion, 'retailDiscountAmount', price)}`;
+    const priceText = `$ ${this.calculatePriceDiscount (promotion, 'retailDiscountAmount', price).toFixed (2)}`;
     return (
       <View style={styles.container}>
         {isLoading && <LoadingOverlay />}
