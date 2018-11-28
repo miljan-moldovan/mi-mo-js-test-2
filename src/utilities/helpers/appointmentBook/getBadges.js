@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import SvgUri from 'react-native-svg-uri';
 
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import Badge from '../../../components/SalonBadge/index';
 import GroupBadge from '../../../components/SalonGroupBadge/index';
 import multiProviderUri from '../../../assets/svg/multi-provider-icon.svg';

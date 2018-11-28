@@ -5,7 +5,6 @@
 */
 
 const Icons = {
-
   '500px': '\uf26e',
   addressBook: '\uf2b9',
   addressBookO: '\uf2ba',

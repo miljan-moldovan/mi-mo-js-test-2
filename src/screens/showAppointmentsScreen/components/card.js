@@ -4,7 +4,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import SalonAvatar from '../../../components/SalonAvatar';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import {DefaultAvatar} from '../../../components/formHelpers';
 import getEmployeePhotoSource
   from '../../../utilities/helpers/getEmployeePhotoSource';

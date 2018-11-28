@@ -4,7 +4,7 @@ import { StyleSheet, View, Text } from 'react-native';
 
 import moment from 'moment';
 
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({

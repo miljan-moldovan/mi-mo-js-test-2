@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, Platform, Text, StyleSheet, Easing } from 'react-native';
 
 import SalonAvatar from '../../../components/SalonAvatar';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import { DefaultAvatar } from '../../../components/formHelpers';
 

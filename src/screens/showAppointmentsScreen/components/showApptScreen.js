@@ -6,7 +6,7 @@ import SalonInputModal from '../../../components/SalonInputModal';
 import Card from './card';
 import styles from './styles';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import {Navigation} from '../../../models/propTypes';
 import {Client, AppointmentBook} from '../../../utilities/apiWrapper';
 import ClientInfoButton from '../../../components/ClientInfoButton';

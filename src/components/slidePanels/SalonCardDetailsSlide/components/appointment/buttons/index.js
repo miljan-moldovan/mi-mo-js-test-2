@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import SalonTouchableOpacity from '../../../../../SalonTouchableOpacity';
-import Icon from '../../../../../UI/Icon';
+import Icon from '@/components/common/Icon';
 import ApptQueueStatus from '../../../../../../constants/apptQueueStatus';
 import styles from './styles';
 

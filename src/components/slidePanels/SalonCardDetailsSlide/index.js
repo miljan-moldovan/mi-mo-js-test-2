@@ -7,7 +7,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 import { connect } from 'react-redux';
 import Swiper from 'react-native-swiper';
 
-import Icon from '../../UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import ApptointmentHeader from './components/appointment/header';
 import BlockHeader from './components/blockTime/header';

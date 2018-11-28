@@ -7,7 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import { get, isFunction, sortBy, isNumber } from 'lodash';
 
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonSearchBar from '../../components/SalonSearchBar';

@@ -1,5 +1,4 @@
-// @flow
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
@@ -10,24 +9,32 @@ import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get, isFunction } from 'lodash';
 
-import SelectableServiceList from '../../components/SelectableServiceList';
-import SalonSearchHeader from '../../components/SalonSearchHeader';
+import SelectableServiceList from '@/components/SelectableServiceList';
+import SalonSearchHeader from '@/components/SalonSearchHeader';
 import ServiceList from './components/serviceList';
+import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
+import Colors from '@/constants/Colors';
+
 import CategoryServicesList from './components/categoryServicesList';
 import ServiceCategoryList from './components/serviceCategoryList';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
-import Colors from '../../constants/Colors';
 
-class ServicesScreen extends React.Component {
+export interface Props {
+
+}
+
+export interface State {
+
+}
+
+class ServicesScreen extends React.Component<Props, State> {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params &&
       navigation.state.params.defaultProps ? navigation.state.params.defaultProps : {
         title: 'Services',
         subTitle: null,
         leftButtonOnPress: () => { navigation.goBack(); },
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        leftButton: (<Text style={styles.leftButtonText}> Cancel </Text>),
       };
     const ignoreNav = navigation.state.params ? navigation.state.params.ignoreNav : false;
     const { leftButton } = navigation.state.params &&
@@ -55,7 +62,8 @@ class ServicesScreen extends React.Component {
 
     return {
       header: () => (
-        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
+        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }
+        }>
           <SalonSearchHeader
             title={title}
             subTitle={subTitle}
@@ -111,13 +119,13 @@ class ServicesScreen extends React.Component {
         title: 'Services',
         subTitle: null,
         leftButtonOnPress: () => { this.goBack(); },
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        leftButton: <Text style={styles.leftButtonText}> Cancel </Text>,
       },
       defaultHeaderProps: {
         title: 'Services',
         subTitle: null,
         leftButtonOnPress: () => { this.goBack(); },
-        leftButton: <Text style={styles.leftButtonText}>Cancel</Text>,
+        leftButton: <Text style={styles.leftButtonText}> Cancel </Text>,
       },
       previousIgnoringNumber: props.salonSearchHeaderState.ignoredNumberOfLetters,
     };
@@ -365,12 +373,12 @@ class ServicesScreen extends React.Component {
       title: walkInRoute ? 'Walk-in' : item.name,
       subTitle: walkInRoute ? 'step 2 of 3' : null,
       leftButton: (
-        <SalonTouchableOpacity style={styles.leftButton} onPress={this.goBack}>
-          <View style={styles.leftButtonContainer}>
-            <FontAwesome style={styles.backIcon}>
+        <SalonTouchableOpacity style={styles.leftButton} onPress={this.goBack} >
+          <View style={styles.leftButtonContainer} >
+            <FontAwesome style={styles.backIcon} >
               {Icons.angleLeft}
             </FontAwesome>
-            <Text style={styles.leftButtonText}>
+            < Text style={styles.leftButtonText} >
               {walkInRoute && item.name}
             </Text>
           </View>
@@ -395,15 +403,16 @@ class ServicesScreen extends React.Component {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-      }}
+      }
+      }
       >
         <ActivityIndicator />
       </View>
     ) : (
-      <View style={styles.container}>
-        <View style={styles.servicesList}>
+        <View style={styles.container} >
+          <View style={styles.servicesList}>
 
-          {(!hasCategories
+            {(!hasCategories
               && this.services.length > 0) &&
               <SelectableServiceList
                 services={this.services}
@@ -415,9 +424,10 @@ class ServicesScreen extends React.Component {
             }
 
 
-          {hasCategories && (!servicesState.showCategoryServices
-              && !this.props.salonSearchHeaderState.showFilter
-              && this.services.length > 0) &&
+            {
+              hasCategories && (!servicesState.showCategoryServices
+                && !this.props.salonSearchHeaderState.showFilter
+                && this.services.length > 0) &&
               <ServiceCategoryList
                 onRefresh={this.getServices}
                 handlePressServiceCategory={this.handlePressServiceCategory}
@@ -426,9 +436,10 @@ class ServicesScreen extends React.Component {
               />
             }
 
-          {hasCategories && (!servicesState.showCategoryServices
-              && this.props.salonSearchHeaderState.showFilter
-              && this.services.length > 0) &&
+            {
+              hasCategories && (!servicesState.showCategoryServices
+                && this.props.salonSearchHeaderState.showFilter
+                && this.services.length > 0) &&
               <ServiceList
                 {...this.props}
                 onRefresh={this.getServices}
@@ -439,8 +450,9 @@ class ServicesScreen extends React.Component {
               />
             }
 
-          {hasCategories && (servicesState.showCategoryServices
-              && this.services.length > 0) &&
+            {
+              hasCategories && (servicesState.showCategoryServices
+                && this.services.length > 0) &&
               <CategoryServicesList
                 {...this.props}
                 onRefresh={this.getServices}
@@ -448,9 +460,9 @@ class ServicesScreen extends React.Component {
                 categoryServices={servicesState.categoryServices}
               />
             }
+          </View>
         </View>
-      </View>
-    );
+      );
   }
 }
 

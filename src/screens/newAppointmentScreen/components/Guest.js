@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 
 import { SubTitle } from '../NewAppointmentScreen';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonCard from '../../../components/SalonCard';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import { ClientInput } from '../../../components/formHelpers';

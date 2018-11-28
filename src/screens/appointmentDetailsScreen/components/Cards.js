@@ -9,7 +9,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import SalonCard from '../../../components/SalonCard';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonAvatar from '../../../components/SalonAvatar';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import { Employees } from '../../../utilities/apiWrapper';
 import styles from './appointmentDetails/styles';

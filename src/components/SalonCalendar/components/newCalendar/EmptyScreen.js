@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
-import Icon from '../../../UI/Icon';
+import Icon from '@/components/common/Icon';
 
 const styles = StyleSheet.create({
   container: {

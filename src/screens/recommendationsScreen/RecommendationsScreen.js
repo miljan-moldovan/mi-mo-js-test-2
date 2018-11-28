@@ -8,7 +8,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 
 import SalonCard from '../../components/SalonCard';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { SectionTitle } from '../../components/formHelpers';
 import SalonActionSheet from '../../components/SalonActionSheet';

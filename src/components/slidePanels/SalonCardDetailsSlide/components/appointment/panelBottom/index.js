@@ -6,7 +6,7 @@ import {
   InputGroup,
   InputButton,
 } from '../../../../../formHelpers';
-import Icon from '../../../../../UI/Icon';
+import Icon from '@/components/common/Icon';
 import styles from './styles';
 
 const apptPanelBottom = ({

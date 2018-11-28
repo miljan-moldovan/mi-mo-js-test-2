@@ -30,7 +30,7 @@ import {
 } from '../formHelpers';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
-import Icon from '../UI/Icon';
+import Icon from '@/components/common/Icon';
 import Button from './components/Button';
 import ConflictBox from './components/ConflictBox';
 import AddonsContainer from './components/AddonsContainer';

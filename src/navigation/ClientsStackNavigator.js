@@ -1,22 +1,26 @@
 // @flow
 import React from 'react';
-import { StackNavigator } from 'react-navigation';
+import {StackNavigator} from 'react-navigation';
 import ImageHeader from '../components/ImageHeader';
 
 import ClientsScreen from './../screens/clientsScreen';
 import NewClientScreen from '../screens/newClientScreen';
 
 import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
-import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
+import ClientFormulas
+  from './../screens/clientInfoScreen/components/clientFormulas';
 import ClientNote from './../screens/clientInfoScreen/components/clientNote';
-import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
-import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
+import ClientFormula
+  from './../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen
+  from './../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
-import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
+import ClientDetailsScreen
+  from '../screens/clientInfoScreen/components/clientDetails';
 import ProvidersScreen from '../screens/providersScreen';
-import ServicesScreen from '../screens/servicesScreen';
+import ServicesScreen from '../screens/ServicesScreen';
 
-const ClientsStackNavigator = StackNavigator(
+const ClientsStackNavigator = StackNavigator (
   {
     ClientsMain: {
       screen: ClientsScreen,
@@ -29,15 +33,14 @@ const ClientsStackNavigator = StackNavigator(
     },
     ClientInfo: {
       screen: ClientInfoScreen,
-      navigationOptions: { tabBarVisible: false },
+      navigationOptions: {tabBarVisible: false},
     },
     ClientNotes: {
       screen: ClientNotes,
-      navigationOptions: { tabBarVisible: false },
+      navigationOptions: {tabBarVisible: false},
     },
     ClientNote: {
       screen: ClientNote,
-
     },
     ClientFormula: {
       screen: ClientFormula,
@@ -47,11 +50,11 @@ const ClientsStackNavigator = StackNavigator(
     },
     ClientFormulas: {
       screen: ClientFormulas,
-      navigationOptions: { tabBarVisible: false },
+      navigationOptions: {tabBarVisible: false},
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
-      navigationOptions: { tabBarVisible: false },
+      navigationOptions: {tabBarVisible: false},
     },
     Services: {
       screen: ServicesScreen,
@@ -60,7 +63,7 @@ const ClientsStackNavigator = StackNavigator(
       screen: ProvidersScreen,
     },
   },
-  {},
+  {}
 );
 
 export default ClientsStackNavigator;

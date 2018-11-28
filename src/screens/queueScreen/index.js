@@ -25,7 +25,7 @@ import walkInActions from '../../redux/actions/walkIn';
 import clientsActions from '../../redux/actions/clients';
 import Queue from './queue';
 import QueueHeader from './queueHeader';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonModal from '../../components/SalonModal';
 import SalonTextInput from '../../components/SalonTextInput';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';

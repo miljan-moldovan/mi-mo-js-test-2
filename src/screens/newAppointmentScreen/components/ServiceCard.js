@@ -15,7 +15,7 @@ import { DefaultAvatar } from '../../../components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonCard from '../../../components/SalonCard';
 import SalonAvatar from '../../../components/SalonAvatar';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import Colors from '../../../constants/Colors';
 import styles from '../styles';
 

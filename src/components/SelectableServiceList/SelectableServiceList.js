@@ -9,7 +9,7 @@ import { get, includes, remove, isNumber } from 'lodash';
 
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
-import Icon from '../UI/Icon';
+import Icon from '@/components/common/Icon';
 import styles from './styles';
 
 class SelectableServiceList extends React.Component {

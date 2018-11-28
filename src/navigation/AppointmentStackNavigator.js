@@ -1,18 +1,22 @@
-import { createStackNavigator } from 'react-navigation';
+import {createStackNavigator} from 'react-navigation';
 import headerStyles from '../constants/headerStyles';
 
 import AppointmentScreen from '../screens/AppointmentsScreen';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
-import ServicesScreen from '../screens/servicesScreen';
+import ServicesScreen from '../screens/ServicesScreen';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
-import ClientFormulas from './../screens/clientInfoScreen/components/clientFormulas';
+import ClientFormulas
+  from './../screens/clientInfoScreen/components/clientFormulas';
 import ClientNote from './../screens/clientInfoScreen/components/clientNote';
-import ClientFormula from './../screens/clientInfoScreen/components/clientFormula';
-import ClientCopyFormulaScreen from './../screens/clientInfoScreen/components/clientCopyFormula';
+import ClientFormula
+  from './../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen
+  from './../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
-import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
+import ClientDetailsScreen
+  from '../screens/clientInfoScreen/components/clientDetails';
 import NewClientScreen from '../screens/newClientScreen';
 import AppointmentCalendarScreen from './../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
@@ -38,13 +42,14 @@ import RecommendProductScreen from '../screens/recommendProductScreen';
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
 import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
-import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
+import ChangeDateTimeScreen
+  from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
 import RebookDialogScreen from './../screens/rebookDialogScreen';
 import TransitionConfiguration from './transitionConfiguration';
 
-const AppointmentStackNavigator = createStackNavigator(
+const AppointmentStackNavigator = createStackNavigator (
   {
     Main: {
       screen: AppointmentCalendarScreen,
@@ -234,17 +239,17 @@ const AppointmentStackNavigator = createStackNavigator(
   {
     transitionConfig: TransitionConfiguration,
     headerMode: 'float',
-  },
+  }
 );
 
-AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
-  const { state } = navigation;
+AppointmentStackNavigator.navigationOptions = ({navigation}) => {
+  const {state} = navigation;
 
   let tabBarVisible = true;
 
-
-  const hideTabBar = state.routes[state.index].params ?
-    state.routes[state.index].params.hideTabBar : false;
+  const hideTabBar = state.routes[state.index].params
+    ? state.routes[state.index].params.hideTabBar
+    : false;
 
   if (hideTabBar) {
     tabBarVisible = false;

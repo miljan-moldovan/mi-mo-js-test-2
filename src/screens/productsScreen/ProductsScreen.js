@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { get, sortBy, isNumber, filter } from 'lodash';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonSearchHeader from '../../components/SalonSearchHeader';

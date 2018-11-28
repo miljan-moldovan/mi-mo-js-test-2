@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { View, Dimensions, Text } from 'react-native';
 import moment from 'moment';
 import styles from './styles';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 
 const smallDevice = false; // Dimensions.get('window').width === 320;
 

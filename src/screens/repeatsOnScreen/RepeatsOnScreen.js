@@ -13,7 +13,7 @@ import {
   InputGroup,
   InputButton,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 

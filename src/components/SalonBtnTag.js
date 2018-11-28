@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
-import Icon from './../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({

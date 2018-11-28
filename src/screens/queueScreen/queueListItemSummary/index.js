@@ -9,7 +9,7 @@ import getEmployeePhotoSource
 import * as actions from '../../../redux/actions/queue';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import styles from './styles';
 import {DefaultAvatar} from '../../../components/formHelpers';
 

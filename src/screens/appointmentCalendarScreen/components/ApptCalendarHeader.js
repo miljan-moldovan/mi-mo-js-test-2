@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 
 const styles = StyleSheet.create({
   container: {

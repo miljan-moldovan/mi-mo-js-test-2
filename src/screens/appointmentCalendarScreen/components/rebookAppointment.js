@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, Animated } from 'react-native';
 
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 
 const styles = StyleSheet.create({
   container: {

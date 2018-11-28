@@ -6,7 +6,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import Icon from '../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 const marginBottom = 5;

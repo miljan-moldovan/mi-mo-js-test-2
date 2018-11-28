@@ -12,7 +12,7 @@ import {
   SectionTitle,
   InputText,
 } from '../../components/formHelpers';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import fetchFormCache from '../../utilities/fetchFormCache';
 import SalonTouchableHighlight from '../../components/SalonTouchableHighlight';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';

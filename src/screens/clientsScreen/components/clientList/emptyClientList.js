@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {View, Text, StyleSheet, Keyboard} from 'react-native';
 import {get} from 'lodash';
-import Icon from '../../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity
   from '../../../../components/SalonTouchableOpacity';
 import groupedSettingsSelector

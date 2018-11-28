@@ -3,7 +3,7 @@ import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
-import Icon from './../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
 const styles = StyleSheet.create({

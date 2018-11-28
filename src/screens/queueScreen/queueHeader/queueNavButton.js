@@ -3,7 +3,7 @@ import {
   View,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import styles from './styles';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 

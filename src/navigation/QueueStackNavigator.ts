@@ -2,41 +2,41 @@ import * as React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { get } from 'lodash';
 
-import headerStyles from '../constants/headerStyles';
-import QueueScreen from './../screens/queueScreen';
-import QueueCombineScreen from './../screens/queueCombineScreen';
-import ClientMergeScreen from './../screens/clientMergeScreen';
-import QueueDetailScreen from './../screens/queueDetailScreen';
-import WalkInScreen from '../screens/WalkInScreen';
-import ClientsScreen from './../screens/clientsScreen';
-import RemovalReasonTypesScreen from './../screens/removalReasonTypes';
-import ProvidersScreen from '../screens/providersScreen';
-import NewClientScreen from '../screens/newClientScreen';
-import PromotionsScreen from '../screens/promotionsScreen';
-import ServicesScreen from '../screens/servicesScreen';
-import TurnAwayScreen from '../screens/turnAwayScreen';
-import ModifyServiceScreen from '../screens/modifyServiceScreen';
-import ModifyProductScreen from '../screens/modifyProductScreen';
-import RecommendationsScreen from '../screens/recommendationsScreen';
-import AppointmentDetailsScreen from '../screens/appointmentDetailsScreen/';
-import NewAppointmentScreen from '../screens/newAppointmentScreen';
-import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
+import QueueScreen from '@/screens/queueScreen';
+import QueueCombineScreen from '@/screens/queueCombineScreen';
+import ClientMergeScreen from '@/screens/clientMergeScreen';
+import QueueDetailScreen from '@/screens/queueDetailScreen';
+import WalkInScreen from '@/screens/WalkInScreen';
+import ClientsScreen from '@/screens/clientsScreen';
+import RemovalReasonTypesScreen from '@/screens/removalReasonTypes';
+import ProvidersScreen from '@/screens/providersScreen';
+import NewClientScreen from '@/screens/newClientScreen';
+import PromotionsScreen from '@/screens/promotionsScreen';
+import ServicesScreen from '@/screens/ServicesScreen';
+import TurnAwayScreen from '@/screens/turnAwayScreen';
+import ModifyServiceScreen from '@/screens/modifyServiceScreen';
+import ModifyProductScreen from '@/screens/modifyProductScreen';
+import RecommendationsScreen from '@/screens/recommendationsScreen';
+import AppointmentDetailsScreen from '@/screens/appointmentDetailsScreen/';
+import NewAppointmentScreen from '@/screens/newAppointmentScreen';
+import ClientNotes from '@/screens/clientInfoScreen/components/clientNotes';
 import ClientFormulas
-  from './../screens/clientInfoScreen/components/clientFormulas';
-import ClientNote from './../screens/clientInfoScreen/components/clientNote';
+  from '@/screens/clientInfoScreen/components/clientFormulas';
+import ClientNote from '@/screens/clientInfoScreen/components/clientNote';
 import ClientFormula
-  from './../screens/clientInfoScreen/components/clientFormula';
+  from '@/screens/clientInfoScreen/components/clientFormula';
 import ClientCopyFormulaScreen
-  from './../screens/clientInfoScreen/components/clientCopyFormula';
-import ClientInfoScreen from '../screens/clientInfoScreen';
+  from '@/screens/clientInfoScreen/components/clientCopyFormula';
+import ClientInfoScreen from '@/screens/clientInfoScreen';
 import ClientDetailsScreen
-  from '../screens/clientInfoScreen/components/clientDetails';
-import ProductsScreen from './../screens/productsScreen';
-import RebookDialogScreen from './../screens/rebookDialogScreen';
-import AppointmentScreen from '../screens/AppointmentsScreen';
-import apptBookSetEmployeeOrder from './../screens/apptBookSetEmployeeOrder';
-import apptBookViewOptions from './../screens/apptBookViewOptions';
-import SettingsScreen from './../screens/SettingsScreen';
+  from '@/screens/clientInfoScreen/components/clientDetails';
+import ProductsScreen from '@/screens/productsScreen';
+import RebookDialogScreen from '@/screens/rebookDialogScreen';
+import AppointmentScreen from '@/screens/AppointmentsScreen';
+import apptBookSetEmployeeOrder from '@/screens/apptBookSetEmployeeOrder';
+import apptBookViewOptions from '@/screens/apptBookViewOptions';
+import SettingsScreen from '@/screens/SettingsScreen';
+
 import TransitionConfiguration from './transitionConfiguration';
 
 export const MainNavigator = createStackNavigator(
@@ -259,7 +259,6 @@ QueueStackNavigator.navigationOptions = ({ navigation }) => {
   }
   return {
     tabBarVisible,
-    ...headerStyles,
   };
 };
 

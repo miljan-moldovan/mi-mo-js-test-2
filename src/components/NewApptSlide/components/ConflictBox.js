@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
-import Icon from '../../UI/Icon';
+import Icon from '@/components/common/Icon';
 import Colors from '../../../constants/Colors';
 import styles from '../styles';
 

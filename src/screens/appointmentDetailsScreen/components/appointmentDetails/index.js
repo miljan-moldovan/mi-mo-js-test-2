@@ -27,7 +27,7 @@ import {SalonFixedBottom} from '../../../../components/SalonBtnFixedBottom';
 import SalonTouchableOpacity
   from '../../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../../../queueScreen/queueTimeNote';
-import Icon from '../../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import StatusEnum from '../../../../constants/Status';
 import QueueTypes from '../../../../constants/QueueTypes';
 import PromotionType from '../../../../constants/PromotionType';

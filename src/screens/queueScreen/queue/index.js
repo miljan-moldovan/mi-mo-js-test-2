@@ -34,7 +34,7 @@ import {
   NotificationBannerButton,
 } from '../../../components/NotificationBanner';
 import ServiceIcons from '../../../components/ServiceIcons';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import QueueTimeNote from '../queueTimeNote';
 import {shortenTitle} from '../../../utilities/helpers';
 import groupedSettingsSelector from '../../../redux/selectors/settingsSelector';

@@ -13,7 +13,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import SalonSearchHeader from '../../components/SalonSearchHeader';
 import SalonSearchBar from '../../components/SalonSearchBar';
 
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import styles from './styles';
 
 class ProductsScreen extends React.Component {

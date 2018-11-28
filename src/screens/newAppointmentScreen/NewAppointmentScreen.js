@@ -38,7 +38,7 @@ import {
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonHeader from '../../components/SalonHeader';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';

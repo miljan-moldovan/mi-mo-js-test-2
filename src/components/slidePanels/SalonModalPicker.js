@@ -13,7 +13,7 @@ import moment from 'moment';
 import {isFunction} from 'lodash';
 
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
-import Icon from '../UI/Icon';
+import Icon from '@/components/common/Icon';
 import { Picker } from 'react-native-wheel-datepicker';
 
 const styles = StyleSheet.create ({

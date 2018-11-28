@@ -9,7 +9,7 @@ import ClientFormulas from '../clientInfoScreen/components/clientFormulas';
 import ClientNotes from '../clientInfoScreen/components/clientNotes';
 import ClientInfoButton from '../../components/ClientInfoButton';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
 import headerStyles from '../../constants/headerStyles';

@@ -22,7 +22,7 @@ import SalonCard from '../../../../components/SalonCard';
 import SalonViewMoreText from '../../../../components/SalonViewMoreText';
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import styles from './stylesClientNotes';
-import Icon from '../../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import HeaderLateral from '../../../../components/HeaderLateral';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
 import headerStyles from '../../../../constants/headerStyles';

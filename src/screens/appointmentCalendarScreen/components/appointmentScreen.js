@@ -29,7 +29,7 @@ import Colors from '../../../constants/Colors';
 import styles, {headerStyles} from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '../../../components/SalonHeader';
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 
 class AppointmentScreen extends Component {
   static navigationOptions = ({navigation}) => {

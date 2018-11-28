@@ -4,7 +4,7 @@ import moment from 'moment';
 import {get} from 'lodash';
 import {InputGroup, DefaultAvatar} from '../../components/formHelpers';
 import {Services} from '../../utilities/apiWrapper';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonAvatar from '../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import getEmployeePhotoSource

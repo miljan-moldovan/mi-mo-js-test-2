@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {get} from 'lodash';
 import PropTypes from 'prop-types';
-import Icon from './../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 
 import {isValidAppointment} from '../redux/selectors/newAppt';
 import userActions from '../redux/actions/user';

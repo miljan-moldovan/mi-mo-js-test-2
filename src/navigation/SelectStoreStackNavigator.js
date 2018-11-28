@@ -1,9 +1,8 @@
-import { createStackNavigator } from 'react-navigation';
+import {createStackNavigator} from 'react-navigation';
 
-import SelectStoreScreen from '../screens/selectStoreScreen';
+import SelectStoreScreen from '@/screens/SelectStoreScreen';
 
-
-export default createStackNavigator({
+export default createStackNavigator ({
   SelectStore: {
     screen: SelectStoreScreen,
   },

@@ -21,7 +21,7 @@ import PromotionType from '../../constants/PromotionType';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import LoadingOverlay from '../../components/LoadingOverlay';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 

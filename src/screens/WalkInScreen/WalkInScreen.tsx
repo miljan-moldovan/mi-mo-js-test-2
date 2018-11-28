@@ -29,7 +29,7 @@ import {
   WalkInActions,
 } from '../../models/WalkIn';
 import { SettingsActions } from '../../models/Settings';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import Colors from '../../constants/Colors';
 import LoadingOverlay from '../../components/LoadingOverlay';
 

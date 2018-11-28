@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Text,
 } from 'react-native';
-import Icon from '../../UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles, InputDivider } from '../index';
 

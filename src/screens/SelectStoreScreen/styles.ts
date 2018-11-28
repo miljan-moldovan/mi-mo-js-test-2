@@ -1,7 +1,10 @@
 import { StyleSheet } from 'react-native';
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 
-export default StyleSheet.create({
+const styles = StyleSheet.create({
+  listItemContainer: {
+    backgroundColor: Colors.white,
+  },
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -48,10 +51,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   selectedItem: {
-    color: 'rgb(28, 191, 18)',
+    color: Colors.selectedGreen,
   },
   selectedItemIcon: {
-    color: 'rgb(28, 191, 18)',
+    color: Colors.selectedGreen,
     position: 'absolute',
     right: 0,
   },
@@ -75,3 +78,4 @@ export default StyleSheet.create({
     height: 45,
   },
 });
+export default styles;

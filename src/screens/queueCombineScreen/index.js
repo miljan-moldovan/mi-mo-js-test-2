@@ -13,7 +13,7 @@ import {
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import Icon from '../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import styles from './styles';
 import * as actions from '../../redux/actions/queue.js';

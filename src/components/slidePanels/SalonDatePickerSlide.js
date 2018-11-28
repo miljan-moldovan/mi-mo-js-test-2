@@ -4,7 +4,7 @@ import { LocaleConfig, Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import ModalBox from './ModalBox';
 import SalonTouchableOpacity from './../SalonTouchableOpacity';
-import Icon from '../UI/Icon';
+import Icon from '@/components/common/Icon';
 
 LocaleConfig.locales.en = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],

@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, Animated, Dimensions, ScrollView, View, StyleSheet } from 'react-native';
 import moment from 'moment';
 
-import Icon from './../UI/Icon';
+import Icon from '@/components/common/Icon';
 import ModalBox from './ModalBox';
 import SalonFlatPicker from '../SalonFlatPicker';
 

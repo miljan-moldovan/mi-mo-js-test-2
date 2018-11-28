@@ -6,7 +6,7 @@ import moment from 'moment';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import Icon from '../../../components/UI/Icon';
+import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonActionSheet from '../../../components/SalonActionSheet';
 import styles from './styles';

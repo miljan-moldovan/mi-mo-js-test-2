@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 
 import colors from '../../../../../constants/appointmentColors';
 import multiProviderUri from '../../../../../assets/svg/multi-provider-icon.svg';
-import Icon from '../../../../UI/Icon';
+import Icon from '@/components/common/Icon';
 import Badge from '../../../../SalonBadge/index';
 import ResizeButton from '../../resizeButtons';
 import GroupBadge from '../../../../SalonGroupBadge/index';
