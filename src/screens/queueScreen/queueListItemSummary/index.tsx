@@ -72,11 +72,30 @@ class queueListItemSummary extends React.Component<Props, State> {
       selectedService: service,
       client: this.props.appointment.client,
       employeeId: service.employeeId,
-      dismissOnSelect: true,
+      // dismissOnSelect: true,
       hasCategories: false,
       mode: 'quickQueue',
       queueItem: this.props.item,
-      onChangeService: data => this.saveQueueService(data, service.id),
+      onChangeWithNavigation: (data, nav) => {
+        this.saveQueueService(data, service.id);
+        const { service: { employee = null, ...serviceItem }, item } = this.props;
+        nav.navigate('ModalProviders', {
+          selectedService: { id: serviceItem.serviceId },
+          showFirstAvailable: !!this.props.isWaiting,
+          dismissOnSelect: true,
+          selectedProvider: employee,
+          checkProviderStatus: true,
+          // queueList: true,
+          queueItem: item,
+          mode: 'quickQueue',
+          headerProps: { title: 'Providers', ...this.cancelButton() },
+          onChangeProvider: data => {
+            this.saveQueueProvider(data, serviceItem.id);
+            this.props.onDonePress();
+            nav.goBack();
+          },
+        });
+      },
       headerProps: {
         title: 'Services',
         rightButton: null,

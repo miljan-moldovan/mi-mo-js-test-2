@@ -32,6 +32,7 @@ export default function storeReducer (state = initialState, action) {
     case LOAD_SCHEDULE_EXCEPTIONS_SUCCESS:
       return {
         ...state,
+        isLoading: false,
         scheduleExceptions: data.scheduleExceptions,
       };
     case SET_MAIN_STORE_SUCCESS:

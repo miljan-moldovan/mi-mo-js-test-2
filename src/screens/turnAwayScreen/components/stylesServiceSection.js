@@ -1,8 +1,6 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 
-export default StyleSheet.create({
+export default StyleSheet.create ({
   container: {
     backgroundColor: '#fff',
   },
@@ -83,9 +81,15 @@ export default StyleSheet.create({
     flexDirection: 'row',
   },
   middleSectionDivider: {
-    width: '95%', height: 1, alignSelf: 'center', backgroundColor: '#DDE6F4',
+    width: '95%',
+    height: 1,
+    alignSelf: 'center',
+    backgroundColor: '#DDE6F4',
   },
-  providerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  providerWrapper: { marginRight: 5 },
-  providerRootStyle: { marginLeft: 10 },
+  providerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  providerWrapper: {marginRight: 5},
 });

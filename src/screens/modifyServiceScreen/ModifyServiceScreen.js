@@ -265,7 +265,7 @@ export default class ModifyServiceScreen extends React.Component {
       isProviderRequested,
       isInService,
     } = this.state;
-    const priceLabelValue = `$ ${this.calculatePriceDiscount (promotion, 'serviceDiscountAmount', price)}`;
+    const priceLabelValue = `$ ${this.calculatePriceDiscount (promotion, 'serviceDiscountAmount', price).toFixed (2)}`;
     const isFirstAvailable = get (employee, 'isFirstAvailable', false);
     return (
       <View style={styles.container}>
