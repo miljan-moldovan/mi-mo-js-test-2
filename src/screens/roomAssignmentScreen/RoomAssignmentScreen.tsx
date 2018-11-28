@@ -1,13 +1,13 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
   ScrollView,
 } from 'react-native';
 import { get, slice, times, orderBy, cloneDeep } from 'lodash';
-import moment, { isMoment } from 'moment';
+import moment, { Moment, isMoment } from 'moment';
 
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 import DateTime from '../../constants/DateTime';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import LoadingOverlay from '../../components/LoadingOverlay';
@@ -19,12 +19,41 @@ import {
   InputGroup,
   SectionTitle,
 } from '../../components/formHelpers';
-
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import { Room, RoomFromApi } from '@/models';
+import { NavigationScreenProp } from 'react-navigation';
 
-export default class RoomAssignmentScreen extends React.Component {
+export interface RoomAssignmentScreenNavigationParams {
+  dismissOnSelect?: boolean;
+  date: Moment;
+  canSave: boolean;
+  handleSave: () => void;
+}
+
+export interface RoomAssignmentScreenProps {
+  id: number;
+  isOpen: boolean;
+  rooms: RoomFromApi[];
+  getRooms: () => void;
+  navigation: NavigationScreenProp<RoomAssignmentScreenNavigationParams>;
+}
+
+interface RoomItem {
+  room: Room;
+  startTime: Moment;
+  endTime: Moment;
+}
+
+export interface RoomAssignmentScreenState {
+  toast: any;
+  pickerType: string;
+  assignments: RoomItem[],
+  isModalPickerVisible: boolean,
+  currentOpenAssignment: RoomItem,
+}
+
+export default class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, RoomAssignmentScreenState> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const date = params.date || moment();

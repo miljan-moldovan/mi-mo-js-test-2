@@ -1,4 +1,4 @@
-import { Maybe } from 'models';
+import { Maybe } from '@/models';
 import { AccessState } from '@app-constants/core';
 
 export type SettingItem<T> = {

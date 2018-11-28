@@ -1,4 +1,4 @@
-import { Maybe } from 'models';
+import { Maybe } from '@/models';
 export interface Room {
   roomCount: number;
   name: string;
@@ -14,7 +14,7 @@ export interface RoomFromApi {
 }
 
 export interface RoomAppointment {
-  appointmentId: number;
   room: Room;
   roomOrdinal: number;
+  appointmentId: number;
 }

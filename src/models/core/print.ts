@@ -1,4 +1,4 @@
-import { Client, PastService, RetailHistoryItem, Note, Service, QueueItem, Formula, ClientAppointment } from 'models';
+import { Client, PastService, RetailHistoryItem, Note, Service, QueueItem, Formula, ClientAppointment } from '@/models';
 
 export enum PrintOutletName {
   ClientWorkTicket = 'ClientWorkTicket',

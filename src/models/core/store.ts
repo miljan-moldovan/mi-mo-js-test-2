@@ -50,7 +50,7 @@ import {
   Conflict,
   StoreScheduleException,
   Store, PureProvider, TooltipState
-} from 'models';
+} from '@/models';
 
 export interface EmployeesState {
   loading: boolean;

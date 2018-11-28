@@ -5,7 +5,7 @@ import {
   NewAppointmentFormInitialDataBase,
   MoveAppointmentData,
   BookAnotherAppointmentData
-} from 'models';
+} from '@/models';
 
 export interface SetInitialDataForNewAppointmentFormParams extends Partial<NewAppointmentFormInitialDataBase> {
   appointments?: BookAnotherAppointmentData[];
@@ -17,7 +17,7 @@ export interface ChangeGridViewParams {
   previousTypeView?: TypeView;
 }
 
-export interface ShowMoveAppointmentModalAction extends MoveAppointmentData {}
+export interface ShowMoveAppointmentModalAction extends MoveAppointmentData { }
 
 export interface MoveAppointmentActionParams {
   id: number;

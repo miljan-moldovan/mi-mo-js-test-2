@@ -8,7 +8,8 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {get} from 'lodash';
 import PropTypes from 'prop-types';
-import Icon, {IconTypes} from '@/components/common/Icon';
+import Icon from '../components/common/Icon';
+import {IconTypes} from '@/components/common/Icon';
 
 import {isValidAppointment} from '@/redux/selectors/newAppt';
 import userActions from '@/redux/actions/user';
