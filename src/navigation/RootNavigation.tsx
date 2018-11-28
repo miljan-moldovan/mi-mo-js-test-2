@@ -1,17 +1,17 @@
-import React from 'react';
+import * as React from 'react';
 import {
   TabNavigator,
   createBottomTabNavigator,
   TabBarBottom,
 } from 'react-navigation';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {get} from 'lodash';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import Icon from '../components/common/Icon';
-import {IconTypes} from '@/components/common/Icon';
+import Icon from '@/components/common/Icon';
+import { IconTypes } from '@/components/common/Icon/interfaces';
 
-import {isValidAppointment} from '@/redux/selectors/newAppt';
+import { isValidAppointment } from '@/redux/selectors/newAppt';
 import userActions from '@/redux/actions/user';
 import walkInActions from '@/redux/actions/walkIn';
 import clientsActions from '@/redux/actions/clients';
@@ -27,22 +27,22 @@ import rootDrawerNavigatorAction from '@/redux/actions/rootDrawerNavigator';
 import getActiveRouteName from '@/utilities/helpers/getActiveRouteName';
 import navigationActions from '@/redux/actions/navigation';
 
-const RootDrawerNavigator = TabNavigator (
+const RootDrawerNavigator = TabNavigator(
   {
-    Queue: {screen: QueueStackNavigator},
+    Queue: { screen: QueueStackNavigator },
     ApptBook: {
       screen: AppointmentStackNavigator,
-      navigationOptions: {title: 'Appt. Book'},
+      navigationOptions: { title: 'Appt. Book' },
     },
     ClientsStack: {
       screen: ClientsStackNavigator,
-      navigationOptions: {title: 'Clients'},
+      navigationOptions: { title: 'Clients' },
     },
   },
   {
-    navigationOptions: ({navigation, screenProps}) => ({
-      tabBarIcon: ({focused, tintColor}) => {
-        const {routeName} = navigation.state;
+    navigationOptions: ({ navigation, screenProps }) => ({
+      tabBarIcon: ({ focused, tintColor }) => {
+        const { routeName } = navigation.state;
         let iconName;
         const type = IconTypes.regular;
         const fontWeight = 'normal';
@@ -69,14 +69,14 @@ const RootDrawerNavigator = TabNavigator (
           />
         );
       },
-      tabBarOnPress: ({previousScene, scene, jumpToIndex}) => {
+      tabBarOnPress: ({ previousScene, scene, jumpToIndex }) => {
         if (
           previousScene.routeName === 'Clients' &&
           previousScene.route !== scene.route
         ) {
-          screenProps.clientsActions.setClients ([]);
+          screenProps.clientsActions.setClients([]);
         }
-        jumpToIndex (scene.index);
+        jumpToIndex(scene.index);
       },
     }),
     tabBarOptions: {
@@ -104,10 +104,10 @@ const RootDrawerNavigator = TabNavigator (
 );
 
 class RootNavigator extends React.Component {
-  componentDidMount () {
-    this.props.rootDrawerNavigatorAction.changeShowTabBar (true);
+  componentDidMount() {
+    this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
   }
-  render () {
+  render() {
     const {
       loggedIn,
       useFingerprintId,
@@ -122,17 +122,17 @@ class RootNavigator extends React.Component {
     }
     if (
       loggedIn &&
-      (!useFingerprintId || fingerprintExpireTime > Date.now ())
+      (!useFingerprintId || fingerprintExpireTime > Date.now())
     ) {
       if (!this.props.userInfo.isLoading && !this.props.userInfo.currentEmployee) {
-        this.props.userActions.getEmployeeData ();
+        this.props.userActions.getEmployeeData();
       }
       return (
         <RootDrawerNavigator
           onNavigationStateChange={(prevState, currentState) => {
-            const currentScreen = getActiveRouteName (currentState);
-            const prevScreen = getActiveRouteName (prevState);
-            this.props.navigationActions.setCurrentRoute (currentScreen);
+            const currentScreen = getActiveRouteName(currentState);
+            const prevScreen = getActiveRouteName(prevState);
+            this.props.navigationActions.setCurrentRoute(currentScreen);
           }}
           screenProps={{
             isNewApptValid: this.props.isNewApptValid,
@@ -149,33 +149,33 @@ class RootNavigator extends React.Component {
 
 RootNavigator.propTypes = {
   isNewApptValid: PropTypes.bool.isRequired,
-  clientsActions: PropTypes.shape ({
+  clientsActions: PropTypes.shape({
     setClients: PropTypes.func.isRequired,
     setFilteredClients: PropTypes.func.isRequired,
   }).isRequired,
-  userActions: PropTypes.shape ({
+  userActions: PropTypes.shape({
     getEmployeeData: PropTypes.func.isRequired,
   }).isRequired,
-  auth: PropTypes.shape ({
+  auth: PropTypes.shape({
     loggedIn: PropTypes.bool.isRequired,
     useFingerprintId: PropTypes.bool.isRequired,
     fingerprintAuthenticationTime: PropTypes.number.isRequired,
     username: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   }).isRequired,
-  drawerOptions: PropTypes.shape ({
+  drawerOptions: PropTypes.shape({
     showTabBar: PropTypes.bool.isRequired,
   }).isRequired,
-  store: PropTypes.shape ({
+  store: PropTypes.shape({
     hasStore: PropTypes.bool.isRequired,
   }).isRequired,
-  userInfo: PropTypes.shape ({
-    currentEmployee: PropTypes.shape ({}),
+  userInfo: PropTypes.shape({
+    currentEmployee: PropTypes.shape({}),
   }).isRequired,
-  rootDrawerNavigatorAction: PropTypes.shape ({
+  rootDrawerNavigatorAction: PropTypes.shape({
     changeShowTabBar: PropTypes.func.isRequired,
   }).isRequired,
-  navigationActions: PropTypes.shape ({
+  navigationActions: PropTypes.shape({
     setCurrentRoute: PropTypes.func.isRequired,
   }).isRequired,
 };
@@ -192,21 +192,21 @@ const mapStateToProps = state => ({
   store: state.storeReducer,
 });
 const mapActionsToProps = dispatch => ({
-  navigationActions: bindActionCreators ({...navigationActions}, dispatch),
-  userActions: bindActionCreators ({...userActions}, dispatch),
-  walkInActions: bindActionCreators ({...walkInActions}, dispatch),
-  clientsActions: bindActionCreators ({...clientsActions}, dispatch),
-  appointmentNoteActions: bindActionCreators (
-    {...appointmentNoteActions},
+  navigationActions: bindActionCreators({ ...navigationActions }, dispatch),
+  userActions: bindActionCreators({ ...userActions }, dispatch),
+  walkInActions: bindActionCreators({ ...walkInActions }, dispatch),
+  clientsActions: bindActionCreators({ ...clientsActions }, dispatch),
+  appointmentNoteActions: bindActionCreators(
+    { ...appointmentNoteActions },
     dispatch
   ),
-  salonSearchHeaderActions: bindActionCreators (
-    {...salonSearchHeaderActions},
+  salonSearchHeaderActions: bindActionCreators(
+    { ...salonSearchHeaderActions },
     dispatch
   ),
-  rootDrawerNavigatorAction: bindActionCreators (
-    {...rootDrawerNavigatorAction},
+  rootDrawerNavigatorAction: bindActionCreators(
+    { ...rootDrawerNavigatorAction },
     dispatch
   ),
 });
-export default connect (mapStateToProps, mapActionsToProps) (RootNavigator);
+export default connect(mapStateToProps, mapActionsToProps)(RootNavigator);

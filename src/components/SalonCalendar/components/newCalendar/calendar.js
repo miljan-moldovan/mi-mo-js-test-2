@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {
   View,
   StyleSheet,
@@ -103,7 +103,7 @@ const weekWidth = (screenWidth - 36) / 7;
 const providerWidth = 130;
 const headerHeight = 40;
 
-export default class Calendar extends Component {
+export default class Calendar extends React.Component {
   constructor (props) {
     super (props);
     this.offset = {x: 0, y: 0};
@@ -219,8 +219,11 @@ export default class Calendar extends Component {
     if (nextProps.isLoading) {
       this.clearActive ();
     }
-    if (nextProps.startDate.format('YYYY-MM-DD') !== this.props.startDate.format('YYYY-MM-DD')) {
-      this.board.scrollTo({ x: 0, y: 0 });
+    if (
+      nextProps.startDate.format ('YYYY-MM-DD') !==
+      this.props.startDate.format ('YYYY-MM-DD')
+    ) {
+      this.board.scrollTo ({x: 0, y: 0});
     }
   }
 
@@ -240,10 +243,15 @@ export default class Calendar extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.displayMode !== this.props.displayMode || this.props.isLoading !== nextProps.isLoading ||
-      this.state.alert !== nextState.alert || this.state.activeCard !== nextState.activeCard ||
-      this.state.activeBlock !== nextState.activeBlock || this.props.bufferVisible !== nextProps.bufferVisible;
+  shouldComponentUpdate (nextProps, nextState) {
+    return (
+      nextProps.displayMode !== this.props.displayMode ||
+      this.props.isLoading !== nextProps.isLoading ||
+      this.state.alert !== nextState.alert ||
+      this.state.activeCard !== nextState.activeCard ||
+      this.state.activeBlock !== nextState.activeBlock ||
+      this.props.bufferVisible !== nextProps.bufferVisible
+    );
   }
 
   setGroupedAppointments = ({
@@ -1789,9 +1797,15 @@ export default class Calendar extends Component {
               hideAlert={this.hideAlert}
               storeScheduleExceptions={storeScheduleExceptions}
             />
-            <CardGrid cardsArray={cardsArray} isLoading={isLoading} headerData={headerData}
-              selectedFilter={selectedFilter} selectedProvider={selectedProvider} renderCard={this.renderCard}
-              renderBlock={this.renderBlock} cardActive={this.state.activeBlock || this.state.activeCard}
+            <CardGrid
+              cardsArray={cardsArray}
+              isLoading={isLoading}
+              headerData={headerData}
+              selectedFilter={selectedFilter}
+              selectedProvider={selectedProvider}
+              renderCard={this.renderCard}
+              renderBlock={this.renderBlock}
+              cardActive={this.state.activeBlock || this.state.activeCard}
             />
             {this.renderResizeCard ()}
             {this.renderResizeBlock ()}

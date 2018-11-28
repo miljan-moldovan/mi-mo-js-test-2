@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Icon extends React.Component<IconProps, {}> {
+class Icon extends React.Component<IconProps, {}> {
   root = null;
 
   setNativeProps(nativeProps) {
@@ -49,3 +49,4 @@ export default class Icon extends React.Component<IconProps, {}> {
     );
   }
 }
+export default Icon;

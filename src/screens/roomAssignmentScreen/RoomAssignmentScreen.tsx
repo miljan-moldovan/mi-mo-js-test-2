@@ -53,7 +53,7 @@ export interface RoomAssignmentScreenState {
   currentOpenAssignment: RoomItem,
 }
 
-export default class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, RoomAssignmentScreenState> {
+export default class RoomAssignmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const date = params.date || moment();
