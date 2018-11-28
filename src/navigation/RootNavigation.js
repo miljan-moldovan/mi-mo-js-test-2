@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import {
   TabNavigator,
@@ -9,24 +8,23 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {get} from 'lodash';
 import PropTypes from 'prop-types';
-import Icon from '@/components/common/Icon';
+import Icon, {IconTypes} from '@/components/common/Icon';
 
-import {isValidAppointment} from '../redux/selectors/newAppt';
-import userActions from '../redux/actions/user';
-import walkInActions from '../redux/actions/walkIn';
-import clientsActions from '../redux/actions/clients';
-import appointmentNoteActions from '../redux/actions/appointmentNotes';
-import salonSearchHeaderActions from '../redux/reducers/searchHeader';
+import {isValidAppointment} from '@/redux/selectors/newAppt';
+import userActions from '@/redux/actions/user';
+import walkInActions from '@/redux/actions/walkIn';
+import clientsActions from '@/redux/actions/clients';
+import appointmentNoteActions from '@/redux/actions/appointmentNotes';
+import salonSearchHeaderActions from '@/redux/reducers/searchHeader';
 
 import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
 import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
 import SelectStoreStackNavigator from './SelectStoreStackNavigator';
-import rootDrawerNavigatorAction from '../redux/actions/rootDrawerNavigator';
-import getActiveRouteName from '../utilities/helpers/getActiveRouteName';
-import navigationActions from '../redux/actions/navigation';
-import headerStyles from '../constants/headerStyles';
+import rootDrawerNavigatorAction from '@/redux/actions/rootDrawerNavigator';
+import getActiveRouteName from '@/utilities/helpers/getActiveRouteName';
+import navigationActions from '@/redux/actions/navigation';
 
 const RootDrawerNavigator = TabNavigator (
   {
@@ -45,14 +43,13 @@ const RootDrawerNavigator = TabNavigator (
       tabBarIcon: ({focused, tintColor}) => {
         const {routeName} = navigation.state;
         let iconName;
-        let type = 'regularFree';
+        const type = IconTypes.regular;
         const fontWeight = 'normal';
 
         if (routeName === 'Sales') {
           iconName = 'lineChart';
         } else if (routeName === 'Queue') {
           iconName = 'signIn';
-          type = 'regular';
         } else if (routeName === 'ClientsStack') {
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {

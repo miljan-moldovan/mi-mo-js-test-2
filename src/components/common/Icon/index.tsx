@@ -15,6 +15,7 @@ export enum IconTypes {
   brands = 'Brands',
   light = 'Light',
   regular = 'RegularFree',
+  regularFree = 'RegularFree',
   solidFree = 'SolidFree',
   simple = 'Simple',
 }

@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Text } from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 
 import moment from 'moment';
 
 import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   calendarContainer: {
     //zIndex: 99999,
     overflow: 'hidden',
@@ -71,21 +71,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-  //  marginRight: 15,
+    //  marginRight: 15,
   },
   dateButton: {
     width: 160,
   },
 });
 
-
 export default class SalonDatePickerBar extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
 
-    const startDate = this.getInitialDate();
-    const selectedDate = moment(this.props.selectedDate);
-    const { mode } = this.props;
+    const startDate = this.getInitialDate ();
+    const selectedDate = moment (this.props.selectedDate);
+    const {mode} = this.props;
     this.state = {
       startDate,
       selectedDate,
@@ -97,111 +96,145 @@ export default class SalonDatePickerBar extends Component {
     mode: 'day',
   };
 
-  getPrevious= () => {
-    let previousDayStartDate = this.state.startDate.clone();
-    previousDayStartDate = previousDayStartDate.subtract(1, this.state.mode);
+  getPrevious = () => {
+    let previousDayStartDate = this.state.startDate.clone ();
+    previousDayStartDate = previousDayStartDate.subtract (1, this.state.mode);
 
-    this.setState({ startDate: previousDayStartDate });
+    this.setState ({startDate: previousDayStartDate});
 
-    let endDate = previousDayStartDate.clone();
-    endDate = this.state.mode === 'week' ? endDate.add(6, 'day') : previousDayStartDate;
+    let endDate = previousDayStartDate.clone ();
+    endDate = this.state.mode === 'week'
+      ? endDate.add (6, 'day')
+      : previousDayStartDate;
 
-    this.props.onDateChange(previousDayStartDate, endDate);
-  }
+    this.props.onDateChange (previousDayStartDate, endDate);
+  };
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ startDate: nextProps.selectedDate, mode: nextProps.mode });
+  componentWillReceiveProps (nextProps) {
+    this.setState ({startDate: nextProps.selectedDate, mode: nextProps.mode});
   }
 
   getNext = () => {
-    let nextDayStartDate = this.state.startDate.clone();
-    nextDayStartDate = nextDayStartDate.add(1, this.state.mode);
+    let nextDayStartDate = this.state.startDate.clone ();
+    nextDayStartDate = nextDayStartDate.add (1, this.state.mode);
 
-    this.setState({ startDate: nextDayStartDate });
-    let endDate = nextDayStartDate.clone();
-    endDate = this.state.mode === 'week' ? endDate.add(6, 'day') : nextDayStartDate.clone();
+    this.setState ({startDate: nextDayStartDate});
+    let endDate = nextDayStartDate.clone ();
+    endDate = this.state.mode === 'week'
+      ? endDate.add (6, 'day')
+      : nextDayStartDate.clone ();
 
-    this.props.onDateChange(nextDayStartDate, endDate);
+    this.props.onDateChange (nextDayStartDate, endDate);
+  };
+
+  goToToday = () => {
+    const today = moment ();
+    this.setState ({startDate: today});
+    this.props.onDateChange (today, today);
+  };
+
+  getInitialDate = () => {
+    if (this.props.startDate) {
+      return moment (this.props.startDate);
+    }
+    if (this.props.date) {
+      return moment (this.props.date);
+    }
+    return moment ();
+  };
+
+  // getSelectedDate(date) {
+  //   if (this.state.selectedDate.valueOf() === 0) {
+  //     return;
+  //   }
+  //   return this.state.selectedDate;
+  // }
+
+  setSelectedDate (date) {
+    const mDate = moment (date);
+    this.props.onCalendarSelected (mDate);
   }
 
-    goToToday = () => {
-      const today = moment();
-      this.setState({ startDate: today });
-      this.props.onDateChange(today, today);
-    }
+  render = () => (
+    <View
+      style={[
+        styles.calendarContainer,
+        {backgroundColor: this.props.calendarColor},
+        this.props.style,
+      ]}
+    >
+      <View style={styles.datesStrip}>
+        <SalonTouchableOpacity
+          style={[
+            styles.angleContainer,
+            {justifyContent: 'flex-start', padding: 10, marginLeft: 8},
+          ]}
+          onPress={this.getPrevious}
+        >
+          <View>
+            <Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />
+          </View>
+        </SalonTouchableOpacity>
 
-    getInitialDate = () => {
-      if (this.props.startDate) {
-        return moment(this.props.startDate);
-      }
-      if (this.props.date) {
-        return moment(this.props.date);
-      }
-      return moment();
-    }
-
-    // getSelectedDate(date) {
-    //   if (this.state.selectedDate.valueOf() === 0) {
-    //     return;
-    //   }
-    //   return this.state.selectedDate;
-    // }
-
-    setSelectedDate(date) {
-      const mDate = moment(date);
-      this.props.onCalendarSelected(mDate);
-    }
-
-    render= () => (
-      <View
-        style={[
-          styles.calendarContainer,
-          { backgroundColor: this.props.calendarColor },
-          this.props.style,
-        ]}
-      >
-        <View style={styles.datesStrip}>
-          <SalonTouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-start', padding: 10, marginLeft: 8 }]} onPress={this.getPrevious}>
+        <View style={styles.calendarDates}>
+          <SalonTouchableOpacity
+            style={styles.todayContainer}
+            onPress={this.goToToday}
+          >
             <View>
-              <Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />
+              <Text style={styles.today}>
+                Today
+              </Text>
             </View>
           </SalonTouchableOpacity>
 
-          <View style={styles.calendarDates}>
-            <SalonTouchableOpacity style={styles.todayContainer} onPress={this.goToToday}>
-              <View>
-                <Text style={styles.today}>
-                Today
-                </Text>
-              </View>
-            </SalonTouchableOpacity>
+          <SalonTouchableOpacity
+            style={styles.dateButton}
+            onPress={this.props.onCalendarSelected}
+          >
+            <View style={styles.dateContainer}>
+              {this.state.mode === 'week' &&
+                <Text style={styles.date}>
+                  {`${moment (this.state.startDate).format ('ddd MM/DD')} - ${moment (
+                    this.state.startDate
+                  )
+                    .add (6, 'day')
+                    .format ('ddd MM/DD')}`}
+                </Text>}
 
-            <SalonTouchableOpacity style={styles.dateButton} onPress={this.props.onCalendarSelected}>
-              <View style={styles.dateContainer}>
-                {this.state.mode === 'week' && <Text style={styles.date} >
-                  {`${moment(this.state.startDate).format('ddd MM/DD')} - ${moment(this.state.startDate).add(6, 'day').format('ddd MM/DD')}`}
-                </Text>
-                }
+              {this.state.mode === 'day' &&
+                <Text style={styles.date}>
+                  {moment (this.state.startDate).format ('dddd, MMM DD')}
+                </Text>}
+            </View>
+          </SalonTouchableOpacity>
 
-                {this.state.mode === 'day' && <Text style={styles.date} >
-                  {moment(this.state.startDate).format('dddd, MMM DD')}
-                </Text>
-                }
-              </View>
-            </SalonTouchableOpacity>
-
-            <SalonTouchableOpacity style={styles.iconContainer} onPress={this.props.onCalendarSelected}>
-              <View>
-                <Icon name="calendar" size={20} color="#115ECD" type="regularFree" />
-              </View>
-            </SalonTouchableOpacity>
-          </View>
-          <SalonTouchableOpacity style={[styles.angleContainer, { justifyContent: 'flex-end', padding: 10, marginRight: 8 }]} onPress={this.getNext}>
+          <SalonTouchableOpacity
+            style={styles.iconContainer}
+            onPress={this.props.onCalendarSelected}
+          >
             <View>
-              <Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />
+              <Icon name="calendar" size={20} color="#115ECD" type="regular" />
             </View>
           </SalonTouchableOpacity>
         </View>
+        <SalonTouchableOpacity
+          style={[
+            styles.angleContainer,
+            {justifyContent: 'flex-end', padding: 10, marginRight: 8},
+          ]}
+          onPress={this.getNext}
+        >
+          <View>
+            <Icon
+              name="chevronRight"
+              size={12.5}
+              color="#727a8f"
+              type="solid"
+            />
+          </View>
+        </SalonTouchableOpacity>
       </View>
-    )
+    </View>
+  );
 }
