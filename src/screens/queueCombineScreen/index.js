@@ -16,7 +16,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import styles from './styles';
-import * as actions from '../../redux/actions/queue.js';
+import * as actions from '../../redux/actions/queue';
 import {QueueCombine, QueueUncombine} from './queueCombine';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';

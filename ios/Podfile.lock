@@ -7,15 +7,10 @@ DEPENDENCIES:
   - Crashlytics
   - Fabric
 
-SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
-    - Crashlytics
-    - Fabric
-
 SPEC CHECKSUMS:
   Crashlytics: aee1a064cbbf99b32efa3f056a5f458d846bc8ff
   Fabric: ae7146a5f505ea370a1e44820b4b1dc8890e2890
 
 PODFILE CHECKSUM: 3817d34ffbf7863cc24dd7af1e9da22575401872
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.4.0
