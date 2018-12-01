@@ -4,7 +4,7 @@ import walkInActions from '../../redux/actions/walkIn';
 import * as queueActions from '../../redux/actions/queue';
 import salonSearchHeaderActions from '../../redux/reducers/searchHeader';
 import settingsActions from '../../redux/actions/settings';
-import WalkInScreen from './WalkInScreen';
+import WalkInScreen from './walkInScreen';
 
 const mapStateToProps = state => ({
   queue: state.queue,

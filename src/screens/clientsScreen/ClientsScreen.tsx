@@ -9,6 +9,8 @@ import Icon from '@/components/common/Icon';
 import styles from './styles';
 import BarsActionSheet from '../../components/BarsActionSheet';
 import Colors from '../../constants/Colors';
+import { Client } from '@/models';
+import { SalonSearchHeaderActions, SalonSearchHeaderReducer } from '@/redux/reducers/searchHeader';
 
 const query = {
   fromAllStores: false,
@@ -17,17 +19,30 @@ const query = {
 };
 
 export interface NavigationParams {
-
+  isModal?: boolean;
+  headerProps?: Object;
+  stateProps?: Object;
+  defaultProps?: Object;
+  hideAddButton?: boolean;
+  dismissOnSelect?: boolean;
+  isWalkin?: boolean;
+  ignoreNav?: boolean;
+  clearSearch?: () => void;
+  onPressMenu?: () => void;
+  onChangeClient?: (client: Client) => void;
+  onChangeWithNavigation?: (client: Client, navigation: NavigationScreenProp<any>) => void;
 }
 
 export interface Props {
   isLoadingMore: boolean;
   total: number;
   showing: number;
-  clientsActions: {
-    getClients: Function;
-    getMoreClients: Function;
-  };
+  clientsActions: any;
+  clientsState: any;
+  auth: any;
+  clientsSectionDataSource: any;
+  salonSearchHeaderActions: SalonSearchHeaderActions;
+  salonSearchHeaderState: SalonSearchHeaderReducer;
   navigation: NavigationScreenProp<any, NavigationParams>;
   storeActions: {
     reselectMainStore: Function;
@@ -39,12 +54,14 @@ export interface State {
 }
 
 class ClientsScreen extends React.Component<Props, State> {
+  BarsActionSheet?: BarsActionSheet;
+
   static navigationOptions = ({ navigation }) => {
     const onPressMenu = navigation.getParam('onPressMenu', () => { });
-    const isModal = get(navigation.state.params, 'isModal', false);
-    const headerProps = get(navigation.state.params, 'headerProps', {});
-    const stateProps = get(navigation.state.params, 'defaultProps', {});
-    const hideAddButton = get(navigation.state.params, 'hideAddButton', false);
+    const isModal = navigation.getParam('isModal', false);
+    const headerProps = navigation.getParam('headerProps', {});
+    const stateProps = navigation.getParam('defaultProps', {});
+    const hideAddButton = navigation.getParam('hideAddButton', false);
     const defaultProps = {
       title: 'Clients',
       subTitle: null,
@@ -112,10 +129,8 @@ class ClientsScreen extends React.Component<Props, State> {
   };
 
   static flexFilter(list, info) {
-    let matchesFilter = [];
     const matches = [];
-
-    matchesFilter = function match(item) {
+    const matchesFilter = function match(item) {
       let count = 0;
       for (let n = 0; n < info.length; n += 1) {
         if (
@@ -160,7 +175,7 @@ class ClientsScreen extends React.Component<Props, State> {
           this.props.navigation.state.params.isModal
             ? 'ModalNewClient'
             : 'NewClient',
-          { onChangeClient: this._handleOnChangeClient }
+          { onChangeClient: this.onChangeClient }
         );
       },
     },
@@ -184,6 +199,34 @@ class ClientsScreen extends React.Component<Props, State> {
         this.props.clientsActions.getClients(params);
       }
     }
+  }
+
+  get params() {
+    const { navigation: { getParam } } = this.props;
+    const onPressMenu = getParam('onPressMenu', () => { });
+    const isModal = getParam('isModal', false);
+    const headerProps = getParam('headerProps', {});
+    const stateProps = getParam('defaultProps', {});
+    const hideAddButton = getParam('hideAddButton', false);
+    const dismissOnSelect = getParam('dismissOnSelect', false);
+    const ignoreNav = getParam('ignoreNav', false);
+    const isWalkin = getParam('isWalkin', false);
+    const onChangeClient = getParam('onChangeClient', null);
+    const onChangeWithNavigation = getParam('onChangeWithNavigation');
+    const clearSearch = getParam('clearSearch');
+    return {
+      onPressMenu,
+      isModal,
+      headerProps,
+      stateProps,
+      hideAddButton,
+      dismissOnSelect,
+      onChangeClient,
+      onChangeWithNavigation,
+      ignoreNav,
+      isWalkin,
+      clearSearch,
+    } as NavigationParams;
   }
 
   getSuggestionsList = clients => {
@@ -220,14 +263,16 @@ class ClientsScreen extends React.Component<Props, State> {
     this.props.clientsActions.setClients([]);
   };
 
-  _handleOnChangeClient = client => {
+  onChangeClient = client => {
     const {
-      navigation: { getParam, goBack, ...navigation },
+      navigation,
       salonSearchHeaderActions: { setShowFilter },
     } = this.props;
-    const onChangeClient = getParam('onChangeClient', null);
-    const onChangeWithNavigation = getParam('onChangeWithNavigation', null);
-    const dismissOnSelect = getParam('dismissOnSelect', false);
+    const {
+      onChangeClient,
+      onChangeWithNavigation,
+      dismissOnSelect,
+    } = this.params;
     if (isFunction(onChangeWithNavigation)) {
       onChangeWithNavigation(client, navigation);
       setShowFilter(false);
@@ -235,7 +280,7 @@ class ClientsScreen extends React.Component<Props, State> {
       onChangeClient(client);
       if (dismissOnSelect) {
         setShowFilter(false);
-        goBack();
+        navigation.goBack();
       }
     }
   };
@@ -296,13 +341,8 @@ class ClientsScreen extends React.Component<Props, State> {
   };
 
   render() {
-    let onChangeClient = null;
-    const { state } = this.props.navigation;
-    // make sure we only pass a callback to the component if we have one for the screen
-    if (state.params && state.params.onChangeClient) {
-      onChangeClient = this._handleOnChangeClient;
-    }
-
+    const { onChangeClient, onChangeWithNavigation } = this.params;
+    const onChange = !onChangeClient && !onChangeWithNavigation ? null : this.onChangeClient;
     return (
       <View style={styles.container}>
         <NavigationEvents
@@ -321,19 +361,15 @@ class ClientsScreen extends React.Component<Props, State> {
         />
         <View style={styles.clientsList}>
           <ClientList
-            isWalkin={get(
-              this.props.navigation.state,
-              'params.isWalkin',
-              false
-            )}
+            isWalkin={this.params.isWalkin}
             isLoadingMore={this.props.isLoadingMore}
             fetchMore={this.fetchMore}
             navigate={this.props.navigation.navigate}
             boldWords={this.props.salonSearchHeaderState.searchText}
             style={styles.clientListContainer}
             clients={this.props.clientsSectionDataSource}
-            onChangeClient={onChangeClient}
-            refreshing={this.props.salonSearchHeaderState.isLoading}
+            onChangeClient={onChange}
+            refreshing={this.props.clientsState.isLoading}
             isLoading={this.props.clientsState.isLoading}
             hideAddButton={
               this.props.navigation.state.params

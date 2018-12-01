@@ -142,9 +142,27 @@ class NewApptSlide extends React.Component {
     return addons.length > 0 || recommended.length > 0 || required !== null;
   }
 
-  setClient = client => {
-    this.props.newApptActions.setClient (client);
-    this.showPanel ().checkConflicts ();
+  setClient = (client, clientsNav) => {
+    const {newApptState: {mainEmployee: selectedProvider}} = this.props;
+    const {service: selectedService} = this.getService ();
+    clientsNav.navigate ('Services', {
+      selectedService,
+      selectedProvider,
+      onChangeWithNavigation: (service, servicesNav) => {
+        servicesNav.navigate ('Providers', {
+          selectedService,
+          selectedProvider,
+          dismissOnSelect: true,
+          onChangeProvider: provider => {
+            this.setProvider (provider);
+            this.props.newApptActions.setClient (client);
+            servicesNav.goBack ();
+            clientsNav.goBack ();
+            this.setService (service);
+          },
+        });
+      },
+    });
   };
 
   setService = service => {
@@ -169,8 +187,6 @@ class NewApptSlide extends React.Component {
                         selectedRecommended: recommended,
                         selectedRequired: required,
                       } = this.state;
-
-                      console.log (JSON.stringify (service));
                       this.props.newApptActions.addQuickServiceItem ({
                         service,
                         addons,
@@ -413,7 +429,7 @@ class NewApptSlide extends React.Component {
 
   handleTabChange = (ev, activeTab) => this.props.onChangeTab (activeTab);
 
-  showPanel = () => {
+  showPanel = (callback:  () => void | boolean = false) => {
     if (!this.state.isAnimating) {
       this.setState ({isAnimating: true}, () => {
         setTimeout (() => {
@@ -423,7 +439,11 @@ class NewApptSlide extends React.Component {
               Animated.timing (this.state.addonsHeight, {
                 toValue: 500,
                 duration: 500,
-              }).start ();
+              }).start (() => {
+                if (isFunction (callback)) {
+                  callback ();
+                }
+              });
             }
           });
         }, 300);
@@ -432,7 +452,7 @@ class NewApptSlide extends React.Component {
     return this;
   };
 
-  hidePanel = (callback = false) => {
+  hidePanel = (callback:  () => void | boolean = false) => {
     if (!this.state.isAnimating) {
       this.setState ({isAnimating: true}, () => {
         const animateClose = () => {
@@ -812,7 +832,7 @@ class NewApptSlide extends React.Component {
             navigate={navigation.navigate}
             headerProps={{title: 'Clients', ...this.cancelButton ()}}
             iconStyle={styles.inputColor}
-            onChange={this.setClient}
+            onChangeWithNavigation={this.setClient}
           />
           <InputDivider style={styles.middleSectionDivider} />
           <ServiceInput

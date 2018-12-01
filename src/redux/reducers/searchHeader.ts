@@ -1,3 +1,5 @@
+import { Maybe } from '@/models';
+
 export const SET_FILTER_TYPES = 'salonSearchHeader/FILTER_TYPES';
 export const SET_SELECTED_FILTER = 'salonSearchHeader/SET_SELECTED_FILTER';
 export const SET_SHOW_FILTER = 'salonSearchHeader/SET_SHOW_FILTER';
@@ -8,7 +10,18 @@ export const SET_FILTER_ACTION = 'salonSearchHeader/SET_FILTER_ACTION';
 export const SET_IGNORED_NUMBER_OF_LETTERS =
   'salonSearchHeader/SET_IGNORED_NUMBER_OF_LETTERS';
 
-const initialState = {
+export interface SalonSearchHeaderReducer {
+  filterTypes: Maybe<string[]>;
+  selectedFilter: number;
+  showFilter: boolean;
+  title: string;
+  subTitle: Maybe<string>;
+  searchText: string;
+  filterList: () => any;
+  ignoredNumberOfLetters: Maybe<number>;
+}
+
+const initialState: SalonSearchHeaderReducer = {
   filterTypes: ['This store', 'All stores'],
   selectedFilter: 0,
   showFilter: false,
@@ -19,7 +32,7 @@ const initialState = {
   ignoredNumberOfLetters: 2,
 };
 
-export function salonSearchHeaderReducer(state = initialState, action) {
+export function salonSearchHeaderReducer(state: SalonSearchHeaderReducer = initialState, action) {
   const { type, data } = action;
   switch (type) {
     case SET_FILTER_ACTION:

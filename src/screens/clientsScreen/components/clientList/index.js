@@ -9,10 +9,9 @@ import {
   Animated,
 } from 'react-native';
 import {connect} from 'react-redux';
+import {isFunction} from 'lodash';
 import ClientListItem from './clientListItem';
 import ClientListHeader from './clientListHeader';
-
-import ListLetterFilter from '../../../../components/listLetterFilter';
 import SalonTouchableHighlight
   from '../../../../components/SalonTouchableHighlight';
 import EmptyList from './emptyClientList';
@@ -262,7 +261,9 @@ class ClientList extends React.Component {
       return (
         <EmptyList
           onChangeClient={
-            this.props.onChangeClient ? this.props.onChangeClient : () => {}
+            isFunction (this.props.onChangeClient)
+              ? this.props.onChangeClient
+              : null
           }
           navigate={this.props.navigate}
           hideAddButton={this.props.hideAddButton}

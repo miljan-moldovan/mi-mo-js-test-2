@@ -20,7 +20,6 @@ import {
 import ServiceSection from './components/serviceSection';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 
 class WalkInScreen extends Component {
@@ -134,16 +133,25 @@ class WalkInScreen extends Component {
   }
 
   setStateClientInfo = client => {
-    const email = client.id === 1 ? '' : client.email;
-    const currentPhone = client.phones.find (
-      phone => phone.type === ClientPhoneTypes.cell
-    );
+    const clientId = get (client, 'id', 1);
+    if (clientId === 1) {
+      this.setState ({
+        client,
+        email: '',
+        phone: '',
+        currentPhone: null,
+      });
+      return;
+    }
+    const email = get (client, 'email', '');
     const phones = get (client, 'phones', []);
+    const currentPhone = phones.find (
+      phone => get (phone, 'type', null) === ClientPhoneTypes.cell
+    );
     const clientPhone = phones.find (
       item => get (item, 'type', null) === ClientPhoneTypes.cell
     );
     const phone = get (clientPhone, 'value', '');
-
     this.setState ({
       client,
       email,
