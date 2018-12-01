@@ -1,12 +1,13 @@
 import React from 'react';
-import { Animated, Platform, Text, StyleSheet, Easing } from 'react-native';
+import {Animated, Platform, Text, StyleSheet, Easing} from 'react-native';
 
 import SalonAvatar from '../../../components/SalonAvatar';
 import Icon from '@/components/common/Icon';
-import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
-import { DefaultAvatar } from '../../../components/formHelpers';
+import getEmployeePhotoSource
+  from '../../../utilities/helpers/getEmployeePhotoSource';
+import {DefaultAvatar} from '../../../components/formHelpers';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   row: {
     height: 44,
     flex: 1,
@@ -39,34 +40,38 @@ const styles = StyleSheet.create({
 });
 
 export default class Row extends React.PureComponent {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
 
-    this._active = new Animated.Value(0);
+    this._active = new Animated.Value (0);
 
     this._style = {
-      ...Platform.select({
+      ...Platform.select ({
         ios: {
-          transform: [{
-            scale: this._active.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.07],
-            }),
-          }],
-          shadowRadius: this._active.interpolate({
+          transform: [
+            {
+              scale: this._active.interpolate ({
+                inputRange: [0, 1],
+                outputRange: [1, 1.07],
+              }),
+            },
+          ],
+          shadowRadius: this._active.interpolate ({
             inputRange: [0, 1],
             outputRange: [2, 10],
           }),
         },
 
         android: {
-          transform: [{
-            scale: this._active.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.07],
-            }),
-          }],
-          elevation: this._active.interpolate({
+          transform: [
+            {
+              scale: this._active.interpolate ({
+                inputRange: [0, 1],
+                outputRange: [1, 1.07],
+              }),
+            },
+          ],
+          elevation: this._active.interpolate ({
             inputRange: [0, 1],
             outputRange: [2, 6],
           }),
@@ -75,27 +80,22 @@ export default class Row extends React.PureComponent {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (this.props.active !== nextProps.active) {
-      Animated.timing(this._active, {
+      Animated.timing (this._active, {
         duration: 300,
         easing: Easing.bounce,
-        toValue: Number(nextProps.active),
-      }).start();
+        toValue: Number (nextProps.active),
+      }).start ();
     }
   }
 
-  render() {
-    const { data, active } = this.props;
-    const containerStyles = active ? [
-      styles.row,
-      this._style,
-      styles.borderTop,
-    ] : [
-      styles.row,
-      this._style,
-    ];
-    const image = getEmployeePhotoSource(data);
+  render () {
+    const {data, active} = this.props;
+    const containerStyles = active
+      ? [styles.row, this._style, styles.borderTop]
+      : [styles.row, this._style];
+    const image = getEmployeePhotoSource (data);
     return (
       <Animated.View style={containerStyles}>
         {/* <Image source={{ uri: data.image }} style={styles.image} /> */}
@@ -105,14 +105,10 @@ export default class Row extends React.PureComponent {
           borderWidth={1}
           borderColor="transparent"
           image={image}
-          defaultComponent={(
-            <DefaultAvatar
-              provider={data}
-            />
-          )}
+          defaultComponent={<DefaultAvatar provider={data} />}
         />
         <Text style={styles.text}>{data.fullName}</Text>
-        <Icon name="bars" size={14} color="#C0C1C6" type="regular" />
+        <Icon name="bars" size={14} color="#C0C1C6" />
       </Animated.View>
     );
   }

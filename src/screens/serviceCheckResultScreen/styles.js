@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 import Colors from '../../constants/Colors';
 
-export default StyleSheet.create({
+export default StyleSheet.create ({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
@@ -21,19 +21,25 @@ export default StyleSheet.create({
     color: 'white',
   },
   headerLeftButton: {
-    paddingLeft: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    paddingLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerRightButton: {
-    paddingRight: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    paddingRight: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerButtonText: {
     fontSize: 14,
     color: 'white',
     fontFamily: 'Roboto',
   },
-  marginLeft: { marginLeft: 8 },
-  robotoMedium: { fontFamily: 'Roboto-Medium' },
-  inputGroup: { marginTop: 17, paddingRight: 22 },
+  marginLeft: {marginLeft: 8},
+  robotoMedium: {fontFamily: 'Roboto-Medium'},
+  inputGroup: {marginTop: 17, paddingRight: 22},
   errorText: {
     color: Colors.defaultBlack,
     fontSize: 14,
@@ -46,7 +52,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  resultRow: { flex: 1, flexDirection: 'row' },
+  resultRow: {flex: 1, flexDirection: 'row'},
   resultEmployeeText: {
     color: Colors.defaultBlack,
     fontSize: 14,
@@ -60,7 +66,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   resultServiceDuration: {
-    color: Colors.serviceCheckBlack,
+    color: Colors.darkBlue,
     fontSize: 11,
     lineHeight: 44,
     fontFamily: 'Roboto-Thin',

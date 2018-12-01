@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 import Colors from '../../constants/Colors';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   headerTitle: {
     fontSize: 17,
     lineHeight: 22,
@@ -14,15 +14,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   itemRow: {
-    height: 43,
+    height: 44,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 14,
     backgroundColor: 'white',
   },
   inputRow: {
-    flex: 9,
+    height: 44,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -90,15 +89,14 @@ const styles = StyleSheet.create({
   selectedGreen: {
     color: Colors.selectedGreen,
   },
-  estimatedTimeContainer: { flex: 1, alignItems: 'flex-end' },
-  selectedIconContainer: { flex: 1, alignItems: 'center' },
+  estimatedTimeContainer: {flex: 1, alignItems: 'flex-end'},
+  selectedIconContainer: {flex: 1, alignItems: 'center'},
   searchBarContainer: {
-    paddingTop: 3,
-    paddingBottom: 3.1,
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 5,
   },
-  flexRow: { flexDirection: 'row' },
-  fullSizeColumn: { flexDirection: 'column', flex: 1 },
+  flexRow: {flexDirection: 'row'},
+  fullSizeColumn: {flexDirection: 'column', flex: 1},
   whiteBackground: {
     backgroundColor: Colors.white,
   },

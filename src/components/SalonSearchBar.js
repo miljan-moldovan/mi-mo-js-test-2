@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { Text, TextInput, View, StyleSheet, ViewPropTypes } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
-import { isFunction } from 'lodash';
+import React, {Component} from 'react';
+import {Text, TextInput, View, StyleSheet, ViewPropTypes} from 'react-native';
+import {NavigationEvents} from 'react-navigation';
+import {isFunction} from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from '@/components/common/Icon';
 import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 10,
@@ -76,63 +76,72 @@ class SalonSearchBar extends Component {
   };
 
   blurInput = () => {
-    this.textInput.blur();
-  }
+    this.textInput.blur ();
+  };
 
-  handleChange = (searchText) => {
-    this.setState({ searchText }, () => {
+  handleChange = searchText => {
+    this.setState ({searchText}, () => {
       if (this.props.onChangeText) {
-        this.props.onChangeText(searchText);
+        this.props.onChangeText (searchText);
       }
     });
-  }
+  };
 
   handleCancel = () => {
-    this.handleChange('');
-    this.textInput.blur()
-    if (isFunction(this.props.handleCancel)) {
-      this.props.handleCancel();
+    this.handleChange ('');
+    this.textInput.blur ();
+    if (isFunction (this.props.handleCancel)) {
+      this.props.handleCancel ();
     }
-  }
+  };
 
-  render() {
+  render () {
     const {
       iconsColor,
       borderColor,
       backgroundColor,
+      containerColor,
       focusOnMount,
       fontColor,
       showCancel,
       searchIconPosition,
       onClear,
     } = this.props;
-    const { searchText } = this.state;
+    const {searchText} = this.state;
     const searchBarStyle = {
       borderColor,
       backgroundColor,
     };
-    const searchIconStyle = { color: iconsColor };
-    const textInputStyle = { color: fontColor };
+    const containerStyle = containerColor
+      ? {
+          backgroundColor: containerColor,
+        }
+      : {};
+    const searchIconStyle = {color: iconsColor};
+    const textInputStyle = {color: fontColor};
     const clearSearchText = () => {
-      this.textInput.blur();
-      this.handleChange('');
+      this.textInput.blur ();
+      this.handleChange ('');
     };
     return (
-      <View style={[styles.container, this.props.containerStyle]}>
+      <View
+        style={[styles.container, containerStyle, this.props.containerStyle]}
+      >
         <NavigationEvents
-    onWillFocus={payload => this.props.focusOnMount && this.textInput.focus()}
-  />
+          onWillFocus={payload =>
+            this.props.focusOnMount && this.textInput.focus ()}
+        />
         <View style={[styles.searchBar, searchBarStyle]}>
           <View style={styles.searchBarItems}>
-            {
-              searchIconPosition === 'left' &&
+            {searchIconPosition === 'left' &&
               <Icon
                 style={[styles.searchIconLeft, searchIconStyle]}
                 name="search"
-              />
-            }
+              />}
             <TextInput
-              ref={(ref) => { this.textInput = ref; }}
+              ref={ref => {
+                this.textInput = ref;
+              }}
               style={[styles.searchBarInput, textInputStyle]}
               placeholder={this.props.placeHolderText}
               placeholderTextColor={this.props.placeholderTextColor}
@@ -141,16 +150,14 @@ class SalonSearchBar extends Component {
               onFocus={this.props.onFocus}
               onBlur={this.props.onBlur}
             />
-            {
-              searchText.length === 0 && searchIconPosition === 'right' &&
+            {searchText.length === 0 &&
+              searchIconPosition === 'right' &&
               <Icon
                 style={[styles.searchIconRight, searchIconStyle]}
                 name="search"
-              />
-            }
+              />}
             <View style={styles.crossIconContainer}>
-              {
-                searchText.length > 0 &&
+              {searchText.length > 0 &&
                 <SalonTouchableHighlight
                   underlayColor="transparent"
                   onPress={clearSearchText}
@@ -160,13 +167,11 @@ class SalonSearchBar extends Component {
                     name="timesCircle"
                     style={[styles.crossIcon, searchIconStyle]}
                   />
-                </SalonTouchableHighlight>
-              }
+                </SalonTouchableHighlight>}
             </View>
           </View>
         </View>
-        {
-          showCancel &&
+        {showCancel &&
           <View style={styles.cancelContainer}>
             <SalonTouchableHighlight
               style={styles.cancelSearchContainer}
@@ -175,13 +180,11 @@ class SalonSearchBar extends Component {
             >
               <Text style={[styles.cancelSearch, textInputStyle]}>Cancel</Text>
             </SalonTouchableHighlight>
-          </View>
-        }
+          </View>}
       </View>
     );
   }
 }
-
 
 SalonSearchBar.propTypes = {
   placeholderTextColor: PropTypes.string,
@@ -209,9 +212,9 @@ SalonSearchBar.defaultProps = {
   searchIconPosition: 'left',
   showCancel: false,
   placeHolderText: 'Search',
-  onFocus: () => { },
-  onBlur: () => { },
-  onClear: () => { },
+  onFocus: () => {},
+  onBlur: () => {},
+  onClear: () => {},
   focusOnMount: false,
   containerStyle: {},
 };

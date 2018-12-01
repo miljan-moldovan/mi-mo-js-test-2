@@ -42,7 +42,7 @@ export default class ServiceCheckResultScreen extends React.Component {
               wait={3000}
               onPress={navigation.goBack}
             >
-              <Icon name="angleLeft" type="regular" color="white" size={22} />
+              <Icon name="angleLeft" color="white" size={22} />
               <Text style={[styles.headerButtonText, styles.marginLeft]}>
                 Back
               </Text>

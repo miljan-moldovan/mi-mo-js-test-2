@@ -1,8 +1,8 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 import Colors from '../../constants/Colors';
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
+const styles = StyleSheet.create ({
+  container: {flex: 1},
   rootView: {
     marginTop: -44,
   },
@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
   caretIcon: {
     marginHorizontal: 10,
   },
-  flexRow: { flexDirection: 'row' },
-  whiteBg: { backgroundColor: Colors.white },
+  flexRow: {flexDirection: 'row'},
+  whiteBg: {backgroundColor: Colors.white},
   headerButton: {
     fontSize: 14,
     lineHeight: 22,
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   sizeText: {
     fontSize: 11,
-    color: Colors.serviceCheckBlack,
+    color: Colors.darkBlue,
   },
   priceText: {
     fontSize: 14,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     color: Colors.defaultGrey,
     alignSelf: 'flex-end',
   },
-  searchBarContainer: { paddingHorizontal: 8 },
+  searchBarContainer: {paddingHorizontal: 8},
   highlightText: {
     color: Colors.selectedGreen,
   },

@@ -12,6 +12,7 @@
     "@types/jest": "^23.3.9",
     "@types/react": "^16.4.18",
     "@types/react-native": "^0.57.7",
+    "@types/react-native-calendars": "^1.20.5",
     "@types/react-native-tab-view": "^1.0.2",
     "@types/react-navigation": "^2.13.1",
     "@types/react-redux": "^6.0.9",

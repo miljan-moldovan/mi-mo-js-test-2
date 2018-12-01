@@ -1,22 +1,22 @@
 import { StyleProp, TextStyle } from 'react-native';
 
 export enum IconTypes {
-  solid = 'Solid',
-  brands = 'Brands',
-  light = 'Light',
-  regular = 'RegularFree',
-  regularFree = 'RegularFree',
-  solidFree = 'SolidFree',
-  simple = 'Simple',
+  'solid',
+  'brands',
+  'light',
+  'regular',
+  'regularFree',
+  'solidFree',
+  'simple',
 }
 
 export enum IconFonts {
-  Solid = 'FontAwesome5ProSolid',
-  Brands = 'FontAwesome5BrandsRegular',
-  Light = 'FontAwesome5ProLight',
-  RegularFree = 'FontAwesome5FreeRegular',
-  SolidFree = 'FontAwesome5FreeSolid',
-  Simple = 'FontAwesome',
+  'Solid' = 'FontAwesome5ProSolid',
+  'Brands' = 'FontAwesome5BrandsRegular',
+  'Light' = 'FontAwesome5ProLight',
+  'RegularFree' = 'FontAwesome5FreeRegular',
+  'SolidFree' = 'FontAwesome5FreeSolid',
+  'Simple' = 'FontAwesome',
 };
 
 export interface IconProps {

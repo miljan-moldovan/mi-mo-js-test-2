@@ -4,30 +4,33 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import { get, slice, times, orderBy, cloneDeep } from 'lodash';
+import { get, slice, times, flatten, orderBy, cloneDeep } from 'lodash';
 import moment, { Moment, isMoment } from 'moment';
 
 import Colors from '@/constants/Colors';
-import DateTime from '../../constants/DateTime';
+import DateTime from '@/constants/DateTime';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
-import LoadingOverlay from '../../components/LoadingOverlay';
-import SalonModalPicker from '../../components/slidePanels/SalonModalPicker';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+import LoadingOverlay from '@/components/LoadingOverlay';
+import SalonModalPicker from '@/components/slidePanels/SalonModalPicker';
+import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 import {
   InputButton,
   InputDivider,
   InputGroup,
   SectionTitle,
-} from '../../components/formHelpers';
+} from '@/components/formHelpers';
 import styles from './styles';
-import SalonHeader from '../../components/SalonHeader';
-import { Room, RoomFromApi } from '@/models';
+import SalonHeader from '@/components/SalonHeader';
+import { Room, RoomFromApi, Employee } from '@/models';
 import { NavigationScreenProp } from 'react-navigation';
+import { RoomAssignmentActions } from '@/redux/actions/roomAssignment';
+import { RoomAssignmentReducer } from '@/redux/reducers/roomAssignment';
 
 export interface RoomAssignmentScreenNavigationParams {
   dismissOnSelect?: boolean;
   date: Moment;
   canSave: boolean;
+  employee: Employee;
   handleSave: () => void;
 }
 
@@ -36,11 +39,15 @@ export interface RoomAssignmentScreenProps {
   isOpen: boolean;
   rooms: RoomFromApi[];
   getRooms: () => void;
+  chunkedSchedule: moment.Moment[];
   navigation: NavigationScreenProp<RoomAssignmentScreenNavigationParams>;
+  roomAssignmentActions: RoomAssignmentActions;
+  roomAssignmentState: RoomAssignmentReducer;
 }
 
 interface RoomItem {
   room: Room;
+  roomOrdinal: number;
   startTime: Moment;
   endTime: Moment;
 }
@@ -53,7 +60,7 @@ export interface RoomAssignmentScreenState {
   currentOpenAssignment: RoomItem,
 }
 
-export default class RoomAssignmentScreen extends React.Component {
+export default class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, RoomAssignmentScreenState> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const date = params.date || moment();

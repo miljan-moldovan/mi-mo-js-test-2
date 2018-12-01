@@ -41,7 +41,7 @@ export default class AppointmentDetailsScreen extends React.Component {
                 navigation.goBack ();
               }}
             >
-              <Icon name="angleLeft" size={35} color="white" type="regular" />
+              <Icon name="angleLeft" size={35} color="white" />
             </SalonTouchableOpacity>
           }
           headerRight={

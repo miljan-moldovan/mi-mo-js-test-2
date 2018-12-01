@@ -1,5 +1,5 @@
 import axios from 'axios';
-import cancelRequest from '../../../helpers/cancelRequest';
+import {cancelRequest} from '@/utilities/helpers/cancelRequest';
 import {getApiInstance} from '../../api';
 
 let cancellationToken = null;

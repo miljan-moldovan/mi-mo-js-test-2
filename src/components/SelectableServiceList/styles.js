@@ -1,9 +1,10 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+import Colors from '@/constants/Colors';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flex: 1,
-    backgroundColor: '#F1F1F1',
+    backgroundColor: Colors.lightGrey,
   },
   headerTitleContainer: {
     flexDirection: 'column',
@@ -22,8 +23,8 @@ const styles = StyleSheet.create({
     lineHeight: 12,
     color: 'white',
   },
-  headerButtonText: { fontSize: 14, color: 'white' },
-  robotoMedium: { fontFamily: 'Roboto-Medium' },
+  headerButtonText: {fontSize: 14, color: 'white'},
+  robotoMedium: {fontFamily: 'Roboto-Medium'},
   listItem: {
     backgroundColor: 'white',
     flexDirection: 'row',
@@ -40,21 +41,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2F3142',
   },
-  priceText: { 
-    fontSize: 12, 
-    color: '#115ECD' 
+  priceText: {
+    fontSize: 12,
+    color: '#115ECD',
   },
   iconContainer: {
-    flexDirection: 'row', 
-    flex: 1 / 10, 
-    alignItems: 'flex-end', 
+    flexDirection: 'row',
+    flex: 1 / 10,
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
-  icon: { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
+  icon: {flex: 1, alignItems: 'flex-end', justifyContent: 'center'},
   listItemSeparator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#C0C1C6',
   },
-  marginTop: { marginTop: 14 },
+  marginTop: {marginTop: 14},
 });
 export default styles;

@@ -5,9 +5,11 @@ import {
   StyleProp,
   TextStyle,
   ActivityIndicator,
+  ViewStyle,
 } from 'react-native';
 
-import Icon, { IconProps } from '@/components/common/Icon';
+import Icon from '@/components/common/Icon';
+import { IconProps } from '@/components/common/Icon/interfaces';
 import styles from './styles';
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 
@@ -18,6 +20,9 @@ export interface SalonListItemProps {
   height?: number;
   children?: React.ReactNode;
   textStyle?: StyleProp<TextStyle>;
+  isLoading?: boolean;
+  style?: StyleProp<ViewStyle>;
+  key?: string;
 }
 
 const SalonListItem = (props: SalonListItemProps) => {
@@ -28,15 +33,21 @@ const SalonListItem = (props: SalonListItemProps) => {
     onPress,
     textStyle,
     height,
+    isLoading,
+    style,
+    key = '',
   } = props;
   const containerStyle = height ? [styles.container, { height }] : styles.container;
+  const contentStyle = style ? [styles.content, style] : styles.content;
   const content = text ? <Text style={[styles.itemText, textStyle]}>{text}</Text> : children;
   return (
-    <SalonTouchableOpacity style={containerStyle} onPress={onPress}>
-      <View style={styles.content}>{content}</View>
+    <SalonTouchableOpacity key={key} style={containerStyle} onPress={onPress}>
+      <View style={contentStyle}>{content}</View>
       <View style={styles.icons}>
         {
-          icons.map(iconProps => <Icon {...iconProps} style={styles.marginLeft} />)
+          isLoading
+            ? <ActivityIndicator style={styles.marginLeft} />
+            : icons && icons.map(iconProps => <Icon {...iconProps} style={styles.marginLeft} />)
         }
       </View>
     </SalonTouchableOpacity>

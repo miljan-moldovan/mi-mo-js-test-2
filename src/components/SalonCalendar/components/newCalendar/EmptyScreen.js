@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 
 import Icon from '@/components/common/Icon';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -29,8 +29,14 @@ const styles = StyleSheet.create({
 const emptyScreen = () => (
   <View style={styles.container}>
     <View style={styles.iconsContainer}>
-      <Icon name="userCircle" type="regular" size={100} color="rgb(222, 224, 226)" />
-      <Icon name="exclamationCircle" type="solid" size={40} color="rgb(222, 224, 226)" style={styles.exclamationIcon} />
+      <Icon name="userCircle" size={100} color="rgb(222, 224, 226)" />
+      <Icon
+        name="exclamationCircle"
+        type="solid"
+        size={40}
+        color="rgb(222, 224, 226)"
+        style={styles.exclamationIcon}
+      />
     </View>
     <Text style={styles.textStyle}>No providers available</Text>
   </View>

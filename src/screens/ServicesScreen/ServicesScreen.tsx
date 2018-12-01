@@ -3,11 +3,10 @@ import {
   View,
   Text,
   SafeAreaView,
-  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
-import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { get, isFunction } from 'lodash';
+import { get, filter, isFunction } from 'lodash';
 
 import SelectableServiceList from '@/components/SelectableServiceList';
 import SalonSearchHeader from '@/components/SalonSearchHeader';
@@ -18,8 +17,50 @@ import Colors from '@/constants/Colors';
 import CategoryServicesList from './components/categoryServicesList';
 import ServiceCategoryList from './components/serviceCategoryList';
 import styles from './styles';
+import { NavigationScreenProp } from 'react-navigation';
+import { ServicesActions } from '@/redux/actions/service';
+import { SalonSearchHeaderActions } from '@/redux/reducers/searchHeader';
+import LoadingOverlay from '@/components/LoadingOverlay';
+import { Maybe, ServiceCategories, Service, Provider } from '@/models'
+import SalonFlatList from '@/components/common/SalonFlatList';
+import { ServicesReducer } from '@/redux/reducers/service';
+import SalonListItem from '@/components/common/SalonListItem';
 
-class ServicesScreen extends React.Component {
+export interface ServicesScreenNavigationParams {
+  mode: string;
+  queueList: boolean;
+  hasCategories: boolean;
+  dismissOnSelect: boolean;
+  showEstimatedTime: boolean;
+  showFirstAvailable: boolean;
+  checkProviderStatus: boolean;
+  filterList: Maybe<any[]>;
+  selectedService: Maybe<Service>;
+  selectedProvider: Maybe<Provider>;
+  onChangeService: (service: Service) => void;
+  onChangeWithNavigation: (service: Service, navigation: NavigationScreenProp<any>) => void;
+}
+
+export interface ServicesScreenProps {
+  navigation: NavigationScreenProp<ServicesScreenNavigationParams>;
+  servicesActions: ServicesActions;
+  salonSearchHeaderActions: SalonSearchHeaderActions;
+  walkInState: any,
+  servicesState: ServicesReducer,
+  salonSearchHeaderState: any,
+  flatServices: any,
+  quickQueueServices: any,
+}
+
+export interface ServicesScreenState {
+  previousIgnoringNumber: number;
+  defaultHeaderProps: any;
+  prevHeaderProps: any;
+  headerProps: any;
+  isRefreshing: boolean;
+}
+
+class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreenState> {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params &&
       navigation.state.params.defaultProps
@@ -95,10 +136,9 @@ class ServicesScreen extends React.Component {
   };
 
   static flexFilter(list, info) {
-    let matchesFilter = [];
     const matches = [];
 
-    matchesFilter = function match(item) {
+    const flter = function match(item) {
       let count = 0;
       for (let n = 0; n < info.length; n += 1) {
         if (
@@ -112,7 +152,7 @@ class ServicesScreen extends React.Component {
     };
 
     for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
+      if (flter(list[i])) {
         matches.push(list[i]);
       }
     }
@@ -143,6 +183,7 @@ class ServicesScreen extends React.Component {
       },
       previousIgnoringNumber: props.salonSearchHeaderState
         .ignoredNumberOfLetters,
+      isRefreshing: false,
     };
     this.props.navigation.setParams({
       selectedService,
@@ -157,6 +198,18 @@ class ServicesScreen extends React.Component {
 
   componentDidMount() {
     this.getServices();
+  }
+
+  componentWillReceiveProps(nextProps: ServicesScreenProps) {
+    if (
+      !nextProps.servicesState.isLoading && this.props.servicesState.isLoading
+    ) {
+      this.setState({ isRefreshing: false });
+    } else if (
+      nextProps.servicesState.isLoading && !this.props.servicesState.isLoading
+    ) {
+      this.setState({ isRefreshing: true });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -224,14 +277,10 @@ class ServicesScreen extends React.Component {
     const employeeId = params.employeeId || false;
     const queueItem = params.queueItem || {};
     const service = params.service || {};
-
-    // this.props.servicesActions.getServices(opts);
-
     const {
       servicesActions: { getServices, getQueueServiceEmployeeServices },
     } = this.props;
-
-    const opts = {};
+    const opts: any = {};
     if (clientId) {
       opts.clientId = clientId;
     }
@@ -281,11 +330,11 @@ class ServicesScreen extends React.Component {
     const queueList = get(params, 'queueList', false);
     const mode = get(params, 'mode', false);
     const hasCategories = get(params, 'hasCategories', true);
-
     return {
       mode,
       queueList,
       filterList,
+      hasCategories,
       dismissOnSelect,
       selectedService,
       onChangeService,
@@ -294,8 +343,7 @@ class ServicesScreen extends React.Component {
       showFirstAvailable,
       checkProviderStatus,
       onChangeWithNavigation,
-      hasCategories,
-    };
+    } as ServicesScreenNavigationParams;
   }
 
   getServicesById = ids => {
@@ -388,8 +436,7 @@ class ServicesScreen extends React.Component {
 
   handlePressServiceCategory = item => {
     const { navigation } = this.props;
-
-    const walkInRoute = navigation.state.routeName === 'ModalServices';
+    const walkInRoute = get(navigation, 'state.routeName', '') === 'ModalServices';
     this.setHeaderData(
       {
         title: walkInRoute ? 'Walk-in' : item.name,
@@ -419,29 +466,83 @@ class ServicesScreen extends React.Component {
       },
       true
     );
-
     this.props.servicesActions.setShowCategoryServices(true);
     this.props.servicesActions.setCategoryServices(item.services);
   };
 
+  renderCategoryItem = ({ item }) => {
+    const {
+      servicesState: { selectedService },
+    } = this.props;
+    const selectedCategory = selectedService
+      ? filter(this.services, {
+        services: [{ id: selectedService.id }],
+      })[0]
+      : {};
+    const isSelected = selectedCategory.id === item.id;
+    const textStyle = isSelected ? { color: Colors.selectedGreen } : {};
+    const icons = isSelected ? [
+      {
+        name: 'checkCircle',
+        type: 'solid',
+        color: Colors.selectedGreen,
+      }, {
+        name: 'angleRight',
+        color: Colors.defaultBlack,
+        size: 20,
+      }
+    ] : [{
+      name: 'angleRight',
+      color: Colors.defaultBlack,
+      size: 20,
+    }];
+    const onPress = () => this.handlePressServiceCategory(item);
+    return (
+      <SalonListItem
+        text={item.name}
+        icons={icons}
+        textStyle={textStyle}
+        onPress={onPress}
+      />
+    );
+  }
+
+  renderServiceItem = ({ item }) => {
+    const {
+      servicesState: { selectedService },
+    } = this.props;
+    const isSelected = selectedService && selectedService.id === item.id;
+    const textStyle = isSelected ? { color: Colors.selectedGreen } : {};
+    const icons = isSelected ? [
+      {
+        name: 'checkCircle',
+        type: 'solid',
+        color: Colors.selectedGreen,
+      }
+    ] : [];
+    const onPress = () => this.handleOnChangeService(item);
+    return (
+      <SalonListItem
+        text={item.name}
+        icons={icons}
+        textStyle={textStyle}
+        onPress={onPress}
+      />
+    );
+  }
+
   render() {
     const { servicesState } = this.props;
-    const { hasCategories } = this;
-
-    return servicesState.isLoading
-      ? <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <ActivityIndicator />
-      </View>
-      : <View style={styles.container}>
+    const { hasCategories, state: { isRefreshing } } = this;
+    return (
+      <View style={styles.container}>
+        {
+          servicesState.isLoading &&
+          <LoadingOverlay />
+        }
         <View style={styles.servicesList}>
-
-          {!hasCategories &&
+          {
+            !hasCategories &&
             this.services.length > 0 &&
             <SelectableServiceList
               services={this.services}
@@ -453,23 +554,33 @@ class ServicesScreen extends React.Component {
               hidePrice
               returnFullObject
               onChangeSelected={this.handleOnChangeService}
-            />}
+            />
+          }
 
-          {hasCategories &&
-            (!servicesState.showCategoryServices &&
+          {
+            hasCategories && (
+              !servicesState.showCategoryServices &&
               !this.props.salonSearchHeaderState.showFilter &&
-              this.services.length > 0) &&
-            <ServiceCategoryList
-              onRefresh={this.getServices}
-              handlePressServiceCategory={this.handlePressServiceCategory}
-              serviceCategories={this.services}
-              serviceCategoriesLength={this.services.length}
-            />}
-
-          {hasCategories &&
-            (!servicesState.showCategoryServices &&
+              this.services.length > 0
+            ) &&
+            <SalonFlatList
+              refreshControl={
+                <RefreshControl
+                  refreshing={isRefreshing}
+                  onRefresh={this.getServices}
+                />
+              }
+              data={this.services}
+              extraData={this.props}
+              renderItem={this.renderCategoryItem}
+            />
+          }
+          {
+            hasCategories && (
+              !servicesState.showCategoryServices &&
               this.props.salonSearchHeaderState.showFilter &&
-              this.services.length > 0) &&
+              this.services.length > 0
+            ) &&
             <ServiceList
               {...this.props}
               onRefresh={this.getServices}
@@ -479,62 +590,26 @@ class ServicesScreen extends React.Component {
               onChangeService={this.handleOnChangeService}
             />
           }
-
-          {hasCategories &&
-            (servicesState.showCategoryServices &&
-              this.services.length > 0) &&
-            <CategoryServicesList
-              {...this.props}
-              onRefresh={this.getServices}
-              onChangeService={this.handleOnChangeService}
-              categoryServices={servicesState.categoryServices}
-            />}
+          {
+            hasCategories && (
+              servicesState.showCategoryServices &&
+              this.services.length > 0
+            ) &&
+            <SalonFlatList
+              refreshControl={
+                <RefreshControl
+                  refreshing={isRefreshing}
+                  onRefresh={this.getServices}
+                />
+              }
+              data={servicesState.categoryServices}
+              extraData={this.props}
+              renderItem={this.renderServiceItem}
+            />
+          }
         </View>
-      </View>;
+      </View>
+    );
   }
 }
-
-ServicesScreen.propTypes = {
-  salonSearchHeaderState: PropTypes.shape({
-    showFilter: PropTypes.bool.isRequired,
-    searchText: PropTypes.string,
-    ignoredNumberOfLetters: PropTypes.number.isRequired,
-  }).isRequired,
-  flatServices: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  salonSearchHeaderActions: PropTypes.shape({
-    setShowFilter: PropTypes.bool.isRequired,
-    setFilterAction: PropTypes.bool.isRequired,
-    setIgnoredNumberOfLetters: PropTypes.bool.isRequired,
-  }).isRequired,
-  navigation: PropTypes.shape({
-    goBack: PropTypes.func,
-    state: PropTypes.shape({
-      params: PropTypes.shape({
-        onChangeService: PropTypes.func,
-        dismissOnSelect: PropTypes.bool,
-      }),
-    }),
-  }),
-  servicesActions: PropTypes.shape({
-    setSelectedService: PropTypes.func.isRequired,
-    setFilteredServices: PropTypes.func.isRequired,
-    setCategoryServices: PropTypes.func.isRequired,
-    setShowCategoryServices: PropTypes.func.isRequired,
-    getServices: PropTypes.func.isRequired,
-    getQueueServiceEmployeeServices: PropTypes.func.isRequired,
-  }).isRequired,
-  servicesState: PropTypes.shape({
-    showCategoryServices: PropTypes.bool.isRequired,
-    services: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  }).isRequired,
-};
-
-ServicesScreen.defaultProps = {
-  navigation: null,
-};
-
 export default ServicesScreen;

@@ -1,4 +1,5 @@
 import { Maybe } from '@/models';
+
 export interface Room {
   roomCount: number;
   name: string;

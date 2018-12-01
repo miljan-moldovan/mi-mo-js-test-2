@@ -1,4 +1,4 @@
-import { StateEmployee } from 'models/queue';
+import { StateEmployee } from '@/models/queue';
 
 export interface Employee {
   id: number;
@@ -33,11 +33,11 @@ export interface Provider {
   id: number;
   lastName?: string;
   middleName?: string;
-  fullName?:  string;
+  fullName?: string;
   name: string;
   imagePath?: string;
   isReceptionist?: boolean;
-  displayColor?: number| string;
+  displayColor?: number | string;
   code?: string;
 }
 

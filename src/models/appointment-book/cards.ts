@@ -1,5 +1,5 @@
-import { Resource, Room, Maybe, Service, Client, PureProvider, Provider } from 'models';
-import { QueueStatus } from '@app-constants/index';
+import { Resource, Room, Maybe, Service, Client, PureProvider, Provider } from '@/models';
+import { QueueStatus } from '@/constants';
 import { Duration, Moment } from 'moment';
 
 export interface PureAppointment {
@@ -126,7 +126,7 @@ export interface BlockTimeCard extends PureBlockTime {
   toTimeMoment: Moment;
 }
 
-export interface CommonCard extends AppointmentCard, BlockTimeCard {}
+export interface CommonCard extends AppointmentCard, BlockTimeCard { }
 
 export enum AppointmentStatus {
   Regular = 1,

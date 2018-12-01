@@ -32,6 +32,8 @@ import { SettingsActions } from '../../models/Settings';
 import Icon from '@/components/common/Icon';
 import Colors from '../../constants/Colors';
 import LoadingOverlay from '../../components/LoadingOverlay';
+import { Client } from '@/models/Client';
+import { InfoClient } from '@/models';
 
 export interface NavigationParams {
   handleSave: () => void;
@@ -49,12 +51,12 @@ export interface Props {
 }
 
 export interface State {
-  client?: WalkInClient | null;
+  client?: Client | null;
   email: string | null;
   phone: string | null;
   isValidEmail: boolean;
   isValidPhone: boolean;
-  currentPhone: string;
+  currentPhone: any;
   services: ServiceItem[];
 }
 
@@ -137,6 +139,7 @@ class WalkInScreen extends React.Component<Props, State> {
     const prevClientInfo = this.state.client;
     const newClientInfo = nextProps.clientInfoState.client;
     if (
+      prevClientInfo &&
       prevClientInfo.id === newClientInfo.id &&
       !isEqual(prevClientInfo, newClientInfo)
     ) {
@@ -145,10 +148,10 @@ class WalkInScreen extends React.Component<Props, State> {
   }
 
   setStateClientInfo = client => {
-    const email = client.id === 1 ? '' : client.email;
-    const currentPhone = client.phones.find(
+    const email = client && client.id === 1 ? '' : get(client, 'email', '');
+    const currentPhone = client && client.phones ? client.phones.find(
       phone => phone.type === ClientPhoneTypes.cell
-    );
+    ) : { type: ClientPhoneTypes.cell, value: '' };
     const phones = get(client, 'phones', []);
     const clientPhone = phones.find(
       item => get(item, 'type', null) === ClientPhoneTypes.cell
@@ -203,11 +206,11 @@ class WalkInScreen extends React.Component<Props, State> {
 
   validateFields = () => {
     const { email, phone, currentPhone, services, client } = this.state;
-    let canSave = client.id === 1;
+    let canSave = client && client.id === 1;
     if (!canSave) {
       canSave =
         this.isValidEmailRegExp.test(email) ||
-        (isNull(client.email) && (isNull(email) || email === ''));
+        (isNull(get(client, 'email', null)) && (isNull(email) || email === ''));
       canSave =
         canSave &&
         (this.isValidPhoneRegExp.test(phone) ||
@@ -308,6 +311,9 @@ class WalkInScreen extends React.Component<Props, State> {
       isValidPhone: phoneValid,
       client,
     } = this.state;
+    if (!client) {
+      return;
+    }
     const currentPhone = client.phones.find(
       phone => phone.type === ClientPhoneTypes.cell
     );

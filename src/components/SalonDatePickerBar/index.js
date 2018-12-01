@@ -214,7 +214,7 @@ export default class SalonDatePickerBar extends Component {
             onPress={this.props.onCalendarSelected}
           >
             <View>
-              <Icon name="calendar" size={20} color="#115ECD" type="regular" />
+              <Icon name="calendar" size={20} color="#115ECD" />
             </View>
           </SalonTouchableOpacity>
         </View>

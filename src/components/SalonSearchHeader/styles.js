@@ -1,8 +1,9 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+import Colors from '@/constants/Colors';
 
-export default StyleSheet.create({
+export default StyleSheet.create ({
   headerContainer: {
-    backgroundColor: '#115ECD',
+    backgroundColor: Colors.defaultBlue,
     width: '100%',
     flexDirection: 'column',
     alignItems: 'center',

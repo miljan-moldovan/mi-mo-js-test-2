@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, FlatList, StyleSheet, RefreshControl} from 'react-native';
-import FontAwesome, {Icons} from 'react-native-fontawesome';
 import {get, includes, isFunction, isArray, map, filter, find} from 'lodash';
 import PropTypes from 'prop-types';
 import {
@@ -10,13 +9,14 @@ import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonAvatar from '../../components/SalonAvatar';
 import WordHighlighter from '../../components/wordHighlighter';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import {DefaultAvatar} from '../../components/formHelpers';
+import {DefaultAvatar, InputDivider} from '../../components/formHelpers';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/Colors';
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import SalonListItem from '@/components/common/SalonListItem';
+import SalonFlatList from '@/components/common/SalonFlatList';
 
 const FirstAvailableRow = props => {
   const firstAvProvider = {
@@ -25,11 +25,12 @@ const FirstAvailableRow = props => {
     name: 'First',
     lastName: 'Available',
   };
+  const style = {paddingLeft: 16};
   const onPress = () => props.onPress (firstAvProvider);
   return (
     <SalonTouchableOpacity
       onPress={onPress}
-      style={styles.itemRow}
+      style={style}
       key="firstAvailableRow"
     >
       <View style={styles.inputRow}>
@@ -346,12 +347,21 @@ class ProviderScreen extends React.Component {
     const highlightStyle = checked
       ? [styles.providerName, styles.selectedGreen]
       : styles.providerName;
-
+    const icons = checked
+      ? [
+          {
+            name: 'checkCircle',
+            type: 'solid',
+            color: Colors.selectedGreen,
+          },
+        ]
+      : [];
+    const onPress = () => this.handleOnChangeProvider (item);
     return (
-      <SalonTouchableOpacity
-        style={styles.itemRow}
-        onPress={() => this.handleOnChangeProvider (item)}
-        key={index}
+      <SalonListItem
+        key={`provider_${item.id}`}
+        icons={icons}
+        onPress={onPress}
       >
         <View style={styles.inputRow}>
           <SalonAvatar
@@ -378,17 +388,11 @@ class ProviderScreen extends React.Component {
             // <Text style={styles.timeLeftText}>21m</Text> // TODO: Add estimated time text
           }
         </View>
-        <View style={styles.selectedIconContainer}>
-          {checked &&
-            <FontAwesome style={styles.selectedGreen}>
-              {Icons.checkCircle}
-            </FontAwesome>}
-        </View>
-      </SalonTouchableOpacity>
+      </SalonListItem>
     );
   };
 
-  renderSeparator = () => <View style={styles.listItemSeparator} />;
+  renderSeparator = () => <InputDivider />;
 
   render () {
     const {showFirstAvailable} = this.params;
@@ -400,6 +404,7 @@ class ProviderScreen extends React.Component {
           fontColor={Colors.defaultGrey}
           iconsColor={Colors.defaultGrey}
           placeholderTextColor={Colors.defaultGrey}
+          containerColor={Colors.lightGrey}
           placeHolderText="Search"
           borderColor="transparent"
           containerStyle={styles.searchBarContainer}
@@ -409,18 +414,15 @@ class ProviderScreen extends React.Component {
         {showFirstAvailable &&
           <React.Fragment>
             <FirstAvailableRow onPress={this.handleOnChangeProvider} />
-            {this.renderSeparator ()}
+            <InputDivider fullWidth={!this.currentData.length} />
           </React.Fragment>}
-        <FlatList
-          style={styles.whiteBackground}
+        <SalonFlatList
           data={this.currentData}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           ref={ref => {
             this.flatListRef = ref;
           }}
-          ListFooterComponent={this.renderSeparator}
-          ItemSeparatorComponent={this.renderSeparator}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}

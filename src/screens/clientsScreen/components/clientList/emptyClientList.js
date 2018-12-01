@@ -8,6 +8,7 @@ import SalonTouchableOpacity
 import groupedSettingsSelector
   from '../../../../redux/selectors/settingsSelector';
 import settingsActions from '../../../../redux/actions/settings';
+import {IconTypes} from '@/components/common/Icon/interfaces';
 
 const styles = StyleSheet.create ({
   container: {
@@ -91,7 +92,12 @@ class emptyClientList extends PureComponent {
     return (
       <View style={styles.container}>
         <View style={styles.circle}>
-          <Icon color="#C0C1C6" size={50} name="search" type="regular" />
+          <Icon
+            color="#C0C1C6"
+            size={50}
+            name="search"
+            type={IconTypes.regular}
+          />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.textTitle}>Search for clients above.</Text>

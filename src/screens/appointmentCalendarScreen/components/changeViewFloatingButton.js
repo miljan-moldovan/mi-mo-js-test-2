@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import PropTypes from 'prop-types';
 
 import FloatingButton from '../../../components/FloatingButton';
 import Icon from '@/components/common/Icon';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flexDirection: 'column',
     alignItems: 'center',
@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
 class ChangeViewFloatingButton extends Component {
   handlePress = () => {
     if (this.props.handlePress) {
-      this.props.handlePress();
+      this.props.handlePress ();
     }
-  }
+  };
 
-  render() {
+  render () {
     return (
       <FloatingButton
         handlePress={this.handlePress}
@@ -61,33 +61,40 @@ class ChangeViewFloatingButton extends Component {
           right: 16,
         }}
       >
-        {this.props.pickerMode === 'day' ?
-          <View>
-            <View style={[styles.numberContainer, { marginTop: 12, marginLeft: 12 }]}>
-              <Text style={styles.numberText}>7</Text>
-            </View>
+        {this.props.pickerMode === 'day'
+          ? <View>
+              <View
+                style={[
+                  styles.numberContainer,
+                  {marginTop: 12, marginLeft: 12},
+                ]}
+              >
+                <Text style={styles.numberText}>7</Text>
+              </View>
 
-            <View style={styles.container}>
-              <Icon name="calendar" size={21} color="#FFFFFF" type="regularFree" />
-              <Text style={styles.text}>Week</Text>
+              <View style={styles.container}>
+                <Icon name="calendar" size={21} color="#FFFFFF" />
+                <Text style={styles.text}>Week</Text>
+              </View>
             </View>
-          </View>
-          :
-          <View>
-            <View style={[styles.numberContainer, { marginTop: 7, marginLeft: 2.5 }]}>
-              <Text style={styles.numberText}>1</Text>
-            </View>
-            <View style={styles.container}>
-              <Icon name="calendarO" size={21} color="#FFFFFF" type="solid" />
-              <Text style={styles.text}>Day</Text>
-            </View>
-          </View>
-          }
+          : <View>
+              <View
+                style={[
+                  styles.numberContainer,
+                  {marginTop: 7, marginLeft: 2.5},
+                ]}
+              >
+                <Text style={styles.numberText}>1</Text>
+              </View>
+              <View style={styles.container}>
+                <Icon name="calendarO" size={21} color="#FFFFFF" type="solid" />
+                <Text style={styles.text}>Day</Text>
+              </View>
+            </View>}
       </FloatingButton>
     );
   }
 }
-
 
 ChangeViewFloatingButton.defaultProps = {
   pickerMode: 'day',

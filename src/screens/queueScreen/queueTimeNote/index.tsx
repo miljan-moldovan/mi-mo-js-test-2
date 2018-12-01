@@ -10,7 +10,7 @@ const smallDevice = false; // Dimensions.get('window').width === 320;
 const calcEstimatedTime = (estimatedTime) => {
   const seconds = moment(estimatedTime, 'hh:mm:ss').seconds() > 0 ? 1 : 0;
   return moment(estimatedTime, 'hh:mm:ss').hours() * 60 +
-  moment(estimatedTime, 'hh:mm:ss').minutes() + seconds;
+    moment(estimatedTime, 'hh:mm:ss').minutes() + seconds;
 };
 
 const QueueTimeNote = (props) => {
@@ -86,7 +86,7 @@ const QueueTimeNote = (props) => {
   return (
     <View style={[styles.serviceTimeContainer, props.containerStyles, serviceContainerStyle]}>
       <View style={styles.serviceTimeLeft}>
-        <Icon name="clockO" type="regularFree" style={styles.serviceClockIcon} />
+        <Icon name="clockO" style={styles.serviceClockIcon} />
         <Text style={styles.serviceTime}> {startTime} </Text>
         <Icon name="chevronRight" type="light" style={styles.chevronRightIcon} />
       </View>

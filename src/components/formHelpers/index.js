@@ -132,9 +132,10 @@ SectionDivider.defaultProps = {
   style: false,
 };
 
-const InputDivider = props => (
-  <View style={[styles.inputDivider, props.style]} />
-);
+const InputDivider = props => {
+  const style = props.fullWidth ? {width: '100%'} : {};
+  return <View style={[styles.inputDivider, style, props.style]} />;
+};
 
 InputDivider.propTypes = {
   style: ViewPropTypes.style,

@@ -1,15 +1,17 @@
 import axios from 'axios';
-import cancelRequest from '../../../helpers/cancelRequest';
-import { getApiInstance } from '../../api';
+import {cancelRequest} from '@/utilities/helpers/cancelRequest';
+import {getApiInstance} from '../../api';
 
 let cancellationToken = null;
 
-export default async ({ dateFrom, dateTo, id }) => {
-  const apiInstance = await getApiInstance();
-  cancelRequest(cancellationToken);
-  return apiInstance.get(`AppointmentBook/${dateFrom}/${dateTo}/Employee/${id}/Appointments`, {
-    cancelToken: new axios.CancelToken((c) => {
-      cancellationToken = c;
-    }),
-  }).then(({ data: { response } }) => response);
+export default async ({dateFrom, dateTo, id}) => {
+  const apiInstance = await getApiInstance ();
+  cancelRequest (cancellationToken);
+  return apiInstance
+    .get (`AppointmentBook/${dateFrom}/${dateTo}/Employee/${id}/Appointments`, {
+      cancelToken: new axios.CancelToken (c => {
+        cancellationToken = c;
+      }),
+    })
+    .then (({data: {response}}) => response);
 };

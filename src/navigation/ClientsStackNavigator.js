@@ -18,7 +18,7 @@ import ClientInfoScreen from '../screens/clientInfoScreen';
 import ClientDetailsScreen
   from '../screens/clientInfoScreen/components/clientDetails';
 import ProvidersScreen from '../screens/providersScreen';
-import ServicesScreen from '../screens/servicesScreen';
+import ServicesScreen from '../screens/ServicesScreen';
 
 const ClientsStackNavigator = StackNavigator (
   {

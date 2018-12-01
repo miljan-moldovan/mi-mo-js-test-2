@@ -28,7 +28,7 @@ export default {
   secondaryLightBlue: '#1B65CF',
   secondaryBlack: '#2F3142',
   conflictBox: '#FFF7CC',
-  serviceCheckBlack: '#0C4699',
+  darkBlue: '#0C4699',
   selectedGreen: '#1DBF12',
   dividerGrey: '#0C4699',
   divider: '#C0C1C6',
