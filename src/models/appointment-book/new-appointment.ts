@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { Client, Provider, Service, ClientPhone, Resource, Room, PopulatedService } from 'models';
-import { Maybe } from 'models';
+import { Client, Provider, Service, ClientPhone, Resource, Room, PopulatedService } from '@/models';
+import { Maybe } from '@/models';
 
 export enum ConfirmationType {
   Email = 1,
@@ -64,7 +64,7 @@ export type NewAppointmentService = {
 export type NewAppointmentServiceDetails = {
   price: number;
   length: moment.Duration;
-  conflicts: {message: string}[];
+  conflicts: { message: string }[];
 };
 
 export type NewAppointmentRequestDataItem = {

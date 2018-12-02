@@ -1,4 +1,4 @@
-import { Maybe, Client, Service, PureProvider, Room, Resource } from 'models';
+import { Maybe, Client, Service, PureProvider, Room, Resource } from '@/models';
 
 export interface BookAnotherAppointmentData {
   id?: number;

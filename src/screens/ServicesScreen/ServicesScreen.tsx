@@ -488,12 +488,14 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         color: Colors.selectedGreen,
       }, {
         name: 'angleRight',
-        color: Colors.defaultBlack,
+        type: 'light',
+        color: Colors.defaultGrey,
         size: 20,
       }
     ] : [{
       name: 'angleRight',
-      color: Colors.defaultBlack,
+      type: 'light',
+      color: Colors.defaultGrey,
       size: 20,
     }];
     const onPress = () => this.handlePressServiceCategory(item);

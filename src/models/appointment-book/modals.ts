@@ -10,7 +10,7 @@ import {
   Conflict,
   StoreSchedule,
   PureProvider
-} from 'models';
+} from '@/models';
 
 export enum futureAppointmentsListMode {
   today = 0,

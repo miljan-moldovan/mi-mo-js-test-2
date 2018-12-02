@@ -1,5 +1,5 @@
-import { Maybe } from 'models';
-import { AppointmentEmployee } from 'models';
+import { Maybe } from '@/models';
+import { AppointmentEmployee } from '@/models';
 
 export interface TurnAwayService {
   fromTime: string;

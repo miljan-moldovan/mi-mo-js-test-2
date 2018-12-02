@@ -1,4 +1,4 @@
-import { GroupClient } from 'models';
+import { GroupClient } from '@/models';
 
 export interface AppointmentGroup {
   clients: GroupClient[];

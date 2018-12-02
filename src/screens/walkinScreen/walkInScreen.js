@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {StackActions, NavigationActions} from 'react-navigation';
 import {ScrollView, Text, View, ActivityIndicator} from 'react-native';
-import {get, isEqual, isNull, isUndefined} from 'lodash';
+import {get, isEqual, isNull, isFunction, isUndefined} from 'lodash';
 import FontAwesome, {Icons} from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import ClientInfoButton from '../../components/ClientInfoButton';
 import regexs from '../../constants/Regexs';
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import {Client} from '../../utilities/apiWrapper';
-
+import {Maybe} from '@/models';
 import {
   InputLabel,
   InputGroup,
@@ -88,6 +88,7 @@ class WalkInScreen extends Component {
       phone: null,
       isValidEmail: true,
       isValidPhone: true,
+      currentPhone: null,
       services: [],
     };
   }
@@ -132,7 +133,7 @@ class WalkInScreen extends Component {
     }
   }
 
-  setStateClientInfo = client => {
+  setStateClientInfo = (client, callback: Maybe< () => void> = null) => {
     const clientId = get (client, 'id', 1);
     if (clientId === 1) {
       this.setState ({
@@ -152,12 +153,15 @@ class WalkInScreen extends Component {
       item => get (item, 'type', null) === ClientPhoneTypes.cell
     );
     const phone = get (clientPhone, 'value', '');
-    this.setState ({
-      client,
-      email,
-      phone,
-      currentPhone,
-    });
+    this.setState (
+      {
+        client,
+        email,
+        phone,
+        currentPhone,
+      },
+      () => (isFunction (callback) ? callback () : null)
+    );
   };
 
   setWaitMins = () => {
@@ -202,21 +206,16 @@ class WalkInScreen extends Component {
     this.shouldUpdateClientInfo ();
     this.props.navigation.goBack ();
   };
+
   validateFields = () => {
-    const {email, phone, currentPhone, services, client} = this.state;
+    const {email, phone, services, client} = this.state;
     if (!client) {
       return false;
     }
     let canSave = client.id === 1;
     if (!canSave) {
-      canSave =
-        this.isValidEmailRegExp.test (email) ||
-        (isNull (client.email) && (isNull (email) || email === ''));
-      canSave =
-        canSave &&
-        (this.isValidPhoneRegExp.test (phone) ||
-          (isUndefined (currentPhone.phone) &&
-            (isNull (phone) || phone === '')));
+      canSave = this.isValidEmailRegExp.test (email) || !email;
+      canSave = canSave && (this.isValidPhoneRegExp.test (phone) || !phone);
     }
     for (let i = 0; i < services.length; i += 1) {
       const serviceBlock = services[i];
@@ -277,7 +276,9 @@ class WalkInScreen extends Component {
       {
         client,
       },
-      this.validateFields
+      () => {
+        this.setStateClientInfo (client, this.validateFields);
+      }
     );
   };
 
@@ -312,11 +313,14 @@ class WalkInScreen extends Component {
       isValidPhone: phoneValid,
       client,
     } = this.state;
-    const currentPhone = client.phones.find (
+    if (!client || client.id === 1) {
+      return false;
+    }
+    const currentPhone = get (client, 'phones', []).find (
       phone => phone.type === ClientPhoneTypes.cell
     );
-    const hasEmailChanged = email !== client.email;
-    const hasPhoneChanged = phone !== currentPhone.value;
+    const hasEmailChanged = email !== get (client, 'email', '');
+    const hasPhoneChanged = phone !== get (currentPhone, 'value', '');
     const isValidEmail = emailValid && email !== '' && hasEmailChanged;
     const isValidPhone = phoneValid && phone !== '' && hasPhoneChanged;
     if (!isValidEmail && !isValidPhone) {
@@ -328,17 +332,19 @@ class WalkInScreen extends Component {
             type: ClientPhoneTypes.cell,
             value: phone,
           },
-          ...client.phones.filter (
+          ...get (client, 'phones', []).filter (
             phone =>
-              phone.value &&
-              phone.type !== ClientPhoneTypes.cell &&
-              this.isValidPhoneRegExp.test (phone.value)
+              get (phone, 'value', '') &&
+              get (phone, 'type', null) !== ClientPhoneTypes.cell &&
+              this.isValidPhoneRegExp.test (get (phone, 'value', ''))
           ),
         ]
-      : client.phones.filter (
-          phone => phone.value && this.isValidPhoneRegExp.test (phone.value)
+      : get (client, 'phones', []).filter (
+          phone =>
+            get (phone, 'value', '') &&
+            this.isValidPhoneRegExp.test (get (phone, 'value', ''))
         );
-    const newEmail = isValidEmail ? email : client.email;
+    const newEmail = isValidEmail ? email : get (client, 'email', '');
     const updateObject = {
       id: client.id,
       phones,
@@ -386,7 +392,8 @@ class WalkInScreen extends Component {
         label="Email"
         isValid={
           this.isValidEmailRegExp.test (email) ||
-            (isNull (client.email) && (isNull (email) || email === ''))
+            (isNull (get (client, 'email', null)) &&
+              (isNull (email) || email === ''))
         }
         onValidated={this.onValidateEmail}
         value={email}
@@ -406,7 +413,7 @@ class WalkInScreen extends Component {
         mask="[000]-[000]-[0000]"
         isValid={
           this.isValidPhoneRegExp.test (phone) ||
-            (isUndefined (currentPhone.phone) &&
+            (isUndefined (get (currentPhone, 'phone')) &&
               (isNull (phone) || phone === ''))
         }
         value={phone}
@@ -446,7 +453,9 @@ class WalkInScreen extends Component {
     this.setState (state => {
       const newState = state;
       newState.isValidEmail =
-        isValid || (isNull (state.client.email) && state.email === '');
+        isValid ||
+        (isNull (get (state, 'client.email', null)) &&
+          get (state, 'email', '') === '');
 
       return newState;
     }, this.shouldUpdateClientInfo);

@@ -91,7 +91,6 @@ TrackRequestSwitch.propTypes = {
 const mapStateToProps = state => ({
   settings: state.settingsReducer,
 });
-
 const mapActionsToProps = dispatch => ({
   settingsActions: bindActionCreators ({...settingsActions}, dispatch),
 });

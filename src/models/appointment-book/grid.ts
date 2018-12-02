@@ -1,4 +1,4 @@
-import { Provider, Maybe, TypeView, HeaderViewSwitcherEntity, Service, ProviderPosition, ProviderCompany } from 'models';
+import { Provider, Maybe, TypeView, HeaderViewSwitcherEntity, Service, ProviderPosition, ProviderCompany } from '@/models';
 
 export interface AppointmentGridSettingsInStore extends Pick<AppointmentGrid,
   'selectedDate' |
@@ -10,7 +10,7 @@ export interface AppointmentGridSettingsInStore extends Pick<AppointmentGrid,
   'displayFirstAvailableAppointments' |
   'isResizing' |
   'isScrolling' |
-  'showOnlyApptProviders'|
+  'showOnlyApptProviders' |
   'loading' |
   'showLoader' |
   'allowGridReloading' |
@@ -19,7 +19,7 @@ export interface AppointmentGridSettingsInStore extends Pick<AppointmentGrid,
   'isSelectedDateInPast' |
   'cardTypeToScrollIsBlock' |
   'selectedDateDebouncingIsInProgress'
-> {}
+  > { }
 
 export interface AppointmentGrid {
   startTime: string;

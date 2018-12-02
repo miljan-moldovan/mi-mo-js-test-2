@@ -77,7 +77,11 @@ class emptyClientList extends PureComponent {
 
   walkinClient = () => {
     if (this.props.onWalkinPress) {
-      this.props.onWalkinPress (this.props.walkinClient);
+      this.props.onWalkinPress ({
+        id: 1,
+        name: 'Walk',
+        lastName: 'In',
+      });
     }
   };
 

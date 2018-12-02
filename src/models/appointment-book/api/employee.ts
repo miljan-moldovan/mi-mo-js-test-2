@@ -1,4 +1,4 @@
-import { EmployeeSchedule } from 'models';
+import { EmployeeSchedule } from '@/models';
 
 export interface ResponseEmployeeSchedule {
   key: number;

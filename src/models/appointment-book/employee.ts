@@ -1,4 +1,4 @@
-import { Maybe, EmployeeScheduledInterval, PureProvider } from 'models';
+import { Maybe, EmployeeScheduledInterval, PureProvider } from '@/models';
 
 export interface AppointmentEmployee extends PureProvider {
   roomAssignments: RoomAssignment[];

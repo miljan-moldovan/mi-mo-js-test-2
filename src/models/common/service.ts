@@ -1,4 +1,4 @@
-import  { RoomType } from 'models';
+import { RoomType } from '@/models';
 import { Action } from 'redux';
 
 export interface Addon {
@@ -14,7 +14,7 @@ export interface Service {
   description?: string;
   bookBetween?: boolean;
   canBePerformed: boolean;
-  isAddon:  boolean;
+  isAddon: boolean;
   isDeleted: boolean;
   maxDuration: string | null;
   minDuration: string | null;
@@ -27,7 +27,7 @@ export interface Service {
   orderDetails?: Addon;
   price: number;
   requireResource: boolean;
-  requireRoom:  RoomType|number;
+  requireRoom: RoomType | number;
   requiredResourceId: number;
   supportedRooms: { id: number, name: string }[];
   supportedResource: { id: number, name: string };

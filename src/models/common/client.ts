@@ -1,4 +1,4 @@
-import { ConfirmationType, Provider, Maybe } from 'models';
+import { ConfirmationType, Provider, Maybe } from '@/models';
 
 export enum ClientPhoneType {
   Cell = 2,
@@ -83,4 +83,17 @@ export interface ClientContactInfo {
 export interface DataMessageClientsModal {
   employee: Provider;
   date: string;
+}
+
+export interface ClientEditResponse {
+  id: number;
+  name: string;
+  middleName: string;
+  lastName: string;
+  isDeleted: boolean;
+  updateStamp: number;
+}
+
+export interface ClientCreateResponse extends ClientEditResponse {
+  bookedbyUuid: string;
 }

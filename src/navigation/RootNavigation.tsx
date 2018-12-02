@@ -44,13 +44,14 @@ const RootDrawerNavigator = TabNavigator(
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
-        const type = IconTypes.regular;
+        let type = 'regularFree';
         const fontWeight = 'normal';
 
         if (routeName === 'Sales') {
           iconName = 'lineChart';
         } else if (routeName === 'Queue') {
           iconName = 'signIn';
+          type = 'light';
         } else if (routeName === 'ClientsStack') {
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {

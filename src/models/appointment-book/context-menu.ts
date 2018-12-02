@@ -1,5 +1,5 @@
-import { Resource, Room, Provider, Service, Client, Reason } from 'models';
-import { Maybe } from 'models';
+import { Resource, Room, Provider, Service, Client, Reason } from '@/models';
+import { Maybe } from '@/models';
 
 interface CellContextMenuData {
   date: string;
@@ -21,7 +21,7 @@ export interface OpenBookApptContextMenuData extends CellContextMenuData {
   rebooked: boolean;
   idCell: string;
 }
-export interface OpenCellContextMenuData extends CellContextMenuData {}
+export interface OpenCellContextMenuData extends CellContextMenuData { }
 export interface BlockTimeCellContextMenuData extends CellContextMenuData {
   reason?: Reason;
   notes?: string;

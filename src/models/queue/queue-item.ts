@@ -2,7 +2,7 @@ import {
   Client,
   ServiceQueue,
   QueueItemProduct
-} from 'models';
+} from '@/models';
 
 export interface QueueItem {
   badgeData: {
@@ -81,7 +81,7 @@ export enum Status {
   noShow = 3,
   walkOut = 4,
   returningLater = 5,
-  inService  = 6,
+  inService = 6,
   finished = 7,
   removed = 8
 }

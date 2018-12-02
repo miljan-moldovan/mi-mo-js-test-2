@@ -1,4 +1,4 @@
-import { Employee } from 'models/common';
+import { Employee } from '@/models/common';
 
 export interface ServiceQueue {
   id: number;
@@ -22,7 +22,7 @@ export interface ServiceQueue {
   isDeleted: boolean;
 }
 
-export interface  Promotion {
+export interface Promotion {
   promotionCode: string;
   startDate: string;
   expirationDate: string;

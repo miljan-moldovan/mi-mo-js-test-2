@@ -1,4 +1,4 @@
-import { Employee, Coords } from 'models';
+import { Employee, Coords } from '@/models';
 
 export enum StateEmployee {
   NotStarted = 0,
@@ -24,7 +24,7 @@ export interface EmployeesForDD {
   displayColor?: number;
   imagePath?: string;
   imageName?: string;
-  firstName?:  string;
+  firstName?: string;
   middleName?: string;
   lastName: string;
   fullName: string;

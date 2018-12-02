@@ -1,4 +1,4 @@
-import { Coords, CommonCard, AppointmentEmployee, AppointmentGridEmployeeFilters, Maybe, Room, Resource } from 'models';
+import { Coords, CommonCard, AppointmentEmployee, AppointmentGridEmployeeFilters, Maybe, Room, Resource } from '@/models';
 
 export interface TooltipState {
   isOpen?: boolean;

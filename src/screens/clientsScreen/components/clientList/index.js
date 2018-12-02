@@ -282,7 +282,7 @@ class ClientList extends React.Component {
           {this.props.clients.length
             ? <SectionList
                 onEndReached={this.props.fetchMore}
-                enableEmptySections
+                enableEmptySections={true}
                 keyboardShouldPersistTaps="always"
                 initialNumToRender={this.props.clients.length}
                 ref={ref => {

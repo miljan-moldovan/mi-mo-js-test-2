@@ -1,4 +1,4 @@
-import { ProductBase } from 'models';
+import { ProductBase } from '@/models';
 
 export interface Product {
   id: number;

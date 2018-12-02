@@ -1,7 +1,7 @@
 import { getApiInstance } from '../../api';
 
-export default async () => {
+export default async (clientId, formula) => {
   const apiInstance = await getApiInstance();
-  return apiInstance.get('Inventory/RetailTree', {})
+  return apiInstance.post(`Clients/${clientId}/Formulas`, formula)
     .then(({ data: { response } }) => response);
 };

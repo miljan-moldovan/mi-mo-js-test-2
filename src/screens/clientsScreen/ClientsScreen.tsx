@@ -55,7 +55,6 @@ export interface State {
 
 class ClientsScreen extends React.Component<Props, State> {
   BarsActionSheet?: BarsActionSheet;
-
   static navigationOptions = ({ navigation }) => {
     const onPressMenu = navigation.getParam('onPressMenu', () => { });
     const isModal = navigation.getParam('isModal', false);

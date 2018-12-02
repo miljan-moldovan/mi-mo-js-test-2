@@ -29,12 +29,13 @@ export interface IconProps {
 }
 
 export enum IconFontWeights {
-  Solid = '900',
-  Brands = '400',
-  Light = '300',
-  RegularFree = '400',
-  SolidFree = '300',
-  Simple = 'normal',
+  solid = 'solid',
+  brands = 'brands',
+  light = 'light',
+  regular = 'regular',
+  regularFree = 'regularFree',
+  solidFree = 'solidFree',
+  simple = 'simple',
 };
 
 export enum Icons {

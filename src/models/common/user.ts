@@ -1,4 +1,4 @@
-import { Maybe } from 'models';
+import { Maybe } from '@/models';
 
 export interface User {
   id: number;

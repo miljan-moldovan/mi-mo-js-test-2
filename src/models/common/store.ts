@@ -1,4 +1,4 @@
-import { WeeklySchedule } from 'models/index';
+import { WeeklySchedule } from '@/models/index';
 
 export interface Store {
   id: number;

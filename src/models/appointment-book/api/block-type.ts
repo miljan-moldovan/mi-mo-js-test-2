@@ -1,4 +1,4 @@
-import  { BlockTimeConflictsParams } from 'models';
+import { BlockTimeConflictsParams } from '@/models';
 
 export interface CreateBlockTypePayload {
   date: string;

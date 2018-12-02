@@ -1,4 +1,4 @@
-import { Maybe, Promo, Provider } from 'models';
+import { Maybe, Promo, Provider } from '@/models';
 
 export interface ProductBase {
   firstItemCode: number;

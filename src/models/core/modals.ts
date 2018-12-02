@@ -20,7 +20,7 @@ import {
   DataMessageClientsModal,
   RejectAppointmentModalState,
   AcceptAppointmentModalState
-} from 'models';
+} from '@/models';
 
 import { Tasks } from '@app-constants/core';
 
@@ -44,7 +44,7 @@ export interface LoginFormData {
 export interface ClientEmail {
   isOpen: boolean;
   client: {
-    id: number|null;
+    id: number | null;
     name: string;
   };
 }
@@ -87,7 +87,7 @@ export interface ModalsState {
   isOpenModifyModal: boolean;
   isModifyModalSubmitting: boolean;
   isOpenWalkOut: boolean;
-  clientEmail: ClientEmail|null;
+  clientEmail: ClientEmail | null;
   isOpenWalkOutConfirm: boolean;
   isOpenMergeDuplicateClients: boolean;
   isActiveWalkOut: boolean;

@@ -65,7 +65,8 @@ class ServiceCategoryList extends React.Component {
       : [
           {
             name: 'angleRight',
-            color: Colors.defaultBlack,
+            type: 'light',
+            color: Colors.defaultGrey,
           },
         ];
     return (
