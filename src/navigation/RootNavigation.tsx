@@ -131,9 +131,9 @@ class RootNavigator extends React.Component {
       return (
         <RootDrawerNavigator
           onNavigationStateChange={(prevState, currentState) => {
-            const currentScreen = getActiveRouteName(currentState);
-            const prevScreen = getActiveRouteName(prevState);
-            this.props.navigationActions.setCurrentRoute(currentScreen);
+            // const currentScreen = getActiveRouteName(currentState);
+            // const prevScreen = getActiveRouteName(prevState);
+            // this.props.navigationActions.setCurrentRoute(currentScreen);
           }}
           screenProps={{
             isNewApptValid: this.props.isNewApptValid,

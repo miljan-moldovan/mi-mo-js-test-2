@@ -7,7 +7,6 @@ import Card from './card';
 import styles from './styles';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
-import {Navigation} from '../../../models/propTypes';
 import {Client, AppointmentBook} from '../../../utilities/apiWrapper';
 import ClientInfoButton from '../../../components/ClientInfoButton';
 import SalonHeader from '../../../components/SalonHeader';
@@ -223,7 +222,6 @@ ShowApptScreen.propTypes = {
   appointmentCalendarActions: PropTypes.shape ({
     setGridView: PropTypes.func,
   }).isRequired,
-  navigation: Navigation.isRequired,
   clientApptActions: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   isLoadingMore: PropTypes.bool.isRequired,

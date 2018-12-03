@@ -94,7 +94,6 @@ const mapStateToProps = state => ({
 const mapActionsToProps = dispatch => ({
   settingsActions: bindActionCreators ({...settingsActions}, dispatch),
 });
-
 export default connect (mapStateToProps, mapActionsToProps) (
   TrackRequestSwitch
 );

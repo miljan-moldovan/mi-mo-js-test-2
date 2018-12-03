@@ -11,16 +11,17 @@ import {
   PUT_ASSIGNMENTS_FAILED,
   PUT_ASSIGNMENTS_SUCCESS,
 } from '../actions/roomAssignment';
+import { Room, RoomAssignment } from '@/models';
 
 export interface RoomAssignmentReducer {
-  rooms: any[];
-  assignments: any[];
+  rooms: Room[];
+  assignments: RoomAssignment[];
   isError: boolean;
   isLoading: boolean;
   isUpdating: boolean;
 }
 
-const initialState = {
+const initialState: RoomAssignmentReducer = {
   isLoading: false,
   isError: false,
   isUpdating: false,
@@ -28,7 +29,7 @@ const initialState = {
   assignments: [],
 };
 
-const roomAssignmentReducer = (state: RoomAssignmentReducer = initialState, action) => {
+const roomAssignmentReducer = (state: RoomAssignmentReducer = initialState, action): RoomAssignmentReducer => {
   const { type, data } = action;
   const newState = cloneDeep(state);
   switch (type) {
