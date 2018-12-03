@@ -1,5 +1,4 @@
 import { Maybe } from '@/models';
-import { AccessState } from '@app-constants/core';
 
 export type SettingItem<T> = {
   settingName: string;
@@ -52,7 +51,6 @@ export type Settings = {
   FormulasToPrint: Maybe<string>;
   NotesToPrint: Maybe<string>;
   PreventActivity: boolean;
-  ViewContactInfo: AccessState;
   ApptCardType: ReceiptTypes;
   AllowServiceProviderToPerformServicesOnMultipleClientsSimultaneously: boolean;
   ApptBookFont: ApptBookFontSize;
