@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
-class BlockCard extends Component {
+class BlockCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = { notesLines: 1, height: 0 }

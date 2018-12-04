@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { View, PanResponder, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 
 const styles = {

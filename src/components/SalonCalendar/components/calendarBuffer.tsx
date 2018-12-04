@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import * as React from 'react';
+import { FlatList, View, TouchableOpacity, Text } from 'react-native';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '@/components/common/Icon';
@@ -40,7 +40,6 @@ const styles = {
   },
   listView: {
     height: 56,
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -62,6 +61,9 @@ const styles = {
     flex: 1,
     paddingLeft: 46,
   },
+  itemSeparator: {
+    paddingHorizontal: 2,
+  }
 };
 
 export default class calendarBuffer extends React.Component {
@@ -113,6 +115,8 @@ export default class calendarBuffer extends React.Component {
     }
   }
 
+  keyExtractor = (item) => item.id;
+
   renderCard = ({ item }) => {
     const { panResponder, activeCard, startDate } = this.props;
     const isActive = activeCard && activeCard.data.id === item.id;
@@ -157,6 +161,8 @@ export default class calendarBuffer extends React.Component {
     );
   }
 
+  renderSeparator = () => <View style={styles.itemSeparator} />
+
   render() {
     return (
       <View style={styles.container} pointerEvents="box-none">
@@ -189,9 +195,14 @@ export default class calendarBuffer extends React.Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.listContainer]}>
-              <View style={[{ flexDirection: 'row' }, styles.listView]}>
-                {this.props.dataSource.map((appt, index) => this.renderCard({ item: appt }))}
-              </View>
+              <FlatList
+                contentContainerStyle={styles.listView}
+                data={this.props.dataSource}
+                horizontal
+                keyExtractor={this.keyExtractor}
+                renderItem={this.renderCard}
+                ItemSeparatorComponent={this.renderSeparator}
+              />
             </View>
           </View>
         </SlidingUpPanel>

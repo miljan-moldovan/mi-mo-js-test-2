@@ -40,6 +40,7 @@ import {
   isCardWithGap,
   areDatesInRange,
   areDateRangeOverlapped,
+  hasClientMoreAppointments,
 } from '../../../../utilities/helpers';
 import DateTime from '../../../../constants/DateTime';
 import ViewTypes from '../../../../constants/ViewTypes';
@@ -48,6 +49,7 @@ import {
   CHECK_APPT_CONFLICTS_SUCCESS,
   CHECK_APPT_CONFLICTS_FAILED,
 } from '../../../../redux/actions/appointment';
+import { CalendarProps, CalendarState } from  '@/models/components/calendar';
 
 const extendedMoment = getRangeExtendedMoment ();
 
@@ -103,7 +105,7 @@ const weekWidth = (screenWidth - 36) / 7;
 const providerWidth = 130;
 const headerHeight = 40;
 
-export default class Calendar extends React.Component {
+export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor (props) {
     super (props);
     this.offset = {x: 0, y: 0};
@@ -960,12 +962,48 @@ export default class Calendar extends React.Component {
       const top = pan.y._value + pan.y._offset;
       const bufferHeight = 110;
       if (top > height - bufferHeight) {
-        if (!droppedCard.isBuffer && buffer.length < 4) {
+        if (!droppedCard.isBuffer) {
+          const clientAppts = hasClientMoreAppointments({
+            appointment: data,
+            appointments: this.props.appointments,
+          }).filter((item) => {
+            let isInBuffer = false;
+            for(let i; i < this.state.buffer.length && !isInBuffer; i += 1) {
+              if (this.state.buffer[i].id === item.id || item.id === data.id) {
+                isInBuffer = true;
+              }
+            }
+            return !isInBuffer;
+          });
+
+          if (clientAppts.length > 0) {
+            const onPressRight = () => {
+              const { buffer } = this.state;
+
+              this.setState((state) => {
+                const newbuffer = state.buffer.slice();
+                for(let i in clientAppts){
+                  newbuffer.push(clientAppts[i]);
+                }
+                return { buffer: newbuffer, alert: null };
+              })
+            }
+            const onPressLeft = () => this.setState({alert:  null});
+            const alert = {
+              onPressRight,
+              onPressLeft,
+              title: 'Question',
+              description: 'The client has other appointments scheduled today, would you like to move them all?',
+              btnLeftText: 'No',
+              btnRightText: 'Move them all',
+            };
+            this.setState({ alert })
+          }
           buffer.push (data);
+          this.setState ({activeCard: null, activeBlock: null, buffer: buffer.slice() });
           this.moveX = null;
           this.moveY = null;
         }
-        this.setState ({activeCard: null, activeBlock: null});
       } else {
         this.handleReleaseCard ();
       }
@@ -1702,7 +1740,6 @@ export default class Calendar extends React.Component {
       isLoading,
       headerData,
       apptGridSettings,
-      dataSource,
       selectedFilter,
       selectedProvider,
       displayMode,

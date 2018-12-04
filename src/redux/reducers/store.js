@@ -29,12 +29,13 @@ export default function storeReducer (state = initialState, action) {
         ...state,
         storeInfo: data.storeInfo,
       };
-    case LOAD_SCHEDULE_EXCEPTIONS_SUCCESS:
+    case LOAD_SCHEDULE_EXCEPTIONS_SUCCESS: {
       return {
         ...state,
         isLoading: false,
         scheduleExceptions: data.scheduleExceptions,
       };
+    }
     case SET_MAIN_STORE_SUCCESS:
       return {
         ...state,

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class TimeColumn extends Component {
+export default class TimeColumn extends React.Component {
   renderRowLabel = (row, index) => {
     const timeSplit = row.format('h:mm A').split(':');
     const minutesSplit = timeSplit[1].split(' ');

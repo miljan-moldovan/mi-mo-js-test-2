@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { TouchableOpacity, View, Text, Animated } from 'react-native';
 import moment from 'moment';
 import Svg, {
@@ -21,7 +21,7 @@ import { isCardWithGap, getBadges } from '../../../../../utilities/helpers';
 
 import styles from './styles';
 
-class Card extends Component {
+class Card extends React.Component {
   constructor(props) {
     super(props);
     this.cards = [];

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
 import Icon from '@/components/common/Icon';
