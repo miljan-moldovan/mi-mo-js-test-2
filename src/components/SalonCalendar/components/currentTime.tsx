@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { View, Text, StyleSheet, Animated, Easing, Dimensions } from 'react-native';
 import moment from 'moment';
 
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
 });
 
-class CurrentTime extends Component {
+class CurrentTime extends React.Component {
   constructor(props) {
     super(props);
     const currentTime = moment();

@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import moment from 'moment';
 
 import Column from './column';
 import AvailabilityColumn from './availabilityColumn';
+import { BoardProps } from '@/models';
 
 const styles = StyleSheet.create({
   container: {
@@ -11,7 +12,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Board extends Component {
+export default class Board extends React.Component<BoardProps, any> {
   shouldComponentUpdate(nextProps, nexState) {
     return nextProps.displayMode !== this.props.displayMode || (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading);
   }
@@ -20,7 +21,6 @@ export default class Board extends Component {
     const {
       apptGridSettings,
       showRoomAssignments,
-      rows,
       cellWidth,
       selectedFilter,
       providerSchedule,

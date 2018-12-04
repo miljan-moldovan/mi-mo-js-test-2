@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import moment from 'moment';
 import {get, filter} from 'lodash';
+import { ColumnProps } from '@/models';
 
 const styles = StyleSheet.create ({
   colContainer: {
@@ -57,7 +58,7 @@ const styles = StyleSheet.create ({
   },
 });
 
-export default class Column extends Component {
+export default class Column extends React.Component<ColumnProps, any> {
   onCellPressed = (cellId, colData, date) => {
     const time = moment (
       `${date.format ('YYYY-MM-DD')} ${cellId.format ('HH:mm')}`,
@@ -107,11 +108,12 @@ export default class Column extends Component {
     let isStoreOff = false;
     let exception;
     let storeTodaySchedule;
-    let isException = '';
+    let isEmployeeException = '';
+    let storeExceptionComment = '';
     if (!isDate) {
       exception = get (storeScheduleExceptions, ['0'], null);
-      storeTodaySchedule =
-        exception || weeklySchedule[startDate.isoWeekday () - 1];
+      storeTodaySchedule = exception ?
+        { ...exception, isException: true } : weeklySchedule[startDate.isoWeekday () - 1];
     } else {
       storeTodaySchedule =
         apptGridSettings.weeklySchedule[colData.isoWeekday () - 1];
@@ -121,8 +123,12 @@ export default class Column extends Component {
           moment (item.startDate, 'YYYY-MM-DD').isSame (colData, 'day') ||
           moment (item.endDate, 'YYYY-MM-DD').isSame (colData, 'day')
       )[0];
-      storeTodaySchedule = exception || storeTodaySchedule;
+      storeTodaySchedule = exception ? { ...exception, isException: true } : storeTodaySchedule;
     }
+
+    storeExceptionComment = storeTodaySchedule && storeTodaySchedule.isException && storeTodaySchedule.comments
+    && (cell.isSame(moment(storeTodaySchedule.end1, 'HH:mm'), 'minute') || cell.isSame(moment(storeTodaySchedule.end2, 'HH:mm'), 'minute')) ? storeTodaySchedule.comments : null;
+
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
     if (!isStoreOff) {
       isStoreOff =
@@ -172,7 +178,7 @@ export default class Column extends Component {
       if (schedule) {
         for (let i = 0; i < schedule.length; i += 1) {
           if (schedule[i].isException && schedule[i].comment) {
-            isException += schedule[i].comment;
+            isEmployeeException += schedule[i].comment;
           }
           if (schedule[i].isOff) {
             break;
@@ -195,9 +201,12 @@ export default class Column extends Component {
               this.onCellPressed (cell, colData, !isDate ? startDate : colData);
             }}
           >
-            {index === 0 && isException
-              ? <Text style={styles.exceptionText}>{isException}</Text>
+            {index === 0 && isEmployeeException
+              ? <Text style={styles.exceptionText}>{isEmployeeException}</Text>
               : null}
+              {storeExceptionComment
+                ? <Text style={styles.exceptionText}>{storeExceptionComment}</Text>
+                : null}
           </TouchableOpacity>
         </View>
       );
@@ -216,9 +225,12 @@ export default class Column extends Component {
             this.onCellPressed (cell, colData, !isDate ? startDate : colData);
           }}
         >
-          {index === 0 && isException
-            ? <Text style={styles.exceptionText}>{isException}</Text>
+          {storeExceptionComment
+            ? <Text style={styles.exceptionText}>{storeExceptionComment}</Text>
             : null}
+            {index === 0 && isEmployeeException
+              ? <Text style={styles.exceptionText}>{isEmployeeException}</Text>
+              : null}
         </TouchableOpacity>
       </View>
     );

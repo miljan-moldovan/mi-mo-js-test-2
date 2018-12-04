@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
 import { isNull } from 'lodash';
 
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Header extends Component {
+export default class Header extends React.Component {
   renderColumnLabel = (data, index) => {
     const { isDate, selectedFilter } = this.props;
 

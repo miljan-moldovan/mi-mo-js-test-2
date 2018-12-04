@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {
   View,
   StyleSheet,
@@ -21,11 +21,7 @@ import {
   mergeWith,
 } from 'lodash';
 
-export default class CardGrid extends Component {
-  shouldComponentUpdate(nextProps) {
-    return !nextProps.isLoading && (this.props.isLoading !== nextProps.isLoading
-        || this.props.selctedFilter !== nextProps.selctedFilter || this.props.cardActive !== nextProps.cardActive);
-  }
+export default class CardGrid extends React.Component {
 
   renderCards = (cards, headerIndex, headerId) => {
     if (cards && cards.length) {

@@ -105,7 +105,6 @@ const initialState = {
   filterOptions: {
     company: null,
     position: null,
-    serviceProxy: null,
     showOffEmployees: false,
     showRoomAssignments: false,
     showAssistantAssignments: false,
