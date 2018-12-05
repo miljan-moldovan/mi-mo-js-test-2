@@ -4,7 +4,7 @@ import headerStyles from '../constants/headerStyles';
 import AppointmentScreen from '../screens/AppointmentsScreen';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
-import ServicesScreen from '../screens/servicesScreen';
+import ServicesScreen from '../screens/ServicesScreen';
 import ClientsScreen from './../screens/clientsScreen';
 import ClientNotes from './../screens/clientInfoScreen/components/clientNotes';
 import ClientFormulas
