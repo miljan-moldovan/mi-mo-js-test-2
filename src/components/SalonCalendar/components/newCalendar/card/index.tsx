@@ -402,7 +402,8 @@ class Card extends React.Component {
                   <TouchableOpacity
                     onPress={() => {
                       if (this.props.onPress) {
-                        this.props.onPress(this.props.appointment);
+                        const { top, height } = verticalPositions[0];
+                        this.props.onPress(this.props.appointment, left, top);
                       }
                     }}
                     onLongPress={() => this.handleOnLongPress({ left, verticalPositions, width })}

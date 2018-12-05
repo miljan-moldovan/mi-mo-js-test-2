@@ -901,6 +901,7 @@ class AppointmentScreen extends Component {
           selectedDate={moment (startDate)}
         />
         <SalonCalendar
+          isDetailsVisible={this.state.visibleAppointment}
           navigation={this.props.navigation}
           checkConflicts={this.props.checkConflicts}
           checkConflictsBlock={this.props.checkConflictsBlock}

@@ -50,6 +50,7 @@ import {
   CHECK_APPT_CONFLICTS_FAILED,
 } from '../../../../redux/actions/appointment';
 import { CalendarProps, CalendarState } from  '@/models/components/calendar';
+import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 
 const extendedMoment = getRangeExtendedMoment ();
 
@@ -207,7 +208,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   componentWillUpdate (nextProps) {
     if (
       (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading) ||
-      nextProps.displayMode !== this.props.displayMode
+      nextProps.displayMode !== this.props.displayMode ||
+      !nextProps.isDetailsVisible  && this.props.isDetailsVisible !== nextProps.isDetailsVisible
     ) {
       this.setCellsByColumn (nextProps);
     }
@@ -229,7 +231,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     }
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps) {
     if (this.goToPosition && !this.props.isLoading) {
       const top = this.goToPosition.top - this.state.calendarMeasure.height / 2;
       const left =
@@ -243,6 +245,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.props.clearGoToAppointment ();
       this.goToPosition = null;
     }
+    if (!this.props.isDetailsVisible && this.props.isDetailsVisible !== prevProps.isDetailsVisible) {
+      if (this.offset.y + this.state.calendarMeasure.height > this.size.height) {
+          requestAnimationFrame(() => this.scrollToY(this.size.height - this.state.calendarMeasure.height));
+        }
+    }
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -252,7 +259,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.state.alert !== nextState.alert ||
       this.state.activeCard !== nextState.activeCard ||
       this.state.activeBlock !== nextState.activeBlock ||
-      this.props.bufferVisible !== nextProps.bufferVisible
+      this.props.bufferVisible !== nextProps.bufferVisible ||
+      this.props.isDetailsVisible !== nextProps.isDetailsVisible
     );
   }
 
@@ -396,7 +404,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     };
   };
 
-  setCellsByColumn = nextProps => {
+  setCellsByColumn = (nextProps, extraHeight = 0) => {
     const {
       apptGridSettings,
       headerData,
@@ -415,26 +423,26 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           const firstColumnWidth = selectedFilter === 'providers' ? 166 : 36;
           this.size = {
             width: headerData.length * providerWidth + firstColumnWidth,
-            height: apptGridSettings.numOfRow * 30 + headerHeight,
+            height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
           };
           this.cellWidth = providerWidth;
         } else if (displayMode === 'week') {
           this.size = {
             width: headerData.length * weekWidth + 36,
-            height: apptGridSettings.numOfRow * 30 + headerHeight,
+            height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
           };
           this.cellWidth = weekWidth;
         } else {
           this.size = {
             width: headerData.length * dayWidth + 36,
-            height: apptGridSettings.numOfRow * 30,
+            height: apptGridSettings.numOfRow * 30 + extraHeight,
           };
           this.cellWidth = dayWidth;
         }
       } else {
         this.size = {
           width: headerData.length * providerWidth + 36,
-          height: apptGridSettings.numOfRow * 30 + headerHeight,
+          height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
         };
         this.cellWidth = providerWidth;
       }
@@ -688,6 +696,25 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       requestAnimationFrame (this.scrollAnimationResize);
     }
   };
+
+  centerCard = (left,top, slideHieght) => {
+    const { calendarMeasure } = this.state;
+    let x = left + (this.cellWidth - calendarMeasure.width) / 2;
+    x = x > 0 ? x : 0;
+    let y = top - (calendarMeasure.height - slideHieght) / 2 - headerHeight;
+    this.board.scrollTo({
+      x,
+      y
+    })
+  }
+
+  handleCardPressed = (appt, left, top) => {
+    const height = HeightHelper.setPositionToMinimalOption();
+    const fixHeight = headerHeight + 24;
+    this.props.onCardPressed(appt);
+    this.setCellsByColumn(this.props, height - fixHeight);
+    requestAnimationFrame(() => this.centerCard(left,top, height));
+  }
 
   handleOnDrag = (
     isScrollEnabled,
@@ -1425,7 +1452,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         <BlockTime
           left={overlap.left}
           width={overlap.width}
-          onPress={this.props.onCardPressed}
+          onPress={this.handleCardPressed}
           isResizeing={this.state.isResizeing}
           isActive={isActive}
           key={blockTime.id}
@@ -1610,7 +1637,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           goToAppointmentId={goToAppointmentId}
           provider={provider}
           panResponder={panResponder}
-          onPress={this.props.onCardPressed}
+          onPress={this.handleCardPressed}
           isResizeing={this.state.isResizeing}
           isMultiBlock={filterOptions.showMultiBlock}
           showAssistant={filterOptions.showAssistantAssignments}
@@ -1723,7 +1750,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           isResizeCard
           activeCard={activeCard}
           provider={provider}
-          onPress={this.props.onCardPressed}
+          onPress={this.handleCardPressed}
           isMultiBlock={filterOptions.showMultiBlock}
           showAssistant={filterOptions.showAssistantAssignments}
           onDrag={this.handleOnDrag}
