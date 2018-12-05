@@ -12,3 +12,4 @@ export * from './api';
 export * from './user';
 export * from './time';
 export * from './store';
+export * from './providerSchedule';
