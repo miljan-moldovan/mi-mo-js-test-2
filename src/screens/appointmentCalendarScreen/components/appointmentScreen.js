@@ -571,7 +571,6 @@ class AppointmentScreen extends Component {
 
   selectFilterProvider = () => {
     this.props.appointmentCalendarActions.setGridView ();
-    requestAnimationFrame (() => this.manageBuffer (false));
   };
 
   selectFilter = (filter, filterProvider = null) => {
@@ -642,7 +641,6 @@ class AppointmentScreen extends Component {
       }
     }
     this.props.appointmentCalendarActions.setGridView ();
-    requestAnimationFrame (() => this.manageBuffer (false));
   };
 
   goToCancelScreen = appointments => {

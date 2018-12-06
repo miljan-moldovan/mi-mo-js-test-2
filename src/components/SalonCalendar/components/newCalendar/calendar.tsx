@@ -213,13 +213,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     ) {
       this.setCellsByColumn (nextProps);
     }
-    if (
-      nextProps.displayMode !== this.props.displayMode ||
-      nextProps.selectedProvider !== this.props.selectedProvider
-    ) {
-      this.state.buffer = [];
-      nextProps.manageBuffer (false);
-    }
     if (nextProps.isLoading) {
       this.clearActive ();
     }
@@ -260,7 +253,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.state.activeCard !== nextState.activeCard ||
       this.state.activeBlock !== nextState.activeBlock ||
       this.props.bufferVisible !== nextProps.bufferVisible ||
-      this.props.isDetailsVisible !== nextProps.isDetailsVisible
+      this.props.isDetailsVisible !== nextProps.isDetailsVisible ||
+      this.props.filterOptions.showFirstAvailable !== nextProps.filterOptions.showFirstAvailable
     );
   }
 
@@ -1122,7 +1116,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           },
         };
         this.props.navigation.navigate ('Conflicts', params);
-        // this.props.manageBuffer (false);
       } else {
         if (buffer.length < 1) {
           this.props.manageBuffer (false);
