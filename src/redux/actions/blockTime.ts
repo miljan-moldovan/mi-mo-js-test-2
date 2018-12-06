@@ -1,8 +1,8 @@
 import moment from 'moment';
-import {showErrorAlert} from './utils';
+import { showErrorAlert } from './utils';
 
-import {AppointmentBook} from '../../utilities/apiWrapper';
-import {appointmentCalendarActions} from './appointmentBook';
+import { AppointmentBook } from '../../utilities/apiWrapper';
+import { appointmentCalendarActions } from './appointmentBook';
 
 export const POST_BLOCKTIME = 'appointmentBook/POST_BLOCKTIME';
 export const POST_BLOCKTIME_SUCCESS = 'appointmentBook/POST_BLOCKTIME_SUCCESS';
@@ -31,67 +31,67 @@ export const BLOCK_CANCEL_FAILED = 'block/POST_APPOINTMENT_FAILED';
 
 const postBlockTimeSuccess = blockTime => ({
   type: POST_BLOCKTIME_SUCCESS,
-  data: {blockTime},
+  data: { blockTime },
 });
 
 const postBlockTimeFailed = error => ({
   type: POST_BLOCKTIME_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const postBlockTime = (data, callback) => dispatch => {
-  dispatch ({type: POST_BLOCKTIME});
+  dispatch({ type: POST_BLOCKTIME });
 
-  return AppointmentBook.postAppointmentBookBlockTime (data)
-    .then (resp => {
-      dispatch (postBlockTimeSuccess (resp));
-      callback (true);
+  return AppointmentBook.postAppointmentBookBlockTime(data)
+    .then(resp => {
+      dispatch(postBlockTimeSuccess(resp));
+      callback(true);
     })
-    .catch (error => {
-      dispatch (postBlockTimeFailed (error));
-      showErrorAlert (error);
-      callback (false, error);
+    .catch(error => {
+      dispatch(postBlockTimeFailed(error));
+      showErrorAlert(error);
+      callback(false, error);
     });
 };
 
 const putBlockTimeEditSuccess = blockTime => ({
   type: PUT_BLOCKTIME_EDIT_SUCCESS,
-  data: {blockTime},
+  data: { blockTime },
 });
 
 const putBlockTimeEditFailed = error => ({
   type: PUT_BLOCKTIME_EDIT_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const putBlockTimeEdit = (id, data, callback) => dispatch => {
-  dispatch ({type: PUT_BLOCKTIME_EDIT});
+  dispatch({ type: PUT_BLOCKTIME_EDIT });
 
-  return AppointmentBook.putBlockTimeEdit (id, data)
-    .then (resp => {
-      dispatch (putBlockTimeEditSuccess (resp));
-      callback (true);
+  return AppointmentBook.putBlockTimeEdit(id, data)
+    .then(resp => {
+      dispatch(putBlockTimeEditSuccess(resp));
+      callback(true);
     })
-    .catch (error => {
-      dispatch (putBlockTimeEditFailed (error));
-      showErrorAlert (error);
-      callback (false, error);
+    .catch(error => {
+      dispatch(putBlockTimeEditFailed(error));
+      showErrorAlert(error);
+      callback(false, error);
     });
 };
 
 const putBlockTimeMoveSuccess = (blockTime, oldBlockTime) => {
-  const newTime = moment (blockTime.fromTime, 'HH:mm').format ('h:mm a');
-  const newDate = moment (blockTime.date, 'YYYY-MM-DD').format ('MMM DD, YYYY');
+  const newTime = moment(blockTime.fromTime, 'HH:mm').format('h:mm a');
+  const newDate = moment(blockTime.date, 'YYYY-MM-DD').format('MMM DD, YYYY');
   const description = `Moved to - ${newTime} ${newDate}`;
   const undoType = 'move';
   const toast = oldBlockTime
     ? {
-        description,
-        type: 'success',
-        btnRightText: 'OK',
-        btnLeftText: 'UNDO',
-        isBlockTime: true,
-      }
+      description,
+      type: 'success',
+      btnRightText: 'OK',
+      btnLeftText: 'UNDO',
+      isBlockTime: true,
+    }
     : null;
   return {
     type: PUT_BLOCKTIME_MOVE_SUCCESS,
@@ -105,18 +105,18 @@ const putBlockTimeMoveSuccess = (blockTime, oldBlockTime) => {
 };
 
 const putBlockTimeResizeSuccess = (blockTime, oldBlockTime) => {
-  const newTime = moment (blockTime.fromTime, 'HH:mm').format ('h:mm a');
-  const newToTime = moment (blockTime.toTime, 'HH:mm').format ('h:mm a');
+  const newTime = moment(blockTime.fromTime, 'HH:mm').format('h:mm a');
+  const newToTime = moment(blockTime.toTime, 'HH:mm').format('h:mm a');
   const description = `Moved to - ${newTime} to ${newToTime}`;
   const undoType = 'resize';
   const toast = oldBlockTime
     ? {
-        description,
-        type: 'success',
-        btnRightText: 'OK',
-        btnLeftText: 'UNDO',
-        isBlockTime: true,
-      }
+      description,
+      type: 'success',
+      btnRightText: 'OK',
+      btnLeftText: 'UNDO',
+      isBlockTime: true,
+    }
     : null;
   return {
     type: PUT_BLOCKTIME_RESIZE_SUCCESS,
@@ -131,21 +131,21 @@ const putBlockTimeResizeSuccess = (blockTime, oldBlockTime) => {
 
 const putBlockTimeMoveFailed = error => ({
   type: PUT_BLOCKTIME_MOVE_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const putBlockTimeResizeFailed = error => ({
   type: PUT_BLOCKTIME_RESIZE_FAILED,
-  data: {error},
+  data: { error },
 });
 
 export const putBlockTimeMove = (
   id,
-  {date, employeeId, newTime, roomId, roomOrdinal, resourceId, resourceOrdinal},
+  { date, employeeId, newTime, roomId, roomOrdinal, resourceId, resourceOrdinal },
   oldBlock
 ) => dispatch => {
-  dispatch ({type: PUT_BLOCKTIME_MOVE});
-  return AppointmentBook.putBlockTimeMove (id, {
+  dispatch({ type: PUT_BLOCKTIME_MOVE });
+  return AppointmentBook.putBlockTimeMove(id, {
     date,
     employeeId,
     newTime,
@@ -154,26 +154,26 @@ export const putBlockTimeMove = (
     resourceId,
     resourceOrdinal,
   })
-    .then (resp =>
-      dispatch (appointmentCalendarActions.setGridView ()).then (() =>
-        dispatch (putBlockTimeMoveSuccess (resp, oldBlock))
+    .then(resp =>
+      dispatch(appointmentCalendarActions.setGridView()).then(() =>
+        dispatch(putBlockTimeMoveSuccess(resp, oldBlock))
       )
     )
-    .catch (error => {
-      dispatch (putBlockTimeMoveFailed (error));
+    .catch(error => {
+      dispatch(putBlockTimeMoveFailed(error));
     });
 };
 
-export const putBlockTimeResize = (id, {newLength}, oldBlock) => dispatch => {
-  dispatch ({type: PUT_BLOCKTIME_RESIZE});
-  return AppointmentBook.putBlockTimeResize (id, {newLength})
-    .then (resp =>
-      dispatch (appointmentCalendarActions.setGridView ()).then (() =>
-        dispatch (putBlockTimeResizeSuccess (resp, oldBlock))
+export const putBlockTimeResize = (id, { newLength }, oldBlock) => dispatch => {
+  dispatch({ type: PUT_BLOCKTIME_RESIZE });
+  return AppointmentBook.putBlockTimeResize(id, { newLength })
+    .then(resp =>
+      dispatch(appointmentCalendarActions.setGridView()).then(() =>
+        dispatch(putBlockTimeResizeSuccess(resp, oldBlock))
       )
     )
-    .catch (error => {
-      dispatch (putBlockTimeResizeFailed (error));
+    .catch(error => {
+      dispatch(putBlockTimeResizeFailed(error));
     });
 };
 
@@ -182,7 +182,7 @@ const undoMove = () => (dispatch, getState) => {
     oldBlockTime,
     undoType,
     apptGridSettings,
-  } = getState ().appointmentBookReducer;
+  } = getState().appointmentBookReducer;
   let params;
   switch (undoType) {
     case 'move': {
@@ -203,19 +203,19 @@ const undoMove = () => (dispatch, getState) => {
         roomId,
         roomOrdinal,
       };
-      dispatch ({type: UNDO_MOVE_BLOCK});
-      return dispatch (putBlockTimeMove (oldBlockTime.id, params, null));
+      dispatch({ type: UNDO_MOVE_BLOCK });
+      return dispatch(putBlockTimeMove(oldBlockTime.id, params, null));
     }
     case 'resize': {
-      const toTime = moment (oldBlockTime.toTime, 'HH:mm');
-      const fromTime = moment (oldBlockTime.fromTime, 'HH:mm');
+      const toTime = moment(oldBlockTime.toTime, 'HH:mm');
+      const fromTime = moment(oldBlockTime.fromTime, 'HH:mm');
       const newLength =
-        toTime.diff (fromTime, 'minutes') / apptGridSettings.step;
+        toTime.diff(fromTime, 'minutes') / apptGridSettings.step;
       params = {
         newLength,
       };
-      dispatch ({type: UNDO_MOVE_BLOCK});
-      return dispatch (putBlockTimeResize (oldBlockTime.id, params, null));
+      dispatch({ type: UNDO_MOVE_BLOCK });
+      return dispatch(putBlockTimeResize(oldBlockTime.id, params, null));
     }
     default:
       return null;
@@ -224,23 +224,23 @@ const undoMove = () => (dispatch, getState) => {
 
 const cancelBlockTimeSuccess = resp => ({
   type: BLOCK_CANCEL_SUCCESS,
-  data: {resp},
+  data: { resp },
 });
 
 const cancelBlockTimeFailed = error => ({
   type: BLOCK_CANCEL_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const cancelBlockTime = id => dispatch => {
-  dispatch ({type: BLOCK_CANCEL});
+  dispatch({ type: BLOCK_CANCEL });
 
-  return AppointmentBook.deleteBlock (id)
-    .then (resp => {
-      dispatch (appointmentCalendarActions.setGridView ());
-      return dispatch (cancelBlockTimeSuccess (resp));
+  return AppointmentBook.deleteBlock(id)
+    .then(resp => {
+      dispatch(appointmentCalendarActions.setGridView());
+      return dispatch(cancelBlockTimeSuccess(resp));
     })
-    .catch (error => dispatch (cancelBlockTimeFailed (error)));
+    .catch(error => dispatch(cancelBlockTimeFailed(error)));
 };
 
 const blockTimeActions = {
@@ -251,5 +251,14 @@ const blockTimeActions = {
   putBlockTimeResize,
   undoMove,
 };
+
+export interface BlockTimeActions {
+  cancelBlockTime: (id: number) => any;
+  postBlockTime: (data: any, callback?: any) => any;
+  putBlockTimeEdit: (id: number, data: any, callback?: any) => any;
+  putBlockTimeMove: (id: number, data: any, oldBlock: any) => any;
+  putBlockTimeResize: (id: number, data: any, oldBlock: any) => any;
+  undoMove: () => any;
+}
 
 export default blockTimeActions;

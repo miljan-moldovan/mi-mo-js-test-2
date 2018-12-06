@@ -1,6 +1,7 @@
-import {get, isFunction, isNumber} from 'lodash';
-import {showErrorAlert} from './utils';
-import {Queue, Services} from '../../utilities/apiWrapper';
+import { get, isFunction, isNumber } from 'lodash';
+import { showErrorAlert } from './utils';
+import { Queue, Services } from '../../utilities/apiWrapper';
+import { Maybe, PureProvider, Service } from '@/models';
 
 export const GET_APPOINTMENT = 'appointmentDetails/GET_APPOINTMENT';
 export const GET_APPOINTMENT_SUCCESS =
@@ -18,74 +19,81 @@ export const UPDATE_APPOINTMENT_SUCCESS =
 export const UPDATE_APPOINTMENT_FAILED =
   'appointmentDetails/UPDATE_APPOINTMENT_FAILED';
 
-const setAppointment = appointmentId => dispatch => {
-  dispatch ({type: GET_APPOINTMENT});
-  Queue.getQueueById (appointmentId)
-    .then (appointment =>
-      dispatch ({type: GET_APPOINTMENT_SUCCESS, data: {appointment}})
+const setAppointment = (appointmentId: number): any => dispatch => {
+  dispatch({ type: GET_APPOINTMENT });
+  Queue.getQueueById(appointmentId)
+    .then(appointment =>
+      dispatch({ type: GET_APPOINTMENT_SUCCESS, data: { appointment } })
     )
-    .catch (error => dispatch ({type: GET_APPOINTMENT_FAILED, data: {error}}));
+    .catch(error => dispatch({ type: GET_APPOINTMENT_FAILED, data: { error } }));
 };
 
 const updateAppointment = (
-  clientId,
-  serviceEmployeeClientQueues,
-  productEmployeeClientQueues,
-  onSuccess,
-  onFailed
-) => async (dispatch, getState) => {
-  const {appointment} = getState ().queueDetailReducer;
-  const apptId = get (appointment, 'id', null);
-  dispatch ({type: UPDATE_APPOINTMENT});
+  clientId: number,
+  serviceEmployeeClientQueues: any,
+  productEmployeeClientQueues: any,
+  onSuccess: Maybe<Function>,
+  onFailed: Maybe<Function>,
+): any => async (dispatch, getState) => {
+  const { appointment } = getState().queueDetailReducer;
+  const apptId = get(appointment, 'id', null);
+  dispatch({ type: UPDATE_APPOINTMENT });
   const req = {
     clientId,
     serviceEmployeeClientQueues,
     productEmployeeClientQueues,
   };
-  return Queue.putQueue (apptId, req)
-    .then (appt => {
-      dispatch ({
+  return Queue.putQueue(apptId, req)
+    .then(appt => {
+      dispatch({
         type: UPDATE_APPOINTMENT_SUCCESS,
-        data: {appt},
+        data: { appt },
       });
-      if (isFunction (onSuccess)) {
-        onSuccess ();
+      if (isFunction(onSuccess)) {
+        onSuccess();
       }
     })
-    .catch (error => {
-      showErrorAlert (error);
-      dispatch ({type: UPDATE_APPOINTMENT_FAILED});
-      if (isFunction (onFailed)) {
-        onFailed (error);
+    .catch(error => {
+      showErrorAlert(error);
+      dispatch({ type: UPDATE_APPOINTMENT_FAILED });
+      if (isFunction(onFailed)) {
+        onFailed(error);
       }
     });
 };
 
-const getServiceCheck = (employee, service) => async (dispatch, getState) => {
-  dispatch ({type: GET_SERVICE_CHECK});
-  const employeeId = isNumber (employee)
+const getServiceCheck = (employee: Maybe<PureProvider>, service: Maybe<Service>): any => async (dispatch, getState) => {
+  dispatch({ type: GET_SERVICE_CHECK });
+  const employeeId = isNumber(employee)
     ? employee
-    : get (employee, 'id', false);
-  const serviceId = isNumber (service) ? service : get (service, 'id', false);
-  return Services.getServiceEmployeeCheck ({employeeId, serviceId})
-    .then (result =>
-      dispatch ({
+    : get(employee, 'id', false);
+  const serviceId = isNumber(service) ? service : get(service, 'id', false);
+  return Services.getServiceEmployeeCheck({ employeeId, serviceId })
+    .then(result =>
+      dispatch({
         type: GET_SERVICE_CHECK_SUCCESS,
-        data: {result},
+        data: { result },
       })
     )
-    .catch (error => {
-      showErrorAlert (error);
-      dispatch ({
+    .catch(error => {
+      showErrorAlert(error);
+      dispatch({
         type: GET_SERVICE_CHECK_FAILED,
-        data: {error},
+        data: { error },
       });
     });
 };
+
 const queueDetailActions = {
   setAppointment,
   getServiceCheck,
   updateAppointment,
 };
+
+export interface QueueDetailActions {
+  setAppointment: typeof setAppointment;
+  getServiceCheck: typeof getServiceCheck;
+  updateAppointment: typeof updateAppointment;
+}
 
 export default queueDetailActions;

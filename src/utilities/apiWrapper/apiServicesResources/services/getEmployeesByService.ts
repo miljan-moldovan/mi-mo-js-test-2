@@ -6,7 +6,7 @@ import { PureProvider } from '@/models';
 
 let cancellationToken = null;
 
-export default async (serviceId, query): Promise<PureProvider[]> => {
+export default async (serviceId: number, query): Promise<PureProvider[]> => {
   const queryString = qs.stringify(query);
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);

@@ -1,8 +1,9 @@
-import {AsyncStorage} from 'react-native';
+import { AsyncStorage } from 'react-native';
 
 import processError from '../../utilities/processError';
-import {Login} from '../../utilities/apiWrapper';
-import {JWTKEY} from '../../utilities/apiWrapper/api';
+import { Login } from '../../utilities/apiWrapper';
+import { JWTKEY } from '../../utilities/apiWrapper/api';
+import { Maybe } from '@/models';
 
 export const AT = {
   LOGIN_SUCCESS: 'login/LOGIN_SUCCESS',
@@ -16,13 +17,13 @@ export const AT = {
 };
 
 export const changeUsername = username => dispatch =>
-  dispatch ({
+  dispatch({
     type: AT.CHANGE_USERNAME,
     data: username,
   });
 
 export const changeURL = url => dispatch =>
-  dispatch ({
+  dispatch({
     type: AT.CHANGE_URL,
     data: url,
   });
@@ -38,7 +39,7 @@ export const login = (url, username, password, callback) => async dispatch => {
       },
     };
 
-    const data = await Login.signIn (url, username, password);
+    const data = await Login.signIn(url, username, password);
     if (data && data.message === 'Network Error') {
       urlError = true;
       errObj.response.data.urlError = urlError;
@@ -48,13 +49,13 @@ export const login = (url, username, password, callback) => async dispatch => {
       errObj.response.data.errors = [data.userMessage];
       errObj.response.data.loginError = true;
     } else if (!urlError) {
-      const userToken = {jws: data.response};
-      await AsyncStorage.setItem (JWTKEY, data.response);
-      dispatch ({
+      const userToken = { jws: data.response };
+      await AsyncStorage.setItem(JWTKEY, data.response);
+      dispatch({
         type: AT.LOGIN_SUCCESS,
         data: userToken,
       });
-      callback (true);
+      callback(true);
     }
 
     if (
@@ -64,22 +65,32 @@ export const login = (url, username, password, callback) => async dispatch => {
       throw errObj;
     }
   } catch (error) {
-    const e = processError (error);
-    dispatch ({
+    const e = processError(error);
+    dispatch({
       type: AT.LOGIN_FAILURE,
-      data: {errorMessage: e.message},
+      data: { errorMessage: e.message },
     });
-    callback (false, e, error);
+    callback(false, e, error);
   }
 };
 
 export const logout = () => {
-  AsyncStorage.removeItem (JWTKEY);
-  return {type: AT.LOGOUT};
+  AsyncStorage.removeItem(JWTKEY);
+  return { type: AT.LOGOUT };
 };
-export const enableFingerprintLogin = () => ({type: AT.FINGERPRINT_ENABLE});
-export const disableFingerprintLogin = () => ({type: AT.FINGERPRINT_DISABLE});
+export const enableFingerprintLogin = () => ({ type: AT.FINGERPRINT_ENABLE });
+export const disableFingerprintLogin = () => ({ type: AT.FINGERPRINT_DISABLE });
 export const updateFingerprintValidationTime = () => ({
   type: AT.FINGERPRINT_AUTHENTICATE,
-  data: {fingerprintAuthenticationTime: Date.now ()},
+  data: { fingerprintAuthenticationTime: Date.now() },
 });
+
+export interface LoginActions {
+  login: (url: string, username: string, password: string, callback: Maybe<any>) => any;
+  logout: () => any;
+  changeUsername: (username: string) => any;
+  changeURL: (url: string) => any;
+  enableFingerprintLogin: () => any;
+  disableFingerprintLogin: () => any;
+  updateFingerprintValidationTime: () => any;
+}

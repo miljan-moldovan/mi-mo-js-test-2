@@ -197,4 +197,15 @@ const appointmentActions = {
   undoMove,
 };
 
+export interface AppointmentActions {
+  addAppointment: (appt: any) => void;
+  getAppoinments: (date: string) => void;
+  postAppointmentCancel: (data: { appointmentIds: any, appointmentCancelation: any }) => void;
+  postAppointmentMove: (id: any, params: any, oldAppt: any) => void;
+  postAppointmentResize: (id: any, params: any, oldAppt: any) => void;
+  postAppointmentCheckin: (id: any) => void;
+  postAppointmentCheckout: (id: any) => void;
+  undoMove: () => void;
+}
+
 export default appointmentActions;

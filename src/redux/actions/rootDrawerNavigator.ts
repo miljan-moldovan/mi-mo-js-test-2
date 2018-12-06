@@ -9,4 +9,8 @@ const rootDrawerNavigator = {
   changeShowTabBar,
 };
 
+export interface RootDrawerNavigatorActions {
+  changeShowTabBar: (showTabBar: boolean) => any;
+}
+
 export default rootDrawerNavigator;

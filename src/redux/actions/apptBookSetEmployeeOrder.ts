@@ -1,6 +1,6 @@
-import {Appointment} from '../../utilities/apiWrapper';
-import {storeForm, purgeForm} from './formCache';
-import {keyBy, indexOf} from 'lodash';
+import { Appointment } from '../../utilities/apiWrapper';
+import { storeForm, purgeForm } from './formCache';
+import { keyBy, indexOf } from 'lodash';
 
 export const SET_EMPLOYEES = 'employees/SET_EMPLOYEES';
 export const SET_FILTERED_EMPLOYEES = 'employees/SET_FILTERED_EMPLOYEES';
@@ -27,7 +27,7 @@ export const createInitialsString = employees => {
     const name = 'firstName' in employees[i]
       ? employees[i].firstName
       : employees[i].name;
-    initials += `${name[0].toUpperCase ()}${employees[i].lastName[0].toUpperCase ()}`;
+    initials += `${name[0].toUpperCase()}${employees[i].lastName[0].toUpperCase()}`;
     if (i === 5) {
       initials += '...';
     } else {
@@ -39,92 +39,92 @@ export const createInitialsString = employees => {
 };
 
 const getEmployeesSuccess = employeesArray => dispatch => {
-  const orderInitials = createInitialsString (employeesArray);
-  const employees = keyBy (employeesArray, item =>
-    indexOf (employeesArray, item)
+  const orderInitials = createInitialsString(employeesArray);
+  const employees = keyBy(employeesArray, item =>
+    indexOf(employeesArray, item)
   );
-  return dispatch ({
+  return dispatch({
     type: GET_EMPLOYEES_SUCCESS,
-    data: {employees, orderInitials},
+    data: { employees, orderInitials },
   });
 };
 
 const getEmployeesFailed = error => ({
   type: GET_EMPLOYEES_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const getEmployees = () => dispatch => {
-  dispatch ({type: GET_EMPLOYEES});
-  return Appointment.getEmployeesAppointmentOrder ()
-    .then (response => dispatch (getEmployeesSuccess (response)))
-    .catch (error => dispatch (getEmployeesFailed (error)));
+  dispatch({ type: GET_EMPLOYEES });
+  return Appointment.getEmployeesAppointmentOrder()
+    .then(response => dispatch(getEmployeesSuccess(response)))
+    .catch(error => dispatch(getEmployeesFailed(error)));
 };
 
-function setEmployees (employees) {
+function setEmployees(employees) {
   return {
     type: SET_EMPLOYEES,
-    data: {employees},
+    data: { employees },
   };
 }
 
-function setSelectedEmployee (selectedEmployee) {
+function setSelectedEmployee(selectedEmployee) {
   return {
     type: SET_SELECTED_EMPLOYEE,
-    data: {selectedEmployee},
+    data: { selectedEmployee },
   };
 }
 
-function setShowCategoryEmployees (showCategoryEmployees) {
+function setShowCategoryEmployees(showCategoryEmployees) {
   return {
     type: SET_SHOW_CATEGORY_EMPLOYEES,
-    data: {showCategoryEmployees},
+    data: { showCategoryEmployees },
   };
 }
 
-function setCategoryEmployees (categoryEmployees) {
+function setCategoryEmployees(categoryEmployees) {
   return {
     type: SET_CATEGORY_EMPLOYEES,
-    data: {categoryEmployees},
+    data: { categoryEmployees },
   };
 }
 
-function setFilteredEmployees (filtered) {
+function setFilteredEmployees(filtered) {
   return {
     type: SET_FILTERED_EMPLOYEES,
-    data: {filtered},
+    data: { filtered },
   };
 }
 
 const postEmployeesAppointmentOrderSuccess = employeesArray => {
-  const orderInitials = createInitialsString (employeesArray);
-  const employees = keyBy (employeesArray, item =>
-    indexOf (employeesArray, item)
+  const orderInitials = createInitialsString(employeesArray);
+  const employees = keyBy(employeesArray, item =>
+    indexOf(employeesArray, item)
   );
   return {
     type: POST_EMPLOYEES_APPOINTMENT_ORDER_SUCCESS,
-    data: {employees, orderInitials},
+    data: { employees, orderInitials },
   };
 };
 
 const postEmployeesAppointmentOrderFailed = error => ({
   type: POST_EMPLOYEES_APPOINTMENT_ORDER_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const postEmployeesAppointmentOrder = appointmentOrders => dispatch => {
-  dispatch ({type: POST_EMPLOYEES_APPOINTMENT_ORDER});
-  return Appointment.postEmployeesAppointmentOrder (appointmentOrders)
-    .then (response => {
-      return dispatch (
-        postEmployeesAppointmentOrderSuccess (appointmentOrders)
+  dispatch({ type: POST_EMPLOYEES_APPOINTMENT_ORDER });
+  return Appointment.postEmployeesAppointmentOrder(appointmentOrders)
+    .then(response => {
+      return dispatch(
+        postEmployeesAppointmentOrderSuccess(appointmentOrders)
       );
     })
-    .catch (error => {
-      if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
-        dispatch (storeForm ('AppointmentNoteScreenNew'));
-      }
-      return dispatch (postEmployeesAppointmentOrderFailed (error));
+    .catch(error => {
+      // if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
+      //   // dispatch (storeForm ('AppointmentNoteScreenNew'));
+      // }
+      return dispatch(postEmployeesAppointmentOrderFailed(error));
     });
 };
 

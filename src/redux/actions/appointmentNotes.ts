@@ -1,6 +1,7 @@
 import { Note } from '../../utilities/apiWrapper';
 import apiConstants from '../../utilities/apiWrapper/apiConstants';
 import { storeForm, purgeForm } from './formCache';
+import { Maybe } from '@/models';
 
 export const SET_NOTES = 'appointmentNotes/SET_NOTES';
 export const SET_FILTERED_NOTES = 'appointmentNotes/SET_FILTERED_NOTES';
@@ -59,8 +60,8 @@ const putAppointmentNotes = (clientId, note) => (dispatch) => {
 const setAppointmentNoteUpdateForm = note => dispatch => dispatch(storeForm('AppointmentNoteScreenUpdate', note.id.toString(), note));
 const setAppointmentNoteNewForm = (clientId, note) => dispatch => dispatch(storeForm('AppointmentNoteScreenNew', clientId.toString(), note));
 
-const purgeAppointmentNoteUpdateForm = note => dispatch => dispatch(purgeForm('AppointmentNoteScreenUpdate', note.id.toString(), note));
-const purgeAppointmentNoteNewForm = (clientId, note) => dispatch => dispatch(purgeForm('AppointmentNoteScreenNew', clientId.toString(), note));
+// const purgeAppointmentNoteUpdateForm = note => dispatch => dispatch(purgeForm('AppointmentNoteScreenUpdate', note.id.toString(), note));
+// const purgeAppointmentNoteNewForm = (clientId, note) => dispatch => dispatch(purgeForm('AppointmentNoteScreenNew', clientId.toString(), note));
 
 
 const undeleteAppointmentNotesSuccess = notes => ({
@@ -182,8 +183,23 @@ const appointmentNotesActions = {
   putAppointmentNotes,
   setAppointmentNoteUpdateForm,
   setAppointmentNoteNewForm,
-  purgeAppointmentNoteNewForm,
-  purgeAppointmentNoteUpdateForm,
+  // purgeAppointmentNoteNewForm,
+  // purgeAppointmentNoteUpdateForm,
 };
-
 export default appointmentNotesActions;
+
+export interface ApptNotesActions {
+  setNotes: (notes: any) => any;
+  setFilteredNotes: (notes: any) => any;
+  selectProvider: (provider: any) => any;
+  setOnEditionNote: (onEditionNote: any) => any;
+  getAppointmentNotes: (clientId: Maybe<number>) => any;
+  postAppointmentNotes: (clientId: number, note: any) => any;
+  deleteAppointmentNotes: (clientId: number, noteId: number) => any;
+  undeleteAppointmentNotes: (clientId: number, noteId: number) => any;
+  putAppointmentNotes: (clientId: number, note: any) => any;
+  setAppointmentNoteUpdateForm: (note: any) => any;
+  setAppointmentNoteNewForm: (clientId: number, note: any) => any;
+  // purgeAppointmentNoteNewForm: (clientId: number, note: any) => any;
+  // purgeAppointmentNoteUpdateForm: (note: any) => any;
+};

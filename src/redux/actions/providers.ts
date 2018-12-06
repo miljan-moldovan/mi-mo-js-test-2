@@ -1,6 +1,7 @@
-import {get, isFunction} from 'lodash';
-import {Services, Employees, Queue} from '../../utilities/apiWrapper';
-import {showErrorAlert} from './utils';
+import { get, isFunction } from 'lodash';
+import { Services, Employees, Queue } from '../../utilities/apiWrapper';
+import { showErrorAlert } from './utils';
+import { Maybe, PureProvider, Service } from '@/models';
 
 const alphabeticFilter = (a, b) => {
   if (a.fullName < b.fullName) return -1;
@@ -43,183 +44,183 @@ export const GET_PROVIDER_STATUS_SUCCESS =
 export const GET_PROVIDER_STATUS_FAILED =
   'providers/GET_PROVIDER_STATUS_FAILED';
 
-const setSelectedProvider = selectedProvider => ({
+const setSelectedProvider = (selectedProvider: Maybe<PureProvider>): any => ({
   type: SET_SELECTED_PROVIDER,
-  data: {selectedProvider},
+  data: { selectedProvider },
 });
 
-const setSelectedService = selectedService => ({
+const setSelectedService = (selectedService: Maybe<Service>): any => ({
   type: SET_SELECTED_SERVICE,
-  data: {selectedService},
+  data: { selectedService },
 });
 
-const getQuickQueueEmployees = req => (dispatch, getState) => {
-  dispatch ({type: GET_QUICK_QUEUE_EMPLOYEES});
-  if (getState ().providersReducer.selectedService) {
-    const serviceId = get (
-      getState ().providersReducer.selectedService,
+const getQuickQueueEmployees = (req: any): any => (dispatch, getState) => {
+  dispatch({ type: GET_QUICK_QUEUE_EMPLOYEES });
+  if (getState().providersReducer.selectedService) {
+    const serviceId = get(
+      getState().providersReducer.selectedService,
       'id',
       null
     );
-    return Promise.all ([
-      Queue.getQueueServiceEmployees ({
+    return Promise.all([
+      Queue.getQueueServiceEmployees({
         id: req.queueItemId,
         idService: serviceId,
       }),
     ])
-      .then (([employees]) => {
-        dispatch ({
+      .then(([employees]) => {
+        dispatch({
           type: GET_QUICK_QUEUE_EMPLOYEES_SUCCESS,
-          data: {employees},
+          data: { employees },
         });
       })
-      .catch (error => {
-        dispatch ({
+      .catch(error => {
+        dispatch({
           type: GET_QUICK_QUEUE_EMPLOYEES_ERROR,
-          data: {error},
+          data: { error },
         });
-        showErrorAlert (error);
+        showErrorAlert(error);
       });
   }
-  return Employees.getQueueEmployees (req)
-    .then (({employees = []}) =>
-      dispatch ({
+  return Employees.getQueueEmployees(req)
+    .then(({ employees = [] }) =>
+      dispatch({
         type: GET_QUICK_QUEUE_EMPLOYEES_SUCCESS,
-        data: {employees},
+        data: { employees },
       })
     )
-    .catch (error => {
-      dispatch ({
+    .catch(error => {
+      dispatch({
         type: GET_QUICK_QUEUE_EMPLOYEES_ERROR,
-        data: {error},
+        data: { error },
       });
-      showErrorAlert (error);
+      showErrorAlert(error);
     });
 };
 
-const getQueueEmployees = req => (dispatch, getState) => {
-  dispatch ({type: GET_QUEUE_EMPLOYEES});
-  if (getState ().providersReducer.selectedService) {
-    const serviceId = get (
-      getState ().providersReducer.selectedService,
+const getQueueEmployees = (req: any): any => (dispatch, getState) => {
+  dispatch({ type: GET_QUEUE_EMPLOYEES });
+  if (getState().providersReducer.selectedService) {
+    const serviceId = get(
+      getState().providersReducer.selectedService,
       'id',
       null
     );
-    return Promise.all ([
-      Employees.getQueueEmployees (),
-      Services.getEmployeesByService (serviceId, req),
+    return Promise.all([
+      Employees.getQueueEmployees(),
+      Services.getEmployeesByService(serviceId, req),
     ])
-      .then (([{employees = []}, employeesByService]) => {
-        dispatch ({
+      .then(([{ employees = [] }, employeesByService]) => {
+        dispatch({
           type: GET_QUEUE_EMPLOYEES_SUCCESS,
-          data: {employees, employeesByService},
+          data: { employees, employeesByService },
         });
       })
-      .catch (error => {
-        dispatch ({
+      .catch(error => {
+        dispatch({
           type: GET_QUEUE_EMPLOYEES_ERROR,
-          data: {error},
+          data: { error },
         });
-        showErrorAlert (error);
+        showErrorAlert(error);
       });
   }
-  return Employees.getQueueEmployees (req)
-    .then (({employees = []}) =>
-      dispatch ({
+  return Employees.getQueueEmployees(req)
+    .then(({ employees = [] }) =>
+      dispatch({
         type: GET_QUEUE_EMPLOYEES_SUCCESS,
-        data: {employees},
+        data: { employees },
       })
     )
-    .catch (error => {
-      dispatch ({
+    .catch(error => {
+      dispatch({
         type: GET_QUEUE_EMPLOYEES_ERROR,
-        data: {error},
+        data: { error },
       });
-      showErrorAlert (error);
+      showErrorAlert(error);
     });
 };
 
-const getReceptionists = req => dispatch => {
-  dispatch ({type: GET_RECEPTIONISTS});
-  return Employees.getReceptionists (req)
-    .then (employees =>
-      dispatch ({
+const getReceptionists = (req: any): any => dispatch => {
+  dispatch({ type: GET_RECEPTIONISTS });
+  return Employees.getReceptionists(req)
+    .then(employees =>
+      dispatch({
         type: GET_RECEPTIONISTS_SUCCESS,
-        data: {employees},
+        data: { employees },
       })
     )
-    .catch (error => {
-      showErrorAlert (error);
-      dispatch ({type: GET_RECEPTIONISTS_ERROR});
+    .catch(error => {
+      showErrorAlert(error);
+      dispatch({ type: GET_RECEPTIONISTS_ERROR });
     });
 };
 
-const getProvidersSuccess = providers => {
-  const deskStaff = providers.filter (item => item.isReceptionist);
+const getProvidersSuccess = (providers: any): any => {
+  const deskStaff = providers.filter(item => item.isReceptionist);
   return {
     type: GET_PROVIDERS_SUCCESS,
-    data: {providers, deskStaff},
+    data: { providers, deskStaff },
   };
 };
 
-const getProvidersError = error => {
-  showErrorAlert (error);
+const getProvidersError = (error: Maybe<any>): any => {
+  showErrorAlert(error);
   return {
     type: GET_PROVIDERS_ERROR,
-    data: {error},
+    data: { error },
   };
 };
 
-const getProviders = (params, selectedService = null) => dispatch => {
-  dispatch ({type: GET_PROVIDERS});
-  const serviceId = get (selectedService, 'id', false);
+const getProviders = (params: any, selectedService: Maybe<Service> = null): any => dispatch => {
+  dispatch({ type: GET_PROVIDERS });
+  const serviceId = get(selectedService, 'id', false);
   if (serviceId) {
-    return Services.getEmployeesByService (serviceId, params)
-      .then (employees => {
-        dispatch (getProvidersSuccess (employees));
+    return Services.getEmployeesByService(serviceId, params)
+      .then(employees => {
+        dispatch(getProvidersSuccess(employees));
       })
-      .catch (err => {
-        dispatch (getProvidersError (err));
+      .catch(err => {
+        dispatch(getProvidersError(err));
       });
   }
-  return Employees.getEmployees (params)
-    .then (providers => {
-      dispatch (getProvidersSuccess (providers));
+  return Employees.getEmployees(params)
+    .then(providers => {
+      dispatch(getProvidersSuccess(providers));
     })
-    .catch (err => {
-      dispatch (getProvidersError (err));
+    .catch(err => {
+      dispatch(getProvidersError(err));
     });
 };
 
-const setFilteredProviders = filtered => {
-  const filteredDeskStaff = filtered.filter (item => item.isReceptionist);
+const setFilteredProviders = (filtered: Maybe<PureProvider[]>): any => {
+  const filteredDeskStaff = filtered.filter(item => item.isReceptionist);
   return {
     type: SET_FILTERED_PROVIDERS,
-    data: {filtered, filteredDeskStaff},
+    data: { filtered, filteredDeskStaff },
   };
 };
 
-const getProviderStatusSuccess = response => ({
+const getProviderStatusSuccess = (response: any): any => ({
   type: GET_PROVIDER_STATUS_SUCCESS,
-  data: {response},
+  data: { response },
 });
 
-const getProviderStatusFailed = error => ({
+const getProviderStatusFailed = (error: Maybe<any>): any => ({
   type: GET_PROVIDER_STATUS_FAILED,
-  data: {error},
+  data: { error },
 });
 
-const getProviderStatus = (employeeId, callback) => dispatch => {
-  dispatch ({type: GET_PROVIDER_STATUS});
+const getProviderStatus = (employeeId: number, callback: Maybe<Function>): any => dispatch => {
+  dispatch({ type: GET_PROVIDER_STATUS });
 
-  return Employees.getEmployeeStatus (employeeId)
-    .then (response => {
-      dispatch (getProviderStatusSuccess (response));
-      callback (response);
+  return Employees.getEmployeeStatus(employeeId)
+    .then(response => {
+      dispatch(getProviderStatusSuccess(response));
+      callback(response);
     })
-    .catch (error => {
-      dispatch (getProviderStatusFailed (error));
-      callback (false);
+    .catch(error => {
+      dispatch(getProviderStatusFailed(error));
+      callback(false);
     });
 };
 
@@ -236,4 +237,16 @@ const providersActions = {
   getQuickQueueEmployees,
 };
 
+export interface ProvidersActions {
+  getProviders: typeof getProviders;
+  getProvidersSuccess: typeof getProvidersSuccess;
+  getProvidersError: typeof getProvidersError;
+  setFilteredProviders: typeof setFilteredProviders;
+  setSelectedProvider: typeof setSelectedProvider;
+  getProviderStatus: typeof getProviderStatus;
+  setSelectedService: typeof setSelectedService;
+  getQueueEmployees: typeof getQueueEmployees;
+  getReceptionists: typeof getReceptionists;
+  getQuickQueueEmployees: typeof getQuickQueueEmployees;
+}
 export default providersActions;

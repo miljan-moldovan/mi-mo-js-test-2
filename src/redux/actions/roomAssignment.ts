@@ -2,6 +2,7 @@ import { isFunction } from 'lodash';
 import moment from 'moment';
 import { showErrorAlert } from './utils';
 import { Store, Employees } from '../../utilities/apiWrapper';
+import { Maybe } from '@/models';
 
 export const GET_ROOMS = 'roomAssignment/GET_ROOMS';
 export const GET_ROOMS_SUCCESS = 'roomAssignment/GET_ROOMS_SUCCESS';
@@ -13,7 +14,7 @@ export const PUT_ASSIGNMENTS = 'roomAssignment/PUT_ASSIGNMENTS';
 export const PUT_ASSIGNMENTS_SUCCESS = 'roomAssignment/PUT_ASSIGNMENTS_SUCCESS';
 export const PUT_ASSIGNMENTS_FAILED = 'roomAssignment/PUT_ASSIGNMENTS_FAILED';
 
-const getRooms = () => async dispatch => {
+const getRooms = (): any => async dispatch => {
   dispatch({ type: GET_ROOMS });
   try {
     const rooms = await Store.getRooms();
@@ -27,10 +28,10 @@ const getRooms = () => async dispatch => {
 };
 
 const getAssignments = (
-  date = moment(),
-  employeeId,
-  successCallback
-) => async dispatch => {
+  date: moment.Moment = moment(),
+  employeeId: number,
+  successCallback: Maybe<Function>,
+): any => async dispatch => {
   dispatch({ type: GET_ASSIGNMENTS });
   return Promise.all([
     Store.getRooms(),
@@ -55,11 +56,11 @@ const getAssignments = (
 };
 
 const putAssignments = (
-  id,
-  date,
-  assignments,
-  successCallback
-) => async dispatch => {
+  id: number,
+  date: string,
+  assignments: any,
+  successCallback: Maybe<Function>,
+): any => async dispatch => {
   dispatch({ type: PUT_ASSIGNMENTS });
   try {
     const res = await Employees.putRoomAssignments(id, date, assignments);
@@ -82,7 +83,7 @@ export default roomAssignmentActions;
 export interface RoomAssignmentActions {
   getRooms: () => void,
   getAssignments: (
-    date: string,
+    date: moment.Moment,
     employeeId: number,
     successCallback?: () => void,
   ) => void;

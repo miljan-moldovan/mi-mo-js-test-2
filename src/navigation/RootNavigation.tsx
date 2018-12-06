@@ -1,31 +1,25 @@
 import * as React from 'react';
 import {
   TabNavigator,
-  createBottomTabNavigator,
   TabBarBottom,
 } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from '@/components/common/Icon';
-import { IconTypes } from '@/components/common/Icon/interfaces';
-
-import { isValidAppointment } from '@/redux/selectors/newAppt';
 import userActions from '@/redux/actions/user';
 import walkInActions from '@/redux/actions/walkIn';
 import clientsActions from '@/redux/actions/clients';
 import appointmentNoteActions from '@/redux/actions/appointmentNotes';
 import salonSearchHeaderActions from '@/redux/reducers/searchHeader';
+import rootDrawerNavigatorAction from '@/redux/actions/rootDrawerNavigator';
+import navigationActions from '@/redux/actions/navigation';
 
 import QueueStackNavigator from './QueueStackNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
 import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
 import SelectStoreStackNavigator from './SelectStoreStackNavigator';
-import rootDrawerNavigatorAction from '@/redux/actions/rootDrawerNavigator';
-import getActiveRouteName from '@/utilities/helpers/getActiveRouteName';
-import navigationActions from '@/redux/actions/navigation';
 
 const RootDrawerNavigator = TabNavigator(
   {

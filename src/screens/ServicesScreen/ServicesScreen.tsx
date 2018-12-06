@@ -7,17 +7,13 @@ import {
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { get, filter, isFunction } from 'lodash';
+import { NavigationScreenProp } from 'react-navigation';
 
 import SelectableServiceList from '@/components/SelectableServiceList';
 import SalonSearchHeader from '@/components/SalonSearchHeader';
 import ServiceList from './components/serviceList';
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 import Colors from '@/constants/Colors';
-
-import CategoryServicesList from './components/categoryServicesList';
-import ServiceCategoryList from './components/serviceCategoryList';
-import styles from './styles';
-import { NavigationScreenProp } from 'react-navigation';
 import { ServicesActions } from '@/redux/actions/service';
 import { SalonSearchHeaderActions } from '@/redux/reducers/searchHeader';
 import LoadingOverlay from '@/components/LoadingOverlay';
@@ -25,6 +21,8 @@ import { Maybe, ServiceCategories, Service, Provider } from '@/models'
 import SalonFlatList from '@/components/common/SalonFlatList';
 import { ServicesReducer } from '@/redux/reducers/service';
 import SalonListItem from '@/components/common/SalonListItem';
+
+import styles from './styles';
 
 export interface ServicesScreenNavigationParams {
   mode: string;
@@ -550,7 +548,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
               services={this.services}
               selected={[
                 this.props.servicesState.selectedService
-                  ? this.props.servicesState.selectedService.serviceId
+                  ? this.props.servicesState.selectedService.id
                   : null,
               ]}
               hidePrice

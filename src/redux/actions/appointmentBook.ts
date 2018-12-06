@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {groupBy, orderBy, map, filter, includes} from 'lodash';
+import { groupBy, orderBy, map, filter, includes } from 'lodash';
 import {
   Store,
   AppointmentBook,
@@ -7,6 +7,7 @@ import {
   Employees,
 } from '../../utilities/apiWrapper';
 import StoreActions from './store';
+import { PureProvider, Maybe, StoreCompany, ProviderPosition } from '@/models';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY =
@@ -45,37 +46,37 @@ export const CHANGE_FIRST_AVAILABLE =
 
 const setToast = toast => ({
   type: SET_TOAST,
-  data: {toast},
+  data: { toast },
 });
 
 const setFilterOptionCompany = company => ({
   type: SET_FILTER_OPTION_COMPANY,
-  data: {company},
+  data: { company },
 });
 
 const setFilterOptionPosition = position => ({
   type: SET_FILTER_OPTION_POSITION,
-  data: {position},
+  data: { position },
 });
 
 const setFilterOptionShowOffEmployees = showOffEmployees => ({
   type: SET_FILTER_OPTION_OFF_EMPLOYEES,
-  data: {showOffEmployees},
+  data: { showOffEmployees },
 });
 
 const setFilterOptionRoomAssignments = showRoomAssignments => ({
   type: SET_FILTER_OPTION_ROOM_ASSIGNMENTS,
-  data: {showRoomAssignments},
+  data: { showRoomAssignments },
 });
 
 const setFilterOptionAssistantAssignments = showAssistantAssignments => ({
   type: SET_FILTER_OPTION_ASSISTANT_ASSIGNMENTS,
-  data: {showAssistantAssignments},
+  data: { showAssistantAssignments },
 });
 
 const setFilterOptionShowMultiBlock = showMultiBlock => ({
   type: SET_FILTER_OPTION_MULTIBLOCK,
-  data: {showMultiBlock},
+  data: { showMultiBlock },
 });
 
 const setGridAllViewSuccess = (
@@ -155,23 +156,23 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     pickerMode,
     filterOptions,
     rooms,
-  } = getState ().appointmentBookReducer;
-  const date = startDate.format ('YYYY-MM-DD');
+  } = getState().appointmentBookReducer;
+  const date = startDate.format('YYYY-MM-DD');
   switch (selectedFilter) {
     case 'deskStaff':
     case 'rebookAppointment':
     case 'providers': {
       if (selectedProvider === 'all' || pickerMode === 'day') {
-        return Promise.all ([
-          AppointmentBook.getAppointmentBookEmployees (date, filterOptions),
-          Appointment.getAppointmentsByDate (date),
-          AppointmentBook.getAppointmentBookAvailability (date),
-          AppointmentBook.getBlockTimes (date),
-          Store.getScheduleExceptions ({fromDate: date, toDate: date}),
-          Store.getStoreInfo (),
-          filterOptions.showRoomAssignments ? Store.getRooms () : rooms,
+        return Promise.all([
+          AppointmentBook.getAppointmentBookEmployees(date, filterOptions),
+          Appointment.getAppointmentsByDate(date),
+          AppointmentBook.getAppointmentBookAvailability(date),
+          AppointmentBook.getBlockTimes(date),
+          Store.getScheduleExceptions({ fromDate: date, toDate: date }),
+          Store.getStoreInfo(),
+          filterOptions.showRoomAssignments ? Store.getRooms() : rooms,
         ])
-          .then (
+          .then(
             (
               [
                 employees,
@@ -186,26 +187,26 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               let filteredEmployees = employees;
 
               if (selectedFilter === 'deskStaff') {
-                filteredEmployees = filteredEmployees.filter (
+                filteredEmployees = filteredEmployees.filter(
                   employee => employee.isReceptionist
                 );
               } else if (selectedFilter === 'rebookAppointment') {
                 filteredEmployees = selectedProviders;
               }
 
-              const employeesAppointment = orderBy (
+              const employeesAppointment = orderBy(
                 filteredEmployees,
                 'appointmentOrder'
               );
-              const orderedAppointments = orderBy (appointments, appt =>
-                moment (appt.fromTime, 'HH:mm').unix ()
+              const orderedAppointments = orderBy(appointments, appt =>
+                moment(appt.fromTime, 'HH:mm').unix()
               );
-              dispatch (StoreActions.loadStoreInfoSuccess (storeInfo));
-              dispatch (
-                StoreActions.loadScheduleExceptionsSuccess (scheduleExceptions)
+              dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
+              dispatch(
+                StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
               );
-              dispatch (
-                setGridAllViewSuccess (
+              dispatch(
+                setGridAllViewSuccess(
                   employeesAppointment,
                   orderedAppointments,
                   availabilityItem.timeSlots,
@@ -215,31 +216,31 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               );
             }
           )
-          .catch (ex => {
+          .catch(ex => {
             // TODO
-            console.log (ex);
+            console.log(ex);
           });
       }
-      const dateTo = moment (startDate).add (6, 'days').format ('YYYY-MM-DD');
-      return Promise.all ([
-        Employees.getEmployeeScheduleRange ({
+      const dateTo = moment(startDate).add(6, 'days').format('YYYY-MM-DD');
+      return Promise.all([
+        Employees.getEmployeeScheduleRange({
           id: selectedProvider.id,
-          startDate: startDate.format ('YYYY-MM-DD'),
+          startDate: startDate.format('YYYY-MM-DD'),
           endDate: dateTo,
         }),
-        Employees.getEmployeeAppointments ({
+        Employees.getEmployeeAppointments({
           id: selectedProvider.id,
-          dateFrom: startDate.format ('YYYY-MM-DD'),
+          dateFrom: startDate.format('YYYY-MM-DD'),
           dateTo,
         }),
-        AppointmentBook.getBlockTimesBetweenDates ({
-          fromDate: startDate.format ('YYYY-MM-DD'),
+        AppointmentBook.getBlockTimesBetweenDates({
+          fromDate: startDate.format('YYYY-MM-DD'),
           toDate: dateTo,
         }),
-        Store.getScheduleExceptions ({fromDate: date, toDate: dateTo}),
-        Store.getStoreInfo (),
+        Store.getScheduleExceptions({ fromDate: date, toDate: dateTo }),
+        Store.getStoreInfo(),
       ])
-        .then (
+        .then(
           (
             [
               providerSchedule,
@@ -249,19 +250,19 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               storeInfo,
             ]
           ) => {
-            const groupedProviderSchedule = groupBy (
+            const groupedProviderSchedule = groupBy(
               providerSchedule,
-              schedule => moment (schedule.date).format ('YYYY-MM-DD')
+              schedule => moment(schedule.date).format('YYYY-MM-DD')
             );
-            const orderedAppointments = orderBy (appointments, appt =>
-              moment (appt.fromTime, 'HH:mm').unix ()
+            const orderedAppointments = orderBy(appointments, appt =>
+              moment(appt.fromTime, 'HH:mm').unix()
             );
-            dispatch (StoreActions.loadStoreInfoSuccess (storeInfo));
-            dispatch (
-              StoreActions.loadScheduleExceptionsSuccess (scheduleExceptions)
+            dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
+            dispatch(
+              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
             );
-            dispatch (
-              setGridWeekViewSuccess (
+            dispatch(
+              setGridWeekViewSuccess(
                 orderedAppointments,
                 groupedProviderSchedule,
                 blockTimes
@@ -269,20 +270,20 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             );
           }
         )
-        .catch (() => {
+        .catch(() => {
           // TODO
         });
     }
     case 'rooms': {
-      return Promise.all ([
-        Store.getRooms (),
-        Store.getScheduleExceptions ({fromDate: date, toDate: date}),
-        AppointmentBook.getRoomAppointments (date),
-        Appointment.getAppointmentsByDate (date),
-        AppointmentBook.getAppointmentBookAvailability (date),
-        Store.getStoreInfo (),
+      return Promise.all([
+        Store.getRooms(),
+        Store.getScheduleExceptions({ fromDate: date, toDate: date }),
+        AppointmentBook.getRoomAppointments(date),
+        Appointment.getAppointmentsByDate(date),
+        AppointmentBook.getAppointmentBookAvailability(date),
+        Store.getStoreInfo(),
       ])
-        .then (
+        .then(
           (
             [
               rooms,
@@ -293,15 +294,15 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               storeInfo,
             ]
           ) => {
-            orderBy (appointments, appt =>
-              moment (appt.fromTime, 'HH:mm').unix ()
+            orderBy(appointments, appt =>
+              moment(appt.fromTime, 'HH:mm').unix()
             );
-            dispatch (StoreActions.loadStoreInfoSuccess (storeInfo));
-            dispatch (
-              StoreActions.loadScheduleExceptionsSuccess (scheduleExceptions)
+            dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
+            dispatch(
+              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
             );
-            dispatch (
-              setGridRoomViewSuccess (
+            dispatch(
+              setGridRoomViewSuccess(
                 rooms,
                 roomAppointments,
                 appointments,
@@ -310,20 +311,20 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             );
           }
         )
-        .catch (() => {
+        .catch(() => {
           // TODO
         });
     }
     case 'resources': {
-      return Promise.all ([
-        Store.getResources (),
-        Store.getScheduleExceptions ({fromDate: date, toDate: date}),
-        AppointmentBook.getResourceAppointments (date),
-        Appointment.getAppointmentsByDate (date),
-        AppointmentBook.getAppointmentBookAvailability (date),
-        Store.getStoreInfo (),
+      return Promise.all([
+        Store.getResources(),
+        Store.getScheduleExceptions({ fromDate: date, toDate: date }),
+        AppointmentBook.getResourceAppointments(date),
+        Appointment.getAppointmentsByDate(date),
+        AppointmentBook.getAppointmentBookAvailability(date),
+        Store.getStoreInfo(),
       ])
-        .then (
+        .then(
           (
             [
               resources,
@@ -334,15 +335,15 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               storeInfo,
             ]
           ) => {
-            orderBy (appointments, appt =>
-              moment (appt.fromTime, 'HH:mm').unix ()
+            orderBy(appointments, appt =>
+              moment(appt.fromTime, 'HH:mm').unix()
             );
-            dispatch (StoreActions.loadStoreInfoSuccess (storeInfo));
-            dispatch (
-              StoreActions.loadScheduleExceptionsSuccess (scheduleExceptions)
+            dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
+            dispatch(
+              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
             );
-            dispatch (
-              setGridResourceViewSuccess (
+            dispatch(
+              setGridResourceViewSuccess(
                 resources,
                 resourceAppointments,
                 appointments,
@@ -351,7 +352,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
             );
           }
         )
-        .catch (() => {
+        .catch(() => {
           // TODO
         });
     }
@@ -361,60 +362,60 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
 };
 
 const setGridView = () => dispatch => {
-  dispatch ({
+  dispatch({
     type: SET_GRID_VIEW,
   });
-  return dispatch (reloadGridRelatedStuff ());
+  return dispatch(reloadGridRelatedStuff());
 };
 
 const setScheduleDateRange = () => (dispatch, getState) => {
-  const {startDate, pickerMode} = getState ().appointmentBookReducer;
+  const { startDate, pickerMode } = getState().appointmentBookReducer;
   const dates = [];
   let diff = 0;
 
   if (pickerMode === 'week') {
     diff = 6;
-    dispatch ({
+    dispatch({
       type: SET_PROVIDER_DATES,
-      data: {startDate, endDate: moment (moment (startDate).add (6, 'day'))},
+      data: { startDate, endDate: moment(moment(startDate).add(6, 'day')) },
     });
   }
   for (let i = 0; i <= diff; i += 1) {
-    dates.push (moment (moment (startDate).add (i, 'day')));
+    dates.push(moment(moment(startDate).add(i, 'day')));
   }
-  dispatch ({type: SET_DATE_RANGE, data: {dates}});
+  dispatch({ type: SET_DATE_RANGE, data: { dates } });
 };
 
 const setProviderScheduleDates = (startDate, endDate) => dispatch => {
-  dispatch ({type: SET_PROVIDER_DATES, data: {startDate, endDate}});
-  return dispatch (setScheduleDateRange ());
+  dispatch({ type: SET_PROVIDER_DATES, data: { startDate, endDate } });
+  return dispatch(setScheduleDateRange());
 };
 
 const setPickerMode = pickerMode => dispatch => {
-  dispatch ({
+  dispatch({
     type: SET_PICKER_MODE,
-    data: {pickerMode},
+    data: { pickerMode },
   });
-  return dispatch (setScheduleDateRange ());
+  return dispatch(setScheduleDateRange());
 };
 
 const setSelectedProvider = selectedProvider => ({
   type: SET_SELECTED_PROVIDER,
-  data: {selectedProvider},
+  data: { selectedProvider },
 });
 
 const setSelectedProviders = selectedProviders => ({
   type: SET_SELECTED_PROVIDERS,
-  data: {selectedProviders},
+  data: { selectedProviders },
 });
 
 const setSelectedFilter = selectedFilter => dispatch => {
   if (selectedFilter !== 'providers') {
-    dispatch (setPickerMode ('day'));
+    dispatch(setPickerMode('day'));
   }
-  return dispatch ({
+  return dispatch({
     type: SET_SELECTED_FILTER,
-    data: {selectedFilter},
+    data: { selectedFilter },
   });
 };
 
@@ -442,4 +443,22 @@ export const appointmentCalendarActions = {
   setFilterOptionShowOffEmployees,
   hideToast,
   setToast,
+};
+
+export interface ApptBookActions {
+  changeFirstAvailable: () => any;
+  setGridView: () => any;
+  setProviderScheduleDates: (start: string, end: string) => any;
+  setPickerMode: (mode: any) => any;
+  setSelectedProvider: (provider: Maybe<PureProvider>) => any;
+  setSelectedProviders: (providers: any[]) => any;
+  setSelectedFilter: (filter: any) => any;
+  setFilterOptionCompany: (company: Maybe<StoreCompany>) => any;
+  setFilterOptionPosition: (position: Maybe<ProviderPosition>) => any;
+  setFilterOptionShowMultiBlock: (show: boolean) => any;
+  setFilterOptionRoomAssignments: (show: boolean) => any;
+  setFilterOptionAssistantAssignments: (show: boolean) => any;
+  setFilterOptionShowOffEmployees: (show: boolean) => any;
+  hideToast: () => any;
+  setToast: (toast: Maybe<Object>) => any;
 };

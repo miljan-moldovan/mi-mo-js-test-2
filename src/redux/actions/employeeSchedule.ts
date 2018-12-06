@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Employees} from '../../utilities/apiWrapper';
+import { Employees } from '../../utilities/apiWrapper';
 
 export const GET_EMPLOYEE_SCHEDULE_EXCEPTION =
   'employeeSchedule/GET_EMPLOYEE_SCHEDULE_EXCEPTION';
@@ -23,32 +23,32 @@ export const PUT_EMPLOYEE_SCHEDULE_EXCEPTION_FAILED =
 
 const getEmployeeScheduleSuccess = response => ({
   type: GET_EMPLOYEE_SCHEDULE_SUCCESS,
-  data: {response},
+  data: { response },
 });
 
 const getEmployeeScheduleFailed = error => ({
   type: GET_EMPLOYEE_SCHEDULE_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const putEmployeeScheduleSuccess = employeeSchedule => ({
   type: PUT_EMPLOYEE_SCHEDULE_EXCEPTION_SUCCESS,
-  data: {employeeSchedule},
+  data: { employeeSchedule },
 });
 
 const putEmployeeScheduleFailed = error => ({
   type: PUT_EMPLOYEE_SCHEDULE_EXCEPTION_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const getEmployeeScheduleExceptionSuccess = response => ({
   type: GET_EMPLOYEE_SCHEDULE_EXCEPTION_SUCCESS,
-  data: {response},
+  data: { response },
 });
 
 const getEmployeeScheduleExceptionFailed = error => ({
   type: GET_EMPLOYEE_SCHEDULE_EXCEPTION_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const getEmployeeScheduleException = (
@@ -56,48 +56,47 @@ const getEmployeeScheduleException = (
   date,
   callback
 ) => dispatch => {
-  dispatch ({type: GET_EMPLOYEE_SCHEDULE_EXCEPTION});
+  dispatch({ type: GET_EMPLOYEE_SCHEDULE_EXCEPTION });
 
-  return Employees.getEmployeeScheduleException (employeeId, date)
-    .then (response => {
-      dispatch (getEmployeeScheduleExceptionSuccess (response));
-      callback (true);
+  return Employees.getEmployeeScheduleException(employeeId, date)
+    .then(response => {
+      dispatch(getEmployeeScheduleExceptionSuccess(response));
+      callback(true);
     })
-    .catch (error => {
-      dispatch (getEmployeeScheduleExceptionFailed (error));
-      callback (false);
+    .catch(error => {
+      dispatch(getEmployeeScheduleExceptionFailed(error));
+      callback(false);
     });
 };
 
 const getEmployeeSchedule = (employeeId, date, callback) => dispatch => {
-  dispatch ({type: GET_EMPLOYEE_SCHEDULE});
+  dispatch({ type: GET_EMPLOYEE_SCHEDULE });
 
-  return Employees.getEmployeeSchedule (employeeId, date)
-    .then (response => {
-      dispatch (getEmployeeScheduleSuccess (response));
-      callback (true);
+  return Employees.getEmployeeSchedule(employeeId, date)
+    .then(response => {
+      dispatch(getEmployeeScheduleSuccess(response));
+      callback(true);
     })
-    .catch (error => {
-      dispatch (getEmployeeScheduleFailed (error));
-      callback (false);
+    .catch(error => {
+      dispatch(getEmployeeScheduleFailed(error));
+      callback(false);
     });
 };
 
 const putEmployeeSchedule = (employeeId, data, date, callback) => dispatch => {
-  dispatch ({type: PUT_EMPLOYEE_SCHEDULE_EXCEPTION});
+  dispatch({ type: PUT_EMPLOYEE_SCHEDULE_EXCEPTION });
 
-  return Employees.putEmployeeScheduleException (employeeId, data)
-    .then (response => {
-      callback (true);
-      Employees.getEmployeeScheduleException (
+  return Employees.putEmployeeScheduleException(employeeId, data)
+    .then(response => {
+      callback(true);
+      Employees.getEmployeeScheduleException(
         employeeId,
         date,
-        callback
-      ).then (resp => dispatch (putEmployeeScheduleSuccess (resp)));
+      ).then(resp => dispatch(putEmployeeScheduleSuccess(resp)));
     })
-    .catch (error => {
-      dispatch (putEmployeeScheduleFailed (error));
-      callback (false);
+    .catch(error => {
+      dispatch(putEmployeeScheduleFailed(error));
+      callback(false);
     });
 };
 

@@ -1,9 +1,9 @@
 // @flow
 import e from '../constants/ErrorTypes';
 
-export default function processError(error: Object): Object {
-  let type, 
-message;
+export default function processError(error: any): any {
+  let type,
+    message;
 
   if (error.response) {
     // The request was made and the server responded with a status code
