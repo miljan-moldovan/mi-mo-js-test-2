@@ -189,11 +189,22 @@ class SalonCardDetailsSlide extends React.Component {
   }
 
   handleNewAppt = () => {
-    if (this.state.appointment.isBlockTime) {
-      notImplemented();
-    } else {
-      notImplemented();
+    const { selectedFilter, selectedProvider } = this.props;
+    const { appointment } = this.state
+    const startTime = moment(appointment.fromTime, 'HH:mm').format('HH:mm A');
+    let data = null;
+    if (
+      selectedFilter === 'providers' ||
+      selectedFilter === 'deskStaff' ||
+      selectedFilter === 'rebookAppointment'
+    ) {
+      if (selectedProvider === 'all') {
+        data = appointment.employee;
+      } else {
+        data = appointment.date;
+      }
     }
+    this.props.handleNewAppt(startTime, data);
   }
 
   handleRecommendProductPress = () => {
@@ -388,7 +399,7 @@ class SalonCardDetailsSlide extends React.Component {
                   handleOpenEditRemarks={this.handleOpenEditRemarks}
                   handleShowAppt={this.handleShowAppt}
                   handleRecommendProductPress={this.handleRecommendProductPress}
-                  handleNewAppointment={notImplemented}
+                  handleNewAppt={this.handleNewAppt}
                   handleRebook={this.handleRebook}
                   handleEmailClient={notImplemented}
                   handleSMSClient={notImplemented}

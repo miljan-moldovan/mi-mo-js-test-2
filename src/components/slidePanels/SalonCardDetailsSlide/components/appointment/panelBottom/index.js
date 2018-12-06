@@ -13,7 +13,7 @@ const apptPanelBottom = ({
   handleOpenEditRemarks,
   handleShowAppt,
   handleRecommendProductPress,
-  handleNewAppointment,
+  handleNewAppt,
   handleRebook,
   handleEmailClient,
   handleSMSClient,
@@ -27,7 +27,7 @@ const apptPanelBottom = ({
           noIcon
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
-          onPress={handleNewAppointment}
+          onPress={handleNewAppt}
           label="New Appointment"
         >
           <View style={styles.iconContainer}>
@@ -137,7 +137,7 @@ apptPanelBottom.propTypes = {
   handleOpenEditRemarks: PropTypes.func.isRequired,
   handleShowAppt: PropTypes.func.isRequired,
   handleRecommendProductPress: PropTypes.func.isRequired,
-  handleNewAppointment: PropTypes.func.isRequired,
+  handleNewAppt: PropTypes.func.isRequired,
   handleRebook: PropTypes.func.isRequired,
   handleEmailClient: PropTypes.func.isRequired,
   handleSMSClient: PropTypes.func.isRequired,
