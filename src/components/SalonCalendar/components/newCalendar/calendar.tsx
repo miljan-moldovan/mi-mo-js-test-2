@@ -1057,9 +1057,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     if (index > -1) {
       oldAppointment = buffer[index];
       buffer.splice (index, 1);
-      if (buffer.length < 1) {
-        this.props.manageBuffer (false);
-      }
     } else {
       oldAppointment = appointments.find (item => item.id === id);
     }
@@ -1086,12 +1083,21 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
     this.props.checkConflicts (conflictData).then (({data: {conflicts}}) => {
       if (conflicts && conflicts.length > 0) {
+        if (index > -1) {
+          buffer.splice(index, 0, oldAppointment);
+        }
         const params = {
           date,
           startTime: newTime,
           endTime: newToTime,
           conflicts,
-          handleDone: () =>
+          handleDone: () => {
+            if (index > -1) {
+              buffer.splice (index, 1);
+            }
+            if (buffer.length > 0) {
+              this.props.manageBuffer (true);
+            }
             onDrop (
               id,
               {
@@ -1104,13 +1110,23 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
                 roomOrdinal,
               },
               oldAppointment
-            ),
+            )
+          },
+          handleGoBack: () => {
+            if (buffer.length > 0) {
+              this.props.manageBuffer(true);
+            }
+          },
           headerProps: {
             btnRightText: 'Move anyway',
           },
         };
         this.props.navigation.navigate ('Conflicts', params);
+        // this.props.manageBuffer (false);
       } else {
+        if (buffer.length < 1) {
+          this.props.manageBuffer (false);
+        }
         onDrop (
           id,
           {
