@@ -173,7 +173,7 @@ class SalonCardDetailsSlide extends React.Component {
   }
 
   handleCheckin = () => {
-    this.props.handleCheckin(this.state.appointment.id);
+    this.props.handleCheckin(this.state.appointment.id, this.state.appointment.date);
   }
 
   handleCheckout = () => {

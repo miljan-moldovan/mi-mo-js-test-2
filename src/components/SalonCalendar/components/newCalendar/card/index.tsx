@@ -402,10 +402,17 @@ class Card extends React.Component {
                   <TouchableOpacity
                     onPress={() => {
                       if (this.props.onPress) {
-                        this.props.onPress(this.props.appointment);
+                        const { top, height } = verticalPositions[0];
+                        this.props.onPress(this.props.appointment, left, top);
                       }
                     }}
-                    onLongPress={() => this.handleOnLongPress({ left, verticalPositions, width })}
+                    onLongPress={() => {
+                      const { badgeData, isFirstAvailable } = this.props.appointment;
+                      const isEnabled = !isFirstAvailable && !badgeData.isCashedOut && !badgeData.isNoShow;
+                      if (isEnabled) {
+                        this.handleOnLongPress({ left, verticalPositions, width });
+                      }
+                    }}
                     disabled={activeCard || isActive || isInBuffer}
                   >
                     <View style={styles.fullSize}>

@@ -571,7 +571,6 @@ class AppointmentScreen extends Component {
 
   selectFilterProvider = () => {
     this.props.appointmentCalendarActions.setGridView ();
-    requestAnimationFrame (() => this.manageBuffer (false));
   };
 
   selectFilter = (filter, filterProvider = null) => {
@@ -642,7 +641,6 @@ class AppointmentScreen extends Component {
       }
     }
     this.props.appointmentCalendarActions.setGridView ();
-    requestAnimationFrame (() => this.manageBuffer (false));
   };
 
   goToCancelScreen = appointments => {
@@ -741,6 +739,29 @@ class AppointmentScreen extends Component {
       }
     );
   };
+
+  handleCheckin = (id ,date) => {
+    const onPressRight = () => {
+      this.props.appointmentActions.postAppointmentCheckin(id);
+      this.hideAlert();
+    }
+    const onPressLeft = () => this.hide;
+    const dateMoment = moment(date, 'YYYY-MM-DD');
+    const today = moment();
+    if (dateMoment.isAfter(today, 'day')) {
+      const alert = {
+        title: 'Question',
+        description: 'You are trying to check in an appoinment for another day, are you sure you want to do this?',
+        btnLeftText: 'No',
+        btnRightText: 'Check-In',
+        onPressRight,
+        onPressLeft: this.hideAlert,
+      };
+      this.setState({ alert });
+    } else {
+      this.props.appointmentActions.postAppointmentCheckin(id);
+    }
+  }
 
   hideApptSlide = () => {
     this.setState (
@@ -901,6 +922,7 @@ class AppointmentScreen extends Component {
           selectedDate={moment (startDate)}
         />
         <SalonCalendar
+          isDetailsVisible={this.state.visibleAppointment}
           navigation={this.props.navigation}
           checkConflicts={this.props.checkConflicts}
           checkConflictsBlock={this.props.checkConflictsBlock}
@@ -1014,7 +1036,7 @@ class AppointmentScreen extends Component {
           handleRebook={this.handleRebookAppt}
           goToCancelAppt={this.goToCancelAppt}
           goToShowAppt={this.goToShowAppt}
-          handleCheckin={appointmentActions.postAppointmentCheckin}
+          handleCheckin={this.handleCheckin}
           handleCheckout={appointmentActions.postAppointmentCheckout}
           updateAppointments={this.props.appointmentCalendarActions.setGridView}
           crossedAppointments={this.state.crossedAppointments}

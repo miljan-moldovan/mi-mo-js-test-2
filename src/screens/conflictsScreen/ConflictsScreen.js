@@ -141,7 +141,7 @@ export default class ConflictsScreen extends React.Component {
           headerLeft={(
             <SalonTouchableOpacity
               style={styles.leftButton}
-              onPress={navigation.goBack}
+              onPress={onLeftPress}
             >
               <Text style={styles.btnHeaderText}>
                 Cancel
