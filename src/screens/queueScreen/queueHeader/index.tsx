@@ -116,9 +116,7 @@ class QueueHeader extends React.Component<Props, State>  {
     this.setState({ barsActionSheet: item });
   };
   render() {
-    // if (this.props.navigationState.currentRoute !== 'Main') {
-    //   return null;
-    // }
+
     return this.props.searchMode
       ? <View style={[this.state.styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
 
