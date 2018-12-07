@@ -5,92 +5,52 @@
     
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.015558">
-=======
       <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.010918">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.006096">
-=======
       <testcase classname="fastlane.lanes" name="1: default_platform" time="0.001302">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="2: npm install" time="12.754278">
-=======
       <testcase classname="fastlane.lanes" name="2: npm install" time="8.513616">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="3: npm run bundle:ios" time="86.947087">
-=======
       <testcase classname="fastlane.lanes" name="3: npm run bundle:ios" time="7.49173">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="4: cocoapods" time="77.346826">
-=======
       <testcase classname="fastlane.lanes" name="4: cocoapods" time="57.141459">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="5: automatic_code_signing" time="0.632227">
-=======
       <testcase classname="fastlane.lanes" name="5: automatic_code_signing" time="0.197275">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="6: increment_build_number" time="4.830836">
-=======
       <testcase classname="fastlane.lanes" name="6: increment_build_number" time="4.034782">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="7: gym" time="1449.857054">
-=======
       <testcase classname="fastlane.lanes" name="7: gym" time="558.165405">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="8: crashlytics" time="152.657444">
-=======
       <testcase classname="fastlane.lanes" name="8: crashlytics" time="10.440051">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     
       
-<<<<<<< HEAD
-      <testcase classname="fastlane.lanes" name="9: slack" time="3.823764">
-=======
       <testcase classname="fastlane.lanes" name="9: slack" time="0.832065">
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71
         
       </testcase>
     

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {StackActions, NavigationActions} from 'react-navigation';
 import {ScrollView, Text, View, ActivityIndicator} from 'react-native';
 import {get, isEqual, isNull, isFunction, isUndefined} from 'lodash';

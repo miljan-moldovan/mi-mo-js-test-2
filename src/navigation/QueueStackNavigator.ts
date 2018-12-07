@@ -32,7 +32,6 @@ import ClientDetailsScreen
   from '@/screens/clientInfoScreen/components/clientDetails';
 import ProductsScreen from '@/screens/productsScreen';
 import RebookDialogScreen from '@/screens/rebookDialogScreen';
-import AppointmentScreen from '@/screens/AppointmentsScreen';
 import apptBookSetEmployeeOrder from '@/screens/apptBookSetEmployeeOrder';
 import apptBookViewOptions from '@/screens/apptBookViewOptions';
 import SettingsScreen from '@/screens/SettingsScreen';
@@ -55,9 +54,6 @@ export const MainNavigator = createStackNavigator(
     },
     Services: {
       screen: ServicesScreen,
-    },
-    Appointment: {
-      screen: AppointmentScreen,
     },
     NewClient: {
       screen: NewClientScreen,
@@ -154,9 +150,6 @@ const QueueStackNavigator = createStackNavigator(
     },
     Services: {
       screen: ServicesScreen,
-    },
-    Appointment: {
-      screen: AppointmentScreen,
     },
     NewClient: {
       screen: NewClientScreen,

@@ -26,17 +26,17 @@ class ClientMergeItem extends React.PureComponent {
       <SalonTouchableOpacity onPress={this._onPressSelectMain} style={styles.checkboxContainerTouchable}>
         <View style={[styles.checkboxContainer, main ? { backgroundColor: '#1DBF12' } : null]}>
           <View style={[styles.checkbox, main ? { borderColor: 'transparent' } : null]}>
-            { main ? (
+            {main ? (
               <FontAwesome style={{
-fontSize: 9,
-color: '#fff',
-fontWeight: '100',
-               fontFamily: 'FontAwesome5ProLight',
-}}
+                fontSize: 9,
+                color: '#fff',
+                fontWeight: '100',
+                fontFamily: 'FontAwesome5ProLight',
+              }}
               >{Icons.check}
               </FontAwesome>
 
-            ) : null }
+            ) : null}
           </View>
           <Text style={[styles.checkboxLabel, main ? { color: '#fff' } : null]}>Main</Text>
         </View>
@@ -56,10 +56,10 @@ fontWeight: '100',
 
 
         <FontAwesome style={{
-        fontSize: selected ? 23 : 20,
-        color: selected ? '#2BBA11' : '#727A8F',
-        fontWeight: selected ? '900' : '100',
-        fontFamily: selected ? 'FontAwesome5ProSolid' : 'FontAwesome5ProLight',
+          fontSize: selected ? 23 : 20,
+          color: selected ? '#2BBA11' : '#727A8F',
+          fontWeight: selected ? '900' : '100',
+          fontFamily: selected ? 'FontAwesome5ProSolid' : 'FontAwesome5ProLight',
         }}
         >{selected ? Icons.checkCircle : Icons.circle}
         </FontAwesome>
@@ -82,11 +82,11 @@ fontWeight: '100',
             <Text style={styles.clientName} numberOfLines={2} ellipsizemode="middle">{fullName}</Text>
             <View style={styles.clientMobileAddress}>
               <FontAwesome style={{
-              fontSize: 16,
-              color: '#4D5067',
-              fontWeight: '100',
-              fontFamily: 'FontAwesome',
-              marginRight: 5,
+                fontSize: 16,
+                color: '#4D5067',
+                fontWeight: '100',
+                fontFamily: 'FontAwesome',
+                marginRight: 5,
               }}
               >{Icons.mobile}
               </FontAwesome>
@@ -95,11 +95,11 @@ fontWeight: '100',
               </Text>
               <FontAwesome style={{
                 marginRight: 4,
-marginLeft: 16,
-              fontSize: 12,
-              color: '#4D5067',
-              fontWeight: '100',
-              fontFamily: 'FontAwesome5ProLight',
+                marginLeft: 16,
+                fontSize: 12,
+                color: '#4D5067',
+                fontWeight: '100',
+                fontFamily: 'FontAwesome5ProLight',
               }}
               >{Icons.home}
               </FontAwesome>
@@ -123,7 +123,7 @@ export class ClientMerge extends React.Component {
     refreshing: false,
     data: [],
     mainClient: null,
-    selected: (new Map(): Map<string, boolean>),
+    selected: new Map(),
   }
   componentWillMount() {
     // this.setState({ data: this.props.data });
@@ -211,7 +211,7 @@ export class ClientMerge extends React.Component {
             refreshing={this.state.refreshing}
             onRefresh={this._onRefresh}
           />
-          }
+        }
       />
     );
   }

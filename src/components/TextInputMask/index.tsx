@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-
+import * as React from 'react';
 import {TextInput, findNodeHandle, NativeModules} from 'react-native';
 
 const mask = NativeModules.RNTextInputMask.mask;

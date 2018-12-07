@@ -1,8 +1,9 @@
-import * as momentObj from 'moment';
-import { extendMoment } from 'moment-range';
+import moment from 'moment';
+import { Moment } from 'moment';
+import { extendMoment, MomentRange } from 'moment-range';
 
-const extendedMoment = extendMoment(momentObj);
+const extendedMoment = extendMoment(moment);
 
-export const getRangeExtendedMoment = () => extendedMoment;
+export const getRangeExtendedMoment = (): MomentRange & Moment => extendedMoment;
 
 export default extendedMoment;

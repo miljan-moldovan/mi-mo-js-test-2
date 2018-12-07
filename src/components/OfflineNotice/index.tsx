@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import * as React from 'react';
 import { View, Text, NetInfo, Dimensions, StyleSheet } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -35,7 +35,7 @@ function MiniOfflineSign() {
   );
 }
 
-class OfflineNotice extends PureComponent {
+class OfflineNotice extends React.PureComponent {
   constructor(props) {
     super(props);
     NetInfo.isConnected.fetch().then(this.doCheckFetch);

@@ -19,17 +19,17 @@ import {
   QUEUE_ITEM_INSERVICE,
   QUEUE_ITEM_CHECKEDIN,
 } from '../../../constants/QueueStatus';
-import {QueueItem} from '../../../models';
+import { QueueItem } from '../../../models';
 import * as helpers from '../../../redux/reducers/helpers';
 
 class QueueCombineItem extends React.PureComponent {
   _onPress = () => {
-    this.props.onPressItem (this.props.id, this.props.groupId);
+    this.props.onPressItem(this.props.id, this.props.groupId);
   };
 
   _onPressSelectLeader = () => {
     //
-    this.props.onPressSelectLeader (this.props.id, this.props.groupId);
+    this.props.onPressSelectLeader(this.props.id, this.props.groupId);
   };
   getLabelForItem = (item: QueueItem) => {
     let label, iconName;
@@ -50,10 +50,10 @@ class QueueCombineItem extends React.PureComponent {
     );
   };
   renderPaymentIcon = color => {
-    const {selected, item, type, groupLeader, groups} = this.props;
+    const { selected, item, type, groupLeader, groups } = this.props;
 
     const itemColor =
-      color || helpers.generateColorForNewGroup (Object.keys (groups).length);
+      color || helpers.generateColorForNewGroup(Object.keys(groups).length);
 
     if (type === 'uncombine' || selected) {
       return (
@@ -66,13 +66,13 @@ class QueueCombineItem extends React.PureComponent {
               styles.dollarSignContainer,
               groupLeader
                 ? {
-                    backgroundColor: itemColor.borderColor,
-                    borderColor: itemColor.borderColor,
-                  }
+                  backgroundColor: itemColor.borderColor,
+                  borderColor: itemColor.borderColor,
+                }
                 : {
-                    backgroundColor: 'transparent',
-                    borderColor: itemColor.borderColor,
-                  },
+                  backgroundColor: 'transparent',
+                  borderColor: itemColor.borderColor,
+                },
             ]}
           >
             <Icon
@@ -89,7 +89,7 @@ class QueueCombineItem extends React.PureComponent {
     return null;
   };
   renderCheckContainer = () => {
-    const {selected, type} = this.props;
+    const { selected, type } = this.props;
     if (type === 'combine') {
       return (
         <View style={styles.checkContainer}>
@@ -105,10 +105,10 @@ class QueueCombineItem extends React.PureComponent {
     return null;
   };
 
-  render () {
-    const {selected, index, type, groupLeader} = this.props;
+  render() {
+    const { selected, index, type, groupLeader } = this.props;
     const item: QueueItem = this.props.item;
-    const label = this.getLabelForItem (item);
+    const label = this.getLabelForItem(item);
     let first = null;
     if (type == 'uncombine') {
       first = index == 0
@@ -117,9 +117,9 @@ class QueueCombineItem extends React.PureComponent {
     }
     // const first = index == 0 && type == "uncombine" ? styles.itemContainerCombinedFirst : null;
     const firstService = item.services[0] || {};
-    const serviceName = (firstService.serviceName || '').toUpperCase ();
+    const serviceName = (firstService.serviceName || '').toUpperCase();
     const employee = item.services.length > 0 && !firstService.isFirstAvailable
-      ? `${firstService.employee.fullName || ''}`.toUpperCase ()
+      ? `${firstService.employee.fullName || ''}`.toUpperCase()
       : 'First Available';
 
     const color = item.groupId ? this.props.groups[item.groupId].color : null;
@@ -128,24 +128,24 @@ class QueueCombineItem extends React.PureComponent {
       <SalonTouchableOpacity
         style={[
           styles.itemContainer,
-          type == 'uncombine' ? {backgroundColor: color.backgroundColor} : null,
+          type == 'uncombine' ? { backgroundColor: color.backgroundColor } : null,
           first,
         ]}
         key={item.id}
         onPress={this._onPress}
       >
-        {this.renderCheckContainer ()}
+        {this.renderCheckContainer()}
         <View
           style={[
             styles.itemSummary,
             type == 'uncombine'
               ? groupLeader
-                  ? styles.itemSummaryCombinedFirst
-                  : styles.itemSummaryCombined
+                ? styles.itemSummaryCombinedFirst
+                : styles.itemSummaryCombined
               : null,
           ]}
         >
-          <View style={{width: '100%'}}>
+          <View style={{ width: '100%' }}>
             <Text
               style={styles.clientName}
               numberOfLines={1}
@@ -160,15 +160,15 @@ class QueueCombineItem extends React.PureComponent {
             >
               {serviceName}
               {item.services.length > 1
-                ? <Text style={{color: '#115ECD', fontFamily: 'Roboto-Medium'}}>
-                    +{item.services.length - 1}
-                  </Text>
+                ? <Text style={{ color: '#115ECD', fontFamily: 'Roboto-Medium' }}>
+                  +{item.services.length - 1}
+                </Text>
                 : null}
-              &nbsp;<Text style={{color: '#727A8F'}}>with</Text> {employee}
+              &nbsp;<Text style={{ color: '#727A8F' }}>with</Text> {employee}
             </Text>
             {label}
           </View>
-          {this.renderPaymentIcon (color)}
+          {this.renderPaymentIcon(color)}
         </View>
       </SalonTouchableOpacity>
     );
@@ -183,43 +183,45 @@ export class QueueCombine extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
-    selected:  (new Map (): Map<string, boolean>),
+    selected: new Map(),
   };
-  componentWillMount () {
-    this.setState ({data: this.props.data});
+  componentWillMount() {
+    this.setState({ data: this.props.data });
 
     for (let i = 0; i < this.props.combinedClients.length; i++) {
-      this._onPressItem (this.props.combinedClients[i]);
+      this._onPressItem(this.props.combinedClients[i]);
     }
   }
-  componentWillReceiveProps (nextProps: Object) {
+  componentWillReceiveProps(nextProps: Object) {
     if (nextProps.data !== this.props.data) {
-      this.setState ({data: nextProps.data});
+      this.setState({ data: nextProps.data });
     }
     if (
       nextProps.filterText !== null &&
       nextProps.filterText !== this.props.filterText
     ) {
-      this.searchText (nextProps.filterText);
+      this.searchText(nextProps.filterText);
     }
     if (nextProps.combinedClients.length === 0) {
-      this.setState ({selected:  (new Map (): Map<string, boolean>)});
+      this.setState({
+        selected: new Map()
+      });
     }
   }
   searchText = (query: string) => {
-    const {data} = this.props;
+    const { data } = this.props;
 
     if (query === '') {
-      this.setState ({data});
+      this.setState({ data });
     }
 
-    const text = query.toLowerCase ();
+    const text = query.toLowerCase();
 
-    const filteredData = data.filter (({client, services}) => {
+    const filteredData = data.filter(({ client, services }) => {
       let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-      fullName = fullName.replace (/ +(?= )/g, '');
+      fullName = fullName.replace(/ +(?= )/g, '');
 
-      if (fullName.toLowerCase ().match (text)) {
+      if (fullName.toLowerCase().match(text)) {
         return true;
       }
 
@@ -228,18 +230,18 @@ export class QueueCombine extends React.Component {
 
         const employee = service.isFirstAvailable
           ? {
-              id: 0,
-              isFirstAvailable: true,
-              fullName: 'First Available',
-            }
+            id: 0,
+            isFirstAvailable: true,
+            fullName: 'First Available',
+          }
           : service.employee;
 
         const fullNameProvider = `${employee.fullName || ''}`;
 
-        if (fullNameProvider.toLowerCase ().match (text)) {
+        if (fullNameProvider.toLowerCase().match(text)) {
           return true;
         }
-        if (service.serviceName.toLowerCase ().match (text)) {
+        if (service.serviceName.toLowerCase().match(text)) {
           return true;
         }
       }
@@ -248,34 +250,34 @@ export class QueueCombine extends React.Component {
 
     // if no match, set empty array
     if (!filteredData || !filteredData.length) {
-      this.setState ({data: []});
+      this.setState({ data: [] });
     } else if (filteredData.length === data.length) {
       // if the matched numbers are equal to the original data, keep it the same
-      this.setState ({data: this.props.data});
+      this.setState({ data: this.props.data });
     } else {
       // else, set the filtered data
-      this.setState ({data: filteredData});
+      this.setState({ data: filteredData });
     }
   };
   _onRefresh = () => {
-    this.setState ({refreshing: true});
+    this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
-    setTimeout (() => this.setState ({refreshing: false}), 500);
+    setTimeout(() => this.setState({ refreshing: false }), 500);
   };
   _onPressItem = (id: string) => {
     // updater functions are preferred for transactional updates
-    this.setState (state => {
-      const selected = new Map (state.selected);
-      selected.set (id, !selected.get (id)); // toggle
+    this.setState(state => {
+      const selected = new Map(state.selected);
+      selected.set(id, !selected.get(id)); // toggle
       const selectedArray = [];
-      selected.forEach ((value, key) => {
+      selected.forEach((value, key) => {
         if (value) {
-          selectedArray.push (key);
+          selectedArray.push(key);
         }
       });
 
-      let {groupLeader} = this.state;
+      let { groupLeader } = this.state;
 
       if (selectedArray.length == 0) {
         // if no one is selected, clear group leader
@@ -283,27 +285,27 @@ export class QueueCombine extends React.Component {
       } else if (groupLeader == '') {
         // if no groupLeader is selected, set current item as the leader (so the first person selected will be the default leader)
         groupLeader = id;
-      } else if (!selectedArray.includes (groupLeader)) {
+      } else if (!selectedArray.includes(groupLeader)) {
         // if the previous group leader was unselected, the first selected person from the list will be the leader
         groupLeader = selectedArray[0];
       }
       if (this.props.onChangeCombineClients) {
-        this.props.onChangeCombineClients (selectedArray, groupLeader);
+        this.props.onChangeCombineClients(selectedArray, groupLeader);
       }
-      return {selected, groupLeader};
+      return { selected, groupLeader };
     });
   };
   _onPressSelectLeader = (id: string) => {
-    this.setState ({groupLeader: id});
-    this.props.onChangeCombineClients (null, id);
+    this.setState({ groupLeader: id });
+    this.props.onChangeCombineClients(null, id);
   };
 
-  renderItem = ({item, index}) => (
+  renderItem = ({ item, index }) => (
     <QueueCombineItem
       id={item.id}
       onPressItem={this._onPressItem}
       onPressSelectLeader={this._onPressSelectLeader}
-      selected={!!this.state.selected.get (item.id)}
+      selected={!!this.state.selected.get(item.id)}
       groupLeader={item.id == this.state.groupLeader}
       item={item}
       type="combine"
@@ -313,7 +315,7 @@ export class QueueCombine extends React.Component {
 
   _keyExtractor = (item, index) => item.id;
 
-  render () {
+  render() {
     return (
       // <View style={styles.container}>
       (
@@ -322,7 +324,7 @@ export class QueueCombine extends React.Component {
           data={this.state.data}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
-          style={{marginBottom: 28}}
+          style={{ marginBottom: 28 }}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -342,48 +344,48 @@ export class QueueUncombine extends React.Component {
     notificationVisible: false,
     notificationType: '',
     notificationItem: {},
-    selected:  (new Map (): Map<string, boolean>),
+    selected: new Map(),
     data: [],
   };
-  componentWillMount () {
-    this.setState ({data: this.props.data});
+  componentWillMount() {
+    this.setState({ data: this.props.data });
   }
 
-  componentWillReceiveProps (nextProps: Object) {
+  componentWillReceiveProps(nextProps: Object) {
     if (nextProps.data !== this.props.data) {
-      this.setState ({data: nextProps.data});
+      this.setState({ data: nextProps.data });
     }
     if (
       nextProps.filterText !== null &&
       nextProps.filterText !== this.props.filterText
     ) {
-      this.searchText (nextProps.filterText);
+      this.searchText(nextProps.filterText);
     }
   }
 
   _onRefresh = () => {
-    this.setState ({refreshing: true});
+    this.setState({ refreshing: true });
     // FIXME this._refreshData();
     // emulate refresh call
-    setTimeout (() => this.setState ({refreshing: false}), 500);
+    setTimeout(() => this.setState({ refreshing: false }), 500);
   };
 
   searchText = (query: string) => {
-    const {data} = this.props;
+    const { data } = this.props;
 
     if (query === '') {
-      this.setState ({data});
+      this.setState({ data });
     }
 
-    const text = query.toLowerCase ();
+    const text = query.toLowerCase();
 
-    const filteredData = data.filter (({data}) => {
-      const filteredList = data.filter (({queueItem}) => {
-        const {client, services} = queueItem;
+    const filteredData = data.filter(({ data }) => {
+      const filteredList = data.filter(({ queueItem }) => {
+        const { client, services } = queueItem;
         let fullName = `${client.name || ''} ${client.middleName || ''} ${client.lastName || ''}`;
-        fullName = fullName.replace (/ +(?= )/g, '');
+        fullName = fullName.replace(/ +(?= )/g, '');
 
-        if (fullName.toLowerCase ().match (text)) {
+        if (fullName.toLowerCase().match(text)) {
           return true;
         }
 
@@ -392,18 +394,18 @@ export class QueueUncombine extends React.Component {
 
           const employee = service.isFirstAvailable
             ? {
-                id: 0,
-                isFirstAvailable: true,
-                fullName: 'First Available',
-              }
+              id: 0,
+              isFirstAvailable: true,
+              fullName: 'First Available',
+            }
             : service.employee;
 
           const fullNameProvider = `${employee.fullName || ''}`;
 
-          if (fullNameProvider.toLowerCase ().match (text)) {
+          if (fullNameProvider.toLowerCase().match(text)) {
             return true;
           }
-          if (service.serviceName.toLowerCase ().match (text)) {
+          if (service.serviceName.toLowerCase().match(text)) {
             return true;
           }
         }
@@ -415,22 +417,22 @@ export class QueueUncombine extends React.Component {
 
     // if no match, set empty array
     if (!filteredData || !filteredData.length) {
-      this.setState ({data: []});
+      this.setState({ data: [] });
     } else if (filteredData.length === data.length) {
       // if the matched numbers are equal to the original data, keep it the same
-      this.setState ({data: this.props.data});
+      this.setState({ data: this.props.data });
     } else {
       // else, set the filtered data
-      this.setState ({data: filteredData});
+      this.setState({ data: filteredData });
     }
   };
 
   _onPressSelectLeader = (id: string, groupId: string) => {
     if (this.props.onChangeLeader) {
-      this.props.onChangeLeader (id, groupId);
+      this.props.onChangeLeader(id, groupId);
     }
   };
-  renderItem = ({item, index, section}) => {
+  renderItem = ({ item, index, section }) => {
     const groupLeader = this.props.groupLeaders[section.groupId]
       ? item.id === this.props.groupLeaders[section.groupId]
       : item.isGroupLeader;
@@ -441,7 +443,7 @@ export class QueueUncombine extends React.Component {
         groupId={section.groupId}
         onPressItem={this._onPressSelectLeader}
         onPressSelectLeader={this._onPressSelectLeader}
-        selected={!!this.state.selected.get (item.id)}
+        selected={!!this.state.selected.get(item.id)}
         // if a temporary group leader is set, use it. Otherwise, use item status.
         groupLeader={groupLeader}
         item={item.queueItem}
@@ -451,8 +453,8 @@ export class QueueUncombine extends React.Component {
       />
     );
   };
-  renderSectionHeader = ({section}) => {
-    const {loading} = this.props;
+  renderSectionHeader = ({ section }) => {
+    const { loading } = this.props;
     return (
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -460,7 +462,7 @@ export class QueueUncombine extends React.Component {
           onPress={
             loading
               ? null
-              : () => this.props.onUncombineClients (section.groupId)
+              : () => this.props.onUncombineClients(section.groupId)
           }
           style={styles.sectionUncombine}
         >
@@ -474,7 +476,7 @@ export class QueueUncombine extends React.Component {
           <Text
             style={[
               styles.sectionUncombineText,
-              loading ? {color: 'gray'} : null,
+              loading ? { color: 'gray' } : null,
             ]}
           >
             UNGROUP
@@ -483,11 +485,11 @@ export class QueueUncombine extends React.Component {
       </View>
     );
   };
-  renderSectionFooter = ({section}) => <View style={styles.sectionFooter} />;
+  renderSectionFooter = ({ section }) => <View style={styles.sectionFooter} />;
 
   _keyExtractor = (item, index) => item.id;
 
-  render () {
+  render() {
     return (
       <SectionList
         renderSectionHeader={this.renderSectionHeader}
@@ -509,7 +511,7 @@ export class QueueUncombine extends React.Component {
 
 // export default connect(null, actions)(QueueCombine);
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f1f1f1',
@@ -521,7 +523,7 @@ const styles = StyleSheet.create ({
     // borderWidth: 1,
     // borderColor: '#ccc',
     shadowColor: 'black',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
 
@@ -557,7 +559,7 @@ const styles = StyleSheet.create ({
     // borderColor: '#ccc',
     // borderTopColor: 'transparent',
     shadowColor: 'black',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
 
@@ -578,7 +580,7 @@ const styles = StyleSheet.create ({
     // borderWidth: 1,
     // borderColor: '#ccc',
     shadowColor: 'black',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
 
@@ -602,7 +604,7 @@ const styles = StyleSheet.create ({
     // borderWidth: 1,
     // borderColor: '#ccc',
     shadowColor: 'black',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
 
@@ -620,7 +622,7 @@ const styles = StyleSheet.create ({
     backgroundColor: 'transparent',
 
     shadowColor: null,
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0,
     shadowRadius: 0,
   },

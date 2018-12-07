@@ -1,9 +1,5 @@
 import * as React from 'react';
-<<<<<<< HEAD:src/components/SalonCalendar/components/calendarBuffer.js
-import { View, TouchableOpacity, Text } from 'react-native';
-=======
 import { FlatList, View, TouchableOpacity, Text } from 'react-native';
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/calendarBuffer.tsx
 import SlidingUpPanel from 'rn-sliding-up-panel';
 
 import SalonIcon from '@/components/common/Icon';

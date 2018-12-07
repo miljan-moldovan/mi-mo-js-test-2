@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import moment, { isMoment } from 'moment';
+import moment from 'moment';
+import { isMoment } from 'moment';
 import PropTypes from 'prop-types';
 import { Picker } from 'react-native-wheel-datepicker';
 

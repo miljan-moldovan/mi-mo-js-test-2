@@ -1,12 +1,8 @@
 import * as React from 'react';
-<<<<<<< HEAD:src/components/SalonCalendar/components/newCalendar/card/index.js
-import {TouchableOpacity, View, Text, Animated} from 'react-native';
-=======
 import { TouchableOpacity, View, Text, Animated } from 'react-native';
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/newCalendar/card/index.tsx
 import moment from 'moment';
-import Svg, {LinearGradient, Rect, Defs, Stop} from 'react-native-svg';
-import {get, times} from 'lodash';
+import Svg, { LinearGradient, Rect, Defs, Stop } from 'react-native-svg';
+import { get, times } from 'lodash';
 import SvgUri from 'react-native-svg-uri';
 import PropTypes from 'prop-types';
 
@@ -17,26 +13,21 @@ import Icon from '@/components/common/Icon';
 import Badge from '../../../../SalonBadge/index';
 import ResizeButton from '../../resizeButtons';
 import GroupBadge from '../../../../SalonGroupBadge/index';
-import {isCardWithGap, getBadges} from '../../../../../utilities/helpers';
+import { isCardWithGap, getBadges } from '../../../../../utilities/helpers';
 
 import styles from './styles';
 
 class Card extends React.Component {
-<<<<<<< HEAD:src/components/SalonCalendar/components/newCalendar/card/index.js
-  constructor (props) {
-    super (props);
-=======
   constructor(props) {
     super(props);
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/newCalendar/card/index.tsx
     this.cards = [];
     this.state = {
       height: 0,
-      shadowRadius: new Animated.Value (0),
+      shadowRadius: new Animated.Value(0),
     };
   }
 
-  shouldComponentUpdate (nextProps) {
+  shouldComponentUpdate(nextProps) {
     return (
       nextProps.activeCard ||
       (nextProps.isInBuffer !== this.props.isInBuffer ||
@@ -53,27 +44,27 @@ class Card extends React.Component {
   }
 
   getAfterTimeHeight = () => {
-    const {appointment, apptGridSettings} = this.props;
+    const { appointment, apptGridSettings } = this.props;
 
     return (
-      moment.duration (appointment.afterTime).asMinutes () /
+      moment.duration(appointment.afterTime).asMinutes() /
       apptGridSettings.step *
       30
     );
   };
 
   getGapHeight = () => {
-    const {appointment, apptGridSettings} = this.props;
+    const { appointment, apptGridSettings } = this.props;
 
     return (
-      moment.duration (appointment.gapTime).asMinutes () /
+      moment.duration(appointment.gapTime).asMinutes() /
       apptGridSettings.step *
       30
     );
   };
 
   getAfterGapHeight = () =>
-    this.props.height - this.getAfterTimeHeight () - this.getGapHeight ();
+    this.props.height - this.getAfterTimeHeight() - this.getGapHeight();
 
   getCardProperties = () => {
     const {
@@ -86,7 +77,7 @@ class Card extends React.Component {
       width,
     } = this.props;
     if (!isResizeCard && activeCard) {
-      const {verticalPositions} = activeCard;
+      const { verticalPositions } = activeCard;
       const opacity = isResizeing ? 0 : 1;
       return {
         left,
@@ -102,7 +93,7 @@ class Card extends React.Component {
         left,
         width,
         zIndex: 1,
-        verticalPositions: [{top: 0, height: 46}],
+        verticalPositions: [{ top: 0, height: 46 }],
         opacity: isActive ? 0.7 : 1,
         isActiveEmployeeInCellTime: true,
       };
@@ -119,7 +110,7 @@ class Card extends React.Component {
         gapTime,
         afterTime,
       },
-      apptGridSettings: {step, minStartTime, weeklySchedule},
+      apptGridSettings: { step, minStartTime, weeklySchedule },
       cellWidth,
       displayMode,
       provider,
@@ -128,24 +119,24 @@ class Card extends React.Component {
       goToAppointmentId,
       setGoToPositon,
     } = this.props;
-    const apptFromTimeMoment = moment (fromTime, 'HH:mm');
-    const apptToTimeMoment = moment (toTime, 'HH:mm');
-    const startTimeMoment = moment (minStartTime, 'HH:mm');
+    const apptFromTimeMoment = moment(fromTime, 'HH:mm');
+    const apptToTimeMoment = moment(toTime, 'HH:mm');
+    const startTimeMoment = moment(minStartTime, 'HH:mm');
     // calculate height and top
     const verticalPositions = [];
     let height = null;
     let top = null;
-    if (isCardWithGap (this.props.appointment)) {
-      height = this.getAfterTimeHeight () - 1;
-      top = apptFromTimeMoment.diff (startTimeMoment, 'm') / step * 30;
-      verticalPositions.push ({height, top});
-      top += height + this.getGapHeight () + 1;
-      height = this.getAfterGapHeight () - 1;
-      verticalPositions.push ({height, top});
+    if (isCardWithGap(this.props.appointment)) {
+      height = this.getAfterTimeHeight() - 1;
+      top = apptFromTimeMoment.diff(startTimeMoment, 'm') / step * 30;
+      verticalPositions.push({ height, top });
+      top += height + this.getGapHeight() + 1;
+      height = this.getAfterGapHeight() - 1;
+      verticalPositions.push({ height, top });
     } else {
       height = this.props.height - 1;
-      top = apptFromTimeMoment.diff (startTimeMoment, 'minutes') / step * 30;
-      verticalPositions.push ({height, top});
+      top = apptFromTimeMoment.diff(startTimeMoment, 'minutes') / step * 30;
+      verticalPositions.push({ height, top });
     }
     // calculate zIndex
     const zIndex = isResizeCard ? 999 : 1;
@@ -153,7 +144,7 @@ class Card extends React.Component {
     const opacity = (!isActive && !isInBuffer) || isResizeCard ? 1 : 0.7;
     // is emplyee active in cell time
     let isActiveEmployeeInCellTime = false;
-    const todaySchedule = weeklySchedule[moment (date).isoWeekday () - 1];
+    const todaySchedule = weeklySchedule[moment(date).isoWeekday() - 1];
     const isStoreOff =
       !todaySchedule.start1 &&
       !todaySchedule.end1 &&
@@ -165,45 +156,45 @@ class Card extends React.Component {
     if (selectedFilter === 'providers' || selectedFilter === 'deskStaff') {
       const scheduledIntervals = isStoreOff || provider.isOff
         ? []
-        : get (provider, 'scheduledIntervals', []);
+        : get(provider, 'scheduledIntervals', []);
       for (
         let i = 0;
         !isActiveEmployeeInCellTime && i < scheduledIntervals.length;
         i += 1
       ) {
         providerSchedule = scheduledIntervals[i];
-        providerStartTime = moment (providerSchedule.start, 'HH:mm');
-        providerEndTime = moment (providerSchedule.end, 'HH:mm');
+        providerStartTime = moment(providerSchedule.start, 'HH:mm');
+        providerEndTime = moment(providerSchedule.end, 'HH:mm');
         isActiveEmployeeInCellTime =
-          apptFromTimeMoment.diff (providerStartTime, 'm') >= 0 &&
-          apptToTimeMoment.diff (providerEndTime, 'm') <= 0;
+          apptFromTimeMoment.diff(providerStartTime, 'm') >= 0 &&
+          apptToTimeMoment.diff(providerEndTime, 'm') <= 0;
       }
     } else {
       const storeStart1Moment = todaySchedule.start1
-        ? moment (todaySchedule.start1, 'HH:mm')
+        ? moment(todaySchedule.start1, 'HH:mm')
         : null;
       const storeEnd1Moment = todaySchedule.start1
-        ? moment (todaySchedule.end1, 'HH:mm')
+        ? moment(todaySchedule.end1, 'HH:mm')
         : null;
       const storeStart2Moment = todaySchedule.start1
-        ? moment (todaySchedule.start2, 'HH:mm')
+        ? moment(todaySchedule.start2, 'HH:mm')
         : null;
       const storeEnd2Moment = todaySchedule.start1
-        ? moment (todaySchedule.end2, 'HH:mm')
+        ? moment(todaySchedule.end2, 'HH:mm')
         : null;
       if (storeStart1Moment) {
         isActiveEmployeeInCellTime =
-          apptFromTimeMoment.isSameOrAfter (storeStart1Moment) &&
-          apptFromTimeMoment.isBefore (storeEnd1Moment);
+          apptFromTimeMoment.isSameOrAfter(storeStart1Moment) &&
+          apptFromTimeMoment.isBefore(storeEnd1Moment);
         if (!isActiveEmployeeInCellTime && storeStart2Moment) {
           isActiveEmployeeInCellTime =
-            apptFromTimeMoment.isSameOrAfter (storeStart2Moment) &&
-            apptFromTimeMoment.isBefore (storeEnd2Moment);
+            apptFromTimeMoment.isSameOrAfter(storeStart2Moment) &&
+            apptFromTimeMoment.isBefore(storeEnd2Moment);
         }
       }
     }
     if (goToAppointmentId === id) {
-      setGoToPositon ({
+      setGoToPositon({
         left,
         top: verticalPositions[0].top,
         highlightCard: this.highlightGoTo,
@@ -220,15 +211,15 @@ class Card extends React.Component {
   };
 
   resizeCard = size => {
-    let {height} = this.state;
+    let { height } = this.state;
     if (height + size >= 30) {
       height += size;
-      this.setState ({height});
+      this.setState({ height });
     }
     return height;
   };
 
-  handleOnLongPress = ({verticalPositions, left, width}) => {
+  handleOnLongPress = ({ verticalPositions, left, width }) => {
     const {
       calendarOffset,
       appointment,
@@ -236,23 +227,23 @@ class Card extends React.Component {
       onDrag,
       startDate,
     } = this.props;
-    const today = moment ();
-    if (startDate.isSameOrAfter (today, 'day')) {
+    const today = moment();
+    if (startDate.isSameOrAfter(today, 'day')) {
       if (isBufferCard) {
-        this.cards[0]._propsAnimated._animatedView.measureInWindow ((x, y) => {
-          const {height} = this.props;
-          const newVerticalPositions = [{top: y, height}];
-          onDrag (false, appointment, x, width, newVerticalPositions, true);
+        this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
+          const { height } = this.props;
+          const newVerticalPositions = [{ top: y, height }];
+          onDrag(false, appointment, x, width, newVerticalPositions, true);
         });
       } else {
         const newVerticalPositions = [];
         for (let i = 0; i < verticalPositions.length; i += 1) {
           const item = verticalPositions[i];
-          const newItem = {...item, top: item.top - calendarOffset.y};
-          newVerticalPositions.push (newItem);
+          const newItem = { ...item, top: item.top - calendarOffset.y };
+          newVerticalPositions.push(newItem);
         }
         const newLeft = left - calendarOffset.x;
-        this.props.onDrag (
+        this.props.onDrag(
           false,
           appointment,
           newLeft,
@@ -264,39 +255,39 @@ class Card extends React.Component {
   };
 
   highlightGoTo = () => {
-    Animated.timing (this.state.shadowRadius, {
+    Animated.timing(this.state.shadowRadius, {
       toValue: 8,
       duration: 300,
-    }).start (this.hideHighlightGoTo);
+    }).start(this.hideHighlightGoTo);
   };
 
   hideHighlightGoTo = () => {
-    Animated.timing (this.state.shadowRadius, {
+    Animated.timing(this.state.shadowRadius, {
       delay: 7000,
       toValue: 0,
       duration: 300,
-    }).start ();
+    }).start();
   };
 
-  renderAssistant = ({height}) => (
-    <View style={[styles.assistantContainer, {height: height - 10}]}>
-      <Text style={[styles.assistantText, {width: height}]} numberOfLines={1}>
+  renderAssistant = ({ height }) => (
+    <View style={[styles.assistantContainer, { height: height - 10 }]}>
+      <Text style={[styles.assistantText, { width: height }]} numberOfLines={1}>
         Assistant Assigned
       </Text>
     </View>
   );
 
   renderBadges = () => {
-    const {appointment, hiddenAddonsLength} = this.props;
-    const badges = getBadges (appointment, hiddenAddonsLength, true);
+    const { appointment, hiddenAddonsLength } = this.props;
+    const badges = getBadges(appointment, hiddenAddonsLength, true);
     return (
       <View style={styles.badgesContainer}>
-        {badges.slice (0, 1)}
+        {badges.slice(0, 1)}
       </View>
     );
   };
 
-  renderStripes = ({height, width, backgroundColor}) => {
+  renderStripes = ({ height, width, backgroundColor }) => {
     let gap = 0;
     let countGap2 = 0;
     let countOpacity2 = 0;
@@ -314,7 +305,7 @@ class Card extends React.Component {
             x2={width > height ? width : height}
             y2={0}
           >
-            {times (50).map (index => {
+            {times(50).map(index => {
               gap = countGap2;
               countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
               if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
@@ -349,7 +340,7 @@ class Card extends React.Component {
     );
   };
 
-  render () {
+  render() {
     const {
       left,
       width,
@@ -357,7 +348,7 @@ class Card extends React.Component {
       verticalPositions,
       opacity,
       isActiveEmployeeInCellTime,
-    } = this.getCardProperties ();
+    } = this.getCardProperties();
     const {
       client,
       service,
@@ -403,24 +394,24 @@ class Card extends React.Component {
     const activeServiceTextColor = activeCard ? '#fff' : '#1D1E29';
     const panHandlers = panResponder ? panResponder.panHandlers : {};
     const positions = !isResizeCard && activeCard
-      ? [pan.getLayout (), pan2.getLayout ()]
+      ? [pan.getLayout(), pan2.getLayout()]
       : ['', ''];
     const container = isBufferCard
-      ? [styles.container, {position: 'relative'}]
+      ? [styles.container, { position: 'relative' }]
       : styles.container;
-    const marginTop = isMultiBlock ? {marginTop: 11} : '';
+    const marginTop = isMultiBlock ? { marginTop: 11 } : '';
     const highlightCard = goToAppointmentId === id
       ? {
-          shadowColor: 'rgba(248,231,28,1)',
-          shadowOffset: {width: 0, height: 0},
-          shadowOpacity: 1,
-          shadowRadius: this.state.shadowRadius,
-          elevation: 1,
-        }
+        shadowColor: 'rgba(248,231,28,1)',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: this.state.shadowRadius,
+        elevation: 1,
+      }
       : '';
     const clientBackgroundColor = badgeData.isNoShow || badgeData.isCashedOut
-      ? {borderColor}
-      : {backgroundColor: borderColor, borderColor};
+      ? { borderColor }
+      : { backgroundColor: borderColor, borderColor };
     const isRequested = requested || badgeData.isNoShow || badgeData.isCashedOut
       ? [styles.requestedStyle, clientBackgroundColor]
       : '';
@@ -435,13 +426,13 @@ class Card extends React.Component {
 
     return (
       <React.Fragment>
-        {verticalPositions.map (({height, top}, index) => {
+        {verticalPositions.map(({ height, top }, index) => {
           const usedBlocks = isMultiBlock ? (height + 1) / 30 : 1;
           return (
             <Animated.View
               {...panHandlers}
               ref={view => {
-                this.cards.push (view);
+                this.cards.push(view);
               }}
               style={[
                 container,
@@ -465,29 +456,29 @@ class Card extends React.Component {
               ]}
             >
               {!isActiveEmployeeInCellTime && !activeCard
-                ? this.renderStripes ({height, width, backgroundColor})
+                ? this.renderStripes({ height, width, backgroundColor })
                 : null}
               <TouchableOpacity
                 onPress={() => {
                   if (this.props.onPress) {
-                    this.props.onPress (this.props.appointment);
+                    this.props.onPress(this.props.appointment);
                   }
                 }}
                 onLongPress={() =>
-                  this.handleOnLongPress ({left, verticalPositions, width})}
+                  this.handleOnLongPress({ left, verticalPositions, width })}
                 disabled={activeCard || isActive || isInBuffer}
               >
                 <View style={styles.fullSize}>
                   <View
                     style={[
                       styles.header,
-                      {backgroundColor: colors[color].dark},
+                      { backgroundColor: colors[color].dark },
                     ]}
                   />
                   <View style={styles.cardContent}>
-                    {this.renderBadges ()}
+                    {this.renderBadges()}
                     <View style={styles.textContainer}>
-                      {times (usedBlocks).map (blockIndex => (
+                      {times(usedBlocks).map(blockIndex => (
                         <View
                           style={[
                             styles.clientContainer,
@@ -499,7 +490,7 @@ class Card extends React.Component {
                             numberOfLines={!isMultiBlock && height > 30 ? 0 : 1}
                             style={[
                               styles.clientText,
-                              {color: activeClientTextColor},
+                              { color: activeClientTextColor },
                             ]}
                           >
                             {clientName}
@@ -512,7 +503,7 @@ class Card extends React.Component {
                           numberOfLines={1}
                           style={[
                             styles.serviceText,
-                            {color: activeServiceTextColor},
+                            { color: activeServiceTextColor },
                           ]}
                         >
                           {service.description}
@@ -520,19 +511,19 @@ class Card extends React.Component {
                     </View>
                   </View>
                   {showAssistant && service.useAssistant
-                    ? this.renderAssistant ({height})
+                    ? this.renderAssistant({ height })
                     : null}
                 </View>
               </TouchableOpacity>
               {activeCard && !isBufferCard && index === lastIndex
                 ? <ResizeButton
-                    onPress={this.props.onResize}
-                    color={colors[color].dark}
-                    position={styles.resizePosition}
-                    height={height}
-                    onScrollY={this.props.onScrollY}
-                    isDisabled={isResizeing}
-                  />
+                  onPress={this.props.onResize}
+                  color={colors[color].dark}
+                  position={styles.resizePosition}
+                  height={height}
+                  onScrollY={this.props.onScrollY}
+                  isDisabled={isResizeing}
+                />
                 : null}
             </Animated.View>
           );
@@ -548,15 +539,15 @@ Card.defaultProps = {
     width: 0,
     height: 0,
   },
-  onScrollY: () => {},
-  onPress: () => {},
-  onResize: () => {},
+  onScrollY: () => { },
+  onPress: () => { },
+  onResize: () => { },
 };
 
 Card.propTypes = {
   onResize: PropTypes.func,
   hiddenCard: PropTypes.bool,
-  calendarMeasure: PropTypes.shape ({
+  calendarMeasure: PropTypes.shape({
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
   }),

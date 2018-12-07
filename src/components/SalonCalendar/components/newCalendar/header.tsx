@@ -1,20 +1,15 @@
 import * as React from 'react';
-<<<<<<< HEAD:src/components/SalonCalendar/components/newCalendar/header.js
-import {Text, View, StyleSheet, TouchableHighlight} from 'react-native';
-import {isNull} from 'lodash';
-=======
 import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
 import { isNull } from 'lodash';
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/newCalendar/header.tsx
 
 import SalonAvatar from '../../../SalonAvatar';
 import FirstAvailableBtn from '../firstAvailableBtn';
 import colors from '../../../../constants/appointmentColors';
 import getEmployeePhotoSource
   from '../../../../utilities/helpers/getEmployeePhotoSource';
-import {DefaultAvatar} from '../../../../components/formHelpers';
+import { DefaultAvatar } from '../../../../components/formHelpers';
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
   },
@@ -78,27 +73,27 @@ const styles = StyleSheet.create ({
 
 export default class Header extends React.Component {
   renderColumnLabel = (data, index) => {
-    const {isDate, selectedFilter} = this.props;
+    const { isDate, selectedFilter } = this.props;
 
     switch (selectedFilter) {
       case 'rooms':
       case 'resources': {
-        return this.renderStore (data, index);
+        return this.renderStore(data, index);
       }
       case 'providers':
       case 'deskStaff':
       default: {
         if (isDate) {
-          return this.renderDate (data, index);
+          return this.renderDate(data, index);
         }
-        return this.renderProvider (data, index);
+        return this.renderProvider(data, index);
       }
     }
   };
 
   renderProvider = (data, index) => {
-    const {cellWidth, setSelectedProvider} = this.props;
-    const image = getEmployeePhotoSource (data);
+    const { cellWidth, setSelectedProvider } = this.props;
+    const image = getEmployeePhotoSource(data);
     const hasBorder = data.displayColor && data.displayColor !== -1;
     const backgroundColor = hasBorder
       ? colors[data.displayColor].light
@@ -110,11 +105,11 @@ export default class Header extends React.Component {
     return (
       <TouchableHighlight
         key={data.id}
-        onPress={() => setSelectedProvider (data)}
+        onPress={() => setSelectedProvider(data)}
         underlayColor="rgba(0, 0, 0, 0.5)"
       >
         <View
-          style={[styles.columnLabel, {width: cellWidth, backgroundColor}]}
+          style={[styles.columnLabel, { width: cellWidth, backgroundColor }]}
           pointerEvents="box-none"
         >
           <SalonAvatar
@@ -135,18 +130,18 @@ export default class Header extends React.Component {
   };
 
   renderDate = (data, index) => {
-    const {cellWidth, setSelectedDay} = this.props;
-    const dayName = data.format ('ddd').toString ();
-    const day = data.format ('D').toString ();
+    const { cellWidth, setSelectedDay } = this.props;
+    const dayName = data.format('ddd').toString();
+    const day = data.format('D').toString();
     return (
       <TouchableHighlight
         key={data.id}
-        onPress={() => setSelectedDay (data)}
+        onPress={() => setSelectedDay(data)}
         underlayColor="rgba(0, 0, 0, 0.5)"
       >
         <View
           key={data}
-          style={[styles.columnLabelDate, {width: cellWidth}]}
+          style={[styles.columnLabelDate, { width: cellWidth }]}
           pointerEvents="box-none"
         >
           <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
@@ -157,14 +152,14 @@ export default class Header extends React.Component {
   };
 
   renderStore = (data, index) => {
-    const {cellWidth} = this.props;
+    const { cellWidth } = this.props;
     const textStyle = this.props.selectedFilter === 'rooms'
       ? [styles.columnTitle, styles.roomText]
       : styles.columnTitle;
     return (
       <View
         key={data.id}
-        style={[styles.columnLabel, {width: cellWidth}]}
+        style={[styles.columnLabel, { width: cellWidth }]}
         pointerEvents="box-none"
       >
         <Text numberOfLines={1} style={textStyle}>{data.name}</Text>
@@ -172,7 +167,7 @@ export default class Header extends React.Component {
     );
   };
 
-  render () {
+  render() {
     const {
       isDate,
       selectedFilter,
@@ -183,13 +178,13 @@ export default class Header extends React.Component {
 
     return (
       <View style={styles.container} pointerEvents="box-none">
-        <View style={[styles.firstCell, {width}]}>
+        <View style={[styles.firstCell, { width }]}>
           {selectedFilter === 'providers' && !isDate
             ? <FirstAvailableBtn />
             : null}
         </View>
-        {this.props.dataSource.map ((data, index) =>
-          this.renderColumnLabel (data, index)
+        {this.props.dataSource.map((data, index) =>
+          this.renderColumnLabel(data, index)
         )}
       </View>
     );

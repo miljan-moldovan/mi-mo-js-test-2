@@ -1,9 +1,9 @@
 import { createSelector } from 'reselect';
 import { get } from 'lodash';
-import *  as momentObj from 'moment';
-import { extendMoment } from 'moment-range';
+import moment from 'moment';
+import { getRangeExtendedMoment } from '@/utilities/helpers';
 
-const moment = extendMoment(momentObj);
+const extendedMoment = getRangeExtendedMoment();
 
 const serviceItemsSelector = state => state.newAppointmentReducer.serviceItems;
 
@@ -168,7 +168,7 @@ const appointmentLength = createSelector(
       }
       return agg;
     }, 0);
-    return momentObj.duration(duration, 'minutes');
+    return moment.duration(duration, 'minutes');
   }
 );
 
@@ -196,7 +196,7 @@ const getEndTime = createSelector(
   (startTime, length, { step }) => {
     const addTime = length.asMilliseconds() > 0
       ? length
-      : momentObj.duration(step, 'minute');
+      : moment.duration(step, 'minute');
     return moment(startTime).add(addTime);
   }
 );
@@ -229,12 +229,12 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   if (appointment.editType === 'edit') {
     itemData.id = get(serviceItem.service, 'id', null);
   }
-  const gapTimeDuration = momentObj.duration(get(service, 'gapTime', 0));
-  const afterTimeDuration = momentObj.duration(get(service, 'afterTime', 0));
+  const gapTimeDuration = moment.duration(get(service, 'gapTime', 0));
+  const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
   if (
-    momentObj.isDuration(gapTimeDuration) &&
+    moment.isDuration(gapTimeDuration) &&
     gapTimeDuration.asMilliseconds() > 0 &&
-    momentObj.isDuration(afterTimeDuration) &&
+    moment.isDuration(afterTimeDuration) &&
     afterTimeDuration.asMilliseconds() > 0 &&
     itemData.bookBetween
   ) {
@@ -289,7 +289,7 @@ const employeeScheduleChunkedSelector = createSelector(
       const { step = 15 } = settings;
       const start = moment(schedule.start, 'HH:mm:ss');
       const end = moment(schedule.end, 'HH:mm:ss');
-      const range = moment.range(start, end);
+      const range = extendedmoment.range(start, end);
       const chunked = Array.from(range.by('minutes', { step }));
       return [...agg, ...chunked];
     }, []);

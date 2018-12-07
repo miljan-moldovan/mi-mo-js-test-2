@@ -1,7 +1,7 @@
+import { get } from 'lodash';
 import { createStackNavigator } from 'react-navigation';
 import headerStyles from '../constants/headerStyles';
 
-import AppointmentScreen from '../screens/AppointmentsScreen';
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/ServicesScreen';
@@ -132,10 +132,6 @@ const AppointmentStackNavigator = createStackNavigator(
       screen: ServiceCheckResultScreen,
       // navigationOptions: { tabBarVisible: false },
     },
-    Appointments: {
-      screen: AppointmentScreen,
-      // navigationOptions: { tabBarVisible: false },
-    },
     RebookDialog: {
       screen: RebookDialogScreen,
       // navigationOptions: { tabBarVisible: false },
@@ -244,21 +240,13 @@ const AppointmentStackNavigator = createStackNavigator(
 
 AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
   const { state } = navigation;
-
   let tabBarVisible = true;
-
-  const hideTabBar = state.routes[state.index].params
-    ? state.routes[state.index].params.hideTabBar
-    : false;
-
-  if (hideTabBar) {
+  const routes = get(state, 'routes[0].routes', []);
+  if (state.index > 0 || routes.length > 1) {
     tabBarVisible = false;
   }
-
   return {
-    ...headerStyles,
     tabBarVisible,
   };
 };
-
 export default AppointmentStackNavigator;

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import FontAwesome, {Icons} from 'react-native-fontawesome';
 import PropTypes from 'prop-types';

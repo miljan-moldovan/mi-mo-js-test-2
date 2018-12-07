@@ -22,21 +22,14 @@ import {
 } from 'lodash';
 
 export default class CardGrid extends React.Component {
-<<<<<<< HEAD:src/components/SalonCalendar/components/cardGrid.js
-  shouldComponentUpdate(nextProps) {
-    return !nextProps.isLoading && (this.props.isLoading !== nextProps.isLoading
-        || this.props.selctedFilter !== nextProps.selctedFilter || this.props.cardActive !== nextProps.cardActive);
-  }
-=======
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/cardGrid.tsx
 
   renderCards = (cards, headerIndex, headerId) => {
     if (cards && cards.length) {
-      return cards.map (
+      return cards.map(
         card =>
           card.isBlockTime
-            ? this.props.renderBlock (card, headerIndex, headerId)
-            : this.props.renderCard (card, headerIndex, headerId)
+            ? this.props.renderBlock(card, headerIndex, headerId)
+            : this.props.renderCard(card, headerIndex, headerId)
       );
     }
     return null;
@@ -44,26 +37,26 @@ export default class CardGrid extends React.Component {
 
   render() {
     const { cardsArray, headerData, selectedFilter, selectedProvider, overlappingCardsMap } = this.props;
-    const gridCard = headerData.map ((item, index) => {
+    const gridCard = headerData.map((item, index) => {
       let headerId = item.id;
       if (
         selectedFilter === 'providers' &&
         selectedProvider !== 'all'
       ) {
-        headerId = item.format (DateTime.date);
+        headerId = item.format(DateTime.date);
       }
-      return this.renderCards (
-        chain (cardsArray[headerId])
-          .orderBy (
+      return this.renderCards(
+        chain(cardsArray[headerId])
+          .orderBy(
             card =>
-              get (
+              get(
                 overlappingCardsMap,
                 [headerId, card.id, 'overlappingCardsLength'],
                 0
               ),
             'asc'
           )
-          .value (),
+          .value(),
         index,
         headerId
       );

@@ -1,11 +1,7 @@
 import * as React from 'react';
-<<<<<<< HEAD:src/components/SalonCalendar/components/newCalendar/timeColumn.js
-import {Text, View, StyleSheet} from 'react-native';
-=======
 import { Text, View, StyleSheet } from 'react-native';
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/newCalendar/timeColumn.tsx
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     width: 36,
@@ -48,8 +44,8 @@ const styles = StyleSheet.create ({
 
 export default class TimeColumn extends React.Component {
   renderRowLabel = (row, index) => {
-    const timeSplit = row.format ('h:mm A').split (':');
-    const minutesSplit = timeSplit[1].split (' ');
+    const timeSplit = row.format('h:mm A').split(':');
+    const minutesSplit = timeSplit[1].split(' ');
     const minutes = minutesSplit[0];
     if (row && index !== 0 && minutes % 30 === 0) {
       const hour = timeSplit[0];
@@ -59,7 +55,7 @@ export default class TimeColumn extends React.Component {
       const style = isOClock ? styles.rowTitleOClock : styles.rowTitle;
       return (
         <View
-          key={row.format ('HH:mm')}
+          key={row.format('HH:mm')}
           style={styles.rowLabel}
           pointerEvents="box-none"
         >
@@ -68,15 +64,15 @@ export default class TimeColumn extends React.Component {
           </Text>
           {isOClock
             ? <View
-                style={{
-                  width: 4,
-                  height: 1,
-                  backgroundColor: '#000',
-                  position: 'absolute',
-                  top: -1,
-                  right: -1,
-                }}
-              />
+              style={{
+                width: 4,
+                height: 1,
+                backgroundColor: '#000',
+                position: 'absolute',
+                top: -1,
+                right: -1,
+              }}
+            />
             : null}
         </View>
       );
@@ -86,14 +82,14 @@ export default class TimeColumn extends React.Component {
     );
   };
 
-  render () {
+  render() {
     if (!this.props.schedule) {
       return null;
     }
     return (
       <View style={styles.container} pointerEvents="box-none">
-        {this.props.schedule.map ((row, index) =>
-          this.renderRowLabel (row, index)
+        {this.props.schedule.map((row, index) =>
+          this.renderRowLabel(row, index)
         )}
       </View>
     );

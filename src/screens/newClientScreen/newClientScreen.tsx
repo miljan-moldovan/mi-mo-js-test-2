@@ -17,8 +17,6 @@ export default class NewClientScreen extends React.Component {
       title = `${params.client.name} ${params.client.lastName}`;
     }
 
-    const props = this.props;
-
     const canSave = params.canSave || false;
     const handleDone = params.handleDone ?
       params.handleDone :
@@ -49,7 +47,7 @@ export default class NewClientScreen extends React.Component {
               style={{ paddingRight: 10 }}
             >
               <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-              Save
+                Save
               </Text>
             </SalonTouchableOpacity>
           )}

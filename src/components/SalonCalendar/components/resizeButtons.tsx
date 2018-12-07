@@ -1,14 +1,5 @@
 import * as React from 'react';
-<<<<<<< HEAD:src/components/SalonCalendar/components/resizeButtons.js
-import {
-  View,
-  PanResponder,
-  TouchableWithoutFeedback,
-  StyleSheet,
-} from 'react-native';
-=======
 import { View, PanResponder, TouchableWithoutFeedback, StyleSheet } from 'react-native';
->>>>>>> fa3b13f66e35da52e64b3e8e7f38f0f35bdacc71:src/components/SalonCalendar/components/resizeButtons.tsx
 
 const styles = {
   container: {
@@ -29,11 +20,11 @@ const styles = {
   },
 };
 
-const resizeButton = ({position, isDisabled, onPress, color}) => (
+const resizeButton = ({ position, isDisabled, onPress, color }) => (
   <View style={[styles.container, position]}>
     <TouchableWithoutFeedback disabled={isDisabled} onPressIn={onPress}>
       <View style={styles.btnContainer}>
-        <View style={[styles.btn, {borderColor: color}]} />
+        <View style={[styles.btn, { borderColor: color }]} />
       </View>
     </TouchableWithoutFeedback>
   </View>

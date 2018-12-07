@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import moment from 'moment';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
 import Modal from 'react-native-modal';

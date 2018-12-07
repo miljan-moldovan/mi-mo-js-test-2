@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import Icon from '@/components/common/Icon';
-import SalonTouchableHighlight from './../components/SalonTouchableHighlight';
+import SalonTouchableHighlight from './SalonTouchableHighlight';
 
 const styles = StyleSheet.create({
   btnContainer: {

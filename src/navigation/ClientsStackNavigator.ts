@@ -1,6 +1,5 @@
-import * as React from 'react';
+import { get } from 'lodash';
 import { StackNavigator } from 'react-navigation';
-import ImageHeader from '../components/ImageHeader';
 
 import ClientsScreen from '../screens/clientsScreen';
 import NewClientScreen from '../screens/newClientScreen';
@@ -64,5 +63,15 @@ const ClientsStackNavigator = StackNavigator(
   },
   {}
 );
-
+ClientsStackNavigator.navigationOptions = ({ navigation }) => {
+  const { state } = navigation;
+  let tabBarVisible = true;
+  const routes = get(state, 'routes[0].routes', []);
+  if (state.index > 0 || routes.length > 1) {
+    tabBarVisible = false;
+  }
+  return {
+    tabBarVisible,
+  };
+};
 export default ClientsStackNavigator;

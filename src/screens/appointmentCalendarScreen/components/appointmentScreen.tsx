@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {View, Text, ActivityIndicator, Dimensions} from 'react-native';
 import moment from 'moment';
 import {get, filter, map, find} from 'lodash';
