@@ -450,7 +450,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         </InputGroup>
         <SectionDivider />
         {canRemove &&
-          <RemoveButton title="Remove Service" onPress={this.onPressRemove} />}
+          <RemoveButton disabled={this.props.navigation.state.params.isOnlyMainService} title="Remove Service" onPress={this.onPressRemove} />}
         <SectionDivider />
         {toast &&
           <SalonToast

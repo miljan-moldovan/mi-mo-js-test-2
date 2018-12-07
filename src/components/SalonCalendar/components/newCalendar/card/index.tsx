@@ -17,7 +17,7 @@ import Icon from '@/components/common/Icon';
 import Badge from '../../../../SalonBadge/index';
 import ResizeButton from '../../resizeButtons';
 import GroupBadge from '../../../../SalonGroupBadge/index';
-import { isCardWithGap, getBadges } from '../../../../../utilities/helpers';
+import { isCardWithGap, getBadges, getLighterColor } from '../../../../../utilities/helpers';
 
 import styles from './styles';
 
@@ -315,6 +315,7 @@ class Card extends React.Component {
         toTime,
         id,
         mainServiceColor,
+        displayColor,
         isFirstAvailable,
         requested,
         badgeData,
@@ -339,8 +340,9 @@ class Card extends React.Component {
       this.state.height = verticalPositions[lastIndex].height;
     }
     const color = colors[mainServiceColor] ? mainServiceColor : 0;
-    const borderColor = colors[color].dark;
-    const backgroundColor = activeCard ? borderColor : colors[color].light;
+    const borderColor = displayColor || colors[color].dark;
+    const colorLight = displayColor ? getLighterColor(displayColor) : colors[color].light;
+    const backgroundColor = activeCard ? borderColor : colorLight;
     const clientName = `${client.name} ${client.lastName}`;
     const clientTextColor = activeCard || requested ? '#fff' : '#2F3142';
     let activeClientTextColor = badgeData.isCashedOut ? '#1DA314' : clientTextColor;
@@ -416,7 +418,7 @@ class Card extends React.Component {
                     disabled={activeCard || isActive || isInBuffer}
                   >
                     <View style={styles.fullSize}>
-                      <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
+                      <View style={[styles.header, { backgroundColor: borderColor }]} />
                       <View style={styles.cardContent}>
                         {this.renderBadges()}
                         <View style={styles.textContainer}>

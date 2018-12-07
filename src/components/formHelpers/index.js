@@ -75,7 +75,7 @@ const LabeledTextarea = props => (
   </View>
 );
 
-const RemoveButton = ({title, onPress}) => (
+const RemoveButton = ({title, onPress, disabled = false}) => (
   <SalonTouchableOpacity
     style={{
       height: 44,
@@ -85,6 +85,7 @@ const RemoveButton = ({title, onPress}) => (
       backgroundColor: '#FFFFFF',
     }}
     onPress={onPress}
+    disabled={disabled}
   >
     <Text
       style={{
