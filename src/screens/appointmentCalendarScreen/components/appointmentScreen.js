@@ -751,7 +751,7 @@ class AppointmentScreen extends Component {
     if (dateMoment.isAfter(today, 'day')) {
       const alert = {
         title: 'Question',
-        description: 'You are trying to check in an appoinment for another day, are you sure you want to do this?',
+        description: 'You are trying to check in an appointment for another day, are you sure you want to do this?',
         btnLeftText: 'No',
         btnRightText: 'Check-In',
         onPressRight,
@@ -1022,6 +1022,8 @@ class AppointmentScreen extends Component {
           }}
         />
         <SalonAppointmentSlide
+          selectedFilter={selectedFilter}
+          selectedProvider={selectedProvider}
           appointments={appointments}
           showToast={this.props.appointmentCalendarActions.setToast}
           navigation={this.props.navigation}
@@ -1042,6 +1044,7 @@ class AppointmentScreen extends Component {
           crossedAppointments={this.state.crossedAppointments}
           crossedAppointmentsIdAfter={this.state.crossedAppointmentsIdAfter}
           changeAppointment={this.onCardPressed}
+          handleNewAppt={this.onCalendarCellPressed}
         />
         {toast
           ? <SalonToast

@@ -437,6 +437,8 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   onPressService = (serviceId, guestId = false) => {
+    const item = this.getServiceItem (serviceId);
+    const isOnlyMainService = this.isOnlyMainService(item);
     const {date, client: mainClient} = this.props.newAppointmentState;
     const client = guestId
       ? get (this.getGuest (guestId), 'client', null)
@@ -445,6 +447,7 @@ export default class NewAppointmentScreen extends React.Component {
       date,
       client,
       serviceItem: this.getServiceItem (serviceId),
+      isOnlyMainService,
       onSaveService: service =>
         this.updateService (serviceId, service, guestId),
       onRemoveService: () => this.removeServiceAlert (serviceId),
@@ -541,12 +544,11 @@ export default class NewAppointmentScreen extends React.Component {
     this.checkConflicts ();
   };
 
+  isOnlyMainService = serviceItem => (this.isMainService (serviceItem) &&
+    this.getMainServices (this.props.newAppointmentState.serviceItems).length <= 1)
+
   removeServiceAlert = serviceId => {
-    const {serviceItems} = this.props.newAppointmentState;
     const serviceItem = this.getServiceItem (serviceId);
-    const isOnlyMainService =
-      this.isMainService (serviceItem) &&
-      this.getMainServices (serviceItems).length <= 1;
     const serviceTitle = get (
       serviceItem,
       'service.service.name',
@@ -557,7 +559,7 @@ export default class NewAppointmentScreen extends React.Component {
       ? 'First Available'
       : `${get (employee, 'name', employee.firstName || '')} ${get (employee, 'lastName', '')[0]}.`;
 
-    if (isOnlyMainService) {
+    if (this.isOnlyMainService(serviceItem)) {
       Alert.alert ('Something went wrong', 'You need minimum 1 service', [
         {text: 'Ok, got it', onPress: () => null},
       ]);
@@ -1126,6 +1128,7 @@ export default class NewAppointmentScreen extends React.Component {
                 <ServiceCard
                   key={item.itemId}
                   data={item.service}
+                  isOnlyMainService={this.isOnlyMainService(item)}
                   addons={this.getAddonsForService (item.itemId, serviceItems)}
                   onPress={() => this.onPressService (item.itemId)}
                   onSetExtras={() => this.selectExtraServices (item)}

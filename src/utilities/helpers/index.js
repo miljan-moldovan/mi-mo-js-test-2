@@ -7,3 +7,4 @@ export * from './areDateRangeOverlapped';
 export * from './getNames';
 export * from './shortenTitle';
 export * from './hasClientMoreAppointments';
+export * from './getLighterColor';
