@@ -4,7 +4,7 @@ import {Image, StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 
 import {Button} from 'native-base';
 import {connect} from 'react-redux';
-import * as actions from '../redux/actions/login.js';
+import * as actions from '../redux/actions/login';
 
 class SalesScreen extends React.Component {
   state = {};

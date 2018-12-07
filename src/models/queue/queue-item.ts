@@ -3,6 +3,7 @@ import {
   ServiceQueue,
   QueueItemProduct
 } from '@/models';
+import { number } from 'prop-types';
 
 export interface QueueItem {
   badgeData: {
@@ -98,4 +99,14 @@ export enum QueueTypes {
   BookedbyApp = 4,
   // <summary> If the ClientQueue is created through the in-store self-check-in kiosk, this value should be used. </summary>
   KioskWalkIn = 5
+}
+
+export interface QueueClientsToday {
+  amount: number;
+}
+
+export interface QueueState {
+  debugInfo: string;
+  guestWaitMins: number;
+  todayClients: QueueClientsToday;
 }

@@ -23,3 +23,8 @@ export interface TurnAwayModalInitialData {
   endTime: string;
   employee: Maybe<AppointmentEmployee>;
 }
+
+export interface TurnAwayReason {
+  id: number;
+  name: string;
+}

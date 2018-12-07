@@ -53,3 +53,6 @@ buck-out/
 */fastlane/screenshots
 
 */Pods
+
+fastlane/
+SalonUltimateRN.app.dSYM.zip

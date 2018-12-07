@@ -8,3 +8,4 @@ export * from './service';
 export * from './move-to-servise-queue';
 export * from './promo';
 export * from './product';
+export * from './queue-status';
