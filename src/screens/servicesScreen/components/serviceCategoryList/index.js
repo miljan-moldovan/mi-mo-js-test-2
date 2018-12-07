@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import {View, RefreshControl, FlatList, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';

@@ -1,17 +1,11 @@
-import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Switch,
-  TextInput,
-} from 'react-native';
+import * as React from 'react';
+import {View, StyleSheet, Text, Switch, TextInput} from 'react-native';
 
 import SalonIcon from '../../components/SalonIcon';
 import SalonDatePicker from '../../components/modals/SalonDatePicker';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flex: 1,
     backgroundColor: '#F8F8F8',
@@ -62,14 +56,16 @@ const InputGroup = props => (
   </View>
 );
 
-const Divider = () => (
-  <View style={styles.divider} />
-);
+const Divider = () => <View style={styles.divider} />;
 
-class NewAppointmentNoteScreen extends Component {
-  static compareByDate(a, b) {
-    if (a.date < b.date) { return 1; }
-    if (a.date > b.date) { return -1; }
+class NewAppointmentNoteScreen extends React.Component {
+  static compareByDate (a, b) {
+    if (a.date < b.date) {
+      return 1;
+    }
+    if (a.date > b.date) {
+      return -1;
+    }
     return 0;
   }
 
@@ -83,23 +79,24 @@ class NewAppointmentNoteScreen extends Component {
     isNoteComplete: true,
   };
 
-
-  componentWillMount() {
-    this.props.navigation.setParams({
-      handlePress: () => this.addNote(),
+  componentWillMount () {
+    this.props.navigation.setParams ({
+      handlePress: () => this.addNote (),
     });
   }
 
-  showDatePicker() {
-    this.setState({ dateModalVisible: true });
+  showDatePicker () {
+    this.setState ({dateModalVisible: true});
   }
 
-  addNote() {
+  addNote () {
     if (this.state.isNoteComplete) {
       let notes = this.props.appointmentNotesState.notes;
-      notes.push(JSON.parse(JSON.stringify(this.props.appointmentNotesState.note)));
+      notes.push (
+        JSON.parse (JSON.stringify (this.props.appointmentNotesState.note))
+      );
 
-      this.props.appointmentNotesActions.addNote({
+      this.props.appointmentNotesActions.addNote ({
         id: 0,
         date: '',
         author: 'TEST USER',
@@ -107,19 +104,17 @@ class NewAppointmentNoteScreen extends Component {
         tags: [],
       });
 
-      notes = notes.sort(NewAppointmentNoteScreen.compareByDate);
-      this.props.appointmentNotesActions.setNotes(notes);
-      this.props.navigation.goBack();
+      notes = notes.sort (NewAppointmentNoteScreen.compareByDate);
+      this.props.appointmentNotesActions.setNotes (notes);
+      this.props.navigation.goBack ();
     } else {
-      alert('Please fill all the fields');
+      alert ('Please fill all the fields');
     }
   }
 
-  handlePressClient() {
+  handlePressClient () {}
 
-  }
-
-  setNoteProperty(name, value) {
+  setNoteProperty (name, value) {
     const note = this.props.appointmentNotesState.note;
     if (name === 'note') {
       note.note = value;
@@ -128,29 +123,40 @@ class NewAppointmentNoteScreen extends Component {
     } else if (name === 'author') {
       note.author = value;
     } else if (name === 'tags') {
-      note.tags.push(value);
+      note.tags.push (value);
     }
 
-    this.props.appointmentNotesActions.addNote(note);
+    this.props.appointmentNotesActions.addNote (note);
   }
-
 
   renderNoteGroup = () => (
     <InputGroup>
       <View style={styles.inputSection}>
         <Text style={styles.placeholderText}>Added by</Text>
-        <SalonTouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.handlePressClient()}>
+        <SalonTouchableOpacity
+          style={{alignSelf: 'stretch'}}
+          onPress={() => this.handlePressClient ()}
+        >
           <View style={styles.inputSection}>
-            <SalonIcon size={15} icon="caretRight" style={{ tintColor: '#727A8F' }} />
+            <SalonIcon
+              size={15}
+              icon="caretRight"
+              style={{tintColor: '#727A8F'}}
+            />
           </View>
         </SalonTouchableOpacity>
       </View>
       <Divider />
       <View style={styles.inputSection}>
         <Text style={styles.placeholderText}>Date</Text>
-        <SalonTouchableOpacity style={{ alignSelf: 'stretch' }} onPress={() => this.showDatePicker()}>
+        <SalonTouchableOpacity
+          style={{alignSelf: 'stretch'}}
+          onPress={() => this.showDatePicker ()}
+        >
           <View style={styles.inputSection}>
-            <Text style={styles.placeholderText}>{this.state.selectedDate ? this.state.selectedDate : 'Optional'}</Text>
+            <Text style={styles.placeholderText}>
+              {this.state.selectedDate ? this.state.selectedDate : 'Optional'}
+            </Text>
           </View>
         </SalonTouchableOpacity>
       </View>
@@ -158,14 +164,14 @@ class NewAppointmentNoteScreen extends Component {
       <View style={styles.inputSection}>
         <TextInput
           multiline
-          style={{ width: '100%' }}
+          style={{width: '100%'}}
           placeholder="Write Note"
           placeholderTextColor="#727A8F"
           numberOfLines={4}
-          onChangeText={(note) => {
-            this.setState({ note });
-            this.setNoteProperty('note', note);
-        }}
+          onChangeText={note => {
+            this.setState ({note});
+            this.setNoteProperty ('note', note);
+          }}
           value={this.state.note}
         />
       </View>
@@ -178,9 +184,9 @@ class NewAppointmentNoteScreen extends Component {
         <Text style={styles.placeholderText}>Sales</Text>
         <Switch
           onChange={() => {
-             this.setState({ sales: !this.state.sales });
-             this.setNoteProperty('tags', 'SALES');
-            }}
+            this.setState ({sales: !this.state.sales});
+            this.setNoteProperty ('tags', 'SALES');
+          }}
           value={this.state.sales}
         />
       </View>
@@ -189,9 +195,9 @@ class NewAppointmentNoteScreen extends Component {
         <Text style={styles.placeholderText}>Appointment</Text>
         <Switch
           onChange={() => {
-             this.setState({ appointment: !this.state.appointment });
-             this.setNoteProperty('tags', 'APPOINTMENT');
-            }}
+            this.setState ({appointment: !this.state.appointment});
+            this.setNoteProperty ('tags', 'APPOINTMENT');
+          }}
           value={this.state.appointment}
         />
       </View>
@@ -200,14 +206,14 @@ class NewAppointmentNoteScreen extends Component {
         <Text style={styles.placeholderText}>Queue</Text>
         <Switch
           onChange={() => {
-             this.setState({ queue: !this.state.queue });
-             this.setNoteProperty('tags', 'QUEUE');
-            }}
+            this.setState ({queue: !this.state.queue});
+            this.setNoteProperty ('tags', 'QUEUE');
+          }}
           value={this.state.queue}
         />
       </View>
     </InputGroup>
-  )
+  );
 
   renderTitle = title => (
     <View style={styles.titleContainer}>
@@ -215,19 +221,18 @@ class NewAppointmentNoteScreen extends Component {
     </View>
   );
 
-
-  render() {
+  render () {
     return (
       <View style={styles.container}>
-        {this.renderTitle('')}
-        {this.renderNoteGroup()}
-        {this.renderTitle('NOTE TYPES')}
-        {this.renderNoteTypeGroup()}
+        {this.renderTitle ('')}
+        {this.renderNoteGroup ()}
+        {this.renderTitle ('NOTE TYPES')}
+        {this.renderNoteTypeGroup ()}
         <SalonDatePicker
           isVisible={this.state.dateModalVisible}
-          onPress={(selectedDate) => {
-            this.setState({ selectedDate, dateModalVisible: false });
-            this.setNoteProperty('date', selectedDate);
+          onPress={selectedDate => {
+            this.setState ({selectedDate, dateModalVisible: false});
+            this.setNoteProperty ('date', selectedDate);
           }}
           selectedDate={this.state.selectedDate}
         />

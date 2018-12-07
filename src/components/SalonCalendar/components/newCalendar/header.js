@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
-import { isNull } from 'lodash';
+import * as React from 'react';
+import {Text, View, StyleSheet, TouchableHighlight} from 'react-native';
+import {isNull} from 'lodash';
 
 import SalonAvatar from '../../../SalonAvatar';
 import FirstAvailableBtn from '../firstAvailableBtn';
 import colors from '../../../../constants/appointmentColors';
-import getEmployeePhotoSource from '../../../../utilities/helpers/getEmployeePhotoSource';
-import { DefaultAvatar } from '../../../../components/formHelpers';
+import getEmployeePhotoSource
+  from '../../../../utilities/helpers/getEmployeePhotoSource';
+import {DefaultAvatar} from '../../../../components/formHelpers';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flexDirection: 'row',
   },
@@ -70,92 +71,121 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Header extends Component {
+export default class Header extends React.Component {
   renderColumnLabel = (data, index) => {
-    const { isDate, selectedFilter } = this.props;
+    const {isDate, selectedFilter} = this.props;
 
     switch (selectedFilter) {
       case 'rooms':
       case 'resources': {
-        return this.renderStore(data, index);
+        return this.renderStore (data, index);
       }
       case 'providers':
       case 'deskStaff':
       default: {
         if (isDate) {
-          return this.renderDate(data, index);
+          return this.renderDate (data, index);
         }
-        return this.renderProvider(data, index);
+        return this.renderProvider (data, index);
       }
     }
-  }
-
+  };
 
   renderProvider = (data, index) => {
-    const { cellWidth, setSelectedProvider } = this.props;
-    const image = getEmployeePhotoSource(data);
+    const {cellWidth, setSelectedProvider} = this.props;
+    const image = getEmployeePhotoSource (data);
     const hasBorder = data.displayColor && data.displayColor !== -1;
-    const backgroundColor = hasBorder ? colors[data.displayColor].light : '#fff';
-    const borderColor = hasBorder ? colors[data.displayColor].dark : colors[4].dark;
+    const backgroundColor = hasBorder
+      ? colors[data.displayColor].light
+      : '#fff';
+    const borderColor = hasBorder
+      ? colors[data.displayColor].dark
+      : colors[4].dark;
 
     return (
-      <TouchableHighlight key={data.id} onPress={() => setSelectedProvider(data)} underlayColor="rgba(0, 0, 0, 0.5)">
-        <View style={[styles.columnLabel, { width: cellWidth, backgroundColor }]} pointerEvents="box-none">
+      <TouchableHighlight
+        key={data.id}
+        onPress={() => setSelectedProvider (data)}
+        underlayColor="rgba(0, 0, 0, 0.5)"
+      >
+        <View
+          style={[styles.columnLabel, {width: cellWidth, backgroundColor}]}
+          pointerEvents="box-none"
+        >
           <SalonAvatar
             wrapperStyle={styles.avatarStyle}
             width={24}
             borderWidth={3}
             borderColor={borderColor}
             image={image}
-            defaultComponent={(
-              <DefaultAvatar size={24} provider={data} />
-            )}
+            defaultComponent={<DefaultAvatar size={24} provider={data} />}
           />
-          <Text numberOfLines={1} style={styles.columnTitle}>{`${data.name} ${data.lastName[0]}.`}</Text>
+          <Text
+            numberOfLines={1}
+            style={styles.columnTitle}
+          >{`${data.name} ${data.lastName[0]}.`}</Text>
         </View>
       </TouchableHighlight>
     );
-  }
+  };
 
   renderDate = (data, index) => {
-    const { cellWidth, setSelectedDay } = this.props;
-    const dayName = data.format('ddd').toString();
-    const day = data.format('D').toString();
+    const {cellWidth, setSelectedDay} = this.props;
+    const dayName = data.format ('ddd').toString ();
+    const day = data.format ('D').toString ();
     return (
-      <TouchableHighlight key={data.id} onPress={() => setSelectedDay(data)} underlayColor="rgba(0, 0, 0, 0.5)">
-        <View key={data} style={[styles.columnLabelDate, { width: cellWidth }]} pointerEvents="box-none">
+      <TouchableHighlight
+        key={data.id}
+        onPress={() => setSelectedDay (data)}
+        underlayColor="rgba(0, 0, 0, 0.5)"
+      >
+        <View
+          key={data}
+          style={[styles.columnLabelDate, {width: cellWidth}]}
+          pointerEvents="box-none"
+        >
           <Text numberOfLines={1} style={styles.columnDayName}>{dayName}</Text>
           <Text numberOfLines={1} style={styles.columnDay}>{day}</Text>
         </View>
       </TouchableHighlight>
     );
-  }
+  };
 
   renderStore = (data, index) => {
-    const { cellWidth } = this.props;
-    const textStyle = this.props.selectedFilter === 'rooms' ? [styles.columnTitle, styles.roomText] : styles.columnTitle;
+    const {cellWidth} = this.props;
+    const textStyle = this.props.selectedFilter === 'rooms'
+      ? [styles.columnTitle, styles.roomText]
+      : styles.columnTitle;
     return (
-      <View key={data.id} style={[styles.columnLabel, { width: cellWidth }]} pointerEvents="box-none">
+      <View
+        key={data.id}
+        style={[styles.columnLabel, {width: cellWidth}]}
+        pointerEvents="box-none"
+      >
         <Text numberOfLines={1} style={textStyle}>{data.name}</Text>
       </View>
     );
-  }
+  };
 
-  render() {
+  render () {
     const {
-      isDate, selectedFilter, showFirstAvailable, handleShowfirstAvailalble,
+      isDate,
+      selectedFilter,
+      showFirstAvailable,
+      handleShowfirstAvailalble,
     } = this.props;
     const width = selectedFilter === 'providers' && !isDate ? 166 : 36;
 
     return (
       <View style={styles.container} pointerEvents="box-none">
-        <View style={[styles.firstCell, { width }]}>
-          {selectedFilter === 'providers' && !isDate ? (
-            <FirstAvailableBtn />
-          ) : null
-          }
+        <View style={[styles.firstCell, {width}]}>
+          {selectedFilter === 'providers' && !isDate
+            ? <FirstAvailableBtn />
+            : null}
         </View>
-        {this.props.dataSource.map((data, index) => this.renderColumnLabel(data, index))}
+        {this.props.dataSource.map ((data, index) =>
+          this.renderColumnLabel (data, index)
+        )}
       </View>
     );
   }

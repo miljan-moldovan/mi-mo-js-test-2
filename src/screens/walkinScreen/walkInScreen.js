@@ -22,7 +22,7 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import SalonHeader from '../../components/SalonHeader';
 
-class WalkInScreen extends Component {
+class WalkInScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
     const {params = {}} = navigation.state;
     const handlePress = params && params.handleSave

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { View, SectionList, StyleSheet, RefreshControl, Keyboard, Animated } from 'react-native';
 import { connect } from 'react-redux';
 import ServiceListItem from './serviceListItem';

@@ -17,7 +17,7 @@ import {
 
 import TrackRequestSwitch from '../../../components/TrackRequestSwitch';
 
-class ServiceSection extends Component {
+class ServiceSection extends React.Component {
   handleProviderSelection = (provider, service, index) => {
     const newService = service;
     newService.provider = provider;

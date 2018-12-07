@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {ScrollView, View, Text} from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';

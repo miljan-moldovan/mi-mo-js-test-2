@@ -1,5 +1,5 @@
 import debounce from 'lodash.debounce'; // 4.0.8
-import React from 'react';
+import * as React from 'react';
 import { TouchableOpacity } from 'react-native';
 
 const SalonTouchableOpacity = (WrappedComponent) => {

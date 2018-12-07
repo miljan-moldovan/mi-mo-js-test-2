@@ -84,7 +84,7 @@ const SelectedWithRemove = props => (
   </View>
 );
 
-class ApptBookViewOptionsScreen extends Component {
+class ApptBookViewOptionsScreen extends React.Component {
   static navigationOptions = ({navigation}) => ({
     header: (
       <SalonHeader

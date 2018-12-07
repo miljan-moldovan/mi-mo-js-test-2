@@ -23,7 +23,7 @@ import ProviderSchedulePicker
   from '../../../components/formHelpers/components/ProviderSchedulePicker';
 import DateTime from '../../../constants/DateTime';
 
-class ServiceSection extends Component {
+class ServiceSection extends React.Component {
   constructor (props) {
     super (props);
     this.state = {

@@ -21,7 +21,7 @@ import {
   mergeWith,
 } from 'lodash';
 
-export default class CardGrid extends Component {
+export default class CardGrid extends React.Component {
   shouldComponentUpdate(nextProps) {
     return !nextProps.isLoading && (this.props.isLoading !== nextProps.isLoading
         || this.props.selctedFilter !== nextProps.selctedFilter || this.props.cardActive !== nextProps.cardActive);

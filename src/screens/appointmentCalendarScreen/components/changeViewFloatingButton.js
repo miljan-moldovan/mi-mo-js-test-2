@@ -42,7 +42,7 @@ const styles = StyleSheet.create ({
   },
 });
 
-class ChangeViewFloatingButton extends Component {
+class ChangeViewFloatingButton extends React.Component {
   handlePress = () => {
     if (this.props.handlePress) {
       this.props.handlePress ();

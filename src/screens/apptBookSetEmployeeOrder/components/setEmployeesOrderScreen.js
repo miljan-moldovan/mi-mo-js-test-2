@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Text, View, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import SortableList from 'react-native-sortable-list';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';

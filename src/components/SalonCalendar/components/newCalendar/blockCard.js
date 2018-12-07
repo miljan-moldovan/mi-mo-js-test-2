@@ -1,18 +1,13 @@
-import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated } from 'react-native';
+import * as React from 'react';
+import {TouchableOpacity, View, Text, StyleSheet, Animated} from 'react-native';
 import moment from 'moment';
-import Svg, {
-  LinearGradient,
-  Rect,
-  Defs,
-  Stop,
-} from 'react-native-svg';
-import { times } from 'lodash';
+import Svg, {LinearGradient, Rect, Defs, Stop} from 'react-native-svg';
+import {times} from 'lodash';
 
 import ResizeButton from '../resizeButtons';
 import colors from '../../../../constants/appointmentColors';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   resizePosition: {
     left: -13,
     bottom: -27,
@@ -46,25 +41,38 @@ const styles = StyleSheet.create({
   },
 });
 
-class BlockCard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { notesLines: 1, height: 0 }
+class BlockCard extends React.Component {
+  constructor (props) {
+    super (props);
+    this.state = {notesLines: 1, height: 0};
   }
 
-  shouldComponentUpdate(nextProps) {
-    return (nextProps.activeBlock || (nextProps.isInBuffer !== this.props.isInBuffer
-      || nextProps.isActive !== this.props.isActive
-    || nextProps.width !== this.props.width || nextProps.left !== this.props.left ||
-      !nextProps.isLoading && this.props.isLoading ||
-      (!!this.props.isActive && nextProps.isResizeing !== this.props.isResizeing)))
-       || nextProps.displayMode !== this.props.displayMode;
+  shouldComponentUpdate (nextProps) {
+    return (
+      nextProps.activeBlock ||
+      (nextProps.isInBuffer !== this.props.isInBuffer ||
+        nextProps.isActive !== this.props.isActive ||
+        nextProps.width !== this.props.width ||
+        nextProps.left !== this.props.left ||
+        (!nextProps.isLoading && this.props.isLoading) ||
+        (!!this.props.isActive &&
+          nextProps.isResizeing !== this.props.isResizeing)) ||
+      nextProps.displayMode !== this.props.displayMode
+    );
   }
 
   getCardProperties = () => {
-    const { isBufferBlock, activeBlock, isActive, isResizeBlock, isResizeing, left, width } = this.props;
+    const {
+      isBufferBlock,
+      activeBlock,
+      isActive,
+      isResizeBlock,
+      isResizeing,
+      left,
+      width,
+    } = this.props;
     if (!isResizeBlock && activeBlock) {
-      const { top, height } = activeBlock;
+      const {top, height} = activeBlock;
       const opacity = isResizeing ? 0 : 1;
       return {
         left,
@@ -86,24 +94,20 @@ class BlockCard extends Component {
       };
     }
     const {
-      block: {
-        toTime, fromTime, employee, date,
-      },
-      apptGridSettings: {
-        step,
-        minStartTime,
-        weeklySchedule,
-      },
+      block: {toTime, fromTime, employee, date},
+      apptGridSettings: {step, minStartTime, weeklySchedule},
       displayMode,
       selectedFilter,
       isInBuffer,
     } = this.props;
-    const blockFromTimeMoment = moment(fromTime, 'HH:mm');
-    const blockToTimeMoment = moment(toTime, 'HH:mm');
-    const startTimeMoment = moment(minStartTime, 'HH:mm');
+    const blockFromTimeMoment = moment (fromTime, 'HH:mm');
+    const blockToTimeMoment = moment (toTime, 'HH:mm');
+    const startTimeMoment = moment (minStartTime, 'HH:mm');
     // calculate height and top
-    const height = ((blockToTimeMoment.diff(blockFromTimeMoment, 'minutes') / step) * 30) - 1;
-    const top = (blockFromTimeMoment.diff(startTimeMoment, 'minutes') / step) * 30;
+    const height =
+      blockToTimeMoment.diff (blockFromTimeMoment, 'minutes') / step * 30 - 1;
+    const top =
+      blockFromTimeMoment.diff (startTimeMoment, 'minutes') / step * 30;
     // calculate zIndex
     const zIndex = isResizeBlock ? 999 : 1;
     // opacity
@@ -116,39 +120,52 @@ class BlockCard extends Component {
       height,
       opacity,
     };
-  }
+  };
 
-  handleOnLongPress = ({ top, renderedHeight, left, width }) => {
+  handleOnLongPress = ({top, renderedHeight, left, width}) => {
     const {
-      calendarOffset, block, isBufferBlock, onDrag, startDate
+      calendarOffset,
+      block,
+      isBufferBlock,
+      onDrag,
+      startDate,
     } = this.props;
-    const today = moment();
-    if (startDate.isSameOrAfter(today, 'day')) {
+    const today = moment ();
+    if (startDate.isSameOrAfter (today, 'day')) {
       if (isBufferBlock) {
-        this.block._propsAnimated._animatedView.measureInWindow((x, y) => {
-          const { height } = this.props;
-          const newVerticalPositions = [{ top: y, height }];
-          onDrag(false, block, x, width, newVerticalPositions, true, true);
+        this.block._propsAnimated._animatedView.measureInWindow ((x, y) => {
+          const {height} = this.props;
+          const newVerticalPositions = [{top: y, height}];
+          onDrag (false, block, x, width, newVerticalPositions, true, true);
         });
       } else {
-        const newVerticalPositions = [{ top: top - calendarOffset.y, height: renderedHeight }];
+        const newVerticalPositions = [
+          {top: top - calendarOffset.y, height: renderedHeight},
+        ];
         const newLeft = left - calendarOffset.x;
-        this.props.onDrag(false, block, newLeft, width, newVerticalPositions, false, true);
+        this.props.onDrag (
+          false,
+          block,
+          newLeft,
+          width,
+          newVerticalPositions,
+          false,
+          true
+        );
       }
     }
-  }
+  };
 
-
-  resize = (size) => {
-    let { height } = this.state;
+  resize = size => {
+    let {height} = this.state;
     if (height + size >= 30) {
       height += size;
-      this.setState({ height });
+      this.setState ({height});
     }
     return height;
-  }
+  };
 
-  render() {
+  render () {
     const {
       left,
       width,
@@ -156,15 +173,8 @@ class BlockCard extends Component {
       top,
       height,
       opacity,
-    } = this.getCardProperties();
-    const {
-      color,
-      reason,
-      notes,
-      fromTime,
-      toTime,
-      id,
-    } = this.props.block;
+    } = this.getCardProperties ();
+    const {color, reason, notes, fromTime, toTime, id} = this.props.block;
     const {
       isInBuffer,
       panResponder,
@@ -179,24 +189,33 @@ class BlockCard extends Component {
       this.state.height = height;
     }
     const renderColor = colors[color] ? color : 0;
-    const { notesLines } = this.state;
+    const {notesLines} = this.state;
     const borderColor = colors[renderColor].dark;
     const backgroundColor = activeBlock ? borderColor : colors[color].light;
     const contentColor = colors[renderColor].light;
-    const position = !isResizeBlock && activeBlock ? pan.getLayout() : { left, top };
-    const container = isBufferBlock ? [styles.container, { position: 'relative' }] : styles.container;
+    const position = !isResizeBlock && activeBlock
+      ? pan.getLayout ()
+      : {left, top};
+    const container = isBufferBlock
+      ? [styles.container, {position: 'relative'}]
+      : styles.container;
     let countOpacity2 = 0;
     let countGap2 = 0;
     const panHandlers = panResponder ? panResponder.panHandlers : {};
-    const integerHeight = isResizeBlock && isResizeing ? this.state.height : height;
+    const integerHeight = isResizeBlock && isResizeing
+      ? this.state.height
+      : height;
     if (!activeBlock && isResizeing) {
       return null;
     }
     return (
       <Animated.View
         {...panHandlers}
-        ref={(view) => { this.block = view; }}
-        style={[container,
+        ref={view => {
+          this.block = view;
+        }}
+        style={[
+          container,
           {
             width,
             height: isResizeBlock && isResizeing ? this.state.height : height,
@@ -221,18 +240,29 @@ class BlockCard extends Component {
               x2={width > integerHeight ? width : integerHeight}
               y2={0}
             >
-              {
-               times(50).map((index) => {
+              {times (50).map (index => {
                 const gap = countGap2;
                 countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
                 if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
                   countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
-                  return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={contentColor} stopOpacity="0.4" />);
+                  return (
+                    <Stop
+                      key={`${index}${width}`}
+                      offset={`${index + gap}%`}
+                      stopColor={contentColor}
+                      stopOpacity="0.4"
+                    />
+                  );
                 }
                 countOpacity2 += 1;
-                  return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={contentColor} />);
-              })
-              }
+                return (
+                  <Stop
+                    key={`${index}${width}`}
+                    offset={`${index + gap}%`}
+                    stopColor={contentColor}
+                  />
+                );
+              })}
             </LinearGradient>
           </Defs>
           <Rect
@@ -244,37 +274,43 @@ class BlockCard extends Component {
         </Svg>
         <TouchableOpacity
           onPress={() => {
-            this.props.onPress && this.props.onPress(this.props.block)
+            this.props.onPress && this.props.onPress (this.props.block);
           }}
           onLongPress={() => {
-            this.handleOnLongPress({
-              top, renderedHeight: integerHeight, left, width
+            this.handleOnLongPress ({
+              top,
+              renderedHeight: integerHeight,
+              left,
+              width,
             });
           }}
           disabled={isActive}
         >
-            <View style={{ minHeight: 28, width: '100%', height: '100%' }}>
-              <View style={[styles.header, { backgroundColor: colors[color].dark }]} />
-              <Text
-                numberOfLines={1}
-                style={styles.blockText}
-              >
-                {reason.name}
-              </Text>
-              <Text numberOfLines={notesLines} style={[styles.blockText, styles.notesText]}>
-                {notes}
-              </Text>
-            </View>
+          <View style={{minHeight: 28, width: '100%', height: '100%'}}>
+            <View
+              style={[styles.header, {backgroundColor: colors[color].dark}]}
+            />
+            <Text numberOfLines={1} style={styles.blockText}>
+              {reason.name}
+            </Text>
+            <Text
+              numberOfLines={notesLines}
+              style={[styles.blockText, styles.notesText]}
+            >
+              {notes}
+            </Text>
+          </View>
         </TouchableOpacity>
-        {activeBlock && !isBufferBlock ?
-          <ResizeButton
-            onPress={this.props.onResize}
-            color={colors[color].dark}
-            position={styles.resizePosition}
-            height={height}
-            onScrollY={this.props.onScrollY}
-            isDisabled={isResizeing}
-          /> : null }
+        {activeBlock && !isBufferBlock
+          ? <ResizeButton
+              onPress={this.props.onResize}
+              color={colors[color].dark}
+              position={styles.resizePosition}
+              height={height}
+              onScrollY={this.props.onScrollY}
+              isDisabled={isResizeing}
+            />
+          : null}
       </Animated.View>
     );
   }

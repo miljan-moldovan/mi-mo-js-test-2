@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import {View, StyleSheet, RefreshControl, FlatList} from 'react-native';
 import {connect} from 'react-redux';
 import FontAwesome, {Icons} from 'react-native-fontawesome';

@@ -1,19 +1,22 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import * as React from 'react';
+import {View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import moment from 'moment';
 
 import Column from './column';
 import AvailabilityColumn from './availabilityColumn';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
   container: {
     flexDirection: 'row',
   },
 });
 
-export default class Board extends Component {
-  shouldComponentUpdate(nextProps, nexState) {
-    return nextProps.displayMode !== this.props.displayMode || (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading);
+export default class Board extends React.Component {
+  shouldComponentUpdate (nextProps, nexState) {
+    return (
+      nextProps.displayMode !== this.props.displayMode ||
+      (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading)
+    );
   }
 
   renderCol = (col, key) => {
@@ -54,23 +57,27 @@ export default class Board extends Component {
         hideAlert={hideAlert}
       />
     );
-  }
+  };
 
-  render() {
+  render () {
     const {
-      columns, apptGridSettings, availability, showAvailability, startDate,
+      columns,
+      apptGridSettings,
+      availability,
+      showAvailability,
+      startDate,
     } = this.props;
     return (
       <View style={styles.container}>
-        { showAvailability ?
-          <AvailabilityColumn
-            apptGridSettings={apptGridSettings}
-            onPress={this.props.onPressAvailability}
-            availability={availability}
-            startDate={startDate}
-          /> : null
-        }
-        { columns.map(this.renderCol) }
+        {showAvailability
+          ? <AvailabilityColumn
+              apptGridSettings={apptGridSettings}
+              onPress={this.props.onPressAvailability}
+              availability={availability}
+              startDate={startDate}
+            />
+          : null}
+        {columns.map (this.renderCol)}
       </View>
     );
   }

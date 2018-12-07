@@ -1,29 +1,23 @@
-
-import React, { Component } from 'react';
-import { TextInput } from 'react-native';
+import * as React from 'react';
+import {TextInput} from 'react-native';
 import PropTypes from 'prop-types';
 
-class SalonTextInput extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { placeholder: props.text.length === 0 };
-    this.handleChange = this.handleChange.bind(this);
+class SalonTextInput extends React.Component {
+  constructor (props) {
+    super (props);
+    this.state = {placeholder: props.text.length === 0};
+    this.handleChange = this.handleChange.bind (this);
   }
 
-  handleChange(ev) {
-    this.setState({ placeholder: ev.nativeEvent.text.length === 0 });
+  handleChange (ev) {
+    this.setState ({placeholder: ev.nativeEvent.text.length === 0});
     if (this.props.onChange) {
-      this.props.onChange(ev);
+      this.props.onChange (ev);
     }
   }
 
-  render() {
-    const {
-      placeholderStyle,
-      style,
-      onChange,
-      ...rest
-    } = this.props;
+  render () {
+    const {placeholderStyle, style, onChange, ...rest} = this.props;
 
     return (
       <TextInput
@@ -38,14 +32,8 @@ class SalonTextInput extends Component {
 SalonTextInput.propTypes = {
   text: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  style: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.number,
-  ]),
-  placeholderStyle: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.number,
-  ]),
+  style: PropTypes.oneOfType ([PropTypes.object, PropTypes.number]),
+  placeholderStyle: PropTypes.oneOfType ([PropTypes.object, PropTypes.number]),
 };
 
 SalonTextInput.defaultProps = {

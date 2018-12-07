@@ -1,5 +1,10 @@
-import React, { Component } from 'react';
-import { View, PanResponder, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import * as React from 'react';
+import {
+  View,
+  PanResponder,
+  TouchableWithoutFeedback,
+  StyleSheet,
+} from 'react-native';
 
 const styles = {
   container: {
@@ -20,19 +25,11 @@ const styles = {
   },
 };
 
-const resizeButton = ({
-  position,
-  isDisabled,
-  onPress,
-  color
-}) => (
+const resizeButton = ({position, isDisabled, onPress, color}) => (
   <View style={[styles.container, position]}>
-    <TouchableWithoutFeedback
-      disabled={isDisabled}
-      onPressIn={onPress}
-    >
+    <TouchableWithoutFeedback disabled={isDisabled} onPressIn={onPress}>
       <View style={styles.btnContainer}>
-        <View style={[styles.btn, { borderColor: color }]} />
+        <View style={[styles.btn, {borderColor: color}]} />
       </View>
     </TouchableWithoutFeedback>
   </View>

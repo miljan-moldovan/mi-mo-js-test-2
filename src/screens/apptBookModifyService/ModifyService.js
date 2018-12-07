@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
 import moment from 'moment';
 import {get, isNumber, toNumber} from 'lodash';

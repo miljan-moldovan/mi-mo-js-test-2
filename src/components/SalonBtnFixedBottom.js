@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Text, View, StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonTouchableOpacity from './SalonTouchableOpacity';

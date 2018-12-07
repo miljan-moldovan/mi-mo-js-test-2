@@ -70,7 +70,7 @@ const styles = StyleSheet.create ({
   },
 });
 
-class SalonSearchBar extends Component {
+class SalonSearchBar extends React.Component {
   state = {
     searchText: '',
   };

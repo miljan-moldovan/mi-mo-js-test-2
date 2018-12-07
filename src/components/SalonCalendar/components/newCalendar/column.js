@@ -57,7 +57,7 @@ const styles = StyleSheet.create ({
   },
 });
 
-export default class Column extends Component {
+export default class Column extends React.Component {
   onCellPressed = (cellId, colData, date) => {
     const time = moment (
       `${date.format ('YYYY-MM-DD')} ${cellId.format ('HH:mm')}`,

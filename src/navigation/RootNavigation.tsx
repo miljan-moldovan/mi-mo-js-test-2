@@ -6,12 +6,8 @@ import {
 } from 'react-navigation';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import Icon from '@/components/common/Icon';
-import { IconTypes } from '@/components/common/Icon/interfaces';
-
-import { isValidAppointment } from '@/redux/selectors/newAppt';
 import userActions from '@/redux/actions/user';
 import walkInActions from '@/redux/actions/walkIn';
 import clientsActions from '@/redux/actions/clients';
@@ -100,7 +96,6 @@ const RootDrawerNavigator = TabNavigator(
     tabBarPosition: 'bottom',
     animationEnabled: true,
     swipeEnabled: false,
-    headerMode: 'none',
   }
 );
 

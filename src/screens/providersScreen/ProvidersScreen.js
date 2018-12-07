@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {View, Text, FlatList, StyleSheet, RefreshControl} from 'react-native';
 import {get, includes, isFunction, isArray, map, filter, find} from 'lodash';
 import PropTypes from 'prop-types';

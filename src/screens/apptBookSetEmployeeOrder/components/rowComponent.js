@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {Animated, Platform, Text, StyleSheet, Easing} from 'react-native';
 
 import SalonAvatar from '../../../components/SalonAvatar';

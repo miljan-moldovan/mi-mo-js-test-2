@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {Header} from 'react-navigation';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view';

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {View, Text, ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';

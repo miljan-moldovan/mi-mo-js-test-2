@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {Text, View, FlatList, SectionList, SafeAreaView} from 'react-native';
 import PropTypes from 'prop-types';
 import {get, sortBy, isFunction, isNumber, filter} from 'lodash';

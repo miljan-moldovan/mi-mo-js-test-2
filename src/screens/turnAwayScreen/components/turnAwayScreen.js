@@ -29,7 +29,7 @@ import styles from './styles';
 import headerStyles from '../../../constants/headerStyles';
 import SalonHeader from '../../../components/SalonHeader';
 
-class TurnAwayScreen extends Component {
+class TurnAwayScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;

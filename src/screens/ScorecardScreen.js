@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import {Image, StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 
 import {Button} from 'native-base';

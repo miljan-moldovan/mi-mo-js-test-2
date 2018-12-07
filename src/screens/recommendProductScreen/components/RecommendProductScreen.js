@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { get, remove } from 'lodash';
 import { Client, Product } from '../../../utilities/apiWrapper';
