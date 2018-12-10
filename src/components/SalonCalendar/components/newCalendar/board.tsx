@@ -54,23 +54,27 @@ export default class Board extends React.Component<BoardProps, any> {
         hideAlert={hideAlert}
       />
     );
-  }
+  };
 
   render() {
     const {
-      columns, apptGridSettings, availability, showAvailability, startDate,
+      columns,
+      apptGridSettings,
+      availability,
+      showAvailability,
+      startDate,
     } = this.props;
     return (
       <View style={styles.container}>
-        { showAvailability ?
-          <AvailabilityColumn
+        {showAvailability
+          ? <AvailabilityColumn
             apptGridSettings={apptGridSettings}
             onPress={this.props.onPressAvailability}
             availability={availability}
             startDate={startDate}
-          /> : null
-        }
-        { columns.map(this.renderCol) }
+          />
+          : null}
+        {columns.map(this.renderCol)}
       </View>
     );
   }

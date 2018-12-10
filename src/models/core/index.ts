@@ -6,3 +6,4 @@ export * from './session';
 export * from './exception';
 export * from './list-response';
 export * from './tasks';
+export * from './store';

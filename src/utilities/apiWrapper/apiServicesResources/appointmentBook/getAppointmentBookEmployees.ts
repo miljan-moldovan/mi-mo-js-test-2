@@ -8,7 +8,7 @@ import { EmployeeSchedule } from '@/models';
 
 let cancellationToken = null;
 
-export default async (date, filterOptions): Promise<EmployeeSchedule> => {
+export default async (date, filterOptions): Promise<EmployeeSchedule[]> => {
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
   const queryString = qs.stringify(filterOptions);

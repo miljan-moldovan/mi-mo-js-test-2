@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
-import {get, filter} from 'lodash';
+import { get, filter } from 'lodash';
 import { ColumnProps } from '@/models';
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   colContainer: {
     flexDirection: 'column',
   },
@@ -54,42 +54,42 @@ const styles = StyleSheet.create ({
     margin: 0,
     padding: 0,
     color: 'white',
-    transform: [{rotate: '-90deg'}],
+    transform: [{ rotate: '-90deg' }],
   },
 });
 
 export default class Column extends React.Component<ColumnProps, any> {
   onCellPressed = (cellId, colData, date) => {
-    const time = moment (
-      `${date.format ('YYYY-MM-DD')} ${cellId.format ('HH:mm')}`,
+    const time = moment(
+      `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
       'YYYY-MM-DD HH:mm'
     );
-    const showAlert = moment ().isAfter (time, 'minute');
+    const showAlert = moment().isAfter(time, 'minute');
     if (!showAlert) {
-      this.props.onCellPressed (cellId, colData);
+      this.props.onCellPressed(cellId, colData);
     } else {
-      this.showBookingPastAlert ({cell: cellId, colData});
+      this.showBookingPastAlert({ cell: cellId, colData });
     }
   };
 
   isBetweenTimes = (time, fromTime, toTime) =>
-    time.isSameOrAfter (fromTime) && time.isBefore (toTime);
+    time.isSameOrAfter(fromTime) && time.isBefore(toTime);
 
-  showBookingPastAlert = ({cell, colData}) => {
+  showBookingPastAlert = ({ cell, colData }) => {
     const alert = {
       title: 'Question',
       description: 'The selected time is in the past. Do you want to book the appointment anyway?',
       btnLeftText: 'No',
       btnRightText: 'Yes',
       onPressRight: () => {
-        this.props.onCellPressed (cell, colData);
-        this.props.hideAlert ();
+        this.props.onCellPressed(cell, colData);
+        this.props.hideAlert();
       },
     };
-    this.props.createAlert (alert);
+    this.props.createAlert(alert);
   };
 
-  convertFromTimeToMoment = time => moment (time, 'HH:mm');
+  convertFromTimeToMoment = time => moment(time, 'HH:mm');
 
   renderCell = (cell, index) => {
     const {
@@ -103,49 +103,49 @@ export default class Column extends React.Component<ColumnProps, any> {
       startDate,
       storeScheduleExceptions,
     } = this.props;
-    const {weeklySchedule} = apptGridSettings;
-    const isCellDisabled = moment ().isAfter (startDate, 'day');
+    const { weeklySchedule } = apptGridSettings;
+    const isCellDisabled = moment().isAfter(startDate, 'day');
     let isStoreOff = false;
     let exception;
     let storeTodaySchedule;
     let isEmployeeException = '';
     let storeExceptionComment = '';
     if (!isDate) {
-      exception = get (storeScheduleExceptions, ['0'], null);
+      exception = get(storeScheduleExceptions, ['0'], null);
       storeTodaySchedule = exception ?
-        { ...exception, isException: true } : weeklySchedule[startDate.isoWeekday () - 1];
+        { ...exception, isException: true } : weeklySchedule[startDate.isoWeekday() - 1];
     } else {
       storeTodaySchedule =
-        apptGridSettings.weeklySchedule[colData.isoWeekday () - 1];
-      exception = filter (
+        apptGridSettings.weeklySchedule[colData.isoWeekday() - 1];
+      exception = filter(
         storeScheduleExceptions,
         item =>
-          moment (item.startDate, 'YYYY-MM-DD').isSame (colData, 'day') ||
-          moment (item.endDate, 'YYYY-MM-DD').isSame (colData, 'day')
+          moment(item.startDate, 'YYYY-MM-DD').isSame(colData, 'day') ||
+          moment(item.endDate, 'YYYY-MM-DD').isSame(colData, 'day')
       )[0];
       storeTodaySchedule = exception ? { ...exception, isException: true } : storeTodaySchedule;
     }
 
     storeExceptionComment = storeTodaySchedule && storeTodaySchedule.isException && storeTodaySchedule.comments
-    && (cell.isSame(moment(storeTodaySchedule.end1, 'HH:mm'), 'minute') || cell.isSame(moment(storeTodaySchedule.end2, 'HH:mm'), 'minute')) ? storeTodaySchedule.comments : null;
+      && (cell.isSame(moment(storeTodaySchedule.end1, 'HH:mm'), 'minute') || cell.isSame(moment(storeTodaySchedule.end2, 'HH:mm'), 'minute')) ? storeTodaySchedule.comments : null;
 
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
     if (!isStoreOff) {
       isStoreOff =
-        !this.isBetweenTimes (
+        !this.isBetweenTimes(
           cell,
-          moment (storeTodaySchedule.start1, 'HH:mm'),
-          moment (storeTodaySchedule.end1, 'HH:mm')
+          moment(storeTodaySchedule.start1, 'HH:mm'),
+          moment(storeTodaySchedule.end1, 'HH:mm')
         ) &&
         (!storeTodaySchedule.start2 ||
-          !this.isBetweenTimes (
+          !this.isBetweenTimes(
             cell,
-            moment (storeTodaySchedule.start2, 'HH:mm'),
-            moment (storeTodaySchedule.end2, 'HH:mm')
+            moment(storeTodaySchedule.start2, 'HH:mm'),
+            moment(storeTodaySchedule.end2, 'HH:mm')
           ));
     }
     let styleOclock = '';
-    const timeSplit = moment (cell).add (15, 'm').format ('h:mm').split (':');
+    const timeSplit = moment(cell).add(15, 'm').format('h:mm').split(':');
     const minutesSplit = timeSplit[1];
     if (minutesSplit === '00') {
       styleOclock = styles.oClockBorder;
@@ -157,9 +157,9 @@ export default class Column extends React.Component<ColumnProps, any> {
         case 'deskStaff':
         case 'providers': {
           if (isDate) {
-            const hasSchedule = providerSchedule[colData.format ('YYYY-MM-DD')];
+            const hasSchedule = providerSchedule[colData.format('YYYY-MM-DD')];
             if (hasSchedule) {
-              [schedule] = providerSchedule[colData.format ('YYYY-MM-DD')];
+              [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
               schedule = schedule ? schedule.scheduledIntervals : null;
             }
           } else {
@@ -184,8 +184,8 @@ export default class Column extends React.Component<ColumnProps, any> {
             break;
           }
           if (
-            cell.isSameOrAfter (moment (schedule[i].start, 'HH:mm')) &&
-            cell.isBefore (moment (schedule[i].end, 'HH:mm'))
+            cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
+            cell.isBefore(moment(schedule[i].end, 'HH:mm'))
           ) {
             style = styles.cellContainer;
             break;
@@ -193,20 +193,20 @@ export default class Column extends React.Component<ColumnProps, any> {
         }
       }
       return (
-        <View key={cell.format ('HH:mm')}>
+        <View key={cell.format('HH:mm')}>
           <TouchableOpacity
             disabled={isCellDisabled}
-            style={[style, {width: cellWidth}, styleOclock]}
+            style={[style, { width: cellWidth }, styleOclock]}
             onPress={() => {
-              this.onCellPressed (cell, colData, !isDate ? startDate : colData);
+              this.onCellPressed(cell, colData, !isDate ? startDate : colData);
             }}
           >
             {index === 0 && isEmployeeException
               ? <Text style={styles.exceptionText}>{isEmployeeException}</Text>
               : null}
-              {storeExceptionComment
-                ? <Text style={styles.exceptionText}>{storeExceptionComment}</Text>
-                : null}
+            {storeExceptionComment
+              ? <Text style={styles.exceptionText}>{storeExceptionComment}</Text>
+              : null}
           </TouchableOpacity>
         </View>
       );
@@ -218,26 +218,26 @@ export default class Column extends React.Component<ColumnProps, any> {
           style={[
             styles.cellContainer,
             styles.dayOff,
-            {width: cellWidth},
+            { width: cellWidth },
             styleOclock,
           ]}
           onPress={() => {
-            this.onCellPressed (cell, colData, !isDate ? startDate : colData);
+            this.onCellPressed(cell, colData, !isDate ? startDate : colData);
           }}
         >
           {storeExceptionComment
             ? <Text style={styles.exceptionText}>{storeExceptionComment}</Text>
             : null}
-            {index === 0 && isEmployeeException
-              ? <Text style={styles.exceptionText}>{isEmployeeException}</Text>
-              : null}
+          {index === 0 && isEmployeeException
+            ? <Text style={styles.exceptionText}>{isEmployeeException}</Text>
+            : null}
         </TouchableOpacity>
       </View>
     );
   };
 
-  renderRooms () {
-    const {colData, apptGridSettings, selectedFilter, rooms} = this.props;
+  renderRooms() {
+    const { colData, apptGridSettings, selectedFilter, rooms } = this.props;
     if (
       selectedFilter !== 'providers' ||
       !colData ||
@@ -248,14 +248,14 @@ export default class Column extends React.Component<ColumnProps, any> {
     }
 
     const startTime = apptGridSettings.minStartTime;
-    const startTimeMoment = this.convertFromTimeToMoment (startTime);
-    return colData.roomAssignments.map ((room, i) => {
-      const startTimeDifference = this.convertFromTimeToMoment (
+    const startTimeMoment = this.convertFromTimeToMoment(startTime);
+    return colData.roomAssignments.map((room, i) => {
+      const startTimeDifference = this.convertFromTimeToMoment(
         room.fromTime
-      ).diff (startTimeMoment, 'minutes');
-      const endTimeDifference = this.convertFromTimeToMoment (
+      ).diff(startTimeMoment, 'minutes');
+      const endTimeDifference = this.convertFromTimeToMoment(
         room.toTime
-      ).diff (startTimeMoment, 'minutes');
+      ).diff(startTimeMoment, 'minutes');
       const startPosition = startTimeDifference / apptGridSettings.step * 30;
       const endPosition = endTimeDifference / apptGridSettings.step * 30;
       const height = endPosition - startPosition;
@@ -274,11 +274,11 @@ export default class Column extends React.Component<ColumnProps, any> {
           maxWidth: height,
         },
       ];
-      const selectedRoom = rooms.find (itm => itm.id === room.roomId);
-      const roomName = get (selectedRoom, 'name', '');
+      const selectedRoom = rooms.find(itm => itm.id === room.roomId);
+      const roomName = get(selectedRoom, 'name', '');
       return (
         <View
-          key={`room-${get (colData, 'id', '')}-${room.roomId}`}
+          key={`room-${get(colData, 'id', '')}-${room.roomId}`}
           style={containerStyle}
         >
           <Text style={textStyle} numberOfLines={1}>
@@ -289,12 +289,12 @@ export default class Column extends React.Component<ColumnProps, any> {
     });
   }
 
-  render () {
-    const {apptGridSettings, showRoomAssignments} = this.props;
-    const rooms = showRoomAssignments ? this.renderRooms () : null;
+  render() {
+    const { apptGridSettings, showRoomAssignments } = this.props;
+    const rooms = showRoomAssignments ? this.renderRooms() : null;
     return (
       <View style={styles.colContainer}>
-        {apptGridSettings.schedule.map (this.renderCell)}
+        {apptGridSettings.schedule.map(this.renderCell)}
         {rooms}
       </View>
     );

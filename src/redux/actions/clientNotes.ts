@@ -1,6 +1,6 @@
-import {Note} from '../../utilities/apiWrapper';
+import { Note } from '../../utilities/apiWrapper';
 import apiConstants from '../../utilities/apiWrapper/apiConstants';
-import {storeForm, purgeForm} from './formCache';
+import { storeForm, purgeForm } from './formCache';
 
 export const SET_NOTES = 'clientNotes/SET_NOTES';
 export const SET_FILTERED_NOTES = 'clientNotes/SET_FILTERED_NOTES';
@@ -35,148 +35,148 @@ export const SET_CLIENT_NOTE_FORM = 'clientNotes/SET_CLIENT_NOTE_FORM';
 
 const putClientNotesSuccess = (notes: any) => ({
   type: PUT_CLIENT_NOTE_SUCCESS,
-  data: {notes},
+  data: { notes },
 });
 
 const putClientNotesFailed = (error: any) => ({
   type: PUT_CLIENT_NOTE_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const putClientNotes = (clientId: number, note: any) => dispatch => {
-  dispatch ({type: PUT_CLIENT_NOTE});
-  return Note.putClientNote ({clientId, id: note.id}, note)
-    .then (response => {
-      dispatch (purgeForm ('ClientNoteScreenUpdate', note.id.toString ()));
-      return dispatch (putClientNotesSuccess (response));
+  dispatch({ type: PUT_CLIENT_NOTE });
+  return Note.putClientNote({ clientId, id: note.id }, note)
+    .then(response => {
+      dispatch(purgeForm('ClientNoteScreenUpdate', note.id.toString()));
+      return dispatch(putClientNotesSuccess(response));
     })
-    .catch (error => {
+    .catch(error => {
       if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
-        dispatch (
-          storeForm ('ClientNoteScreenUpdate', note.id.toString (), note)
+        dispatch(
+          storeForm('ClientNoteScreenUpdate', note.id.toString(), note)
         );
       }
-      return dispatch (putClientNotesFailed (error));
+      return dispatch(putClientNotesFailed(error));
     });
 };
 
 const setClientNoteUpdateForm = (note: any) => dispatch =>
-  dispatch (storeForm ('ClientNoteScreenUpdate', note.id.toString (), note));
+  dispatch(storeForm('ClientNoteScreenUpdate', note.id.toString(), note));
 
 const setClientNoteNewForm = (clientId: number, note: any) => dispatch =>
-  dispatch (storeForm ('ClientNoteScreenNew', clientId.toString (), note));
+  dispatch(storeForm('ClientNoteScreenNew', clientId.toString(), note));
 
 const purgeClientNoteUpdateForm = (note: any) => dispatch =>
-  dispatch (purgeForm ('ClientNoteScreenUpdate', note.id.toString ()/*, note*/));
+  dispatch(purgeForm('ClientNoteScreenUpdate', note.id.toString()/*, note*/));
 
 const purgeClientNoteNewForm = (clientId: number, note: any) => dispatch =>
-  dispatch (purgeForm ('ClientNoteScreenNew', clientId.toString ()/*, note*/));
+  dispatch(purgeForm('ClientNoteScreenNew', clientId.toString()/*, note*/));
 
 const undeleteClientNotesSuccess = (notes: any) => ({
   type: UNDELETE_CLIENT_NOTE_SUCCESS,
-  data: {notes},
+  data: { notes },
 });
 
 const undeleteClientNotesFailed = (error: any) => ({
   type: UNDELETE_CLIENT_NOTE_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const undeleteClientNotes = (clientId: number, id: number) => dispatch => {
-  dispatch ({type: UNDELETE_CLIENT_NOTE});
-  return Note.postUndeleteClientNote ({clientId, id})
-    .then (response => dispatch (undeleteClientNotesSuccess (response)))
-    .catch (error => dispatch (undeleteClientNotesFailed (error)));
+  dispatch({ type: UNDELETE_CLIENT_NOTE });
+  return Note.postUndeleteClientNote({ clientId, id })
+    .then(response => dispatch(undeleteClientNotesSuccess(response)))
+    .catch(error => dispatch(undeleteClientNotesFailed(error)));
 };
 
 const deleteClientNotesSuccess = (notes: any) => ({
   type: DELETE_CLIENT_NOTE_SUCCESS,
-  data: {notes},
+  data: { notes },
 });
 
 const deleteClientNotesFailed = (error: any) => ({
   type: DELETE_CLIENT_NOTE_FAILED,
-  data: {error},
+  data: { error },
 });
 
 const deleteClientNotes = (clientId: number, noteId: number) => dispatch => {
-  dispatch ({type: DELETE_CLIENT_NOTE});
-  return Note.deleteClientNote ({clientId, noteId})
-    .then (response => dispatch (deleteClientNotesSuccess (response)))
-    .catch (error => dispatch (deleteClientNotesFailed (error)));
+  dispatch({ type: DELETE_CLIENT_NOTE });
+  return Note.deleteClientNote({ clientId, noteId })
+    .then(response => dispatch(deleteClientNotesSuccess(response)))
+    .catch(error => dispatch(deleteClientNotesFailed(error)));
 };
 
 const postClientNotesSuccess = (notes: any) => ({
   type: POST_CLIENT_NOTE_SUCCESS,
-  data: {notes},
+  data: { notes },
 });
 
 const postClientNotesFailed = (error: any) => ({
   type: POST_CLIENT_NOTE_FAILED,
-  data: {error},
+  data: { error },
 });
 
-const postClientNotes = (clientId:number, note: any) => dispatch => {
-  dispatch ({type: POST_CLIENT_NOTE});
-  return Note.postClientNote (clientId, note)
-    .then (response => {
-      dispatch (purgeForm ('ClientNoteScreenNew', clientId.toString ()));
-      return dispatch (postClientNotesSuccess (response));
+const postClientNotes = (clientId: number, note: any) => dispatch => {
+  dispatch({ type: POST_CLIENT_NOTE });
+  return Note.postClientNote(clientId, note)
+    .then(response => {
+      dispatch(purgeForm('ClientNoteScreenNew', clientId.toString()));
+      return dispatch(postClientNotesSuccess(response));
     })
-    .catch (error => {
+    .catch(error => {
       if (error.responseCode === apiConstants.responsesCodes.NetworkError) {
-        dispatch (
-          storeForm ('ClientNoteScreenNew', clientId.toString (), note)
+        dispatch(
+          storeForm('ClientNoteScreenNew', clientId.toString(), note)
         );
       }
-      return dispatch (postClientNotesFailed (error));
+      return dispatch(postClientNotesFailed(error));
     });
 };
 
-function getClientNotesSuccess (notes: any) {
+function getClientNotesSuccess(notes: any) {
   return {
     type: GET_CLIENT_NOTES_SUCCESS,
-    data: {notes},
+    data: { notes },
   };
 }
 
 const getClientNotesFailed = (error: any) => ({
   type: GET_CLIENT_NOTES_FAILED,
-  data: {error},
+  data: { error },
 });
 
-const getClientNotes = (clientId:number) => dispatch => {
-  dispatch ({type: GET_CLIENT_NOTES});
-  return Note.getClientNotes (clientId)
-    .then (response => dispatch (getClientNotesSuccess (response)))
-    .catch (error => dispatch (getClientNotesFailed (error)));
+const getClientNotes = (clientId: number) => dispatch => {
+  dispatch({ type: GET_CLIENT_NOTES });
+  return Note.getClientNotes(clientId)
+    .then(response => dispatch(getClientNotesSuccess(response)))
+    .catch(error => dispatch(getClientNotesFailed(error)));
 };
 
-function setNotes (notes: any) {
+function setNotes(notes: any) {
   return {
     type: SET_NOTES,
-    data: {notes},
+    data: { notes },
   };
 }
 
-function setFilteredNotes (filtered: any) {
+function setFilteredNotes(filtered: any) {
   return {
     type: SET_FILTERED_NOTES,
-    data: {filtered},
+    data: { filtered },
   };
 }
 
-function selectProvider (provider: any) {
+function selectProvider(provider: any) {
   return {
     type: SELECTED_PROVIDER,
-    data: {provider},
+    data: { provider },
   };
 }
 
-function setOnEditionNote (onEditionNote: any) {
+function setOnEditionNote(onEditionNote: any) {
   return {
     type: SET_ON_EDITION_NOTE,
-    data: {onEditionNote},
+    data: { onEditionNote },
   };
 }
 
@@ -194,6 +194,22 @@ const clientNotesActions = {
   setClientNoteNewForm,
   purgeClientNoteNewForm,
   purgeClientNoteUpdateForm,
+};
+
+export interface ClientNotesActions {
+  setNotes: typeof setNotes;
+  setFilteredNotes: typeof setFilteredNotes;
+  selectProvider: typeof selectProvider;
+  setOnEditionNote: typeof setOnEditionNote;
+  getClientNotes: typeof getClientNotes;
+  postClientNotes: typeof postClientNotes;
+  deleteClientNotes: typeof deleteClientNotes;
+  undeleteClientNotes: typeof undeleteClientNotes;
+  putClientNotes: typeof putClientNotes;
+  setClientNoteUpdateForm: typeof setClientNoteUpdateForm;
+  setClientNoteNewForm: typeof setClientNoteNewForm;
+  purgeClientNoteNewForm: typeof purgeClientNoteNewForm;
+  purgeClientNoteUpdateForm: typeof purgeClientNoteUpdateForm;
 };
 
 export default clientNotesActions;

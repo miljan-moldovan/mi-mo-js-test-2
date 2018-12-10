@@ -47,14 +47,14 @@ class CurrentTime extends React.Component {
   updateTime = () => {
     const currentTime = moment();
     let dTime = currentTime.diff(this.props.startTime, 'minutes');
-    dTime = ((dTime / this.props.apptGridSettings.step) * 30) - 5.5;
+    dTime = dTime / this.props.apptGridSettings.step * 30 - 5.5;
     Animated.timing(this.state.top, {
       toValue: dTime,
       duration: 300,
       easing: Easing.inOut(Easing.ease),
     }).start();
     this.setState({ currentTime: currentTime.format('h:mm') });
-  }
+  };
 
   render() {
     return (

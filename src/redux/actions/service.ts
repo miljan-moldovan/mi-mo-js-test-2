@@ -1,4 +1,5 @@
 import { Services, Queue } from '@/utilities/apiWrapper';
+import { ServiceCategories, Maybe, Service } from '@/models';
 
 export const SET_SERVICES = 'services/SET_SERVICES';
 export const SET_FILTERED_SERVICES = 'services/SET_FILTERED_SERVICES';
@@ -18,22 +19,22 @@ export const GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS =
 export const GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED =
   'services/GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED';
 
-const getServicesSuccess = services => ({
+const getServicesSuccess = (services: ServiceCategories[]): any => ({
   type: GET_SERVICES_SUCCESS,
   data: { services },
 });
 
-const getServicesFailed = error => ({
+const getServicesFailed = (error: Maybe<any>): any => ({
   type: GET_SERVICES_FAILED,
   data: { error },
 });
 
-const setSelectingExtras = isSelectingExtras => ({
+const setSelectingExtras = (isSelectingExtras: boolean): any => ({
   type: IS_SELECTING_EXTRAS,
   data: { isSelectingExtras },
 });
 
-const getServices = params => (dispatch, getState) => {
+const getServices = (params: any): any => (dispatch, getState) => {
   const { isSelectingExtras } = getState().serviceReducer;
   if (isSelectingExtras) {
     return false;
@@ -50,17 +51,17 @@ const getServices = params => (dispatch, getState) => {
     .catch(error => dispatch(getServicesFailed(error)));
 };
 
-const getQueueServiceEmployeeServicesSuccess = services => ({
+const getQueueServiceEmployeeServicesSuccess = (services: any): any => ({
   type: GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_SUCCESS,
   data: { services },
 });
 
-const getQueueServiceEmployeeServicesFailed = error => ({
+const getQueueServiceEmployeeServicesFailed = (error: any): any => ({
   type: GET_QUEUE_SERVICE_EMPLOYEE_SERVICES_FAILED,
   data: { error },
 });
 
-const getQueueServiceEmployeeServices = params => (dispatch, getState) => {
+const getQueueServiceEmployeeServices = (params: any): any => (dispatch, getState) => {
   const { isSelectingExtras } = getState().serviceReducer;
   if (isSelectingExtras) {
     return false;
@@ -74,35 +75,35 @@ const getQueueServiceEmployeeServices = params => (dispatch, getState) => {
     .catch(error => dispatch(getQueueServiceEmployeeServicesFailed(error)));
 };
 
-function setServices(services) {
+function setServices(services: any): any {
   return {
     type: SET_SERVICES,
     data: { services },
   };
 }
 
-function setSelectedService(selectedService) {
+function setSelectedService(selectedService: Maybe<Service>): any {
   return {
     type: SET_SELECTED_SERVICE,
     data: { selectedService },
   };
 }
 
-function setShowCategoryServices(showCategoryServices) {
+function setShowCategoryServices(showCategoryServices: boolean): any {
   return {
     type: SET_SHOW_CATEGORY_SERVICES,
     data: { showCategoryServices },
   };
 }
 
-function setCategoryServices(categoryServices) {
+function setCategoryServices(categoryServices: any): any {
   return {
     type: SET_CATEGORY_SERVICES,
     data: { categoryServices },
   };
 }
 
-function setFilteredServices(filtered) {
+function setFilteredServices(filtered: ServiceCategories[]): any {
   return {
     type: SET_FILTERED_SERVICES,
     data: { filtered },
@@ -122,12 +123,12 @@ const servicesActions = {
 export default servicesActions;
 
 export interface ServicesActions {
-  setSelectingExtras: (flag: boolean) => void;
-  setServices: (services: any) => void;
-  setFilteredServices: (filtered: any) => void;
-  getServices: (params: any) => void;
-  setShowCategoryServices: (show: boolean) => void;
-  setCategoryServices: (categories: any) => void;
-  setSelectedService: (service: any) => void;
-  getQueueServiceEmployeeServices: (params: any) => void;
+  setSelectingExtras: (flag: boolean) => any;
+  setServices: (services: any) => any;
+  setFilteredServices: (filtered: any) => any;
+  getServices: (params: any) => any;
+  setShowCategoryServices: (show: boolean) => any;
+  setCategoryServices: (categories: any) => any;
+  setSelectedService: (service: any) => any;
+  getQueueServiceEmployeeServices: (params: any) => any;
 }

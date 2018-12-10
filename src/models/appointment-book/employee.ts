@@ -41,6 +41,7 @@ export interface EmployeesStats {
 }
 
 export interface EmployeeSchedule {
+  isReceptionist?: Maybe<any>;
   scheduledIntervals: EmployeeScheduledInterval[];
   roomAssignment: RoomAssignment[];
   assistantAssignment: AssistantAssignment;

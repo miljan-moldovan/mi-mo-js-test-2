@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Text, View, TextInput} from 'react-native';
+import { Text, View, TextInput } from 'react-native';
 import moment from 'moment';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Icon from '@/components/common/Icon';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
@@ -66,24 +66,24 @@ class QueueHeader extends React.Component<Props, State>  {
   }
 
 
-  onSearchPress = () => this.props.onChangeSearchMode (true);
-  onSearchCancel = () => this.props.onChangeSearchMode (false);
+  onSearchPress = () => this.props.onChangeSearchMode(true);
+  onSearchCancel = () => this.props.onChangeSearchMode(false);
   onChangeSearchText = (searchText: String) =>
-    this.props.onChangeSearchText (searchText);
+    this.props.onChangeSearchText(searchText);
 
-  handlePressAction (i) {
-    const {navigation} = this.props;
+  handlePressAction(i) {
+    const { navigation } = this.props;
     switch (i) {
       case 0:
-        navigation.navigate ('TurnAway', {
+        navigation.navigate('TurnAway', {
           transition: 'SlideFromBottom',
-          date: moment (),
+          date: moment(),
           employee: null,
           apptBook: false,
         });
         break;
       case 1:
-        navigation.navigate ('QueueCombine', {transition: 'SlideFromBottom'});
+        navigation.navigate('QueueCombine', { transition: 'SlideFromBottom' });
         break;
       default:
         break;
@@ -93,128 +93,126 @@ class QueueHeader extends React.Component<Props, State>  {
   }
 
   handlePress = i => {
-    setTimeout (() => {
-      this.handlePressAction (i);
+    setTimeout(() => {
+      this.handlePressAction(i);
     }, 500);
     return false;
   };
 
   showActionSheet = () => {
-    this.state.salonActionSheet.show ();
+    this.state.salonActionSheet.show();
   };
 
   showBarsActionSheet = () => {
-    this.state.barsActionSheet.show ();
+    this.state.barsActionSheet.show();
   };
 
-  onLogoutPressed = () => this.props.auth.logout ();
+  onLogoutPressed = () => this.props.auth.logout();
 
   onChangeStore = () => {
-    this.props.storeActions.reselectMainStore ();
+    this.props.storeActions.reselectMainStore();
   };
   assignBarsActionSheet = item => {
-    this.setState({barsActionSheet: item});
+    this.setState({ barsActionSheet: item });
   };
-  render () {
-    if (this.props.navigationState.currentRoute !== 'Main') {
-      return null;
-    }
+  render() {
+
     return this.props.searchMode
-      ? <View style={[this.state.styles.headerContainer, {height: 52, paddingBottom: 10}]}>
+      ? <View style={[this.state.styles.headerContainer, { height: 52, paddingBottom: 10 }]}>
 
-          <View style={this.state.styles.searchContainer}>
-            {/* <FontAwesome style={this.state.styles.searchIcon}>{Icons.search}</FontAwesome> */}
-            <Icon name="search" type="light" style={this.state.styles.searchIcon} />
-            <TextInput
-              autoFocus
-              style={this.state.styles.search}
-              placeholderTextColor="rgba(76,134,217,1)"
-              onChangeText={this.onChangeSearchText}
-              value={this.props.searchText}
-              placeholder="Search"
-              returnKeyType="search"
-            />
-          </View>
-          <SalonTouchableOpacity onPress={this.onSearchCancel}>
-            <Text
-              style={[
-                this.state.styles.navButtonText,
-                {color: 'white', marginRight: 6, marginLeft: 6},
-              ]}
-            >
-              Cancel
-            </Text>
-          </SalonTouchableOpacity>
-
+        <View style={this.state.styles.searchContainer}>
+          {/* <FontAwesome style={this.state.styles.searchIcon}>{Icons.search}</FontAwesome> */}
+          <Icon name="search" type="light" style={this.state.styles.searchIcon} />
+          <TextInput
+            autoFocus
+            style={this.state.styles.search}
+            placeholderTextColor="rgba(76,134,217,1)"
+            onChangeText={this.onChangeSearchText}
+            value={this.props.searchText}
+            placeholder="Search"
+            returnKeyType="search"
+          />
         </View>
-      : <View style={[this.state.styles.headerContainer, {height: 44, paddingBottom: 10}]}>
+        <SalonTouchableOpacity onPress={this.onSearchCancel}>
+          <Text
+            style={[
+              this.state.styles.navButtonText,
+              { color: 'white', marginRight: 6, marginLeft: 6 },
+            ]}
+          >
+            Cancel
+            </Text>
+        </SalonTouchableOpacity>
 
-         <SalonActionSheet
-            ref={
-              o => { 
-                if(!this.state.salonActionSheet){
-                  this.setState({salonActionSheet:o}) 
-                }
+      </View>
+      : <View style={[this.state.styles.headerContainer, { height: 44, paddingBottom: 10 }]}>
+
+        <SalonActionSheet
+          ref={
+            o => {
+              if (!this.state.salonActionSheet) {
+                this.setState({ salonActionSheet: o })
               }
             }
-            options={options}
-            cancelButtonIndex={CANCEL_INDEX}
-            destructiveButtonIndex={DESTRUCTIVE_INDEX}
-            onPress={i => {
-              this.handlePress (i);
-            }}
-            wrapperStyle={{paddingBottom: 11}}
-          />
+          }
+          options={options}
+          cancelButtonIndex={CANCEL_INDEX}
+          destructiveButtonIndex={DESTRUCTIVE_INDEX}
+          onPress={i => {
+            this.handlePress(i);
+          }}
+          wrapperStyle={{ paddingBottom: 11 }}
+        />
 
-          <BarsActionSheet
-            ref={this.assignBarsActionSheet}
-            onLogout={this.onLogoutPressed}
-            navigation={this.props.navigation}
-            onChangeStore={this.onChangeStore}
-          />
+        <BarsActionSheet
+          ref={this.assignBarsActionSheet}
+          onLogout={this.onLogoutPressed}
+          navigation={this.props.navigation}
+          onChangeStore={this.onChangeStore}
+        />
 
+        <QueueNavButton
+          type="solid"
+          icon="bars"
+          style={{
+            alignItems: 'flex-start',
+            flex: 1,
+            paddingLeft: 8,
+            paddingTop: 5,
+          }}
+          onPress={this.showBarsActionSheet}
+        />
+        <View
+          style={{
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            flex: 1,
+            paddingRight: 6,
+          }}
+        >
+          <Text style={this.state.styles.headerTitle}>Queue</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            flex: 1,
+          }}
+        >
           <QueueNavButton
             type="solid"
-            icon="bars"
-            style={{
-              alignItems: 'flex-start',
-              flex: 1,
-              paddingLeft: 8,
-              paddingTop: 5,
-            }}
-            onPress={this.showBarsActionSheet}
+            icon="ellipsisH"
+            onPress={this.showActionSheet}
+            style={{ marginRight: 20, paddingTop: 5 }}
           />
-          <View
-            style={{
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              flex: 1,
-              paddingRight: 6,
-            }}
-          >
-            <Text style={this.state.styles.headerTitle}>Queue</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              flex: 1,
-            }}
-          >
-            <QueueNavButton
-              type="solid"
-              icon="ellipsisH"
-              onPress={this.showActionSheet}
-              style={{marginRight: 20, paddingTop: 5}}
-            />
-            <QueueNavButton
-              type="solid"
-              icon="search"
-              onPress={this.onSearchPress}
-              style={{marginRight: 2, paddingTop: 5}}
-            />
-          </View>
-        </View>;
+          <QueueNavButton
+            type="solid"
+            icon="search"
+            onPress={this.onSearchPress}
+            style={{ marginRight: 2, paddingTop: 5 }}
+          />
+        </View>
+      </View>;
   }
 }
 
@@ -222,9 +220,9 @@ const mapStateToProps = state => ({
   navigationState: state.navigationReducer,
 });
 const mapActionToProps = dispatch => ({
-  auth: bindActionCreators ({...loginActions as any}, dispatch),
-  storeActions: bindActionCreators ({...storeActions}, dispatch),
+  auth: bindActionCreators({ ...loginActions as any }, dispatch),
+  storeActions: bindActionCreators({ ...storeActions }, dispatch),
 });
-export default connect (mapStateToProps, mapActionToProps) (QueueHeader);
+export default connect(mapStateToProps, mapActionToProps)(QueueHeader);
 
 

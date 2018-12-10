@@ -54,18 +54,33 @@ export default class TimeColumn extends React.Component {
       const text = isOClock ? `${hour}${ampm}` : `${hour}:${minutes}`;
       const style = isOClock ? styles.rowTitleOClock : styles.rowTitle;
       return (
-        <View key={row.format('HH:mm')} style={styles.rowLabel} pointerEvents="box-none">
+        <View
+          key={row.format('HH:mm')}
+          style={styles.rowLabel}
+          pointerEvents="box-none"
+        >
           <Text style={style}>
             {text}
           </Text>
-          {isOClock ? <View style={{width: 4, height: 1, backgroundColor: '#000', position: 'absolute', top: -1, right: -1}}/> : null }
+          {isOClock
+            ? <View
+              style={{
+                width: 4,
+                height: 1,
+                backgroundColor: '#000',
+                position: 'absolute',
+                top: -1,
+                right: -1,
+              }}
+            />
+            : null}
         </View>
       );
     }
     return (
       <View key={row.id} style={styles.rowLabel} pointerEvents="box-none" />
     );
-  }
+  };
 
   render() {
     if (!this.props.schedule) {
@@ -73,7 +88,9 @@ export default class TimeColumn extends React.Component {
     }
     return (
       <View style={styles.container} pointerEvents="box-none">
-        { this.props.schedule.map((row, index) => this.renderRowLabel(row, index)) }
+        {this.props.schedule.map((row, index) =>
+          this.renderRowLabel(row, index)
+        )}
       </View>
     );
   }
