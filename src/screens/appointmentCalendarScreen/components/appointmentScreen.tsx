@@ -41,7 +41,6 @@ class AppointmentScreen extends React.Component {
     const onPressEllipsis = navigation.getParam ('onPressEllipsis', null);
     const onPressCalendar = navigation.getParam ('onPressCalendar', null);
     const filterOptions = navigation.getParam ('filterOptions', {});
-
     let subTitleText = null;
     const {company, position} = filterOptions;
     let titleText = 'All Providers';
@@ -906,6 +905,8 @@ class AppointmentScreen extends React.Component {
         break;
     }
 
+    const isNeedShowCurrentTime = startDate.format('MM-DD-YYYY') === moment().format('MM-DD-YYYY') && pickerMode === 'day';
+
     return (
       <View style={styles.mainContainer}>
         <BarsActionSheet
@@ -960,6 +961,7 @@ class AppointmentScreen extends React.Component {
           goToAppointmentId={goToAppointmentId}
           clearGoToAppointment={this.clearGoToAppointment}
           crossedAppointmentAfter={crossedAppointmentsIdAfter}
+          isNeedShowCurrentTime={isNeedShowCurrentTime}
         />
         {isLoading
           ? <View style={styles.loadingContainer}>

@@ -185,7 +185,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               ]
             ) => {
               let filteredEmployees = employees;
-
               if (selectedFilter === 'deskStaff') {
                 filteredEmployees = filteredEmployees.filter(
                   employee => employee.isReceptionist
