@@ -113,29 +113,6 @@ export default class FilterOptionsScreen extends React.Component {
     ),
   });
 
-  static flexFilter(list, info) {
-    let matchesFilter = [];
-    const matches = [];
-
-    matchesFilter = function match(item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n += 1) {
-        if (item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
-          count += 1;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
-  }
-
   constructor(props) {
     super(props);
 
@@ -212,22 +189,12 @@ export default class FilterOptionsScreen extends React.Component {
   }
 
   filterProviders = (searchText) => {
-    if (searchText && searchText.length > 0) {
-      const criteria = [
-        { Field: 'name', Values: [searchText.toLowerCase()] },
-        { Field: 'lastName', Values: [searchText.toLowerCase()] },
-      ];
-
-      const filtered = FilterOptionsScreen.flexFilter(this.props.providersState.providers, criteria);
-      this.props.providersActions.setFilteredProviders(filtered);
-    } else {
-      this.props.providersActions.setFilteredProviders(this.props.providersState.providers);
-    }
-  }
-
-  filterList = (searchText) => {
-    this.filterProviders(searchText);
     this.setState({ searchText });
+
+    const matches = this.props.providersState.providers.filter(item =>
+      item.fullName.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
+
+    this.props.providersActions.setFilteredProviders(matches);
   }
 
   renderActiveTab = () => {
@@ -358,7 +325,7 @@ export default class FilterOptionsScreen extends React.Component {
             borderColor="transparent"
             placeHolderText="Start typing to search"
             onChangeText={(text) => {
-              this.filterList(text);
+              this.filterProviders(text);
             }}
           />
         </View>
