@@ -25,6 +25,7 @@ import RebookAppointment from './rebookAppointment';
 import SalonAlert from '../../../components/SalonAlert';
 import BarsActionSheet from '../../../components/BarsActionSheet';
 import Colors from '../../../constants/Colors';
+import DateTime from '../../../constants/DateTime';
 
 import styles, {headerStyles} from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
@@ -905,7 +906,8 @@ class AppointmentScreen extends React.Component {
         break;
     }
 
-    const isNeedShowCurrentTime = startDate.format('MM-DD-YYYY') === moment().format('MM-DD-YYYY') && pickerMode === 'day';
+    const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
+      === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
 
     return (
       <View style={styles.mainContainer}>
