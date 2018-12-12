@@ -162,6 +162,10 @@ class ClientsScreen extends React.Component<Props, State> {
     });
   }
 
+  componentWillUnmount() {
+    this.props.clientsActions.setClients([]);
+  }
+
   state = {
     headerProps: {
       title: 'Clients',
@@ -342,6 +346,7 @@ class ClientsScreen extends React.Component<Props, State> {
   render() {
     const { onChangeClient, onChangeWithNavigation } = this.params;
     const onChange = !onChangeClient && !onChangeWithNavigation ? null : this.onChangeClient;
+    console.log(this.props)
     return (
       <View style={styles.container}>
         <NavigationEvents

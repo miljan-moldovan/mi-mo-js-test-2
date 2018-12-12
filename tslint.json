@@ -50,14 +50,14 @@
       "ignore-bound-class-methods"
     ], // disable checking of semi-colon for class bound methods
     "object-literal-sort-keys": false,
-    "no-duplicate-imports": true, // disallow repeating of imports from the same module 
+    "no-duplicate-imports": true, // disallow repeating of imports from the same module
     // react specific rules (more info here: https://github.com/palantir/tslint-react#rules)
     "jsx-alignment": true, // enforces a consistent style for multiline JSX elements
     "jsx-no-bind": true, // disallow function binding in JSX attributes
     "jsx-no-lambda": true, // disallow creation of anonymous functions inside the render method
     "jsx-no-multiline-js": false, // disable checking of multi-line JavaScript inside JSX
     "jsx-boolean-value": false,
-    "space-before-function-paren": false,
+    "space-before-function-paren": false
     // "max-classes-per-file": [
     //   false
     // ] // disable rule for limiting the number of classes per file
