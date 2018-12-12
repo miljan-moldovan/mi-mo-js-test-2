@@ -113,24 +113,11 @@ class ClientList extends React.Component {
     );
   }
 
-  constructor (props) {
-    super (props);
-    this.keyboardHeight = new Animated.Value (0);
-  }
-
   componentWillMount () {
     this.setState ({letterGuide: this.renderLetterGuide ()});
   }
 
   componentDidMount () {
-    this.keyboardDidShowSub = Keyboard.addListener (
-      'keyboardDidShow',
-      this.keyboardWillShow
-    );
-    this.keyboardDidHideSub = Keyboard.addListener (
-      'keyboardDidHide',
-      this.keyboardWillHide
-    );
 
     const wait = new Promise (resolve => setTimeout (resolve, 500)); // Smaller number should work
     wait.then (() => {
@@ -141,24 +128,6 @@ class ClientList extends React.Component {
       }
     });
   }
-
-  componentWillUnmount () {
-    this.keyboardDidShowSub.remove ();
-    this.keyboardDidHideSub.remove ();
-  }
-
-  keyboardWillShow = event => {
-    Animated.timing (this.keyboardHeight, {
-      duration: event.duration,
-      toValue: event.endCoordinates.height,
-    }).start ();
-  };
-
-  keyboardWillHide = event => {
-    Animated.timing (this.keyboardHeight, {
-      toValue: 0,
-    }).start ();
-  };
 
   goToClientInfo = client => {
     if (client.id > 1) {
