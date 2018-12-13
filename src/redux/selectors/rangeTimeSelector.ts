@@ -10,8 +10,8 @@ const rangeTimeSelector = createSelector(
   (settings, intervals = []) => {
     const { step = 15 } = settings;
     const firstInterval = intervals[0];
-    const initMinDate = moment(firstInterval.start, 'hh:mm:ss');
-    const initMaxDate = moment(firstInterval.end, 'hh:mm:ss');
+    const initMinDate = moment(firstInterval && firstInterval.start || '00:00:00', 'hh:mm:ss');
+    const initMaxDate = moment(firstInterval && firstInterval.end || '23:59:00', 'hh:mm:ss');
 
     return intervals.reduce((agg, schedule) => {
       const minimumDate = moment(schedule.start, 'hh:mm:ss');

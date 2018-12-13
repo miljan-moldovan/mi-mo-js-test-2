@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {ActivityIndicator, View, Text} from 'react-native';
-import moment, {isMoment} from 'moment';
+import { ActivityIndicator, View, Text } from 'react-native';
+import moment, { isMoment } from 'moment';
 import uuid from 'uuid/v4';
-import {get, isNull, cloneDeep} from 'lodash';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { get, isNull, cloneDeep } from 'lodash';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import DatePicker from '../../../components/modals/SalonDatePicker';
 import ServiceSection from './serviceSection';
@@ -11,7 +11,7 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import LoadingOverlay from '../../../components/LoadingOverlay';
 import Colors from '../../../constants/Colors';
 import DateTime from '../../../constants/DateTime';
-import {Services} from '../../../utilities/apiWrapper';
+import { Services } from '../../../utilities/apiWrapper';
 
 import {
   SectionDivider,
@@ -20,21 +20,19 @@ import {
   InputRadioGroup,
   InputDivider,
   ClientInput,
-  InputButton,
   SectionTitle,
   SalonTimePicker,
 } from '../../../components/formHelpers';
 
 import styles from './styles';
-import headerStyles from '../../../constants/headerStyles';
 import SalonHeader from '../../../components/SalonHeader';
 
-class TurnAwayScreen extends React.Component {
-  static navigationOptions = ({navigation}) => {
+class TurnAwayScreen extends React.Component<any, any> {
+  static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
     const handleDone = params.handleDone || (() => null);
-    const doneButtonStyle = {color: canSave ? '#FFFFFF' : '#19428A'};
+    const doneButtonStyle = { color: canSave ? '#FFFFFF' : '#19428A' };
     return {
       header: (
         <SalonHeader
@@ -64,37 +62,37 @@ class TurnAwayScreen extends React.Component {
     };
   };
 
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
 
-    props.navigation.setParams ({handleDone: this.handleDone});
+    props.navigation.setParams({ handleDone: this.handleDone });
 
     const services = [];
-    const {startTime} = this.params;
-    const {apptGridSettings: {step}} = this.props;
-    const fromTime = moment (startTime);
-    const employee = props.navigation.getParam ('employee', null);
+    const { startTime } = this.params;
+    const { apptGridSettings: { step } } = this.props;
+    const fromTime = moment().startOf('hour');
+    const employee = props.navigation.getParam('employee', null);
     const service = {
-      itemId: uuid (),
+      itemId: uuid(),
       provider: employee
         ? employee
         : {
-            id: 0,
-            name: 'First',
-            lastName: 'Available',
-            fullName: 'First Available',
-          },
+          id: 0,
+          name: 'First',
+          lastName: 'Available',
+          fullName: 'First Available',
+        },
       myEmployeeId: null,
       service: null,
       fromTime,
-      toTime: moment (fromTime).add (step, 'm'),
-      length: moment.duration (step, 'minutes'),
+      toTime: moment(fromTime).add(step, 'm'),
+      length: moment.duration(step, 'minutes'),
     };
-    services.push (service);
+    services.push(service);
 
     this.state = {
       isLoading: false,
-      date: moment (),
+      date: moment(),
       isOpenDatePicker: false,
       isModalVisible: false,
       selectedClient: null,
@@ -104,45 +102,45 @@ class TurnAwayScreen extends React.Component {
       otherReason: '',
     };
 
-    this.checkCanSave ();
+    this.checkCanSave();
   }
 
-  componentDidMount () {
-    this.props.turnAwayReasonsActions.getTurnAwayReasons (
-      this.finishedGetTurnAwayReasons
+  componentDidMount() {
+    this.props.turnAwayReasonsActions.getTurnAwayReasons(
+      this.finishedGetTurnAwayReasons,
     );
   }
 
   onChangeOtherReason = text =>
-    this.setState ({otherReason: text}, this.checkCanSave);
+    this.setState({ otherReason: text }, this.checkCanSave);
 
   onPressInputGroup = (option, index) => {
     const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[
-      this.props.turnAwayReasonsState.turnAwayReasons.length - 1
-    ];
+    this.props.turnAwayReasonsState.turnAwayReasons.length - 1
+      ];
 
     const isEditableOtherReason = option.id === selectedReasonCode.id;
 
-    let {otherReason} = this.state;
+    let { otherReason } = this.state;
 
     if (!isEditableOtherReason) {
       otherReason = '';
     }
-    this.setState (
+    this.setState(
       {
         otherReason,
         isEditableOtherReason,
         selectedReasonCode: option,
       },
-      this.checkCanSave
+      this.checkCanSave,
     );
   };
 
-  get params () {
+  get params() {
     const params = this.props.navigation.state.params || {};
     const {
       employee,
-      fromTime: startTime = moment ('7:00:00', DateTime.time),
+      fromTime: startTime = moment('7:00:00', DateTime.time),
     } = params;
     return {
       employee,
@@ -150,21 +148,21 @@ class TurnAwayScreen extends React.Component {
     };
   }
 
-  get totalDuration () {
-    const {services} = this.state;
-    return services.reduce (
-      (agg, srv) => agg.add (srv.length),
-      moment.duration (0)
+  get totalDuration() {
+    const { services } = this.state;
+    return services.reduce(
+      (agg, srv) => agg.add(srv.length),
+      moment.duration(0),
     );
   }
 
-  get hasInvalidServices () {
-    const {services} = this.state;
+  get hasInvalidServices() {
+    const { services } = this.state;
     let hasInvalid = false;
 
     if (services.length > 0) {
-      services.forEach (itm => {
-        hasInvalid = !this.validateServiceItem (itm);
+      services.forEach(itm => {
+        hasInvalid = !this.validateServiceItem(itm);
       });
     }
 
@@ -182,23 +180,23 @@ class TurnAwayScreen extends React.Component {
       this.state.selectedReasonCode !== null &&
       !this.hasInvalidServices
     ) {
-      this.props.navigation.setParams ({canSave: true});
+      this.props.navigation.setParams({ canSave: true });
     } else {
-      this.props.navigation.setParams ({canSave: false});
+      this.props.navigation.setParams({ canSave: false });
     }
   };
 
   goBack = (result, userMessage) => {
     if (result) {
-      alert (userMessage);
-      this.props.navigation.goBack ();
+      alert(userMessage);
+      this.props.navigation.goBack();
     }
   };
 
   finishedGetTurnAwayReasons = result => {
     const selectedReasonCode = this.props.turnAwayReasonsState
       .turnAwayReasons[0];
-    this.setState (
+    this.setState(
       {
         // date: moment (),
         // isModalVisible: false,
@@ -208,23 +206,23 @@ class TurnAwayScreen extends React.Component {
         isEditableOtherReason: false,
         otherReason: '',
       },
-      this.checkCanSave
+      this.checkCanSave,
     );
   };
 
   handleDone = () => {
     const services = [];
-    const selectedServices = JSON.parse (JSON.stringify (this.state.services));
+    const selectedServices = JSON.parse(JSON.stringify(this.state.services));
     for (let i = 0; i < selectedServices.length; i += 1) {
       const service = selectedServices[i];
       delete service.service;
       delete service.provider;
-      service.toTime = moment (service.toTime).format (DateTime.time);
-      service.fromTime = moment (service.fromTime).format (DateTime.time);
-      services.push (service);
+      service.toTime = moment(service.toTime).format(DateTime.time);
+      service.fromTime = moment(service.fromTime).format(DateTime.time);
+      services.push(service);
     }
     const turnAway = {
-      date: this.state.date.format (DateTime.date),
+      date: this.state.date.format(DateTime.date),
       reasonCode: this.state.selectedReasonCode.id,
       reason: this.state.otherReason.length > 0 ? this.state.otherReason : null,
       myClientId: this.state.selectedClient
@@ -234,16 +232,16 @@ class TurnAwayScreen extends React.Component {
       services,
     };
 
-    this.props.turnAwayActions.postTurnAway (turnAway, this.goBack);
+    this.props.turnAwayActions.postTurnAway(turnAway, this.goBack);
   };
 
   handleAddService = () => {
-    const {apptGridSettings: {step}} = this.props;
-    const {employee, startTime} = this.params;
-    const services = cloneDeep (this.state.services);
-    const fromTime = moment (startTime).add (this.totalDuration);
+    const { apptGridSettings: { step } } = this.props;
+    const { employee, startTime } = this.params;
+    const services = cloneDeep(this.state.services);
+    const fromTime = moment(startTime).add(this.totalDuration);
     const service = {
-      itemId: uuid (),
+      itemId: uuid(),
       provider: {
         id: 0,
         name: 'First',
@@ -252,157 +250,157 @@ class TurnAwayScreen extends React.Component {
       },
       myEmployeeId: null,
       fromTime,
-      toTime: moment (fromTime).add (step, 'minutes'),
-      length: moment.duration (step, 'minutes'),
+      toTime: moment(fromTime).add(step, 'minutes'),
+      length: moment.duration(step, 'minutes'),
     };
-    services.push (service);
-    this.setState ({services}, this.checkCanSave);
+    services.push(service);
+    this.setState({ services }, this.checkCanSave);
   };
 
   handleRemoveService = itemId => {
-    const {startTime} = this.params;
-    const services = cloneDeep (this.state.services);
-    const index = services.findIndex (itm => itm.itemId === itemId);
-    services.splice (index, 1);
-    this.setState (
-      {services: this.resetTimeForServices (services, index, startTime)},
-      this.checkCanSave
+    const { startTime } = this.params;
+    const services = cloneDeep(this.state.services);
+    const index = services.findIndex(itm => itm.itemId === itemId);
+    services.splice(index, 1);
+    this.setState(
+      { services: this.resetTimeForServices(services, index, startTime) },
+      this.checkCanSave,
     );
   };
 
   handleUpdateService = (itemId, updatedService) => {
-    const {startTime} = this.params;
-    const services = cloneDeep (this.state.services);
-    const {provider, service} = updatedService;
-    const serviceId = get (service, 'id');
-    const employeeId = get (provider, 'id');
-    const index = services.findIndex (itm => itm.itemId === itemId);
+    const { startTime } = this.params;
+    const services = cloneDeep(this.state.services);
+    const { provider, service } = updatedService;
+    const serviceId = get(service, 'id');
+    const employeeId = get(provider, 'id');
+    const index = services.findIndex(itm => itm.itemId === itemId);
     if (!employeeId || employeeId <= 0) {
-      const length = moment.duration (get (service, 'maxDuration'));
-      services[index] = {...updatedService, length};
-      this.setState (
+      const length = moment.duration(get(service, 'maxDuration'));
+      services[index] = { ...updatedService, length };
+      this.setState(
         {
-          services: this.resetTimeForServices (services, index, startTime),
+          services: this.resetTimeForServices(services, index, startTime),
           isLoading: false,
         },
-        this.checkCanSave
+        this.checkCanSave,
       );
     }
-    this.setState ({isLoading: true}, () => {
-      Services.getServiceEmployeeCheck ({
+    this.setState({ isLoading: true }, () => {
+      Services.getServiceEmployeeCheck({
         employeeId,
         serviceId,
       })
-        .then (check => {
-          const length = moment.duration (get (check, 'duration'));
-          services[index] = {...updatedService, length};
-          this.setState (
+        .then(check => {
+          const length = moment.duration(get(check, 'duration'));
+          services[index] = { ...updatedService, length };
+          this.setState(
             {
-              services: this.resetTimeForServices (services, index, startTime),
+              services: this.resetTimeForServices(services, index, startTime),
               isLoading: false,
             },
-            this.checkCanSave
+            this.checkCanSave,
           );
         })
-        .catch (error => {
-          const length = moment.duration (get (service, 'maxDuration'));
-          services[index] = {...updatedService, length};
-          this.setState (
+        .catch(error => {
+          const length = moment.duration(get(service, 'maxDuration'));
+          services[index] = { ...updatedService, length };
+          this.setState(
             {
-              services: this.resetTimeForServices (services, index, startTime),
+              services: this.resetTimeForServices(services, index, startTime),
               isLoading: false,
             },
-            this.checkCanSave
+            this.checkCanSave,
           );
         });
     });
   };
 
-  handleDateModal = () => this.setState ({isModalVisible: true});
+  handleDateModal = () => this.setState({ isModalVisible: true });
 
   onChangeDate = data => {
-    if (moment (data).isValid ()) {
-      this.setState (
+    if (moment(data).isValid()) {
+      this.setState(
         {
-          date: moment (data),
+          date: moment(data),
         },
-        this.checkCanSave
+        this.checkCanSave,
       );
     }
   };
 
   handleClientSelection = client => {
     const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[
-      this.props.turnAwayReasonsState.turnAwayReasons.length - 1
-    ];
-    this.setState (
+    this.props.turnAwayReasonsState.turnAwayReasons.length - 1
+      ];
+    this.setState(
       {
         selectedClient: client,
         isEditableOtherReason: this.state.selectedReasonCode.id ===
           selectedReasonCode.id,
       },
-      this.checkCanSave
+      this.checkCanSave,
     );
   };
 
   handleRemoveClient = () =>
-    this.setState ({selectedClient: null}, this.checkCanSave);
+    this.setState({ selectedClient: null }, this.checkCanSave);
 
   toggleDatePicker = () =>
-    this.setState ({isOpenDatePicker: !this.state.isOpenDatePicker});
+    this.setState({ isOpenDatePicker: !this.state.isOpenDatePicker });
 
   validateServiceItem = serviceItem => {
     const valid =
-      isMoment (get (serviceItem, 'fromTime', null)) &&
-      isMoment (get (serviceItem, 'toTime', null)) &&
-      !isNull (get (serviceItem, 'provider', null)) &&
-      !isNull (get (serviceItem, 'service', null));
+      isMoment(get(serviceItem, 'fromTime', null)) &&
+      isMoment(get(serviceItem, 'toTime', null)) &&
+      !isNull(get(serviceItem, 'provider', null)) &&
+      !isNull(get(serviceItem, 'service', null));
     return valid;
   };
 
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: navigation => {
-      navigation.goBack ();
+      navigation.goBack();
     },
   });
 
   resetTimeForServices = (items, index, initialFromTime) =>
-    items.map ((item, i) => {
+    items.map((item, i) => {
       if (i > index) {
         const prevItem = items[i - 1];
         let fromTime = initialFromTime;
         if (prevItem) {
-          fromTime = get (prevItem, 'toTime', initialFromTime);
+          fromTime = get(prevItem, 'toTime', initialFromTime);
         }
         return {
           ...item,
           fromTime,
-          toTime: moment (item.fromTime).add (item.length),
+          toTime: moment(item.fromTime).add(item.length),
         };
       }
       return item;
     });
 
-  render () {
+  render() {
     const {
-      apptGridSettings: {step = 15},
-      turnAwayState: {isLoadingState},
-      navigation: {navigate, state: {params = {}}},
-      turnAwayReasonsState: {isLoading: isLoadingReasons},
+      apptGridSettings: { step = 15 },
+      turnAwayState: { isLoadingState },
+      navigation: { navigate, state: { params = {} } },
+      turnAwayReasonsState: { isLoading: isLoadingReasons },
     } = this.props;
-    const {apptBook = false} = params;
-    const {date, isLoading, isOpenDatePicker, selectedReasonCode} = this.state;
+    const { apptBook = false } = params;
+    const { date, isLoading, isOpenDatePicker, selectedReasonCode } = this.state;
     const inputGroupLoadingStyle = isLoadingReasons
       ? {
-          height: 50,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }
       : {};
     return (
       <View style={styles.container}>
-        {(isLoading || isLoadingState) && <LoadingOverlay />}
+        {(isLoading || isLoadingState) && <LoadingOverlay/>}
         <KeyboardAwareScrollView
           extraHeight={80}
           keyboardShouldPersistTaps="always"
@@ -419,9 +417,9 @@ class TurnAwayScreen extends React.Component {
               isOpen={isOpenDatePicker}
               toggle={this.toggleDatePicker}
               onChange={this.onChangeDate}
-              minimumDate={moment ().toDate ()}
+              minimumDate={moment().toDate()}
             />
-            <InputDivider />
+            <InputDivider/>
             <ClientInput
               apptBook={apptBook}
               label={false}
@@ -434,13 +432,13 @@ class TurnAwayScreen extends React.Component {
                   : null
               }
               navigate={navigate}
-              headerProps={{title: 'Clients', ...this.cancelButton ()}}
+              headerProps={{ title: 'Clients', ...this.cancelButton() }}
               onChange={this.handleClientSelection}
             />
           </InputGroup>
-          <SectionTitle value="SERVICES" />
+          <SectionTitle value="SERVICES"/>
           <ServiceSection
-            date={moment (date)}
+            date={moment(date)}
             apptBook={false}
             minuteInterval={step}
             services={this.state.services}
@@ -452,23 +450,23 @@ class TurnAwayScreen extends React.Component {
             navigate={navigate}
             client={this.state.selectedClient}
           />
-          <SectionDivider />
+          <SectionDivider/>
           <InputGroup style={inputGroupLoadingStyle}>
             {isLoadingReasons
-              ? <ActivityIndicator color={Colors.mediumGrey} />
+              ? <ActivityIndicator color={Colors.mediumGrey}/>
               : <React.Fragment>
-                  <InputRadioGroup
-                    options={this.props.turnAwayReasonsState.turnAwayReasons}
-                    defaultOption={selectedReasonCode}
-                    onPress={this.onPressInputGroup}
-                  />
-                  <InputText
-                    value={this.state.otherReason}
-                    isEditable={this.state.isEditableOtherReason}
-                    onChangeText={this.onChangeOtherReason}
-                    placeholder="Please specify"
-                  />
-                </React.Fragment>}
+                <InputRadioGroup
+                  options={this.props.turnAwayReasonsState.turnAwayReasons}
+                  defaultOption={selectedReasonCode}
+                  onPress={this.onPressInputGroup}
+                />
+                <InputText
+                  value={this.state.otherReason}
+                  isEditable={this.state.isEditableOtherReason}
+                  onChangeText={this.onChangeOtherReason}
+                  placeholder="Please specify"
+                />
+              </React.Fragment>}
           </InputGroup>
           <DatePicker
             onPress={this.handleSelectDate}
@@ -483,13 +481,13 @@ class TurnAwayScreen extends React.Component {
 TurnAwayScreen.defaultProps = {};
 
 TurnAwayScreen.propTypes = {
-  apptGridSettings: PropTypes.shape ({
+  apptGridSettings: PropTypes.shape({
     step: PropTypes.number.isRequired,
   }).isRequired,
-  turnAwayReasonsActions: PropTypes.shape ({
+  turnAwayReasonsActions: PropTypes.shape({
     getTurnAwayReasons: PropTypes.func.isRequired,
   }).isRequired,
-  turnAwayActions: PropTypes.shape ({
+  turnAwayActions: PropTypes.shape({
     postTurnAway: PropTypes.func.isRequired,
   }).isRequired,
   turnAwayReasonsState: PropTypes.any.isRequired,
