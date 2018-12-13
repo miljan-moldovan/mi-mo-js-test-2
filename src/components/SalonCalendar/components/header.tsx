@@ -2,12 +2,12 @@ import * as React from 'react';
 import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
 import { isNull } from 'lodash';
 
-import SalonAvatar from '../../../SalonAvatar';
-import FirstAvailableBtn from '../firstAvailableBtn';
-import colors from '../../../../constants/appointmentColors';
+import SalonAvatar from '@/components/SalonAvatar';
+import FirstAvailableBtn from './firstAvailableBtn';
+import colors from '@/constants/appointmentColors';
 import getEmployeePhotoSource
-  from '../../../../utilities/helpers/getEmployeePhotoSource';
-import { DefaultAvatar } from '../../../../components/formHelpers';
+  from '@/utilities/helpers/getEmployeePhotoSource';
+import { DefaultAvatar } from '@/components/formHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -173,13 +173,14 @@ export default class Header extends React.Component {
       selectedFilter,
       showFirstAvailable,
       handleShowfirstAvailalble,
+      showAvailability
     } = this.props;
-    const width = selectedFilter === 'providers' && !isDate ? 166 : 36;
+    const width = showAvailability ? 166 : 36;
 
     return (
       <View style={styles.container} pointerEvents="box-none">
         <View style={[styles.firstCell, { width }]}>
-          {selectedFilter === 'providers' && !isDate
+          {showAvailability
             ? <FirstAvailableBtn />
             : null}
         </View>

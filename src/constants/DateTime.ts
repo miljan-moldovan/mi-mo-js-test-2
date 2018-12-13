@@ -1,4 +1,4 @@
-export default {
+export const dateTimeConstants =  {
   time: 'HH:mm:ss',
   timeOld: 'HH:mm',
   displayTime: 'hh:mm A',
@@ -9,3 +9,5 @@ export default {
   dateForPrint: 'M/DD/YYYY',
   dateWithMonthShort: 'MMM D YYYY',
 };
+
+export default dateTimeConstants;

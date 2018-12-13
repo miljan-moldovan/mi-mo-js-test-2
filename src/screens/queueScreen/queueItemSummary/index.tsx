@@ -5,6 +5,7 @@ import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../queueTimeNote';
 import StatusEnum from '../../../constants/Status';
 import QueueTypes from '../../../constants/QueueTypes';
+import ListItem from '../queueListItemSummary';
 import createStyleSheet from './styles';
 
 import ClientInfoButton from '../../../components/ClientInfoButton';
@@ -266,8 +267,7 @@ export default class QueueItemSummary extends React.Component<Props, State> {
   }
 
   renderItem = ({ item }) => (
-    //<ListItem {...this.props} service={item} />
-    <View></View>
+    <ListItem {...this.props} service={item} />
   )
 
   render() {

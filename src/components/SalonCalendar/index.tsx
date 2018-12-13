@@ -1,3 +1,3 @@
-import SalonCalendar from './components/newCalendar/calendar';
+import SalonCalendar from './components/calendar';
 
 export default SalonCalendar;

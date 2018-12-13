@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { groupBy, orderBy, map, filter, includes } from 'lodash';
 import {
+  Settings,
   Store,
   AppointmentBook,
   Appointment,
@@ -8,6 +9,7 @@ import {
 } from '../../utilities/apiWrapper';
 import StoreActions from './store';
 import { PureProvider, Maybe, StoreCompany, ProviderPosition } from '@/models';
+import { dateTimeConstants } from '@/constants';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY =
@@ -147,6 +149,43 @@ const setGridResourceViewSuccess = (
   },
 });
 
+const reloadGridCallback = ({
+  employees, selectedFilter, selectedProviders,
+  appointments, storeInfo, scheduleExceptions, availabilityItem,
+  blockTimes, storeRooms, dispatch
+}) => {
+  let filteredEmployees = employees;
+
+  if (selectedFilter === 'deskStaff') {
+    filteredEmployees = filteredEmployees.filter(
+      employee => employee.isReceptionist
+    );
+  } else if (selectedFilter === 'rebookAppointment') {
+    filteredEmployees = selectedProviders;
+  }
+
+  const employeesAppointment = orderBy(
+    filteredEmployees,
+    'appointmentOrder'
+  );
+  const orderedAppointments = orderBy(appointments, appt =>
+    moment(appt.fromTime, dateTimeConstants.timeOld).unix()
+  );
+  dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
+  dispatch(
+    StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
+  );
+  return dispatch(
+    setGridAllViewSuccess(
+      employeesAppointment,
+      orderedAppointments,
+      availabilityItem.timeSlots,
+      blockTimes,
+      storeRooms
+    )
+  );
+};
+
 const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const {
     selectedFilter,
@@ -166,7 +205,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
         return Promise.all([
           AppointmentBook.getAppointmentBookEmployees(date, filterOptions),
           Appointment.getAppointmentsByDate(date),
-          AppointmentBook.getAppointmentBookAvailability(date),
+          Settings.getSettings(),
           AppointmentBook.getBlockTimes(date),
           Store.getScheduleExceptions({ fromDate: date, toDate: date }),
           Store.getStoreInfo(),
@@ -177,42 +216,28 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               [
                 employees,
                 appointments,
-                availabilityItem,
+                settings,
                 blockTimes,
                 scheduleExceptions,
                 storeInfo,
                 storeRooms,
               ]
             ) => {
-              let filteredEmployees = employees;
-              if (selectedFilter === 'deskStaff') {
-                filteredEmployees = filteredEmployees.filter(
-                  employee => employee.isReceptionist
-                );
-              } else if (selectedFilter === 'rebookAppointment') {
-                filteredEmployees = selectedProviders;
+              const useFirstAvailable = settings.find((itm) => itm.settingName === 'UseFirstAvailable');
+              if (useFirstAvailable && useFirstAvailable.settingValue) {
+                return AppointmentBook.getAppointmentBookAvailability(date).then(availabilityItem => reloadGridCallback({
+                  employees, selectedFilter, selectedProviders,
+                  appointments, storeInfo, scheduleExceptions, availabilityItem,
+                  blockTimes, storeRooms, dispatch
+                }));
+              } else {
+                const availabilityItem = { timeSlots: null };
+                return reloadGridCallback({
+                  employees, selectedFilter, selectedProviders,
+                  appointments, storeInfo, scheduleExceptions, availabilityItem,
+                  blockTimes, storeRooms, dispatch
+                });
               }
-
-              const employeesAppointment = orderBy(
-                filteredEmployees,
-                'appointmentOrder'
-              );
-              const orderedAppointments = orderBy(appointments, appt =>
-                moment(appt.fromTime, 'HH:mm').unix()
-              );
-              dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
-              dispatch(
-                StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
-              );
-              dispatch(
-                setGridAllViewSuccess(
-                  employeesAppointment,
-                  orderedAppointments,
-                  availabilityItem.timeSlots,
-                  blockTimes,
-                  storeRooms
-                )
-              );
             }
           )
           .catch(ex => {
@@ -460,4 +485,4 @@ export interface ApptBookActions {
   setFilterOptionShowOffEmployees: (show: boolean) => any;
   hideToast: () => any;
   setToast: (toast: Maybe<Object>) => any;
-};
+}

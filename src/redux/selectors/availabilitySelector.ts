@@ -9,8 +9,9 @@ const availabiltiySelector = state => state.appointmentBookReducer.availability;
 const getAvailabilityWithGaps = createSelector (
   [availabiltiySelector, apptGridSettingsSelector],
   (availability, apptGridSettings) => {
-    const newAvailability = [];
+    let newAvailability = null;
     if (availability) {
+      newAvailability = [];
       let currentTime = moment (apptGridSettings.minStartTime, 'HH:mm');
       let count = 0;
       times (apptGridSettings.numOfRow, () => {
