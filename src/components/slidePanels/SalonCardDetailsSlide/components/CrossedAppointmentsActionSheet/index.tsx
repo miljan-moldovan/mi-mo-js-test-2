@@ -47,10 +47,12 @@ class CrossedAppointmentsActionSheet extends React.Component {
       this.props.handleOnPress(appointments[index]);
     }
 
+    this.props.slidingUpPanelRefs.transitionTo(this.props.previousPosition);
     return false;
   }
 
   show = () => {
+    this.props.slidingUpPanelRefs.transitionTo(10);
     this.SalonActionSheet.show();
   };
 
@@ -81,6 +83,8 @@ CrossedAppointmentsActionSheet.propTypes = {
     }).isRequired,
   })).isRequired,
   handleOnPress: PropTypes.func.isRequired,
+  slidingUpPanelRefs: PropTypes.object.isRequired,
+  previousPosition: PropTypes.number,
 };
 
 export default CrossedAppointmentsActionSheet;

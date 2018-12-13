@@ -421,11 +421,13 @@ class SalonCardDetailsSlide extends React.Component {
         renderDraggableHeader={this.renderHeader}
         onDragEnd={this.hanleOnDragEnd}
         defaultYPosition={this.state.defaultPosition}
-        ref={(slidingPanel) => { this.slidingPanel = slidingPanel; }}
+        ref={(slidingPanel) => { this.slidingPanel = slidingPanel }}
       >
         {this.state.appointment && this.renderContent()}
         {this.props.crossedAppointments.length > 0 && (
           <ActionSheet
+            previousPosition={this.state.previousHeight}
+            slidingUpPanelRefs={this.slidingPanel}
             ref={this.assignActionSheet}
             appointments={this.props.crossedAppointments}
             handleOnPress={this.props.changeAppointment}
