@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import moment from 'moment';
 
-import SalonTouchableOpacity from '../../../SalonTouchableOpacity';
+import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 
 const styles = StyleSheet.create({
   textStyle: {

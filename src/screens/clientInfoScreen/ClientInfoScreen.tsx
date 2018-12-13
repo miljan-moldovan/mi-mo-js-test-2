@@ -51,9 +51,12 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
 
     const canSave = params.canSave || false;
     const showDoneButton = params.showDoneButton;
-    const handleDone = navigation.state.params.handleDone ?
-      navigation.state.params.handleDone :
-      () => { Alert.alert('Not Implemented'); };
+    const handleDone = () => {
+      if (navigation.state.params.handleDone) {
+        navigation.state.params.handleDone();
+      }
+       navigation.goBack();
+    }
 
     const handleBack = params.handleBack ?
       () => { params.handleBack(); navigation.goBack(); } :

@@ -204,7 +204,7 @@ class ClientDetails extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    
+
     this.state = {
       pointerEvents: '',
       clientReferralType: '',
@@ -394,7 +394,7 @@ class ClientDetails extends React.Component<Props, State> {
 
 
   onValidatePhoneWork = isValid => {
-    
+
       const phone = find(this.state.client.phones, { type: 0 });
 
       const isValidPhoneWork = phone !== undefined ? isValid : true;
@@ -454,7 +454,7 @@ class ClientDetails extends React.Component<Props, State> {
 };
   onValidateStreet1 = isValid => {
 
-    
+
     const isValidStreet1 = this.state.requiredFields.address ? isValid : true;
 
     this.checkValidation();
@@ -695,7 +695,7 @@ class ClientDetails extends React.Component<Props, State> {
       this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult, message) => {
         if (result) {
           this.setState({
-            client: JSON.parse(JSON.stringify(defaultClient)),
+            client: JSON.parse(JSON.stringify(clientResult)),
             loadingClient: false,
           });
 

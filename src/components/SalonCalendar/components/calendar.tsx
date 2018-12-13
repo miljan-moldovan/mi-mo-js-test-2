@@ -23,14 +23,14 @@ import {
 } from 'lodash';
 import moment from 'moment';
 
-import CardGrid from '../cardGrid';
+import CardGrid from './cardGrid';
 import Board from './board';
 import Header from './header';
 import TimeColumn from './timeColumn';
 import Card from './card/index';
-import CurrentTime from '../currentTime';
-import Buffer from '../calendarBuffer';
-import SalonAlert from '../../../SalonAlert';
+import CurrentTime from './currentTime';
+import Buffer from './calendarBuffer';
+import SalonAlert from '@/components/SalonAlert';
 import BlockTime from './blockCard';
 import EmptyScreen from './EmptyScreen';
 import {
@@ -41,14 +41,14 @@ import {
   areDatesInRange,
   areDateRangeOverlapped,
   hasClientMoreAppointments,
-} from '../../../../utilities/helpers';
-import DateTime from '../../../../constants/DateTime';
-import ViewTypes from '../../../../constants/ViewTypes';
+} from '@/utilities/helpers';
+import DateTime from '@/constants/DateTime';
+import ViewTypes from '@/constants/ViewTypes';
 import {
   CHECK_APPT_CONFLICTS,
   CHECK_APPT_CONFLICTS_SUCCESS,
   CHECK_APPT_CONFLICTS_FAILED,
-} from '../../../../redux/actions/appointment';
+} from '@/redux/actions/appointment';
 import { CalendarProps, CalendarState } from  '@/models/components/calendar';
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 
@@ -240,7 +240,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     }
     if (!this.props.isDetailsVisible && this.props.isDetailsVisible !== prevProps.isDetailsVisible) {
       if (this.offset.y + this.state.calendarMeasure.height > this.size.height) {
-          requestAnimationFrame(() => this.scrollToY(this.size.height - this.state.calendarMeasure.height));
+          requestAnimationFrame(() => this.board.scrollTo ({
+            x: this.offset.x,
+            y: this.size.height - this.state.calendarMeasure.height - headerHeight,
+            animated: true,
+          }));
         }
     }
   }
@@ -405,6 +409,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       selectedFilter,
       selectedProvider,
       displayMode,
+      availability,
     } = nextProps;
 
     if (apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0) {
@@ -414,7 +419,10 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         selectedFilter === 'rebookAppointment'
       ) {
         if (selectedProvider === 'all') {
-          const firstColumnWidth = selectedFilter === 'providers' ? 166 : 36;
+          const showAvailability = availability &&
+            selectedFilter === 'providers' && selectedProvider === 'all' ;
+
+          const firstColumnWidth = showAvailability ? 166 : 36;
           this.size = {
             width: headerData.length * providerWidth + firstColumnWidth,
             height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
@@ -704,7 +712,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   handleCardPressed = (appt, left, top) => {
     const height = HeightHelper.setPositionToMinimalOption();
-    const fixHeight = headerHeight + 24;
+    console.log('bacon', height)
+    const fixHeight = 118;
     this.props.onCardPressed(appt);
     this.setCellsByColumn(this.props, height - fixHeight);
     requestAnimationFrame(() => this.centerCard(left,top, height));
@@ -1810,8 +1819,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       width: this.size.width,
       height: bufferVisible ? this.size.height + 110 : this.size.height,
     };
-    const showAvailability =
-      selectedFilter === 'providers' && selectedProvider === 'all';
+    const showAvailability = availability &&
+      selectedFilter === 'providers' && selectedProvider === 'all' ;
 
     const areProviders =
       apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0;
@@ -1902,6 +1911,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
                 style={styles.headerContainer}
               >
                 <Header
+                  showAvailability={showAvailability}
                   dataSource={headerData}
                   isDate={isDate}
                   selectedFilter={selectedFilter}
