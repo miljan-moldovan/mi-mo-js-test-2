@@ -15,31 +15,28 @@ const appointmentButtons = ({
   <React.Fragment>
     <View style={styles.panelIcon}>
       <SalonTouchableOpacity
-        style={isCheckInDisabled ?
-          styles.panelIconBtnDisabled : styles.panelIconBtn}
+        style={isCheckInDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
         onPress={handleCheckin}
         disabled={isCheckInDisabled}
       >
-        { isCheckingIn ?
-          <ActivityIndicator />
-          :
-          <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+        {
+          isCheckingIn
+            ? <ActivityIndicator />
+            : <Icon name="check" size={18} color="#FFFFFF" type="solid" />
         }
       </SalonTouchableOpacity>
       <Text style={styles.panelIconText}>Check-In</Text>
     </View>
-
     <View style={styles.panelIcon}>
       <SalonTouchableOpacity
         disabled={isCheckOutDisabled}
-        style={isCheckOutDisabled ?
-          styles.panelIconBtnDisabled : styles.panelIconBtn}
+        style={isCheckOutDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
         onPress={handleCheckout}
       >
-        { isCheckingOut ?
-          <ActivityIndicator />
-          :
-          <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+        {
+          isCheckingOut
+            ? <ActivityIndicator />
+            : <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
         }
       </SalonTouchableOpacity>
       <Text style={styles.panelIconText}>Check-out</Text>
