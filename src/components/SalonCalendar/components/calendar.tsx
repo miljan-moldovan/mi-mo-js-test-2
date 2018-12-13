@@ -1799,6 +1799,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       startDate,
       storeScheduleExceptions,
       rooms,
+      isNeedShowCurrentTime,
     } = this.props;
     const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
     const showHeader =
@@ -1825,6 +1826,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     const areProviders =
       apptGridSettings.numOfRow > 0 && headerData && headerData.length > 0;
     size = areProviders ? size : {width: 0, height: 0, opacity: 0};
+
     return (
       <View
         style={{flex: 1}}
@@ -1903,6 +1905,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
             <CurrentTime
               apptGridSettings={apptGridSettings}
               startTime={startTime}
+              isNeedShowCurrentTime={isNeedShowCurrentTime}
             />
           </ScrollViewChild>
           {showHeader

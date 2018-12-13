@@ -1,4 +1,6 @@
-export default {
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
   panelIcon: {
     flex: 1,
     flexDirection: 'column',
@@ -39,4 +41,4 @@ export default {
     top: 19,
     backgroundColor: '#727A8F',
   },
-};
+});

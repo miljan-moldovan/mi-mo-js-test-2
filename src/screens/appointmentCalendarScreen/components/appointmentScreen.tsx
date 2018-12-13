@@ -25,6 +25,7 @@ import RebookAppointment from './rebookAppointment';
 import SalonAlert from '../../../components/SalonAlert';
 import BarsActionSheet from '../../../components/BarsActionSheet';
 import Colors from '../../../constants/Colors';
+import DateTime from '../../../constants/DateTime';
 
 import styles, {headerStyles} from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
@@ -41,7 +42,6 @@ class AppointmentScreen extends React.Component {
     const onPressEllipsis = navigation.getParam ('onPressEllipsis', null);
     const onPressCalendar = navigation.getParam ('onPressCalendar', null);
     const filterOptions = navigation.getParam ('filterOptions', {});
-
     let subTitleText = null;
     const {company, position} = filterOptions;
     let titleText = 'All Providers';
@@ -906,6 +906,9 @@ class AppointmentScreen extends React.Component {
         break;
     }
 
+    const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
+      === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
+
     return (
       <View style={styles.mainContainer}>
         <BarsActionSheet
@@ -960,6 +963,7 @@ class AppointmentScreen extends React.Component {
           goToAppointmentId={goToAppointmentId}
           clearGoToAppointment={this.clearGoToAppointment}
           crossedAppointmentAfter={crossedAppointmentsIdAfter}
+          isNeedShowCurrentTime={isNeedShowCurrentTime}
         />
         {isLoading
           ? <View style={styles.loadingContainer}>

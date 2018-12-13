@@ -57,6 +57,8 @@ class CurrentTime extends React.Component {
   };
 
   render() {
+    if (!this.props.isNeedShowCurrentTime) return null;
+
     return (
       <Animated.View style={[styles.container, { top: this.state.top }]}>
         <View style={styles.textContainer}>

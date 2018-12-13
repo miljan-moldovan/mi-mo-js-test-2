@@ -1,14 +1,14 @@
 import * as React from 'react';
-import {StackActions, NavigationActions} from 'react-navigation';
-import {ScrollView, Text, View, ActivityIndicator} from 'react-native';
-import {get, isEqual, isNull, isFunction, isUndefined} from 'lodash';
-import FontAwesome, {Icons} from 'react-native-fontawesome';
+import { StackActions, NavigationActions } from 'react-navigation';
+import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
+import { get, isEqual, isNull, isFunction, isUndefined } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import ClientInfoButton from '../../components/ClientInfoButton';
 import regexs from '../../constants/Regexs';
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
-import {Client} from '../../utilities/apiWrapper';
-import {Maybe} from '@/models';
+import { Client } from '../../utilities/apiWrapper';
+import { Maybe } from '@/models';
 import {
   InputLabel,
   InputGroup,
@@ -23,18 +23,18 @@ import styles from './styles';
 import SalonHeader from '../../components/SalonHeader';
 
 class WalkInScreen extends React.Component {
-  static navigationOptions = ({navigation}) => {
-    const {params = {}} = navigation.state;
+  static navigationOptions = ({ navigation }) => {
+    const { params = {} } = navigation.state;
     const handlePress = params && params.handleSave
       ? params.handleSave
-      : () => {};
+      : () => { };
 
-    const handleGoBack = navigation.getParam ('handleGoBack', () => {});
+    const handleGoBack = navigation.getParam('handleGoBack', () => { });
     const waitTime = params && params.waitTime ? params.waitTime : 0;
 
     let canSave;
     if (params && params.isValidInfo) {
-      canSave = params.isValidInfo ();
+      canSave = params.isValidInfo();
     }
 
     return {
@@ -44,7 +44,7 @@ class WalkInScreen extends React.Component {
           subTitle={`${waitTime}m Est. wait`}
           headerLeft={
             <SalonTouchableOpacity
-              style={[styles.sideButtons, {paddingLeft: 10}]}
+              style={[styles.sideButtons, { paddingLeft: 10 }]}
               onPress={handleGoBack}
             >
               <View style={styles.leftButtonContainer}>
@@ -60,14 +60,14 @@ class WalkInScreen extends React.Component {
           headerRight={
             <SalonTouchableOpacity
               disabled={!canSave}
-              style={[styles.sideButtons, {paddingRight: 10}]}
+              style={[styles.sideButtons, { paddingRight: 10 }]}
               onPress={handlePress}
             >
               <View style={styles.rightButtonContainer}>
                 <Text
                   style={[
                     styles.rightButtonText,
-                    {color: canSave ? '#FFFFFF' : '#19428A'},
+                    { color: canSave ? '#FFFFFF' : '#19428A' },
                   ]}
                 >
                   Done
@@ -80,8 +80,8 @@ class WalkInScreen extends React.Component {
     };
   };
 
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
     this.state = {
       client: null,
       email: '',
@@ -93,13 +93,13 @@ class WalkInScreen extends React.Component {
     };
   }
 
-  componentDidMount () {
-    this.props.queueActions.getQueueState (this.setWaitMins);
-    this.props.settingsActions.getSettings ();
+  componentDidMount() {
+    this.props.queueActions.getQueueState(this.setWaitMins);
+    this.props.settingsActions.getSettings();
 
-    const {newAppointment} = this.props.navigation.state.params;
+    const { newAppointment } = this.props.navigation.state.params;
     if (newAppointment) {
-      const {client, provider, service} = newAppointment;
+      const { client, provider, service } = newAppointment;
 
       const services = [
         {
@@ -108,35 +108,35 @@ class WalkInScreen extends React.Component {
           isProviderRequested: false, //! provider.isFirstAvailable,
         },
       ];
-      this.setState ({services}, () => this.setStateClientInfo (client));
+      this.setState({ services }, () => this.setStateClientInfo(client));
     }
 
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     // We can only set the function after the component has been initialized
-    navigation.setParams ({
+    navigation.setParams({
       isValidInfo: this.validateFields,
       handleSave: this.handleSave,
       handleGoBack: this.handleGoBack,
     });
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const prevClientInfo = this.state.client;
     const newClientInfo = nextProps.clientInfoState.client;
     if (
       prevClientInfo &&
       newClientInfo &&
-      get (prevClientInfo, 'id') === get (newClientInfo, 'id') &&
-      !isEqual (prevClientInfo, newClientInfo)
+      get(prevClientInfo, 'id') === get(newClientInfo, 'id') &&
+      !isEqual(prevClientInfo, newClientInfo)
     ) {
-      this.setStateClientInfo (newClientInfo);
+      this.setStateClientInfo(newClientInfo);
     }
   }
 
-  setStateClientInfo = (client, callback: Maybe< () => void> = null) => {
-    const clientId = get (client, 'id', 1);
+  setStateClientInfo = (client, callback: Maybe<() => void> = null) => {
+    const clientId = get(client, 'id', 1);
     if (clientId === 1) {
-      this.setState ({
+      this.setState({
         client,
         email: '',
         phone: '',
@@ -144,28 +144,28 @@ class WalkInScreen extends React.Component {
       });
       return;
     }
-    const email = get (client, 'email', '');
-    const phones = get (client, 'phones', []);
-    const currentPhone = phones.find (
-      phone => get (phone, 'type', null) === ClientPhoneTypes.cell
+    const email = get(client, 'email', '');
+    const phones = get(client, 'phones', []);
+    const currentPhone = phones.find(
+      phone => get(phone, 'type', null) === ClientPhoneTypes.cell
     );
-    const clientPhone = phones.find (
-      item => get (item, 'type', null) === ClientPhoneTypes.cell
+    const clientPhone = phones.find(
+      item => get(item, 'type', null) === ClientPhoneTypes.cell
     );
-    const phone = get (clientPhone, 'value', '');
-    this.setState (
+    const phone = get(clientPhone, 'value', '');
+    this.setState(
       {
         client,
         email,
         phone,
         currentPhone,
       },
-      () => (isFunction (callback) ? callback () : null)
+      () => (isFunction(callback) ? callback() : null)
     );
   };
 
   setWaitMins = () => {
-    const {guestWaitMins} = this.props.queue.queueState
+    const { guestWaitMins } = this.props.queue.queueState
       ? this.props.queue.queueState
       : {};
     let waitTime = '-';
@@ -175,13 +175,13 @@ class WalkInScreen extends React.Component {
       waitTime = '0';
     }
 
-    const {navigation} = this.props;
-    navigation.setParams ({waitTime});
+    const { navigation } = this.props;
+    navigation.setParams({ waitTime });
   };
 
   getFullName = () => {
     let fullName = '';
-    const {client} = this.state;
+    const { client } = this.state;
     if (client) {
       if (client.name) {
         fullName = client.name;
@@ -196,26 +196,26 @@ class WalkInScreen extends React.Component {
   };
 
   handleSave = async () => {
-    if (this.validateFields ()) {
-      this.shouldUpdateClientInfo ();
-      this.handleWalkin ();
+    if (this.validateFields()) {
+      this.shouldUpdateClientInfo();
+      this.handleWalkin();
     }
   };
 
   handleGoBack = () => {
-    this.shouldUpdateClientInfo ();
-    this.props.navigation.goBack ();
+    this.shouldUpdateClientInfo();
+    this.props.navigation.goBack();
   };
 
   validateFields = () => {
-    const {email, phone, services, client} = this.state;
+    const { email, phone, services, client } = this.state;
     if (!client) {
       return false;
     }
     let canSave = client.id === 1;
     if (!canSave) {
-      canSave = this.isValidEmailRegExp.test (email) || !email;
-      canSave = canSave && (this.isValidPhoneRegExp.test (phone) || !phone);
+      canSave = this.isValidEmailRegExp.test(email) || !email;
+      canSave = canSave && (this.isValidPhoneRegExp.test(phone) || !phone);
     }
     for (let i = 0; i < services.length; i += 1) {
       const serviceBlock = services[i];
@@ -224,7 +224,7 @@ class WalkInScreen extends React.Component {
         serviceBlock.service !== null &&
         serviceBlock.provider !== undefined;
     }
-    this.shouldUpdateClientInfo ();
+    this.shouldUpdateClientInfo();
     return canSave;
   };
 
@@ -233,7 +233,7 @@ class WalkInScreen extends React.Component {
   handleWalkin = async () => {
     if (!this.saving) {
       this.saving = true;
-      const {services, client} = this.state;
+      const { services, client } = this.state;
 
       const servicesBlock = [];
       for (let i = 0; i < services.length; i += 1) {
@@ -241,9 +241,9 @@ class WalkInScreen extends React.Component {
 
         const providerBlock = serviceContainer.provider.isFirstAvailable
           ? {}
-          : {providerId: serviceContainer.provider.id};
+          : { providerId: serviceContainer.provider.id };
 
-        servicesBlock.push ({
+        servicesBlock.push({
           serviceId: serviceContainer.service.id,
           ...providerBlock,
           isProviderRequested: serviceContainer.isProviderRequested,
@@ -258,26 +258,26 @@ class WalkInScreen extends React.Component {
         services: servicesBlock,
       };
 
-      this.props.walkInActions.postWalkinClient (params).then (() => {
+      this.props.walkInActions.postWalkinClient(params).then(() => {
         this.saving = false;
         const params = this.props.navigation.state.params || {};
-        params.loadQueueData ();
-        this.props.navigation.popToTop ({immediate: true});
+        params.loadQueueData();
+        this.props.navigation.popToTop({ immediate: true });
       });
     }
   };
 
   handleUpdateClient = client => {
-    this.setState ({client}, this.validateFields);
+    this.setState({ client }, this.validateFields);
   };
 
   onChangeClient = client => {
-    this.setState (
+    this.setState(
       {
         client,
       },
       () => {
-        this.setStateClientInfo (client, this.validateFields);
+        this.setStateClientInfo(client, this.validateFields);
       }
     );
   };
@@ -286,23 +286,23 @@ class WalkInScreen extends React.Component {
     <ClientInfoButton
       client={this.state.client}
       navigation={this.props.navigation}
-      onDonePress={() => {}}
+      onDonePress={() => { }}
       apptBook={false}
-      buttonStyle={{marginHorizontal: 5}}
-      iconStyle={{fontSize: 20, color: '#115ECD'}}
+      buttonStyle={{ marginHorizontal: 5 }}
+      iconStyle={{ fontSize: 20, color: '#115ECD' }}
     />
   );
 
   handleRemoveService = index => {
-    const {services} = this.state;
-    services.splice (index, 1);
-    this.setState ({services}, this.validateFields);
+    const { services } = this.state;
+    services.splice(index, 1);
+    this.setState({ services }, this.validateFields);
   };
 
   handleUpdateService = (index, service) => {
-    const {services} = this.state;
+    const { services } = this.state;
     services[index] = service;
-    this.setState ({services}, this.validateFields);
+    this.setState({ services }, this.validateFields);
   };
 
   shouldUpdateClientInfo = async () => {
@@ -316,11 +316,11 @@ class WalkInScreen extends React.Component {
     if (!client || client.id === 1) {
       return false;
     }
-    const currentPhone = get (client, 'phones', []).find (
+    const currentPhone = get(client, 'phones', []).find(
       phone => phone.type === ClientPhoneTypes.cell
     );
-    const hasEmailChanged = email !== get (client, 'email', '');
-    const hasPhoneChanged = phone !== get (currentPhone, 'value', '');
+    const hasEmailChanged = email !== get(client, 'email', '');
+    const hasPhoneChanged = phone !== get(currentPhone, 'value', '');
     const isValidEmail = emailValid && email !== '' && hasEmailChanged;
     const isValidPhone = phoneValid && phone !== '' && hasPhoneChanged;
     if (!isValidEmail && !isValidPhone) {
@@ -328,23 +328,23 @@ class WalkInScreen extends React.Component {
     }
     const phones = isValidPhone && hasPhoneChanged
       ? [
-          {
-            type: ClientPhoneTypes.cell,
-            value: phone,
-          },
-          ...get (client, 'phones', []).filter (
-            phone =>
-              get (phone, 'value', '') &&
-              get (phone, 'type', null) !== ClientPhoneTypes.cell &&
-              this.isValidPhoneRegExp.test (get (phone, 'value', ''))
-          ),
-        ]
-      : get (client, 'phones', []).filter (
+        {
+          type: ClientPhoneTypes.cell,
+          value: phone,
+        },
+        ...get(client, 'phones', []).filter(
           phone =>
-            get (phone, 'value', '') &&
-            this.isValidPhoneRegExp.test (get (phone, 'value', ''))
-        );
-    const newEmail = isValidEmail ? email : get (client, 'email', '');
+            get(phone, 'value', '') &&
+            get(phone, 'type', null) !== ClientPhoneTypes.cell &&
+            this.isValidPhoneRegExp.test(get(phone, 'value', ''))
+        ),
+      ]
+      : get(client, 'phones', []).filter(
+        phone =>
+          get(phone, 'value', '') &&
+          this.isValidPhoneRegExp.test(get(phone, 'value', ''))
+      );
+    const newEmail = isValidEmail ? email : get(client, 'email', '');
     const updateObject = {
       id: client.id,
       phones,
@@ -354,7 +354,7 @@ class WalkInScreen extends React.Component {
       updateObject.email = newEmail;
     }
 
-    const updated = await Client.putContactInformation (
+    const updated = await Client.putContactInformation(
       client.id,
       updateObject
     );
@@ -364,7 +364,7 @@ class WalkInScreen extends React.Component {
   handleAddService = () => {
     const params = this.props.navigation.state.params || {};
 
-    const {employee} = params;
+    const { employee } = params;
 
     const service = {
       provider: employee,
@@ -372,17 +372,17 @@ class WalkInScreen extends React.Component {
       isProviderRequested: false,
     };
 
-    const {services} = this.state;
-    services.push (service);
-    this.setState ({services}, this.validateFields);
+    const { services } = this.state;
+    services.push(service);
+    this.setState({ services }, this.validateFields);
   };
 
   isValidEmailRegExp = regexs.email;
   isValidPhoneRegExp = regexs.phone;
 
   renderEmailField = client => {
-    const {email} = this.state;
-    if (!client || get (client, 'id') === 1) {
+    const { email } = this.state;
+    if (!client || get(client, 'id') === 1) {
       return <InputLabel style={styles.rootStyle} label="Email" value="" />;
     }
     return (
@@ -391,9 +391,9 @@ class WalkInScreen extends React.Component {
         validation={this.emailValidation}
         label="Email"
         isValid={
-          this.isValidEmailRegExp.test (email) ||
-            (isNull (get (client, 'email', null)) &&
-              (isNull (email) || email === ''))
+          this.isValidEmailRegExp.test(email) ||
+          (isNull(get(client, 'email', null)) &&
+            (isNull(email) || email === ''))
         }
         onValidated={this.onValidateEmail}
         value={email}
@@ -403,8 +403,8 @@ class WalkInScreen extends React.Component {
   };
 
   renderPhoneField = client => {
-    const {phone, currentPhone} = this.state;
-    if (!client || get (client, 'id') === 1) {
+    const { phone, currentPhone } = this.state;
+    if (!client || get(client, 'id') === 1) {
       return <InputLabel style={styles.rootStyle} label="Phone" value="" />;
     }
     return (
@@ -412,9 +412,9 @@ class WalkInScreen extends React.Component {
         label="Phone"
         mask="[000]-[000]-[0000]"
         isValid={
-          this.isValidPhoneRegExp.test (phone) ||
-            (isUndefined (get (currentPhone, 'phone')) &&
-              (isNull (phone) || phone === ''))
+          this.isValidPhoneRegExp.test(phone) ||
+          (isUndefined(get(currentPhone, 'phone')) &&
+            (isNull(phone) || phone === ''))
         }
         value={phone}
         validation={this.isValidPhoneRegExp}
@@ -425,43 +425,43 @@ class WalkInScreen extends React.Component {
   };
 
   onChangeEmail = email => {
-    this.setState ({email}, () => {
-      this.props.navigation.setParams ({
+    this.setState({ email }, () => {
+      this.props.navigation.setParams({
         isValidInfo: this.validateFields,
       });
     });
   };
 
   emailValidation = email => {
-    if (email === '' || isNull (email)) {
+    if (email === '' || isNull(email)) {
       return true;
     }
 
-    const result = this.isValidEmailRegExp.test (email);
+    const result = this.isValidEmailRegExp.test(email);
     return result;
   };
 
   onChangePhone = phone => {
-    this.setState ({phone}, () => {
-      this.props.navigation.setParams ({
+    this.setState({ phone }, () => {
+      this.props.navigation.setParams({
         isValidInfo: this.validateFields,
       });
     });
   };
 
   onValidateEmail = isValid =>
-    this.setState (state => {
+    this.setState(state => {
       const newState = state;
       newState.isValidEmail =
         isValid ||
-        (isNull (get (state, 'client.email', null)) &&
-          get (state, 'email', '') === '');
+        (isNull(get(state, 'client.email', null)) &&
+          get(state, 'email', '') === '');
 
       return newState;
     }, this.shouldUpdateClientInfo);
 
   onValidatePhone = isValid =>
-    this.setState (state => {
+    this.setState(state => {
       const newState = state;
       newState.isValidPhone = newState.phone === '' ? true : isValid;
       return newState;
@@ -470,68 +470,68 @@ class WalkInScreen extends React.Component {
   cancelButton = () => ({
     leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: navigation => {
-      navigation.goBack ();
+      navigation.goBack();
     },
   });
 
-  render () {
-    const {client} = this.state;
+  render() {
+    const { client } = this.state;
     return (
       <ScrollView style={styles.container}>
 
         {this.props.walkInState.isLoading
           ? <View style={styles.activityIndicator}>
-              <ActivityIndicator />
-            </View>
+            <ActivityIndicator />
+          </View>
           : <View style={styles.container}>
-              <SectionTitle
-                value="CLIENT"
-                style={styles.sectionTitleRootStyle}
-                sectionTitleStyle={styles.sectionTitleStyle}
-              />
-              <InputGroup style={styles.inputGroupStyle}>
-                <ClientInput
-                  walkin
-                  style={styles.rootStyle}
-                  navigate={this.props.navigation.navigate}
-                  push={this.props.navigation.push}
-                  label={this.state.client === null ? 'Client' : 'Client'}
-                  headerProps={{
-                    title: 'Clients',
-                    leftButton: (
-                      <Text style={{fontSize: 14, color: 'white'}}>Cancel</Text>
-                    ),
-                    leftButtonOnPress: navigation => {
-                      navigation.goBack ();
-                    },
-                  }}
-                  selectedClient={client}
-                  onChange={this.onChangeClient}
-                  extraComponents={
-                    client !== null && this.renderExtraClientButtons ()
-                  }
-                />
-                <InputDivider />
-                {this.renderEmailField (client)}
-                <InputDivider />
-                {this.renderPhoneField (client)}
-              </InputGroup>
-              <SectionTitle
-                value="SERVICE AND PROVIDER"
-                style={styles.sectionTitleRootStyle}
-                sectionTitleStyle={styles.sectionTitleStyle}
-              />
-              <ServiceSection
-                services={this.state.services}
-                onAdd={this.handleAddService}
-                onRemove={this.handleRemoveService}
-                onUpdate={this.handleUpdateService}
-                cancelButton={this.cancelButton}
+            <SectionTitle
+              value="CLIENT"
+              style={styles.sectionTitleRootStyle}
+              sectionTitleStyle={styles.sectionTitleStyle}
+            />
+            <InputGroup style={styles.inputGroupStyle}>
+              <ClientInput
+                walkin
+                style={styles.rootStyle}
                 navigate={this.props.navigation.navigate}
                 push={this.props.navigation.push}
-                walkin
+                label={this.state.client === null ? 'Client' : 'Client'}
+                headerProps={{
+                  title: 'Clients',
+                  leftButton: (
+                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+                  ),
+                  leftButtonOnPress: navigation => {
+                    navigation.goBack();
+                  },
+                }}
+                selectedClient={client}
+                onChange={this.onChangeClient}
+                extraComponents={
+                  client !== null && this.renderExtraClientButtons()
+                }
               />
-            </View>}
+              <InputDivider />
+              {this.renderEmailField(client)}
+              <InputDivider />
+              {this.renderPhoneField(client)}
+            </InputGroup>
+            <SectionTitle
+              value="SERVICE AND PROVIDER"
+              style={styles.sectionTitleRootStyle}
+              sectionTitleStyle={styles.sectionTitleStyle}
+            />
+            <ServiceSection
+              services={this.state.services}
+              onAdd={this.handleAddService}
+              onRemove={this.handleRemoveService}
+              onUpdate={this.handleUpdateService}
+              cancelButton={this.cancelButton}
+              navigate={this.props.navigation.navigate}
+              push={this.props.navigation.push}
+              walkin
+            />
+          </View>}
       </ScrollView>
     );
   }
@@ -540,13 +540,13 @@ class WalkInScreen extends React.Component {
 WalkInScreen.defaultProps = {};
 
 WalkInScreen.propTypes = {
-  walkInActions: PropTypes.shape ({
+  walkInActions: PropTypes.shape({
     postWalkinClient: PropTypes.func.isRequired,
   }).isRequired,
-  settingsActions: PropTypes.shape ({
+  settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
-  queueActions: PropTypes.shape ({
+  queueActions: PropTypes.shape({
     getQueueState: PropTypes.func.isRequired,
   }).isRequired,
   queue: PropTypes.any.isRequired,
