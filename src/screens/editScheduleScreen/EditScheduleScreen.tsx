@@ -227,6 +227,16 @@ class EditScheduleScreen extends React.Component<any, any> {
   handleChangestartTimeScheduleOne = (startTimeScheduleOneDateObj) => {
     const startTimeScheduleOne = moment(startTimeScheduleOneDateObj);
 
+    if (startTimeScheduleOne.isSameOrAfter(this.state.endTimeScheduleOne)) {
+      return this.setState(
+        {
+          startTimeScheduleOne,
+          endTimeScheduleOne: null,
+        },
+        this.checkCanSave,
+      );
+    }
+
     return this.setState({
       startTimeScheduleOne,
     }, this.checkCanSave);
@@ -235,6 +245,16 @@ class EditScheduleScreen extends React.Component<any, any> {
   handleChangeendTimeScheduleOne = (endTimeScheduleOneDateObj) => {
     const endTimeScheduleOne = moment(endTimeScheduleOneDateObj);
 
+    if (endTimeScheduleOne.isSameOrAfter(this.state.startTimeScheduleTwo)) {
+      return this.setState(
+        {
+          endTimeScheduleOne,
+          startTimeScheduleTwo: null,
+          endTimeScheduleTwo: null,
+        },
+        this.checkCanSave,
+      );
+    }
     return this.setState({
       endTimeScheduleOne,
     }, this.checkCanSave);
@@ -243,6 +263,16 @@ class EditScheduleScreen extends React.Component<any, any> {
 
   handleChangestartTimeScheduleTwo = (startTimeScheduleTwoDateObj) => {
     const startTimeScheduleTwo = moment(startTimeScheduleTwoDateObj);
+
+    if (startTimeScheduleTwo.isSameOrAfter(this.state.endTimeScheduleTwo)) {
+      return this.setState(
+        {
+          startTimeScheduleTwo,
+          endTimeScheduleTwo: null,
+        },
+        this.checkCanSave,
+      );
+    }
 
     return this.setState({
       startTimeScheduleTwo,
@@ -385,7 +415,7 @@ class EditScheduleScreen extends React.Component<any, any> {
     }
 
     if (canSave) {
-      this.closeAllPickers();
+      // this.closeAllPickers();
     }
 
     this.props.navigation.setParams({ canSave });
@@ -423,62 +453,64 @@ class EditScheduleScreen extends React.Component<any, any> {
               />
             </InputGroup>
 
-            {this.state.hoursWorking ?
-              <React.Fragment>
-                <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle}/>
-                <InputGroup>
-                  <SchedulePicker
-                    date={date}
-                    format="hh:mm A"
-                    label="Start"
-                    isStart
-                    icon={false}
-                    value={startTimeScheduleOne}
-                    isOpen={this.state.startTimeScheduleOnePickerOpen}
-                    onChange={this.handleChangestartTimeScheduleOne}
-                    toggle={this.pickerToogleStartTimeOne}
-                  />
-                  <InputDivider/>
-                  <SchedulePicker
-                    date={date}
-                    format="hh:mm A"
-                    label="Ends"
-                    isStart={false}
-                    icon={false}
-                    value={endTimeScheduleOne}
-                    isOpen={this.state.endTimeScheduleOnePickerOpen}
-                    onChange={this.handleChangeendTimeScheduleOne}
-                    toggle={this.pickerToogleEndTimeOne}
-                  />
-                </InputGroup>
-                <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle}/>
-                <InputGroup>
-                  <SchedulePicker
-                    date={date}
-                    format="hh:mm A"
-                    label="Start"
-                    isStart
-                    icon={false}
-                    value={startTimeScheduleTwo}
-                    isOpen={this.state.startTimeScheduleTwoPickerOpen}
-                    onChange={this.handleChangestartTimeScheduleTwo}
-                    toggle={this.pickerToogleStartTimeTwo}
-                  />
-                  <InputDivider/>
-                  <SchedulePicker
-                    date={date}
-                    format="hh:mm A"
-                    label="Ends"
-                    isStart={false}
-                    icon={false}
-                    value={endTimeScheduleTwo}
-                    isOpen={this.state.endTimeScheduleTwoPickerOpen}
-                    onChange={this.handleChangeendTimeScheduleTwo}
-                    toggle={this.pickerToogleEndTimeTwo}
-                  />
-                </InputGroup>
-              </React.Fragment>
-              : null
+            {this.state.hoursWorking &&
+            <React.Fragment>
+              <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle}/>
+              <InputGroup>
+                <SchedulePicker
+                  date={date}
+                  format="hh:mm A"
+                  label="Start"
+                  isStart
+                  icon={false}
+                  value={startTimeScheduleOne}
+                  isOpen={this.state.startTimeScheduleOnePickerOpen}
+                  onChange={this.handleChangestartTimeScheduleOne}
+                  toggle={this.pickerToogleStartTimeOne}
+                />
+                <InputDivider/>
+                <SchedulePicker
+                  date={date}
+                  format="hh:mm A"
+                  minimumDate={startTimeScheduleOne}
+                  label="Ends"
+                  isStart={false}
+                  icon={false}
+                  value={endTimeScheduleOne}
+                  isOpen={this.state.endTimeScheduleOnePickerOpen}
+                  onChange={this.handleChangeendTimeScheduleOne}
+                  toggle={this.pickerToogleEndTimeOne}
+                />
+              </InputGroup>
+              <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle}/>
+              <InputGroup>
+                <SchedulePicker
+                  date={date}
+                  format="hh:mm A"
+                  label="Start"
+                  isStart
+                  minimumDate={endTimeScheduleOne}
+                  icon={false}
+                  value={startTimeScheduleTwo}
+                  isOpen={this.state.startTimeScheduleTwoPickerOpen}
+                  onChange={this.handleChangestartTimeScheduleTwo}
+                  toggle={this.pickerToogleStartTimeTwo}
+                />
+                <InputDivider/>
+                <SchedulePicker
+                  date={date}
+                  format="hh:mm A"
+                  label="Ends"
+                  minimumDate={startTimeScheduleTwo}
+                  isStart={false}
+                  icon={false}
+                  value={endTimeScheduleTwo}
+                  isOpen={this.state.endTimeScheduleTwoPickerOpen}
+                  onChange={this.handleChangeendTimeScheduleTwo}
+                  toggle={this.pickerToogleEndTimeTwo}
+                />
+              </InputGroup>
+            </React.Fragment>
             }
 
             <SectionTitle value="SCHEDULE EXCEPTION REASON" style={styles.sectionTitle}/>

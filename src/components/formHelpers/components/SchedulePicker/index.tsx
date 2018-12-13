@@ -101,7 +101,7 @@ class SchedulePicker extends React.Component<any, any> {
             isStart={isStart}
             isLoading={isLoading}
             step={this.props.rangeTimes && this.props.rangeTimes.step}
-            minimumDate={this.props.rangeTimes && this.props.rangeTimes.minimumDate}
+            minimumDate={this.props.minimumDate || this.props.rangeTimes && this.props.rangeTimes.minimumDate}
             maximumDate={this.props.rangeTimes && this.props.rangeTimes.maximumDate}
             expectedRanges={this.props.rangeTimes && this.props.rangeTimes.expectedRanges}
             selectedValue={this.selectedTime}
