@@ -184,7 +184,7 @@ const reloadGridCallback = ({
       storeRooms
     )
   );
-}
+};
 
 const reloadGridRelatedStuff = () => (dispatch, getState) => {
   const {
@@ -223,7 +223,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                 storeRooms,
               ]
             ) => {
-<<<<<<< HEAD
               const useFirstAvailable = settings.find((itm) => itm.settingName === 'UseFirstAvailable');
               if (useFirstAvailable && useFirstAvailable.settingValue) {
                 return AppointmentBook.getAppointmentBookAvailability(date).then(availabilityItem => reloadGridCallback({
@@ -238,15 +237,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                   appointments, storeInfo, scheduleExceptions, availabilityItem,
                   blockTimes, storeRooms, dispatch
                 });
-=======
-              let filteredEmployees = employees;
-              if (selectedFilter === 'deskStaff') {
-                filteredEmployees = filteredEmployees.filter(
-                  employee => employee.isReceptionist
-                );
-              } else if (selectedFilter === 'rebookAppointment') {
-                filteredEmployees = selectedProviders;
->>>>>>> e21f9ed82a4916c5e9327edeb87ca79f0f4d162c
               }
             }
           )
@@ -495,4 +485,4 @@ export interface ApptBookActions {
   setFilterOptionShowOffEmployees: (show: boolean) => any;
   hideToast: () => any;
   setToast: (toast: Maybe<Object>) => any;
-};
+}
