@@ -88,10 +88,9 @@ const mapStateToProps = (state, { appointment }) => ({
   isCheckingIn: state.appointmentReducer.isCheckingIn,
   isCheckingOut: state.appointmentReducer.isCheckingOut,
   isGridLoading: state.appointmentBookReducer.isLoading,
-  isCheckInDisabled: state.appointmentBookReducer.isLoading || state.appointmentReducer.isCheckingIn
+  isCheckInDisabled: state.appointmentReducer.isCheckingIn
   || appointment.queueStatus !== ApptQueueStatus.NotInQueue || appointment.isNoShow,
-  isCheckOutDisabled: state.appointmentBookReducer.isLoading
-    || state.appointmentReducer.isCheckingOut ||
+  isCheckOutDisabled: state.appointmentReducer.isCheckingOut ||
     appointment.queueStatus === ApptQueueStatus.CheckedOut
     || appointment.isNoShow || appointment.isFirstAvailable,
 });
