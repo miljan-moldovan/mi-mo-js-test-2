@@ -1,29 +1,30 @@
 import * as React from 'react';
-import { Text } from 'react-native';
+// @ts-ignore
 import { DatePicker } from 'react-native-wheel-datepicker';
 import styles from './style';
 import { ActivityIndicator, View, Alert } from 'react-native';
 import Colors from '../../../../constants/Colors';
 import moment = require('moment');
+import PropTypes from 'prop-types';
 
 type IExpectedRanges = {
-  minimumDate: moment.Moment
-  maximumDate: moment.Moment
+  minimumDate: moment.Moment;
+  maximumDate: moment.Moment;
 };
 
 type IProps = {
-  isLoading: boolean
-  isStart: boolean
-  onValueChange: (arg: moment.Moment) => void
-  step: number
-  expectedRanges: [IExpectedRanges]
-  maximumDate: moment.Moment
-  minimumDate: moment.Moment
-  selectedValue: moment.Moment
+  isLoading: boolean;
+  isStart: boolean;
+  onValueChange: (arg: moment.Moment) => void;
+  step: number;
+  expectedRanges: [IExpectedRanges];
+  maximumDate: moment.Moment;
+  minimumDate: moment.Moment;
+  selectedValue: moment.Moment;
 };
 
 type IState = {
-  interval: number
+  interval: number;
 };
 
 const getMinDate = (minimumDate: moment.Moment, step: number, isStart: boolean) => {
@@ -45,6 +46,17 @@ class SplittedTimePicker extends React.Component<IProps, IState> {
     interval: 1,
   };
 
+  static propTypes = {
+    isLoading: PropTypes.bool,
+    isStart: PropTypes.bool,
+    onValueChange: PropTypes.func,
+    step: PropTypes.number,
+    expectedRanges: PropTypes.array,
+    maximumDate: PropTypes.object,
+    minimumDate: PropTypes.object,
+    selectedValue: PropTypes.object,
+  };
+
   componentDidMount() {
     this.setState({ interval: this.props.step });
   }
@@ -58,7 +70,7 @@ class SplittedTimePicker extends React.Component<IProps, IState> {
     const selectedValueMoment = moment(selectedValue);
     let forbidden = true;
 
-    expectedRanges.forEach((expectedRange) => {
+    expectedRanges.forEach(expectedRange => {
       const minDate = getMinDate(expectedRange.minimumDate, step, isStart);
       const maxDate = getMaxDate(expectedRange.maximumDate, step, isStart);
 
@@ -93,27 +105,22 @@ class SplittedTimePicker extends React.Component<IProps, IState> {
   }
 
   render() {
-    return (
-      this.props.isLoading ?
-        (
-          <View style={[styles.pickerContainer, styles.loadingStyle]}>
-            <ActivityIndicator color={Colors.defaultGrey}/>
-          </View>
-        )
-        :
-        (
-          <View style={styles.pickerContainer}>
-            <DatePicker
-              style={styles.picker}
-              minuteInterval={this.state.interval}
-              maximumDate={this.maximumDate.toDate()}
-              minimumDate={this.minimumDate.toDate()}
-              mode="time"
-              date={this.props.selectedValue && this.props.selectedValue.toDate()}
-              onDateChange={this.onValueChange}
-            />
-          </View>
-        )
+    return this.props.isLoading ? (
+      <View style={[styles.pickerContainer, styles.loadingStyle]}>
+        <ActivityIndicator color={Colors.defaultGrey}/>
+      </View>
+    ) : (
+      <View style={styles.pickerContainer}>
+        <DatePicker
+          style={styles.picker}
+          minuteInterval={this.state.interval}
+          maximumDate={this.maximumDate.toDate()}
+          minimumDate={this.minimumDate.toDate()}
+          mode="time"
+          date={this.props.selectedValue && this.props.selectedValue.toDate()}
+          onDateChange={this.onValueChange}
+        />
+      </View>
     );
   }
 }

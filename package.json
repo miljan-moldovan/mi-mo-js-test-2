@@ -64,6 +64,7 @@
     "reselect": "3.0.1",
     "rn-sliding-up-panel": "git+https://github.com/igor-slotin/rn-sliding-up-panel.git#default-y-position",
     "shouldcomponentupdate-children": "1.1.0",
+    "tslint-config-airbnb": "^5.11.1",
     "typescript": "^3.1.6",
     "url-parse": "^1.4.0",
     "uuid": "^3.2.1"
@@ -75,9 +76,12 @@
     "babel-preset-react-native": "4.0.0",
     "enzyme": "3.7.0",
     "enzyme-adapter-react-16": "1.7.0",
+    "enzyme-to-json": "^3.3.5",
     "jest": "^22.1.4",
     "jest-enzyme": "7.0.1",
     "jest-serializer-enzyme": "1.0.0",
+    "jsdom": "13.0.0",
+    "jsdom-global": "3.0.2",
     "prettier": "1.15.2",
     "react-addons-test-utils": "15.6.2",
     "react-dom": "16.6.3",
@@ -89,17 +93,6 @@
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-react": "^3.6.0"
-  },
-  "jest": {
-    "preset": "react-native",
-    "transformIgnorePatterns": [
-      "/node_modules/(?!native-base)/"
-    ],
-    "setupTestFrameworkScriptFile": "./__tests__/setup/setupEnzyme.js",
-    "testPathIgnorePatterns": [
-      "<rootDir>/__tests__/setup/",
-      "<rootDir>/node_modules"
-    ]
   },
   "rnpm": {
     "assets": [

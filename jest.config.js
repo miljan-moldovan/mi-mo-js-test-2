@@ -1,11 +1,27 @@
+const { jestPreset: tsJest } = require('ts-jest');
+
 module.exports = {
-  "roots": [
-    "<rootDir>/src"
-  ],
-  "transform": {
-    "^.+\\.tsx?$": "ts-jest"
+  ...tsJest,
+  transform: {
+    ...tsJest.transform,
+    "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
   },
-  "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+  globals: {
+    "ts-jest": {
+      babelConfig: true,
+    }
+  },
+  "preset": "react-native",
+  "testURL": "http://localhost/",
+  "snapshotSerializers": [
+    "enzyme-to-json/serializer"
+  ],
+  "testPathIgnorePatterns": [
+    "<rootDir>/__tests__/setup/",
+    "<rootDir>/node_modules"
+  ],
+  "setupTestFrameworkScriptFile": "./__tests__/setup/setupEnzyme.tsx",
+  "testEnvironment": "jsdom",
   "moduleFileExtensions": [
     "ts",
     "tsx",

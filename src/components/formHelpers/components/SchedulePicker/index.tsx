@@ -3,13 +3,39 @@ import { connect } from 'react-redux';
 import moment, { isMoment } from 'moment';
 import PropTypes from 'prop-types';
 import SplittedTimePicker from './SplittedTimePicker';
-import { Picker } from 'react-native-wheel-datepicker';
 import storeActions from '../../../../redux/actions/store';
 import { InputButton } from '../../index';
 import rangeTimeSelector from '../../../../redux/selectors/rangeTimeSelector';
 import styles from './style';
 
 class SchedulePicker extends React.Component<any, any> {
+  static propTypes = {
+    value: PropTypes.string.isRequired,
+    date: PropTypes.any,
+    format: PropTypes.string,
+    inline: PropTypes.bool,
+    storeState: PropTypes.shape({
+      isLoading: PropTypes.bool,
+    }).isRequired,
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    isOpen: PropTypes.bool.isRequired,
+    toggle: PropTypes.func.isRequired,
+    schedule: PropTypes.arrayOf(PropTypes.object).isRequired,
+    placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    getSchedule: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    excludeLast: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    date: moment(),
+    inline: false,
+    label: '',
+    format: 'hh:mm A',
+    placeholder: '',
+    excludeLast: true,
+  };
+
   componentDidMount() {
     const { date, getSchedule } = this.props;
     getSchedule(moment(date).format('YYYY-MM-DD'));
@@ -17,10 +43,7 @@ class SchedulePicker extends React.Component<any, any> {
 
   componentWillReceiveProps(newProps) {
     const { date, getSchedule } = this.props;
-    if (
-      moment(date).format('YYYY-MM-DD') !==
-      moment(newProps.date).format('YYYY-MM-DD')
-    ) {
+    if (moment(date).format('YYYY-MM-DD') !== moment(newProps.date).format('YYYY-MM-DD')) {
       getSchedule(moment(newProps.date).format('YYYY-MM-DD'));
     }
   }
@@ -62,8 +85,7 @@ class SchedulePicker extends React.Component<any, any> {
 
     return (
       <React.Fragment>
-        {
-          !inline &&
+        {!inline && (
           <InputButton
             {...props}
             label={label}
@@ -73,9 +95,8 @@ class SchedulePicker extends React.Component<any, any> {
             valueStyle={isOpen && styles.openDialog}
             style={styles.noPadding}
           />
-        }
-        {
-          inline || isOpen &&
+        )}
+        {(inline || isOpen) && (
           <SplittedTimePicker
             isStart={isStart}
             isLoading={isLoading}
@@ -86,37 +107,11 @@ class SchedulePicker extends React.Component<any, any> {
             selectedValue={this.selectedTime}
             onValueChange={this.onValueChange}
           />
-        }
+        )}
       </React.Fragment>
     );
   }
 }
-
-SchedulePicker.propTypes = {
-  value: PropTypes.string.isRequired,
-  date: PropTypes.any,
-  format: PropTypes.string,
-  inline: PropTypes.bool,
-  storeState: PropTypes.shape({
-    isLoading: PropTypes.bool,
-  }).isRequired,
-  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  isOpen: PropTypes.bool.isRequired,
-  toggle: PropTypes.func.isRequired,
-  schedule: PropTypes.arrayOf(PropTypes.object).isRequired,
-  placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  getSchedule: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  excludeLast: PropTypes.bool,
-};
-SchedulePicker.defaultProps = {
-  date: moment(),
-  inline: false,
-  label: '',
-  format: 'hh:mm A',
-  placeholder: '',
-  excludeLast: true,
-};
 
 const mapStateToProps = state => ({
   rangeTimes: rangeTimeSelector(state),
@@ -125,4 +120,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getSchedule: date => dispatch(storeActions.getScheduleForDate(date)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(SchedulePicker);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SchedulePicker);
