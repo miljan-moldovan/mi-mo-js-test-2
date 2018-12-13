@@ -148,19 +148,11 @@ class NewApptSlide extends React.Component {
     clientsNav.navigate('Services', {
       selectedService,
       selectedProvider,
-      onChangeWithNavigation: (service, servicesNav) => {
-        servicesNav.navigate('Providers', {
-          selectedService,
-          selectedProvider,
-          dismissOnSelect: true,
-          onChangeProvider: provider => {
-            this.setProvider(provider);
-            this.props.newApptActions.setClient(client);
-            servicesNav.goBack();
-            clientsNav.goBack();
-            this.setService(service);
-          },
-        });
+      dismissOnSelect: true,
+      onChangeService: (service) => {
+        this.props.newApptActions.setClient(client);
+        clientsNav.goBack();
+        this.setService(service);
       },
     });
   };

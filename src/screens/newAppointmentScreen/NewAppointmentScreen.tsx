@@ -8,14 +8,14 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import {NavigationEvents} from 'react-navigation';
+import { NavigationEvents } from 'react-navigation';
 import deepEqual from 'deep-equal';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {Picker} from 'react-native-wheel-datepicker';
+import { Picker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
-import {get, debounce, isNull} from 'lodash';
+import { get, debounce, isNull } from 'lodash';
 import ClientInfoButton from '../../components/ClientInfoButton';
 import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
 import SwipeableComponent from '../../components/SwipeableComponent';
@@ -43,7 +43,7 @@ import SalonHeader from '../../components/SalonHeader';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import {Store, Client, Services} from '../../utilities/apiWrapper';
+import { Store, Client, Services } from '../../utilities/apiWrapper';
 
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
@@ -54,7 +54,7 @@ import Colors from '../../constants/Colors';
 export const SubTitle = props => (
   <View style={[styles.subTitleContainer, props.style || {}]}>
     <View style={styles.subTitleTextContainer}>
-      <Text style={styles.subTitleText}>{props.title.toUpperCase ()}</Text>
+      <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
     </View>
     {props.children}
   </View>
@@ -68,13 +68,13 @@ SubTitle.defaultProps = {
 };
 
 export default class NewAppointmentScreen extends React.Component {
-  static navigationOptions = ({navigation, screenProps}) => {
+  static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
     const canSave = params.canSave;
-    const leftButtonStyle = {paddingLeft: 10};
-    const rightButtonStyle = {paddingRight: 10};
-    const doneButtonStyle = {color: canSave ? 'white' : 'rgba(0,0,0,0.3)'};
+    const leftButtonStyle = { paddingLeft: 10 };
+    const rightButtonStyle = { paddingRight: 10 };
+    const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
     return {
       header: (
         <SalonHeader
@@ -108,20 +108,20 @@ export default class NewAppointmentScreen extends React.Component {
 
   isValidPhoneNumberRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 
-  constructor (props) {
-    super (props);
-    const {client, editType} = this.props.newAppointmentState;
+  constructor(props) {
+    super(props);
+    const { client, editType } = this.props.newAppointmentState;
     const {
       clientEmail,
       clientPhone,
       clientPhoneType,
       isValidEmail,
       isValidPhone,
-    } = this.getClientInfo (client);
-    this.props.navigation.setParams ({
+    } = this.getClientInfo(client);
+    this.props.navigation.setParams({
       editType,
-      handleSave: debounce (this.handleSave, 500),
-      handleCancel: debounce (this.handleCancel, 500),
+      handleSave: debounce(this.handleSave, 500),
+      handleCancel: debounce(this.handleCancel, 500),
     });
     this.state = {
       toast: null,
@@ -136,23 +136,23 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhoneType,
     };
 
-    this.props.navigation.addListener ('willFocus', () => {
-      const {client, editType} = this.props.newAppointmentState;
+    this.props.navigation.addListener('willFocus', () => {
+      const { client, editType } = this.props.newAppointmentState;
       if (editType !== 'new') {
-        this.props.formulaActions.getFormulasAndNotes (client.id);
+        this.props.formulaActions.getFormulasAndNotes(client.id);
       }
-      this.shouldUpdateClientInfo ();
+      this.shouldUpdateClientInfo();
     });
-    this.props.navigation.addListener ('willBlur', this.shouldUpdateClientInfo);
+    this.props.navigation.addListener('willBlur', this.shouldUpdateClientInfo);
   }
 
-  componentDidMount () {
-    this.checkConflicts ();
+  componentDidMount() {
+    this.checkConflicts();
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    const {isValidAppointment} = this.props;
-    const {canSave} = this.props.navigation.state.params;
+  componentDidUpdate(prevProps, prevState) {
+    const { isValidAppointment } = this.props;
+    const { canSave } = this.props.navigation.state.params;
     const remarksChanged =
       prevProps.newAppointmentState.remarks !==
       this.props.newAppointmentState.remarks;
@@ -161,7 +161,7 @@ export default class NewAppointmentScreen extends React.Component {
       (isValidAppointment !== prevProps.isValidAppointment &&
         isValidAppointment !== canSave)
     ) {
-      this.validate ();
+      this.validate();
     }
   }
 
@@ -171,22 +171,22 @@ export default class NewAppointmentScreen extends React.Component {
       startTime,
       mainEmployee: employee,
     } = this.props.newAppointmentState;
-    const length = this.totalLength ();
-    const serviceLength = moment.duration (service.maxDuration);
-    const fromTime = moment (startTime).add (length);
-    const toTime = moment (fromTime).add (serviceLength);
+    const length = this.totalLength();
+    const serviceLength = moment.duration(service.maxDuration);
+    const fromTime = moment(startTime).add(length);
+    const toTime = moment(fromTime).add(serviceLength);
 
     const newService = {
       service,
       length: serviceLength,
-      client: guestId ? get (this.getGuest (guestId), 'client', null) : client,
+      client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
       requested: true,
       employee: provider || employee,
       fromTime,
       toTime,
-      bookBetween: get (service, 'bookBetween', false),
-      gapTime: moment.duration (get (service, 'gapDuration', 0)),
-      afterTime: moment.duration (get (service, 'afterDuration', 0)),
+      bookBetween: get(service, 'bookBetween', false),
+      gapTime: moment.duration(get(service, 'gapDuration', 0)),
+      afterTime: moment.duration(get(service, 'afterDuration', 0)),
     };
 
     // if (service.requireRoom) {
@@ -204,108 +204,108 @@ export default class NewAppointmentScreen extends React.Component {
     // }
 
     const newServiceItem = {
-      itemId: uuid (),
+      itemId: uuid(),
       guestId,
       service: newService,
     };
 
-    this.props.newAppointmentActions.addServiceItem (newServiceItem);
-    setTimeout (() => {
-      this.selectExtraServices (newServiceItem);
+    this.props.newAppointmentActions.addServiceItem(newServiceItem);
+    setTimeout(() => {
+      this.selectExtraServices(newServiceItem);
     });
   };
 
   createPhonesArr = phones => {
     const createPhone = type => {
-      const cell = phones.find (
-        itm => get (itm, 'type', null) === ClientPhoneTypes[type]
+      const cell = phones.find(
+        itm => get(itm, 'type', null) === ClientPhoneTypes[type]
       );
       if (
         !cell ||
         !cell.value ||
-        !cell.value.trim () ||
-        !this.isValidPhoneNumberRegExp.test (cell.value)
+        !cell.value.trim() ||
+        !this.isValidPhoneNumberRegExp.test(cell.value)
       ) {
-        return {type: ClientPhoneTypes[type], value: ''};
+        return { type: ClientPhoneTypes[type], value: '' };
       }
       return cell;
     };
-    return [createPhone ('cell'), createPhone ('home'), createPhone ('work')];
+    return [createPhone('cell'), createPhone('home'), createPhone('work')];
   };
 
   selectMainEmployee = () =>
-    new Promise (resolve => {
+    new Promise(resolve => {
       const {
-        appointmentScreenState: {providers: filterList = false},
+        appointmentScreenState: { providers: filterList = false },
       } = this.props;
-      this.props.navigation.navigate ('ApptBookProvider', {
+      this.props.navigation.navigate('ApptBookProvider', {
         filterList,
         headerProps: {
           title: 'Providers',
           leftButton: (
-            <Text style={{fontSize: 14, color: 'white'}}>Cancel</Text>
+            <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
           ),
           leftButtonOnPress: navigation => navigation.goBack,
         },
         showFirstAvailable: true,
         showEstimatedTime: true,
         dismissOnSelect: true,
-        onChangeProvider: provider => resolve (provider),
+        onChangeProvider: provider => resolve(provider),
       });
     });
 
   selectExtraServices = serviceItem => {
-    const {service: {service = null}, itemId} = serviceItem;
-    const extras = this.getAddonsForService (
+    const { service: { service = null }, itemId } = serviceItem;
+    const extras = this.getAddonsForService(
       itemId,
       this.props.newAppointmentState.serviceItems
     );
     const addonIds = extras
-      .filter (itm => itm.type === 'addon')
-      .map (itm => itm.service.service.id);
+      .filter(itm => itm.type === 'addon')
+      .map(itm => itm.service.service.id);
     const recommendedIds = extras
-      .filter (itm => itm.type === 'recommended')
-      .map (itm => itm.service.service.id);
+      .filter(itm => itm.type === 'recommended')
+      .map(itm => itm.service.service.id);
     const requiredIds = extras
-      .filter (itm => itm.type === 'required')
-      .map (itm => itm.service.service.id);
-    this.props.servicesActions.setSelectingExtras (true);
-    this.showAddons (service, addonIds).then (selectedAddons =>
-      this.setState ({selectedAddons}, () => {
-        this.showRecommended (
+      .filter(itm => itm.type === 'required')
+      .map(itm => itm.service.service.id);
+    this.props.servicesActions.setSelectingExtras(true);
+    this.showAddons(service, addonIds).then(selectedAddons =>
+      this.setState({ selectedAddons }, () => {
+        this.showRecommended(
           service,
           recommendedIds
-        ).then (selectedRecommended =>
-          this.setState ({selectedRecommended}, () => {
-            this.showRequired (service, requiredIds)
-              .then (selectedRequired =>
-                this.setState ({selectedRequired}, () => {
+        ).then(selectedRecommended =>
+          this.setState({ selectedRecommended }, () => {
+            this.showRequired(service, requiredIds)
+              .then(selectedRequired =>
+                this.setState({ selectedRequired }, () => {
                   const {
                     selectedAddons: addons,
                     selectedRequired: required,
                     selectedRecommended: recommended,
                   } = this.state;
-                  this.props.newAppointmentActions.addServiceItemExtras (
+                  this.props.newAppointmentActions.addServiceItemExtras(
                     itemId, // parentId
                     'addon', // extraService type
                     addons
                   );
-                  this.props.newAppointmentActions.addServiceItemExtras (
+                  this.props.newAppointmentActions.addServiceItemExtras(
                     itemId, // parentId
                     'recommended', // extraService type
                     recommended
                   );
-                  this.props.newAppointmentActions.addServiceItemExtras (
+                  this.props.newAppointmentActions.addServiceItemExtras(
                     itemId, // parentId
                     'required', // extraService type
                     required
                   );
-                  this.props.servicesActions.setSelectingExtras (false);
-                  return this.checkConflicts ();
+                  this.props.servicesActions.setSelectingExtras(false);
+                  return this.checkConflicts();
                 })
               )
-              .catch (() => {
-                this.props.servicesActions.setSelectingExtras (false);
+              .catch(() => {
+                this.props.servicesActions.setSelectingExtras(false);
               });
           })
         );
@@ -314,73 +314,73 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   showRequired = (service, selectedIds = []) =>
-    new Promise (resolve => {
+    new Promise(resolve => {
       try {
-        const {navigation: {navigate}} = this.props;
+        const { navigation: { navigate } } = this.props;
         if (service && service.requiredServices.length > 0) {
           if (service.requiredServices.length === 1) {
-            Services.getService (service.requiredServices[0].id).then (res =>
-              resolve ({name: res.description, ...res})
+            Services.getService(service.requiredServices[0].id).then(res =>
+              resolve({ name: res.description, ...res })
             );
           } else {
-            navigate ('RequiredServices', {
+            navigate('RequiredServices', {
               selectedIds,
               showCancelButton: false,
               services: service.requiredServices,
               serviceTitle: service.name,
               onNavigateBack: this.showPanel,
-              onSave: selected => resolve (selected),
+              onSave: selected => resolve(selected),
             });
           }
         } else {
-          resolve ([]);
+          resolve([]);
         }
       } catch (err) {
-        console.warn (err);
-        resolve ([]);
+        console.warn(err);
+        resolve([]);
       }
     });
 
   showAddons = (service, selectedIds = []) =>
-    new Promise (resolve => {
+    new Promise(resolve => {
       try {
-        const {navigation: {navigate}} = this.props;
+        const { navigation: { navigate } } = this.props;
         if (service && service.addons.length > 0) {
-          navigate ('AddonServices', {
+          navigate('AddonServices', {
             selectedIds,
             showCancelButton: false,
             services: service.addons,
             serviceTitle: service.name,
             onNavigateBack: this.showPanel,
-            onSave: services => resolve (services),
+            onSave: services => resolve(services),
           });
         } else {
-          resolve ([]);
+          resolve([]);
         }
       } catch (err) {
-        console.warn (err);
-        resolve ([]);
+        console.warn(err);
+        resolve([]);
       }
     });
 
   showRecommended = (service, selectedIds = []) =>
-    new Promise (resolve => {
+    new Promise(resolve => {
       try {
-        const {navigation: {navigate}} = this.props;
+        const { navigation: { navigate } } = this.props;
         if (service && service.recommendedServices.length > 0) {
-          navigate ('RecommendedServices', {
+          navigate('RecommendedServices', {
             selectedIds,
             showCancelButton: false,
             services: service.recommendedServices,
             serviceTitle: service.name,
             onNavigateBack: this.showPanel,
-            onSave: services => resolve (services),
+            onSave: services => resolve(services),
           });
         } else {
-          resolve ([]);
+          resolve([]);
         }
       } catch (err) {
-        resolve ([]);
+        resolve([]);
       }
     });
 
@@ -392,8 +392,8 @@ export default class NewAppointmentScreen extends React.Component {
       isValidPhone: phoneValid,
       clientPhoneType,
     } = this.state;
-    const {client} = this.props.newAppointmentState;
-    const currentPhone = client.phones.find (
+    const { client } = this.props.newAppointmentState;
+    const currentPhone = client.phones.find(
       phone => phone.type === ClientPhoneTypes.cell
     );
     const hasEmailChanged = clientEmail !== client.email;
@@ -405,21 +405,21 @@ export default class NewAppointmentScreen extends React.Component {
     }
     const phones = isValidPhone && hasPhoneChanged
       ? [
-          {
-            type: ClientPhoneTypes.cell,
-            value: clientPhone,
-          },
-          ...client.phones.filter (
-            phone =>
-              phone.value &&
-              phone.type !== ClientPhoneTypes.cell &&
-              this.isValidPhoneNumberRegExp.test (phone.value)
-          ),
-        ]
-      : client.phones.filter (
+        {
+          type: ClientPhoneTypes.cell,
+          value: clientPhone,
+        },
+        ...client.phones.filter(
           phone =>
-            phone.value && this.isValidPhoneNumberRegExp.test (phone.value)
-        );
+            phone.value &&
+            phone.type !== ClientPhoneTypes.cell &&
+            this.isValidPhoneNumberRegExp.test(phone.value)
+        ),
+      ]
+      : client.phones.filter(
+        phone =>
+          phone.value && this.isValidPhoneNumberRegExp.test(phone.value)
+      );
     const email = isValidEmail ? clientEmail : client.email;
     const updateObject = {
       id: client.id,
@@ -429,7 +429,7 @@ export default class NewAppointmentScreen extends React.Component {
     if (email) {
       updateObject.email = email;
     }
-    const updated = await Client.putContactInformation (
+    const updated = await Client.putContactInformation(
       client.id,
       updateObject
     );
@@ -437,29 +437,29 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   onPressService = (serviceId, guestId = false) => {
-    const item = this.getServiceItem (serviceId);
+    const item = this.getServiceItem(serviceId);
     const isOnlyMainService = this.isOnlyMainService(item);
-    const {date, client: mainClient} = this.props.newAppointmentState;
+    const { date, client: mainClient } = this.props.newAppointmentState;
     const client = guestId
-      ? get (this.getGuest (guestId), 'client', null)
+      ? get(this.getGuest(guestId), 'client', null)
       : mainClient;
-    this.props.navigation.navigate ('ModifyApptService', {
+    this.props.navigation.navigate('ModifyApptService', {
       date,
       client,
-      serviceItem: this.getServiceItem (serviceId),
+      serviceItem: this.getServiceItem(serviceId),
       isOnlyMainService,
       onSaveService: service =>
-        this.updateService (serviceId, service, guestId),
-      onRemoveService: () => this.removeServiceAlert (serviceId),
+        this.updateService(serviceId, service, guestId),
+      onRemoveService: () => this.removeServiceAlert(serviceId),
     });
   };
 
   onPressConflicts = serviceId => {
-    const {date, startTime} = this.props.newAppointmentState;
-    const totalDuration = this.totalLength ();
-    const endTime = moment (startTime).add (moment.duration (totalDuration));
-    const conflicts = this.getConflictsForService (serviceId);
-    this.props.navigation.navigate ('Conflicts', {
+    const { date, startTime } = this.props.newAppointmentState;
+    const totalDuration = this.totalLength();
+    const endTime = moment(startTime).add(moment.duration(totalDuration));
+    const conflicts = this.getConflictsForService(serviceId);
+    this.props.navigation.navigate('Conflicts', {
       date,
       conflicts,
       startTime,
@@ -468,122 +468,122 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   setGuest = (client, guestId) => {
-    this.props.newAppointmentActions.setGuestClient (guestId, client);
-    this.checkConflicts ();
+    this.props.newAppointmentActions.setGuestClient(guestId, client);
+    this.checkConflicts();
   };
 
   getGuestServices = guestId =>
-    this.props.newAppointmentState.serviceItems.filter (
+    this.props.newAppointmentState.serviceItems.filter(
       item => item.guestId === guestId && !item.parentId
     );
 
   getGuest = guestId =>
-    this.props.newAppointmentState.guests.find (
+    this.props.newAppointmentState.guests.find(
       item => item.guestId === guestId
     );
 
   getServiceItem = serviceId =>
-    this.props.newAppointmentState.serviceItems.find (
+    this.props.newAppointmentState.serviceItems.find(
       item => item.itemId === serviceId
     );
 
   getClientInfo = client => {
-    const phones = get (client, 'phones', []);
-    const phone = phones.find (
-      item => get (item, 'type', null) === ClientPhoneTypes.cell
+    const phones = get(client, 'phones', []);
+    const phone = phones.find(
+      item => get(item, 'type', null) === ClientPhoneTypes.cell
     );
-    const clientEmail = get (client, 'email', '') || '';
-    const clientPhone = get (phone, 'value', '') || '';
-    const clientPhoneType = get (phone, 'type', ClientPhoneTypes.cell);
+    const clientEmail = get(client, 'email', '') || '';
+    const clientPhone = get(phone, 'value', '') || '';
+    const clientPhoneType = get(phone, 'type', ClientPhoneTypes.cell);
     return {
-      clientPhone: isNull (clientPhone) ? '' : clientPhone,
-      clientEmail: isNull (clientEmail) ? '' : clientEmail,
+      clientPhone: isNull(clientPhone) ? '' : clientPhone,
+      clientEmail: isNull(clientEmail) ? '' : clientEmail,
       clientPhoneType,
-      isValidEmail: this.emailValidation (clientEmail),
-      isValidPhone: this.phoneValidation (clientPhone),
+      isValidEmail: this.emailValidation(clientEmail),
+      isValidPhone: this.phoneValidation(clientPhone),
     };
   };
 
   getRoomInfo = roomId =>
-    new Promise ((resolve, reject) => {
-      Store.getRooms ()
-        .then (rooms => resolve (rooms.find (room => room.id === roomId)))
-        .catch (err => reject (err));
+    new Promise((resolve, reject) => {
+      Store.getRooms()
+        .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+        .catch(err => reject(err));
     });
 
   getResourceInfo = resourceId =>
-    new Promise ((resolve, reject) => {
-      Store.getResources ()
-        .then (resources =>
-          resolve (resources.find (resource => resource.id === resourceId))
+    new Promise((resolve, reject) => {
+      Store.getResources()
+        .then(resources =>
+          resolve(resources.find(resource => resource.id === resourceId))
         )
-        .catch (err => reject (err));
+        .catch(err => reject(err));
     });
 
   getMainServices = serviceItems =>
-    serviceItems.filter (item => this.isMainService (item));
+    serviceItems.filter(item => this.isMainService(item));
 
   getAddonsForService = (serviceId, serviceItems) =>
-    serviceItems.filter (item => item.parentId === serviceId);
+    serviceItems.filter(item => item.parentId === serviceId);
 
   getConflictsForService = serviceId =>
-    this.props.newAppointmentState.conflicts.filter (
+    this.props.newAppointmentState.conflicts.filter(
       conf => conf.associativeKey === serviceId
     );
 
   isMainService = item => !item.guestId && !item.parentId;
 
-  hideToast = () => this.setState ({toast: null});
+  hideToast = () => this.setState({ toast: null });
 
   updateService = (serviceId, updatedService, guestId = false) => {
-    this.props.newAppointmentActions.updateServiceItem (
+    this.props.newAppointmentActions.updateServiceItem(
       serviceId,
       updatedService,
       guestId
     );
-    this.checkConflicts ();
+    this.checkConflicts();
   };
 
-  isOnlyMainService = serviceItem => (this.isMainService (serviceItem) &&
-    this.getMainServices (this.props.newAppointmentState.serviceItems).length <= 1)
+  isOnlyMainService = serviceItem => (this.isMainService(serviceItem) &&
+    this.getMainServices(this.props.newAppointmentState.serviceItems).length <= 1)
 
   removeServiceAlert = serviceId => {
-    const serviceItem = this.getServiceItem (serviceId);
-    const serviceTitle = get (
+    const serviceItem = this.getServiceItem(serviceId);
+    const serviceTitle = get(
       serviceItem,
       'service.service.name',
-      get (serviceItem, 'service.service.description', '')
+      get(serviceItem, 'service.service.description', '')
     );
-    const employee = get (serviceItem, 'service.employee', null);
+    const employee = get(serviceItem, 'service.employee', null);
     const employeeName = employee.isFirstAvailable
       ? 'First Available'
-      : `${get (employee, 'name', employee.firstName || '')} ${get (employee, 'lastName', '')[0]}.`;
+      : `${get(employee, 'name', employee.firstName || '')} ${get(employee, 'lastName', '')[0]}.`;
 
     if (this.isOnlyMainService(serviceItem)) {
-      Alert.alert ('Something went wrong', 'You need minimum 1 service', [
-        {text: 'Ok, got it', onPress: () => null},
+      Alert.alert('Something went wrong', 'You need minimum 1 service', [
+        { text: 'Ok, got it', onPress: () => null },
       ]);
     } else {
-      Alert.alert (
+      Alert.alert(
         'Remove Service',
         `Are you sure you want to remove service ${serviceTitle} w/ ${employeeName}?`,
         [
-          {text: 'No, Thank You', onPress: () => null},
-          {text: 'Yes, Discard', onPress: () => this.removeService (serviceId)},
+          { text: 'No, Thank You', onPress: () => null },
+          { text: 'Yes, Discard', onPress: () => this.removeService(serviceId) },
         ]
       );
     }
   };
 
   removeService = serviceId => {
-    this.props.newAppointmentActions.removeServiceItem (serviceId);
-    this.checkConflicts ();
+    this.props.newAppointmentActions.removeServiceItem(serviceId);
+    this.checkConflicts();
   };
 
   onChangeRecurring = isRecurring => isRecurring; // this.setState({ isRecurring: !isRecurring });
 
   onChangeBookedBy = employee => {
-    this.props.newAppointmentActions.setBookedBy (employee);
+    this.props.newAppointmentActions.setBookedBy(employee);
   };
 
   onChangeClient = client => {
@@ -593,10 +593,10 @@ export default class NewAppointmentScreen extends React.Component {
       isValidEmail,
       isValidPhone,
       clientPhoneType,
-    } = this.getClientInfo (client);
-    this.props.formulaActions.getFormulasAndNotes (client.id);
-    this.props.newAppointmentActions.setClient (client);
-    this.setState (
+    } = this.getClientInfo(client);
+    this.props.formulaActions.getFormulasAndNotes(client.id);
+    this.props.newAppointmentActions.setClient(client);
+    this.setState(
       {
         clientEmail,
         clientPhone,
@@ -609,26 +609,26 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   onChangeRemarks = remarks =>
-    this.props.newAppointmentActions.setRemarks (remarks);
+    this.props.newAppointmentActions.setRemarks(remarks);
 
   onChangeGuestNumber = (action, guestNumber) => {
     if (this.props.newAppointmentState.guests.length < guestNumber) {
-      this.props.newAppointmentActions.addGuest ();
+      this.props.newAppointmentActions.addGuest();
     } else {
-      this.props.newAppointmentActions.removeGuest ();
+      this.props.newAppointmentActions.removeGuest();
     }
-    this.checkConflicts ();
+    this.checkConflicts();
   };
 
   removeGuest = guestId => {
-    this.props.newAppointmentActions.removeGuest (guestId);
-    this.checkConflicts ();
+    this.props.newAppointmentActions.removeGuest(guestId);
+    this.checkConflicts();
   };
 
   handleAddMainService = () => {
-    const {client, mainEmployee} = this.props.newAppointmentState;
-    if (isNull (client)) {
-      return this.setState ({
+    const { client, mainEmployee } = this.props.newAppointmentState;
+    if (isNull(client)) {
+      return this.setState({
         toast: {
           text: 'Select a client first',
           type: 'warning',
@@ -636,23 +636,23 @@ export default class NewAppointmentScreen extends React.Component {
         },
       });
     }
-    this.props.navigation.navigate ('ApptBookService', {
+    this.props.navigation.navigate('ApptBookService', {
       dismissOnSelect: true,
       selectExtraServices: true,
       filterByProvider: true,
       clientId: client.id,
       selectedEmployee: mainEmployee,
       onChangeWithNavigation: (service, nav) => {
-        nav.navigate ('ApptBookProvider', {
+        nav.navigate('ApptBookProvider', {
           dismissOnSelect: true,
           selectedService: service,
           selectedProvider: mainEmployee,
           onChangeProvider: provider => {
             if (!mainEmployee) {
-              this.props.newAppointmentActions.setMainEmployee (provider);
+              this.props.newAppointmentActions.setMainEmployee(provider);
             }
-            this.addService (service, provider);
-            nav.goBack ();
+            this.addService(service, provider);
+            nav.goBack();
           },
         });
       },
@@ -660,43 +660,43 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   changeDateTime = () =>
-    this.props.navigation.navigate ('ChangeNewApptDateTime');
+    this.props.navigation.navigate('ChangeNewApptDateTime');
 
   checkConflicts = () =>
-    this.props.newAppointmentActions.getConflicts (() => {
-      this.validate ();
-      this.shouldUpdateClientInfo ();
+    this.props.newAppointmentActions.getConflicts(() => {
+      this.validate();
+      this.shouldUpdateClientInfo();
     });
 
   handleAddGuestService = guestId => {
-    const {mainEmployee} = this.props.newAppointmentState;
-    const guest = this.getGuest (guestId);
-    const {client = null} = guest;
+    const { mainEmployee } = this.props.newAppointmentState;
+    const guest = this.getGuest(guestId);
+    const { client = null } = guest;
 
     if (client !== null) {
-      return this.props.navigation.navigate ('ApptBookService', {
+      return this.props.navigation.navigate('ApptBookService', {
         dismissOnSelect: true,
         selectExtraServices: true,
         filterByProvider: true,
-        clientId: get (client, 'id', null),
+        clientId: get(client, 'id', null),
         employeeId: mainEmployee.id,
         onChangeWithNavigation: (service, nav) => {
-          nav.navigate ('ApptBookProvider', {
+          nav.navigate('ApptBookProvider', {
             dismissOnSelect: true,
             selectedService: service,
             selectedProvider: mainEmployee,
             onChangeProvider: provider => {
               if (!mainEmployee) {
-                this.props.newAppointmentActions.setMainEmployee (provider);
+                this.props.newAppointmentActions.setMainEmployee(provider);
               }
-              this.addService (service, provider, guestId);
-              nav.goBack ();
+              this.addService(service, provider, guestId);
+              nav.goBack();
             },
           });
         },
       });
     }
-    return this.setState ({
+    return this.setState({
       toast: {
         text: 'Select a guest first',
         type: 'warning',
@@ -706,14 +706,14 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   handleSave = () => {
-    const {editType} = this.props.newAppointmentState;
+    const { editType } = this.props.newAppointmentState;
 
     const successCallback = () => {
-      const {date} = this.props.newAppointmentState;
-      this.props.navigation.goBack ();
-      this.props.apptBookActions.setProviderScheduleDates (date, date);
-      this.props.apptBookActions.setGridView ();
-      this.props.apptBookActions.setToast ({
+      const { date } = this.props.newAppointmentState;
+      this.props.navigation.goBack();
+      this.props.apptBookActions.setProviderScheduleDates(date, date);
+      this.props.apptBookActions.setGridView();
+      this.props.apptBookActions.setToast({
         description: editType === 'edit'
           ? 'Appointment Modified'
           : 'Appointment Booked',
@@ -725,21 +725,21 @@ export default class NewAppointmentScreen extends React.Component {
       const rebook = params.rebook || false;
 
       if (rebook) {
-        params.onFinishRebook ();
+        params.onFinishRebook();
       }
     };
-    const errorCallback = () => this.checkConflicts ();
-    this.shouldUpdateClientInfo ();
+    const errorCallback = () => this.checkConflicts();
+    this.shouldUpdateClientInfo();
     if (editType === 'new') {
       if (this.props.isValidAppointment) {
-        this.props.newAppointmentActions.quickBookAppt (
+        this.props.newAppointmentActions.quickBookAppt(
           successCallback,
           errorCallback
         );
       }
     } else if (editType === 'edit') {
-      const {selectedAppt: {id}} = this.props.newAppointmentState;
-      this.props.newAppointmentActions.modifyAppt (
+      const { selectedAppt: { id } } = this.props.newAppointmentState;
+      this.props.newAppointmentActions.modifyAppt(
         id,
         successCallback,
         errorCallback
@@ -754,15 +754,15 @@ export default class NewAppointmentScreen extends React.Component {
       mainEmployee,
     } = this.props.newAppointmentState;
     const firstService = serviceItems[0]
-      ? get (serviceItems[0].service, 'service', null)
+      ? get(serviceItems[0].service, 'service', null)
       : null;
-    const serviceTitle = get (firstService, 'name', null);
-    const employeeName = `${get (mainEmployee, 'name', get (mainEmployee, 'firstName', ''))} ${get (mainEmployee, 'lastName', '')[0]}.`;
+    const serviceTitle = get(firstService, 'name', null);
+    const employeeName = `${get(mainEmployee, 'name', get(mainEmployee, 'firstName', ''))} ${get(mainEmployee, 'lastName', '')[0]}.`;
     let alertBody = '';
     let alertTitle = '';
     switch (editType) {
       case 'edit': {
-        const hasChanges = this.lookForChanges ();
+        const hasChanges = this.lookForChanges();
         if (hasChanges) {
           alertTitle = 'Discard Changes?';
           alertBody = serviceTitle
@@ -780,52 +780,52 @@ export default class NewAppointmentScreen extends React.Component {
         break;
     }
     if (alertTitle) {
-      Alert.alert (alertTitle, alertBody, [
-        {text: 'No, Thank You', onPress: () => null},
+      Alert.alert(alertTitle, alertBody, [
+        { text: 'No, Thank You', onPress: () => null },
         {
           text: 'Yes, Discard',
           onPress: () => {
-            this.props.navigation.goBack ();
-            this.props.apptBookActions.setGridView ();
+            this.props.navigation.goBack();
+            this.props.apptBookActions.setGridView();
           },
         },
       ]);
     } else {
-      this.props.navigation.goBack ();
-      this.props.apptBookActions.setGridView ();
+      this.props.navigation.goBack();
+      this.props.apptBookActions.setGridView();
     }
   };
 
   emailValidation = email => {
-    if (email === '' || isNull (email)) {
+    if (email === '' || isNull(email)) {
       return true;
     }
-    const isValid = this.isValidEmailRegExp.test (email);
+    const isValid = this.isValidEmailRegExp.test(email);
     if (isValid) {
-      this.shouldUpdateClientInfo ();
+      this.shouldUpdateClientInfo();
     }
     return isValid;
   };
 
   phoneValidation = phone => {
-    if (phone === '' || isNull (phone)) {
+    if (phone === '' || isNull(phone)) {
       return true;
     }
-    const isValid = this.isValidPhoneNumberRegExp.test (phone);
+    const isValid = this.isValidPhoneNumberRegExp.test(phone);
     if (isValid) {
-      this.shouldUpdateClientInfo ();
+      this.shouldUpdateClientInfo();
     }
     return isValid;
   };
 
-  onChangeEmail = clientEmail => this.setState ({clientEmail}, this.validate);
+  onChangeEmail = clientEmail => this.setState({ clientEmail }, this.validate);
 
-  onChangePhone = clientPhone => this.setState ({clientPhone}, this.validate);
+  onChangePhone = clientPhone => this.setState({ clientPhone }, this.validate);
 
   onValidateEmail = (isValid, isFirstValidation) =>
-    this.setState (state => {
+    this.setState(state => {
       const newState = state;
-      const {client} = this.props.newAppointmentState;
+      const { client } = this.props.newAppointmentState;
       newState.isValidEmail = state.clientEmail === '' ? true : isValid;
       if (
         !isValid &&
@@ -843,9 +843,9 @@ export default class NewAppointmentScreen extends React.Component {
     }, this.shouldUpdateClientInfo);
 
   onValidatePhone = (isValid, isFirstValidation) =>
-    this.setState (state => {
+    this.setState(state => {
       const newState = state;
-      const {client} = this.props.newAppointmentState;
+      const { client } = this.props.newAppointmentState;
       newState.isValidPhone = newState.clientPhone === '' ? true : isValid;
       if (
         !isValid &&
@@ -873,24 +873,24 @@ export default class NewAppointmentScreen extends React.Component {
       guests,
       serviceItems,
     } = this.props.newAppointmentState;
-    const {clientEmail, clientPhone} = this.state;
+    const { clientEmail, clientPhone } = this.state;
     const diffDate =
-      date.format ('MM/DD/YYYY') !== initialState.date.format ('MM/DD/YYYY');
+      date.format('MM/DD/YYYY') !== initialState.date.format('MM/DD/YYYY');
     const diffTime =
-      startTime.format ('hh:mm A') !==
-      initialState.startTime.format ('hh:mm A');
+      startTime.format('hh:mm A') !==
+      initialState.startTime.format('hh:mm A');
     const diffRemarks = remarks !== initialState.remarks;
     const diffClient =
-      get (client, 'id', -1) !== get (initialState.client, 'id', -1);
+      get(client, 'id', -1) !== get(initialState.client, 'id', -1);
     const diffEmail =
-      clientEmail !== this.getClientInfo (initialState.client).clientEmail;
+      clientEmail !== this.getClientInfo(initialState.client).clientEmail;
     const diffPhone =
-      clientPhone !== this.getClientInfo (initialState.client).clientPhone;
+      clientPhone !== this.getClientInfo(initialState.client).clientPhone;
     const diffBookedByEmployee =
-      get (bookedByEmployee, 'id', -1) !==
-      get (initialState.bookedByEmployee, 'id', -1);
-    const diffGuests = !deepEqual (guests, initialState.guests, {strict: true});
-    const diffServices = !deepEqual (serviceItems, initialState.serviceItems, {
+      get(bookedByEmployee, 'id', -1) !==
+      get(initialState.bookedByEmployee, 'id', -1);
+    const diffGuests = !deepEqual(guests, initialState.guests, { strict: true });
+    const diffServices = !deepEqual(serviceItems, initialState.serviceItems, {
       strict: true,
     });
     return (
@@ -910,16 +910,16 @@ export default class NewAppointmentScreen extends React.Component {
     let canSave = this.props.isValidAppointment;
     if (this.props.newAppointmentState.editType === 'edit') {
       if (this.props.newAppointmentState.initialState) {
-        canSave = canSave && this.lookForChanges ();
+        canSave = canSave && this.lookForChanges();
       } else {
         canSave = false;
       }
     }
-    this.props.navigation.setParams ({canSave});
+    this.props.navigation.setParams({ canSave });
   };
 
   toggleRecurringPicker = () =>
-    this.setState (({recurringPickerOpen}) => ({
+    this.setState(({ recurringPickerOpen }) => ({
       recurringPickerOpen: !recurringPickerOpen,
     }));
 
@@ -928,14 +928,14 @@ export default class NewAppointmentScreen extends React.Component {
   totalLength = () => this.props.appointmentLength;
 
   resetTimeForServices = (items, index, initialFromTime) => {
-    items.forEach ((item, i) => {
+    items.forEach((item, i) => {
       if (i > index) {
         const prevItem = items[i - 1];
         item.service.fromTime =
-          (prevItem && prevItem.service.toTime.clone ()) || initialFromTime;
+          (prevItem && prevItem.service.toTime.clone()) || initialFromTime;
         item.service.toTime = item.service.fromTime
-          .clone ()
-          .add (moment.duration (item.service.toTime));
+          .clone()
+          .add(moment.duration(item.service.toTime));
       }
     });
     return items;
@@ -944,11 +944,11 @@ export default class NewAppointmentScreen extends React.Component {
   renderExtraClientButtons = isDisabled => [
     <SalonTouchableOpacity
       disabled={isDisabled}
-      key={Math.random ().toString ()}
+      key={Math.random().toString()}
       onPress={() => {
         // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
         // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
-        this.props.navigation.navigate ('ClientNotes', {
+        this.props.navigation.navigate('ClientNotes', {
           forAppointment: true,
           forSales: false,
           forQueue: false,
@@ -971,8 +971,8 @@ export default class NewAppointmentScreen extends React.Component {
     <ClientInfoButton
       client={this.props.newAppointmentState.client}
       navigation={this.props.navigation}
-      onDonePress={() => {}}
-      iconStyle={{fontSize: 20, color: '#115ECD'}}
+      onDonePress={() => { }}
+      iconStyle={{ fontSize: 20, color: '#115ECD' }}
       apptBook
       buttonStyle={{
         marginHorizontal: 5,
@@ -980,7 +980,7 @@ export default class NewAppointmentScreen extends React.Component {
     />,
   ];
 
-  render () {
+  render() {
     const {
       isLoading,
       isBooking,
@@ -1004,9 +1004,9 @@ export default class NewAppointmentScreen extends React.Component {
       isValidPhone,
       toast,
     } = this.state;
-    const totalPrice = this.totalPrice ();
-    const totalDuration = this.totalLength ();
-    const dividerWithErrorStyle = {backgroundColor: '#D1242A'};
+    const totalPrice = this.totalPrice();
+    const totalDuration = this.totalLength();
+    const dividerWithErrorStyle = { backgroundColor: '#D1242A' };
     // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const disabledLabelStyle = {
       fontSize: 14,
@@ -1014,30 +1014,30 @@ export default class NewAppointmentScreen extends React.Component {
       color: '#727A8F',
     };
     const isDisabled =
-      this.props.formulasAndNotesState.notes.filter (
+      this.props.formulasAndNotesState.notes.filter(
         itm =>
           itm.isDeleted === false &&
           !(itm.expiration
-            ? moment (itm.expiration).isSameOrBefore (moment ().startOf ('day'))
+            ? moment(itm.expiration).isSameOrBefore(moment().startOf('day'))
             : false)
       ).length < 1;
     const displayDuration = moment
-      .duration (totalDuration)
-      .asMilliseconds () === 0
+      .duration(totalDuration)
+      .asMilliseconds() === 0
       ? '0 min'
-      : `${moment.duration (totalDuration).asMinutes ()} min`;
+      : `${moment.duration(totalDuration).asMinutes()} min`;
     const guestsLabel = guests.length === 0 || guests.length > 1
       ? `${guests.length} Guests`
       : `${guests.length} Guest`;
 
-    const mainServices = this.getMainServices (serviceItems);
+    const mainServices = this.getMainServices(serviceItems);
     return (
       <SwipeableComponent onSwipeRight={this.handleCancel}>
         <View style={styles.container}>
           <NavigationEvents onDidFocus={this.validate} />
           {isLoading || isBooking || isLoadingNotes ? <LoadingOverlay /> : null}
           <KeyboardAwareScrollView style={styles.container}>
-            <InputGroup style={{marginTop: 15}}>
+            <InputGroup style={{ marginTop: 15 }}>
               <ProviderInput
                 apptBook
                 noAvatar
@@ -1053,21 +1053,21 @@ export default class NewAppointmentScreen extends React.Component {
                 headerProps={{
                   title: 'Providers',
                   leftButton: (
-                    <Text style={{fontSize: 14, color: 'white'}}>Cancel</Text>
+                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
                   ),
                   leftButtonOnPress: navigation => {
-                    navigation.goBack ();
+                    navigation.goBack();
                   },
                 }}
               />
               <InputDivider />
               <InputButton
                 label="Date"
-                value={`${date.format ('ddd, MM/DD/YYYY')}, ${startTime.format ('hh:mm A')}`}
+                value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('hh:mm A')}`}
                 onPress={this.changeDateTime}
               />
             </InputGroup>
-            <SectionTitle style={{height: 46}} value="Client" />
+            <SectionTitle style={{ height: 46 }} value="Client" />
             <InputGroup>
               <ClientInput
                 apptBook
@@ -1076,16 +1076,16 @@ export default class NewAppointmentScreen extends React.Component {
                 headerProps={{
                   title: 'Clients',
                   leftButton: (
-                    <Text style={{fontSize: 14, color: 'white'}}>Cancel</Text>
+                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
                   ),
                   leftButtonOnPress: navigation => {
-                    navigation.goBack ();
+                    navigation.goBack();
                   },
                 }}
                 selectedClient={client}
                 onChange={this.onChangeClient}
                 extraComponents={
-                  client !== null && this.renderExtraClientButtons (isDisabled)
+                  client !== null && this.renderExtraClientButtons(isDisabled)
                 }
               />
               <InputDivider />
@@ -1124,32 +1124,32 @@ export default class NewAppointmentScreen extends React.Component {
               <SubTitle
                 title={guests.length > 0 ? 'Main Client' : 'Services'}
               />
-              {mainServices.map (item => [
+              {mainServices.map(item => [
                 <ServiceCard
                   key={item.itemId}
                   data={item.service}
                   isOnlyMainService={this.isOnlyMainService(item)}
-                  addons={this.getAddonsForService (item.itemId, serviceItems)}
-                  onPress={() => this.onPressService (item.itemId)}
-                  onSetExtras={() => this.selectExtraServices (item)}
-                  conflicts={this.getConflictsForService (item.itemId)}
-                  onPressDelete={() => this.removeServiceAlert (item.itemId)}
-                  onPressConflicts={() => this.onPressConflicts (item.itemId)}
+                  addons={this.getAddonsForService(item.itemId, serviceItems)}
+                  onPress={() => this.onPressService(item.itemId)}
+                  onSetExtras={() => this.selectExtraServices(item)}
+                  conflicts={this.getConflictsForService(item.itemId)}
+                  onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                  onPressConflicts={() => this.onPressConflicts(item.itemId)}
                 />,
-                this.getAddonsForService (
+                this.getAddonsForService(
                   item.itemId,
                   serviceItems
-                ).map (addon => (
+                ).map(addon => (
                   <ServiceCard
                     isAddon
                     key={addon.itemId}
                     data={addon.service}
                     isRequired={addon.isRequired}
-                    onPress={() => this.onPressService (addon.itemId)}
-                    conflicts={this.getConflictsForService (addon.itemId)}
-                    onPressDelete={() => this.removeServiceAlert (addon.itemId)}
+                    onPress={() => this.onPressService(addon.itemId)}
+                    conflicts={this.getConflictsForService(addon.itemId)}
+                    onPressDelete={() => this.removeServiceAlert(addon.itemId)}
                     onPressConflicts={() =>
-                      this.onPressConflicts (addon.itemId)}
+                      this.onPressConflicts(addon.itemId)}
                   />
                 )),
               ])}
@@ -1159,62 +1159,62 @@ export default class NewAppointmentScreen extends React.Component {
                   paddingTop: 0,
                 }}
                 onPress={this.handleAddMainService}
-                iconStyle={{marginLeft: 10, marginRight: 4}}
+                iconStyle={{ marginLeft: 10, marginRight: 4 }}
                 title="add service"
               />
             </View>
             {guests.length > 0 &&
               <View>
-                {guests.map ((guest, guestIndex) => (
+                {guests.map((guest, guestIndex) => (
                   <View>
                     <Guest
                       index={guestIndex}
                       navigate={this.props.navigation.navigate}
                       selectedClient={guest.client || null}
-                      onRemove={() => this.removeGuest (guest.guestId)}
+                      onRemove={() => this.removeGuest(guest.guestId)}
                       onChange={selectedClient =>
-                        this.setGuest (selectedClient, guest.guestId)}
+                        this.setGuest(selectedClient, guest.guestId)}
                     />
-                    {this.getGuestServices (guest.guestId).map (item => [
+                    {this.getGuestServices(guest.guestId).map(item => [
                       <ServiceCard
                         key={item.itemId}
                         data={item.service}
-                        addons={this.getAddonsForService (
+                        addons={this.getAddonsForService(
                           item.itemId,
                           serviceItems
                         )}
-                        onSetExtras={() => this.selectExtraServices (item)}
-                        conflicts={this.getConflictsForService (item.itemId)}
+                        onSetExtras={() => this.selectExtraServices(item)}
+                        conflicts={this.getConflictsForService(item.itemId)}
                         onPressDelete={() =>
-                          this.removeServiceAlert (item.itemId)}
+                          this.removeServiceAlert(item.itemId)}
                         onPressConflicts={() =>
-                          this.onPressConflicts (item.itemId)}
+                          this.onPressConflicts(item.itemId)}
                         onPress={() =>
-                          this.onPressService (item.itemId, guest.guestId)}
+                          this.onPressService(item.itemId, guest.guestId)}
                       />,
-                      this.getAddonsForService (
+                      this.getAddonsForService(
                         item.itemId,
                         serviceItems
-                      ).map (addon => (
+                      ).map(addon => (
                         <ServiceCard
                           isAddon
                           key={addon.itemId}
                           data={addon.service}
                           isRequired={addon.isRequired}
-                          conflicts={this.getConflictsForService (addon.itemId)}
+                          conflicts={this.getConflictsForService(addon.itemId)}
                           onPressDelete={() =>
-                            this.removeServiceAlert (addon.itemId)}
+                            this.removeServiceAlert(addon.itemId)}
                           onPressConflicts={() =>
-                            this.onPressConflicts (addon.itemId)}
+                            this.onPressConflicts(addon.itemId)}
                           onPress={() =>
-                            this.onPressService (addon.itemId, guest.guestId)}
+                            this.onPressService(addon.itemId, guest.guestId)}
                         />
                       )),
                     ])}
                     <AddButton
-                      style={{marginVertical: 5}}
-                      onPress={() => this.handleAddGuestService (guest.guestId)}
-                      iconStyle={{marginLeft: 10, marginRight: 6}}
+                      style={{ marginVertical: 5 }}
+                      onPress={() => this.handleAddGuestService(guest.guestId)}
+                      iconStyle={{ marginLeft: 10, marginRight: 6 }}
                       title="add service"
                     />
                   </View>
@@ -1222,13 +1222,13 @@ export default class NewAppointmentScreen extends React.Component {
               </View>}
             {this.state.isRecurring &&
               <View>
-                <InputGroup style={{marginVertical: 20}}>
+                <InputGroup style={{ marginVertical: 20 }}>
                   <InputSwitch
                     text="Recurring appt."
                     value={this.state.isRecurring}
                     // onChange={this.onChangeRecurring}
                     onChange={() =>
-                      this.setState ({
+                      this.setState({
                         toast: {
                           type: 'info',
                           text: 'API Not implemented',
@@ -1237,7 +1237,7 @@ export default class NewAppointmentScreen extends React.Component {
                   />
                 </InputGroup>
                 <SectionTitle
-                  style={{marginTop: 0, paddingBottom: 12, height: 26}}
+                  style={{ marginTop: 0, paddingBottom: 12, height: 26 }}
                   value="Repeat Every"
                 />
                 <InputGroup>
@@ -1245,7 +1245,7 @@ export default class NewAppointmentScreen extends React.Component {
                     label="Repeats every"
                     value={`${this.state.recurringNumber} ${this.state.recurringType}`}
                     onPress={this.toggleRecurringPicker}
-                    style={{paddingLeft: 0}}
+                    style={{ paddingLeft: 0 }}
                   />
                   {this.state.recurringPickerOpen &&
                     <View
@@ -1258,35 +1258,35 @@ export default class NewAppointmentScreen extends React.Component {
                       }}
                     >
                       <Picker
-                        style={{flex: 1}}
-                        itemStyle={{backgroundColor: 'white'}}
+                        style={{ flex: 1 }}
+                        itemStyle={{ backgroundColor: 'white' }}
                         selectedValue={this.state.recurringNumber}
                         pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
                         onValueChange={recurringNumber =>
-                          this.setState ({recurringNumber})}
+                          this.setState({ recurringNumber })}
                       />
                       <Picker
-                        style={{flex: 1}}
-                        itemStyle={{backgroundColor: 'white'}}
+                        style={{ flex: 1 }}
+                        itemStyle={{ backgroundColor: 'white' }}
                         selectedValue={this.state.recurringType}
                         pickerData={['Weeks', 'Months']}
                         onValueChange={recurringType =>
-                          this.setState ({recurringType})}
+                          this.setState({ recurringType })}
                       />
                     </View>}
                   <InputDivider />
                   <InputButton
                     label="On"
                     value="The same day each month"
-                    onPress={() => this.props.navigation.navigate ('RepeatsOn')}
-                    style={{paddingLeft: 0}}
+                    onPress={() => this.props.navigation.navigate('RepeatsOn')}
+                    style={{ paddingLeft: 0 }}
                   />
                   <InputDivider />
                   <InputButton
                     label="Ends"
                     value="After 5 ocurrences"
-                    onPress={() => this.props.navigation.navigate ('EndsOn')}
-                    style={{paddingLeft: 0}}
+                    onPress={() => this.props.navigation.navigate('EndsOn')}
+                    style={{ paddingLeft: 0 }}
                   />
                 </InputGroup>
                 <Text
@@ -1301,7 +1301,7 @@ export default class NewAppointmentScreen extends React.Component {
                   Event will occur every month on the same day each month
                 </Text>
               </View>}
-            <View style={{paddingHorizontal: 8, marginVertical: 10}}>
+            <View style={{ paddingHorizontal: 8, marginVertical: 10 }}>
               <View
                 style={{
                   height: 2,
@@ -1353,12 +1353,12 @@ export default class NewAppointmentScreen extends React.Component {
           </KeyboardAwareScrollView>
           {toast
             ? <SalonToast
-                timeout={5000}
-                type={toast.type}
-                description={toast.text}
-                hide={this.hideToast}
-                btnRightText={toast.btnRightText}
-              />
+              timeout={5000}
+              type={toast.type}
+              description={toast.text}
+              hide={this.hideToast}
+              btnRightText={toast.btnRightText}
+            />
             : null}
         </View>
       </SwipeableComponent>
