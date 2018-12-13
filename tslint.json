@@ -1,65 +1,54 @@
 {
   "extends": [
-    "tslint-react",
-    "tslint-config-prettier"
-  ], // the default rules we want to extend
-  "jsRules": {
-    "react/jsx-filename-extension": [
-      1,
-      {
-        "extensions": [
-          ".js",
-          ".jsx"
-        ]
-      }
+    "tslint-config-airbnb",
+    "tslint-react"
+  ],
+  "rules": {
+    "no-invalid-this": true,
+    "cyclomatic-complexity": [
+      true,
+      25
     ],
-    "react/prop-types": [
-      "error",
+    "only-arrow-functions": [
+      true,
+      "allow-declarations",
+      "allow-named-functions"
+    ],
+    "no-construct": true,
+    "no-debugger": true,
+    "no-invalid-template-strings": true,
+    "triple-equals": true,
+    "indent": [
+      true,
+      "spaces",
+      2
+    ],
+    "prefer-const": true,
+    "no-consecutive-blank-lines": false,
+    "ter-arrow-parens": false,
+    "align": false,
+    "object-shorthand-properties-first": false,
+    "variable-name": false,
+    "jsx-curly-brace": false,
+    "jsx-no-multiline-js": false,
+    "jsx-curly-spacing": false,
+    "jsx-no-lambda": false,
+    "jsx-boolean-value": false,
+    "import-spacing": true,
+    "import-name": false,
+    "semicolon": {
+      "severity": "warning",
+      "options": [
+        "ignore-interfaces",
+        "ignore-bound-class-methods"
+      ]
+    },
+    "max-line-length": [
+      true,
       {
-        "ignore": [
-          "navigation"
-        ]
+        "limit": 120,
+        "ignore-pattern": "^import |^export {(.*?)}"
       }
     ]
-  },
-  "rules": {
-    "ordered-imports": [
-      false
-    ], // import statements should be alphabetically arranged
-    "member-access": [
-      false
-    ], // don't require explicit visibility declarations for class members
-    "member-ordering": [
-      false
-    ], // don't check for keeping related groups of classes together
-    "trailing-comma": false,
-    "no-empty": false, // allow empty blocks
-    "no-submodule-imports": false, // allow importing of submodules
-    "no-implicit-dependencies": false, // allow importing of modules that aren't listed under the package.jsons dependency list
-    "no-constant-condition": false,
-    "triple-equals": [
-      true,
-      "allow-undefined-check"
-    ], // always use triple equals when comparing values, except for checking undefined values
-    "arrow-parens": [
-      false
-    ], // disable checking of parenthesis for single argument arrow functions
-    "semicolon": [
-      true,
-      "always",
-      "ignore-bound-class-methods"
-    ], // disable checking of semi-colon for class bound methods
-    "object-literal-sort-keys": false,
-    "no-duplicate-imports": true, // disallow repeating of imports from the same module 
-    // react specific rules (more info here: https://github.com/palantir/tslint-react#rules)
-    "jsx-alignment": true, // enforces a consistent style for multiline JSX elements
-    "jsx-no-bind": true, // disallow function binding in JSX attributes
-    "jsx-no-lambda": true, // disallow creation of anonymous functions inside the render method
-    "jsx-no-multiline-js": false, // disable checking of multi-line JavaScript inside JSX
-    "jsx-boolean-value": false,
-    "space-before-function-paren": false,
-    // "max-classes-per-file": [
-    //   false
-    // ] // disable rule for limiting the number of classes per file
   }
 }
