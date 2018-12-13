@@ -6,31 +6,38 @@ import SalonActionSheet from '../../../../SalonActionSheet';
 import styles from './styles';
 
 class CrossedAppointmentsActionSheet extends React.Component {
+  private SalonActionSheet: any;
+
   get options() {
     const { appointments } = this.props;
+
     if (!appointments || appointments.length === 0) {
       return [];
     }
-    const optionsMap = appointments.map((appointment) => {
-      if (appointment.isBlockTime) {
-        return (
-          <View style={styles.actionItemContainer}>
-            <Text style={styles.actionItemTitle}>{appointment.reason.name}</Text>
-          </View>
-        );
-      }
-      return (
-        <View style={styles.actionItemContainer}>
-          <Text style={styles.actionItemTitle}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
-        </View>
-      );
-    });
-    optionsMap.push((
-      <View style={styles.actionItemContainer}>
-        <Text style={styles.actionItemTitle}>Cancel</Text>
-      </View>
-    ));
+
+    const optionsMap = appointments.map((appointment) => this.generateOption(appointment));
+
+    optionsMap.push(this.renderRow('Cancel'));
+
     return optionsMap;
+  }
+
+  generateOption(appointment) {
+    if (appointment.isBlockTime) {
+      return this.renderRow(appointment.reason.name);
+    }
+
+    return this.renderRow(
+      `${appointment.client.name} ${appointment.client.lastName} - ${appointment.service.description}`
+    );
+  }
+
+  renderRow(textValue) {
+    return (
+      <View style={styles.actionItemContainer}>
+        <Text style={styles.actionItemTitle}>{textValue}</Text>
+      </View>
+    );
   }
 
   handlePressAction = (index) => {
