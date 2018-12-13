@@ -11,13 +11,13 @@ import { get, times } from 'lodash';
 import SvgUri from 'react-native-svg-uri';
 import PropTypes from 'prop-types';
 
-import colors from '../../../../../constants/appointmentColors';
-import multiProviderUri from '../../../../../assets/svg/multi-provider-icon.svg';
+import colors from '@/constants/appointmentColors';
+import multiProviderUri from '@/assets/svg/multi-provider-icon.svg';
 import Icon from '@/components/common/Icon';
-import Badge from '../../../../SalonBadge/index';
-import ResizeButton from '../../resizeButtons';
-import GroupBadge from '../../../../SalonGroupBadge/index';
-import { isCardWithGap, getBadges, getLighterColor } from '../../../../../utilities/helpers';
+import Badge from '.@/components/SalonBadge/index';
+import ResizeButton from '../resizeButtons';
+import GroupBadge from '@/components/SalonGroupBadge/index';
+import { isCardWithGap, getBadges, getLighterColor } from '@/utilities/helpers';
 
 import styles from './styles';
 

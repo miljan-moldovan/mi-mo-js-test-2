@@ -69,7 +69,7 @@ export default StyleSheet.create ({
     color: Colors.darkBlue,
     fontSize: 11,
     lineHeight: 44,
-    fontFamily: 'Roboto-Thin',
+    fontFamily: 'Roboto-Regular',
   },
   resultServicePrice: {
     color: Colors.defaultGrey,

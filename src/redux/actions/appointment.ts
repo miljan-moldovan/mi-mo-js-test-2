@@ -160,8 +160,8 @@ const postAppointmentCheckin = appointmentId => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_CHECKIN });
   return Appointment.postCheckin(appointmentId)
     .then(() => {
-      dispatch(appointmentCalendarActions.setGridView());
-      return dispatch(postAppointmentCheckinSuccess());
+      return dispatch(appointmentCalendarActions.setGridView())
+        .then(() => dispatch(postAppointmentCheckinSuccess()));
     })
     .catch(error => dispatch(postAppointmentCheckinFailed(error)));
 };
@@ -179,8 +179,8 @@ const postAppointmentCheckout = appointmentId => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_CHECKOUT });
   return Appointment.postAppointmentCheckout(appointmentId)
     .then(() => {
-      dispatch(appointmentCalendarActions.setGridView());
-      return dispatch(postAppointmentCheckoutSuccess());
+      return dispatch(appointmentCalendarActions.setGridView())
+        .then(() => dispatch(postAppointmentCheckoutSuccess()));
     })
     .catch(error => dispatch(postAppointmentCheckoutFailed(error)));
 };

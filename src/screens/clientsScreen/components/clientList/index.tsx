@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   Keyboard,
   Animated,
+  Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {isFunction} from 'lodash';
@@ -18,6 +20,8 @@ import EmptyList from './emptyClientList';
 
 const ITEM_HEIGHT = 88;
 const HEADER_HEIGHT = 30;
+
+const { height: screenHeight } = Dimensions.get('window');
 
 const abecedary = [
   '#',
@@ -53,6 +57,7 @@ const styles = StyleSheet.create ({
   container: {
     flex: 1,
     flexDirection: 'column',
+    backgroundColor: '#fff',
   },
   guideContainer: {
     flex: 1,
@@ -108,24 +113,11 @@ class ClientList extends React.Component {
     );
   }
 
-  constructor (props) {
-    super (props);
-    this.keyboardHeight = new Animated.Value (14);
-  }
-
   componentWillMount () {
     this.setState ({letterGuide: this.renderLetterGuide ()});
   }
 
   componentDidMount () {
-    this.keyboardDidShowSub = Keyboard.addListener (
-      'keyboardDidShow',
-      this.keyboardWillShow
-    );
-    this.keyboardDidHideSub = Keyboard.addListener (
-      'keyboardDidHide',
-      this.keyboardWillHide
-    );
 
     const wait = new Promise (resolve => setTimeout (resolve, 500)); // Smaller number should work
     wait.then (() => {
@@ -136,24 +128,6 @@ class ClientList extends React.Component {
       }
     });
   }
-
-  componentWillUnmount () {
-    this.keyboardDidShowSub.remove ();
-    this.keyboardDidHideSub.remove ();
-  }
-
-  keyboardWillShow = event => {
-    Animated.timing (this.keyboardHeight, {
-      duration: event.duration,
-      toValue: event.endCoordinates.height,
-    }).start ();
-  };
-
-  keyboardWillHide = event => {
-    Animated.timing (this.keyboardHeight, {
-      toValue: 14,
-    }).start ();
-  };
 
   goToClientInfo = client => {
     if (client.id > 1) {
@@ -275,10 +249,24 @@ class ClientList extends React.Component {
     return null;
   };
 
+  getKeyboardVerticalOffset() {
+    if (screenHeight < 600) {
+      return screenHeight * 0.21;
+    } else if (screenHeight < 700) {
+      return screenHeight * 0.18;
+    } else {
+      return screenHeight * 0.15;
+    }
+  }
+
   render () {
     return (
       <View style={styles.container}>
-        <Animated.View style={{flex: 1, marginBottom: this.keyboardHeight}}>
+        <KeyboardAvoidingView
+          style={{flex: 1}}
+          behavior='padding'
+          keyboardVerticalOffset={this.getKeyboardVerticalOffset()}
+        >
           {this.props.clients.length
             ? <SectionList
                 onEndReached={this.props.fetchMore}
@@ -302,7 +290,7 @@ class ClientList extends React.Component {
                 ListFooterComponent={this.renderMoreLoading}
               />
             : this.renderEmptyView ()}
-        </Animated.View>
+        </KeyboardAvoidingView>
       </View>
     );
   }

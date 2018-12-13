@@ -9,9 +9,9 @@ class ValidatableInput extends React.Component {
   }
 
   onChangeText = (text) => {
-    if (this.props.validateOnChange) {
-      this.validate(text);
-    }
+    // if (this.props.validateOnChange) {
+    //   this.validate(text);
+    // }
     return this.props.onChangeText(text);
   };
 

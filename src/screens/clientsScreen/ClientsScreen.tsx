@@ -162,6 +162,10 @@ class ClientsScreen extends React.Component<Props, State> {
     });
   }
 
+  componentWillUnmount() {
+    this.props.clientsActions.setClients([]);
+  }
+
   state = {
     headerProps: {
       title: 'Clients',

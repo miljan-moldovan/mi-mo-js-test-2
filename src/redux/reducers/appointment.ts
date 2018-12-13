@@ -102,10 +102,15 @@ export default function appoinmentReducer(state: AppointmentReducer = initialSta
         isCheckingIn: true,
       };
     case POST_APPOINTMENT_CHECKIN_SUCCESS:
+      return {
+        ...state,
+        isCheckingIn: false,
+      };
     case POST_APPOINTMENT_CHECKIN_FAILED:
       return {
         ...state,
         isCheckingIn: false,
+        error: data.error,
       };
     case POST_APPOINTMENT_CHECKOUT:
       return {
@@ -113,6 +118,11 @@ export default function appoinmentReducer(state: AppointmentReducer = initialSta
         isCheckingOut: true,
       };
     case POST_APPOINTMENT_CHECKOUT_FAILED:
+      return {
+        ...state,
+        isCheckingOut: false,
+        error: data.error,
+      };
     case POST_APPOINTMENT_CHECKOUT_SUCCESS:
       return {
         ...state,

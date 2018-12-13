@@ -4,8 +4,8 @@ import moment from 'moment';
 import Svg, { LinearGradient, Rect, Defs, Stop } from 'react-native-svg';
 import { times } from 'lodash';
 
-import ResizeButton from '../resizeButtons';
-import colors from '../../../../constants/appointmentColors';
+import ResizeButton from './resizeButtons';
+import colors from '@/constants/appointmentColors';
 
 const styles = StyleSheet.create({
   resizePosition: {
