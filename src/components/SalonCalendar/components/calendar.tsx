@@ -44,6 +44,7 @@ import {
 } from '@/utilities/helpers';
 import DateTime from '@/constants/DateTime';
 import ViewTypes from '@/constants/ViewTypes';
+import { addToBufferState } from '@/constants';
 import {
   CHECK_APPT_CONFLICTS,
   CHECK_APPT_CONFLICTS_SUCCESS,
@@ -978,6 +979,116 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.hideAlert ();
   };
 
+  showMoveAllClientsAppointmentsConfirmModal = (appointment, clientAppointments, result) => {
+    const onPressRight = () => {
+      this.setState({ alert: null }, ()=> {
+        this.addItemToMoveBar(appointment, [...result, ...clientAppointments], addToBufferState.checkOtherPartyAppointments)
+      });
+    };
+    const onPressLeft = () => {
+      this.setState({ alert: null }, () => {
+        debugger
+        this.addItemToMoveBar(appointment, result, addToBufferState.checkOtherPartyAppointments);
+      });
+    };
+    const alert = {
+      onPressRight,
+      onPressLeft,
+      title: 'Question',
+      description: 'The client has other appointments scheduled today, would you like to move them all?',
+      btnLeftText: 'No',
+      btnRightText: 'Move them all',
+    };
+    this.setState({ alert })
+  }
+
+  showMovePartyAppointmentsConfirmModal = (appointment, partyAppointments, result) => {
+    const onPressRight = () => {
+      this.setState({ alert: null }, ()=> {
+        this.addItemToMoveBar(appointment, [...result, ...partyAppointments], addToBufferState.finish)
+      });
+    };
+    const onPressLeft = () => {
+      this.setState({ alert: null }, ()=> {
+        this.addItemToMoveBar(appointment, result, addToBufferState.finish);
+      });
+    };
+    const alert = {
+      onPressRight,
+      onPressLeft,
+      title: 'Question',
+      description: `There are other appointments in the party of ${appointment.client.name} ${appointment.client.lastName}, would you like to move them all?`,
+      btnLeftText: 'No',
+      btnRightText: 'Move them all',
+    };
+    this.setState({ alert })
+  }
+
+  addItemToMoveBar = (appointment, result, state) => {
+    const { appointments } = this.props;
+    const { buffer } = this.state;
+    const resultIds = result.map(item => item.id);
+    const itemIds = buffer.map(item => item.id);
+    switch (state) {
+      case addToBufferState.checkExistenceInMoveBar: {
+        if (!itemIds.includes(appointment.id)) {
+          this.addItemToMoveBar(appointment, [], addToBufferState.checkBlockTime);
+        }
+        break;
+      }
+
+      case addToBufferState.checkBlockTime: {
+        const newResult = appointment.isBlockTime ? [...result, appointment] : result;
+        this.addItemToMoveBar(appointment, newResult, addToBufferState.checkOtherClientAppointments);
+        break;
+      }
+
+      case addToBufferState.checkOtherClientAppointments: {
+        const clientAppointments = appointments.filter(item => {
+          return appointment.id !== item.id
+            && !itemIds.includes(item.id)
+            && !resultIds.includes(item.id)
+            && !item.isFirstAvailable
+            && item.client.id === appointment.client.id;
+        });
+
+        if (!clientAppointments[0]) {
+          this.addItemToMoveBar(appointment, result, addToBufferState.checkOtherPartyAppointments);
+        } else {
+          this.showMoveAllClientsAppointmentsConfirmModal(appointment, clientAppointments, result);
+        }
+
+        break;
+      }
+
+      case addToBufferState.checkOtherPartyAppointments: {
+        debugger
+        const partyAppointments = !!appointment.appointmentGroupId ? appointments.filter(item => {
+          return appointment.id !== item.id
+            && !!item.appointmentGroupId
+            && !itemIds.includes(item.id)
+            && !resultIds.includes(item.id)
+            && !item.isFirstAvailable
+            && item.appointmentGroupId === appointment.appointmentGroupId;
+        }) : [];
+
+        if (!partyAppointments[0]) {
+          this.addItemToMoveBar(appointment, result, addToBufferState.finish);
+        } else {
+          this.showMovePartyAppointmentsConfirmModal(appointment, partyAppointments, result);
+        }
+
+        break;
+      }
+
+      case addToBufferState.finish: {
+        this.moveX = null;
+        this.moveY = null;
+        this.setState(prevState => ({ activeCard: null, activeBlock: null, buffer: [...prevState.buffer, appointment, ...result] }));
+      }
+    }
+  }
+
   handleCardDrop = () => {
     if (this.props.bufferVisible) {
       const {
@@ -993,46 +1104,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       const bufferHeight = 110;
       if (top > height - bufferHeight) {
         if (!droppedCard.isBuffer) {
-          const clientAppts = hasClientMoreAppointments({
-            appointment: data,
-            appointments: this.props.appointments,
-          }).filter((item) => {
-            let isInBuffer = false;
-            for(let i; i < this.state.buffer.length && !isInBuffer; i += 1) {
-              if (this.state.buffer[i].id === item.id || item.id === data.id) {
-                isInBuffer = true;
-              }
-            }
-            return !isInBuffer;
-          });
-
-          if (clientAppts.length > 0) {
-            const onPressRight = () => {
-              const { buffer } = this.state;
-
-              this.setState((state) => {
-                const newbuffer = state.buffer.slice();
-                for(let i in clientAppts){
-                  newbuffer.push(clientAppts[i]);
-                }
-                return { buffer: newbuffer, alert: null };
-              })
-            }
-            const onPressLeft = () => this.setState({alert:  null});
-            const alert = {
-              onPressRight,
-              onPressLeft,
-              title: 'Question',
-              description: 'The client has other appointments scheduled today, would you like to move them all?',
-              btnLeftText: 'No',
-              btnRightText: 'Move them all',
-            };
-            this.setState({ alert })
-          }
-          buffer.push (data);
-          this.setState ({activeCard: null, activeBlock: null, buffer: buffer.slice() });
-          this.moveX = null;
-          this.moveY = null;
+          this.addItemToMoveBar(data, [], addToBufferState.checkExistenceInMoveBar);
         }
       } else {
         this.handleReleaseCard ();
@@ -1946,7 +2018,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           description={alert ? alert.description : ''}
           btnLeftText={alert ? alert.btnLeftText : ''}
           btnRightText={alert ? alert.btnRightText : ''}
-          onPressLeft={this.hideAlert}
+          onPressLeft={alert && alert.onPressLeft ? alert.onPressLeft : this.hideAlert}
           onPressRight={alert ? alert.onPressRight : null}
         />
       </View>
