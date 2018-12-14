@@ -13,8 +13,8 @@ export default StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
   },
-  inputGroup: { 
-    marginTop: 16 
+  inputGroup: {
+    marginTop: 16,
   },
   rowFirst: {
     borderTopWidth: StyleSheet.hairlineWidth,

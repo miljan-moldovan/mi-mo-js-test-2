@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   whiteBg: { backgroundColor: 'white' },
 });
 
-class SalonTimePicker extends React.Component {
+class SalonTimePicker extends React.Component<any, any> {
   componentDidMount() {
     if (this.props.required) {
       this.validate(this.props.selectedDate, true);
@@ -34,7 +34,7 @@ class SalonTimePicker extends React.Component {
       this.validate(selectedDate, false);
     }
     this.props.onChange(selectedDate);
-  }
+  };
 
 
   validate = (selectedDate, isFirstValidation = false) => {
@@ -45,7 +45,8 @@ class SalonTimePicker extends React.Component {
   render() {
     const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
     const format = this.props.format || 'HH:mm A';
-    const value = moment(this.props.value).isValid() ? moment(this.props.value).format(format) : this.props.placeholder !== undefined || '-';
+    const value = moment(this.props.value).isValid()
+      ? moment(this.props.value).format(format) : this.props.placeholder !== undefined || '-';
     const date = moment(this.props.value).isValid() ? moment(this.props.value).toDate() : new Date();
     const valueStyle = this.props.isOpen ? { color: '#1B65CF' } : this.props.valueStyle || null;
     const icon = this.props.icon || 'default';
@@ -77,4 +78,5 @@ class SalonTimePicker extends React.Component {
     );
   }
 }
+
 export default SalonTimePicker;

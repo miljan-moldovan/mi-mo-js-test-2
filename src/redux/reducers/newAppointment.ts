@@ -276,11 +276,11 @@ export default function newAppointmentReducer(state: NewAppointmentReducer = def
     case REMOVE_GUEST:
       if (data.guestId) {
         const guestIndex = state.guests.findIndex(
-          guest => guest.guestId === data.guestId
+          guest => guest.guestId === data.guestId,
         );
         state.serviceItems = reject(
           state.serviceItems,
-          item => item.guestId === data.guestId
+          item => item.guestId === data.guestId,
         );
         newGuests.splice(guestIndex, 1);
       } else {
@@ -289,7 +289,7 @@ export default function newAppointmentReducer(state: NewAppointmentReducer = def
         if (removedGuestId) {
           state.serviceItems = reject(
             state.serviceItems,
-            item => item.guestId === removedGuestId
+            item => item.guestId === removedGuestId,
           );
         }
       }

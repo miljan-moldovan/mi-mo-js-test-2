@@ -1,21 +1,33 @@
 import debounce from 'lodash.debounce'; // 4.0.8
 import * as React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, ViewStyle, RegisteredStyle } from 'react-native';
+
+type IProps = {
+  onPress: () => void,
+  wait?: number,
+  disabled?: boolean,
+  style?: RegisteredStyle<ViewStyle>,
+};
 
 const SalonTouchableOpacity = (WrappedComponent) => {
-  class PreventDoubleClick extends React.PureComponent {
+  class PreventDoubleClick extends React.PureComponent<IProps> {
+    static displayName = `SalonTouchableOpacity(${WrappedComponent.displayName || WrappedComponent.name})`;
     debouncedOnPress = () => {
-      this.props.onPress && this.props.onPress();
-    }
+      if (this.props.disabled !== true) {
+        this.props.onPress && this.props.onPress();
+      }
+    };
 
-    onPress = debounce(this.debouncedOnPress, this.props.wait ? this.props.wait : 700, { leading: true, trailing: false });
+    onPress = debounce(this.debouncedOnPress, this.props.wait ? this.props.wait : 700, {
+      leading: true,
+      trailing: false,
+    });
 
     render() {
-      return <WrappedComponent {...this.props} onPress={this.onPress} />;
+      return <WrappedComponent {...this.props} onPress={this.onPress}/>;
     }
   }
 
-  PreventDoubleClick.displayName = `SalonTouchableOpacity(${WrappedComponent.displayName || WrappedComponent.name})`;
   return PreventDoubleClick;
 };
 

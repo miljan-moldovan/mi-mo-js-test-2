@@ -1,5 +1,5 @@
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import newAppointmentActions from '../../redux/actions/newAppointment';
 import ModifyApptServiceScreen from './ModifyService';
 
@@ -10,11 +10,11 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  newAppointmentActions: bindActionCreators (
-    {...newAppointmentActions},
-    dispatch
+  newAppointmentActions: bindActionCreators(
+    { ...newAppointmentActions },
+    dispatch,
   ),
 });
-export default connect (mapStateToProps, mapActionsToProps) (
-  ModifyApptServiceScreen
+export default connect(mapStateToProps, mapActionsToProps)(
+  ModifyApptServiceScreen,
 );

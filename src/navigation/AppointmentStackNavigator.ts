@@ -7,16 +7,12 @@ import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/ServicesScreen';
 import ClientsScreen from '../screens/clientsScreen';
 import ClientNotes from '../screens/clientInfoScreen/components/clientNotes';
-import ClientFormulas
-  from '../screens/clientInfoScreen/components/clientFormulas';
+import ClientFormulas from '../screens/clientInfoScreen/components/clientFormulas';
 import ClientNote from '../screens/clientInfoScreen/components/clientNote';
-import ClientFormula
-  from '../screens/clientInfoScreen/components/clientFormula';
-import ClientCopyFormulaScreen
-  from '../screens/clientInfoScreen/components/clientCopyFormula';
+import ClientFormula from '../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen from '../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
-import ClientDetailsScreen
-  from '../screens/clientInfoScreen/components/clientDetails';
+import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
 import NewClientScreen from '../screens/newClientScreen';
 import AppointmentCalendarScreen from '../screens/appointmentCalendarScreen';
 import apptBookSetEmployeeOrder from '../screens/apptBookSetEmployeeOrder';
@@ -42,8 +38,7 @@ import RecommendProductScreen from '../screens/recommendProductScreen';
 import SelectRoomScreen from '../screens/apptBookSelectRoom';
 import SelectResourceScreen from '../screens/apptBookSelectResource';
 import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
-import ChangeDateTimeScreen
-  from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
+import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
 import RebookDialogScreen from '../screens/rebookDialogScreen';
@@ -235,7 +230,7 @@ const AppointmentStackNavigator = createStackNavigator(
   {
     transitionConfig: TransitionConfiguration,
     headerMode: 'float',
-  }
+  },
 );
 
 AppointmentStackNavigator.navigationOptions = ({ navigation }) => {
