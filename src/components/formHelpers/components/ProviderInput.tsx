@@ -3,10 +3,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import PropTypes from 'prop-types';
+import moment from 'moment';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { StyleProvider } from 'native-base';
-import { get, isNull, isFunction } from 'lodash';
+import { isFunction } from 'lodash';
 
 import SalonAvatar from '../../SalonAvatar';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
@@ -23,6 +22,7 @@ export default class ProviderInput extends React.Component {
     const {
       navigate,
       push,
+      date = moment(),
       onPress = false,
       apptBook = false,
       headerProps = {},
@@ -41,6 +41,7 @@ export default class ProviderInput extends React.Component {
     const nav = walkin ? push : navigate;
     nav(apptBook ? 'ApptBookProvider' : screenProviders, {
       mode,
+      date,
       queueList,
       filterList,
       headerProps,

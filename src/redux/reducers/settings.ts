@@ -71,7 +71,6 @@ export default function settingsReducer(state: SettingsReducer = initialState, a
         ...state,
         isLoading: false,
         error: data.error,
-        settings: [],
       };
 
     default:

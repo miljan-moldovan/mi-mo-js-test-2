@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import moment from 'moment';
-import {get, isNumber, toNumber} from 'lodash';
+import { get, isNumber, toNumber } from 'lodash';
 
 import {
   InputGroup,
@@ -26,7 +26,7 @@ import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 
 export default class ModifyApptServiceScreen extends React.Component {
-  static navigationOptions = ({navigation}) => {
+  static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
     const handleSave = params.handleSave || (() => null);
@@ -36,15 +36,15 @@ export default class ModifyApptServiceScreen extends React.Component {
         title = navigation.state.params.item.service.name;
       }
     }
-    const buttonStyle = {color: canSave ? 'white' : 'rgba(0,0,0,.3)'};
-    const buttonOnPress = () => (canSave ? handleSave () : null);
+    const buttonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,.3)' };
+    const buttonOnPress = () => (canSave ? handleSave() : null);
     return {
       header: (
         <SalonHeader
           title={title}
           headerLeft={
             <SalonTouchableOpacity
-              style={{paddingLeft: 10}}
+              style={{ paddingLeft: 10 }}
               onPress={navigation.goBack}
             >
               <Text style={styles.headerButton}>Cancel</Text>
@@ -52,7 +52,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           }
           headerRight={
             <SalonTouchableOpacity
-              style={{paddingRight: 10}}
+              style={{ paddingRight: 10 }}
               onPress={buttonOnPress}
               disabled={!canSave}
             >
@@ -64,42 +64,42 @@ export default class ModifyApptServiceScreen extends React.Component {
     };
   };
 
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
 
-    this.state = this.getStateFromParams ();
-    this.props.navigation.setParams ({handleSave: this.handleSave});
+    this.state = this.getStateFromParams();
+    this.props.navigation.setParams({ handleSave: this.handleSave });
   }
 
-  componentDidMount () {
-    this.validate ();
+  componentDidMount() {
+    this.validate();
   }
 
   onPressRemove = () => {
     const params = this.props.navigation.state.params || {};
     if (params.onRemoveService) {
-      params.onRemoveService ();
+      params.onRemoveService();
     }
-    return this.props.navigation.goBack ();
+    return this.props.navigation.goBack();
   };
 
   setPrice = price => {
-    this.setState ({price: price.replace (/\D/g, '')});
+    this.setState({ price: price.replace(/\D/g, '') });
   };
 
   getStateFromParams = () => {
     const params = this.props.navigation.state.params || {};
     const serviceItem = params.serviceItem || false;
     const client = params.client || null;
-    const date = params.date || moment ();
-    const startTime = get (serviceItem.service, 'fromTime', moment ());
-    const endTime = get (
+    const date = params.date || moment();
+    const startTime = get(serviceItem.service, 'fromTime', moment());
+    const endTime = get(
       serviceItem.service,
       'toTime',
-      moment ().add (15, 'm')
+      moment().add(15, 'm')
     );
-    const length = moment.duration (endTime.diff (startTime));
-    const price = get (serviceItem.service.service || {}, 'price', '0');
+    const length = moment.duration(endTime.diff(startTime));
+    const price = get(serviceItem.service.service || {}, 'price', '0');
     const state = {
       date,
       price,
@@ -111,69 +111,69 @@ export default class ModifyApptServiceScreen extends React.Component {
       endTimePickerOpen: false,
       startTimePickerOpen: false,
       canRemove: !!params.onRemoveService,
-      id: get (serviceItem.service, 'id', null),
+      id: get(serviceItem.service, 'id', null),
       selectedClient: serviceItem.guestId
-        ? get (serviceItem.service, 'client', null)
+        ? get(serviceItem.service, 'client', null)
         : client,
-      selectedProvider: get (serviceItem.service, 'employee', null),
-      selectedService: get (serviceItem.service, 'service', null),
-      requested: get (serviceItem.service, 'requested', true),
-      bookBetween: get (serviceItem.service, 'bookBetween', false),
-      gapTime: moment.duration (get (serviceItem.service, 'gapTime', 0)),
-      afterTime: moment.duration (get (serviceItem.service, 'afterTime', 0)),
-      room: get (serviceItem.service, 'room', null),
-      resource: get (serviceItem.service, 'resource', null),
+      selectedProvider: get(serviceItem.service, 'employee', null),
+      selectedService: get(serviceItem.service, 'service', null),
+      requested: get(serviceItem.service, 'requested', true),
+      bookBetween: get(serviceItem.service, 'bookBetween', false),
+      gapTime: moment.duration(get(serviceItem.service, 'gapTime', 0)),
+      afterTime: moment.duration(get(serviceItem.service, 'afterTime', 0)),
+      room: get(serviceItem.service, 'room', null),
+      resource: get(serviceItem.service, 'resource', null),
     };
 
-    state.length = moment.duration (state.endTime.diff (state.startTime));
+    state.length = moment.duration(state.endTime.diff(state.startTime));
 
     return state;
   };
 
   validate = () => {
-    const {selectedProvider, selectedService} = this.state;
+    const { selectedProvider, selectedService } = this.state;
     let valid = false;
     if (selectedProvider !== null || selectedService !== null) {
       valid = true;
     }
-    this.setState ({canSave: valid});
-    this.props.navigation.setParams ({canSave: valid});
+    this.setState({ canSave: valid });
+    this.props.navigation.setParams({ canSave: valid });
   };
 
   toggleStartTimePicker = () =>
-    this.setState (({startTimePickerOpen}) => ({
+    this.setState(({ startTimePickerOpen }) => ({
       startTimePickerOpen: !startTimePickerOpen,
     }));
 
   toggleEndTimePicker = () =>
-    this.setState (({endTimePickerOpen}) => ({
+    this.setState(({ endTimePickerOpen }) => ({
       endTimePickerOpen: !endTimePickerOpen,
     }));
 
   cancelButton = () => ({
-    leftButton: <Text style={{fontSize: 14, color: 'white'}}>Cancel</Text>,
-    leftButtonOnPress: navigation => navigation.goBack (),
+    leftButton: <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>,
+    leftButtonOnPress: navigation => navigation.goBack(),
   });
 
   handleSelectService = selectedService => {
-    const {startTime} = this.state;
+    const { startTime } = this.state;
     let endTime = null;
     if ('maxDuration' in selectedService) {
-      endTime = moment (startTime).add (
-        moment.duration (selectedService.maxDuration)
+      endTime = moment(startTime).add(
+        moment.duration(selectedService.maxDuration)
       );
     }
-    const length = moment.duration (endTime.diff (startTime));
-    const price = get (selectedService, 'price', '0');
-    this.setState (
+    const length = moment.duration(endTime.diff(startTime));
+    const price = get(selectedService, 'price', '0');
+    this.setState(
       {
         selectedService,
         endTime,
         length,
         price,
-        bookBetween: get (selectedService, 'bookBetween', false),
-        gapTime: moment.duration (get (selectedService, 'gapDuration', 0)),
-        afterTime: moment.duration (get (selectedService, 'afterDuration', 0)),
+        bookBetween: get(selectedService, 'bookBetween', false),
+        gapTime: moment.duration(get(selectedService, 'gapDuration', 0)),
+        afterTime: moment.duration(get(selectedService, 'afterDuration', 0)),
       },
       this.validate
     );
@@ -199,15 +199,15 @@ export default class ModifyApptServiceScreen extends React.Component {
     } = this.state;
 
     if (canSave) {
-      const price = isNumber (priceString)
+      const price = isNumber(priceString)
         ? priceString
-        : toNumber (priceString.replace (/\D/g, ''));
-      const {params} = this.props.navigation.state;
+        : toNumber(priceString.replace(/\D/g, ''));
+      const { params } = this.props.navigation.state;
       const serviceItem = {
         id,
         client: selectedClient,
         employee: selectedProvider,
-        service: {...selectedService, price},
+        service: { ...selectedService, price },
         fromTime: startTime,
         toTime: endTime,
         requested,
@@ -218,13 +218,13 @@ export default class ModifyApptServiceScreen extends React.Component {
         resource,
         length,
       };
-      params.onSaveService (serviceItem);
-      this.props.navigation.goBack ();
+      params.onSaveService(serviceItem);
+      this.props.navigation.goBack();
     }
   };
 
   handleSelectProvider = selectedProvider => {
-    this.setState (
+    this.setState(
       {
         selectedProvider,
       },
@@ -233,14 +233,14 @@ export default class ModifyApptServiceScreen extends React.Component {
   };
 
   handleRequested = requested => {
-    this.setState ({requested: !requested}, this.validate);
+    this.setState({ requested: !requested }, this.validate);
   };
 
   handleChangeEndTime = endTimeDateObj => {
-    const {startTime} = this.state;
-    const endTime = moment (endTimeDateObj);
-    if (startTime.isAfter (endTime)) {
-      return this.setState ({
+    const { startTime } = this.state;
+    const endTime = moment(endTimeDateObj);
+    if (startTime.isAfter(endTime)) {
+      return this.setState({
         toast: {
           description: "Start time can't be after end time!",
           type: 'error',
@@ -248,40 +248,40 @@ export default class ModifyApptServiceScreen extends React.Component {
         },
       });
     }
-    return this.setState (
+    return this.setState(
       {
         endTime,
-        length: moment.duration (endTime.diff (startTime)),
+        length: moment.duration(endTime.diff(startTime)),
       },
       this.validate
     );
   };
 
   handleChangeStartTime = startTimeDateObj => {
-    const {selectedService} = this.state;
-    const startTime = moment (startTimeDateObj);
+    const { selectedService } = this.state;
+    const startTime = moment(startTimeDateObj);
     const duration = selectedService.maxDuration
       ? selectedService.maxDuration
       : selectedService.duration;
-    const endTime = moment (startTime).add (moment.duration (duration));
-    return this.setState (
+    const endTime = moment(startTime).add(moment.duration(duration));
+    return this.setState(
       {
         startTime,
         endTime,
-        length: moment.duration (endTime.diff (startTime)),
+        length: moment.duration(endTime.diff(startTime)),
       },
       this.validate
     );
   };
 
   handleChangeGapTime = (action, time) => {
-    const {afterTime, length} = this.state;
-    const gapTime = moment.duration (time, 'minute');
+    const { afterTime, length } = this.state;
+    const gapTime = moment.duration(time, 'minute');
     if (
-      moment.duration (gapTime).add (afterTime).asMilliseconds () >
-      length.asMilliseconds ()
+      moment.duration(gapTime).add(afterTime).asMilliseconds() >
+      length.asMilliseconds()
     ) {
-      return this.setState ({
+      return this.setState({
         toast: {
           description: "Sum of after and gap durations\ncan't be more than service length",
           type: 'error',
@@ -289,17 +289,17 @@ export default class ModifyApptServiceScreen extends React.Component {
         },
       });
     }
-    return this.setState ({gapTime});
+    return this.setState({ gapTime });
   };
 
   handleChangeAfterTime = (action, time) => {
-    const {gapTime, length} = this.state;
-    const afterTime = moment.duration (time, 'minute');
+    const { gapTime, length } = this.state;
+    const afterTime = moment.duration(time, 'minute');
     if (
-      moment.duration (gapTime).add (afterTime).asMilliseconds () >
-      length.asMilliseconds ()
+      moment.duration(gapTime).add(afterTime).asMilliseconds() >
+      length.asMilliseconds()
     ) {
-      return this.setState ({
+      return this.setState({
         toast: {
           description: "Sum of after and gap durations\ncan't be more than service length",
           type: 'error',
@@ -307,12 +307,12 @@ export default class ModifyApptServiceScreen extends React.Component {
         },
       });
     }
-    return this.setState ({afterTime});
+    return this.setState({ afterTime });
   };
 
-  hideToast = () => this.setState ({toast: null});
+  hideToast = () => this.setState({ toast: null });
 
-  render () {
+  render() {
     const {
       canRemove,
       selectedProvider,
@@ -332,7 +332,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     } = this.state;
     return (
       <ScrollView style={styles.container}>
-        <InputGroup style={{marginTop: 16}}>
+        <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
             apptBook
             noPlaceholder
@@ -341,17 +341,19 @@ export default class ModifyApptServiceScreen extends React.Component {
             selectedService={selectedService}
             navigate={this.props.navigation.navigate}
             onChange={this.handleSelectService}
-            headerProps={{title: 'Services', ...this.cancelButton ()}}
+            headerProps={{ title: 'Services', ...this.cancelButton() }}
           />
           <InputDivider />
           <ProviderInput
-            apptBook
-            noPlaceholder
+            date={date}
+            mode="newAppointment"
+            apptBook={true}
+            noPlaceholder={true}
             selectedService={selectedService}
             selectedProvider={selectedProvider}
             onChange={this.handleSelectProvider}
             navigate={this.props.navigation.navigate}
-            headerProps={{title: 'Providers', ...this.cancelButton ()}}
+            headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
           <InputDivider />
           <InputSwitch
@@ -392,7 +394,7 @@ export default class ModifyApptServiceScreen extends React.Component {
                   color: '#727A8F',
                 }}
               >
-                {`${moment.duration (length).asMinutes ()} min`}
+                {`${moment.duration(length).asMinutes()} min`}
               </Text>
             }
           />
@@ -401,13 +403,13 @@ export default class ModifyApptServiceScreen extends React.Component {
             text="Gap"
             value={bookBetween}
             onChange={bookBetween =>
-              this.setState ({bookBetween: !bookBetween})}
+              this.setState({ bookBetween: !bookBetween })}
           />
           {bookBetween &&
             <View>
               <InputDivider />
               <InputNumber
-                value={gapTime.asMinutes ()}
+                value={gapTime.asMinutes()}
                 onChange={this.handleChangeGapTime}
                 step={this.props.apptGridSettings.step} // TODO should be apptgrid step
                 label="Gap Time"
@@ -416,7 +418,7 @@ export default class ModifyApptServiceScreen extends React.Component {
               />
               <InputDivider />
               <InputNumber
-                value={afterTime.asMinutes ()}
+                value={afterTime.asMinutes()}
                 onChange={this.handleChangeAfterTime}
                 label="After"
                 step={this.props.apptGridSettings.step}
@@ -429,8 +431,8 @@ export default class ModifyApptServiceScreen extends React.Component {
         <InputGroup>
           <InputButton
             onPress={() => {
-              this.props.navigation.navigate ('SelectRoom', {
-                onSelect: selectedRoom => this.setState ({room: selectedRoom}),
+              this.props.navigation.navigate('SelectRoom', {
+                onSelect: selectedRoom => this.setState({ room: selectedRoom }),
               });
             }}
             label="Assigned Room"
@@ -439,9 +441,9 @@ export default class ModifyApptServiceScreen extends React.Component {
           <InputDivider />
           <InputButton
             onPress={() => {
-              this.props.navigation.navigate ('SelectResource', {
+              this.props.navigation.navigate('SelectResource', {
                 onSelect: selectedResource =>
-                  this.setState ({resource: selectedResource}),
+                  this.setState({ resource: selectedResource }),
               });
             }}
             label="Assigned Resource"

@@ -1,60 +1,77 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {find} from 'lodash';
-import {InputSwitch, InputDivider} from './formHelpers';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { get, find } from 'lodash';
+import { InputSwitch, InputDivider } from './formHelpers';
 import settingsActions from '../redux/actions/settings';
+import { SettingsActions } from '@/models/Settings';
+import { SettingsReducer } from '@/redux/reducers/settings';
 
-class TrackRequestSwitch extends React.Component {
-  state = {
-    value: false,
-    trackRequest: false,
-  };
+export interface TrackRequestSwitchProps {
+  initialValue?: boolean;
+  settingsActions: SettingsActions;
+  settings: SettingsReducer;
+  textStyle?: any;
+  middleSectionDivider?: any;
+  style?: any;
+  isFirstAvailable?: boolean;
+  hideDivider?: boolean;
+  onChange: (newVal: boolean) => void;
+}
 
-  componentWillMount () {
-    // this.props.settingsActions.getSettingsByName('TrackRequest', () => {
-    const {settings} = this.props;
+export interface TrackRequestSwitchState {
+  value: boolean;
+  trackRequest: boolean;
+}
 
-    let trackRequest = find (settings.settings, {settingName: 'TrackRequest'});
-    trackRequest = trackRequest ? trackRequest.settingValue : false;
-
-    let value = trackRequest;
-
-    if (this.props.initialValue !== undefined) {
-      value = this.props.initialValue;
+class TrackRequestSwitch extends React.Component<TrackRequestSwitchProps, TrackRequestSwitchState> {
+  constructor(props) {
+    super(props);
+    let value = false;
+    if (props.initialValue) {
+      value = props.initialValue;
     }
+    this.state = {
+      value,
+      trackRequest: props.settings.data.TrackRequest || false,
+    };
+    this.props.settingsActions.getSettingsByName('TrackRequest');
+  }
 
-    this.setState ({trackRequest, value});
-    //  });
+  componentWillReceiveProps(nextProps: TrackRequestSwitchProps) {
+    const {
+      data: { TrackRequest: trackRequest = false }
+    } = nextProps.settings;
+    if (trackRequest !== this.props.settings.data.TrackRequest) {
+      this.setState({ trackRequest });
+    }
   }
 
   onChange = () => {
-    this.setState ({value: !this.state.value}, () => {
-      this.props.onChange (this.state.value);
+    this.setState({ value: !this.state.value }, () => {
+      this.props.onChange(this.state.value);
     });
   };
 
-  render () {
-    const {textStyle, style, isFirstAvailable, hideDivider} = this.props;
+  render() {
+    const { textStyle, style, isFirstAvailable, hideDivider } = this.props;
     // TODO: Remove InputDivider from this component
     return (
       <React.Fragment>
         {this.state.trackRequest && !isFirstAvailable
           ? <React.Fragment>
-              {hideDivider
-                ? <InputDivider style={this.props.middleSectionDivider} />
-                : null}
-              <InputSwitch
-                textStyle={textStyle}
-                style={style}
-                onChange={() => {
-                  this.onChange ();
-                }}
-                text="Provider is Requested?"
-                value={this.state.value}
-              />
-            </React.Fragment>
+            {hideDivider
+              ? <InputDivider style={this.props.middleSectionDivider} />
+              : null}
+            <InputSwitch
+              textStyle={textStyle}
+              style={style}
+              onChange={this.onChange}
+              text="Provider is Requested?"
+              value={this.state.value}
+            />
+          </React.Fragment>
           : null}
       </React.Fragment>
     );
@@ -83,7 +100,7 @@ TrackRequestSwitch.propTypes = {
   hideDivider: PropTypes.bool,
   initialValue: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  settingsActions: PropTypes.shape ({
+  settingsActions: PropTypes.shape({
     getSettingsByName: PropTypes.func.isRequired,
   }).isRequired,
 };
@@ -92,8 +109,8 @@ const mapStateToProps = state => ({
   settings: state.settingsReducer,
 });
 const mapActionsToProps = dispatch => ({
-  settingsActions: bindActionCreators ({...settingsActions}, dispatch),
+  settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
 });
-export default connect (mapStateToProps, mapActionsToProps) (
+export default connect(mapStateToProps, mapActionsToProps)(
   TrackRequestSwitch
 );

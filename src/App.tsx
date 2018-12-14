@@ -72,6 +72,7 @@ const persistConf: PersistorConfig = {
     'navigationReducer',
     'salonSearchHeaderReducer',
     'rebookReducer',
+    'settingsReducer',
   ],
 };
 

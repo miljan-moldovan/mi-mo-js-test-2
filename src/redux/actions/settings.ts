@@ -45,14 +45,14 @@ const getSettingsByName = (name: string, callback?: (...args: any) => any) => (
   dispatch,
 ) => {
   dispatch({ type: SETTINGS_BY_NAME });
-  return Settings.getSettingsByName(name)
+  Settings.getSettingsByName(name)
     .then(response => {
       dispatch(getSettingsByNameSuccess(response));
-      callback(true, response);
+      // callback(true, response);
     })
     .catch(error => {
       dispatch(getSettingsByNameFailed(error));
-      callback(false, error.message);
+      // callback(false, error.message);
     });
 };
 

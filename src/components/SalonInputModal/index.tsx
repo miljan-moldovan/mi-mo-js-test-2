@@ -15,7 +15,7 @@ class SalonInputModal extends React.Component {
   state = {
     value: '',
     visible: false,
-  }
+  };
 
   componentWillReceiveProps(newProps) {
     if (!this.state.visible && newProps.visible) {

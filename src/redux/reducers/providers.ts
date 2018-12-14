@@ -1,3 +1,5 @@
+import moment from 'moment';
+import { cloneDeep } from 'lodash';
 import {
   SET_FILTERED_PROVIDERS,
   SET_SELECTED_PROVIDER,
@@ -20,8 +22,11 @@ import {
   GET_RECEPTIONISTS_ERROR,
   GET_RECEPTIONISTS_SUCCESS,
   SET_SELECTED_SERVICE,
+  GET_APPT_BOOK_PROVIDERS_FOR_DATE,
+  GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS,
+  GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED,
 } from '../actions/providers';
-import { Maybe, PureProvider, AppointmentEmployee, Service } from '@/models';
+import { Maybe, PureProvider, AppointmentEmployee, Service, EmployeeSchedule } from '@/models';
 
 const initialState: ProvidersReducer = {
   error: null,
@@ -39,7 +44,13 @@ const initialState: ProvidersReducer = {
   queueEmployees: [],
   quickQueueEmployees: [],
   employeesByService: [],
+  apptBookDates: [],
 };
+
+export interface ApptBookProvidersForDate {
+  date: moment.Moment;
+  providers: EmployeeSchedule[];
+}
 
 export interface ProvidersReducer {
   error: Maybe<any>;
@@ -57,6 +68,7 @@ export interface ProvidersReducer {
   queueEmployees: PureProvider[] | AppointmentEmployee[];
   quickQueueEmployees: PureProvider[] | AppointmentEmployee[];
   employeesByService: PureProvider[] | AppointmentEmployee[];
+  apptBookDates: ApptBookProvidersForDate[];
 }
 
 const providersReducer = (state: ProvidersReducer = initialState, action): ProvidersReducer => {
@@ -187,6 +199,36 @@ const providersReducer = (state: ProvidersReducer = initialState, action): Provi
       return {
         ...state,
         error: data.error,
+        isLoading: false,
+      };
+    case GET_APPT_BOOK_PROVIDERS_FOR_DATE:
+      return {
+        ...state,
+        error: null,
+        isLoading: true,
+      };
+    case GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS:
+      const apptBookDatesIndex = state.apptBookDates.findIndex(itm => itm.date.isSame(data.date));
+      const newApptBookDateItem: ApptBookProvidersForDate = {
+        date: data.date,
+        providers: data.providers,
+      };
+      const apptBookDates = cloneDeep(state.apptBookDates);
+      if (apptBookDatesIndex < 0) {
+        apptBookDates.push(newApptBookDateItem);
+      } else {
+        state.apptBookDates.splice(apptBookDatesIndex, 1, newApptBookDateItem);
+      }
+      return {
+        ...state,
+        error: null,
+        apptBookDates,
+        isLoading: false,
+      };
+    case GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED:
+      return {
+        ...state,
+        error: data.error || null,
         isLoading: false,
       };
     default:
