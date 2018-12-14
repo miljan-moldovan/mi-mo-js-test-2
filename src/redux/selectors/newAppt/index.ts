@@ -118,7 +118,6 @@ const validateAppointment = ({
   mainEmployee,
   client,
   serviceItems,
-  conflicts,
   guests,
 }) =>
   date &&
@@ -126,7 +125,6 @@ const validateAppointment = ({
   mainEmployee !== null &&
   client !== null &&
   serviceItems.length > 0 &&
-  !conflicts.length &&
   !isLoading &&
   !isBooking &&
   validateGuests(guests, serviceItems);
