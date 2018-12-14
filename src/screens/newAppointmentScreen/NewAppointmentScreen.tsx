@@ -967,7 +967,7 @@ export default class NewAppointmentScreen extends React.Component {
           color={isDisabled ? '#ccc' : '#115ECD'}
           type="regular"
         />
-      </SalonTouchableOpacity>,
+      </SalonTouchableOpacity>
       <ClientInfoButton
         client={this.props.newAppointmentState.client}
         navigation={this.props.navigation}
