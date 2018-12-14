@@ -109,22 +109,25 @@ const setGuestClient = (guestId: Maybe<string>, client: Maybe<ClientModel>): any
   });
 };
 
-const resetTimeForServices = (items: any, index: Maybe<number>, initialFromTime: Maybe<string | moment.Moment>): any => {
-  items.forEach((item, i) => {
+const resetTimeForServices = (items: any, index: Maybe<number>,
+                              initialFromTime: Maybe<string | moment.Moment>): any => {
+  return items.map((item, i) => {
     if (i > index) {
       const prevItem = items[i - 1];
       let fromTime = initialFromTime;
       if (prevItem) {
         fromTime = get(prevItem.service, 'toTime', initialFromTime);
       }
-      item.service.fromTime = fromTime;
-      item.service.toTime = moment(item.service.fromTime).add(
-        item.service.length
-      );
+      return {
+        ...item,
+        service: {
+          ...item.service, fromTime, toTime: moment(item.service.fromTime).add(
+            item.service.length,
+          ),
+        },
+      };
     }
   });
-
-  return items;
 };
 
 const isBookingQuickAppt = (isBookingQuickAppt: boolean): any => ({
