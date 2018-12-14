@@ -141,9 +141,10 @@ export interface ServiceWithAddons {
   recommended: Maybe<Service[]>;
   required: Maybe<Service>;
 }
+
 const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId: Maybe<string> = null) => (
   dispatch,
-  getState
+  getState,
 ) => {
   const {
     client,
@@ -191,22 +192,22 @@ const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId
       addServiceItemExtras(
         serviceItem.itemId, // parentId
         'addon', // extraService type
-        addons
-      )
+        addons,
+      ),
     );
     dispatch(
       addServiceItemExtras(
         serviceItem.itemId, // parentId
         'recommended', // extraService type
-        recommended
-      )
+        recommended,
+      ),
     );
     dispatch(
       addServiceItemExtras(
         serviceItem.itemId, // parentId
         'required', // extraService type
-        required
-      )
+        required,
+      ),
     );
   });
 };
@@ -224,7 +225,7 @@ const addServiceItem = (serviceItem: any): any => (dispatch, getState) => {
 
 const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, services: Maybe<Service[] | Service>): any => (
   dispatch,
-  getState
+  getState,
 ) => {
   if (isNull(services)) {
     return;
@@ -237,7 +238,7 @@ const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, serv
     mainEmployee: employee,
   } = getState().newAppointmentReducer;
   const [parentService] = serviceItems.filter(
-    item => item.itemId === parentId
+    item => item.itemId === parentId,
   );
   const { guestId, service: { employee: parentEmployee } } = parentService;
   const serializeServiceItem = service => {
@@ -246,7 +247,7 @@ const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, serv
     }
     const length = appointmentLength(getState());
     const serviceLength = moment.duration(
-      service.maxDuration || service.duration
+      service.maxDuration || service.duration,
     );
     const fromTime = moment(startTime).add(moment.duration(length));
     const toTime = moment(fromTime).add(serviceLength);
@@ -254,7 +255,7 @@ const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, serv
       ? get(
         guests.filter(guest => guest.guestId === guestId)[0],
         'client',
-        null
+        null,
       )
       : client;
     const newService = {
@@ -283,7 +284,7 @@ const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, serv
 
   const newServiceItems = reject(
     serviceItems,
-    item => get(item, 'type', null) === type && item.parentId === parentId
+    item => get(item, 'type', null) === type && item.parentId === parentId,
   );
 
   if (Array.isArray(services)) {
@@ -304,13 +305,13 @@ const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, serv
 
 const updateServiceItem = (serviceId: Maybe<string>, updatedService: any, guestId: Maybe<string>) => (
   dispatch,
-  getState
+  getState,
 ) => {
   const newServiceItems = cloneDeep(
-    getState().newAppointmentReducer.serviceItems
+    getState().newAppointmentReducer.serviceItems,
   );
   const serviceIndex = newServiceItems.findIndex(
-    item => item.itemId === serviceId
+    item => item.itemId === serviceId,
   );
   const serviceItemToUpdate = newServiceItems[serviceIndex];
   const serviceItem = {
@@ -321,7 +322,7 @@ const updateServiceItem = (serviceId: Maybe<string>, updatedService: any, guestI
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
-    updatedService.fromTime
+    updatedService.fromTime,
   );
   return dispatch({
     type: UPDATE_SERVICE_ITEM,
@@ -332,15 +333,15 @@ const updateServiceItem = (serviceId: Maybe<string>, updatedService: any, guestI
 const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState) => {
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
   const serviceIndex = newServiceItems.findIndex(
-    item => item.itemId === serviceId
+    item => item.itemId === serviceId,
   );
   const removedAppt = newServiceItems.splice(serviceIndex, 1)[0];
   const extrasToRemove = newServiceItems.filter(
-    item => item.parentId === removedAppt.itemId
+    item => item.parentId === removedAppt.itemId,
   );
   extrasToRemove.forEach(extra => {
     const extraIndex = newServiceItems.findIndex(
-      item => item.itemId === extra.itemId
+      item => item.itemId === extra.itemId,
     );
     newServiceItems.splice(extraIndex, 1);
   });
@@ -348,7 +349,7 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
-    removedAppt.service.fromTime
+    removedAppt.service.fromTime,
   );
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
@@ -465,7 +466,7 @@ const setBookedBy = (employee: Maybe<PureProvider> = null): any => async (dispat
   const loggedInEmployee = getBookedByEmployee(getState());
   const loggedInEmployeeId = get(loggedInEmployee, 'id', false);
   const forceReceptionistUser = await Settings.getSettingsByName(
-    'ForceReceptionistUser'
+    'ForceReceptionistUser',
   );
   const isBookedByFieldEnabled =
     !forceReceptionistUser.settingValue ||
@@ -518,7 +519,7 @@ const setQuickApptRequested = (requested: boolean): any => ({
 
 const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Function>): any => (
   dispatch,
-  getState
+  getState,
 ) => {
   const { startTime, serviceItems } = getState().newAppointmentReducer;
 
@@ -554,7 +555,7 @@ const populateStateFromRebookAppt = (
   services,
   mainEmployee,
   startDate,
-  startTime
+  startTime,
 ) => (dispatch, getState) => {
   dispatch({
     type: SET_SELECTED_APPT,
@@ -607,7 +608,7 @@ const populateStateFromRebookAppt = (
   serviceItems = resetTimeForServices(
     serviceItems,
     -1,
-    moment(startTime, 'HH:mm')
+    moment(startTime, 'HH:mm'),
   );
 
   serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
@@ -652,7 +653,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
   const { badgeData: { isParty, primaryClient } } = appt;
   const clients = groupData.reduce(
     (agg, currentAppt) => [...agg, currentAppt.client],
-    []
+    [],
   );
   const primaryClientId = isParty
     ? get(primaryClient, 'id', null)
@@ -798,13 +799,13 @@ const messageProvidersClients = (
   date,
   employeeId,
   messageText,
-  callback
+  callback,
 ) => dispatch => {
   dispatch({ type: MESSAGE_PROVIDERS_CLIENTS });
   return AppointmentBook.postMessageProvidersClients(
     date,
     employeeId,
-    messageText
+    messageText,
   )
     .then(response => {
       dispatch(messageProvidersClientsSuccess(response));
@@ -819,7 +820,7 @@ const messageProvidersClients = (
 
 const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, errorCallback: Maybe<Function> = null): any => (
   dispatch,
-  getState
+  getState,
 ) => {
   const {
     startTime,
@@ -833,10 +834,10 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
   resetTimeForServices(serviceItems, -1, startTime);
   const requestBody = serializeApptToRequestData(getState());
   const existingServices = reject(serviceItems, itm => !itm.service.id).map(
-    itm => itm.service.id
+    itm => itm.service.id,
   );
   const deletedIds = reject(existingApptIds, id =>
-    existingServices.includes(id)
+    existingServices.includes(id),
   );
   requestBody.deletedIds = deletedIds;
   return Appointment.putAppointment(apptId, requestBody)
