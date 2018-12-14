@@ -9,6 +9,11 @@ import groupedSettingsSelector
   from '../../../../redux/selectors/settingsSelector';
 import settingsActions from '../../../../redux/actions/settings';
 import { IconTypes } from '@/components/common/Icon/interfaces';
+import { bindActionCreators } from 'redux';
+import { settings } from 'cluster';
+import { SettingsActions } from '@/models/Settings';
+import { SettingsReducer } from '@/redux/reducers/settings';
+import { Client } from '@/models';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,12 +69,35 @@ const styles = StyleSheet.create({
   },
 });
 
-class emptyClientList extends React.PureComponent {
-  state = { walkInModeSetting: false };
+export interface EmptyClientListProps {
+  settings: SettingsReducer;
+  isWalkin?: boolean;
+  settingsActions: SettingsActions;
+  navigate: Function;
+  onWalkinPress: (walkInClient: any) => void;
+  onChangeClient: (client: Client) => void;
+}
 
-  componentDidMount() {
-    this.props.getRelatedSettings('WalkInMode');
+export interface EmptyClientListState {
+  walkInMode: number;
+}
+
+class emptyClientList extends React.Component<EmptyClientListProps, EmptyClientListState> {
+  constructor(props) {
+    super(props);
+    this.state = { walkInMode: -1 };
+    this.props.settingsActions.getSettingsByName('WalkInMode');
   }
+
+  componentWillReceiveProps(nextProps) {
+    const walkInMode = nextProps.settings.data.WalkInMode;
+    if (
+      walkInMode !== this.props.settings.data.WalkInMode
+    ) {
+      this.setState({ walkInMode });
+    }
+  }
+
   addNewClient = () => {
     this.props.navigate('NewClient', {
       onChangeClient: this.props.onChangeClient,
@@ -130,7 +158,6 @@ const mapStateToProps = state => ({
   walkinClient: state.settingsReducer.walkinClient,
 });
 const mapDispatchToProps = dispatch => ({
-  getRelatedSettings: settings =>
-    dispatch(settingsActions.getSettingsByName(settings)),
+  settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(emptyClientList);

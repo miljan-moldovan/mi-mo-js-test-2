@@ -27,11 +27,12 @@ class ValidatableInput extends React.Component {
 
   render() {
     const labelStyle = this.props.isValid ? {} : { color: '#D1242A' };
+    const onBlur = () => this.validate(this.props.value);
     return (
       <LabeledTextInput
         {...this.props}
+        onBlur={onBlur}
         labelStyle={labelStyle}
-        onBlur={() => this.validate(this.props.value)}
         onChangeText={this.onChangeText}
       />
     );

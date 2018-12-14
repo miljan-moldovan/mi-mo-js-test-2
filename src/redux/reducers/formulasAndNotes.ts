@@ -4,15 +4,24 @@ import {
   GET_FORMULAS_AND_NOTES_SUCCESS,
   GET_FORMULAS_AND_NOTES_FAILED,
 } from '../actions/formulasAndNotes';
+import { Note, Formula, Maybe } from '@/models';
 
-const initialState = {
-  isLoading: false,
+const initialState: FormulasAndNotesReducer = {
+  error: null,
   notes: [],
   formulas: [],
+  isLoading: false,
 };
 
-export default (state = initialState, action) => {
-  const {type, data} = action;
+export interface FormulasAndNotesReducer {
+  isLoading: boolean;
+  notes: Note[];
+  error: Maybe<any>;
+  formulas: Formula[];
+}
+
+export default (state: FormulasAndNotesReducer = initialState, action): FormulasAndNotesReducer => {
+  const { type, data } = action;
   switch (type) {
     case GET_FORMULAS_AND_NOTES:
       return {

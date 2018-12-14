@@ -37,7 +37,7 @@ import styles from './styles';
 const TAB_BOOKING = 0;
 const TAB_OTHER = 1;
 
-class NewApptSlide extends React.Component {
+class NewApptSlide extends React.Component<{}, {}> {
   constructor(props) {
     super(props);
 
@@ -175,15 +175,15 @@ class NewApptSlide extends React.Component {
                   .then(selectedRequired => {
                     this.setState({ selectedRequired }, () => {
                       const {
+                        selectedRequired: required,
                         selectedAddons: addons,
                         selectedRecommended: recommended,
-                        selectedRequired: required,
                       } = this.state;
                       this.props.newApptActions.addQuickServiceItem({
-                        service,
                         addons,
-                        recommended,
+                        service,
                         required,
+                        recommended,
                       });
                       this.props.servicesActions.setSelectingExtras(false);
                       this.showPanel().checkConflicts();
@@ -421,7 +421,7 @@ class NewApptSlide extends React.Component {
 
   handleTabChange = (ev, activeTab) => this.props.onChangeTab(activeTab);
 
-  showPanel = (callback: () => void | boolean = false) => {
+  showPanel = (callback?: () => void) => {
     if (!this.state.isAnimating) {
       this.setState({ isAnimating: true }, () => {
         setTimeout(() => {
@@ -444,7 +444,7 @@ class NewApptSlide extends React.Component {
     return this;
   };
 
-  hidePanel = (callback: () => void | boolean = false) => {
+  hidePanel = (callback?: () => void) => {
     if (!this.state.isAnimating) {
       this.setState({ isAnimating: true }, () => {
         const animateClose = () => {
@@ -608,9 +608,9 @@ class NewApptSlide extends React.Component {
                 this.hidePanel();
                 const {
                   date,
-                  mainEmployee: employee,
                   startTime,
                   bookedByEmployee,
+                  mainEmployee: employee,
                 } = this.props.newApptState;
                 this.props.navigation.navigate('BlockTime', {
                   date,
@@ -645,11 +645,11 @@ class NewApptSlide extends React.Component {
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
-                this.hidePanel();
                 const {
                   date,
                   mainEmployee: employee,
                 } = this.props.newApptState;
+                this.hidePanel();
                 this.props.navigation.navigate('EditSchedule', {
                   date,
                   employee,
@@ -856,8 +856,9 @@ class NewApptSlide extends React.Component {
           <ProviderInput
             apptBook
             label={false}
+            mode="newAppointment"
+            date={date}
             isRequested={isQuickApptRequested}
-            filterList={filterProviders.map(itm => itm.id)}
             rootStyle={styles.inputHeight}
             selectedProvider={provider}
             selectedService={service}

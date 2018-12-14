@@ -1,7 +1,9 @@
+import moment from 'moment';
 import { get, isFunction } from 'lodash';
-import { Services, Employees, Queue } from '../../utilities/apiWrapper';
+import { Services, AppointmentBook, Employees, Queue } from '../../utilities/apiWrapper';
 import { showErrorAlert } from './utils';
-import { Maybe, PureProvider, Service } from '@/models';
+import { Maybe, PureProvider, Service, AppStore } from '@/models';
+import { dateTimeConstants } from '@/constants';
 
 const alphabeticFilter = (a, b) => {
   if (a.fullName < b.fullName) return -1;
@@ -17,6 +19,11 @@ export const GET_QUEUE_EMPLOYEES = 'providers/GET_QUEUE_EMPLOYEES';
 export const GET_QUEUE_EMPLOYEES_SUCCESS =
   'providers/GET_QUEUE_EMPLOYEES_SUCCESS';
 export const GET_QUEUE_EMPLOYEES_ERROR = 'providers/GET_PROVIDERS_ERROR';
+
+export const GET_APPT_BOOK_PROVIDERS_FOR_DATE = 'providers/GET_APPT_BOOK_PROVIDERS_FOR_DATE';
+export const GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS =
+  'providers/GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS';
+export const GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED = 'providers/GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED';
 
 export const GET_QUICK_QUEUE_EMPLOYEES = 'providers/GET_QUICK_QUEUE_EMPLOYEES';
 export const GET_QUICK_QUEUE_EMPLOYEES_SUCCESS =
@@ -224,6 +231,21 @@ const getProviderStatus = (employeeId: number, callback: Maybe<Function>): any =
     });
 };
 
+const getApptBookProvidersForDate = (date: moment.Moment): any => (dispatch: Function, getState: Function) => {
+  const state: AppStore = getState();
+  const filterOptions = state.appointmentBookReducer.filterOptions;
+  const providers = state.providersReducer.apptBookDates.find(itm => itm.date.isSame(date));
+  if (!providers) {
+    dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE });
+    AppointmentBook.getAppointmentBookEmployees(date.format(dateTimeConstants.date), filterOptions)
+      .then(providers => dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS, data: { date, providers } }))
+      .catch(error => {
+        showErrorAlert(error);
+        dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED });
+      });
+  }
+};
+
 const providersActions = {
   getProviders,
   getProvidersSuccess,
@@ -235,6 +257,7 @@ const providersActions = {
   getQueueEmployees,
   getReceptionists,
   getQuickQueueEmployees,
+  getApptBookProvidersForDate,
 };
 
 export interface ProvidersActions {
@@ -248,5 +271,6 @@ export interface ProvidersActions {
   getQueueEmployees: typeof getQueueEmployees;
   getReceptionists: typeof getReceptionists;
   getQuickQueueEmployees: typeof getQuickQueueEmployees;
+  getApptBookProvidersForDate: (date: string) => any;
 }
 export default providersActions;

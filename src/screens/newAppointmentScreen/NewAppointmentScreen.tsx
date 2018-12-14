@@ -3,29 +3,21 @@ import {
   Text,
   View,
   Alert,
-  ScrollView,
-  StyleSheet,
-  ActivityIndicator,
-  SafeAreaView,
 } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
-import deepEqual from 'deep-equal';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Picker } from 'react-native-wheel-datepicker';
 import uuid from 'uuid/v4';
 import { get, debounce, isNull } from 'lodash';
-import ClientInfoButton from '../../components/ClientInfoButton';
-import ClientPhoneTypes from '../../constants/ClientPhoneTypes';
-import SwipeableComponent from '../../components/SwipeableComponent';
+import deepEqual from 'deep-equal';
+import PropTypes from 'prop-types';
+import { NavigationEvents } from 'react-navigation';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Picker } from 'react-native-wheel-datepicker';
+import ClientInfoButton from '@/components/ClientInfoButton';
+import ClientPhoneTypes from '@/constants/ClientPhoneTypes';
+import SwipeableComponent from '@/components/SwipeableComponent';
 import {
-  DefaultAvatar,
-  LabeledTextInput,
   LabeledTextarea,
   InputGroup,
-  InputText,
-  InputLabel,
   SectionTitle,
   InputSwitch,
   InputDivider,
@@ -34,22 +26,21 @@ import {
   InputButton,
   ProviderInput,
   ValidatableInput,
-} from '../../components/formHelpers';
+} from '@/components/formHelpers';
 import {
   AddButton,
 } from '../appointmentDetailsScreen/components/appointmentDetails';
 import Icon from '@/components/common/Icon';
-import SalonHeader from '../../components/SalonHeader';
-import LoadingOverlay from '../../components/LoadingOverlay';
+import SalonHeader from '@/components/SalonHeader';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
-import { Store, Client, Services } from '../../utilities/apiWrapper';
+import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
+import { Store, Client, Services } from '@/utilities/apiWrapper';
 
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 
 export const SubTitle = props => (
   <View style={[styles.subTitleContainer, props.style || {}]}>
@@ -66,6 +57,8 @@ SubTitle.propTypes = {
 SubTitle.defaultProps = {
   children: [],
 };
+
+
 
 export default class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => {
@@ -236,10 +229,12 @@ export default class NewAppointmentScreen extends React.Component {
   selectMainEmployee = () =>
     new Promise(resolve => {
       const {
-        appointmentScreenState: { providers: filterList = false },
+        newAppointmentState: { date },
+        appointmentScreenState: { providers },
       } = this.props;
       this.props.navigation.navigate('ApptBookProvider', {
-        filterList,
+        date,
+        mode: 'newAppointment',
         headerProps: {
           title: 'Providers',
           leftButton: (
@@ -626,7 +621,7 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   handleAddMainService = () => {
-    const { client, mainEmployee } = this.props.newAppointmentState;
+    const { client, date, mainEmployee } = this.props.newAppointmentState;
     if (isNull(client)) {
       return this.setState({
         toast: {
@@ -644,6 +639,8 @@ export default class NewAppointmentScreen extends React.Component {
       selectedEmployee: mainEmployee,
       onChangeWithNavigation: (service, nav) => {
         nav.navigate('ApptBookProvider', {
+          date,
+          mode: 'newAppointment',
           dismissOnSelect: true,
           selectedService: service,
           selectedProvider: mainEmployee,
@@ -669,7 +666,7 @@ export default class NewAppointmentScreen extends React.Component {
     });
 
   handleAddGuestService = guestId => {
-    const { mainEmployee } = this.props.newAppointmentState;
+    const { date, mainEmployee } = this.props.newAppointmentState;
     const guest = this.getGuest(guestId);
     const { client = null } = guest;
 
@@ -682,6 +679,8 @@ export default class NewAppointmentScreen extends React.Component {
         employeeId: mainEmployee.id,
         onChangeWithNavigation: (service, nav) => {
           nav.navigate('ApptBookProvider', {
+            date,
+            mode: 'newAppointment',
             dismissOnSelect: true,
             selectedService: service,
             selectedProvider: mainEmployee,
@@ -941,44 +940,46 @@ export default class NewAppointmentScreen extends React.Component {
     return items;
   };
 
-  renderExtraClientButtons = isDisabled => [
-    <SalonTouchableOpacity
-      disabled={isDisabled}
-      key={Math.random().toString()}
-      onPress={() => {
-        // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
-        // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
-        this.props.navigation.navigate('ClientNotes', {
-          forAppointment: true,
-          forSales: false,
-          forQueue: false,
-          editionMode: false,
-          showTagBar: false,
-          client: this.props.newAppointmentState.client,
-        });
-      }}
-      style={{
-        marginHorizontal: 5,
-      }}
-    >
-      <Icon
-        name="fileText"
-        size={20}
-        color={isDisabled ? '#ccc' : '#115ECD'}
-        type="regular"
+  renderExtraClientButtons = isDisabled => (
+    <React.Fragment>
+      <SalonTouchableOpacity
+        disabled={isDisabled}
+        key={Math.random().toString()}
+        onPress={() => {
+          // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
+          // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
+          this.props.navigation.navigate('ClientNotes', {
+            forAppointment: true,
+            forSales: false,
+            forQueue: false,
+            editionMode: false,
+            showTagBar: false,
+            client: this.props.newAppointmentState.client,
+          });
+        }}
+        style={{
+          marginHorizontal: 5,
+        }}
+      >
+        <Icon
+          name="fileText"
+          size={20}
+          color={isDisabled ? '#ccc' : '#115ECD'}
+          type="regular"
+        />
+      </SalonTouchableOpacity>,
+      <ClientInfoButton
+        client={this.props.newAppointmentState.client}
+        navigation={this.props.navigation}
+        onDonePress={() => { }}
+        iconStyle={{ fontSize: 20, color: '#115ECD' }}
+        apptBook
+        buttonStyle={{
+          marginHorizontal: 5,
+        }}
       />
-    </SalonTouchableOpacity>,
-    <ClientInfoButton
-      client={this.props.newAppointmentState.client}
-      navigation={this.props.navigation}
-      onDonePress={() => { }}
-      iconStyle={{ fontSize: 20, color: '#115ECD' }}
-      apptBook
-      buttonStyle={{
-        marginHorizontal: 5,
-      }}
-    />,
-  ];
+    </React.Fragment>
+  );
 
   render() {
     const {
@@ -1124,35 +1125,46 @@ export default class NewAppointmentScreen extends React.Component {
               <SubTitle
                 title={guests.length > 0 ? 'Main Client' : 'Services'}
               />
-              {mainServices.map(item => [
-                <ServiceCard
-                  key={item.itemId}
-                  data={item.service}
-                  isOnlyMainService={this.isOnlyMainService(item)}
-                  addons={this.getAddonsForService(item.itemId, serviceItems)}
-                  onPress={() => this.onPressService(item.itemId)}
-                  onSetExtras={() => this.selectExtraServices(item)}
-                  conflicts={this.getConflictsForService(item.itemId)}
-                  onPressDelete={() => this.removeServiceAlert(item.itemId)}
-                  onPressConflicts={() => this.onPressConflicts(item.itemId)}
-                />,
-                this.getAddonsForService(
-                  item.itemId,
-                  serviceItems
-                ).map(addon => (
-                  <ServiceCard
-                    isAddon
-                    key={addon.itemId}
-                    data={addon.service}
-                    isRequired={addon.isRequired}
-                    onPress={() => this.onPressService(addon.itemId)}
-                    conflicts={this.getConflictsForService(addon.itemId)}
-                    onPressDelete={() => this.removeServiceAlert(addon.itemId)}
-                    onPressConflicts={() =>
-                      this.onPressConflicts(addon.itemId)}
-                  />
-                )),
-              ])}
+              {mainServices.map(item => {
+
+                return (
+                  <React.Fragment key={item.itemId}>
+                    <ServiceCard
+                      key={`service_card_${item.itemId}`}
+                      data={item.service}
+                      isOnlyMainService={this.isOnlyMainService(item)}
+                      addons={this.getAddonsForService(item.itemId, serviceItems)}
+                      onPress={() => this.onPressService(item.itemId)}
+                      onSetExtras={() => this.selectExtraServices(item)}
+                      conflicts={this.getConflictsForService(item.itemId)}
+                      onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                      onPressConflicts={() => this.onPressConflicts(item.itemId)}
+                    />
+                    {
+                      this.getAddonsForService(
+                        item.itemId,
+                        serviceItems
+                      ).map(addon => {
+                        const addonOnPress = () => this.onPressService(addon.itemId);
+                        const addonDelete = () => this.removeServiceAlert(addon.itemId);
+                        const addonConflicts = () =>
+                          this.onPressConflicts(addon.itemId);
+                        return (
+                          <ServiceCard
+                            isAddon
+                            key={`addon_card_${addon.itemId}`}
+                            data={addon.service}
+                            isRequired={addon.isRequired}
+                            onPress={addonOnPress}
+                            conflicts={this.getConflictsForService(addon.itemId)}
+                            onPressDelete={addonDelete}
+                            onPressConflicts={addonConflicts}
+                          />
+                        );
+                      })
+                    }
+                  </React.Fragment>);
+              })}
               <AddButton
                 style={{
                   marginVertical: 5,
