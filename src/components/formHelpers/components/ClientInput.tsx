@@ -1,12 +1,50 @@
 import * as React from 'react';
-import { Text, View, ViewPropTypes } from 'react-native';
+import { Text, View, ViewPropTypes, RegisteredStyle, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles } from '../index';
 
-export default class ClientInput extends React.Component {
+export default class ClientInput extends React.Component<any, any> {
+
+  static defaultProps = {
+    apptBook: false,
+    label: 'Client',
+    placeholder: false,
+    onPress: () => {
+    },
+    extraComponents: [],
+    selectedClient: null,
+    headerProps: {},
+    push: () => {
+    },
+  };
+
+  static propTypes = {
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    selectedClient: PropTypes.any,
+    onPress: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
+    extraComponents: PropTypes.node,
+    headerProps: PropTypes.any,
+    apptBook: PropTypes.bool,
+    contentStyle: ViewPropTypes.style,
+    style: ViewPropTypes.style,
+    // @ts-ignore
+    selectedStyle: Text.propTypes.style,
+    // @ts-ignore
+    placeholderStyle: Text.propTypes.style,
+    // @ts-ignore
+
+    labelStyle: Text.propTypes.style,
+    // @ts-ignore
+    iconStyle: Text.propTypes.style,
+    navigate: PropTypes.func.isRequired,
+    push: PropTypes.func,
+  };
+
   constructor(props) {
     super(props);
 
@@ -49,12 +87,12 @@ export default class ClientInput extends React.Component {
         onPress={this.handlePress}
       >
         {label &&
-          <Text
-            numberOfLines={1}
-            style={[styles.labelText, this.props.labelStyle]}
-          >
-            {label}
-          </Text>}
+        <Text
+          numberOfLines={1}
+          style={[styles.labelText, this.props.labelStyle]}
+        >
+          {label}
+        </Text>}
         <View
           style={[
             {
@@ -66,25 +104,25 @@ export default class ClientInput extends React.Component {
           ]}
         >
           {value !== null &&
-            <Text
-              numberOfLines={1}
-              style={[styles.inputText, this.props.selectedStyle]}
-            >
-              {value}
-            </Text>}
+          <Text
+            numberOfLines={1}
+            style={[styles.inputText, this.props.selectedStyle]}
+          >
+            {value}
+          </Text>}
           {value === null &&
-            placeholder &&
-            <Text
-              numberOfLines={1}
-              style={[styles.labelText, this.props.placeholderStyle]}
-            >
-              {placeholder}
-            </Text>}
+          placeholder &&
+          <Text
+            numberOfLines={1}
+            style={[styles.labelText, this.props.placeholderStyle]}
+          >
+            {placeholder}
+          </Text>}
         </View>
         {'extraComponents' in this.props &&
-          <View style={{ marginHorizontal: 5, flexDirection: 'row' }}>
-            {this.props.extraComponents}
-          </View>}
+        <View style={{ marginHorizontal: 5, flexDirection: 'row' }}>
+          {this.props.extraComponents}
+        </View>}
         <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>
           {Icons.angleRight}
         </FontAwesome>
@@ -92,32 +130,3 @@ export default class ClientInput extends React.Component {
     );
   }
 }
-
-ClientInput.propTypes = {
-  label: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  selectedClient: PropTypes.any,
-  onPress: PropTypes.func,
-  onChange: PropTypes.func.isRequired,
-  extraComponents: PropTypes.node,
-  headerProps: PropTypes.any,
-  apptBook: PropTypes.bool,
-  contentStyle: ViewPropTypes.style,
-  style: ViewPropTypes.style,
-  selectedStyle: Text.propTypes.style,
-  placeholderStyle: Text.propTypes.style,
-  labelStyle: Text.propTypes.style,
-  iconStyle: Text.propTypes.style,
-  navigate: PropTypes.func.isRequired,
-  push: PropTypes.func,
-};
-ClientInput.defaultProps = {
-  apptBook: false,
-  label: 'Client',
-  placeholder: false,
-  onPress: () => { },
-  extraComponents: [],
-  selectedClient: null,
-  headerProps: {},
-  push: () => { },
-};

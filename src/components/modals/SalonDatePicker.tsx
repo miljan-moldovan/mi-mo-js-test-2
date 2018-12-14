@@ -45,8 +45,35 @@ const styles = StyleSheet.create({
   },
 });
 
+interface IDefault {
+  isVisible: boolean,
+  minDate: string,
+  maxDate: string,
+}
 
-class SalonDatePicker extends React.Component {
+interface IProps extends IDefault {
+  onPress: (arg) => void,
+}
+
+interface IState extends IDefault {
+  selected?: any,
+}
+
+
+class SalonDatePicker extends React.Component<IProps, IState> {
+  static propTypes = {
+    onPress: PropTypes.func.isRequired,
+    isVisible: PropTypes.bool,
+    minDate: PropTypes.string,
+    maxDate: PropTypes.string,
+  };
+
+  static defaultProps = {
+    isVisible: false,
+    minDate: null,
+    maxDate: null,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -56,11 +83,12 @@ class SalonDatePicker extends React.Component {
     };
   }
 
-  state:{
+  state: {
     isVisible: false,
     minDate: '',
-    maxDate: ''
-  }
+    maxDate: '',
+  };
+
 
   componentWillReceiveProps(nextProps) {
     this.setState({
@@ -80,7 +108,8 @@ class SalonDatePicker extends React.Component {
   hideModal = () => {
     this.setState({ isVisible: false });
     this.props.onPress(null);
-  }
+  };
+
   render() {
     return (
       <SalonModal
@@ -90,32 +119,26 @@ class SalonDatePicker extends React.Component {
         closeModal={this.hideModal}
       >
         {[
-          <View style={styles.container}>
+          <View key={1} style={styles.container}>
             <Calendar
               minDate={this.state.minDate}
               maxDate={this.state.maxDate}
               onDayPress={day => this.onDayPress(day)}
               style={styles.calendar}
               hideExtraDays
-              markedDates={{ [this.state.selected]: { selected: true, disableTouchEvent: true, selectedColor: '#115ECD' } }}
+              markedDates={{
+                // @ts-ignore
+                [this.state.selected]: {
+                  selected: true,
+                  disableTouchEvent: true,
+                  selectedColor: '#115ECD',
+                },
+              }}
             />
           </View>]}
       </SalonModal>
     );
   }
 }
-
-SalonDatePicker.propTypes = {
-  onPress: PropTypes.func.isRequired,
-  isVisible: PropTypes.bool,
-  minDate: PropTypes.string,
-  maxDate: PropTypes.string,
-};
-
-SalonDatePicker.defaultProps = {
-  isVisible: false,
-  minDate: null,
-  maxDate: null,
-};
 
 export default SalonDatePicker;

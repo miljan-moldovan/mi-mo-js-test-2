@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ActivityIndicator, View, Text } from 'react-native';
+import { ActivityIndicator, View, Text, Alert } from 'react-native';
 import moment, { isMoment } from 'moment';
 import uuid from 'uuid/v4';
 import { get, isNull, cloneDeep } from 'lodash';
@@ -28,6 +28,7 @@ import styles from './styles';
 import SalonHeader from '../../../components/SalonHeader';
 
 class TurnAwayScreen extends React.Component<any, any> {
+  private scroll: any;
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
@@ -42,7 +43,11 @@ class TurnAwayScreen extends React.Component<any, any> {
               onPress={navigation.goBack}
               style={styles.leftButton}
             >
-              <Text style={styles.leftButtonText}>Cancel</Text>
+              <Text
+                style={styles.leftButtonText}
+              >
+                {'Cancel'}
+              </Text>
             </SalonTouchableOpacity>
           }
           headerRight={
@@ -60,6 +65,21 @@ class TurnAwayScreen extends React.Component<any, any> {
         />
       ),
     };
+  };
+
+  static propTypes = {
+    apptGridSettings: PropTypes.shape({
+      step: PropTypes.number.isRequired,
+    }).isRequired,
+    turnAwayReasonsActions: PropTypes.shape({
+      getTurnAwayReasons: PropTypes.func.isRequired,
+    }).isRequired,
+    turnAwayActions: PropTypes.shape({
+      postTurnAway: PropTypes.func.isRequired,
+    }).isRequired,
+    turnAwayReasonsState: PropTypes.any.isRequired,
+    turnAwayState: PropTypes.any.isRequired,
+    navigation: PropTypes.any.isRequired,
   };
 
   constructor(props) {
@@ -114,10 +134,9 @@ class TurnAwayScreen extends React.Component<any, any> {
   onChangeOtherReason = text =>
     this.setState({ otherReason: text }, this.checkCanSave);
 
-  onPressInputGroup = (option, index) => {
-    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[
-    this.props.turnAwayReasonsState.turnAwayReasons.length - 1
-      ];
+  onPressInputGroup = (option) => {
+    const index = this.props.turnAwayReasonsState.turnAwayReasons.length - 1;
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[index];
 
     const isEditableOtherReason = option.id === selectedReasonCode.id;
 
@@ -188,7 +207,7 @@ class TurnAwayScreen extends React.Component<any, any> {
 
   goBack = (result, userMessage) => {
     if (result) {
-      alert(userMessage);
+      Alert.alert(userMessage);
       this.props.navigation.goBack();
     }
   };
@@ -198,10 +217,6 @@ class TurnAwayScreen extends React.Component<any, any> {
       .turnAwayReasons[0];
     this.setState(
       {
-        // date: moment (),
-        // isModalVisible: false,
-        // selectedClient: null,
-        // services: [],
         selectedReasonCode,
         isEditableOtherReason: false,
         otherReason: '',
@@ -330,9 +345,9 @@ class TurnAwayScreen extends React.Component<any, any> {
   };
 
   handleClientSelection = client => {
-    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[
-    this.props.turnAwayReasonsState.turnAwayReasons.length - 1
-      ];
+    const index = this.props.turnAwayReasonsState.turnAwayReasons.length - 1;
+
+    const selectedReasonCode = this.props.turnAwayReasonsState.turnAwayReasons[index];
     this.setState(
       {
         selectedClient: client,
@@ -477,22 +492,5 @@ class TurnAwayScreen extends React.Component<any, any> {
     );
   }
 }
-
-TurnAwayScreen.defaultProps = {};
-
-TurnAwayScreen.propTypes = {
-  apptGridSettings: PropTypes.shape({
-    step: PropTypes.number.isRequired,
-  }).isRequired,
-  turnAwayReasonsActions: PropTypes.shape({
-    getTurnAwayReasons: PropTypes.func.isRequired,
-  }).isRequired,
-  turnAwayActions: PropTypes.shape({
-    postTurnAway: PropTypes.func.isRequired,
-  }).isRequired,
-  turnAwayReasonsState: PropTypes.any.isRequired,
-  turnAwayState: PropTypes.any.isRequired,
-  navigation: PropTypes.any.isRequired,
-};
 
 export default TurnAwayScreen;
