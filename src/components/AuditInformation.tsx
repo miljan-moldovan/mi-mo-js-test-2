@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AuditInformation extends React.Component {
+export default class AuditInformation extends React.Component<any, any> {
   constructor(props) {
     super(props);
     const prepareData = this.prepareAudit(props.audit);
@@ -182,27 +182,34 @@ export default class AuditInformation extends React.Component {
     return auditToRender.map(item => (
       <View key={Math.random()} style={[styles.panelInfoLine, { paddingVertical: 5 }]}>
         <Text style={styles.panelInfoTitle}>{this.getAuditType(item.auditType)}</Text>
-        {isBlockTime
-          ? [
-            <Text style={styles.panelInfoText}>
-                at {this.formatDate(item.auditDateTime)},{' '}
-              {item.auditDateTime ? ` ${this.formatTimeWithMinutes(item.auditDateTime)} ` : ''}
-            </Text>,
-            <Text style={styles.panelInfoDate}>
-              {this.formatEmployeeName(item.auditEmployee)}
-            </Text>,
-            ]
-          : [
-            <Text style={styles.panelInfoText}>
-              {item.service || ''} with {this.formatEmployeeName(item.provider)} on{' '}
-              {this.formatDate(item.appointmentDate)} at{' '}
-              {this.formatTime(item.appointmentStartTime)}
-            </Text>,
-            <Text style={styles.panelInfoDate}>
-                by {this.formatEmployeeName(item.auditEmployee)} on{' '}
-              {item.auditDateTime ? this.formatDate(item.auditDateTime) : ''}
-            </Text>,
-            ]}
+        {
+          isBlockTime ?
+            (
+              <React.Fragment>
+                <Text style={styles.panelInfoText}>
+                  at {this.formatDate(item.auditDateTime)},{' '}
+                  {item.auditDateTime ? ` ${this.formatTimeWithMinutes(item.auditDateTime)} ` : ''}
+                </Text>
+                <Text style={styles.panelInfoDate}>
+                  {this.formatEmployeeName(item.auditEmployee)}
+                </Text>
+              </React.Fragment>
+            )
+            :
+            (
+              <React.Fragment>
+                <Text style={styles.panelInfoText}>
+                  {item.service || ''} with {this.formatEmployeeName(item.provider)} on{' '}
+                  {this.formatDate(item.appointmentDate)} at{' '}
+                  {this.formatTime(item.appointmentStartTime)}
+                </Text>
+                <Text style={styles.panelInfoDate}>
+                  by {this.formatEmployeeName(item.auditEmployee)} on{' '}
+                  {item.auditDateTime ? this.formatDate(item.auditDateTime) : ''}
+                </Text>
+              </React.Fragment>
+            )
+        }
       </View>
     ));
   };
@@ -210,32 +217,41 @@ export default class AuditInformation extends React.Component {
   render() {
     const { isBlockTime, isOpen } = this.state;
     const { audit } = this.state;
-    return this.props.isLoading ? (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <ActivityIndicator />
-      </View>
-    ) : (
-      [
-        <View style={[styles.panelInfo, isOpen ? {} : { maxHeight: 230, minHeight: 55 }]}>
-          {this.renderAuditInfo(audit, isBlockTime, isOpen)}
-        </View>,
-        <SalonTouchableOpacity
-          style={styles.panelInfoShowMore}
-          onPress={() => {
-            this.setState({ isOpen: !this.state.isOpen });
-          }}
-        >
-          <Text style={styles.panelInfoShowMoreText}>
-            {this.state.isOpen ? 'SHOW LESS' : 'SHOW MORE'}
-          </Text>
-        </SalonTouchableOpacity>,
-      ]
+
+    return (
+      this.props.isLoading ?
+        (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <ActivityIndicator/>
+          </View>
+        )
+        :
+        (
+          <React.Fragment>
+            <View style={[styles.panelInfo, isOpen ? {} : { maxHeight: 230, minHeight: 55 }]}>
+              {this.renderAuditInfo(audit, isBlockTime, isOpen)}
+            </View>
+            {
+              (audit.length > 1)
+              && (<SalonTouchableOpacity
+                style={styles.panelInfoShowMore}
+                onPress={() => {
+                  this.setState({ isOpen: !this.state.isOpen });
+                }}
+              >
+                <Text style={styles.panelInfoShowMoreText}>
+                  {this.state.isOpen ? 'SHOW LESS' : 'SHOW MORE'}
+                </Text>
+              </SalonTouchableOpacity>)
+            }
+          </React.Fragment>
+        )
     );
   }
 }
