@@ -335,10 +335,24 @@ class AppointmentScreen extends React.Component {
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
-    const {newAppointmentActions} = this.props;
+
+    const {newAppointmentActions, restrictedToBookInAdvanceDays} = this.props;
     const startTime = moment (cellId, 'HH:mm A');
     const {client} = this.props.newAppointmentState;
-
+    let date = selectedFilter === ('providers' ||
+    selectedFilter === 'deskStaff' ||
+    selectedFilter === 'rebookAppointment' ) && selectedProvider === 'all' ? startDate : colData;
+    const differenceInDaysFromToday = moment(date, DateTime.date).diff(moment().startOf('day'), 'days');
+    if (restrictedToBookInAdvanceDays && differenceInDaysFromToday >= restrictedToBookInAdvanceDays) {
+      const alert = {
+        title: '',
+        description: `You may only book appointments ${restrictedToBookInAdvanceDays} days in advance`,
+        btnRightText: 'Ok',
+        onPressRight: this.hideAlert,
+      };
+      this.setState({ alert });
+      return;
+    }
     newAppointmentActions.cleanForm ();
     if (
       this.state.bookAnotherEnabled ||
@@ -352,6 +366,8 @@ class AppointmentScreen extends React.Component {
       selectedFilter === 'rebookAppointment'
     ) {
       if (selectedProvider === 'all') {
+        const differenceInDaysFromToday = moment(date, DateTime.date).diff(moment().startOf('day'), 'days');
+
         newAppointmentActions.setMainEmployee (colData);
         newAppointmentActions.setDate (startDate);
         newAppointmentActions.setQuickApptRequested (!colData.isFirstAvailable);
@@ -384,7 +400,7 @@ class AppointmentScreen extends React.Component {
           : colData;
       }
 
-      const date = rebookProviders.length === 1 ? colData : startDate;
+      date = rebookProviders.length === 1 ? colData : startDate;
 
       for (let i = 0; i < services.length; i += 1) {
         services[i].employee = mainEmployee;

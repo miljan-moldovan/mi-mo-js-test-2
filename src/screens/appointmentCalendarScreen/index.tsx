@@ -14,6 +14,7 @@ import {
 } from '../../redux/selectors/appointmentSelector';
 import getAvailabilityWithGaps
   from '../../redux/selectors/availabilitySelector';
+import restrictedToBookInAdvanceDays from '../../redux/selectors/restrictedToBookInAdvanceDays';
 import {
   apptGridSettingsSelector,
 } from '../../redux/selectors/apptGridSettingsSelector';
@@ -35,6 +36,7 @@ const mapStateToProps = state => ({
   apptGridSettings: apptGridSettingsSelector (state),
   storeScheduleExceptions: state.storeReducer.scheduleExceptions,
   rebookState: state.rebookReducer,
+  restrictedToBookInAdvanceDays: restrictedToBookInAdvanceDays(state)
 });
 
 const mapActionsToProps = dispatch => ({

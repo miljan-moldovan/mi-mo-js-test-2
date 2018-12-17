@@ -10,6 +10,7 @@ import {
 import StoreActions from './store';
 import { PureProvider, Maybe, StoreCompany, ProviderPosition } from '@/models';
 import { dateTimeConstants } from '@/constants';
+import { setSettings } from './settings';
 
 export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY =
@@ -223,6 +224,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                 storeRooms,
               ]
             ) => {
+              dispatch(setSettings(settings));
               const useFirstAvailable = settings.find((itm) => itm.settingName === 'UseFirstAvailable');
               if (useFirstAvailable && useFirstAvailable.settingValue) {
                 return AppointmentBook.getAppointmentBookAvailability(date).then(availabilityItem => reloadGridCallback({
