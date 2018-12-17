@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonTouchableOpacity from './SalonTouchableOpacity';
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -19,26 +18,14 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    borderLeftWidth: 1,
     alignItems: 'center',
     flexDirection: 'column',
-  },
-  btnLast: {
-    flex: 1,
-    borderRightWidth: 1,
-    alignItems: 'center',
   },
   text: {
     textAlign: 'center',
     fontSize: 14,
     fontFamily: 'Roboto',
   },
-  // textSelected: {
-  //   color: '#fff',
-  // },
-  // selected: {
-  //   backgroundColor: '#67A3C7',
-  // },
   textContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -53,20 +40,24 @@ const styles = StyleSheet.create({
 });
 
 function renderBtn(
-  data, index, isSelected, isLast, onItemPress,
-  disabled, selectedColor, selectedTextColor, unSelectedTextColor, textFontSize,
+  data,
+  index,
+  isSelected,
+  onItemPress,
+  disabled,
+  selectedColor,
+  selectedTextColor,
+  unSelectedTextColor,
+  textFontSize,
 ) {
   let btnStyle = styles.btn;
   let textStyle = styles.text;
   if (isSelected) {
-    btnStyle = [btnStyle, { backgroundColor: selectedColor, borderColor: selectedColor }];
+    btnStyle = [btnStyle, { backgroundColor: selectedColor /*, borderColor: selectedColor */ }];
     textStyle = [textStyle, { color: selectedTextColor }];
   } else {
     textStyle = [textStyle, { color: unSelectedTextColor }];
     btnStyle = [btnStyle, { borderColor: selectedColor }];
-  }
-  if (isLast) {
-    btnStyle = [btnStyle, styles.btnLast];
   }
   return (
     <SalonTouchableOpacity
@@ -76,9 +67,7 @@ function renderBtn(
       disabled={disabled}
     >
       <View style={styles.textContainer}>
-        <Text style={[textStyle, { fontSize: textFontSize }]}>
-          {data}
-        </Text>
+        <Text style={[textStyle, { fontSize: textFontSize }]}>{data}</Text>
       </View>
     </SalonTouchableOpacity>
   );
@@ -86,18 +75,21 @@ function renderBtn(
 
 const salonFlatPicker = props => (
   <View style={[styles.container, props.rootStyle]}>
-    {props.title ? <Text style={styles.titleStyle}>{props.title}</Text> : null }
+    {props.title ? <Text style={styles.titleStyle}>{props.title}</Text> : null}
     <View style={[styles.pickerContainer, props.containerStyle, { borderColor: props.selectedColor }]}>
       {props.dataSource.map((data, index) =>
         renderBtn(
-          data, index, index === props.selectedIndex,
-          index === props.dataSource.length - 1, props.onItemPress,
+          data,
+          index,
+          index === props.selectedIndex,
+          props.onItemPress,
           props.disabled,
           props.selectedColor,
           props.selectedTextColor,
           props.unSelectedTextColor,
           props.textFontSize,
-        ))}
+        ),
+      )}
     </View>
   </View>
 );
