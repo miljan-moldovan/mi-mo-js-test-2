@@ -6,6 +6,7 @@ import {
   SETTINGS,
   SETTINGS_SUCCESS,
   SETTINGS_FAILED,
+  SET_SETTINGS_SUCCESS,
 } from '../actions/settings';
 import { Dictionary, SettingItem, Maybe } from '@/models';
 
@@ -41,6 +42,11 @@ export default function settingsReducer(state: SettingsReducer = initialState, a
         settings: data.settings,
         walkinClient: data.walkinClient,
         isLoading: false,
+      };
+    case SET_SETTINGS_SUCCESS:
+      return {
+        ...state,
+        settings: data.settings,
       };
     case SETTINGS_FAILED:
       return {

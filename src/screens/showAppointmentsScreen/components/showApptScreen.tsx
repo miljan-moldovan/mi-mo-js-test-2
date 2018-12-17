@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {View, SectionList, Text, ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import SalonInputModal from '../../../components/SalonInputModal';
 import Card from './card';
@@ -12,6 +13,7 @@ import ClientInfoButton from '../../../components/ClientInfoButton';
 import SalonHeader from '../../../components/SalonHeader';
 import Colors from '../../../constants/Colors';
 import LoadingOverlay from '../../../components/LoadingOverlay';
+import { dateTimeConstants } from '@/constants';
 
 const query = {
   SortOrder: 1,
@@ -71,24 +73,27 @@ class ShowApptScreen extends React.Component {
       ),
     };
   };
+  
   constructor (props) {
     super (props);
     const {clientApptActions, navigation: {state: {params: {client}}}} = props;
     this.state = {
       client,
       isEmailVisible: false,
+      date: moment().format(dateTimeConstants.date)
     };
     clientApptActions.clearAppts ();
   }
 
   componentDidMount () {
+    this.state
     const {
       navigation: {state: {params: {client, date}}, setParams},
       clientApptActions,
     } = this.props;
     clientApptActions.getClientAppt ({
       clientId: client.id,
-      fromDate: date,
+      fromDate: this.state.date,
       query,
     });
     setParams ({sendEmail: this.showEmailModal});
@@ -108,7 +113,7 @@ class ShowApptScreen extends React.Component {
       };
       clientApptActions.getMoreClientAppt ({
         clientId: client.id,
-        fromDate: date,
+        fromDate: this.state.date,
         query: newQuery,
       });
     }
