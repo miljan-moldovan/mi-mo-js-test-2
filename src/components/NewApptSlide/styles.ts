@@ -20,14 +20,17 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 16,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     flexDirection: 'row',
   },
   body: {
     padding: 15,
-    ...ifIphoneX({
-      paddingBottom: 30,
-    }, {}),
+    ...ifIphoneX(
+      {
+        paddingBottom: 30,
+      },
+      {},
+    ),
   },
   dateText: {
     fontFamily: 'Roboto-Medium',
@@ -286,7 +289,10 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
   },
-  cancelButton: { flex: 4 / 17, justifyContent: 'flex-start' },
+  cancelButton: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
   cancelButtonText: {
     color: 'white',
     fontSize: 14,
@@ -294,7 +300,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     textAlign: 'left',
   },
-  headerMiddle: { flex: 9 / 17, justifyContent: 'center', alignItems: 'stretch' },
+  headerMiddle: {
+    flex: 2,
+    maxWidth: '50%',
+    justifyContent: 'center',
+    alignItems: 'stretch',
+  },
+  headerStub: {
+    flex: 1,
+  },
   justifyCenter: { justifyContent: 'center' },
 });
 export default styles;

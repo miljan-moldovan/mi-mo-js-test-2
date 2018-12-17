@@ -215,7 +215,7 @@ const ServiceCard = (props) => {
           }
         />
       </SalonTouchableOpacity>
-      {props.conflicts.length > 0 && (
+      {props.conflicts.length > 0 && !props.isGotAddon && (
         <ConflictBox
           style={{
             marginHorizontal: 10,

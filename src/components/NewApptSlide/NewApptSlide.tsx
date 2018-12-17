@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  ScrollView,
-  Animated,
-  Switch,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, Text, Modal, ScrollView, Animated, Switch, TouchableWithoutFeedback } from 'react-native';
 import moment from 'moment';
 import { compact, get, slice, isNull, isFunction } from 'lodash';
 
@@ -15,21 +7,14 @@ import { Services, AppointmentBook, Product } from '../../utilities/apiWrapper';
 import Colors from '../../constants/Colors';
 import { AppointmentTime } from '../slidePanels/SalonNewAppointmentSlide';
 import SalonInputModal from '../SalonInputModal';
-import {
-  InputButton,
-  InputDivider,
-  ClientInput,
-  ServiceInput,
-  ProviderInput,
-} from '../formHelpers';
+import { InputButton, InputDivider, ClientInput, ServiceInput, ProviderInput } from '../formHelpers';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import SalonFlatPicker from '../SalonFlatPicker';
 import Icon from '@/components/common/Icon';
 import Button from './components/Button';
 import ConflictBox from './components/ConflictBox';
 import AddonsContainer from './components/AddonsContainer';
-import SalonToast
-  from '../../screens/appointmentCalendarScreen/components/SalonToast';
+import SalonToast from '../../screens/appointmentCalendarScreen/components/SalonToast';
 import TrackRequestSwitch from '../TrackRequestSwitch';
 
 import styles from './styles';
@@ -37,7 +22,80 @@ import styles from './styles';
 const TAB_BOOKING = 0;
 const TAB_OTHER = 1;
 
-class NewApptSlide extends React.Component<{}, {}> {
+type IProps = {
+  navigation: any;
+  filterProviders: any;
+  maxHeight: any;
+  activeTab: any;
+  visible: boolean;
+  getLength: () => object;
+  getEndTime: () => void;
+  handleBook: (arg?: any) => void;
+  onChangeTab: (arg?: any) => void;
+  show: () => void;
+  hide: () => void;
+  servicesActions: {
+    setSelectingExtras: (boolean) => void;
+  };
+  newApptActions: INewApptActions;
+  newApptState: INewApptState;
+};
+
+type INewApptActions = {
+  addServiceItemExtras: (arg1?: any, arg2?: any, arg3?: any) => void;
+  addQuickServiceItem: (arg1?: any, arg2?: any, arg3?: any) => void;
+  messageProvidersClients: (arg1?: any, arg2?: any, arg3?: any, arg4?: any) => void;
+  messageAllClients: (arg1?: any, arg2?: any, arg3?: any, arg4?: any) => void;
+  setMainEmployee: (arg?: any) => void;
+  setClient: (arg?: any) => void;
+  setQuickApptRequested: (arg?: any) => void;
+  getConflicts: (arg?: any) => any;
+  isBookingQuickAppt: (arg?: any) => any;
+};
+
+type INewApptState = {
+  mainEmployee: any;
+  serviceItems: any;
+  client: any;
+  conflicts: any;
+  bookedByEmployee: any;
+  date: any;
+  startTime: any;
+  isLoading: boolean;
+  isBooking: boolean;
+  isQuickApptRequested: boolean;
+};
+
+type IState = {
+  hasViewedRequired: any;
+  selectedAddons: any;
+  selectedRequired: any;
+  selectedRecommended: any;
+  isLoading: boolean;
+  visible: boolean;
+  activeTab: any;
+  isAnimating: boolean;
+  hasSelectedAddons: boolean;
+  hasSelectedRecommended: boolean;
+  hasViewedAddons: boolean;
+  hasViewedRecommended: boolean;
+  canBook: boolean;
+  service: any;
+  client: any;
+  addons: any;
+  recommended: any;
+  required: any;
+  conflicts: any;
+  isRequested: boolean;
+  serviceItems: any;
+  addonsHeight: any;
+  isInputModalVisible: boolean;
+  postModalFunction: (arg?: any) => any;
+  toast: any;
+  otherHeight: number;
+};
+
+class NewApptSlide extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
 
@@ -65,6 +123,12 @@ class NewApptSlide extends React.Component<{}, {}> {
     postModalFunction: null,
     toast: null,
     otherHeight: 0,
+    selectedAddons: null,
+    hasViewedRequired: null,
+    selectedRequired: null,
+    selectedRecommended: null,
+    hasViewedAddons: null,
+    hasViewedRecommended: null,
   });
 
   componentWillReceiveProps(newProps) {
@@ -93,46 +157,46 @@ class NewApptSlide extends React.Component<{}, {}> {
             this.setState({ selectedAddons: addons }, () => {
               this.showRecommended(
                 service,
-                recommended.map(itm => itm.id)
+                recommended.map(itm => itm.id),
               ).then(recommended =>
                 this.setState({ selectedRecommended: recommended }, () => {
                   const { selectedAddons, selectedRecommended } = this.state;
-                  const { newApptActions: { addServiceItemExtras } } = this.props;
+                  const {
+                    newApptActions: { addServiceItemExtras },
+                  } = this.props;
                   addServiceItemExtras(itemId, 'addon', selectedAddons);
-                  addServiceItemExtras(
-                    itemId,
-                    'recommended',
-                    selectedRecommended
-                  );
+                  addServiceItemExtras(itemId, 'recommended', selectedRecommended);
                   this.props.servicesActions.setSelectingExtras(false);
                   this.showPanel().checkConflicts();
-                })
+                }),
               );
-            })
+            }),
           )
           .catch(() => {
             this.props.servicesActions.setSelectingExtras(false);
           });
-      }
+      },
     );
   };
 
   onPressRequired = () => {
     const { service, itemId, required } = this.getService(true);
-    const { newApptActions: { addServiceItemExtras } } = this.props;
-    this.showRequired(service, [
-      get(required, 'id', null),
-    ]).then(selectedRequired =>
+    const {
+      newApptActions: { addServiceItemExtras },
+    } = this.props;
+    this.showRequired(service, [get(required, 'id', null)]).then(selectedRequired =>
       this.setState({ selectedRequired }, () => {
         addServiceItemExtras(itemId, 'required', this.state.selectedRequired);
         this.showPanel().checkConflicts();
-      })
+      }),
     );
   };
 
   onPressRemoveRequired = () => {
     const { itemId } = this.getService();
-    const { newApptActions: { addServiceItemExtras } } = this.props;
+    const {
+      newApptActions: { addServiceItemExtras },
+    } = this.props;
     addServiceItemExtras(itemId, 'required', []);
     this.showPanel().checkConflicts();
   };
@@ -143,13 +207,15 @@ class NewApptSlide extends React.Component<{}, {}> {
   }
 
   setClient = (client, clientsNav) => {
-    const { newApptState: { mainEmployee: selectedProvider } } = this.props;
+    const {
+      newApptState: { mainEmployee: selectedProvider },
+    } = this.props;
     const { service: selectedService } = this.getService();
     clientsNav.navigate('Services', {
       selectedService,
       selectedProvider,
       dismissOnSelect: true,
-      onChangeService: (service) => {
+      onChangeService: service => {
         this.props.newApptActions.setClient(client);
         clientsNav.goBack();
         this.setService(service);
@@ -196,10 +262,10 @@ class NewApptSlide extends React.Component<{}, {}> {
                     this.props.servicesActions.setSelectingExtras(false);
                     this.showPanel().checkConflicts();
                   });
-              }
+              },
             );
           });
-        }
+        },
       );
     });
   };
@@ -271,13 +337,13 @@ class NewApptSlide extends React.Component<{}, {}> {
   showRequired = (service, selectedIds = []) =>
     new Promise(resolve => {
       try {
-        const { navigation: { navigate } } = this.props;
+        const {
+          navigation: { navigate },
+        } = this.props;
         const { hasViewedRequired: showCancelButton } = this.state;
         if (service && service.requiredServices.length > 0) {
           if (service.requiredServices.length === 1) {
-            Services.getService(service.requiredServices[0].id).then(res =>
-              resolve({ name: res.description, ...res })
-            );
+            Services.getService(service.requiredServices[0].id).then(res => resolve({ name: res.description, ...res }));
           } else {
             const navigateCallback = () =>
               navigate('RequiredServices', {
@@ -302,7 +368,9 @@ class NewApptSlide extends React.Component<{}, {}> {
   showAddons = (service, selectedIds = []) =>
     new Promise(resolve => {
       try {
-        const { navigation: { navigate } } = this.props;
+        const {
+          navigation: { navigate },
+        } = this.props;
         const { hasViewedAddons: showCancelButton } = this.state;
         if (service && service.addons.length > 0) {
           const navigateCallback = () =>
@@ -327,7 +395,9 @@ class NewApptSlide extends React.Component<{}, {}> {
   showRecommended = (service, selectedIds = []) =>
     new Promise(resolve => {
       try {
-        const { navigation: { navigate } } = this.props;
+        const {
+          navigation: { navigate },
+        } = this.props;
         const { hasViewedRecommended: showCancelButton } = this.state;
         if (service && service.recommendedServices.length > 0) {
           const navigateCallback = () =>
@@ -361,14 +431,7 @@ class NewApptSlide extends React.Component<{}, {}> {
   checkConflicts = () => this.props.newApptActions.getConflicts();
 
   canBook = () => {
-    const {
-      client,
-      conflicts,
-      isLoading,
-      isBooking,
-      mainEmployee,
-      bookedByEmployee,
-    } = this.props.newApptState;
+    const { client, conflicts, isLoading, isBooking, mainEmployee, bookedByEmployee } = this.props.newApptState;
     const { service } = this.getService();
     if (
       service === null ||
@@ -401,7 +464,7 @@ class NewApptSlide extends React.Component<{}, {}> {
     if (isNull(bookedByEmployee)) {
       return this.setState({
         toast: {
-          description: "Logged in user isn't employee\nPlease select booked by from More Options",
+          description: 'Logged in user isn\'t employee\nPlease select booked by from More Options',
           type: 'error',
           btnRightText: 'DISMISS',
         },
@@ -410,7 +473,7 @@ class NewApptSlide extends React.Component<{}, {}> {
     if (bookedByEmployee.isFirstAvailable) {
       return this.setState({
         toast: {
-          description: "Booking employee can't be first available\nPlease select booked by from More Options",
+          description: 'Booking employee can\'t be first available\nPlease select booked by from More Options',
           type: 'error',
           btnRightText: 'DISMISS',
         },
@@ -444,7 +507,7 @@ class NewApptSlide extends React.Component<{}, {}> {
     return this;
   };
 
-  hidePanel = (callback?: () => void) => {
+  hidePanel = (callback?: any) => {
     if (!this.state.isAnimating) {
       this.setState({ isAnimating: true }, () => {
         const animateClose = () => {
@@ -473,8 +536,7 @@ class NewApptSlide extends React.Component<{}, {}> {
   };
 
   goToFullForm = () => {
-    const navigateCallback = () =>
-      this.props.navigation.navigate('NewAppointment');
+    const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
     this.props.newApptActions.isBookingQuickAppt(false);
     return this.hidePanel(navigateCallback);
   };
@@ -523,24 +585,14 @@ class NewApptSlide extends React.Component<{}, {}> {
     this.hidePanel();
     const { date, mainEmployee: employee } = this.props.newApptState;
     const formated_date = moment(date).format('YYYY-MM-DD');
-    this.props.newApptActions.messageProvidersClients(
-      formated_date,
-      employee.id,
-      message,
-      this.showToast
-    );
+    this.props.newApptActions.messageProvidersClients(formated_date, employee.id, message, this.showToast);
   };
 
   messageAllClients = message => {
     this.hidePanel();
     const { date, mainEmployee: employee } = this.props.newApptState;
     const formated_date = moment(date).format('YYYY-MM-DD');
-    this.props.newApptActions.messageAllClients(
-      formated_date,
-      'test',
-      message,
-      this.showToast
-    );
+    this.props.newApptActions.messageAllClients(formated_date, 'test', message, this.showToast);
   };
 
   openMessageProvidersClients = () => {
@@ -570,9 +622,7 @@ class NewApptSlide extends React.Component<{}, {}> {
   renderOthersTab = () => {
     const { mainEmployee: employee } = this.props.newApptState;
 
-    const isFirstAvailable = employee
-      ? get(employee, 'isFirstAvailable', false)
-      : true;
+    const isFirstAvailable = employee ? get(employee, 'isFirstAvailable', false) : true;
 
     const messageAllClientsButton = (
       <InputButton
@@ -583,35 +633,24 @@ class NewApptSlide extends React.Component<{}, {}> {
         label="Message All Clients"
       >
         <View style={styles.iconContainer}>
-          <Icon
-            name="users"
-            size={18}
-            color={Colors.defaultBlue}
-            type="solid"
-          />
+          <Icon name="users" size={18} color={Colors.defaultBlue} type="solid"/>
         </View>
       </InputButton>
     );
 
     return (
       <View style={[styles.body, { height: this.state.otherHeight }]}>
-        {isFirstAvailable
-          ? <React.Fragment>
-            {messageAllClientsButton}
-          </React.Fragment>
-          : <React.Fragment>
+        {isFirstAvailable ? (
+          <React.Fragment>{messageAllClientsButton}</React.Fragment>
+        ) : (
+          <React.Fragment>
             <InputButton
               icon={false}
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
                 this.hidePanel();
-                const {
-                  date,
-                  startTime,
-                  bookedByEmployee,
-                  mainEmployee: employee,
-                } = this.props.newApptState;
+                const { date, startTime, bookedByEmployee, mainEmployee: employee } = this.props.newApptState;
                 this.props.navigation.navigate('BlockTime', {
                   date,
                   employee,
@@ -622,20 +661,9 @@ class NewApptSlide extends React.Component<{}, {}> {
               label="Block Time"
             >
               <View style={styles.iconContainer}>
-                <Icon
-                  name="clockO"
-                  size={16}
-                  color={Colors.defaultBlue}
-                  type="regular"
-                />
+                <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular"/>
                 <View style={styles.banIconContainer}>
-                  <Icon
-                    style={styles.subIcon}
-                    name="ban"
-                    size={9}
-                    color={Colors.defaultBlue}
-                    type="solid"
-                  />
+                  <Icon style={styles.subIcon} name="ban" size={9} color={Colors.defaultBlue} type="solid"/>
                 </View>
               </View>
             </InputButton>
@@ -645,10 +673,7 @@ class NewApptSlide extends React.Component<{}, {}> {
               style={styles.otherOptionsBtn}
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
-                const {
-                  date,
-                  mainEmployee: employee,
-                } = this.props.newApptState;
+                const { date, mainEmployee: employee } = this.props.newApptState;
                 this.hidePanel();
                 this.props.navigation.navigate('EditSchedule', {
                   date,
@@ -658,12 +683,7 @@ class NewApptSlide extends React.Component<{}, {}> {
               label="Edit Schedule"
             >
               <View style={styles.iconContainer}>
-                <Icon
-                  name="calendarEdit"
-                  size={16}
-                  color={Colors.defaultBlue}
-                  type="regular"
-                />
+                <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular"/>
               </View>
             </InputButton>
 
@@ -675,12 +695,7 @@ class NewApptSlide extends React.Component<{}, {}> {
               label="Room Assignment"
             >
               <View style={styles.iconContainer}>
-                <Icon
-                  name="streetView"
-                  size={16}
-                  color={Colors.defaultBlue}
-                  type="solid"
-                />
+                <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid"/>
               </View>
             </InputButton>
 
@@ -690,11 +705,7 @@ class NewApptSlide extends React.Component<{}, {}> {
               labelStyle={styles.otherOptionsLabels}
               onPress={() => {
                 this.hidePanel();
-                const {
-                  date,
-                  mainEmployee: employee,
-                  startTime,
-                } = this.props.newApptState;
+                const { date, mainEmployee: employee, startTime } = this.props.newApptState;
                 this.props.navigation.navigate('TurnAway', {
                   date,
                   employee,
@@ -705,12 +716,7 @@ class NewApptSlide extends React.Component<{}, {}> {
               label="Turn Away"
             >
               <View style={styles.iconContainer}>
-                <Icon
-                  name="ban"
-                  size={16}
-                  color={Colors.defaultBlue}
-                  type="solid"
-                />
+                <Icon name="ban" size={16} color={Colors.defaultBlue} type="solid"/>
               </View>
             </InputButton>
 
@@ -722,12 +728,7 @@ class NewApptSlide extends React.Component<{}, {}> {
               label="Message Provider's Clients"
             >
               <View style={styles.iconContainer}>
-                <Icon
-                  name="userAlt"
-                  size={16}
-                  color={Colors.defaultBlue}
-                  type="regular"
-                />
+                <Icon name="userAlt" size={16} color={Colors.defaultBlue} type="regular"/>
               </View>
             </InputButton>
             <InputButton
@@ -738,15 +739,11 @@ class NewApptSlide extends React.Component<{}, {}> {
               label="Message All Clients"
             >
               <View style={styles.iconContainer}>
-                <Icon
-                  name="group"
-                  size={16}
-                  color={Colors.defaultBlue}
-                  type="regular"
-                />
+                <Icon name="group" size={16} color={Colors.defaultBlue} type="regular"/>
               </View>
             </InputButton>
-          </React.Fragment>}
+          </React.Fragment>
+        )}
       </View>
     );
   };
@@ -769,12 +766,7 @@ class NewApptSlide extends React.Component<{}, {}> {
       mainEmployee: provider,
       isQuickApptRequested,
     } = this.props.newApptState;
-    const {
-      service = null,
-      addons = [],
-      recommended = [],
-      required = null,
-    } = this.getService(true);
+    const { service = null, addons = [], recommended = [], required = null } = this.getService(true);
 
     const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
     const selectedStyle = {
@@ -783,7 +775,8 @@ class NewApptSlide extends React.Component<{}, {}> {
       color: conflicts.length > 0 ? 'red' : 'black',
     };
     const serviceLengthStyle = {
-      opacity: service === null ? 0.5 : 1,
+      // TODO: opacity is not supported on <Text />
+      // opacity: service === null ? 0.5 : 1,
       fontStyle: service === null ? 'italic' : 'normal',
     };
     const conflictsCallback = () => {
@@ -802,14 +795,8 @@ class NewApptSlide extends React.Component<{}, {}> {
         onContentSizeChange={this.handleHeigth}
         contentContainerStyle={styles.body}
       >
-        <Text style={styles.dateText}>
-          {moment(date).format('ddd, MMM D')}
-        </Text>
-        <AppointmentTime
-          containerStyle={styles.flexStart}
-          startTime={startTime}
-          endTime={this.getEndTime()}
-        />
+        <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
+        <AppointmentTime containerStyle={styles.flexStart} startTime={startTime} endTime={this.getEndTime()}/>
         <View style={styles.mainInputGroup}>
           <ClientInput
             apptBook
@@ -826,7 +813,7 @@ class NewApptSlide extends React.Component<{}, {}> {
             iconStyle={styles.inputColor}
             onChangeWithNavigation={this.setClient}
           />
-          <InputDivider style={styles.middleSectionDivider} />
+          <InputDivider style={styles.middleSectionDivider}/>
           <ServiceInput
             apptBook
             label={false}
@@ -852,7 +839,7 @@ class NewApptSlide extends React.Component<{}, {}> {
             iconStyle={styles.inputColor}
             onChange={this.setService}
           />
-          <InputDivider style={styles.middleSectionDivider} />
+          <InputDivider style={styles.middleSectionDivider}/>
           <ProviderInput
             apptBook
             label={false}
@@ -884,7 +871,7 @@ class NewApptSlide extends React.Component<{}, {}> {
           onPressRequired={this.onPressRequired}
           onRemoveRequired={this.onPressRemoveRequired}
         />
-        {conflicts.length > 0 && <ConflictBox onPress={onPressConflicts} />}
+        {conflicts.length > 0 && <ConflictBox onPress={onPressConflicts}/>}
         <View style={styles.requestedContainer}>
           {/*  <Text style={styles.requestedText}>Provider is Requested?</Text>
           <Switch
@@ -894,25 +881,25 @@ class NewApptSlide extends React.Component<{}, {}> {
           */}
 
           <View style={{ flex: 1 }}>
-
-            {provider
-              ? <TrackRequestSwitch
+            {provider ? (
+              <TrackRequestSwitch
                 hideDivider={false}
                 style={{ marginLeft: 0, paddingRight: 0 }}
                 textStyle={styles.requestedText}
                 onChange={this.props.newApptActions.setQuickApptRequested}
                 isFirstAvailable={provider.isFirstAvailable}
               />
-              : null}
-
+            ) : null}
           </View>
         </View>
         <View style={styles.lengthContainer}>
           <Text style={styles.lengthText}>Length</Text>
           <Text style={[styles.serviceLengthText, serviceLengthStyle]}>
-            {service === null
-              ? 'select a service first'
-              : `${this.getTotalLength().asMinutes()} min`}
+            {
+              service === null ?
+              'select a service first' :
+              `${this.getTotalLength().asMinutes()} min`
+            }
           </Text>
         </View>
         <View style={styles.flexColumn}>
@@ -960,13 +947,14 @@ class NewApptSlide extends React.Component<{}, {}> {
     return (
       <Modal visible={this.props.visible} transparent animationType="slide">
         <View style={styles.container}>
-          {toast &&
+          {toast && (
             <SalonToast
               type={toast.type}
               hide={this.hideToast}
               description={toast.description}
               btnRightText={toast.btnRightText}
-            />}
+            />
+          )}
           <SalonInputModal
             visible={this.state.isInputModalVisible}
             title="Enter a message"
@@ -974,7 +962,7 @@ class NewApptSlide extends React.Component<{}, {}> {
             onPressOk={this.onPressOkInputModal}
           />
           <TouchableWithoutFeedback onPress={this.hidePanel}>
-            <View style={styles.backDrop} />
+            <View style={styles.backDrop}/>
           </TouchableWithoutFeedback>
           <View style={[styles.slideContainer, { maxHeight: height }]}>
             <View style={styles.header}>
@@ -996,6 +984,7 @@ class NewApptSlide extends React.Component<{}, {}> {
                   selectedIndex={this.props.activeTab}
                 />
               </View>
+              <View style={styles.headerStub}/>
             </View>
             {this.renderActiveTab()}
           </View>
@@ -1004,4 +993,5 @@ class NewApptSlide extends React.Component<{}, {}> {
     );
   }
 }
+
 export default NewApptSlide;
