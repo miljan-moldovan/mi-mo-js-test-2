@@ -83,9 +83,13 @@ const salonAlert = ({ title, description, visible, btnLeftText, btnRightText, on
           <Text style={styles.description}>{description}</Text>
         </View>
         <View style={styles.btnContainer}>
-            <TouchableOpacity onPress={onPressLeft} style={styles.btn}><Text style={styles.btnLeftText}>{btnLeftText}</Text></TouchableOpacity>
-            <View style={styles.btnDivider}/>
-            <TouchableOpacity style={styles.btn} onPress={onPressRight}><Text style={styles.btnRightText}>{btnRightText}</Text></TouchableOpacity>
+            {onPressLeft ?
+              <TouchableOpacity onPress={onPressLeft} style={styles.btn}><Text style={styles.btnLeftText}>{btnLeftText}</Text></TouchableOpacity>
+            : null}
+            {onPressLeft && onPressRight ? <View style={styles.btnDivider}/> : null }
+            {onPressRight ? 
+              <TouchableOpacity style={styles.btn} onPress={onPressRight}><Text style={styles.btnRightText}>{btnRightText}</Text></TouchableOpacity>
+              : null }
         </View>
       </View>
     </View>
