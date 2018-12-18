@@ -428,6 +428,7 @@ export default class NewAppointmentScreen extends React.Component {
       client.id,
       updateObject
     );
+
     return updated;
   };
 
@@ -494,8 +495,8 @@ export default class NewAppointmentScreen extends React.Component {
       clientPhone: isNull(clientPhone) ? '' : clientPhone,
       clientEmail: isNull(clientEmail) ? '' : clientEmail,
       clientPhoneType,
-      isValidEmail: this.emailValidation(clientEmail),
-      isValidPhone: this.phoneValidation(clientPhone),
+      isValidEmail: this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true),
+      isValidPhone: this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true),
     };
   };
 
@@ -795,27 +796,21 @@ export default class NewAppointmentScreen extends React.Component {
     }
   };
 
-  emailValidation = email => {
-    if (email === '' || isNull(email)) {
+
+  validationWithUpdate = (nameState, nameValidation, isNeedUpdate) => {
+    const target = this.state && this.state[nameState];
+
+    if (target === '' || isNull(target)) {
       return true;
     }
-    const isValid = this.isValidEmailRegExp.test(email);
-    if (isValid) {
+
+    const isValid = this[nameValidation].test(target);
+    if (isValid && isNeedUpdate) {
       this.shouldUpdateClientInfo();
     }
     return isValid;
   };
 
-  phoneValidation = phone => {
-    if (phone === '' || isNull(phone)) {
-      return true;
-    }
-    const isValid = this.isValidPhoneNumberRegExp.test(phone);
-    if (isValid) {
-      this.shouldUpdateClientInfo();
-    }
-    return isValid;
-  };
 
   onChangeEmail = clientEmail => this.setState({ clientEmail }, this.validate);
 
@@ -906,9 +901,11 @@ export default class NewAppointmentScreen extends React.Component {
   };
 
   validate = () => {
+    const isEmailValide = this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', false);
+    const isPhoneValid = this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', false);
     let canSave = this.props.isValidAppointment;
     if (this.props.newAppointmentState.editType === 'edit') {
-      if (this.props.newAppointmentState.initialState) {
+      if (this.props.newAppointmentState.initialState && isPhoneValid && isEmailValide) {
         canSave = canSave && this.lookForChanges();
       } else {
         canSave = false;
@@ -1094,7 +1091,7 @@ export default class NewAppointmentScreen extends React.Component {
                 label="Email"
                 value={clientEmail}
                 isValid={isValidEmail || !client}
-                validation={this.emailValidation}
+                validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
                 onValidated={this.onValidateEmail}
                 onChangeText={this.onChangeEmail}
               />
@@ -1106,7 +1103,7 @@ export default class NewAppointmentScreen extends React.Component {
                 mask="[000]-[000]-[0000]"
                 isValid={isValidPhone || !client}
                 value={clientPhone}
-                validation={this.phoneValidation}
+                validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
                 onValidated={this.onValidatePhone}
                 onChangeText={this.onChangePhone}
               />
