@@ -458,6 +458,49 @@ const getConflicts = (callback: Maybe<Function>): any => (dispatch, getState) =>
     });
 };
 
+const getConflictsForService = (serviceItem, callback) => (dispatch, getState) => {
+  const {
+    client,
+    date,
+    startTime,
+    bookedByEmployee: provider,
+  } = getState().newAppointmentReducer;
+
+  if (!client || !provider) {
+    return;
+  }
+
+  dispatch({ type: CHECK_CONFLICTS });
+
+  resetTimeForServices([serviceItem], -1, moment(startTime, 'HH:mm'));
+
+  const conflictData = {
+    date: date.format('YYYY-MM-DD'),
+    clientId: client.id,
+    bookedByEmployeeId: get(provider, 'id', null),
+    items: [serviceItem.service],
+  };
+
+  AppointmentBook.postCheckConflicts(conflictData)
+    .then(conflicts => {
+      dispatch({
+        type: CHECK_CONFLICTS_SUCCESS,
+        data: { conflicts },
+      });
+      if (isFunction(callback)) {
+        callback();
+      }
+    })
+    .catch(() => {
+      if (isFunction(callback)) {
+        callback();
+      }
+      return dispatch({
+        type: CHECK_CONFLICTS_FAILED,
+      });
+    });
+};
+
 const cleanForm = (): any => ({
   type: CLEAN_FORM,
 });
@@ -887,6 +930,7 @@ const newAppointmentActions = {
   populateStateFromRebookAppt,
   modifyAppt,
   setMainEmployee,
+  getConflictsForService,
 };
 
 export interface NewApptActions {
@@ -916,6 +960,7 @@ export interface NewApptActions {
   populateStateFromRebookAppt: typeof newAppointmentActions.populateStateFromRebookAppt;
   modifyAppt: typeof newAppointmentActions.modifyAppt;
   setMainEmployee: typeof newAppointmentActions.setMainEmployee;
+  getConflictsForService: typeof newAppointmentActions.getConflictsForService;
 }
 
 export default newAppointmentActions;

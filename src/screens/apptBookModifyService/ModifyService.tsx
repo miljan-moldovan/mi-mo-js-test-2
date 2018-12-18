@@ -24,12 +24,15 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import { ConflictBox } from "../../components/slidePanels/SalonNewAppointmentSlide";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 export default class ModifyApptServiceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
     const handleSave = params.handleSave || (() => null);
+    const handleCancel = params.handleCancel || (() => null);
     let title = 'New Service';
     if ('params' in navigation.state && navigation.state.params !== undefined) {
       if ('item' in navigation.state.params) {
@@ -45,7 +48,7 @@ export default class ModifyApptServiceScreen extends React.Component {
           headerLeft={
             <SalonTouchableOpacity
               style={{ paddingLeft: 10 }}
-              onPress={navigation.goBack}
+              onPress={handleCancel}
             >
               <Text style={styles.headerButton}>Cancel</Text>
             </SalonTouchableOpacity>
@@ -68,11 +71,14 @@ export default class ModifyApptServiceScreen extends React.Component {
     super(props);
 
     this.state = this.getStateFromParams();
-    this.props.navigation.setParams({ handleSave: this.handleSave });
+    this.props.navigation.setParams({
+      handleSave: this.handelSaveWithNavigate,
+      handleCancel: this.handelCancel,
+    });
   }
 
   componentDidMount() {
-    this.validate();
+    this.checkConflicts();
   }
 
   onPressRemove = () => {
@@ -123,9 +129,11 @@ export default class ModifyApptServiceScreen extends React.Component {
       afterTime: moment.duration(get(serviceItem.service, 'afterTime', 0)),
       room: get(serviceItem.service, 'room', null),
       resource: get(serviceItem.service, 'resource', null),
+      serviceId: serviceItem && serviceItem.itemId || null,
     };
 
     state.length = moment.duration(state.endTime.diff(state.startTime));
+    state.initialConflicts = this.props.newAppointmentState.conflicts;
 
     return state;
   };
@@ -133,7 +141,7 @@ export default class ModifyApptServiceScreen extends React.Component {
   validate = () => {
     const { selectedProvider, selectedService } = this.state;
     let valid = false;
-    if (selectedProvider !== null || selectedService !== null) {
+    if ((selectedProvider !== null || selectedService !== null) && !this.conflictsForThisService().length) {
       valid = true;
     }
     this.setState({ canSave: valid });
@@ -175,8 +183,22 @@ export default class ModifyApptServiceScreen extends React.Component {
         gapTime: moment.duration(get(selectedService, 'gapDuration', 0)),
         afterTime: moment.duration(get(selectedService, 'afterDuration', 0)),
       },
-      this.validate
+      this.checkConflicts
     );
+  };
+
+  conflictsForThisService = () => this.props.newAppointmentState.conflicts.filter(conf =>
+      conf.associativeKey ===  this.state.serviceId
+    );
+
+  getConflictsByProblem = () => {
+    let listConflicts = {};
+    const newListConflicts = this.conflictsForThisService().map(item => {
+      //if (item.promlem ===)
+      return item;
+    });
+
+    return newListConflicts;
   };
 
   handleSave = () => {
@@ -219,8 +241,17 @@ export default class ModifyApptServiceScreen extends React.Component {
         length,
       };
       params.onSaveService(serviceItem);
-      this.props.navigation.goBack();
     }
+  };
+
+  handelSaveWithNavigate = () => {
+    this.handleSave();
+    this.props.navigation.goBack();
+  };
+
+  handelCancel = () => {
+    this.props.setConflicts(this.state.initialConflicts);
+    this.props.navigation.goBack();
   };
 
   handleSelectProvider = selectedProvider => {
@@ -228,12 +259,12 @@ export default class ModifyApptServiceScreen extends React.Component {
       {
         selectedProvider,
       },
-      this.validate
+      this.checkConflicts
     );
   };
 
   handleRequested = requested => {
-    this.setState({ requested: !requested }, this.validate);
+    this.setState({ requested: !requested }, this.checkConflicts);
   };
 
   handleChangeEndTime = endTimeDateObj => {
@@ -253,7 +284,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         endTime,
         length: moment.duration(endTime.diff(startTime)),
       },
-      this.validate
+      this.checkConflicts
     );
   };
 
@@ -270,7 +301,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         endTime,
         length: moment.duration(endTime.diff(startTime)),
       },
-      this.validate
+      this.checkConflicts
     );
   };
 
@@ -312,6 +343,55 @@ export default class ModifyApptServiceScreen extends React.Component {
 
   hideToast = () => this.setState({ toast: null });
 
+  onPressConflicts = () => {
+    const { date, startTime } = this.props.newAppointmentState;
+    const conflicts = this.conflictsForThisService();
+    const totalDuration = this.props.appointmentLength;
+    const endTime = moment(startTime).add(moment.duration(totalDuration));
+    this.props.navigation.navigate('Conflicts', {
+      date,
+      conflicts,
+      startTime,
+      endTime,
+    });
+  };
+
+  checkConflicts = () => {
+    const isFirstAvailable = get(this.state.selectedProvider, 'id', 0) === 0;
+    const serviceState = {};
+    serviceState.service = {
+      isFirstAvailable,
+      appointmentId: this.state.id,
+      clientId: this.state.selectedClient.id,
+      serviceId: this.state.selectedService.id,
+      employeeId: isFirstAvailable
+         ? null
+         : get(this.state.selectedProvider, 'id', null),
+      fromTime: this.state.startTime.format('HH:mm:ss'),
+      toTime: this.state.endTime.format('HH:mm:ss'),
+      bookBetween: this.state.bookBetween,
+      roomId: get(get(this.state, 'room', null), 'id', null),
+      roomOrdinal: get(this.state, 'roomOrdinal', null),
+      resourceId: get(get(this.state, 'resource', null), 'id', null),
+      resourceOrdinal: get(this.state, 'resourceOrdinal', null),
+      associativeKey: this.state.serviceId,
+    };
+    this.props.newAppointmentActions.getConflictsForService(serviceState, () => this.validate());
+  };
+
+  renderConflictsBox() {
+    if (!this.conflictsForThisService().length) {
+      return <SectionDivider />;
+    }
+
+    return (
+      <ConflictBox
+        style={styles.conflictsBox}
+        onPress={() => this.onPressConflicts()}
+      />
+    );
+  }
+
   render() {
     const {
       canRemove,
@@ -330,8 +410,10 @@ export default class ModifyApptServiceScreen extends React.Component {
       toast,
       date,
     } = this.state;
+
     return (
       <ScrollView style={styles.container}>
+        {this.props.newAppointmentState.isLoading ? <LoadingOverlay/> : null}
         <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
             apptBook
@@ -450,7 +532,7 @@ export default class ModifyApptServiceScreen extends React.Component {
             value={resource ? resource.name : 'None'}
           />
         </InputGroup>
-        <SectionDivider />
+        {this.renderConflictsBox()}
         {canRemove &&
           <RemoveButton disabled={this.props.navigation.state.params.isOnlyMainService} title="Remove Service" onPress={this.onPressRemove} />}
         <SectionDivider />
