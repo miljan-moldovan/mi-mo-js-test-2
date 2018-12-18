@@ -72,7 +72,7 @@ const newAppointmentInfoSelector = createSelector(
     editType,
     deletedIds,
     remarks,
-    rebooked
+    rebooked,
   ) => ({
     date,
     startTime,
@@ -88,7 +88,7 @@ const newAppointmentInfoSelector = createSelector(
     deletedIds,
     remarks,
     rebooked,
-  })
+  }),
 );
 
 const getGuestServices = (guestId, serviceItems) =>
@@ -111,20 +111,22 @@ const validateGuests = (guests, serviceItems) => {
 };
 
 const validateAppointment = ({
-  isLoading,
-  isBooking,
-  date,
-  bookedByEmployee,
-  mainEmployee,
-  client,
-  serviceItems,
-  guests,
-}) =>
+                               isLoading,
+                               isBooking,
+                               date,
+                               bookedByEmployee,
+                               mainEmployee,
+                               client,
+                               serviceItems,
+                               conflicts,
+                               guests,
+                             }) =>
   date &&
   bookedByEmployee !== null &&
   mainEmployee !== null &&
   client !== null &&
   serviceItems.length > 0 &&
+  !conflicts.length &&
   !isLoading &&
   !isBooking &&
   validateGuests(guests, serviceItems);
@@ -141,9 +143,11 @@ const isValidAppointment = createSelector(
       serviceItems,
       conflicts,
       guests,
-    }
-  ) =>
-    validateAppointment({
+    },
+  ) => {
+    const filteredConflicts = conflicts.filter((conflict) => !conflict.canBeSkipped);
+
+    return validateAppointment({
       isLoading,
       isBooking,
       date,
@@ -151,9 +155,10 @@ const isValidAppointment = createSelector(
       mainEmployee,
       client,
       serviceItems,
-      conflicts,
+      conflicts: filteredConflicts,
       guests,
-    })
+    });
+  },
 );
 
 const appointmentLength = createSelector(
@@ -167,7 +172,7 @@ const appointmentLength = createSelector(
       return agg;
     }, 0);
     return moment.duration(duration, 'minutes');
-  }
+  },
 );
 
 const totalPrice = createSelector(
@@ -183,8 +188,8 @@ const totalPrice = createSelector(
         return currentPrice;
       }, 0);
       return price;
-    }
-  )
+    },
+  ),
 );
 
 const getEndTime = createSelector(
@@ -196,7 +201,7 @@ const getEndTime = createSelector(
       ? length
       : moment.duration(step, 'minute');
     return moment(startTime).add(addTime);
-  }
+  },
 );
 
 const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
@@ -267,14 +272,14 @@ const serializeApptToRequestData = createSelector(
       // confirmationType: appt.client.confirmationType
     },
     items: appt.serviceItems.map(srv =>
-      serializeApptItem(appt, srv, appt.isQuickBooking)
+      serializeApptItem(appt, srv, appt.isQuickBooking),
     ),
-  })
+  }),
 );
 
 const employeeScheduledIntervalsSelector = createSelector(
   mainEmployeeSelector,
-  employee => get(employee, 'scheduledIntervals', [])
+  employee => get(employee, 'scheduledIntervals', []),
 );
 
 const employeeScheduleChunkedSelector = createSelector(
@@ -292,7 +297,7 @@ const employeeScheduleChunkedSelector = createSelector(
       return [...agg, ...chunked];
     }, []);
     return reduced;
-  }
+  },
 );
 
 const getBookedByEmployee = state => state.userInfoReducer.currentEmployee;
