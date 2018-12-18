@@ -92,7 +92,7 @@ export default {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    miHeight: 200,
+    minHeight: 200,
     borderBottomColor: '#CACBCF',
     borderBottomWidth: 1 / 2,
   },
