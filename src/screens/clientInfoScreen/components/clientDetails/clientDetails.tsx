@@ -6,8 +6,9 @@ import {
   Alert,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import deepEqual from 'deep-equal';
 import moment from 'moment';
-import { find, reject } from 'lodash';
+import { find, reject, get, cloneDeep } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
@@ -149,59 +150,6 @@ interface State {
 }
 
 class ClientDetails extends React.Component<Props, State> {
-  static navigationOptions = ({ navigation }) => {
-    const { params } = navigation.state;
-    let title = 'Client Info';
-    if (params && params.client) {
-      title = `${params.client.name} ${params.client.lastName}`;
-    }
-
-    const canSave = params.canSave || false;
-    const showDoneButton = params.showDoneButton;
-    const handleDone = navigation.state.params.handleDone ?
-      navigation.state.params.handleDone :
-      () => { Alert.alert('Not Implemented'); };
-
-    const handleBack = params.handleBack ?
-      () => { params.handleBack(); navigation.goBack(); } :
-      navigation.goBack;
-
-
-    const styles = createStyleSheet()
-
-    return ({
-      header: (
-        <SalonHeader
-          title={title}
-          headerLeft={(
-            <SalonTouchableOpacity onPress={handleBack}>
-              <View style={styles.backContainer}>
-                <FontAwesome style={styles.backIcon}>
-                  {Icons.angleLeft}
-                </FontAwesome>
-                <Text style={styles.leftButtonText}>
-                  Back
-                </Text>
-              </View>
-            </SalonTouchableOpacity>
-          )}
-          headerRight={(
-            showDoneButton ? (
-              <SalonTouchableOpacity
-                disabled={!canSave}
-                onPress={handleDone}
-              >
-                <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-                  Done
-                </Text>
-              </SalonTouchableOpacity>
-            ) : null
-          )}
-        />
-      ),
-    });
-  }
-
   constructor(props: Props) {
     super(props);
 
@@ -281,6 +229,35 @@ class ClientDetails extends React.Component<Props, State> {
     });
   }
 
+  lookForChanges = (newClient) => {
+    const { initialClient } = this.state;
+    const nameHasChanged = newClient.name !== initialClient.name;
+    const lastNameHasChanged = newClient.lastName !== initialClient.lastName;
+    const middleNameHasChanged = newClient.middleName !== initialClient.middleName;
+    const loyaltyHasChanged = newClient.loyalty !== initialClient.loyalty;
+    const street1HasChanged = newClient.street1 !== initialClient.street1;
+    const cityHasChanged = newClient.city !== initialClient.city;
+    const zipCodeHasChanged = newClient.zipCode !== initialClient.zipCode;
+    const clientIdHasChanged = newClient.clientId !== initialClient.clientId;
+    const genderHasChanged = get(newClient, 'gender.key', -1) !== get(initialClient, 'gender.key', -1);
+    const ageHasChanged = get(newClient, 'age.key', -1) !== get(initialClient, 'age.key', -1);
+    const stateHasChanged = get(newClient, 'state.key', -1) !== get(initialClient, 'state.key', -1);
+    const birthdayHasChanged = newClient.birthday !== initialClient.birthday;
+    const anniversaryHasChanged = newClient.anniversary !== initialClient.anniversary;
+    const confirmByHasChanged = get(newClient, 'confirmBy.key', -1) !== get(initialClient, 'confirmBy.key', -1);
+    const clientReferralTypeHasChanged = get(newClient, 'clientReferralType.key', -1) !== get(initialClient, 'clientReferralType.key', -1);
+    const confirmationNoteHasChanged = newClient.confirmationNote !== initialClient.confirmationNote;
+    const emailHasChanged = newClient.email !== initialClient.email;
+    const phoneHasChanged = !deepEqual(newClient.phones, initialClient.phones, { strict: true });
+    
+    return nameHasChanged || lastNameHasChanged || middleNameHasChanged ||
+      loyaltyHasChanged || street1HasChanged || cityHasChanged ||
+      zipCodeHasChanged || clientIdHasChanged || genderHasChanged ||
+      ageHasChanged || birthdayHasChanged || anniversaryHasChanged ||
+      confirmByHasChanged || clientReferralTypeHasChanged || confirmationNoteHasChanged ||
+      emailHasChanged || phoneHasChanged;
+  }
+
   onChangeClientField = (field: string, value: any, type? : any) => {
     const newClient = this.state.client;
 
@@ -294,11 +271,9 @@ class ClientDetails extends React.Component<Props, State> {
         break;
       case 'middleName':
         newClient.middleName = value;
-        this.props.setCanSave(true);
         break;
       case 'loyalty':
         newClient.loyalty = value;
-        this.props.setCanSave(true);
         break;
       case 'street1':
         newClient.street1 = value;
@@ -352,8 +327,9 @@ class ClientDetails extends React.Component<Props, State> {
       default:
       /* nothing */
     }
-
-    this.setState({ client: newClient, hasChanged: true }, this.checkValidation);
+    const hasChanged = this.lookForChanges(newClient);
+    this.props.navigation.setParams({ hasChanged })
+    this.setState({ client: newClient, hasChanged }, this.checkValidation);
   }
 
   onChangeClientReferralTypes = (option) => {
@@ -681,6 +657,7 @@ class ClientDetails extends React.Component<Props, State> {
         if (result) {
           this.setState({
             client: JSON.parse(JSON.stringify(defaultClient)),
+            intialClient: JSON.parse(JSON.stringify(clientResult)),
             loadingClient: false,
           });
 
@@ -696,9 +673,9 @@ class ClientDetails extends React.Component<Props, State> {
         if (result) {
           this.setState({
             client: JSON.parse(JSON.stringify(clientResult)),
+            intialClient: JSON.parse(JSON.stringify(clientResult)),
             loadingClient: false,
           });
-
           if (this.props.onDismiss) {
             this.props.onDismiss(clientResult);
           } else {
@@ -780,6 +757,7 @@ class ClientDetails extends React.Component<Props, State> {
 
       this.setState({
         client,
+        initialClient: cloneDeep(client),
         loadingClient: false,
         pointerEvents: this.props.editionMode ? 'auto' : 'none',
       });
