@@ -36,6 +36,8 @@ exports[`UrlInput renders correctly 1`] = `
     autoCapitalize="none"
     autoCorrect={false}
     blurOnSubmit={true}
+    disabled={true}
+    onChangeText={[MockFunction]}
     placeholder="URL"
     placeholderTextColor="rgb(76.15, 135.15, 216.75)"
     style={
@@ -50,10 +52,43 @@ exports[`UrlInput renders correctly 1`] = `
           "paddingTop": 0,
         },
         Object {
-          "fontFamily": "Roboto-Italic",
+          "fontFamily": "Roboto-Regular",
         },
       ]
     }
+    value="http://test.com"
   />
+  <Icon
+    style={
+      Array [
+        Object {
+          "position": "absolute",
+          "right": 10,
+          "top": 18,
+        },
+        Object {
+          "color": "rgb(0, 207, 71.4)",
+        },
+      ]
+    }
+  >
+    
+  </Icon>
+  <Icon
+    style={
+      Array [
+        Object {
+          "position": "absolute",
+          "right": 10,
+          "top": 18,
+        },
+        Object {
+          "color": "red",
+        },
+      ]
+    }
+  >
+    
+  </Icon>
 </View>
 `;

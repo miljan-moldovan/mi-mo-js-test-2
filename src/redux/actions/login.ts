@@ -5,6 +5,20 @@ import { Login } from '../../utilities/apiWrapper';
 import { JWTKEY } from '../../utilities/apiWrapper/api';
 import { Maybe } from '@/models';
 
+export type DataError = {
+  message: string,
+  errors: any[],
+  loginError: boolean,
+  urlError: boolean,
+};
+
+export type ErrorObj =
+  {
+    response: {
+      data: DataError;
+    },
+  };
+
 export const AT = {
   LOGIN_SUCCESS: 'login/LOGIN_SUCCESS',
   LOGIN_FAILURE: 'login/LOGIN_FAILURE',
@@ -33,9 +47,9 @@ export const login = (url, username, password, callback) => async dispatch => {
     // const url = endpoints.LOGIN;
     // let { data } = await axios.post(url, { email, password });
     let urlError = false;
-    const errObj = {
+    const errObj: ErrorObj = {
       response: {
-        data: {},
+        data: {} as  DataError,
       },
     };
 

@@ -17,7 +17,14 @@ exports[`UserNameInput renders correctly 1`] = `
         "paddingLeft": 20,
         "paddingRight": 20,
       },
-      null,
+      Object {
+        "borderBottomWidth": 1,
+        "borderColor": "red",
+        "borderLeftWidth": 1,
+        "borderRightWidth": 1,
+        "borderStyle": "solid",
+        "borderTopWidth": 1,
+      },
     ]
   }
 >
@@ -39,6 +46,8 @@ exports[`UserNameInput renders correctly 1`] = `
     autoCapitalize="none"
     autoCorrect={false}
     blurOnSubmit={true}
+    disabled={true}
+    onChangeText={[MockFunction]}
     placeholder="Username"
     placeholderTextColor="rgb(76.15, 135.15, 216.75)"
     style={
@@ -53,11 +62,12 @@ exports[`UserNameInput renders correctly 1`] = `
           "paddingTop": 0,
         },
         Object {
-          "fontFamily": "Roboto-Italic",
+          "fontFamily": "Roboto-Regular",
         },
       ]
     }
     underline={false}
+    value="test"
   />
 </View>
 `;

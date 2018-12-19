@@ -1,9 +1,8 @@
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
-import renderer from 'react-test-renderer';
 
-import LoginScreen from '../../../src/screens/loginScreen';
+import LoginScreen from '../';
 
 const mockStore = configureStore();
 
@@ -19,15 +18,16 @@ const initialState = {
     storeKey: 0,
     baseHost: '',
     currentEmployee: null,
-  }
+  },
 };
+const navigation = { navigate: jest.fn() };
 
 describe('LoginScreen', () => {
-  it ('renders correctly', () => {
+  it('renders correctly', () => {
     const wrapper = shallow(
-        <LoginScreen />,
-        { context: { store: mockStore(initialState) } },
-      );
-      expect(wrapper.dive()).toMatchSnapshot();
+      <LoginScreen navigation={navigation}/>,
+      { context: { store: mockStore(initialState) } },
+    );
+    expect(wrapper.dive()).toMatchSnapshot();
   });
-})
+});
