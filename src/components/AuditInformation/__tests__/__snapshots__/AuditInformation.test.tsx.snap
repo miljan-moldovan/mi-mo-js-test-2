@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AuditInformation /> renders correctly 1`] = `
+<AuditInformation
+  audit={Array []}
+  isLoading={false}
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "stretch",
+          "backgroundColor": "#F1F1F1",
+          "flex": 1,
+          "flexDirection": "column",
+          "justifyContent": "center",
+          "padding": 15,
+          "width": "92%",
+        },
+        Object {
+          "maxHeight": 230,
+          "minHeight": 55,
+        },
+      ]
+    }
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "alignItems": "stretch",
+            "backgroundColor": "#F1F1F1",
+            "flex": 1,
+            "flexDirection": "column",
+            "justifyContent": "center",
+            "padding": 15,
+            "width": "92%",
+          },
+          Object {
+            "maxHeight": 230,
+            "minHeight": 55,
+          },
+        ]
+      }
+    />
+  </View>
+</AuditInformation>
+`;
