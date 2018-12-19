@@ -9,21 +9,21 @@ import AuditInfoItem from '../AuditItem';
 export default class AuditInformation extends React.Component<any, any> {
   constructor(props) {
     super(props);
-    const prepareData = this.prepareAudit(props.audit);
+    const { audits, isBlockTime } = this.prepareAudit(props.audit);
     this.state = {
       isOpen: false,
-      audit: prepareData.audits,
-      isBlockTime: prepareData.isBlockTime,
+      audit: audits,
+      isBlockTime,
     };
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.audit) {
-      const prepareData = this.prepareAudit(nextProps.audit);
+      const { audits, isBlockTime } = this.prepareAudit(nextProps.audit);
 
       this.setState({
-        audit: prepareData.audits,
-        isBlockTime: prepareData.isBlockTime,
+        audit: audits,
+        isBlockTime,
       });
     }
   }
@@ -67,8 +67,7 @@ export default class AuditInformation extends React.Component<any, any> {
   };
 
   render() {
-    const { isBlockTime, isOpen } = this.state;
-    const { audit } = this.state;
+    const { isBlockTime, isOpen, audit } = this.state;
 
     return this.props.isLoading ?
       (
