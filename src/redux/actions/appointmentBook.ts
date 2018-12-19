@@ -8,7 +8,7 @@ import {
   Employees,
 } from '../../utilities/apiWrapper';
 import StoreActions from './store';
-import { PureProvider, Maybe, StoreCompany, ProviderPosition } from '@/models';
+import { PureProvider, Maybe, StoreCompany, ProviderPosition, StoreScheduleException } from '@/models';
 import { dateTimeConstants } from '@/constants';
 import { setSettings } from './settings';
 
@@ -87,7 +87,7 @@ const setGridAllViewSuccess = (
   appointments,
   availability,
   blockTimes,
-  rooms
+  rooms,
 ) => {
   const step = 15;
   const apptGridSettings = {
@@ -110,7 +110,7 @@ const setGridAllViewSuccess = (
 const setGridWeekViewSuccess = (
   appointments,
   providerSchedule,
-  blockTimes
+  blockTimes,
 ) => ({
   type: SET_GRID_WEEK_VIEW_SUCCESS,
   data: {
@@ -124,7 +124,7 @@ const setGridRoomViewSuccess = (
   rooms,
   roomAppointments,
   appointments,
-  availability
+  availability,
 ) => ({
   type: SET_GRID_ROOM_VIEW_SUCCESS,
   data: {
@@ -139,7 +139,7 @@ const setGridResourceViewSuccess = (
   resources,
   resourceAppointments,
   appointments,
-  availability
+  availability,
 ) => ({
   type: SET_GRID_RESOURCE_VIEW_SUCCESS,
   data: {
@@ -151,15 +151,15 @@ const setGridResourceViewSuccess = (
 });
 
 const reloadGridCallback = ({
-  employees, selectedFilter, selectedProviders,
-  appointments, storeInfo, scheduleExceptions, availabilityItem,
-  blockTimes, storeRooms, dispatch
-}) => {
+                              employees, selectedFilter, selectedProviders,
+                              appointments, storeInfo, scheduleExceptions, availabilityItem,
+                              blockTimes, storeRooms, dispatch,
+                            }) => {
   let filteredEmployees = employees;
 
   if (selectedFilter === 'deskStaff') {
     filteredEmployees = filteredEmployees.filter(
-      employee => employee.isReceptionist
+      employee => employee.isReceptionist,
     );
   } else if (selectedFilter === 'rebookAppointment') {
     filteredEmployees = selectedProviders;
@@ -167,14 +167,14 @@ const reloadGridCallback = ({
 
   const employeesAppointment = orderBy(
     filteredEmployees,
-    'appointmentOrder'
+    'appointmentOrder',
   );
   const orderedAppointments = orderBy(appointments, appt =>
-    moment(appt.fromTime, dateTimeConstants.timeOld).unix()
+    moment(appt.fromTime, dateTimeConstants.timeOld).unix(),
   );
   dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
   dispatch(
-    StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
+    StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions),
   );
   return dispatch(
     setGridAllViewSuccess(
@@ -182,8 +182,8 @@ const reloadGridCallback = ({
       orderedAppointments,
       availabilityItem.timeSlots,
       blockTimes,
-      storeRooms
-    )
+      storeRooms,
+    ),
   );
 };
 
@@ -222,25 +222,25 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
                 scheduleExceptions,
                 storeInfo,
                 storeRooms,
-              ]
+              ],
             ) => {
               dispatch(setSettings(settings));
               const useFirstAvailable = settings.find((itm) => itm.settingName === 'UseFirstAvailable');
               if (useFirstAvailable && useFirstAvailable.settingValue) {
-                return AppointmentBook.getAppointmentBookAvailability(date).then(availabilityItem => reloadGridCallback({
-                  employees, selectedFilter, selectedProviders,
-                  appointments, storeInfo, scheduleExceptions, availabilityItem,
-                  blockTimes, storeRooms, dispatch
-                }));
-              } else {
-                const availabilityItem = { timeSlots: null };
-                return reloadGridCallback({
-                  employees, selectedFilter, selectedProviders,
-                  appointments, storeInfo, scheduleExceptions, availabilityItem,
-                  blockTimes, storeRooms, dispatch
-                });
+                return AppointmentBook.getAppointmentBookAvailability(date)
+                  .then(availabilityItem => reloadGridCallback({
+                    employees, selectedFilter, selectedProviders,
+                    appointments, storeInfo, scheduleExceptions, availabilityItem,
+                    blockTimes, storeRooms, dispatch,
+                  }));
               }
-            }
+              const availabilityItem = { timeSlots: null };
+              return reloadGridCallback({
+                employees, selectedFilter, selectedProviders,
+                appointments, storeInfo, scheduleExceptions, availabilityItem,
+                blockTimes, storeRooms, dispatch,
+              });
+            },
           )
           .catch(ex => {
             // TODO
@@ -274,27 +274,27 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               blockTimes,
               scheduleExceptions,
               storeInfo,
-            ]
+            ],
           ) => {
             const groupedProviderSchedule = groupBy(
               providerSchedule,
-              schedule => moment(schedule.date).format('YYYY-MM-DD')
+              schedule => moment(schedule.date).format('YYYY-MM-DD'),
             );
             const orderedAppointments = orderBy(appointments, appt =>
-              moment(appt.fromTime, 'HH:mm').unix()
+              moment(appt.fromTime, 'HH:mm').unix(),
             );
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
             dispatch(
-              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
+              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions as StoreScheduleException[]),
             );
             dispatch(
               setGridWeekViewSuccess(
                 orderedAppointments,
                 groupedProviderSchedule,
-                blockTimes
-              )
+                blockTimes,
+              ),
             );
-          }
+          },
         )
         .catch(() => {
           // TODO
@@ -318,24 +318,24 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               appointments,
               availability,
               storeInfo,
-            ]
+            ],
           ) => {
             orderBy(appointments, appt =>
-              moment(appt.fromTime, 'HH:mm').unix()
+              moment(appt.fromTime, 'HH:mm').unix(),
             );
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
             dispatch(
-              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
+              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions as StoreScheduleException[]),
             );
             dispatch(
               setGridRoomViewSuccess(
                 rooms,
                 roomAppointments,
                 appointments,
-                availability.timeSlots
-              )
+                availability.timeSlots,
+              ),
             );
-          }
+          },
         )
         .catch(() => {
           // TODO
@@ -359,24 +359,24 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               appointments,
               availability,
               storeInfo,
-            ]
+            ],
           ) => {
             orderBy(appointments, appt =>
-              moment(appt.fromTime, 'HH:mm').unix()
+              moment(appt.fromTime, 'HH:mm').unix(),
             );
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
             dispatch(
-              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions)
+              StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions as StoreScheduleException[]),
             );
             dispatch(
               setGridResourceViewSuccess(
                 resources,
                 resourceAppointments,
                 appointments,
-                availability.timeSlots
-              )
+                availability.timeSlots,
+              ),
             );
-          }
+          },
         )
         .catch(() => {
           // TODO
