@@ -9,7 +9,7 @@
     "test:watch": "jest --watch",
     "bundle:ios": "react-native bundle --entry-file ./index.js --platform ios --bundle-output ios/SalonUltimateRN/main.jsbundle"
   },
-  "pre-push":[
+  "pre-push": [
     "test:push"
   ],
   "dependencies": {
@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
+    "axios-mock-adapter": "^1.15.0",
     "babel-jest": "22.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-preset-react-native": "4.0.0",
