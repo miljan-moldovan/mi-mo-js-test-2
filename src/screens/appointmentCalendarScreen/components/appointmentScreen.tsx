@@ -28,6 +28,7 @@ import styles, { headerStyles } from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
+import getCalendarMarksForWeekends from '@/utilities/helpers/getCalendarMarksForWeekends';
 
 class AppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -921,7 +922,6 @@ class AppointmentScreen extends React.Component {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
-
     return (
       <View style={styles.mainContainer}>
         <BarsActionSheet
@@ -1022,6 +1022,7 @@ class AppointmentScreen extends React.Component {
           selectedDate={moment(startDate)}
           onHide={() => this.setState({ visible: false })}
           markedDates={{
+            ...getCalendarMarksForWeekends(startDate),
             [moment().format('YYYY-MM-DD')]: {
               customStyles: {
                 container: styles.dateTimeContainer,
