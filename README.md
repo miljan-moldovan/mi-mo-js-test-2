@@ -4,7 +4,7 @@
 
 ## Installation
 
-####Using npm:
+#### Using npm:
 
 `$ npm install`
 
@@ -12,7 +12,7 @@
 
 `$ pod install`
 
-####Run:
+#### Run:
 
 `$ react-native run-ios`
 
