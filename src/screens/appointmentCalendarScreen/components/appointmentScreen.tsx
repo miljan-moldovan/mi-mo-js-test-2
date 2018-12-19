@@ -1022,7 +1022,6 @@ class AppointmentScreen extends React.Component {
           selectedDate={moment(startDate)}
           onHide={() => this.setState({ visible: false })}
           markedDates={{
-            ...getCalendarMarksForWeekends(startDate),
             [moment().format('YYYY-MM-DD')]: {
               customStyles: {
                 container: styles.dateTimeContainer,
