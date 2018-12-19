@@ -17,7 +17,7 @@ const DateTime = {
   serverDateTime: 'YYYY-MM-DDTHH:mm:ss',
 };
 
-export const getAuditType = auditType => {
+export const getAuditType = (auditType?: number):string => {
   switch (auditType) {
     case AuditType.Normal:
       return 'BOOKED';
@@ -32,20 +32,21 @@ export const getAuditType = auditType => {
   }
 };
 
-export const formatDate = date => moment(date, DateTime.date).format('MM/DD/YYYY');
+export const formatDate = (date: string):string =>
+  moment(date, DateTime.date).format('MM/DD/YYYY');
 
-export const formatTime = time => moment(time, DateTime.time).format(DateTime.displayTime);
+export const formatTime = (time: string):string =>
+  moment(time, DateTime.time).format(DateTime.displayTime);
 
-export const formatTimeWithMinutes = time => moment(time, DateTime.serverDateTime).format(DateTime.displayTime);
+export const formatTimeWithMinutes = (time: string):string =>
+  moment(time, DateTime.serverDateTime).format(DateTime.displayTime);
 
-export const formatEmployeeName = employee => {
+export const formatEmployeeName = (employee?: string):string => {
   if (!employee) {
     return '';
   }
   const splitName = employee.split(' ');
   switch (splitName.length) {
-    case 0:
-      return '';
     case 1:
       return splitName[0];
     case 2:
