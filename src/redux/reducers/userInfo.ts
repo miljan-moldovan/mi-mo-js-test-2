@@ -10,6 +10,7 @@ import { Maybe, PureProvider } from '@/models';
 
 const initialState: UserInfoReducer = {
   isLoading: false,
+  doneFetching: false,
   userId: null,
   guardUserId: 0,
   centralEmployeeId: 0,
@@ -21,6 +22,7 @@ const initialState: UserInfoReducer = {
 
 export interface UserInfoReducer {
   isLoading: boolean;
+  doneFetching: boolean;
   userId: Maybe<number>;
   guardUserId: Maybe<number>;
   centralEmployeeId: Maybe<number>;
@@ -41,20 +43,10 @@ const userInfoReducer = (state: UserInfoReducer = initialState, action): UserInf
     case GET_SESSION_DATA_SUCCESS:
       return {
         ...state,
+        doneFetching: true,
         isLoading: false,
         userId: data.info.userId,
         employeeId: data.info.employeeId,
-        currentEmployee: data.employee,
-      };
-    case GET_EMPLOYEE_DATA:
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case GET_EMPLOYEE_DATA_SUCCESS:
-      return {
-        ...state,
-        isLoading: false,
         currentEmployee: data.employee,
       };
     default:

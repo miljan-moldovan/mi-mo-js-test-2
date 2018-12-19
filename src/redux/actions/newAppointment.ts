@@ -14,11 +14,11 @@ import {
 import uuid from 'uuid/v4';
 
 import {
-  Settings,
   Client,
   AppointmentBook,
   Appointment,
-} from '../../utilities/apiWrapper';
+} from '@/utilities/apiWrapper';
+import { isBookedByEditEnabled } from '@/utilities/helpers';
 import { ADD_APPOINTMENT } from './appointmentBook';
 import {
   appointmentLength,
@@ -53,6 +53,7 @@ export const UPDATE_SERVICE_ITEM = 'newAppointment/UPDATE_SERVICE_ITEM';
 export const REMOVE_SERVICE_ITEM = 'newAppointment/REMOVE_SERVICE_ITEM';
 export const ADD_SERVICE_ITEM_EXTRAS = 'newAppointment/ADD_SERVICE_ITEM_EXTRAS';
 
+export const IS_BOOKED_BY_FIELD_ENABLED = 'newAppointment/IS_BOOKED_BY_FIELD_ENABLED';
 export const CLEAN_FORM = 'newAppointment/CLEAN_FORM';
 export const IS_BOOKING_QUICK_APPT = 'newAppointment/IS_BOOKING_QUICK_APPT';
 export const CHECK_CONFLICTS = 'newAppointment/CHECK_CONFLICTS';
@@ -131,10 +132,12 @@ const resetTimeForServices = (items: any, index: Maybe<number>,
   });
 };
 
-const isBookingQuickAppt = (isBookingQuickAppt: boolean): any => ({
-  type: IS_BOOKING_QUICK_APPT,
-  data: { isBookingQuickAppt },
-});
+const isBookingQuickAppt = (isBookingQuickAppt: boolean): any => async (dispatch, getState: () => AppStore) => {
+  dispatch({
+    type: IS_BOOKING_QUICK_APPT,
+    data: { isBookingQuickAppt },
+  });
+};
 
 export interface ServiceWithAddons {
   service: Maybe<Service>;
@@ -467,13 +470,8 @@ const cleanForm = () => (dispatch, getState: () => AppStore) => dispatch({
 });
 
 const setBookedBy = (
-  bookedByEmployee: Maybe<PureProvider> = null): any => async (dispatch, getState: () => AppStore) => {
-    const loggedInEmployee = getState().userInfoReducer.currentEmployee;
-    const forceReceptionistUser = await Settings.getSettingsByName(
-      'ForceReceptionistUser',
-    );
-    const isBookedByFieldEnabled =
-      !forceReceptionistUser.settingValue || isNull(loggedInEmployee);
+  bookedByEmployee: Maybe<PureProvider>): any => async (dispatch, getState: () => AppStore) => {
+    const isBookedByFieldEnabled = await isBookedByEditEnabled(getState());
     dispatch({
       type: SET_BOOKED_BY,
       data: {
@@ -635,7 +633,7 @@ const populateStateFromRebookAppt = (
   });
 };
 
-const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): any => (dispatch, getState) => {
+const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): any => async (dispatch, getState) => {
   dispatch({
     type: SET_SELECTED_APPT,
     data: { appt },
@@ -696,7 +694,9 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
   }, []);
 
   serviceItems.sort((a, b) => a.service.fromTime.isAfter(b.service.fromTime));
+  const isBookedByFieldEnabled = await isBookedByEditEnabled(getState());
   const newState = {
+    isBookedByFieldEnabled,
     selectedAppt: appt,
     date: moment(get(appt, 'date', moment())),
     startTime: serviceItems.length
@@ -724,6 +724,11 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     type: POPULATE_STATE_FROM_APPT,
     data: { newState },
   });
+};
+
+const checkIsBookedByFieldEnabled = () => async (dispatch, getState: () => AppStore) => {
+  const isBookedByFieldEnabled = await isBookedByEditEnabled(getState());
+  dispatch({ type: IS_BOOKED_BY_FIELD_ENABLED, data: { isBookedByFieldEnabled } });
 };
 
 const bookNewAppt = appt => (dispatch, getState) => {
@@ -882,6 +887,7 @@ const newAppointmentActions = {
   populateStateFromRebookAppt,
   modifyAppt,
   setMainEmployee,
+  checkIsBookedByFieldEnabled,
 };
 
 export interface NewApptActions {
@@ -911,6 +917,7 @@ export interface NewApptActions {
   populateStateFromRebookAppt: typeof newAppointmentActions.populateStateFromRebookAppt;
   modifyAppt: typeof newAppointmentActions.modifyAppt;
   setMainEmployee: typeof newAppointmentActions.setMainEmployee;
+  checkIsBookedByFieldEnabled: typeof newAppointmentActions.checkIsBookedByFieldEnabled;
 }
 
 export default newAppointmentActions;

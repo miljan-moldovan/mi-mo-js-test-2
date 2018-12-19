@@ -1,5 +1,6 @@
+import { isNumber } from 'lodash';
 import { Session, Employees } from '../../utilities/apiWrapper';
-import { SessionInfo, Maybe, PureProvider } from '@/models';
+import { SessionInfo, Maybe, PureProvider, AppStore } from '@/models';
 import newAppointmentActions from './newAppointment';
 
 export const GET_SESSION_DATA = 'user/GET_SESSION_DATA';
@@ -16,24 +17,26 @@ const getSessionInfoSuccess = (info: SessionInfo, employee: Maybe<PureProvider>)
   });
 };
 
-const getEmployeeData = (): any => async dispatch => {
-  dispatch({
-    type: GET_SESSION_DATA,
-  });
-  Session.getSessionInfo()
-    .then(async info => {
-      const employee = info.employeeId || info.centralEmployeeId
-        ? await Employees.getEmployee(info.employeeId || info.centralEmployeeId)
-        : null;
-      dispatch(newAppointmentActions.setBookedBy(employee));
-      dispatch(getSessionInfoSuccess(info, employee));
-    })
-    .catch(error =>
-      dispatch({
-        type: GET_SESSION_DATA_FAILED,
-        data: { error },
-      }),
-    );
+const getEmployeeData = (): any => async (dispatch, getState: () => AppStore) => {
+  if (!getState().userInfoReducer.doneFetching) {
+    dispatch({
+      type: GET_SESSION_DATA,
+    });
+    Session.getSessionInfo()
+      .then(async info => {
+        const employee = isNumber(info.employeeId) && info.employeeId > 0
+          ? await Employees.getEmployee(info.employeeId)
+          : null;
+        dispatch(newAppointmentActions.setBookedBy(employee));
+        dispatch(getSessionInfoSuccess(info, employee));
+      })
+      .catch(error =>
+        dispatch({
+          type: GET_SESSION_DATA_FAILED,
+          data: { error },
+        }),
+      );
+  }
 };
 
 const userActions = {

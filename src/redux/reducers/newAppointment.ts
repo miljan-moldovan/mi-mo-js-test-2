@@ -28,6 +28,7 @@ import {
   POPULATE_STATE_FROM_APPT,
   POPULATE_STATE_FROM_REBOOKED_APPT,
   SET_MAIN_EMPLOYEE,
+  IS_BOOKED_BY_FIELD_ENABLED,
 } from '../actions/newAppointment';
 import { Maybe, Client, PureProvider, Conflict, PureAppointment, AppointmentCard } from '@/models';
 import { ServiceItem } from '@/models/new-appointment';
@@ -82,6 +83,11 @@ export default function newAppointmentReducer(
   const newGuests = state.guests.slice();
   const newServiceItems = state.serviceItems.slice();
   switch (type) {
+    case IS_BOOKED_BY_FIELD_ENABLED:
+      return {
+        ...state,
+        isBookedByFieldEnabled: data.isBookedByFieldEnabled,
+      };
     case CLEAN_FORM:
       return {
         isLoading: false,
@@ -166,6 +172,7 @@ export default function newAppointmentReducer(
       return {
         ...state,
         isBookingQuickAppt: data.isBookingQuickAppt,
+        isBookedByFieldEnabled: data.isBookedByFieldEnabled,
       };
     case SET_BOOKED_BY:
       return {

@@ -56,7 +56,7 @@ export const SubTitle = (props: {
     </View>
   );
 
-class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, NewAppointmentScreenState> {
+class NewAppointmentScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
@@ -94,13 +94,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   };
 
   isValidEmailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
   isValidPhoneNumberRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-
-  private props: NewAppointmentScreenProps;
-
   constructor(props: NewAppointmentScreenProps) {
-
     super(props);
     const { client, editType } = props.newAppointmentState;
     const {
@@ -126,7 +121,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       isValidEmail,
       isValidPhone,
       clientPhoneType,
-    } as NewAppointmentScreenState;
+    };
 
     this.props.navigation.addListener('willFocus', () => {
       const { client, editType } = this.props.newAppointmentState;
@@ -139,6 +134,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   }
 
   componentDidMount() {
+    this.props.newAppointmentActions.checkIsBookedByFieldEnabled();
     this.checkConflicts();
   }
 

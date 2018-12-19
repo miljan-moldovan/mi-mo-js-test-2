@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Text, Modal, ScrollView, Animated, Switch, TouchableWithoutFeedback } from 'react-native';
 import moment from 'moment';
-import { compact, get, slice, isNull, isFunction } from 'lodash';
+import { isNumber, get, isNull, isFunction } from 'lodash';
 
 import { Services, AppointmentBook, Product } from '../../utilities/apiWrapper';
 import Colors from '../../constants/Colors';
@@ -114,16 +114,15 @@ class NewApptSlide extends React.Component<IProps, IState> {
   });
 
   componentWillReceiveProps(newProps: IProps) {
-    // if (
-    //   this.props.userInfo.isLoading !== newProps.userInfo.isLoading
-    // ) {
-    //   if (newProps.userInfo.employeeId !== 0) {
-    //     const bookedByEmployee = newProps.userInfo.currentEmployee;
-    //     this.setState({
-    //       shouldSelectBookedBy: isNull(bookedByEmployee),
-    //     });
-    //   }
-    // }
+    if (
+      this.props.userInfo.isLoading !== newProps.userInfo.isLoading
+      || this.props.userInfo.doneFetching !== newProps.userInfo.doneFetching
+    ) {
+      const bookedByEmployee = newProps.userInfo.currentEmployee;
+      this.setState({
+        shouldSelectBookedBy: isNull(bookedByEmployee),
+      });
+    }
     if (!this.props.visible && newProps.visible) {
       this.showPanel();
     } else if (this.props.visible && !newProps.visible) {
