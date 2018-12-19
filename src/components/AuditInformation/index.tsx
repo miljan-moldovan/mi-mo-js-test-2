@@ -1,4 +1,3 @@
-// tslint:disable:max-line-length
 import * as React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { reverse, slice } from 'lodash';
@@ -34,23 +33,25 @@ export default class AuditInformation extends React.Component<any, any> {
       if (!audit.service) {
         isBlockTime = true;
         return {
+          id: audit.id,
           appointmentDate: audit.scheduleBlockDate || '',
           appointmentStartTime: audit.scheduleBlockStartTime || '',
           appointmentEndTime: audit.scheduleBlockEndTime || '',
           auditType: audit.auditType,
           auditDateTime: audit.auditDateTime || '',
-          auditEmployee: audit.auditEmployee ? audit.auditEmployee.name : '',
+          auditEmployee: audit.auditEmployee && audit.auditEmployee.name || '',
         };
       }
       return {
+        id: audit.id,
         appointmentDate: audit.appointmentDate || '',
         appointmentStartTime: audit.appointmentStartTime || '',
         appointmentEndTime: audit.appointmentEndTime || '',
-        provider: audit.provider ? audit.provider.name : '',
-        service: audit.service ? audit.service.name : '',
+        provider: audit.provider && audit.provider.name || '',
+        service: audit.service && audit.service.name || '',
         auditType: audit.auditType,
         auditDateTime: audit.auditDateTime || '',
-        auditEmployee: audit.auditEmployee ? audit.auditEmployee.name : '',
+        auditEmployee: audit.auditEmployee && audit.auditEmployee.name || '',
       };
     });
     return { audits: reverse(prepareAudits), isBlockTime };
@@ -62,7 +63,7 @@ export default class AuditInformation extends React.Component<any, any> {
       auditToRender = slice(auditToRender, 0, 1);
     }
     return auditToRender.map(item => (
-      <AuditInfoItem key={Math.random()} singleAudit={item} isBlockTime={isBlockTime} />
+      <AuditInfoItem key={item.id} singleAudit={item} isBlockTime={isBlockTime} />
     ));
   };
 
@@ -78,7 +79,7 @@ export default class AuditInformation extends React.Component<any, any> {
     :
       (
         <React.Fragment>
-          <View style={[styles.panelInfo, isOpen ? {} : { maxHeight: 230, minHeight: 55 }]}>
+          <View style={[styles.panelInfo, !isOpen && styles.panelInfoIsOpened]}>
             {this.renderAuditInfo(audit, isBlockTime, isOpen)}
           </View>
           {audit.length > 1 &&

@@ -15,6 +15,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
     padding: 15,
   },
+  panelInfoIsOpened: {
+    maxHeight: 230,
+    minHeight: 55,
+  },
   panelInfoLine: {
     flex: 1,
     flexDirection: 'column',

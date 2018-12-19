@@ -279,6 +279,7 @@ describe('<AuditInformation />', () => {
         auditType: undefined,
         auditDateTime: '',
         auditEmployee: '',
+        id: undefined,
       };
 
       const component = mountComponent({ audit: [{}] });
