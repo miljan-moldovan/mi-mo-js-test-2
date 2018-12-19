@@ -1,5 +1,4 @@
 import * as React from 'react';
-// @ts-ignore
 import { DatePicker } from 'react-native-wheel-datepicker';
 import styles from './style';
 import { ActivityIndicator, View, Alert } from 'react-native';
