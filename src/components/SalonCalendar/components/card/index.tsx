@@ -191,7 +191,7 @@ class Card extends React.Component {
 
   handleOnLongPress = ({ verticalPositions, left, width }) => {
     const {
-      calendarOffset, appointment, isBufferCard, onDrag, startDate
+      appointment, isBufferCard, onDrag, startDate
     } = this.props;
     const today = moment();
     if (startDate.isSameOrAfter(today, 'day')) {
@@ -205,10 +205,10 @@ class Card extends React.Component {
         const newVerticalPositions = [];
         for (let i = 0; i < verticalPositions.length; i += 1) {
           const item = verticalPositions[i];
-          const newItem = { ...item, top: item.top - calendarOffset.y };
+          const newItem = { ...item, top: item.top };
           newVerticalPositions.push(newItem);
         }
-        const newLeft = left - calendarOffset.x;
+        const newLeft = left;
         this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
       }
     }

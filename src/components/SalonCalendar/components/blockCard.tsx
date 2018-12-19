@@ -124,7 +124,6 @@ class BlockCard extends React.Component {
 
   handleOnLongPress = ({ top, renderedHeight, left, width }) => {
     const {
-      calendarOffset,
       block,
       isBufferBlock,
       onDrag,
@@ -140,9 +139,9 @@ class BlockCard extends React.Component {
         });
       } else {
         const newVerticalPositions = [
-          { top: top - calendarOffset.y, height: renderedHeight },
+          { top: top, height: renderedHeight },
         ];
-        const newLeft = left - calendarOffset.x;
+        const newLeft = left;
         this.props.onDrag(
           false,
           block,

@@ -55,6 +55,7 @@ import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers
 
 const extendedMoment = getRangeExtendedMoment ();
 
+// helper that return an array with the total number of cards overlapping de one sent by params.
 const findOverlappingAppointments = (cardId, intermediateResultDict) => {
   const otherCardsOverlapping = intermediateResultDict[
     cardId
@@ -110,32 +111,36 @@ const headerHeight = 40;
 export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor (props) {
     super (props);
+    // the scrolled offset is saved in memory, this is needed when resizeing or dragging appoitnments
     this.offset = {x: 0, y: 0};
     this.setCellsByColumn (props);
     this.state = {
+      // arrays of appointments and blocktimes
       cardsArray: [],
       overlappingCardsMap: null,
       alert: null,
+      // needed for doing calcultion when dragging or resizing a card
       calendarMeasure: {
         width: 0,
         height: 0,
       },
-      calendarOffset: {
-        x: 0,
-        y: 0,
-      },
+      // appoitnments that are in the bottom move bar
       buffer: [],
+      // pan responder used for appointmets cards and block times
       pan: new Animated.ValueXY ({x: 0, y: 0}),
+      // Appointments with gaps are composed by 2 cards components the second one uses this pan responder
       pan2: new Animated.ValueXY ({x: 0, y: 0}),
       isResizeing: false,
     };
     this.size = {width: 0, height: 0};
     this.panResponder = PanResponder.create ({
       onPanResponderTerminationRequest: () => false,
+      // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
       onMoveShouldSetPanResponder: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard) && !this.state.alert,
+        (this.state.activeBlock || this.state.activeCard),
+      // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
       onMoveShouldSetPanResponderCapture: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard) && !this.state.alert,
+        (this.state.activeBlock || this.state.activeCard),
       onPanResponderMove: (e, gesture) => {
         const {dy, dx} = gesture;
         if (this.state.activeBlock || this.state.activeCard) {
@@ -154,12 +159,17 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               },
             ]) (e, gesture, gesture);
           }
+          // calculate size every time card is draged for resize, this is done by calculating the difference between previoud dy and new dy
           const size = this.moveY ? dy - this.moveY : dy;
+          // save current dy for calulating the size above
           this.moveY = dy;
           if (this.resizeCard) {
             const lastIndex =
               this.state.activeCard.verticalPositions.length - 1;
+            // call resizeCard function from card componet that calulate the hieght set it on the card and return it
             const newHeight = this.resizeCard.resizeCard (size);
+            // updates height on the active card
+            // Update the hieght only in the last card component, in case the appoinment have a gap there will be 2 cards componets
             this.state.activeCard.verticalPositions[
               lastIndex
             ].height = newHeight;
@@ -184,6 +194,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   componentDidMount () {
     const {appointments, blockTimes} = this.props;
+    // group block times and appointment filterOption
     this.setGroupedAppointments (this.props);
   }
 
@@ -202,7 +213,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.props.appointments !== appointments ||
       this.props.blockTimes !== blockTimes
     ) {
-      this.setGroupedAppointments (nextProps);
+      this.setGroupedAppointments(nextProps);
     }
   }
 
@@ -1493,7 +1504,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       startDate,
     } = this.props;
     const {
-      calendarOffset,
       activeBlock,
       activeCard,
       buffer,
@@ -1546,7 +1556,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           block={blockTime}
           apptGridSettings={apptGridSettings}
           onDrag={this.handleOnDragBlock}
-          calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleOnResize}
           isLoading={isLoading}
@@ -1582,7 +1591,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           block={activeBlock.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           height={activeBlock.height}
           onDrop={this.handleCardDrop}
@@ -1624,7 +1632,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           block={activeBlock.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           height={activeBlock.height}
           onDrop={this.handleCardDrop}
@@ -1662,7 +1669,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       crossedAppointmentAfter,
     } = this.props;
     const {
-      calendarOffset,
       activeCard,
       buffer,
       activeBlock,
@@ -1736,7 +1742,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           onDrag={this.handleOnDrag}
           onScrollX={this.scrollToX}
           onScrollY={this.scrollToY}
-          calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleResize}
           cellWidth={this.cellWidth}
@@ -1774,7 +1779,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           appointment={activeCard.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           cardWidth={activeCard.cardWidth}
           height={activeCard.height}
@@ -1821,7 +1825,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           appointment={activeCard.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           width={activeCard.cardWidth}
           height={activeCard.height}
