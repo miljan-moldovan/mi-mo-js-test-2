@@ -22,6 +22,7 @@ class ValidatableInput extends React.Component {
     } else if (isFunction(this.props.validation)) {
       isValid = this.props.validation(text);
     }
+
     this.props.onValidated(isValid, isFirstValidation);
   };
 
