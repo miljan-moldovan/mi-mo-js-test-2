@@ -3,33 +3,30 @@ import { View, Text, ActivityIndicator, Dimensions } from 'react-native';
 import moment from 'moment';
 import { get, filter, map, find } from 'lodash';
 
-import getEmployeePhotoSource
-  from '../../../utilities/helpers/getEmployeePhotoSource';
-import { Client } from '../../../utilities/apiWrapper';
-import SalonCalendar from '../../../components/SalonCalendar';
+import getEmployeePhotoSource from '@/utilities/helpers/getEmployeePhotoSource';
+import { Client } from '@/utilities/apiWrapper';
+import SalonCalendar from '@/components/SalonCalendar';
 import ChangeViewFloatingButton from './changeViewFloatingButton';
-import SalonDatePickerBar from '../../../components/SalonDatePickerBar';
-import SalonDatePickerSlide
-  from '../../../components/slidePanels/SalonDatePickerSlide';
-import SalonAppointmentSlide
-  from '../../../components/slidePanels/SalonCardDetailsSlide';
-import SalonAvatar from '../../../components/SalonAvatar';
-import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
-import EditTypes from '../../../constants/EditTypes';
+import SalonDatePickerBar from '@/components/SalonDatePickerBar';
+import SalonDatePickerSlide from '@/components/slidePanels/SalonDatePickerSlide';
+import SalonAppointmentSlide from '@/components/slidePanels/SalonCardDetailsSlide';
+import SalonAvatar from '@/components/SalonAvatar';
+import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
+import EditTypes from '@/constants/EditTypes';
 import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonToast from './SalonToast';
-import NewApptSlide from '../../../components/NewApptSlide';
-import { DefaultAvatar } from '../../../components/formHelpers';
+import NewApptSlide from '@/components/NewApptSlide';
+import { DefaultAvatar } from '@/components/formHelpers';
 import BookAnother from './bookAnother';
 import RebookAppointment from './rebookAppointment';
-import SalonAlert from '../../../components/SalonAlert';
-import BarsActionSheet from '../../../components/BarsActionSheet';
-import Colors from '../../../constants/Colors';
-import DateTime from '../../../constants/DateTime';
+import SalonAlert from '@/components/SalonAlert';
+import BarsActionSheet from '@/components/BarsActionSheet';
+import Colors from '@/constants/Colors';
+import DateTime from '@/constants/DateTime';
 
 import styles, { headerStyles } from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
-import SalonHeader from '../../../components/SalonHeader';
+import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
 
 class AppointmentScreen extends React.Component {
@@ -335,10 +332,24 @@ class AppointmentScreen extends React.Component {
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
-    const { newAppointmentActions } = this.props;
+
+    const { newAppointmentActions, restrictedToBookInAdvanceDays } = this.props;
     const startTime = moment(cellId, 'HH:mm A');
     const { client } = this.props.newAppointmentState;
-
+    let date = selectedFilter === ('providers' ||
+      selectedFilter === 'deskStaff' ||
+      selectedFilter === 'rebookAppointment') && selectedProvider === 'all' ? startDate : colData;
+    const differenceInDaysFromToday = moment(date, DateTime.date).diff(moment().startOf('day'), 'days');
+    if (restrictedToBookInAdvanceDays && differenceInDaysFromToday >= restrictedToBookInAdvanceDays) {
+      const alert = {
+        title: '',
+        description: `You may only book appointments ${restrictedToBookInAdvanceDays} days in advance`,
+        btnRightText: 'Ok',
+        onPressRight: this.hideAlert,
+      };
+      this.setState({ alert });
+      return;
+    }
     newAppointmentActions.cleanForm();
     if (
       this.state.bookAnotherEnabled ||
@@ -352,6 +363,8 @@ class AppointmentScreen extends React.Component {
       selectedFilter === 'rebookAppointment'
     ) {
       if (selectedProvider === 'all') {
+        const differenceInDaysFromToday = moment(date, DateTime.date).diff(moment().startOf('day'), 'days');
+
         newAppointmentActions.setMainEmployee(colData);
         newAppointmentActions.setDate(startDate);
         newAppointmentActions.setQuickApptRequested(!colData.isFirstAvailable);
@@ -384,7 +397,7 @@ class AppointmentScreen extends React.Component {
           : colData;
       }
 
-      const date = rebookProviders.length === 1 ? colData : startDate;
+      date = rebookProviders.length === 1 ? colData : startDate;
 
       for (let i = 0; i < services.length; i += 1) {
         services[i].employee = mainEmployee;

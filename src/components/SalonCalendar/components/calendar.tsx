@@ -713,7 +713,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   handleCardPressed = (appt, left, top) => {
     const height = HeightHelper.setPositionToMinimalOption();
-    console.log('bacon', height)
     const fixHeight = 118;
     this.props.onCardPressed(appt);
     this.setCellsByColumn(this.props, height - fixHeight);
@@ -987,7 +986,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     };
     const onPressLeft = () => {
       this.setState({ alert: null }, () => {
-        debugger
         this.addItemToMoveBar(appointment, result, addToBufferState.checkOtherPartyAppointments);
       });
     };
@@ -1062,7 +1060,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       }
 
       case addToBufferState.checkOtherPartyAppointments: {
-        debugger
         const partyAppointments = !!appointment.appointmentGroupId ? appointments.filter(item => {
           return appointment.id !== item.id
             && !!item.appointmentGroupId

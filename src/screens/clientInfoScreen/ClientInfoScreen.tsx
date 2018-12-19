@@ -16,6 +16,7 @@ import ClientNotes from './components/clientNotes';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
+import SalonAlert from '@/components/SalonAlert';
 import createStyleSheet from './styles';
 
 
@@ -50,17 +51,41 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
     const styles = createStyleSheet();
 
     const canSave = params.canSave || false;
-    const showDoneButton = params.showDoneButton;
     const handleDone = () => {
       if (navigation.state.params.handleDone) {
         navigation.state.params.handleDone();
       }
-       navigation.goBack();
     }
 
-    const handleBack = params.handleBack ?
-      () => { params.handleBack(); navigation.goBack(); } :
-      navigation.goBack;
+    const handleBack = () => {
+      const onPressRight = () => {
+        params.setAlert(null)
+        handleDone();
+        if (params.handleBack) {
+          params.handleBack();
+        }
+        navigation.goBack();
+      }
+      if(params.hasChanged) {
+        const alert = {
+          onPressRight,
+          btnLeftText: 'Discard changes',
+          btnRightText: 'Save changes',
+          onPressLeft: () => {
+            params.setAlert(null);
+            if (params.handleBack) {
+              params.handleBack();
+            }
+            navigation.goBack();
+          },
+          description: `Are you sure you want to discard changes for client ${title}`,
+          title: 'Discard Changes?',
+        }
+        params.setAlert(alert)
+      } else {
+        onPressRight();
+      }
+    }
 
     return ({
       header: (
@@ -79,16 +104,14 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
             </SalonTouchableOpacity>
           )}
           headerRight={(
-            showDoneButton ? (
               <SalonTouchableOpacity
                 disabled={!canSave}
                 onPress={handleDone}
               >
                 <Text style={[styles.headerRightText, { color: canSave ? '#FFFFFF' : '#19428A' }]}>
-                  Done
+                  Save
                 </Text>
               </SalonTouchableOpacity>
-            ) : null
           )}
         />
       ),
@@ -99,7 +122,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
     super(props);
     const { params } = this.props.navigation.state;
 
-    this.props.navigation.setParams({ handleDone: ()=>{}, canSave: false, showDoneButton: true });
+    this.props.navigation.setParams({ handleDone: ()=>{}, canSave: false, hasChanged: false, setAlert: this.setAlert });
 
     const client = params && params.client ? params.client : null;
     const canDelete = params && params.canDelete ? params.canDelete : false;
@@ -126,11 +149,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
 
   }
 
-  handleIndexChange = (index) => {
-    const showDoneButton = index === 0;
-
-    this.props.navigation.setParams({ showDoneButton });
-
+  handleIndexChange = (index) => {;
     this.setState({ index });
   };
 
@@ -145,6 +164,10 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
 
   setHandleBack = (handleBack) => {
     this.props.navigation.setParams({ handleBack });
+  }
+
+  setAlert = alert => {
+    this.setState({ alert });
   }
 
   renderLabel = ({ position, navigationState }) => ({ route, index }) => (
@@ -189,6 +212,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
   })
 
   render() {
+    const { alert } = this.state;
     return (
       <View style={this.state.styles.container}>
         <TabView
@@ -200,6 +224,15 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
           initialLayout={initialLayout}
           swipeEnabled={false}
           /*useNativeDriver*/
+        />
+        <SalonAlert
+          visible={!!alert}
+          title={alert ? alert.title : ''}
+          description={alert ? alert.description : ''}
+          btnLeftText={alert ? alert.btnLeftText : ''}
+          btnRightText={alert ? alert.btnRightText : ''}
+          onPressLeft={alert ? alert.onPressLeft : null}
+          onPressRight={alert ? alert.onPressRight : null}
         />
       </View>
     );

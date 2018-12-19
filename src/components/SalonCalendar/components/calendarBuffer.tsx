@@ -118,7 +118,6 @@ export default class calendarBuffer extends React.Component {
   keyExtractor = (item) => item.id;
 
   renderCard = ({ item }) => {
-    console.log(item, this.props.dataSource, 'bacon')
     const { panResponder, activeCard, startDate } = this.props;
     const isActive = activeCard && activeCard.data.id === item.id;
     const hasPanResponder = !activeCard || isActive ? panResponder : null;
@@ -142,7 +141,7 @@ export default class calendarBuffer extends React.Component {
         />
       );
     }
-    
+
     return (
       <Card
         left={0}

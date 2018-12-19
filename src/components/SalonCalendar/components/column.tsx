@@ -197,7 +197,7 @@ export default class Column extends React.Component<ColumnProps, any> {
           <TouchableOpacity
             disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
-            onPress={() => {
+            onLongPress={() => {
               this.onCellPressed(cell, colData, !isDate ? startDate : colData);
             }}
           >
@@ -221,7 +221,7 @@ export default class Column extends React.Component<ColumnProps, any> {
             { width: cellWidth },
             styleOclock,
           ]}
-          onPress={() => {
+          onLongPress={() => {
             this.onCellPressed(cell, colData, !isDate ? startDate : colData);
           }}
         >
