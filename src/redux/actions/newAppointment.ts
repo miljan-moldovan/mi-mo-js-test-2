@@ -83,12 +83,12 @@ const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
 
-const addGuest = () => ({
+const addGuest = (client) => ({
   type: ADD_GUEST,
   data: {
     guest: {
       guestId: uuid(),
-      client: null,
+      client,
     },
   },
 });
