@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { ActivityIndicator } from 'react-native';
 import AuditInformation from '../index';
+import sinon from 'sinon';
 
 const auditMock = [
   {
@@ -106,12 +107,12 @@ const auditMock = [
 ];
 
 describe('<AuditInformation />', () => {
-  let props;
+  let defaultProps;
   let mountedComponent;
 
   // just for remove error with depend using react-dom for render. Need it before use adapter for RN
   const origConsole = console.error;
-  const mountComponent = () => {
+  const mountComponent = (props = defaultProps) => {
     if (!mountedComponent) {
       mountedComponent = mount(<AuditInformation {...props} />);
     }
@@ -121,7 +122,7 @@ describe('<AuditInformation />', () => {
   beforeEach(() => {
     // just for remove error with depend using react-dom for render. Need it before use adapter for RN
     console.error = () => {};
-    props = {
+    defaultProps = {
       isLoading: false,
       audit: [],
     };
@@ -132,13 +133,17 @@ describe('<AuditInformation />', () => {
     console.error = origConsole;
   });
 
+  it('renders correctly', () => {
+    expect(mountComponent()).toMatchSnapshot();
+  });
+
   describe('Should render ActivityIndicator based on `isLoading` prop', () => {
     it('Should not render spinner when `isLoading` prop equals to `false`', () => {
       const spinner = mountComponent().contains(<ActivityIndicator />);
       expect(spinner).toBe(false);
     });
     it('Should render spinner when `isLoading` prop equals to `true`', () => {
-      props.isLoading = true;
+      defaultProps.isLoading = true;
       const spinner = mountComponent().contains(<ActivityIndicator />);
       expect(spinner).toBe(true);
     });
@@ -146,7 +151,7 @@ describe('<AuditInformation />', () => {
 
   describe('Should render a correct number of AuditInfoItem`s', () => {
     beforeEach(() => {
-      props.audit = auditMock;
+      defaultProps.audit = auditMock;
     });
     it('Should render a single item when `isOpen` is `false`', () => {
       const total = mountComponent()
@@ -165,14 +170,121 @@ describe('<AuditInformation />', () => {
 
   describe('Should correctly render `show more/less` button', () => {
     it('Should render the button when there`re several AuditItems', () => {
-      props.audit = auditMock;
+      defaultProps.audit = auditMock;
       const buttonIsRendered = mountComponent().exists('SalonTouchableOpacity(TouchableOpacity)');
       expect(buttonIsRendered).toBe(true);
     });
     it('Should NOT render the button when there`s a single AuditItem', () => {
-      props.audit = auditMock.slice(0, 1);
+      defaultProps.audit = auditMock.slice(0, 1);
       const buttonIsRendered = mountComponent().exists('SalonTouchableOpacity(TouchableOpacity)');
       expect(buttonIsRendered).toBe(false);
+    });
+  });
+
+  describe('The `show more/less` button should properly change state', () => {
+    beforeEach(() => {
+      defaultProps.audit = auditMock;
+    });
+
+    it('Click on the button should change `isOpen`', () => {
+      const component = mountComponent();
+      expect(component.state().isOpen).toBe(false);
+
+      component
+        .find('SalonTouchableOpacity(TouchableOpacity)')
+        .props()
+        .onPress();
+      expect(component.state().isOpen).toBe(true);
+    });
+  });
+
+  describe('Should properly prepare audit data for render', () => {
+    let spy;
+    beforeEach(() => {
+      defaultProps.audit = auditMock;
+      spy = sinon.spy(AuditInformation.prototype, 'componentWillReceiveProps');
+    });
+    afterEach(() => {
+      spy.restore();
+    });
+
+    it('Should run `prepareAudit` function and change state when received new audit props', () => {
+      const component = mountComponent();
+
+      expect(spy).toHaveProperty('callCount', 0);
+      expect(component.state().isBlockTime).toBe(false);
+
+      component.setProps({ audit: [{}, {}, {}] });
+
+      expect(spy).toHaveProperty('callCount', 1);
+      expect(component.state().isBlockTime).toBe(true);
+    });
+    it('Should NOT change state when received same audit props', () => {
+      const component = mountComponent();
+
+      expect(spy).toHaveProperty('callCount', 0);
+      expect(component.state().isBlockTime).toBe(false);
+      const firstState = component.state();
+
+      component.setProps({ audit: auditMock });
+
+      expect(spy).toHaveProperty('callCount', 1);
+      expect(component.state().isBlockTime).toBe(false);
+      expect(component.state()).toEqual(firstState);
+    });
+    it('Should NOT change state when DID NOT receive audit props', () => {
+      const component = mountComponent();
+      const firstAuditState = component.state('audit');
+
+      component.setProps({ audit: null });
+
+      expect(component.state('audit')).toBe(firstAuditState);
+    });
+  });
+
+  describe('`prepareAudit` function should properly parse props', () => {
+    beforeEach(() => {
+      defaultProps.audit = auditMock;
+    });
+
+    it('Should properly parse audit with a lot of undefined values', () => {
+      const emptyAuditParsed = {
+        appointmentDate: '',
+        appointmentStartTime: '',
+        appointmentEndTime: '',
+        provider: '',
+        service: 'someMockService',
+        auditType: 'someMockType',
+        auditDateTime: '',
+        auditEmployee: '',
+      };
+
+      const emptyAudit = {
+        service: {
+          name: 'someMockService',
+        },
+        auditType: 'someMockType',
+      };
+
+      const component = mountComponent({ audit: [emptyAudit] });
+
+      expect(component.state('audit')).toEqual([emptyAuditParsed]);
+      expect(component.state('isBlockTime')).toBe(false);
+    });
+    it('Should properly parse a completely empty object', () => {
+      const undefinedAuditParsed = {
+        appointmentDate: '',
+        appointmentStartTime: '',
+        appointmentEndTime: '',
+        auditType: undefined,
+        auditDateTime: '',
+        auditEmployee: '',
+      };
+
+      const component = mountComponent({ audit: [{}] });
+
+      expect(component.state('audit')).toEqual([undefinedAuditParsed]);
+      expect(component.state('isBlockTime')).toBe(true);
     });
   });
 });
