@@ -26,8 +26,9 @@ import {
   getBookedByEmployee,
 } from '../selectors/newAppt';
 import { showErrorAlert } from './utils';
-import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard } from '@/models';
+import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore } from '@/models';
 import { NewAppointmentReducer } from '../reducers/newAppointment';
+import { ServiceItem } from '@/models/new-appointment';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
 export const POPULATE_STATE_FROM_APPT =
@@ -110,7 +111,7 @@ const setGuestClient = (guestId: Maybe<string>, client: Maybe<ClientModel>): any
 };
 
 const resetTimeForServices = (items: any, index: Maybe<number>,
-                              initialFromTime: Maybe<string | moment.Moment>): any => {
+  initialFromTime: Maybe<string | moment.Moment>): any => {
   return items.map((item, i) => {
     if (i > index) {
       const prevItem = items[i - 1];
@@ -212,7 +213,7 @@ const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId
   });
 };
 
-const addServiceItem = (serviceItem: any): any => (dispatch, getState) => {
+const addServiceItem = (serviceItem: ServiceItem): any => (dispatch, getState: () => AppStore) => {
   const { startTime } = getState().newAppointmentReducer;
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
   newServiceItems.push(serviceItem);
@@ -223,112 +224,114 @@ const addServiceItem = (serviceItem: any): any => (dispatch, getState) => {
   });
 };
 
-const addServiceItemExtras = (parentId: Maybe<string>, type: Maybe<string>, services: Maybe<Service[] | Service>): any => (
-  dispatch,
-  getState,
-) => {
-  if (isNull(services)) {
-    return;
-  }
-  const {
-    client,
-    guests,
-    startTime,
-    serviceItems,
-    mainEmployee: employee,
-  } = getState().newAppointmentReducer;
-  const [parentService] = serviceItems.filter(
-    item => item.itemId === parentId,
-  );
-  const { guestId, service: { employee: parentEmployee } } = parentService;
-  const serializeServiceItem = service => {
-    if (!service) {
-      return null;
+const addServiceItemExtras = (
+  parentId: Maybe<string>, type: Maybe<string>, services: Maybe<Service[] | Service>): any => (
+    dispatch,
+    getState: () => AppStore,
+  ) => {
+    if (isNull(services)) {
+      return;
     }
-    const length = appointmentLength(getState());
-    const serviceLength = moment.duration(
-      service.maxDuration || service.duration,
+    const {
+      client,
+      guests,
+      startTime,
+      serviceItems,
+      mainEmployee: employee,
+    } = getState().newAppointmentReducer;
+    const [parentService] = serviceItems.filter(
+      item => item.itemId === parentId,
     );
-    const fromTime = moment(startTime).add(moment.duration(length));
-    const toTime = moment(fromTime).add(serviceLength);
-    const serviceClient = guestId
-      ? get(
-        guests.filter(guest => guest.guestId === guestId)[0],
-        'client',
-        null,
-      )
-      : client;
-    const newService = {
-      length: serviceLength,
-      client: serviceClient,
-      requested: true,
-      service,
-      employee: parentEmployee || employee,
-      fromTime,
-      toTime,
-      bookBetween: get(service, 'bookBetween', false),
-      gapTime: moment.duration(get(service, 'gapDuration', 0)),
-      afterTime: moment.duration(get(service, 'afterDuration', 0)),
+    const { guestId, service: { employee: parentEmployee } } = parentService;
+    const serializeServiceItem = service => {
+      if (!service) {
+        return null;
+      }
+      const length = appointmentLength(getState());
+      const serviceLength = moment.duration(
+        service.maxDuration || service.duration,
+      );
+      const fromTime = moment(startTime).add(moment.duration(length));
+      const toTime = moment(fromTime).add(serviceLength);
+      const serviceClient = guestId
+        ? get(
+          guests.filter(guest => guest.guestId === guestId)[0],
+          'client',
+          null,
+        )
+        : client;
+      const newService = {
+        length: serviceLength,
+        client: serviceClient,
+        requested: true,
+        service,
+        employee: parentEmployee || employee,
+        fromTime,
+        toTime,
+        bookBetween: get(service, 'bookBetween', false),
+        gapTime: moment.duration(get(service, 'gapDuration', 0)),
+        afterTime: moment.duration(get(service, 'afterDuration', 0)),
+      };
+      const serviceItem = {
+        itemId: uuid(),
+        guestId,
+        parentId,
+        type,
+        isRequired: type === 'required',
+        service: newService,
+      };
+
+      return serviceItem;
     };
-    const serviceItem = {
-      itemId: uuid(),
-      guestId,
-      parentId,
-      type,
-      isRequired: type === 'required',
-      service: newService,
-    };
 
-    return serviceItem;
-  };
+    const newServiceItems = reject(
+      serviceItems,
+      item => get(item, 'type', null) === type && item.parentId === parentId,
+    );
 
-  const newServiceItems = reject(
-    serviceItems,
-    item => get(item, 'type', null) === type && item.parentId === parentId,
-  );
+    if (Array.isArray(services)) {
+      services.forEach(service => {
+        newServiceItems.push(serializeServiceItem(service));
+      });
+    } else {
+      newServiceItems.push(serializeServiceItem(services));
+    }
 
-  if (Array.isArray(services)) {
-    services.forEach(service => {
-      newServiceItems.push(serializeServiceItem(service));
+    resetTimeForServices(newServiceItems, -1, startTime);
+
+    dispatch({
+      type: ADD_SERVICE_ITEM_EXTRAS,
+      data: { serviceItems: newServiceItems },
     });
-  } else {
-    newServiceItems.push(serializeServiceItem(services));
-  }
-
-  resetTimeForServices(newServiceItems, -1, startTime);
-
-  dispatch({
-    type: ADD_SERVICE_ITEM_EXTRAS,
-    data: { serviceItems: newServiceItems },
-  });
-};
-
-const updateServiceItem = (serviceId: Maybe<string>, updatedService: any, guestId: Maybe<string>) => (
-  dispatch,
-  getState,
-) => {
-  const newServiceItems = cloneDeep(
-    getState().newAppointmentReducer.serviceItems,
-  );
-  const serviceIndex = newServiceItems.findIndex(
-    item => item.itemId === serviceId,
-  );
-  const serviceItemToUpdate = newServiceItems[serviceIndex];
-  const serviceItem = {
-    ...serviceItemToUpdate,
-    service: { ...updatedService },
   };
-  newServiceItems.splice(serviceIndex, 1, serviceItem);
-  resetTimeForServices(
-    newServiceItems,
-    serviceIndex - 1,
-    updatedService.fromTime,
-  );
-  return dispatch({
-    type: UPDATE_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems },
-  });
-};
+
+const updateServiceItem = (
+  serviceId: Maybe<string>, updatedService: ServiceItem['service'], guestId: Maybe<string>) => (
+    dispatch,
+    getState: () => AppStore,
+  ) => {
+    const newServiceItems: ServiceItem[] = cloneDeep(
+      getState().newAppointmentReducer.serviceItems,
+    );
+    const serviceIndex = newServiceItems.findIndex(
+      item => item.itemId === serviceId,
+    );
+    const serviceItemToUpdate = newServiceItems[serviceIndex];
+    const serviceItem: ServiceItem = {
+      ...serviceItemToUpdate,
+      service: { ...updatedService },
+    };
+    newServiceItems.splice(serviceIndex, 1, serviceItem);
+    resetTimeForServices(
+      newServiceItems,
+      serviceIndex - 1,
+      updatedService.fromTime,
+    );
+    return dispatch({
+      type: UPDATE_SERVICE_ITEM,
+      data: { serviceItems: newServiceItems },
+    });
+  };
 
 const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState) => {
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
@@ -392,7 +395,7 @@ export function serializeNewApptItem(appointment, service) {
   return itemData;
 }
 
-const getConflicts = (callback: Maybe<Function>): any => (dispatch, getState) => {
+const getConflicts = (callback?: Maybe<Function>): any => (dispatch, getState) => {
   const {
     client,
     date,
@@ -458,44 +461,32 @@ const getConflicts = (callback: Maybe<Function>): any => (dispatch, getState) =>
     });
 };
 
-const cleanForm = (): any => ({
+const cleanForm = () => (dispatch, getState: () => AppStore) => dispatch({
   type: CLEAN_FORM,
+  data: { bookedByEmployee: getState().userInfoReducer.currentEmployee },
 });
 
-const setBookedBy = (employee: Maybe<PureProvider> = null): any => async (dispatch, getState) => {
-  const loggedInEmployee = getBookedByEmployee(getState());
-  const loggedInEmployeeId = get(loggedInEmployee, 'id', false);
-  const forceReceptionistUser = await Settings.getSettingsByName(
-    'ForceReceptionistUser',
-  );
-  const isBookedByFieldEnabled =
-    !forceReceptionistUser.settingValue ||
-    isNull(loggedInEmployee) ||
-    !loggedInEmployeeId;
-  const currentEmployee = loggedInEmployee && loggedInEmployeeId
-    ? loggedInEmployee
-    : getState().newAppointmentReducer.mainEmployee;
-  const bookedByEmployee = get(currentEmployee, 'isFirstAvailable', false)
-    ? null
-    : currentEmployee;
-  dispatch({
-    type: SET_BOOKED_BY,
-    data: {
-      isBookedByFieldEnabled,
-      bookedByEmployee: !isNull(employee) && isBookedByFieldEnabled
-        ? employee
-        : bookedByEmployee,
-    },
-  });
-};
+const setBookedBy = (
+  bookedByEmployee: Maybe<PureProvider> = null): any => async (dispatch, getState: () => AppStore) => {
+    const loggedInEmployee = getState().userInfoReducer.currentEmployee;
+    const forceReceptionistUser = await Settings.getSettingsByName(
+      'ForceReceptionistUser',
+    );
+    const isBookedByFieldEnabled =
+      !forceReceptionistUser.settingValue || isNull(loggedInEmployee);
+    dispatch({
+      type: SET_BOOKED_BY,
+      data: {
+        bookedByEmployee,
+        isBookedByFieldEnabled,
+      },
+    });
+  };
 
-const setMainEmployee = (mainEmployee: Maybe<PureProvider>): any => dispatch => {
-  dispatch({
-    type: SET_MAIN_EMPLOYEE,
-    data: { mainEmployee },
-  });
-  return dispatch(setBookedBy());
-};
+const setMainEmployee = (mainEmployee: Maybe<PureProvider>): any => ({
+  type: SET_MAIN_EMPLOYEE,
+  data: { mainEmployee },
+});
 
 const setDate = (date: any): any => ({
   type: SET_DATE,
@@ -771,17 +762,21 @@ const messageAllClientsFailed = error => ({
   data: { error },
 });
 
-const messageAllClients = (date, messageText, callback) => dispatch => {
+const messageAllClients = (date, messageText, callback?: (status: boolean) => void) => dispatch => {
   dispatch({ type: MESSAGE_ALL_CLIENTS });
   return AppointmentBook.postMessageAllClients(date, messageText)
     .then(response => {
       dispatch(messageAllClientsSuccess(response));
-      callback(true);
+      if (callback) {
+        callback(true);
+      }
     })
     .catch(error => {
       dispatch(messageAllClientsFailed(error));
       showErrorAlert(error);
-      callback(false);
+      if (callback) {
+        callback(false);
+      }
     });
 };
 
