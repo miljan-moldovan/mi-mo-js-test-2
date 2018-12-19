@@ -10,6 +10,12 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: 'white',
   },
-
+  conflictsBox: {
+    marginHorizontal: 10,
+    marginVertical: 10,
+  },
+  conflictText: {
+    color: 'red',
+  },
 });
 export default styles;

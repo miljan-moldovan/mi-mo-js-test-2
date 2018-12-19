@@ -11,7 +11,14 @@ let cancellationToken = null;
 export default async (date: string, filterOptions): Promise<EmployeeSchedule[]> => {
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
-  const queryString = qs.stringify(filterOptions);
+
+  const filterOptionsForQuery = {
+    ShowOffEmployees: filterOptions.showOffEmployees,
+    CompanyId: filterOptions.company && filterOptions.company.id,
+    PositionId: filterOptions.position && filterOptions.position.id,
+    ...filterOptions,
+  };
+  const queryString = qs.stringify(filterOptionsForQuery);
   return apiInstance
     .get(`AppointmentBook/${date}/Employees?${queryString}`, {
       cancelToken: new axios.CancelToken(c => {
@@ -30,7 +37,7 @@ export default async (date: string, filterOptions): Promise<EmployeeSchedule[]> 
             const employeeSchedule = get(
               scheduleDictionary,
               [item.id, 'value', 0],
-              {}
+              {},
             );
             return Object.assign({}, item, {
               roomAssignments: employeeSchedule.roomAssignment,
