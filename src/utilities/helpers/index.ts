@@ -8,3 +8,4 @@ export * from './getNames';
 export * from './shortenTitle';
 export * from './hasClientMoreAppointments';
 export * from './getLighterColor';
+export * from './isBookedByEditEnabled';

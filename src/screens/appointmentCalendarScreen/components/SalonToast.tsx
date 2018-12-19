@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {View, StyleSheet, Text, TouchableOpacity, Animated} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Animated } from 'react-native';
 
 const colors = {
   green: '#00CF48',
@@ -8,7 +8,7 @@ const colors = {
   warning: '#D9C101',
 };
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     width: '100%',
     position: 'absolute',
@@ -39,60 +39,77 @@ const styles = StyleSheet.create ({
     fontFamily: 'Roboto-Medium',
     fontSize: 12,
     color: '#fff',
-    // fontWeight: '400',
     padding: 15,
   },
   btnContainer: {
     flexDirection: 'row',
-    // flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
 });
 
-class SalonToast extends React.Component {
-  constructor (props) {
-    super (props);
+export interface SalonToastObject {
+  type?: string;
+  timeout?: number;
+  description: string;
+  btnRightText?: string;
+  btnLeftText?: string;
+}
+
+interface SalonToastProps extends SalonToastObject {
+  hide: () => void;
+  undo?: () => void;
+}
+
+interface SalonToastState {
+  top: Animated.Value;
+}
+
+class SalonToast extends React.Component<SalonToastProps, SalonToastState> {
+  isHiding: boolean;
+
+  constructor(props) {
+    super(props);
     this.state = {
-      top: new Animated.Value (-44),
+      top: new Animated.Value(-44),
     };
   }
 
-  componentDidMount () {
-    const {timeout = 1000} = this.props;
-    Animated.timing (this.state.top, {
+  componentDidMount() {
+    const { timeout = 1000 } = this.props;
+    Animated.timing(this.state.top, {
       toValue: 0,
       duration: 800,
-    }).start (() => setTimeout (this.hide, timeout));
+    }).start(() => setTimeout(this.hide, timeout));
   }
 
   hide = () => {
-    if (!this.ishidding) {
-      this.ishidding = true;
-      Animated.timing (this.state.top, {
+    if (!this.isHiding) {
+      this.isHiding = true;
+      Animated.timing(this.state.top, {
         toValue: -44,
         duration: 600,
-      }).start (this.props.hide);
+      }).start(this.props.hide);
     }
   };
 
   undo = () => {
-    if (!this.ishidding) {
-      this.ishidding = true;
-      Animated.timing (this.state.top, {
+    if (!this.isHiding) {
+      this.isHiding = true;
+      Animated.timing(this.state.top, {
         toValue: -44,
         duration: 600,
-      }).start (this.props.undo);
+      }).start(this.props.undo);
     }
   };
 
-  render () {
-    const {top, visible} = this.state;
-    const {type, description, btnRightText, btnLeftText} = this.props;
+  render() {
+    const { top } = this.state;
+    const { type, description, btnRightText, btnLeftText } = this.props;
     return (
       <View style={styles.container}>
         <Animated.View
-          style={[styles.toast, {backgroundColor: colors[type], top}]}
+          style={[styles.toast, { backgroundColor: colors[type], top }]}
         >
           <Text style={styles.description}>{description}</Text>
           <View style={styles.btnContainer}>

@@ -10,6 +10,7 @@ import { Maybe, PureProvider } from '@/models';
 
 const initialState: UserInfoReducer = {
   isLoading: false,
+  doneFetching: false,
   userId: null,
   guardUserId: 0,
   centralEmployeeId: 0,
@@ -21,6 +22,7 @@ const initialState: UserInfoReducer = {
 
 export interface UserInfoReducer {
   isLoading: boolean;
+  doneFetching: boolean;
   userId: Maybe<number>;
   guardUserId: Maybe<number>;
   centralEmployeeId: Maybe<number>;
@@ -30,25 +32,23 @@ export interface UserInfoReducer {
   currentEmployee: Maybe<PureProvider>;
 }
 
-const userInfoReducer = (prevState: UserInfoReducer = initialState, action): UserInfoReducer => {
+const userInfoReducer = (state: UserInfoReducer = initialState, action): UserInfoReducer => {
   const { type, data = {} } = action;
-  const state = prevState;
   switch (type) {
     case GET_SESSION_DATA:
-      state.isLoading = true;
-      break;
+      return {
+        ...state,
+        isLoading: true,
+      };
     case GET_SESSION_DATA_SUCCESS:
-      state.isLoading = false;
-      state.userId = data.info.userId;
-      state.employeeId = data.info.employeeId;
-      break;
-    case GET_EMPLOYEE_DATA:
-      state.isLoading = true;
-      break;
-    case GET_EMPLOYEE_DATA_SUCCESS:
-      state.isLoading = false;
-      state.currentEmployee = data.employee;
-      break;
+      return {
+        ...state,
+        doneFetching: true,
+        isLoading: false,
+        userId: data.info.userId,
+        employeeId: data.info.employeeId,
+        currentEmployee: data.employee,
+      };
     default:
       break;
   }
