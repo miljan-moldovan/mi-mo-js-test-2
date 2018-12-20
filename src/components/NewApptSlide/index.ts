@@ -6,9 +6,11 @@ import { appointmentCalendarActions } from '../../redux/actions/appointmentBook'
 
 import { getEndTime, appointmentLength } from '../../redux/selectors/newAppt';
 import NewApptSlide from './NewApptSlide';
+import { AppStore } from '@/models';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: AppStore) => ({
   newApptState: state.newAppointmentReducer,
+  userInfo: state.userInfoReducer,
   getLength: appointmentLength(state),
   getEndTime: getEndTime(state),
 });

@@ -28,8 +28,10 @@ import {
   POPULATE_STATE_FROM_APPT,
   POPULATE_STATE_FROM_REBOOKED_APPT,
   SET_MAIN_EMPLOYEE,
+  IS_BOOKED_BY_FIELD_ENABLED,
 } from '../actions/newAppointment';
 import { Maybe, Client, PureProvider, Conflict, PureAppointment, AppointmentCard } from '@/models';
+import { ServiceItem } from '@/models/new-appointment';
 
 const defaultState: NewAppointmentReducer = {
   isLoading: false,
@@ -67,7 +69,7 @@ export interface NewAppointmentReducer {
   deletedIds: number[];
   guests: any[];
   conflicts: Conflict[];
-  serviceItems: any[];
+  serviceItems: ServiceItem[];
   mainEmployee: Maybe<PureProvider>;
   remarks: string;
   rebooked: boolean;
@@ -75,20 +77,38 @@ export interface NewAppointmentReducer {
   selectedAppt: Maybe<AppointmentCard | PureAppointment>;
 }
 
-export default function newAppointmentReducer(state: NewAppointmentReducer = defaultState, action): NewAppointmentReducer {
+export default function newAppointmentReducer(
+  state: NewAppointmentReducer = defaultState, action): NewAppointmentReducer {
   const { type, data } = action;
   const newGuests = state.guests.slice();
   const newServiceItems = state.serviceItems.slice();
   switch (type) {
+    case IS_BOOKED_BY_FIELD_ENABLED:
+      return {
+        ...state,
+        isBookedByFieldEnabled: data.isBookedByFieldEnabled,
+      };
     case CLEAN_FORM:
       return {
-        ...defaultState,
+        isLoading: false,
+        isBooking: false,
+        editType: 'new',
+        isBookingQuickAppt: false,
+        isQuickApptRequested: true,
+        isBookedByFieldEnabled: false,
+        client: null,
+        date: moment(),
+        startTime: moment(),
+        bookedByEmployee: data.bookedByEmployee || null,
+        deletedIds: [],
         guests: [],
         conflicts: [],
         serviceItems: [],
+        mainEmployee: null,
+        remarks: '',
         rebooked: true,
-        editType: 'new',
         initialState: null,
+        selectedAppt: null,
       };
     case SET_SELECTED_APPT:
       return {
@@ -152,6 +172,7 @@ export default function newAppointmentReducer(state: NewAppointmentReducer = def
       return {
         ...state,
         isBookingQuickAppt: data.isBookingQuickAppt,
+        isBookedByFieldEnabled: data.isBookedByFieldEnabled,
       };
     case SET_BOOKED_BY:
       return {

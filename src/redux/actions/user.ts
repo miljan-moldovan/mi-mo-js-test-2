@@ -1,5 +1,7 @@
+import { isNumber } from 'lodash';
 import { Session, Employees } from '../../utilities/apiWrapper';
-import { SessionInfo } from '@/models';
+import { SessionInfo, Maybe, PureProvider, AppStore } from '@/models';
+import newAppointmentActions from './newAppointment';
 
 export const GET_SESSION_DATA = 'user/GET_SESSION_DATA';
 export const GET_SESSION_DATA_SUCCESS = 'user/GET_SESSION_DATA_SUCCESS';
@@ -8,31 +10,33 @@ export const GET_EMPLOYEE_DATA = 'user/GET_EMPLOYEE_DATA';
 export const GET_EMPLOYEE_DATA_SUCCESS = 'user/GET_EMPLOYEE_DATA_SUCCESS';
 export const GET_EMPLOYEE_DATA_FAILED = 'user/GET_EMPLOYEE_DATA_FAILED';
 
-const getSessionInfoSuccess = (info: SessionInfo): any => dispatch => {
+const getSessionInfoSuccess = (info: SessionInfo, employee: Maybe<PureProvider>): any => dispatch => {
   dispatch({
     type: GET_SESSION_DATA_SUCCESS,
-    data: { info },
+    data: { info, employee },
   });
-  Employees.getEmployee(info.employeeId || info.centralEmployeeId).then(employee =>
-    dispatch({
-      type: GET_EMPLOYEE_DATA_SUCCESS,
-      data: { employee },
-    })
-  );
 };
 
-const getEmployeeData = (): any => async dispatch => {
-  dispatch({
-    type: GET_SESSION_DATA,
-  });
-  Session.getSessionInfo()
-    .then(info => dispatch(getSessionInfoSuccess(info)))
-    .catch(error =>
-      dispatch({
-        type: GET_SESSION_DATA_FAILED,
-        data: { error },
+const getEmployeeData = (): any => async (dispatch, getState: () => AppStore) => {
+  if (!getState().userInfoReducer.doneFetching) {
+    dispatch({
+      type: GET_SESSION_DATA,
+    });
+    Session.getSessionInfo()
+      .then(async info => {
+        const employee = isNumber(info.employeeId) && info.employeeId > 0
+          ? await Employees.getEmployee(info.employeeId)
+          : null;
+        dispatch(newAppointmentActions.setBookedBy(employee));
+        dispatch(getSessionInfoSuccess(info, employee));
       })
-    );
+      .catch(error =>
+        dispatch({
+          type: GET_SESSION_DATA_FAILED,
+          data: { error },
+        }),
+      );
+  }
 };
 
 const userActions = {

@@ -24,7 +24,7 @@ const SalonTouchableOpacity = (WrappedComponent) => {
     });
 
     render() {
-      return <WrappedComponent {...this.props} onPress={this.onPress}/>;
+      return <WrappedComponent {...this.props} onPress={this.onPress} />;
     }
   }
 
