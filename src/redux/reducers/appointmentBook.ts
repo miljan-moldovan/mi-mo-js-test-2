@@ -24,7 +24,6 @@ import {
   PUT_BLOCKTIME_RESIZE_FAILED,
 } from '../actions/blockTime';
 import {
-  ADD_APPOINTMENT,
   SET_FILTER_OPTION_COMPANY,
   SET_FILTER_OPTION_POSITION,
   SET_FILTER_OPTION_OFF_EMPLOYEES,
@@ -200,18 +199,6 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
       return {
         ...state,
         filterOptions,
-      };
-    case ADD_APPOINTMENT:
-      if (Array.isArray(data.appointment)) {
-        for (let i = 0; i < data.appointment.length; i += 1) {
-          appointments.push(data.appointment[i]);
-        }
-      } else {
-        appointments.push(data.appointment);
-      }
-      return {
-        ...state,
-        appointments,
       };
     case SET_SELECTED_PROVIDER:
       return {

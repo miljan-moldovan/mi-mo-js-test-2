@@ -55,6 +55,7 @@ import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers
 
 const extendedMoment = getRangeExtendedMoment ();
 
+// helper that return an array with the total number of cards overlapping de one sent by params.
 const findOverlappingAppointments = (cardId, intermediateResultDict) => {
   const otherCardsOverlapping = intermediateResultDict[
     cardId
@@ -106,36 +107,42 @@ const dayWidth = screenWidth - 36;
 const weekWidth = (screenWidth - 36) / 7;
 const providerWidth = 130;
 const headerHeight = 40;
+const timeColumnWidth = 36;
+const cellHeight = 30;
 
 export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor (props) {
     super (props);
+    // the scrolled offset is saved in memory, this is needed when resizeing or dragging appoitnments
     this.offset = {x: 0, y: 0};
     this.setCellsByColumn (props);
     this.state = {
+      // arrays of appointments and blocktimes
       cardsArray: [],
       overlappingCardsMap: null,
       alert: null,
+      // needed for doing calcultion when dragging or resizing a card
       calendarMeasure: {
         width: 0,
         height: 0,
       },
-      calendarOffset: {
-        x: 0,
-        y: 0,
-      },
+      // appoitnments that are in the bottom move bar
       buffer: [],
+      // pan responder used for appointmets cards and block times
       pan: new Animated.ValueXY ({x: 0, y: 0}),
+      // Appointments with gaps are composed by 2 cards components the second one uses this pan responder
       pan2: new Animated.ValueXY ({x: 0, y: 0}),
       isResizeing: false,
     };
     this.size = {width: 0, height: 0};
     this.panResponder = PanResponder.create ({
       onPanResponderTerminationRequest: () => false,
+      // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
       onMoveShouldSetPanResponder: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard) && !this.state.alert,
+        (this.state.activeBlock || this.state.activeCard),
+      // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
       onMoveShouldSetPanResponderCapture: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard) && !this.state.alert,
+        (this.state.activeBlock || this.state.activeCard),
       onPanResponderMove: (e, gesture) => {
         const {dy, dx} = gesture;
         if (this.state.activeBlock || this.state.activeCard) {
@@ -154,12 +161,17 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               },
             ]) (e, gesture, gesture);
           }
+          // calculate size every time card is draged for resize, this is done by calculating the difference between previoud dy and new dy
           const size = this.moveY ? dy - this.moveY : dy;
+          // save current dy for calulating the size above
           this.moveY = dy;
           if (this.resizeCard) {
             const lastIndex =
               this.state.activeCard.verticalPositions.length - 1;
+            // call resizeCard function from card componet that calulate the hieght set it on the card and return it
             const newHeight = this.resizeCard.resizeCard (size);
+            // updates height on the active card
+            // Update the hieght only in the last card component, in case the appoinment have a gap there will be 2 cards componets
             this.state.activeCard.verticalPositions[
               lastIndex
             ].height = newHeight;
@@ -184,6 +196,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   componentDidMount () {
     const {appointments, blockTimes} = this.props;
+    // group block times and appointment filterOption
     this.setGroupedAppointments (this.props);
   }
 
@@ -202,7 +215,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.props.appointments !== appointments ||
       this.props.blockTimes !== blockTimes
     ) {
-      this.setGroupedAppointments (nextProps);
+      // if filters or appoinments changed grup appts again
+      this.setGroupedAppointments(nextProps);
     }
   }
 
@@ -212,6 +226,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       nextProps.displayMode !== this.props.displayMode ||
       !nextProps.isDetailsVisible  && this.props.isDetailsVisible !== nextProps.isDetailsVisible
     ) {
+      // calculate grid size every time the loading prop changes
       this.setCellsByColumn (nextProps);
     }
     if (nextProps.isLoading) {
@@ -221,11 +236,14 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       nextProps.startDate.format ('YYYY-MM-DD') !==
       this.props.startDate.format ('YYYY-MM-DD')
     ) {
+      // scroll to the begiing every time date changes. This is a solution to remove a gray space that appear wehn you
+      // were at the end of the calendar and you changed to a date with less columns or rows.
       this.board.scrollTo ({x: 0, y: 0});
     }
   }
 
   componentDidUpdate (prevProps) {
+    // scroll to appts position and highlight it
     if (this.goToPosition && !this.props.isLoading) {
       const top = this.goToPosition.top - this.state.calendarMeasure.height / 2;
       const left =
@@ -239,6 +257,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.props.clearGoToAppointment ();
       this.goToPosition = null;
     }
+    // center selected card
     if (!this.props.isDetailsVisible && this.props.isDetailsVisible !== prevProps.isDetailsVisible) {
       if (this.offset.y + this.state.calendarMeasure.height > this.size.height) {
           requestAnimationFrame(() => this.board.scrollTo ({
@@ -251,6 +270,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   }
 
   shouldComponentUpdate (nextProps, nextState) {
+    // only update when this props changes for better performance
     return (
       nextProps.displayMode !== this.props.displayMode ||
       this.props.isLoading !== nextProps.isLoading ||
@@ -263,6 +283,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     );
   }
 
+// group appoitnments and block time by filterOption
   setGroupedAppointments = ({
     blockTimes,
     appointments,
@@ -270,6 +291,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     selectedProvider,
     displayMode,
   }) => {
+
     let groupByCondition = ViewTypes[selectedFilter];
     if (selectedFilter === 'providers') {
       if (selectedProvider === 'all') {
@@ -403,6 +425,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     };
   };
 
+  // calculate grid size and cell width
   setCellsByColumn = (nextProps, extraHeight = 0) => {
     const {
       apptGridSettings,
@@ -423,29 +446,29 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           const showAvailability = availability &&
             selectedFilter === 'providers' && selectedProvider === 'all' ;
 
-          const firstColumnWidth = showAvailability ? 166 : 36;
+          const firstColumnWidth = showAvailability ? providerWidth + timeColumnWidth : timeColumnWidth;
           this.size = {
             width: headerData.length * providerWidth + firstColumnWidth,
-            height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
+            height: apptGridSettings.numOfRow * cellHeight + headerHeight + extraHeight,
           };
           this.cellWidth = providerWidth;
         } else if (displayMode === 'week') {
           this.size = {
-            width: headerData.length * weekWidth + 36,
-            height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
+            width: headerData.length * weekWidth + timeColumnWidth,
+            height: apptGridSettings.numOfRow * cellHeight + headerHeight + extraHeight,
           };
           this.cellWidth = weekWidth;
         } else {
           this.size = {
-            width: headerData.length * dayWidth + 36,
-            height: apptGridSettings.numOfRow * 30 + extraHeight,
+            width: headerData.length * dayWidth + timeColumnWidth,
+            height: apptGridSettings.numOfRow * cellHeight + extraHeight,
           };
           this.cellWidth = dayWidth;
         }
       } else {
         this.size = {
-          width: headerData.length * providerWidth + 36,
-          height: apptGridSettings.numOfRow * 30 + headerHeight + extraHeight,
+          width: headerData.length * providerWidth + timeColumnWidth,
+          height: apptGridSettings.numOfRow * cellHeight + headerHeight + extraHeight,
         };
         this.cellWidth = providerWidth;
       }
@@ -456,6 +479,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.isBufferCollapsed = isCollapsed;
   };
 
+  // calculate active card inital position
   getOnDragState = (
     isScrollEnabled,
     data,
@@ -468,8 +492,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.moveX = null;
     this.moveY = null;
     if (!isScrollEnabled) {
-      const offsetY = isBuffer ? -this.calendarPosition.y : 40 - this.offset.y;
-      const offsetX = isBuffer ? 0 : 36 - this.offset.x;
+      const offsetY = isBuffer ? -this.calendarPosition.y : headerHeight - this.offset.y;
+      const offsetX = isBuffer ? 0 : timeColumnWidth - this.offset.x;
       this.fixOffsetY = offsetY;
       const {pan, pan2} = this.state;
       const newVerticalPositions = [];
@@ -515,8 +539,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   measureScrollView = ({nativeEvent: {layout: {width, height}}}) => {
     const {calendarMeasure} = this.state;
-    const newWidth = width - 36;
-    const newHeight = height - 40;
+    const newWidth = width - timeColumnWidth;
+    const newHeight = height - headerHeight;
     if (
       calendarMeasure.width === newWidth ||
       calendarMeasure.height !== newHeight
@@ -554,6 +578,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     let dy = 0;
     const boundLength = 20;
     const maxScrollChange = 15;
+    // the 35 is the move bar height when it is collapsed, to collapse the move bar press the grey rectangle located at the top and centered
     const bufferHeights = this.isBufferCollapsed ? 35 : 110;
     const bufferHeight = bufferVisible ? bufferHeights : 0;
     if (moveableCard) {
@@ -563,16 +588,17 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         }
         const {cardWidth} = moveableCard;
         const maxWidth =
-          headerData.length * cellWidth - calendarMeasure.width + 130;
+          headerData.length * cellWidth - calendarMeasure.width + providerWidth;
         const scrollHorizontalBoundRight =
-          calendarMeasure.width - boundLength - cardWidth + 36;
-        const scrollHorizontalBoundLeft = boundLength + 36;
+          calendarMeasure.width - boundLength - cardWidth + timeColumnWidth;
+        const scrollHorizontalBoundLeft = boundLength + timeColumnWidth;
         const newMoveX = moveX + pan.x._offset;
         if (scrollHorizontalBoundRight < newMoveX) {
           dx = newMoveX - scrollHorizontalBoundRight;
         } else if (scrollHorizontalBoundLeft > newMoveX) {
           dx = newMoveX - scrollHorizontalBoundLeft;
         }
+        // dx !== 0 means the card is on the bounds so we need to scroll
         if (selectedProvider === 'all' && dx !== 0) {
           dx = Math.abs (dx) > boundLength ? boundLength * Math.sign (dx) : dx;
           dx = dx * maxScrollChange / boundLength;
@@ -635,6 +661,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     }
   };
 
+  // calculation for rezise are different from move so we created anotuer function
   scrollAnimationResize = () => {
     const {
       selectedProvider,
@@ -712,6 +739,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   }
 
   handleCardPressed = (appt, left, top) => {
+    // this is the height of the detials slide
     const height = HeightHelper.setPositionToMinimalOption();
     const fixHeight = 118;
     this.props.onCardPressed(appt);
@@ -737,6 +765,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         isBuffer
       ),
     };
+    // when drags start we set the active card in the state and call scrill function
     this.setState (newState, this.scrollAnimation);
   };
 
@@ -847,7 +876,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           btnLeftText: 'Cancel',
           btnRightText: 'Resize',
           onPressRight: () => {
-            this.handleRresizeConfirmation ({
+            this.handleResizeConfirmation ({
               id: data.id,
               date: data.date,
               fromTime: data.fromTime,
@@ -889,7 +918,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     }
   };
 
-  handleRresizeConfirmation = ({
+  handleResizeConfirmation = ({
     id,
     date,
     fromTime,
@@ -978,6 +1007,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.hideAlert ();
   };
 
+  // If client has more appt that day ask for moving them all
   showMoveAllClientsAppointmentsConfirmModal = (appointment, clientAppointments, result) => {
     const onPressRight = () => {
       this.setState({ alert: null }, ()=> {
@@ -1000,6 +1030,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.setState({ alert })
   }
 
+  // If client is in a party ask for move the hole party
   showMovePartyAppointmentsConfirmModal = (appointment, partyAppointments, result) => {
     const onPressRight = () => {
       this.setState({ alert: null }, ()=> {
@@ -1022,6 +1053,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.setState({ alert })
   }
 
+  // state machine that adds items to the move bar
   addItemToMoveBar = (appointment, result, state) => {
     const { appointments } = this.props;
     const { buffer } = this.state;
@@ -1111,6 +1143,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     }
   };
 
+  // logic after dropping the card
   handleMove = ({
     date,
     newTime,
@@ -1152,7 +1185,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         ],
       },
     };
-
+    // check for conflicts after moveing the card
     this.props.checkConflicts (conflictData).then (({data: {conflicts}}) => {
       if (conflicts && conflicts.length > 0) {
         if (index > -1) {
@@ -1301,10 +1334,10 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.hideAlert ();
   };
 
+  // calculation of the new position of the card. Here we calculate new time, new column and new height.
   handleReleaseCard = () => {
     this.moveX = null;
     this.moveY = null;
-    const cellHeight = 30;
     const {pan, activeCard, activeBlock, buffer} = this.state;
     const {
       cellWidth,
@@ -1482,6 +1515,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     return null;
   };
 
+  // render blocks inthe grid
   renderBlock = (blockTime, headerIndex, headerId) => {
     const {
       apptGridSettings,
@@ -1493,7 +1527,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       startDate,
     } = this.props;
     const {
-      calendarOffset,
       activeBlock,
       activeCard,
       buffer,
@@ -1522,6 +1555,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         : this.panResponder;
       const firstCellWidth = isAllProviderView ? 130 : 0;
 
+      // the gap is the space at the left of the card, card have this gap when they overlaps other ones.
       const gap =
         get (
           overlappingCardsMap,
@@ -1546,7 +1580,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           block={blockTime}
           apptGridSettings={apptGridSettings}
           onDrag={this.handleOnDragBlock}
-          calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleOnResize}
           isLoading={isLoading}
@@ -1560,6 +1593,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     return null;
   };
 
+  // renders block being move if any
   renderActiveBlock = () => {
     const {
       apptGridSettings,
@@ -1582,7 +1616,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           block={activeBlock.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           height={activeBlock.height}
           onDrop={this.handleCardDrop}
@@ -1596,6 +1629,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     return null;
   };
 
+  // render block being reiseze if any
   renderResizeBlock = () => {
     const {
       apptGridSettings,
@@ -1624,7 +1658,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           block={activeBlock.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           height={activeBlock.height}
           onDrop={this.handleCardDrop}
@@ -1646,6 +1679,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     return null;
   };
 
+  // render card in the grid
   renderCard = (appointment, headerIndex, headerId) => {
     const {toTime, fromTime} = appointment;
     const {
@@ -1662,7 +1696,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       crossedAppointmentAfter,
     } = this.props;
     const {
-      calendarOffset,
       activeCard,
       buffer,
       activeBlock,
@@ -1736,7 +1769,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           onDrag={this.handleOnDrag}
           onScrollX={this.scrollToX}
           onScrollY={this.scrollToY}
-          calendarOffset={calendarOffset}
           onDrop={this.handleDrop}
           onResize={this.handleResize}
           cellWidth={this.cellWidth}
@@ -1752,6 +1784,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     return null;
   };
 
+  // render card being dragged
   renderActiveCard = () => {
     const {
       apptGridSettings,
@@ -1774,7 +1807,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           appointment={activeCard.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           cardWidth={activeCard.cardWidth}
           height={activeCard.height}
@@ -1791,6 +1823,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     return null;
   };
 
+  // render card being resized
   renderResizeCard = () => {
     const {
       apptGridSettings,
@@ -1821,7 +1854,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           appointment={activeCard.data}
           apptGridSettings={apptGridSettings}
           onScrollY={this.scrollToY}
-          calendarOffset={this.offset}
           onResize={this.handleOnResize}
           width={activeCard.cardWidth}
           height={activeCard.height}
@@ -1960,6 +1992,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               renderBlock={this.renderBlock}
               cardActive={this.state.activeBlock || this.state.activeCard}
             />
+            {/* resize cards goes inside the grid becuase we want it to be relative positioned to it
+            this makes the card to not move it original while resizeing and scrolling thorugh the grid */}
             {this.renderResizeCard ()}
             {this.renderResizeBlock ()}
           </ScrollViewChild>
@@ -1994,6 +2028,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               </ScrollViewChild>
             : null}
         </ScrollView>
+        {/* buffer goes after calendar so it can be on top of it */}
         <Buffer
           panResponder={this.panResponder}
           dataSource={this.state.buffer}
@@ -2007,6 +2042,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           activeCard={activeCard}
           startDate={startDate}
         />
+        {/* actives card goues after calendar and buffer so it can be of top of them */}
         {this.renderActiveCard ()}
         {this.renderActiveBlock ()}
         <SalonAlert

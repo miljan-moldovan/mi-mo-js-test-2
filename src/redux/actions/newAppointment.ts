@@ -85,12 +85,12 @@ const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
 
-const addGuest = () => ({
+const addGuest = (client) => ({
   type: ADD_GUEST,
   data: {
     guest: {
       guestId: uuid(),
-      client: null,
+      client,
     },
   },
 });
@@ -564,10 +564,6 @@ const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Fu
 
   return Appointment.postNewAppointment(requestBody)
     .then(res => {
-      dispatch({
-        type: ADD_APPOINTMENT,
-        data: { appointment: res },
-      });
       dispatch(bookNewApptSuccess(successCallback));
     })
     .catch(err => {
@@ -885,10 +881,6 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
   requestBody.deletedIds = deletedIds;
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
-      dispatch({
-        type: ADD_APPOINTMENT,
-        data: { appointment: res },
-      });
       return dispatch(bookNewApptSuccess(successCallback));
     })
     .catch(err => {

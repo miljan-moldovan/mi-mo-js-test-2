@@ -139,8 +139,14 @@ class NewAppointmentScreen extends React.Component {
   }
 
   componentDidUpdate(prevProps: NewAppointmentScreenProps, prevState) {
-    const { isValidAppointment } = this.props;
+    const { isValidAppointment, newAppointmentState: { guests } } = this.props;
     const { canSave } = this.props.navigation.state.params;
+
+    if (prevProps.newAppointmentState.guests.length < guests.length) {
+      const guest = guests[guests.length - 1];
+      this.handleAddGuestService(guest.guestId);
+    }
+
     const remarksChanged =
       prevProps.newAppointmentState.remarks !==
       this.props.newAppointmentState.remarks;
@@ -602,9 +608,19 @@ class NewAppointmentScreen extends React.Component {
   onChangeRemarks = remarks =>
     this.props.newAppointmentActions.setRemarks(remarks);
 
+  addGuest = () => {
+    this.props.navigation.navigate('ApptBookClient', {
+      onChangeWithNavigation: (client, nav) => {
+          this.props.newAppointmentActions.addGuest(client);
+          nav.goBack();
+        }
+      })
+  }
+
   onChangeGuestNumber = (action, guestNumber) => {
     if (this.props.newAppointmentState.guests.length < guestNumber) {
-      this.props.newAppointmentActions.addGuest();
+      this.addGuest();
+      //this.props.newAppointmentActions.addGuest();
     } else {
       this.props.newAppointmentActions.removeGuest();
     }
