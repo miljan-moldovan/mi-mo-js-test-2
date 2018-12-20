@@ -1,8 +1,8 @@
 import { AsyncStorage } from 'react-native';
 
-import processError from '../../utilities/processError';
-import { Login } from '../../utilities/apiWrapper';
-import { JWTKEY } from '../../utilities/apiWrapper/api';
+import processError from '@//utilities/processError';
+import { Login } from '@/utilities/apiWrapper';
+import { JWTKEY } from '@/utilities/apiWrapper/api';
 import { Maybe } from '@/models';
 
 export type DataError = {
