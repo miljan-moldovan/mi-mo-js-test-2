@@ -28,29 +28,42 @@ const returnData = {
   },
 };
 
-mock.onDelete('Queue/Group/101').reply(200, returnData);
+const id = 101;
+const reqData = {
+  queueItemId: id,
+  employeeId: id,
+  idEmployee: id,
+  serviceId: id,
+  idService: id,
+  groupId: id,
+  clientQueueId: id,
+  serviceEmployeeId: id,
+  id,
+};
+
+mock.onDelete(`Queue/Group/${id}`).reply(200, returnData);
 mock.onGet('Queue').reply(200, returnData);
-mock.onGet('Queue/101').reply(200, returnData);
+mock.onGet(`Queue/${id}`).reply(200, returnData);
 mock.onGet('Queue/ClientsToday').reply(200, returnData);
-mock.onGet('Queue/101/ServiceEmployee/101/Services').reply(200, returnData);
+mock.onGet(`Queue/${id}/ServiceEmployee/${id}/Services`).reply(200, returnData);
 mock.onGet('Queue/Group').reply(200, returnData);
-mock.onGet('Queue/101/Service/101/Employees').reply(200, returnData);
-mock.onGet('Queue/101/ServiceEmployee/101/Services').reply(200, returnData);
+mock.onGet(`Queue/${id}/Service/${id}/Employees`).reply(200, returnData);
+mock.onGet(`Queue/${id}/ServiceEmployee/${id}/Services`).reply(200, returnData);
 mock.onGet('Queue/State').reply(200, returnData);
 mock.onPost('Queue/Group').reply(200, returnData);
 mock.onPost('Queue/WalkIn/Client').reply(200, returnData);
 mock.onPost('Queue/Walkin/Walkin').reply(200, returnData);
-mock.onPut('Queue/101').reply(200, returnData);
-mock.onPut('Queue/101/Employee/101/Service/101/Service').reply(200, returnData);
-mock.onPut('Queue/101/Employee/101/Service/101/Employee').reply(200, returnData);
-mock.onPut('Queue/Group/101/Leader/101').reply(200, returnData);
-mock.onPut('Queue/101/ServiceEmployee/101/Employee').reply(200, returnData);
-mock.onPut('Queue/101/ServiceEmployee/101/Service').reply(200, returnData);
-mock.onPut('Queue/Service/ByEmployee/101').reply(200, returnData);
+mock.onPut(`Queue/${id}`).reply(200, returnData);
+mock.onPut(`Queue/${id}/Employee/${id}/Service/${id}/Service`).reply(200, returnData);
+mock.onPut(`Queue/${id}/Employee/${id}/Service/${id}/Employee`).reply(200, returnData);
+mock.onPut(`Queue/Group/${id}/Leader/${id}`).reply(200, returnData);
+mock.onPut(`Queue/${id}/ServiceEmployee/${id}/Employee`).reply(200, returnData);
+mock.onPut(`Queue/${id}/ServiceEmployee/${id}/Service`).reply(200, returnData);
+mock.onPut(`Queue/Service/ByEmployee/${id}`).reply(200, returnData);
 
 describe('Queue', () => {
   test('deleteQueueGroup should return correct property', async () => {
-    const res = await deleteQueueGroup(101);
+    const res = await deleteQueueGroup(id);
     expect(res).toEqual(returnData.response);
   });
   test('getQueue should return correct property', async () => {
@@ -58,7 +71,7 @@ describe('Queue', () => {
     expect(res).toEqual(returnData.response);
   });
   test('getQueueById should return correct property', async () => {
-    const res = await getQueueById(101);
+    const res = await getQueueById(id);
     expect(res).toEqual(returnData.response);
   });
   test('getQueueClientsToday should return correct property', async () => {
@@ -66,7 +79,7 @@ describe('Queue', () => {
     expect(res).toEqual(returnData.response);
   });
   test('getQueueEmployeeServices should return correct property', async () => {
-    const res = await getQueueEmployeeServices({ id: 101, idEmployee: 101 });
+    const res = await getQueueEmployeeServices(reqData);
     expect(res).toEqual(returnData.response);
   });
   test('getQueueGroups should return correct property', async () => {
@@ -74,39 +87,39 @@ describe('Queue', () => {
     expect(res).toEqual(returnData.response);
   });
   test('getQueueServiceEmployees should return correct property', async () => {
-    const res = await getQueueServiceEmployees({ id: 101, idService: 101 });
+    const res = await getQueueServiceEmployees(reqData);
     expect(res).toEqual(returnData.response);
   });
   test('postQueueGroup should return correct property', async () => {
-    const res = await postQueueGroup(101);
+    const res = await postQueueGroup(id);
     expect(res).toEqual(returnData.response);
   });
   test('postQueueWalkinClient should return correct property', async () => {
-    const res = await postQueueWalkinClient(101);
+    const res = await postQueueWalkinClient(id);
     expect(res).toEqual(returnData.response);
   });
   test('postQueueWalkinWalkin should return correct property', async () => {
-    const res = await postQueueWalkinWalkin(101);
+    const res = await postQueueWalkinWalkin(id);
     expect(res).toEqual(returnData.response);
   });
   test('putQueue should return correct property', async () => {
-    const res = await putQueue(101, 101);
+    const res = await putQueue(id, id);
     expect(res).toEqual(returnData.response);
   });
   test('putQueueEmployeeService should return correct property', async () => {
-    const res = await putQueueEmployeeService({ queueItemId: 101, employeeId: 101, serviceId: 101 }, 101);
+    const res = await putQueueEmployeeService(reqData, 'test');
     expect(res).toEqual(returnData.response);
   });
   test('putQueueEmployeeServiceEmployee should return correct property', async () => {
-    const res = await putQueueEmployeeServiceEmployee({ queueItemId: 101, employeeId: 101, serviceId: 101 }, 101);
+    const res = await putQueueEmployeeServiceEmployee(reqData, 'test');
     expect(res).toEqual(returnData.response);
   });
   test('putQueueGroupLeader should return correct property', async () => {
-    const res = await putQueueGroupLeader({ groupId: 101, clientQueueId: 101 }, 101);
+    const res = await putQueueGroupLeader(reqData, id);
     expect(res).toEqual(returnData.response);
   });
   test('putServiceByEmployee should return correct property', async () => {
-    const res = await putServiceByEmployee(101, 101);
+    const res = await putServiceByEmployee(id, id);
     expect(res).toEqual(returnData.response);
   });
   test('getQueueState should return correct property', async () => {
@@ -114,15 +127,15 @@ describe('Queue', () => {
     expect(res).toEqual(returnData.response);
   });
   test('getQueueServiceEmployeeServices should return correct property', async () => {
-    const res = await getQueueServiceEmployeeServices({ id: 101, serviceEmployeeId: 101 });
+    const res = await getQueueServiceEmployeeServices(reqData);
     expect(res).toEqual(returnData.response);
   });
   test('putQueueServiceEmployeeEmployee should return correct property', async () => {
-    const res = await putQueueServiceEmployeeEmployee(101, 101, { some: 'new service' });
+    const res = await putQueueServiceEmployeeEmployee(id, id, 'testService');
     expect(res).toEqual(returnData.response);
   });
   test('putQueueServiceEmployeeService should return correct property', async () => {
-    const res = await putQueueServiceEmployeeService(101, 101, { some: 'new service' });
+    const res = await putQueueServiceEmployeeService(id, id, 'testService');
     expect(res).toEqual(returnData.response);
   });
 });
