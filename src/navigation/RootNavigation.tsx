@@ -118,7 +118,7 @@ class RootNavigator extends React.Component {
       loggedIn &&
       (!useFingerprintId || fingerprintExpireTime > Date.now())
     ) {
-      if (!this.props.userInfo.isLoading && !this.props.userInfo.currentEmployee) {
+      if (!this.props.userInfo.isLoading && !this.props.userInfo.doneFetching) {
         this.props.userActions.getEmployeeData();
       }
       return (
