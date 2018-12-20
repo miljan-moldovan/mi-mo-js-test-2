@@ -575,10 +575,6 @@ const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Fu
 
   return Appointment.postNewAppointment(requestBody)
     .then(res => {
-      dispatch({
-        type: ADD_APPOINTMENT,
-        data: { appointment: res },
-      });
       dispatch(bookNewApptSuccess(successCallback));
     })
     .catch(err => {
@@ -885,10 +881,6 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
   requestBody.deletedIds = deletedIds;
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
-      dispatch({
-        type: ADD_APPOINTMENT,
-        data: { appointment: res },
-      });
       return dispatch(bookNewApptSuccess(successCallback));
     })
     .catch(err => {

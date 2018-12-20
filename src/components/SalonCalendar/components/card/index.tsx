@@ -56,6 +56,7 @@ class Card extends React.Component {
 
   getAfterGapHeight = () => this.props.height - this.getAfterTimeHeight() - this.getGapHeight();
 
+// get card size, zindex and position
   getCardProperties = () => {
     const {
       isBufferCard,
@@ -66,6 +67,7 @@ class Card extends React.Component {
       left,
       width,
     } = this.props;
+    // if card is active one and is being drag size and position come from params
     if (!isResizeCard && activeCard) {
       const { verticalPositions } = activeCard;
       const opacity = isResizeing ? 0 : 1;
@@ -78,6 +80,7 @@ class Card extends React.Component {
         isActiveEmployeeInCellTime: true,
       };
     }
+    // cards in buffer have some hardcore properties like position adn height
     if (!activeCard && isBufferCard) {
       return {
         left,
@@ -88,6 +91,7 @@ class Card extends React.Component {
         isActiveEmployeeInCellTime: true,
       };
     }
+    // if is not buffer nor active card size and position are caluclated
     const {
       appointment: {
         toTime,
@@ -117,6 +121,8 @@ class Card extends React.Component {
     const apptToTimeMoment = moment(toTime, 'HH:mm');
     const startTimeMoment = moment(minStartTime, 'HH:mm');
     // calculate height and top
+    // vertical position is an array containg the top position and the hiegth of the card
+    // if the card has gaps vertical position will have 2 items
     const verticalPositions = [];
     let height = null;
     let top = null;
@@ -180,6 +186,7 @@ class Card extends React.Component {
     };
   }
 
+  // updates heigth of the card and returns it
   resizeCard = (size) => {
     let { height } = this.state;
     if (height + size >= 30) {
@@ -235,6 +242,7 @@ class Card extends React.Component {
     ).start();
   }
 
+  // render assitants on card when setting is enable
   renderAssistant = ({ height }) => (
     <View
       style={[styles.assistantContainer, { height: height - 10 }]}
@@ -257,6 +265,7 @@ class Card extends React.Component {
     );
   }
 
+  // render stripes when card from or to time is out of bounds
   renderStripes = ({ height, width, backgroundColor }) => {
     let gap = 0;
     let countGap2 = 0;

@@ -110,6 +110,8 @@ export default class Column extends React.Component<ColumnProps, any> {
     let storeTodaySchedule;
     let isEmployeeException = '';
     let storeExceptionComment = '';
+    // get store schedule for specific date or week depending on the type of view
+    // also checko if there is an exception for the date
     if (!isDate) {
       exception = get(storeScheduleExceptions, ['0'], null);
       storeTodaySchedule = exception ?
@@ -130,6 +132,7 @@ export default class Column extends React.Component<ColumnProps, any> {
       && (cell.isSame(moment(storeTodaySchedule.end1, 'HH:mm'), 'minute') || cell.isSame(moment(storeTodaySchedule.end2, 'HH:mm'), 'minute')) ? storeTodaySchedule.comments : null;
 
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
+    // checko if cell is between time the store is off
     if (!isStoreOff) {
       isStoreOff =
         !this.isBetweenTimes(
@@ -144,6 +147,7 @@ export default class Column extends React.Component<ColumnProps, any> {
             moment(storeTodaySchedule.end2, 'HH:mm')
           ));
     }
+    // o'clock times go bold and dosent show minutes
     let styleOclock = '';
     const timeSplit = moment(cell).add(15, 'm').format('h:mm').split(':');
     const minutesSplit = timeSplit[1];
@@ -152,45 +156,37 @@ export default class Column extends React.Component<ColumnProps, any> {
     }
     let style = styles.cellContainerDisabled;
     if (!isStoreOff) {
-      let schedule;
-      switch (selectedFilter) {
-        case 'deskStaff':
-        case 'providers': {
-          if (isDate) {
-            const hasSchedule = providerSchedule[colData.format('YYYY-MM-DD')];
-            if (hasSchedule) {
-              [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
-              schedule = schedule ? schedule.scheduledIntervals : null;
+      let schedule = null;
+      if (selectedFilter === 'deskStaff' || selectedFilter === 'providers') {
+        // check if  is provide rview and set provider schedule
+        if (isDate) {
+          const hasSchedule = providerSchedule[colData.format('YYYY-MM-DD')];
+          if (hasSchedule) {
+            [schedule] = providerSchedule[colData.format('YYYY-MM-DD')];
+            schedule = schedule ? schedule.scheduledIntervals : null;
+          }
+        } else {
+          schedule = colData.scheduledIntervals;
+        }
+        if (schedule) {
+          for (let i = 0; i < schedule.length; i += 1) {
+            if (schedule[i].isException && schedule[i].comment) {
+              isEmployeeException += schedule[i].comment;
             }
-          } else {
-            schedule = colData.scheduledIntervals;
-          }
-          break;
-        }
-        case 'resources':
-        case 'rooms': {
-          style = styles.cellContainer;
-          break;
-        }
-        default:
-          break;
-      }
-      if (schedule) {
-        for (let i = 0; i < schedule.length; i += 1) {
-          if (schedule[i].isException && schedule[i].comment) {
-            isEmployeeException += schedule[i].comment;
-          }
-          if (schedule[i].isOff) {
-            break;
-          }
-          if (
-            cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
-            cell.isBefore(moment(schedule[i].end, 'HH:mm'))
-          ) {
-            style = styles.cellContainer;
-            break;
+            if (schedule[i].isOff) {
+              break;
+            }
+            if (
+              cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
+              cell.isBefore(moment(schedule[i].end, 'HH:mm'))
+            ) {
+              style = styles.cellContainer;
+              break;
+            }
           }
         }
+      } else {
+        style = styles.cellContainer;
       }
       return (
         <View key={cell.format('HH:mm')}>
