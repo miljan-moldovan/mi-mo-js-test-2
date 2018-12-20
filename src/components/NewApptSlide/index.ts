@@ -16,7 +16,7 @@ const mapStateToProps = state => ({
 const mapActionsToProps = dispatch => ({
   apptBookActions: bindActionCreators(
     { ...appointmentCalendarActions },
-    dispatch
+    dispatch,
   ),
   newApptActions: bindActionCreators({ ...newApptActions }, dispatch),
   servicesActions: bindActionCreators({ ...serviceActions }, dispatch),

@@ -3,14 +3,11 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
-  Switch,
-  ActivityIndicator,
   ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import {get, isString} from 'lodash';
-import FontAwesome, {Icons} from 'react-native-fontawesome';
+import { get, isString } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TextInputMask from 'react-native-text-input-mask';
 import ValidatableInput from './components/ValidatableInput';
 import ClientInput from './components/ClientInput';
@@ -34,17 +31,17 @@ const DefaultAvatar = props => (
   <View
     style={[
       styles.avatarDefaultComponent,
-      props.size ? {width: props.size, height: props.size} : '',
+      props.size ? { width: props.size, height: props.size } : '',
     ]}
   >
     <Text
       style={[
         styles.avatarDefaultComponentText,
-        props.fontSize ? {fontSize: props.fontSize} : '',
+        props.fontSize ? { fontSize: props.fontSize } : '',
       ]}
     >
       {props.provider && !props.provider.isFirstAvailable
-        ? `${get (props.provider, 'name[0]', '')}${get (props.provider, 'lastName[0]', '')}`
+        ? `${get(props.provider, 'name[0]', '')}${get(props.provider, 'lastName[0]', '')}`
         : 'FA'}
     </Text>
   </View>
@@ -75,7 +72,7 @@ const LabeledTextarea = props => (
   </View>
 );
 
-const RemoveButton = ({title, onPress, disabled = false}) => (
+const RemoveButton = ({ title, onPress, disabled = false }) => (
   <SalonTouchableOpacity
     style={{
       height: 44,
@@ -103,14 +100,14 @@ const RemoveButton = ({title, onPress, disabled = false}) => (
 const SectionTitle = props => (
   <View
     style={[
-      {height: 38, flexDirection: 'column', justifyContent: 'center'},
+      { height: 38, flexDirection: 'column', justifyContent: 'center' },
       props.style,
     ]}
   >
     <Text style={[styles.sectionTitle, props.sectionTitleStyle]}>
       {props.case === 'upper'
-        ? props.value.toUpperCase ()
-        : props.case === 'lower' ? props.value.toLowerCase () : props.value}
+        ? props.value.toUpperCase()
+        : props.case === 'lower' ? props.value.toLowerCase() : props.value}
     </Text>
   </View>
 );
@@ -123,10 +120,10 @@ SectionTitle.defaultProps = {
   case: 'upper',
 };
 
-const SectionDivider = props => <View style={[{height: 38}, props.style]} />;
+const SectionDivider = props => <View style={[{ height: 38 }, props.style]}/>;
 
 SectionDivider.propTypes = {
-  style: PropTypes.oneOfType ([PropTypes.bool, PropTypes.object]),
+  style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 
 SectionDivider.defaultProps = {
@@ -134,8 +131,8 @@ SectionDivider.defaultProps = {
 };
 
 const InputDivider = props => {
-  const style = props.fullWidth ? {width: '100%'} : {};
-  return <View style={[styles.inputDivider, style, props.style]} />;
+  const style = props.fullWidth ? { width: '100%' } : {};
+  return <View style={[styles.inputDivider, style, props.style]}/>;
 };
 
 InputDivider.propTypes = {
@@ -163,34 +160,34 @@ InputGroup.defaultProps = {
 const InputButton = props => {
   const icon = props.icon === 'default'
     ? <FontAwesome style={[styles.iconStyle, props.iconStyle]}>
-        {Icons.angleRight}
-      </FontAwesome>
+      {Icons.angleRight}
+    </FontAwesome>
     : props.icon;
 
   return (
     <SalonTouchableOpacity
-      style={[styles.inputRow, {justifyContent: 'center'}, props.style]}
+      style={[styles.inputRow, { justifyContent: 'center' }, props.style]}
       onPress={props.onPress}
       disabled={props.disabled || false}
     >
       {props.label && typeof props.label === 'string'
         ? <Text style={[styles.labelText, props.labelStyle]}>
-            {props.label}
-          </Text>
+          {props.label}
+        </Text>
         : props.label}
       <View
         style={[
-          {flex: 1, justifyContent: 'flex-end', flexDirection: 'row'},
+          { flex: 1, justifyContent: 'flex-end', flexDirection: 'row' },
           props.childrenContainerStyle,
         ]}
       >
         {typeof props.value === 'string'
           ? <Text
-              numberOfLines={1}
-              style={[styles.inputText, props.valueStyle]}
-            >
-              {props.value}
-            </Text>
+            numberOfLines={1}
+            style={[styles.inputText, props.valueStyle]}
+          >
+            {props.value}
+          </Text>
           : props.value}
         {props.children}
       </View>
@@ -203,19 +200,19 @@ export const propTypesObj = {
   style: ViewPropTypes.style,
   labelStyle: Text.propTypes.style,
   valueStyle: Text.propTypes.style,
-  label: PropTypes.oneOfType ([
+  label: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string,
     PropTypes.element,
   ]),
-  value: PropTypes.oneOfType ([
+  value: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string,
     PropTypes.element,
   ]),
   children: PropTypes.element,
-  icon: PropTypes.oneOfType ([PropTypes.element, PropTypes.bool]),
-  iconStyle: PropTypes.oneOfType ([PropTypes.bool, PropTypes.object]),
+  icon: PropTypes.oneOfType([PropTypes.element, PropTypes.bool]),
+  iconStyle: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 export const defaultPropsObj = {
   style: {},
@@ -233,29 +230,29 @@ InputButton.propTypes = propTypesObj;
 InputButton.defaultProps = defaultPropsObj;
 
 const InputLabel = props => (
-  <View style={[styles.inputRow, {justifyContent: 'center'}, props.style]}>
+  <View style={[styles.inputRow, { justifyContent: 'center' }, props.style]}>
     <Text style={[styles.labelText]}>{props.label}</Text>
-    <View style={{flex: 1, alignItems: 'flex-end'}}>
+    <View style={{ flex: 1, alignItems: 'flex-end' }}>
       <Text style={[styles.inputText]}>{props.value}</Text>
     </View>
   </View>
 );
 InputLabel.propTypes = {
-  label: PropTypes.oneOfType ([PropTypes.string, PropTypes.element]).isRequired,
-  value: PropTypes.oneOfType ([PropTypes.string, PropTypes.element]),
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 };
 InputLabel.defaultProps = {
   value: null,
 };
 
 const LabeledButton = props => (
-  <InputButton style={{alignSelf: 'stretch'}} onPress={props.onPress}>
-    <InputLabel label={props.label} value={props.value} />
+  <InputButton style={{ alignSelf: 'stretch' }} onPress={props.onPress}>
+    <InputLabel label={props.label} value={props.value}/>
   </InputButton>
 );
 LabeledButton.propTypes = {
-  label: PropTypes.oneOfType ([PropTypes.string, PropTypes.element]).isRequired,
-  value: PropTypes.oneOfType ([PropTypes.string, PropTypes.element]),
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   onPress: PropTypes.func.isRequired,
 };
 LabeledButton.defaultProps = {
@@ -264,34 +261,34 @@ LabeledButton.defaultProps = {
 
 const LabeledTextInput = props => (
   <View
-    style={[styles.inputRow, {justifyContent: 'space-between'}, props.style]}
+    style={[styles.inputRow, { justifyContent: 'space-between' }, props.style]}
   >
     <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
     {props.mask
       ? <TextInputMask
-          {...props}
-          style={[
-            styles.inputText,
-            {textAlign: 'right', flex: 1},
-            props.inputStyle,
-          ]}
-          numberOfLines={1}
-          value={props.value}
-          placeholder={props.placeholder}
-          placeholderTextColor="#727A8F"
-        />
+        {...props}
+        style={[
+          styles.inputText,
+          { textAlign: 'right', flex: 1 },
+          props.inputStyle,
+        ]}
+        numberOfLines={1}
+        value={props.value}
+        placeholder={props.placeholder}
+        placeholderTextColor="#727A8F"
+      />
       : <TextInput
-          {...props}
-          style={[
-            styles.inputText,
-            {textAlign: 'right', flex: 1},
-            props.inputStyle,
-          ]}
-          numberOfLines={1}
-          value={props.value}
-          placeholder={props.placeholder}
-          placeholderTextColor="#727A8F"
-        />}
+        {...props}
+        style={[
+          styles.inputText,
+          { textAlign: 'right', flex: 1 },
+          props.inputStyle,
+        ]}
+        numberOfLines={1}
+        value={props.value}
+        placeholder={props.placeholder}
+        placeholderTextColor="#727A8F"
+      />}
 
     {props.icon}
 
