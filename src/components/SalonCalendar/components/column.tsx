@@ -232,6 +232,7 @@ export default class Column extends React.Component<ColumnProps, any> {
     );
   };
 
+// render rooms name verticaly if settings is enable
   renderRooms() {
     const { colData, apptGridSettings, selectedFilter, rooms } = this.props;
     if (
