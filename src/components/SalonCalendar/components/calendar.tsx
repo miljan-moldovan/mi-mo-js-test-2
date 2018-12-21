@@ -279,7 +279,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.state.activeBlock !== nextState.activeBlock ||
       this.props.bufferVisible !== nextProps.bufferVisible ||
       this.props.isDetailsVisible !== nextProps.isDetailsVisible ||
-      this.props.filterOptions.showFirstAvailable !== nextProps.filterOptions.showFirstAvailable
+      this.props.filterOptions.showFirstAvailable !== nextProps.filterOptions.showFirstAvailable ||
+      this.state.isResizeing !== nextState.isResizeing
     );
   }
 
