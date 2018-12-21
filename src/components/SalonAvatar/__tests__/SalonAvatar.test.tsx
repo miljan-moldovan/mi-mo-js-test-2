@@ -4,6 +4,7 @@ import { Text, ActivityIndicator } from 'react-native';
 import SalonAvatar from '../index';
 
 describe('<SalonAvatar />', () => {
+
   const mountComponent = props =>
     shallow(
       <SalonAvatar {...props}/>,
@@ -97,6 +98,27 @@ describe('<SalonAvatar />', () => {
       expect(componentWithHasBadge.find('View')).toHaveLength(3);
       expect(componentWithHasBadge
         .containsMatchingElement(propsForRenderBadgeComponent.badgeComponent)).toBe(true);
+    });
+  });
+
+  describe('Check attribute', () => {
+
+    it('onError callback', () => {
+      const component = mountComponent(propsForRenderImage);
+      component.find('Image').simulate('error');
+
+      expect(component.state().isError).toBe(true);
+    });
+
+    it('onLoad callback', () => {
+      const component = mountComponent(propsForRenderImage);
+      const cachedImage = component.find('Image');
+
+      cachedImage.simulate('loadStart');
+      expect(component.state().isLoading).toBe(true);
+
+      cachedImage.simulate('loadEnd');
+      expect(component.state().isLoading).toBe(false);
     });
   });
 });
