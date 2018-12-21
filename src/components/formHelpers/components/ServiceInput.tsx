@@ -12,7 +12,7 @@ import { Services } from '../../../utilities/apiWrapper';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles } from '../index';
 
-export default class ServiceInput extends React.Component {
+export default class ServiceInput extends React.Component<any, any> {
   get shouldShowExtras() {
     const {
       selectedService = null,

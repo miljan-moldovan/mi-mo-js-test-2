@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import styles from './styles';
 
-class SalonInputModal extends React.Component {
+class SalonInputModal extends React.Component<any, any> {
   state = {
     value: '',
     visible: false,
