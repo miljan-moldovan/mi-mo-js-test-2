@@ -2,10 +2,6 @@ import moment from 'moment';
 import { Appointment } from '../../utilities/apiWrapper';
 import { appointmentCalendarActions } from './appointmentBook';
 
-export const ADD_APPOINTMENT = 'appointment/ADD_APPOINTMENT';
-export const GET_APPOINTMENTS = 'appointment/GET_APPOINTMENTS';
-export const GET_APPOINTMENTS_SUCCESS = 'appointment/GET_APPOINTMENTS_SUCCESS';
-export const GET_APPOINTMENTS_FAILED = 'appointment/GET_APPOINTMENTS_FAILED';
 export const POST_APPOINTMENT_MOVE = 'appointment/POST_APPOINTMENT_MOVE';
 export const POST_APPOINTMENT_MOVE_SUCCESS = 'appointment/POST_APPOINTMENT_MOVE_SUCCESS';
 export const POST_APPOINTMENT_MOVE_FAILED = 'appointment/POST_APPOINTMENT_MOVE_FAILED';
@@ -26,22 +22,6 @@ export const UNDO_MOVE_SUCCESS = 'appointment/UNDO_MOVE_SUCCESS';
 export const CHECK_APPT_CONFLICTS = 'appointment/CHECK_APPT_CONFLICTS';
 export const CHECK_APPT_CONFLICTS_SUCCESS = 'appointment/CHECK_APPT_CONFLICTS_SUCCESS';
 export const CHECK_APPT_CONFLICTS_FAILED = 'appointment/CHECK_APPT_CONFLICTS_FAILED';
-
-
-const addAppointment = appointment => ({
-  type: ADD_APPOINTMENT,
-  data: { appointment },
-});
-
-const getAppointmentsSuccess = appointmentResponse => ({
-  type: GET_APPOINTMENTS_SUCCESS,
-  data: { appointmentResponse },
-});
-
-const getAppointmentsFailed = error => ({
-  type: GET_APPOINTMENTS_FAILED,
-  data: { error },
-});
 
 const postAppointmentMoveSuccess = (appointment, oldAppointment) => ({
   type: POST_APPOINTMENT_MOVE_SUCCESS,
@@ -71,13 +51,6 @@ const postAppointmentCancelFailed = error => ({
   type: POST_APPOINTMENT_CANCEL_FAILED,
   data: { error },
 });
-
-const getAppoinments = date => (dispatch) => {
-  dispatch({ type: GET_APPOINTMENTS });
-  return Appointment.getAppointmentsByDate(date)
-    .then(response => dispatch(getAppointmentsSuccess(response)))
-    .catch(error => dispatch(getAppointmentsFailed(error)));
-};
 
 const postAppointmentMove = (appointmentId, params, oldAppointment) => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_MOVE });
@@ -187,8 +160,6 @@ const postAppointmentCheckout = appointmentId => (dispatch) => {
 
 
 const appointmentActions = {
-  addAppointment,
-  getAppoinments,
   postAppointmentCancel,
   postAppointmentMove,
   postAppointmentResize,
