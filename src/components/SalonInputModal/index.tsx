@@ -7,11 +7,32 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import PropTypes from 'prop-types';
-
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import styles from './styles';
 
 class SalonInputModal extends React.Component<any, any> {
+  private input: any;
+
+  static propTypes = {
+    visible: PropTypes.bool.isRequired,
+    placeholder: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    onPressOk: PropTypes.func.isRequired,
+    onPressCancel: PropTypes.func.isRequired,
+    value: PropTypes.string,
+    isTextArea: PropTypes.bool,
+    onChangeText: PropTypes.func,
+  };
+
+  static defaultProps = {
+    description: null,
+    value: '',
+    placeholder: '',
+    isTextArea: true,
+    onChangeText: null,
+  };
+
   state = {
     value: '',
     visible: false,
@@ -29,20 +50,20 @@ class SalonInputModal extends React.Component<any, any> {
     }
   }
 
-  onPressOk = () => this.props.onPressOk(this.state.value)
+  onPressOk = () => this.props.onPressOk(this.state.value);
 
   onPressCancel = () => {
     this.setState({ value: '' });
     this.props.onPressCancel();
-  }
+  };
 
   onshow = () => {
     if (this.input) {
       this.input.focus();
     }
-  }
+  };
 
-  handleChangeInput = value => this.setState({ value })
+  handleChangeInput = value => this.setState({ value });
 
   render() {
     const { isTextArea } = this.props;
@@ -50,7 +71,8 @@ class SalonInputModal extends React.Component<any, any> {
       <Modal
         visible={this.state.visible}
         transparent
-        style={{ marginBottom: 60 }}
+        // @ts-ignore
+        style={styles.modalPosition}
         onShow={this.onshow}
       >
         <View style={styles.container}>
@@ -62,10 +84,12 @@ class SalonInputModal extends React.Component<any, any> {
               <View style={styles.header}>
                 <Text
                   style={[styles.title, this.props.description ? styles.titleWithDescription : {}]}
-                >{this.props.title}
+                >
+                  {this.props.title}
                 </Text>
-                {this.props.description ?
-                  <Text style={styles.description}>{this.props.description}</Text>
+                {
+                  this.props.description
+                  ? <Text style={styles.description}>{this.props.description}</Text>
                   : null
                 }
               </View>
@@ -75,7 +99,6 @@ class SalonInputModal extends React.Component<any, any> {
                     ref={(input) => { this.input = input; }}
                     style={isTextArea ? styles.textArea : styles.textInput}
                     multiline={isTextArea}
-                    autoGrow={isTextArea}
                     numberOfLines={isTextArea ? 20 : 1}
                     placeholderTextColor="#727A8F"
                     placeholder={this.props.placeholder}
@@ -89,15 +112,13 @@ class SalonInputModal extends React.Component<any, any> {
                   style={[styles.footerButton, styles.rightBorder]}
                   onPress={this.onPressCancel}
                 >
-                  <Text style={styles.textCancel}>Cancel
-                  </Text>
+                  <Text style={styles.textCancel}>Cancel</Text>
                 </SalonTouchableOpacity>
                 <SalonTouchableOpacity
                   style={styles.footerButton}
                   onPress={this.onPressOk}
                 >
-                  <Text style={styles.textOk}>Ok
-                  </Text>
+                  <Text style={styles.textOk}>Ok</Text>
                 </SalonTouchableOpacity>
               </View>
             </View>
@@ -107,25 +128,5 @@ class SalonInputModal extends React.Component<any, any> {
     );
   }
 }
-
-SalonInputModal.defaultProps = {
-  description: null,
-  value: '',
-  placeholder: '',
-  isTextArea: true,
-  onChangeText: null,
-};
-
-SalonInputModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
-  placeholder: PropTypes.string,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string,
-  onPressOk: PropTypes.func.isRequired,
-  onPressCancel: PropTypes.func.isRequired,
-  value: PropTypes.string,
-  isTextArea: PropTypes.bool,
-  onChangeText: PropTypes.func,
-};
 
 export default SalonInputModal;
