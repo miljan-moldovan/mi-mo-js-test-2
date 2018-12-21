@@ -4,6 +4,16 @@ function delay(timeout) {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
+type Response = {
+  errorMessages?: any[],
+  success?: boolean,
+  errors?: Errors,
+};
+type Errors = {
+  usernameError: boolean,
+  urlError: boolean,
+}
+
 export default async ({ url, username }) => {
   const apiInstance = await getApiInstance();
   let responseObject;
@@ -17,7 +27,7 @@ export default async ({ url, username }) => {
   const urlError = url !== 'sportclips';
   let usernameError = false;
 
-  const response = {
+  const response: Response = {
     errorMessages: [],
   };
 

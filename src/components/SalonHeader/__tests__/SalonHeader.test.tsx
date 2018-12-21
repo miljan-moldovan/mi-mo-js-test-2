@@ -2,16 +2,43 @@ import * as React from 'react';
 import { shallow } from 'enzyme';
 import SalonHeader from '../index';
 import { Text } from 'react-native';
-import {
-  propsForHeaderRight,
-  propsForHeaderLeft,
-  propsForHeaderTitleAsStringWithoutSubtitle,
-  propsForHeaderTitleAsComponentWithoutSubtitle,
-  propsForHeaderTitleAsComponentWithSubtitleAsString,
-  propsForHeaderTitleAsComponentWithSubtitleAsComponent,
-  propsForHeaderTitleAsStringWithSubtitleAsComponent,
-  propsForHeaderTitleAsStringWithSubtitleAsString,
-} from './dataForTest';
+const propsForHeaderRight = {
+  title: 'Title is work',
+  headerRight: (<Text>Render header right</Text>),
+};
+
+const propsForHeaderLeft = {
+  title: 'Title is work',
+  headerLeft: (<Text>Render left right</Text>),
+};
+
+const propsForHeaderTitleAsStringWithoutSubtitle = {
+  title: 'Render title as string',
+};
+
+const propsForHeaderTitleAsComponentWithoutSubtitle = {
+  title: (<Text>Render Title</Text>),
+};
+
+const propsForHeaderTitleAsComponentWithSubtitleAsString = {
+  title: (<Text>Render title as component</Text>),
+  subTitle: 'Render subTitle as string',
+};
+
+const propsForHeaderTitleAsComponentWithSubtitleAsComponent = {
+  title: (<Text>Render title as component</Text>),
+  subTitle: (<Text>Render subTitle as component</Text>),
+};
+
+const propsForHeaderTitleAsStringWithSubtitleAsComponent = {
+  title: 'Render title as component',
+  subTitle: (<Text>Render subTitle as component</Text>),
+};
+
+const propsForHeaderTitleAsStringWithSubtitleAsString = {
+  title: 'Render title as component',
+  subTitle: 'Render subTitle as string',
+};
 
 describe('<SalonHeader />', () => {
 

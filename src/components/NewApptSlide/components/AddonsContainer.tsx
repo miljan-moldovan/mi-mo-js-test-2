@@ -21,7 +21,12 @@ const Addon = props => (
         color="black"
         size={12}
       />
-      <Text style={styles.addonInputText} numberOfLines={1}>{props.title.slice(0,30)}{props.title.length > 30 ? '...' : ''}</Text>
+      <Text
+        style={styles.addonInputText}
+        numberOfLines={1}
+      >
+        {props.title.slice(0, 30)}{props.title.length > 30 ? '...' : ''}
+      </Text>
       {props.number > 0 && (
         <View style={styles.addonCount}>
           <Text style={styles.addonCountText}>+{props.number}</Text>

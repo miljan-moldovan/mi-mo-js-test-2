@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import styles from './styles';
 
-class SalonInputModal extends React.Component {
+class SalonInputModal extends React.Component<any, any> {
   state = {
     value: '',
     visible: false,
@@ -53,10 +53,7 @@ class SalonInputModal extends React.Component {
         style={{ marginBottom: 60 }}
         onShow={this.onshow}
       >
-        <View style={[
-          styles.container,
-        ]}
-        >
+        <View style={styles.container}>
           <KeyboardAvoidingView
             style={[styles.keyboardContainer, styles.container]}
             behavior="padding"

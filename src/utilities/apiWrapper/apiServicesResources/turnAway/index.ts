@@ -1,5 +1,5 @@
 import postTurnAway from './postTurnAway';
 
 export {
-  postTurnAway
+  postTurnAway,
 };
