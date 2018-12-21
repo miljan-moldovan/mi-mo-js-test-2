@@ -1,8 +1,6 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
-const createStyleSheet = () => StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     height: 40,
@@ -90,8 +88,11 @@ const createStyleSheet = () => StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Roboto',
   },
-  cancelButton: { paddingLeft: 10, fontSize: 14, color: 'white' },
-
+  cancelButton: {
+    // paddingLeft: 10,
+    fontSize: 14,
+    color: 'white',
+  },
 });
 
-export default createStyleSheet;
+export default styles;

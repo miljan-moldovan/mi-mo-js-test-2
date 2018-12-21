@@ -10,7 +10,7 @@ export default StyleSheet.create({
     flex: 1,
     height: 44,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'space-between',
   },
   titleText: {
@@ -27,10 +27,13 @@ export default StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   headerRight: {
     flex: 1,
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   headerTitle: {
     flex: 3,
