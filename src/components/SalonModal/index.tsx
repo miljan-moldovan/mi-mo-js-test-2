@@ -97,7 +97,7 @@ const SalonModal = props => (
 SalonModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
-  children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.element), PropTypes.object]),
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   tailStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),

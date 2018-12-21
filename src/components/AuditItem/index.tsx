@@ -1,4 +1,3 @@
-// tslint:disable:max-line-length
 import * as React from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
@@ -12,9 +11,12 @@ const AuditInfoItem = ({ singleAudit, isBlockTime }) => (
     ?
       (
         <React.Fragment>
-          <Text style={styles.auditInfoText}>
-            at {formatDate(singleAudit.auditDateTime)}, {singleAudit.auditDateTime ? ` ${formatTimeWithMinutes(singleAudit.auditDateTime)} ` : ''}
-          </Text>
+          {
+            singleAudit.auditDateTime &&
+            <Text style={styles.auditInfoText}>
+              at {formatDate(singleAudit.auditDateTime)}, {formatTimeWithMinutes(singleAudit.auditDateTime)}
+            </Text>
+          }
           <Text style={styles.auditDateText}>{formatEmployeeName(singleAudit.auditEmployee)}</Text>
         </React.Fragment>
       )
@@ -22,12 +24,16 @@ const AuditInfoItem = ({ singleAudit, isBlockTime }) => (
       (
         <React.Fragment>
           <Text style={styles.auditInfoText}>
-            {singleAudit.service || ''} with {formatEmployeeName(singleAudit.provider)} on {formatDate(singleAudit.appointmentDate)} at{' '}
+            {singleAudit.service || ''} with {formatEmployeeName(singleAudit.provider)} on {
+              formatDate(singleAudit.appointmentDate)} at {' '}
             {formatTime(singleAudit.appointmentStartTime)}
           </Text>
-          <Text style={styles.auditDateText}>
-            by {formatEmployeeName(singleAudit.auditEmployee)} on {singleAudit.auditDateTime ? formatDate(singleAudit.auditDateTime) : ''}
-          </Text>
+          {
+            singleAudit.auditDateTime &&
+            <Text style={styles.auditDateText}>
+              by {formatEmployeeName(singleAudit.auditEmployee)} on {formatDate(singleAudit.auditDateTime)}
+            </Text>
+          }
         </React.Fragment>
       )
     }

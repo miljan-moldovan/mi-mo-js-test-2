@@ -65,4 +65,25 @@ describe('AuditInfo: helperFunctions', () => {
       expect(getAuditType(10)).not.toBe('--');
     });
   });
+
+  describe('formatDate()', () => {
+    it('Should return date in format MM/DD/YYYY', () => {
+      const dateTime = '2018-12-19T14:53:51';
+      expect(formatDate(dateTime)).toBe('12/19/2018');
+    });
+  });
+
+  describe('formatTime()', () => {
+    it('Should return time in format hh:mm A', () => {
+      const dateTime = '14:45:00';
+      expect(formatTime(dateTime)).toBe('02:45 PM');
+    });
+  });
+
+  describe('formatTimeWithMinutes()', () => {
+    it('Should return time in format hh:mm A', () => {
+      const dateTime = '2018-12-19T14:53:51';
+      expect(formatTimeWithMinutes(dateTime)).toBe('02:53 PM');
+    });
+  });
 });
