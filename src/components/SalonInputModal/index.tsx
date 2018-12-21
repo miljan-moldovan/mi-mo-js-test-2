@@ -53,10 +53,7 @@ class SalonInputModal extends React.Component<any, any> {
         style={{ marginBottom: 60 }}
         onShow={this.onshow}
       >
-        <View style={[
-          styles.container,
-        ]}
-        >
+        <View style={styles.container}>
           <KeyboardAvoidingView
             style={[styles.keyboardContainer, styles.container]}
             behavior="padding"

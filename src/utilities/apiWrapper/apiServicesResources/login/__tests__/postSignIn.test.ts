@@ -11,11 +11,20 @@ const returnData = {
   },
 };
 
-mock.onPost('MobilePos/SignIn').reply(200, returnData);
+mock
+  .onPost('MobilePos/SignIn').replyOnce(200, returnData)
+  .onPost('MobilePos/SignIn').replyOnce(501, returnData)
+  .onPost('MobilePos/SignIn').networkError();
 
 describe('postSignIn', () => {
   test('Should return correct property', async () => {
     const res = await postSignIn('url', 'username', 'password');
     expect(res).toEqual(returnData);
+  });
+  test('Should not throw if request failed, resolves to error message', async () => {
+    await expect(postSignIn('url', 'username', 'password'))
+            .resolves.toEqual(returnData);
+    await expect(postSignIn('url', 'username', 'password'))
+            .resolves.toEqual(Error('Network Error'));
   });
 });

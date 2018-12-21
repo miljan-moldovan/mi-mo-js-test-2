@@ -41,25 +41,26 @@ const reqData = {
   id,
 };
 
-mock.onDelete(`Queue/Group/${id}`).reply(200, returnData);
-mock.onGet('Queue').reply(200, returnData);
-mock.onGet(`Queue/${id}`).reply(200, returnData);
-mock.onGet('Queue/ClientsToday').reply(200, returnData);
-mock.onGet(`Queue/${id}/ServiceEmployee/${id}/Services`).reply(200, returnData);
-mock.onGet('Queue/Group').reply(200, returnData);
-mock.onGet(`Queue/${id}/Service/${id}/Employees`).reply(200, returnData);
-mock.onGet(`Queue/${id}/ServiceEmployee/${id}/Services`).reply(200, returnData);
-mock.onGet('Queue/State').reply(200, returnData);
-mock.onPost('Queue/Group').reply(200, returnData);
-mock.onPost('Queue/WalkIn/Client').reply(200, returnData);
-mock.onPost('Queue/Walkin/Walkin').reply(200, returnData);
-mock.onPut(`Queue/${id}`).reply(200, returnData);
-mock.onPut(`Queue/${id}/Employee/${id}/Service/${id}/Service`).reply(200, returnData);
-mock.onPut(`Queue/${id}/Employee/${id}/Service/${id}/Employee`).reply(200, returnData);
-mock.onPut(`Queue/Group/${id}/Leader/${id}`).reply(200, returnData);
-mock.onPut(`Queue/${id}/ServiceEmployee/${id}/Employee`).reply(200, returnData);
-mock.onPut(`Queue/${id}/ServiceEmployee/${id}/Service`).reply(200, returnData);
-mock.onPut(`Queue/Service/ByEmployee/${id}`).reply(200, returnData);
+mock
+  .onDelete(`Queue/Group/${id}`).reply(200, returnData)
+  .onGet('Queue').reply(200, returnData)
+  .onGet(`Queue/${id}`).reply(200, returnData)
+  .onGet('Queue/ClientsToday').reply(200, returnData)
+  .onGet(`Queue/${id}/ServiceEmployee/${id}/Services`).reply(200, returnData)
+  .onGet('Queue/Group').reply(200, returnData)
+  .onGet(`Queue/${id}/Service/${id}/Employees`).reply(200, returnData)
+  .onGet(`Queue/${id}/ServiceEmployee/${id}/Services`).reply(200, returnData)
+  .onGet('Queue/State').reply(200, returnData)
+  .onPost('Queue/Group').reply(200, returnData)
+  .onPost('Queue/WalkIn/Client').reply(200, returnData)
+  .onPost('Queue/Walkin/Walkin').reply(200, returnData)
+  .onPut(`Queue/${id}`).reply(200, returnData)
+  .onPut(`Queue/${id}/Employee/${id}/Service/${id}/Service`).reply(200, returnData)
+  .onPut(`Queue/${id}/Employee/${id}/Service/${id}/Employee`).reply(200, returnData)
+  .onPut(`Queue/Group/${id}/Leader/${id}`).reply(200, returnData)
+  .onPut(`Queue/${id}/ServiceEmployee/${id}/Employee`).reply(200, returnData)
+  .onPut(`Queue/${id}/ServiceEmployee/${id}/Service`).reply(200, returnData)
+  .onPut(`Queue/Service/ByEmployee/${id}`).reply(200, returnData);
 
 describe('Queue', () => {
   test('deleteQueueGroup should return correct property', async () => {
