@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 import styles from './styles';
 
-function UserNameInput(props) {
+const UserNameInput = (props) => {
   const {
     loggedIn,
     userNameError,
@@ -20,6 +20,7 @@ function UserNameInput(props) {
       <Input
         style={[styles.input, username ?
           styles.inputFontFamily : styles.inputPlaceholderFontFamily]}
+        // @ts-ignore this is exist in native base documentation
         underline={false}
         disabled={loggedIn}
         autoCorrect={false}
@@ -32,7 +33,7 @@ function UserNameInput(props) {
       />
     </View>
   );
-}
+};
 
 UserNameInput.propTypes = {
   handleUsernameChange: PropTypes.func.isRequired,

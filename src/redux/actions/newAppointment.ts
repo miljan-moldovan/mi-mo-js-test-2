@@ -856,7 +856,7 @@ const messageProvidersClients = (
       callback(false);
     });
 };
-
+// tslint:disable-next-line
 const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, errorCallback: Maybe<Function> = null): any => (
   dispatch,
   getState,

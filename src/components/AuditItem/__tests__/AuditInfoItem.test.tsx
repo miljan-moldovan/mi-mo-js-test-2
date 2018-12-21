@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import AuditInfoItem from '../index';
-import { getAuditType, formatDate, formatTime, formatTimeWithMinutes, formatEmployeeName } from '../helperFunctions';
+import { formatDate, formatTime, formatEmployeeName } from '../helperFunctions';
 
 const auditMock = {
   appointmentDate: '2018-12-19T00:00:00',
@@ -17,15 +17,11 @@ const auditMock = {
 
 describe('<AuditInfoItem />', () => {
   let defaultProps;
-  let mountedComponent;
 
   // just for remove error with depend using react-dom for render. Need it before use adapter for RN
   const origConsole = console.error;
   const mountComponent = (props = defaultProps) => {
-    if (!mountedComponent) {
-      mountedComponent = mount(<AuditInfoItem {...props} />);
-    }
-    return mountedComponent;
+    return mount(<AuditInfoItem {...props} />);
   };
 
   beforeEach(() => {
@@ -35,7 +31,6 @@ describe('<AuditInfoItem />', () => {
       isBlockTime: false,
       singleAudit: auditMock,
     };
-    mountedComponent = undefined;
   });
   afterEach(() => {
     // just for remove error with depend using react-dom for render. Need it before use adapter for RN
@@ -47,6 +42,31 @@ describe('<AuditInfoItem />', () => {
   });
 
   describe('Should render text in different formats depending on `isBlockTime`', () => {
+    it('`isBlockTime` is `true`', () => {
+      defaultProps.isBlockTime = true;
+      const renderedName = mountComponent()
+        .find('Text')
+        .last()
+        .text();
+      expect(renderedName).toBe(formatEmployeeName(auditMock.auditEmployee));
+    });
+    it('`isBlockTime` is `false`', () => {
+      defaultProps.isBlockTime = false;
+      auditMock.service = null;
+
+      const renderedString = `${''} with ${
+        formatEmployeeName(auditMock.provider)} on ${
+          formatDate(auditMock.appointmentDate)} at ${' '}${
+            formatTime(auditMock.appointmentStartTime)}`;
+
+      const renderedName = mountComponent()
+        .find('Text')
+        .someWhere(n => n.text() === renderedString);
+
+      expect(renderedName).toBe(true);
+    });
+  });
+  describe('Should render auditInfoText in different formats depending on `isBlockTime`', () => {
     it('`isBlockTime` is `true`', () => {
       defaultProps.isBlockTime = true;
       const renderedName = mountComponent()
