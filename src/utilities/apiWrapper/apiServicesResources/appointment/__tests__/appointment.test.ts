@@ -80,7 +80,7 @@ mock
   .onPut(`Appointment/${reqData.id}/Remarks`, { remarks: reqData })
   .reply(200, returnData);
 
-describe('Client', () => {
+describe('Appointment', () => {
   // get
   test('getZipCode should return correct property', async () => {
     const res = await getAppointment(reqData.id);
