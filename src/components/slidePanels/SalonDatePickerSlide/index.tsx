@@ -149,7 +149,7 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
     direction === 'left'
       ? <Icon name="chevronLeft" size={12.5} color="#727a8f" type="solid" />
       : <Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />;
-      
+
   render() {
     return (
       <ModalBox
