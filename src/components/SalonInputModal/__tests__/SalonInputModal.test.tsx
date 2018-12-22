@@ -137,4 +137,32 @@ describe('<SalonInputModal />', () => {
       expect(component.state().value).toBe('');
     });
   });
+
+  describe('componentWillReceiveProps', () => {
+    it('change visible', () => {
+      const component = mountComponent(defaultProps);
+
+      expect(component.state().visible).toBe(false);
+      expect(component.state().value).toBe('');
+
+      component.setProps({ visible: true });
+      component.setState({ value: 'test visible' });
+      component.update();
+      expect(component.state().visible).toBe(true);
+      expect(component.state().value).toBe('test visible');
+
+      component.setProps({ visible: false });
+      component.update();
+      expect(component.state().visible).toBe(false);
+      expect(component.state().value).toBe('');
+    });
+
+    it('change value', () => {
+      const component = mountComponent(defaultProps);
+
+      expect(component.state().value).toBe('');
+      component.setProps({ value: 'test change value' });
+      expect(component.state().value).toBe('test change value');
+    });
+  });
 });
