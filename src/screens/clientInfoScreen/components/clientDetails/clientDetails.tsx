@@ -82,8 +82,6 @@ const defaultClient = {
   clientReferralType: null,
 };
 
-
-
 interface Props {
   settingsActions: any;
   clientInfoActions: any;
@@ -215,6 +213,7 @@ class ClientDetails extends React.Component<Props, State> {
 
     this.props.clientInfoActions.getClientReferralTypes((result) => {
       if (result && this.props.actionType === 'update') {
+        console.log('update')
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       } else if (this.props.actionType === 'new') {
         this.setState({
@@ -539,9 +538,8 @@ class ClientDetails extends React.Component<Props, State> {
         isValidPhoneWork: !requiredFields.workPhone,
         isValidPhoneHome: !requiredFields.homePhone,
         isValidPhoneCell: !requiredFields.cellPhone,
+        requiredFields,
       });
-
-      this.setState({ requiredFields });
     }
   };
 
@@ -619,9 +617,9 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
   handleDone = () => {
+    console.log('before', this.state.client)
     let phones = reject(this.state.client.phones, ['value', null]);
     phones = reject(phones, ['value', '']);
-
     const client = {
       firstName: this.state.client.name,
       lastName: this.state.client.lastName,
@@ -673,11 +671,13 @@ class ClientDetails extends React.Component<Props, State> {
         }
       });
     } else if (this.props.actionType === 'update') {
-      this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult, message) => {
+      this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult) => {
         if (result) {
+          const newClient = { ...clientResult };
+          newClient.age = ages.find(item => item.key === clientResult.age);
           this.setState({
-            client: clientResult,
-            intialClient: clientResult,
+            client: newClient,
+            intialClient: newClient,
             loadingClient: false,
           });
           if (this.props.onDismiss) {
@@ -713,6 +713,7 @@ class ClientDetails extends React.Component<Props, State> {
   loadClientData = (result) => {
     if (result) {
       const { client } = this.props.clientInfoState;
+      console.log(client, 'client')
       const states = usStates;
       if (client.address) {
         if (typeof client.address === 'string' || client.address instanceof String) {
@@ -732,7 +733,7 @@ class ClientDetails extends React.Component<Props, State> {
             client.zipCode = zipCode.trim();
           }
         } else {
-          const state = find(states, { value: client.address.state.toUpperCase() });
+          const state = find(states, { value: client.address.state && client.address.state.toUpperCase() });
 
           client.state = state;
 
@@ -747,6 +748,7 @@ class ClientDetails extends React.Component<Props, State> {
         client.zipCode = '';
       }
 
+      console.log(client)
 
       this.props.setCanSave(false);
       this.props.setHandleDone(this.handleDone);
@@ -759,7 +761,7 @@ class ClientDetails extends React.Component<Props, State> {
       if (client.clientReferralType) {
         this.setReferredOptionOther();
       }
-
+      console.log('12342134', client)
       this.setState({
         client,
         initialClient: cloneDeep(client),
