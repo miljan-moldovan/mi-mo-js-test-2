@@ -39,6 +39,8 @@ export default {
     backgroundColor: 'transparent',
   },
   panelTopRemarks: {
+    flex: 1,
+    textAlign: 'justify',
     color: '#110A24',
     fontSize: 11,
     fontFamily: 'Roboto',
