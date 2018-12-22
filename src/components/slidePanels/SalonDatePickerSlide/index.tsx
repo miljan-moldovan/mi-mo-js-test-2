@@ -2,16 +2,19 @@ import * as React from 'react';
 import {
   Image,
   Text,
-  Animated,
   Dimensions,
   View,
-  StyleSheet,
 } from 'react-native';
-import {LocaleConfig, Calendar} from 'react-native-calendars';
+import { LocaleConfig, Calendar } from 'react-native-calendars';
 import moment from 'moment';
-import ModalBox from './ModalBox';
-import SalonTouchableOpacity from '../SalonTouchableOpacity';
+// @ts-ignore
+import ModalBox from '../ModalBox';
+import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
+import styles from './styles';
+
+
+const toWeekArray = ['1', '2', '3', '4', '5', '6'];
 
 LocaleConfig.locales.en = {
   monthNames: [
@@ -56,119 +59,33 @@ LocaleConfig.locales.en = {
 
 LocaleConfig.defaultLocale = 'en';
 
-const styles = StyleSheet.create ({
-  panel: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: 'transparent',
-    position: 'relative',
-  },
-  panelContainer: {
-    backgroundColor: '#CDCED2',
-    flexDirection: 'column',
-    zIndex: 99999,
-    height: 500,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  panelBlurredSection: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  panelTopSection: {
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    height: 345,
-  },
-  panelBottomSection: {
-    backgroundColor: '#F3F4F4',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-    height: 130,
-  },
-  panelTopArrow: {
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 13,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  iconStyle: {
-    width: 35,
-    height: 10,
-  },
-  weekJumpContainer: {
-    height: 44,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    width: '90%',
-  },
-  weekJump: {
-    backgroundColor: '#FFFFFF',
-    width: Dimensions.get ('window').width === 320 ? 40 : 48,
-    height: Dimensions.get ('window').width === 320 ? 40 : 48,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 6,
-  },
-  weekJumpText: {
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    fontWeight: '500',
-    color: '#115ECD',
-  },
-  weekJumpTitle: {
-    fontSize: 11,
-    color: '#000000',
-    fontFamily: 'Roboto-bold',
-  },
-  weekJumpTitleContainer: {
-    height: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+type IState = {
+  visible: boolean,
+  selected?: string,
+};
+type IProps = {
+  visible: boolean,
+  selectedDate: string,
+  onHide: () => void,
+  mode: string,
+  onDateSelected: (startDate, endDate) => void,
+  markedDates: any,
+  onPressArrowLeft: () => void,
+  onPressArrowRight: () => void,
+};
 
-const calendarTheme = StyleSheet.create ({
-  header: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CAD1D8',
-  },
-  monthText: {
-    flex: 1,
-    fontSize: 17,
-    fontFamily: 'Roboto',
-    fontWeight: '500',
-    color: '#110A24',
-    margin: 10,
-  },
-  dayHeader: {
-    textAlign: 'center',
-    fontSize: 14,
-    fontFamily: 'Roboto',
-    fontWeight: '500',
-    color: '#115ECD',
-  },
-});
-
-export default class SalonDatePickerSlide extends React.Component {
+export default class SalonDatePickerSlide extends React.Component<IProps, IState> {
   static defaultProps = {
     draggableRange: {
-      top: Dimensions.get ('window').height,
+      top: Dimensions.get('window').height,
       bottom: 0,
     },
   };
+  private calendar: any;
 
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
+    // @ts-ignore
     this.state = {
       visible: props.visible,
     };
@@ -179,58 +96,52 @@ export default class SalonDatePickerSlide extends React.Component {
     selected: '',
   };
 
-  componentWillReceiveProps (nextProps) {
-    this.setState ({
+  componentWillReceiveProps(nextProps) {
+    this.setState({
       visible: nextProps.visible,
       selected: nextProps.selectedDate,
     });
-
-    // if (nextProps.visible) {
-    //   this._panel.transitionTo(this.props.draggableRange.top, () => {});
-    // }
   }
 
-  _draggedValue = new Animated.Value (-120);
-
   hidePanel = () => {
-    this.setState ({visible: false});
-    this.props.onHide ();
+    this.setState({ visible: false });
+    this.props.onHide();
   };
 
   onDayPress = day => {
-    this.setState ({
+    this.setState({
       selected: day.dateString,
     });
 
-    const startDate = moment (day.dateString);
+    const startDate = moment(day.dateString);
 
-    let endDate = startDate.clone ();
-    endDate = this.props.mode === 'week' ? endDate.add (6, 'day') : startDate;
+    let endDate = startDate.clone();
+    endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
 
-    this.props.onDateSelected (startDate, endDate);
+    this.props.onDateSelected(startDate, endDate);
 
-    setTimeout (() => {
-      this.hidePanel ();
+    setTimeout(() => {
+      this.hidePanel();
     }, 10);
   };
 
   jumpToWeeks = weekNumber => {
-    const day = moment (this.state.selected)
-      .add (weekNumber, 'week')
-      .format ('YYYY-MM-DD');
-    this.setState ({
+    const day = moment(this.state.selected)
+      .add(weekNumber, 'week')
+      .format('YYYY-MM-DD');
+    this.setState({
       selected: day,
     });
 
-    const startDate = moment (day);
+    const startDate = moment(day);
 
-    let endDate = startDate.clone ();
-    endDate = this.props.mode === 'week' ? endDate.add (6, 'day') : startDate;
+    let endDate = startDate.clone();
+    endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
 
-    this.props.onDateSelected (startDate, endDate);
+    this.props.onDateSelected(startDate, endDate);
 
-    setTimeout (() => {
-      this.hidePanel ();
+    setTimeout(() => {
+      this.hidePanel();
     }, 10);
   };
 
@@ -240,18 +151,18 @@ export default class SalonDatePickerSlide extends React.Component {
       : <Icon name="chevronRight" size={12.5} color="#727a8f" type="solid" />;
 
   getMarkedItems = () => {
-    const start = moment (this.state.selected).startOf ('month');
-    const endOfMonth = moment (this.state.selected).endOf ('month');
-    while (start.isBefore (endOfMonth)) {
+    const start = moment(this.state.selected).startOf('month');
+    const endOfMonth = moment(this.state.selected).endOf('month');
+    while (start.isBefore(endOfMonth)) {
     }
   };
 
-  render () {
+  render() {
     return (
       <ModalBox
         isOpen={this.props.visible}
         coverScreen
-        onClosingState={() => this.hidePanel ()}
+        onClosingState={() => this.hidePanel()}
       >
         <View style={styles.panel}>
           <View style={styles.panelBlurredSection} />
@@ -262,7 +173,7 @@ export default class SalonDatePickerSlide extends React.Component {
               <SalonTouchableOpacity onPress={this.hidePanel}>
                 <View>
                   <Image
-                    source={require ('@/assets/images/icons/Chevron.png')}
+                    source={require('@/assets/images/icons/Chevron.png')}
                   />
                 </View>
               </SalonTouchableOpacity>
@@ -275,11 +186,11 @@ export default class SalonDatePickerSlide extends React.Component {
                 }}
                 onDayPress={this.onDayPress}
                 monthFormat="MMMM yyyy"
-                style={{width: '95%'}}
+                style={{ width: '95%' }}
                 markingType="custom"
                 markedDates={{
                   ...this.props.markedDates,
-                  [moment (this.state.selected).format ('YYYY-MM-DD')]: {
+                  [moment(this.state.selected).format('YYYY-MM-DD')]: {
                     customStyles: {
                       container: {
                         backgroundColor: '#727A8F',
@@ -330,10 +241,10 @@ export default class SalonDatePickerSlide extends React.Component {
                 <Text style={styles.weekJumpTitle}>JUMP TO WEEKS</Text>
               </View>
               <View style={styles.weekJumpContainer}>
-                {['3', '4', '5', '6', '7', '8'].map ((weeks, i) => (
+                {toWeekArray.map((weeks) => (
                   <SalonTouchableOpacity
-                    onPress={() => this.jumpToWeeks (weeks)}
-                    key={Math.random ().toString ()}
+                    onPress={() => this.jumpToWeeks(weeks)}
+                    key={weeks}
                   >
                     <View style={styles.weekJump}>
                       <Text style={styles.weekJumpText}>{weeks}</Text>
