@@ -5,3 +5,10 @@ import Enzyme from 'enzyme';
 
 Enzyme.configure({ adapter: new Adapter() });
 
+jest.mock('react-native-img-cache', () => {
+  const mockComponent = require('react-native/jest/mockComponent');
+  return {
+    CustomCachedImage: mockComponent('Image'),
+    CachedImage: mockComponent('Image'),
+  };
+});

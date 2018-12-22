@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { cancelRequest } from '@/utilities/helpers/cancelRequest';
 import { getApiInstance } from '../../api';
+// @ts-ignore
 import { ResponseZipCode } from '@/models';
 
 let cancellationToken = null;
