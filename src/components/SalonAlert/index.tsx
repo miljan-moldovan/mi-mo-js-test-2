@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, Modal, Text, TouchableOpacity, Alert } from 'react-native';
 import styles from './style';
 
-const salonAlert = ({ title, description, visible, btnLeftText, btnRightText, onPressLeft, onPressRight }) => (
+const SalonAlert = ({ title, description, visible, btnLeftText, btnRightText, onPressLeft, onPressRight }) => (
   <Modal
     animationType="fade"
     transparent
@@ -41,4 +41,4 @@ const renderButton = (onPress, text, style) => {
   );
 };
 
-export default salonAlert;
+export default SalonAlert;

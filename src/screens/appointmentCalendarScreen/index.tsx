@@ -1,6 +1,6 @@
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {appointmentCalendarActions} from '../../redux/actions/appointmentBook';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { appointmentCalendarActions } from '../../redux/actions/appointmentBook';
 import blockTimeActions from '../../redux/actions/blockTime';
 import appointmentActions from '../../redux/actions/appointment';
 import newAppointmentActions from '../../redux/actions/newAppointment';
@@ -18,7 +18,7 @@ import restrictedToBookInAdvanceDays from '../../redux/selectors/restrictedToBoo
 import {
   apptGridSettingsSelector,
 } from '../../redux/selectors/apptGridSettingsSelector';
-import {getConflicts, getConflictsBlocks} from '../../redux/actions/conflicts';
+import { getConflicts, getConflictsBlocks } from '../../redux/actions/conflicts';
 import * as LoginActions from '../../redux/actions/login';
 import storeActions from '../../redux/actions/store';
 
@@ -30,37 +30,37 @@ const mapStateToProps = state => ({
   providersState: state.providersReducer,
   newAppointmentState: state.newAppointmentReducer,
   modifyApptState: state.modifyApptReducer,
-  blockTimes: visbleBlocksSelector (state),
-  appointments: getVisibleAppointmentsDataSource (state),
-  availability: getAvailabilityWithGaps (state),
-  apptGridSettings: apptGridSettingsSelector (state),
+  blockTimes: visbleBlocksSelector(state),
+  appointments: getVisibleAppointmentsDataSource(state),
+  availability: getAvailabilityWithGaps(state),
+  apptGridSettings: apptGridSettingsSelector(state),
   storeScheduleExceptions: state.storeReducer.scheduleExceptions,
   rebookState: state.rebookReducer,
-  restrictedToBookInAdvanceDays: restrictedToBookInAdvanceDays(state)
+  restrictedToBookInAdvanceDays: restrictedToBookInAdvanceDays(state),
 });
 
 const mapActionsToProps = dispatch => ({
-  rebookDialogActions: bindActionCreators ({...rebookDialogActions}, dispatch),
-  appointmentCalendarActions: bindActionCreators (
-    {...appointmentCalendarActions},
-    dispatch
+  rebookDialogActions: bindActionCreators({ ...rebookDialogActions }, dispatch),
+  appointmentCalendarActions: bindActionCreators(
+    { ...appointmentCalendarActions },
+    dispatch,
   ),
-  appointmentActions: bindActionCreators ({...appointmentActions}, dispatch),
-  newAppointmentActions: bindActionCreators (
-    {...newAppointmentActions},
-    dispatch
+  appointmentActions: bindActionCreators({ ...appointmentActions }, dispatch),
+  newAppointmentActions: bindActionCreators(
+    { ...newAppointmentActions },
+    dispatch,
   ),
-  modifyApptActions: bindActionCreators ({...modifyApptActions}, dispatch),
-  rootDrawerNavigatorAction: bindActionCreators (
-    {...rootDrawerNavigatorAction},
-    dispatch
+  modifyApptActions: bindActionCreators({ ...modifyApptActions }, dispatch),
+  rootDrawerNavigatorAction: bindActionCreators(
+    { ...rootDrawerNavigatorAction },
+    dispatch,
   ),
-  blockTimeActions: bindActionCreators ({...blockTimeActions}, dispatch),
-  auth: bindActionCreators ({...LoginActions}, dispatch),
-  checkConflicts: conflictData => dispatch (getConflicts (conflictData)),
+  blockTimeActions: bindActionCreators({ ...blockTimeActions }, dispatch),
+  auth: bindActionCreators({ ...LoginActions }, dispatch),
+  checkConflicts: conflictData => dispatch(getConflicts(conflictData)),
   checkConflictsBlock: conflictData =>
-    dispatch (getConflictsBlocks (conflictData)),
-  storeActions: bindActionCreators ({...storeActions}, dispatch),
+    dispatch(getConflictsBlocks(conflictData)),
+  storeActions: bindActionCreators({ ...storeActions }, dispatch),
 });
 
-export default connect (mapStateToProps, mapActionsToProps) (AppointmentScreen);
+export default connect(mapStateToProps, mapActionsToProps)(AppointmentScreen);

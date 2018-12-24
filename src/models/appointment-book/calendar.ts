@@ -5,6 +5,7 @@ import { PureAppointment, PureBlockTime } from './cards';
 import { ApptGridSettings } from './apptGridSettings';
 import { AvailabilityItem } from './availability-item';
 import { RoomFromApi } from './rooms';
+import * as moment from 'moment';
 
 
 export interface CalendarProps {
@@ -17,7 +18,7 @@ export interface CalendarProps {
   checkConflictsBlock: Function,
   displayMode: string,
   filterOptions: FilterOptions,
-  headerData: Employee[] | Moment[],
+  headerData: Employee[] | moment.Moment[],
   isLoading: boolean,
   isResource: boolean,
   isRoom: boolean,
@@ -34,7 +35,7 @@ export interface CalendarProps {
   selectedFilter: string,
   setSelectedDay: Function,
   setSelectedProvider: Function,
-  startDate: string | Moment,
+  startDate: string | moment.Moment,
   storeScheduleExceptions: ProviderSchedule[],
 }
 
