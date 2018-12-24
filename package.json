@@ -87,6 +87,7 @@
     "jest-serializer-enzyme": "1.0.0",
     "jsdom": "13.0.0",
     "jsdom-global": "3.0.2",
+    "mock-async-storage": "^2.0.4",
     "pre-push": "^0.1.1",
     "prettier": "1.15.2",
     "react-addons-test-utils": "15.6.2",
