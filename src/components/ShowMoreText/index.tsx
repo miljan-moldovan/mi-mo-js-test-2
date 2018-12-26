@@ -6,9 +6,8 @@ import { Text, View } from 'react-native';
 
 type IProps = {
   text: string,
+  maxLength?: number,
 };
-
-const maxLength = 140;
 
 const ShowButton = (props) => {
   return (
@@ -27,16 +26,24 @@ const ShowButton = (props) => {
 
 
 class ShowMoreText extends React.Component<IProps> {
+  static defaultProps = {
+    maxLength: 140,
+  };
+
   state = {
     showMore: true,
-    text: this.props.text.length > maxLength ? this.props.text.substring(0, maxLength) : this.props.text,
+    text: (this.props.text.length > this.props.maxLength)
+      ? this.props.text.substring(0, this.props.maxLength)
+      : this.props.text,
   };
 
   componentWillReceiveProps(newProps) {
-    if (this.props.text !== newProps.text) {
+    if (this.props.text !== newProps.text || this.props.maxLength !== newProps.maxLength) {
       this.setState(
         {
-          text: newProps.text.length > maxLength ? newProps.text.substring(0, maxLength) : newProps.text,
+          text: (newProps.text.length > this.props.maxLength)
+            ? newProps.text.substring(0, this.props.maxLength)
+            : newProps.text,
         },
       );
     }
@@ -51,7 +58,7 @@ class ShowMoreText extends React.Component<IProps> {
   onPressShowLess = () => {
     return this.setState({
       showMore: true,
-      text: this.props.text.substring(0, maxLength),
+      text: this.props.text.substring(0, this.props.maxLength),
     });
   };
 
@@ -68,7 +75,7 @@ class ShowMoreText extends React.Component<IProps> {
                 {this.state.text}
               </Text>
             </View>
-            {this.props.text.length > maxLength &&
+            {this.props.text.length > this.props.maxLength &&
             (
               this.state.showMore ?
                 <ShowButton onPressShowMore={this.onPressShowMore} title="SHOW MORE" /> :
