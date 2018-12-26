@@ -2,14 +2,13 @@ import * as React from 'react';
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import getEmployeePhotoSource
-  from '../../../utilities/helpers/getEmployeePhotoSource';
+import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import * as actions from '../../../redux/actions/queue';
 import SalonAvatar from '../../../components/SalonAvatar';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
-import createStyleSheet from './styles';
 import { DefaultAvatar } from '../../../components/formHelpers';
+import styles from './styles';
 
 
 interface Props {
@@ -25,19 +24,7 @@ interface Props {
   isWaiting: any;
 }
 
-interface State {
-  styles: any
-}
-
-class queueListItemSummary extends React.Component<Props, State> {
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      styles: createStyleSheet()
-    };
-  }
-
+class QueueListItemSummary extends React.Component<Props> {
 
   saveQueueService = (service, serviceEmployeeId) => {
     this.props.putQueueServiceEmployeeService(
@@ -46,7 +33,7 @@ class queueListItemSummary extends React.Component<Props, State> {
       {
         newServiceId: service.id,
       },
-      this.props.loadQueueData
+      this.props.loadQueueData,
     );
   };
 
@@ -61,7 +48,7 @@ class queueListItemSummary extends React.Component<Props, State> {
       () => {
         this.props.loadQueueData();
         this.props.showDialog();
-      }
+      },
     );
   };
 
@@ -107,7 +94,7 @@ class queueListItemSummary extends React.Component<Props, State> {
   };
 
   cancelButton = () => ({
-    leftButton: <Text style={this.state.styles.cancelButton}>Cancel</Text>,
+    leftButton: <Text style={styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: navigation => {
       navigation.goBack();
       this.props.showDialog();
@@ -143,16 +130,16 @@ class queueListItemSummary extends React.Component<Props, State> {
     const image = getEmployeePhotoSource(employee);
     return (
       <View>
-        <View style={this.state.styles.serviceContainer}>
+        <View style={styles.serviceContainer}>
           <SalonTouchableOpacity
             onPress={() => this.handlePressService(this.props.service)}
           >
-            <View style={[this.state.styles.row, this.state.styles.rowBorderBottom]}>
-              <Text style={this.state.styles.textMedium}>
+            <View style={[styles.row, styles.rowBorderBottom]}>
+              <Text style={styles.textMedium}>
                 {this.props.service.serviceName}
               </Text>
-              <View style={this.state.styles.iconContainer}>
-                <FontAwesome style={this.state.styles.angleIcon}>
+              <View style={styles.iconContainer}>
+                <FontAwesome style={styles.angleIcon}>
                   {Icons.angleRight}
                 </FontAwesome>
               </View>
@@ -161,11 +148,11 @@ class queueListItemSummary extends React.Component<Props, State> {
           <SalonTouchableOpacity
             onPress={() => this.handlePressProvider()}
           >
-            <View style={this.state.styles.row}>
+            <View style={styles.row}>
               <SalonAvatar
                 borderColor="#FFFFFF"
                 borderWidth={2}
-                wrapperStyle={this.state.styles.providerRound}
+                wrapperStyle={styles.providerRound}
                 width={26}
                 image={image}
                 hasBadge={isProviderRequested}
@@ -181,14 +168,14 @@ class queueListItemSummary extends React.Component<Props, State> {
                 }
                 defaultComponent={<DefaultAvatar provider={employee} />}
               />
-              <Text style={this.state.styles.textNormal}>
+              <Text style={styles.textNormal}>
                 {!this.props.service.isFirstAvailable &&
-                  this.props.service.employee.fullName
+                this.props.service.employee.fullName
                   ? `${this.props.service.employee.fullName}`
                   : 'First Available'}
               </Text>
-              <View style={this.state.styles.iconContainer}>
-                <FontAwesome style={this.state.styles.angleIcon}>
+              <View style={styles.iconContainer}>
+                <FontAwesome style={styles.angleIcon}>
                   {Icons.angleRight}
                 </FontAwesome>
               </View>
@@ -200,4 +187,4 @@ class queueListItemSummary extends React.Component<Props, State> {
   }
 }
 
-export default connect(null, actions)(queueListItemSummary);
+export default connect(null, actions)(QueueListItemSummary);

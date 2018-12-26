@@ -5,6 +5,7 @@ import ClientInfoButton from '../../../../../ClientInfoButton';
 import { getBadges, getHiddenAddons } from '../../../../../../utilities/helpers';
 import { AppointmentTime } from '../../../../SalonNewAppointmentSlide';
 import styles from './styles';
+import ShowMoreText from '@/components/ShowMoreText';
 
 const renderBadges = (appointment, appointments) => {
   const badges = getBadges(appointment, getHiddenAddons(appointments, appointment).length);
@@ -12,7 +13,7 @@ const renderBadges = (appointment, appointments) => {
     if (badges[i]) {
       return (
         <View style={{ padding: 5, flexDirection: 'row', backgroundColor: '#F1F1F1' }}>
-          { badges }
+          {badges}
         </View>
       );
     }
@@ -21,8 +22,8 @@ const renderBadges = (appointment, appointments) => {
 };
 
 const appointmentHeader = ({
-  appointment, navigation, hidePanel, appointments,
-}) => (
+                             appointment, navigation, hidePanel, appointments,
+                           }) => (
   <React.Fragment>
     <View style={styles.panelTopLine}>
       <View style={styles.panelTopLineLeft}>
@@ -36,7 +37,7 @@ const appointmentHeader = ({
         />
       </View>
     </View>
-    { renderBadges(appointment, appointments) }
+    {renderBadges(appointment, appointments)}
     <View style={styles.panelTopLine}>
       <View style={styles.panelTopLineLeft}>
         <Text style={styles.panelTopService}>{appointment.service.description}</Text>
@@ -49,19 +50,20 @@ const appointmentHeader = ({
       </View>
     </View>
 
-    {appointment.remarks ?
-      <React.Fragment>
-        <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-          <View style={styles.panelTopLineLeft}>
-            <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
-          </View>
-        </View>
-        <View style={[styles.panelTopLine, { alignItems: 'center', padding: 2, backgroundColor: '#F1F1F1' }]}>
-          <View style={[styles.panelTopLineLeft, { paddingHorizontal: 5 }]}>
-            <Text style={styles.panelTopRemarks}>{appointment.remarks}</Text>
-          </View>
-        </View>
-      </React.Fragment> : null
+    {
+      appointment.remarks ?
+        (
+          <React.Fragment>
+            <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+              <View style={styles.panelTopLineLeft}>
+                <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+              </View>
+            </View>
+            <ShowMoreText
+              text={appointment.remarks}
+            />
+          </React.Fragment>
+        ) : null
     }
   </React.Fragment>
 );

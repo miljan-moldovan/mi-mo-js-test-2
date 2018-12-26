@@ -70,9 +70,7 @@ export const headerStyles = StyleSheet.create ({
     justifyContent: 'space-between',
   },
   btn: {
-    flex: 1 / 5,
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
+    paddingTop: 1,
     marginLeft: 16,
   },
   btnTitle: {
@@ -86,9 +84,9 @@ export const headerStyles = StyleSheet.create ({
     marginLeft: 5,
   },
   rightContainer: {
-    flex: 1 / 5,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     paddingRight: 16,
     flexDirection: 'row',
   },
@@ -97,12 +95,13 @@ export const headerStyles = StyleSheet.create ({
     justifyContent: 'center',
   },
   btnCalendar: {
+    paddingBottom: 2,
     marginLeft: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconSearch: {
     position: 'absolute',
-    top: 3.5,
+    top: 8,
   },
 });

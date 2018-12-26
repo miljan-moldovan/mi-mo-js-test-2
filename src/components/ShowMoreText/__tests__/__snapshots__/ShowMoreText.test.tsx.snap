@@ -1,0 +1,270 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ShowMoreText /> renders correctly 1`] = `
+<ShowMoreText
+  maxLength={20}
+  text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut laoreet quam dolor.         Praesent nunc ante, interdum eget elementum rhoncus, vulputate et ante.         Aenean a semper urna, at maximus ligula posuere."
+>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "#F1F1F1",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "padding": 5,
+        "width": "90%",
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "#F1F1F1",
+          "flexDirection": "row",
+          "justifyContent": "center",
+          "padding": 5,
+          "width": "90%",
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "backgroundColor": "transparent",
+            "flex": 1,
+            "flexDirection": "column",
+            "justifyContent": "center",
+            "paddingHorizontal": 2,
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "alignItems": "center",
+              "backgroundColor": "transparent",
+              "flex": 1,
+              "flexDirection": "column",
+              "justifyContent": "center",
+              "paddingHorizontal": 2,
+            }
+          }
+        >
+          <View
+            style={
+              Object {
+                "justifyContent": "flex-start",
+                "width": "100%",
+              }
+            }
+          >
+            <View
+              style={
+                Object {
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                }
+              }
+            >
+              <Text
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                style={
+                  Object {
+                    "backgroundColor": "#F1F1F1",
+                    "color": "#110A24",
+                    "fontFamily": "Roboto",
+                    "fontSize": 11,
+                    "padding": 5,
+                    "textAlign": "justify",
+                  }
+                }
+              >
+                <Text
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  style={
+                    Object {
+                      "backgroundColor": "#F1F1F1",
+                      "color": "#110A24",
+                      "fontFamily": "Roboto",
+                      "fontSize": 11,
+                      "padding": 5,
+                      "textAlign": "justify",
+                    }
+                  }
+                >
+                  Lorem ipsum dolor si
+                </Text>
+              </Text>
+            </View>
+          </View>
+          <ShowButton
+            onPressShowMore={[Function]}
+            title="SHOW MORE"
+          >
+            <View
+              style={
+                Object {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                }
+              }
+            >
+              <View
+                style={
+                  Object {
+                    "alignItems": "center",
+                    "justifyContent": "center",
+                  }
+                }
+              >
+                <SalonTouchableOpacity(TouchableOpacity)
+                  onPress={[Function]}
+                  style={
+                    Object {
+                      "backgroundColor": "#FFFFFF",
+                      "borderColor": "#CACBCF",
+                      "borderRadius": 10,
+                      "borderWidth": 1,
+                      "bottom": -12,
+                      "position": "absolute",
+                      "width": 100,
+                    }
+                  }
+                >
+                  <TouchableOpacity
+                    activeOpacity={0.2}
+                    onPress={[Function]}
+                    style={
+                      Object {
+                        "backgroundColor": "#FFFFFF",
+                        "borderColor": "#CACBCF",
+                        "borderRadius": 10,
+                        "borderWidth": 1,
+                        "bottom": -12,
+                        "position": "absolute",
+                        "width": 100,
+                      }
+                    }
+                  >
+                    <AnimatedComponent
+                      accessible={true}
+                      isTVSelectable={true}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Array [
+                          Object {
+                            "backgroundColor": "#FFFFFF",
+                            "borderColor": "#CACBCF",
+                            "borderRadius": 10,
+                            "borderWidth": 1,
+                            "bottom": -12,
+                            "position": "absolute",
+                            "width": 100,
+                          },
+                          Object {
+                            "opacity": 1,
+                          },
+                        ]
+                      }
+                    >
+                      <View
+                        accessible={true}
+                        isTVSelectable={true}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
+                        style={
+                          Object {
+                            "backgroundColor": "#FFFFFF",
+                            "borderColor": "#CACBCF",
+                            "borderRadius": 10,
+                            "borderWidth": 1,
+                            "bottom": -12,
+                            "opacity": 1,
+                            "position": "absolute",
+                            "width": 100,
+                          }
+                        }
+                      >
+                        <View
+                          accessible={true}
+                          isTVSelectable={true}
+                          onResponderGrant={[Function]}
+                          onResponderMove={[Function]}
+                          onResponderRelease={[Function]}
+                          onResponderTerminate={[Function]}
+                          onResponderTerminationRequest={[Function]}
+                          onStartShouldSetResponder={[Function]}
+                          style={
+                            Object {
+                              "backgroundColor": "#FFFFFF",
+                              "borderColor": "#CACBCF",
+                              "borderRadius": 10,
+                              "borderWidth": 1,
+                              "bottom": -12,
+                              "opacity": 1,
+                              "position": "absolute",
+                              "width": 100,
+                            }
+                          }
+                        >
+                          <Text
+                            accessible={true}
+                            allowFontScaling={true}
+                            ellipsizeMode="tail"
+                            style={
+                              Object {
+                                "backgroundColor": "transparent",
+                                "color": "#115ECD",
+                                "fontFamily": "Roboto",
+                                "fontSize": 10,
+                                "textAlign": "center",
+                              }
+                            }
+                          >
+                            <Text
+                              accessible={true}
+                              allowFontScaling={true}
+                              ellipsizeMode="tail"
+                              style={
+                                Object {
+                                  "backgroundColor": "transparent",
+                                  "color": "#115ECD",
+                                  "fontFamily": "Roboto",
+                                  "fontSize": 10,
+                                  "textAlign": "center",
+                                }
+                              }
+                            >
+                              SHOW MORE
+                            </Text>
+                          </Text>
+                        </View>
+                      </View>
+                    </AnimatedComponent>
+                  </TouchableOpacity>
+                </SalonTouchableOpacity(TouchableOpacity)>
+              </View>
+            </View>
+          </ShowButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</ShowMoreText>
+`;

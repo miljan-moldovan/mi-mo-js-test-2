@@ -105,4 +105,7 @@ export default StyleSheet.create({
     color: '#115ECD',
     fontFamily: 'Roboto-Medium',
   },
+  modalPosition: {
+    marginBottom: 60,
+  },
 });

@@ -11,6 +11,9 @@ module.exports = {
       babelConfig: true,
     }
   },
+  "transformIgnorePatterns": [
+    "node_modules/(?!react-native|native-base/node_modules/react-native-keyboard-aware-scroll-view|react-native-keyboard-aware-scroll-view|native-base-shoutem-theme|@shoutem/animation|@shoutem/ui|tcomb-form-native)"
+  ],
   "preset": "react-native",
   "testURL": "http://localhost/",
   "snapshotSerializers": [
@@ -30,4 +33,4 @@ module.exports = {
     "json",
     "node"
   ],
-}
+};

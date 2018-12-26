@@ -24,7 +24,6 @@ import {
   PUT_BLOCKTIME_RESIZE_FAILED,
 } from '../actions/blockTime';
 import {
-  ADD_APPOINTMENT,
   SET_FILTER_OPTION_COMPANY,
   SET_FILTER_OPTION_POSITION,
   SET_FILTER_OPTION_OFF_EMPLOYEES,
@@ -49,7 +48,21 @@ import {
 
 import DateTime from '../../constants/DateTime';
 import { getFullName } from '../../utilities/helpers';
-import { Conflict, Maybe, PureProvider, PureAppointment, BlockTimeCard, RoomAppointment, ResourceAppointment, StoreCompany, ProviderPosition, AppointmentEmployee, StoreRoom, StoreResource, EmployeeSchedule } from '@/models';
+import {
+  Conflict,
+  Maybe,
+  PureProvider,
+  PureAppointment,
+  BlockTimeCard,
+  RoomAppointment,
+  ResourceAppointment,
+  StoreCompany,
+  ProviderPosition,
+  AppointmentEmployee,
+  StoreRoom,
+  StoreResource,
+  EmployeeSchedule,
+} from '@/models';
 
 const processBlockTime = item => {
   const fromTime = moment(item.fromTime, DateTime.time);
@@ -72,7 +85,7 @@ const processAppointmentFromApi = item => {
     clientName: getFullName(
       item.client.name,
       item.client.middleName,
-      item.client.lastName
+      item.client.lastName,
     ),
     clientId: item.client.id,
     provider: { ...item.employee },
@@ -201,18 +214,6 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
         ...state,
         filterOptions,
       };
-    case ADD_APPOINTMENT:
-      if (Array.isArray(data.appointment)) {
-        for (let i = 0; i < data.appointment.length; i += 1) {
-          appointments.push(data.appointment[i]);
-        }
-      } else {
-        appointments.push(data.appointment);
-      }
-      return {
-        ...state,
-        appointments,
-      };
     case SET_SELECTED_PROVIDER:
       return {
         ...state,
@@ -330,13 +331,13 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
     case POST_APPOINTMENT_MOVE_SUCCESS:
     case POST_APPOINTMENT_RESIZE_SUCCESS: {
       const newTime = moment(data.appointment.fromTime, 'HH:mm').format(
-        'h:mm a'
+        'h:mm a',
       );
       const newToTime = moment(data.appointment.toTime, 'HH:mm').format(
-        'h:mm a'
+        'h:mm a',
       );
       const newDate = moment(data.appointment.date, 'YYYY-MM-DD').format(
-        'MMM DD, YYYY'
+        'MMM DD, YYYY',
       );
       const toastText = type === POST_APPOINTMENT_MOVE_SUCCESS
         ? `Moved to - ${newTime} ${newDate}`
@@ -395,7 +396,7 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
       };
     case POST_APPOINTMENT_CANCEL_SUCCESS: {
       const indexToRemove = appointments.findIndex(
-        item => item.id === data.appointmentId
+        item => item.id === data.appointmentId,
       );
       if (indexToRemove > -1) {
         const newAppointments = appointments.slice();

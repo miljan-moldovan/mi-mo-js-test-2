@@ -12,7 +12,6 @@ import { PureProvider, Maybe, StoreCompany, ProviderPosition, StoreScheduleExcep
 import { dateTimeConstants } from '@/constants';
 import { setSettings } from './settings';
 
-export const ADD_APPOINTMENT = 'appointmentScreen/ADD_APPOINTMENT';
 export const SET_FILTER_OPTION_COMPANY =
   'appointmentScreen/SET_FILTER_OPTION_COMPANY';
 export const SET_FILTER_OPTION_POSITION =

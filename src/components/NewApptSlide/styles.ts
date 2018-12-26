@@ -310,5 +310,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   justifyCenter: { justifyContent: 'center' },
+  serviceLengthStyle: {
+    fontStyle: 'italic',
+  },
 });
 export default styles;

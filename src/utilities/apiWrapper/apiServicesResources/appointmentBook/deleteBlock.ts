@@ -1,8 +1,8 @@
-import {getApiInstance} from '../../api';
+import { getApiInstance } from '../../api';
 
 export default async blockTimeId => {
-  const apiInstance = await getApiInstance ();
+  const apiInstance = await getApiInstance();
   return apiInstance
-    .delete (`AppointmentBook/BlockTime/${blockTimeId}/Cancel`)
-    .then (({data: {response}}) => response);
+    .delete(`AppointmentBook/BlockTime/${blockTimeId}/Cancel`)
+    .then(({ data: { response } }) => response);
 };

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import moment from 'moment';
 
-import Column from './column';
+import Column from './Column';
 import AvailabilityColumn from './availabilityColumn';
 import { BoardProps } from '@/models';
 
