@@ -27,7 +27,7 @@ lane :beta do
     path: "./ios/SalonUltimateRN.xcodeproj"
   )
   
-  ci_job_id = 60010#ENV['CI_JOB_ID']
+  ci_job_id = 70000#ENV['CI_JOB_ID']
   if ci_job_id
     increment_build_number(
       build_number: ci_job_id,
@@ -58,3 +58,20 @@ lane :beta do
     message: "Available new build of iOS POS <https://betas.to/5k1zsCBG|install>",
   )
 end
+
+lane :crashlytics do
+  # upload to Beta by Crashlytics
+  crashlytics(
+    ipa_path: ENV['APPCENTER_OUTPUT_DIRECTORY']+"/SalonUltimateRN.ipa",
+    api_token: "57ed7a29664d211a062ac7a41c806fc3aeec24f2",
+    build_secret: "069f729bbab573001180f1688cd1671414faa52c8894ba7b656b668bb4a52ecc",
+    groups: "beta_testers",
+    notifications: true
+  )
+
+  # slack(
+#     slack_url: "https://hooks.slack.com/services/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", #su_mobileapp
+#     message: "Available new build of iOS POS <https://betas.to/5k1zsCBG|install>",
+#   )
+end
+
