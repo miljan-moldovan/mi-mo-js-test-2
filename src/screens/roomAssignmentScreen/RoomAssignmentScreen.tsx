@@ -107,7 +107,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
     const date = params.date || moment();
     this.props.roomAssignmentActions.getAssignments(
       date,
-      get(employee, 'id', null)
+      get(employee, 'id', null),
     );
   }
 
@@ -119,7 +119,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
     if (nextIsLoading !== prevIsLoading && !isUpdating && !isError) {
       this.setState(
         state => ({ ...this.getStateFromProps(nextProps, state) }),
-        this.canSave
+        this.canSave,
       );
     }
   }
@@ -131,14 +131,14 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
       case 'startTime':
       case 'endTime': {
         const index = chunkedSchedule.findIndex(
-          time => time.format(DateTime.displayTime) === value
+          time => time.format(DateTime.displayTime) === value,
         );
         this.setState(state => {
           const newState = cloneDeep(state);
           const selectedTime = chunkedSchedule[index] || null;
           newState.assignments[currentOpenAssignment][
             pickerType
-          ] = selectedTime;
+            ] = selectedTime;
           if (!isMoment(selectedTime) && pickerType === 'startTime') {
             newState.assignments[currentOpenAssignment].endTime = null;
           }
@@ -148,14 +148,14 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
       }
       case 'room': {
         const index = rooms.findIndex(
-          room => room.name === value.replace(/ \#.*/, '')
+          room => room.name === value.replace(/ \#.*/, ''),
         );
         this.setState(state => {
           const newState = cloneDeep(state);
           const selectedRoom = rooms[index] ? rooms[index] : null;
           newState.assignments[currentOpenAssignment].room = selectedRoom;
           newState.assignments[currentOpenAssignment].roomOrdinal = isNaN(
-            Number(value.replace(/^.*\#/, ''))
+            Number(value.replace(/^.*\#/, '')),
           )
             ? 1
             : Number(value.replace(/^.*\#/, ''));
@@ -177,7 +177,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
           const roomNumber = i + 1;
           return `${room.name} #${roomNumber}`;
         });
-      })
+      }),
     );
     switch (pickerType) {
       case 'startTime':
@@ -201,7 +201,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
           isMoment(assignment.fromTime)) &&
           !this.isValidAssignment(assignment)) ||
         agg,
-      false
+      false,
     );
   }
 
@@ -211,12 +211,12 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
     const roomName = get(
       assignments[currentOpenAssignment],
       'room.name',
-      false
+      false,
     );
     const roomOrdinal = get(
       assignments[currentOpenAssignment],
       'roomOrdinal',
-      1
+      1,
     );
     const roomValue = roomName ? `${roomName} #${roomOrdinal}` : 'None';
     switch (pickerType) {
@@ -238,7 +238,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
     const isModalPickerVisible = get(prevState, 'isModalPickerVisible', false);
     const assignments = roomAssignments.map(itm => {
       const room = rooms.find(
-        rm => get(itm, 'roomId', null) === get(rm, 'id')
+        rm => get(itm, 'roomId', null) === get(rm, 'id'),
       );
       return {
         room,
@@ -254,7 +254,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
           roomOrdinal: null,
           startTime: null,
           endTime: null,
-        })
+        }),
       );
     }
     return {
@@ -268,7 +268,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
 
   getRoomById = id => {
     const [room] = this.props.roomAssignmentState.rooms.filter(
-      item => item.id === id
+      item => item.id === id,
     );
     return room;
   };
@@ -281,7 +281,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
       .map(
         assignment =>
           this.isValidAssignment(assignment) &&
-          !this.isIncompleteAssignment(assignment)
+          !this.isIncompleteAssignment(assignment),
       )
       .reduce((agg, ass) => agg || ass, false);
     this.props.navigation.setParams({ canSave });
@@ -324,7 +324,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
             itm =>
               this.isIncompleteAssignment(itm)
                 ? { ...itm, isIncomplete: true }
-                : { ...itm, isIncomplete: false }
+                : { ...itm, isIncomplete: false },
           ),
         });
       }
@@ -335,7 +335,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
         () => {
           this.props.appointmentCalendarActions.setGridView();
           this.props.appointmentCalendarActions.setFilterOptionRoomAssignments(
-            true
+            true,
           );
           this.props.appointmentCalendarActions.setToast({
             description: 'Room Assignment Completed',
@@ -344,7 +344,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
           });
           this.props.navigation.goBack();
           onSave();
-        }
+        },
       );
     }
     return false;
@@ -401,7 +401,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
             onPress={() =>
               this.setState(
                 { currentOpenAssignment: index, pickerType: 'room' },
-                this.openModal
+                this.openModal,
               )}
           />
           <InputDivider style={dividerStyle} />
@@ -417,7 +417,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
             onPress={() =>
               this.setState(
                 { currentOpenAssignment: index, pickerType: 'startTime' },
-                this.openModal
+                this.openModal,
               )}
           />
           <InputDivider style={dividerStyle} />
@@ -434,7 +434,7 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
             onPress={() =>
               this.setState(
                 { currentOpenAssignment: index, pickerType: 'endTime' },
-                this.openModal
+                this.openModal,
               )}
           />
         </InputGroup>
@@ -462,12 +462,12 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
               selectedValue={this.selectedValue}
             />
             {toast &&
-              <SalonToast
-                description={toast.description}
-                type={toast.type}
-                btnRightText={toast.btnRight}
-                hide={this.hideToast}
-              />}
+            <SalonToast
+              description={toast.description}
+              type={toast.type}
+              btnRightText={toast.btnRight}
+              hide={this.hideToast}
+            />}
           </React.Fragment>}
       </View>
     );

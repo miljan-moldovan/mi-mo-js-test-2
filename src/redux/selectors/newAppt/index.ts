@@ -292,7 +292,7 @@ const employeeScheduleChunkedSelector = createSelector(
       const { step = 15 } = settings;
       const start = moment(schedule.start, 'HH:mm:ss');
       const end = moment(schedule.end, 'HH:mm:ss');
-      const range = extendedmoment.range(start, end);
+      const range = extendedMoment.range(start, end);
       const chunked = Array.from(range.by('minutes', { step }));
       return [...agg, ...chunked];
     }, []);
