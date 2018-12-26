@@ -17,7 +17,7 @@ import Colors from '@/constants/Colors';
 import { ServicesActions } from '@/redux/actions/service';
 import { SalonSearchHeaderActions } from '@/redux/reducers/searchHeader';
 import LoadingOverlay from '@/components/LoadingOverlay';
-import { Maybe, ServiceCategories, Service, Provider } from '@/models'
+import { Maybe, ServiceCategories, Service, Provider } from '@/models';
 import SalonFlatList from '@/components/common/SalonFlatList';
 import { ServicesReducer } from '@/redux/reducers/service';
 import SalonListItem from '@/components/common/SalonListItem';
@@ -61,7 +61,7 @@ export interface ServicesScreenState {
 class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreenState> {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params &&
-      navigation.state.params.defaultProps
+    navigation.state.params.defaultProps
       ? navigation.state.params.defaultProps
       : {
         title: 'Services',
@@ -75,37 +75,37 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
       ? navigation.state.params.ignoreNav
       : false;
     const { leftButton } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : {
         leftButtonOnPress: defaultProps.leftButtonOnPress,
       };
     const { rightButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : {
         rightButtonOnPress: defaultProps.rightButtonOnPress,
       };
     const { title } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { subTitle: defaultProps.subTitle };
 
@@ -124,9 +124,9 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
               rightButtonOnPress(navigation);
             }}
             hasFilter={false}
-          // containerStyle={{
-          //   paddingHorizontal: 20,
-          // }}
+            // containerStyle={{
+            //   paddingHorizontal: 20,
+            // }}
           />
         </SafeAreaView>
       ),
@@ -170,13 +170,17 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
       headerProps: {
         title: 'Services',
         subTitle: null,
-        leftButtonOnPress: () => { this.goBack(); },
+        leftButtonOnPress: () => {
+          this.goBack();
+        },
         leftButton: <Text style={styles.leftButtonText}> Cancel </Text>,
       },
       defaultHeaderProps: {
         title: 'Services',
         subTitle: null,
-        leftButtonOnPress: () => { this.goBack(); },
+        leftButtonOnPress: () => {
+          this.goBack();
+        },
         leftButton: <Text style={styles.leftButtonText}> Cancel </Text>,
       },
       previousIgnoringNumber: props.salonSearchHeaderState
@@ -189,7 +193,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
       defaultProps: this.state.defaultHeaderProps,
     });
     this.props.salonSearchHeaderActions.setFilterAction(searchText =>
-      this.filterList(searchText)
+      this.filterList(searchText),
     );
     this.props.salonSearchHeaderActions.setIgnoredNumberOfLetters(0);
   }
@@ -216,14 +220,14 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
       !this.props.salonSearchHeaderState.showFilter
     ) {
       this.props.servicesActions.setFilteredServices(
-        this.props.servicesState.services
+        this.props.servicesState.services,
       );
     }
   }
 
   componentWillUnmount() {
     this.props.salonSearchHeaderActions.setIgnoredNumberOfLetters(
-      this.state.previousIgnoringNumber
+      this.state.previousIgnoringNumber,
     );
   }
 
@@ -232,7 +236,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
     this.props.navigation.setParams({ defaultProps: props, ignoreNav });
 
     this.props.salonSearchHeaderActions.setFilterAction(searchText =>
-      this.filterList(searchText)
+      this.filterList(searchText),
     );
     this.setState({ headerProps: props });
   }
@@ -272,7 +276,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
     this.props.servicesActions.setShowCategoryServices(false);
     const params = this.props.navigation.state.params || {};
     const clientId = params.clientId || false;
-    const employeeId = params.employeeId || false;
+    const employee = params.selectedEmployee || {};
     const queueItem = params.queueItem || {};
     const service = params.service || {};
     const {
@@ -282,8 +286,8 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
     if (clientId) {
       opts.clientId = clientId;
     }
-    if (employeeId) {
-      opts.employeeId = employeeId;
+    if (employee.id) {
+      opts.employeeId = employee.id;
     }
 
     switch (this.mode) {
@@ -379,7 +383,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
   goBack = () => {
     if (this.props.servicesState.showCategoryServices) {
       this.props.servicesActions.setFilteredServices(
-        this.props.servicesState.services
+        this.props.servicesState.services,
       );
       this.props.servicesActions.setShowCategoryServices(false);
       this.setHeaderData(this.state.prevHeaderProps);
@@ -395,7 +399,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
 
   filterServices = searchText => {
     const servicesCategories = JSON.parse(
-      JSON.stringify(this.props.servicesState.services)
+      JSON.stringify(this.props.servicesState.services),
     );
 
     if (searchText && searchText.length > 0) {
@@ -409,7 +413,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         const servicesCategory = servicesCategories[i];
         servicesCategory.services = ServicesScreen.flexFilter(
           servicesCategory.services,
-          criteria
+          criteria,
         );
         if (servicesCategory.services.length > 0) {
           filtered.push(servicesCategory);
@@ -462,7 +466,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
           ? navigation.state.params.headerProps.rightButtonOnPress
           : null,
       },
-      true
+      true,
     );
     this.props.servicesActions.setShowCategoryServices(true);
     this.props.servicesActions.setCategoryServices(item.services);
@@ -489,7 +493,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         type: 'light',
         color: Colors.defaultGrey,
         size: 20,
-      }
+      },
     ] : [{
       name: 'angleRight',
       type: 'light',
@@ -505,7 +509,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         onPress={onPress}
       />
     );
-  }
+  };
 
   renderServiceItem = ({ item }) => {
     const {
@@ -518,7 +522,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         name: 'checkCircle',
         type: 'solid',
         color: Colors.selectedGreen,
-      }
+      },
     ] : [];
     const onPress = () => this.handleOnChangeService(item);
     return (
@@ -529,7 +533,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         onPress={onPress}
       />
     );
-  }
+  };
 
   render() {
     const { servicesState } = this.props;
@@ -612,4 +616,5 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
     );
   }
 }
+
 export default ServicesScreen;
