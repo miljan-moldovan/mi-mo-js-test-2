@@ -1,3 +1,3 @@
 git clean -xdf
 git reset HEAD --hard
-brew install node
+npm install node@8.3.0
