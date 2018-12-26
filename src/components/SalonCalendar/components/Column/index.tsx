@@ -3,89 +3,74 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import { get, filter } from 'lodash';
 import { ColumnProps } from '@/models';
+import styles from './styles'
 
-const styles = StyleSheet.create({
-  colContainer: {
-    flexDirection: 'column',
-  },
-  cellContainer: {
-    height: 30,
-    borderColor: '#C0C1C6',
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-  },
-  cellContainerDisabled: {
-    height: 30,
-    borderColor: '#C0C1C6',
-    backgroundColor: 'rgb(221,223,224)',
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-  },
-  oClockBorder: {
-    borderBottomColor: '#2c2f34',
-  },
-  dayOff: {
-    backgroundColor: 'rgb(129, 136, 152)',
-  },
-  exceptionText: {
-    fontFamily: 'Roboto',
-    fontSize: 12,
-    paddingHorizontal: 8,
-    color: '#2F3142',
-    flex: 1,
-  },
-  roomContainer: {
-    position: 'absolute',
-    width: 16,
-    backgroundColor: '#082E66',
-    right: 0,
-    borderRadius: 3,
-    zIndex: 9999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  roomText: {
-    fontSize: 11,
-    lineHeight: 11,
-    minHeight: 11,
-    textAlign: 'center',
-    margin: 0,
-    padding: 0,
-    color: 'white',
-    transform: [{ rotate: '-90deg' }],
-  },
-});
+enum AlertTypes {
+  BookingPast = 1,
+  DayOff,
+  NotWorkingTime,
+}
 
 export default class Column extends React.Component<ColumnProps, any> {
-  onCellPressed = (cellId, colData, date) => {
+  onCellPressed = (cellId, colData, date, showNotWorkingTimeAlert?) => {
     const time = moment(
       `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
-      'YYYY-MM-DD HH:mm'
+      'YYYY-MM-DD HH:mm',
     );
-    const showAlert = moment().isAfter(time, 'minute');
-    if (!showAlert) {
-      this.props.onCellPressed(cellId, colData);
-    } else {
-      this.showBookingPastAlert({ cell: cellId, colData });
+    const showBookingPastAlert = moment().isAfter(time, 'minute');
+    const showDayOffAlert = colData && colData.isOff;
+    if (showBookingPastAlert || showDayOffAlert || showNotWorkingTimeAlert) {
+      const type = (showDayOffAlert && AlertTypes.DayOff) ||
+        (showNotWorkingTimeAlert && AlertTypes.NotWorkingTime) ||
+        (showBookingPastAlert && AlertTypes.BookingPast);
+      const needCloseAlert = !(showNotWorkingTimeAlert && showBookingPastAlert);
+      return this.showAlert({ cell: cellId, colData, date, type, needCloseAlert });
     }
+    return this.props.onCellPressed(cellId, colData);
   };
 
   isBetweenTimes = (time, fromTime, toTime) =>
     time.isSameOrAfter(fromTime) && time.isBefore(toTime);
 
-  showBookingPastAlert = ({ cell, colData }) => {
-    const alert = {
-      title: 'Question',
-      description: 'The selected time is in the past. Do you want to book the appointment anyway?',
-      btnLeftText: 'No',
-      btnRightText: 'Yes',
-      onPressRight: () => {
-        this.props.onCellPressed(cell, colData);
-        this.props.hideAlert();
-      },
-    };
+  showAlert = ({ cell, colData, type, date, needCloseAlert }) => {
+    let alert;
+
+    switch (type) {
+      case AlertTypes.BookingPast: {
+        alert = {
+          title: 'Question',
+          description: 'The selected time is in the past. Do you want to book the appointment anyway?',
+          btnLeftText: 'No',
+          btnRightText: 'Yes',
+          onPressRight: () => {
+            this.props.onCellPressed(cell, colData);
+            this.props.hideAlert();
+          },
+        };
+        break;
+      }
+      case AlertTypes.DayOff: {
+        alert = {
+          title: 'Notification',
+          description: 'The selected employee is not working on this day.',
+          btnLeftText: 'ok',
+        };
+        break;
+      }
+      case AlertTypes.NotWorkingTime: {
+        alert = {
+          title: 'Question',
+          description: 'The employee is off at the selected time, would you like to override?',
+          btnLeftText: 'No',
+          btnRightText: 'Submit',
+          onPressRight: () => {
+            this.onCellPressed(cell, colData, date, false);
+            needCloseAlert && this.props.hideAlert();
+          },
+        };
+        break;
+      }
+    }
     this.props.createAlert(alert);
   };
 
@@ -123,13 +108,15 @@ export default class Column extends React.Component<ColumnProps, any> {
         storeScheduleExceptions,
         item =>
           moment(item.startDate, 'YYYY-MM-DD').isSame(colData, 'day') ||
-          moment(item.endDate, 'YYYY-MM-DD').isSame(colData, 'day')
+          moment(item.endDate, 'YYYY-MM-DD').isSame(colData, 'day'),
       )[0];
       storeTodaySchedule = exception ? { ...exception, isException: true } : storeTodaySchedule;
     }
 
     storeExceptionComment = storeTodaySchedule && storeTodaySchedule.isException && storeTodaySchedule.comments
-      && (cell.isSame(moment(storeTodaySchedule.end1, 'HH:mm'), 'minute') || cell.isSame(moment(storeTodaySchedule.end2, 'HH:mm'), 'minute')) ? storeTodaySchedule.comments : null;
+    && (cell.isSame(moment(storeTodaySchedule.end1, 'HH:mm'), 'minute') ||
+      cell.isSame(moment(storeTodaySchedule.end2, 'HH:mm'), 'minute')) ?
+      storeTodaySchedule.comments : null;
 
     isStoreOff = !storeTodaySchedule || !storeTodaySchedule.start1;
     // checko if cell is between time the store is off
@@ -138,13 +125,13 @@ export default class Column extends React.Component<ColumnProps, any> {
         !this.isBetweenTimes(
           cell,
           moment(storeTodaySchedule.start1, 'HH:mm'),
-          moment(storeTodaySchedule.end1, 'HH:mm')
+          moment(storeTodaySchedule.end1, 'HH:mm'),
         ) &&
         (!storeTodaySchedule.start2 ||
           !this.isBetweenTimes(
             cell,
             moment(storeTodaySchedule.start2, 'HH:mm'),
-            moment(storeTodaySchedule.end2, 'HH:mm')
+            moment(storeTodaySchedule.end2, 'HH:mm'),
           ));
     }
     // o'clock times go bold and dosent show minutes
@@ -155,6 +142,7 @@ export default class Column extends React.Component<ColumnProps, any> {
       styleOclock = styles.oClockBorder;
     }
     let style = styles.cellContainerDisabled;
+    let showNotWorkingTimeAlert = true;
     if (!isStoreOff) {
       let schedule = null;
       if (selectedFilter === 'deskStaff' || selectedFilter === 'providers') {
@@ -180,12 +168,14 @@ export default class Column extends React.Component<ColumnProps, any> {
               cell.isSameOrAfter(moment(schedule[i].start, 'HH:mm')) &&
               cell.isBefore(moment(schedule[i].end, 'HH:mm'))
             ) {
+              showNotWorkingTimeAlert = false;
               style = styles.cellContainer;
               break;
             }
           }
         }
       } else {
+        showNotWorkingTimeAlert = false;
         style = styles.cellContainer;
       }
       return (
@@ -194,7 +184,7 @@ export default class Column extends React.Component<ColumnProps, any> {
             disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
             onLongPress={() => {
-              this.onCellPressed(cell, colData, !isDate ? startDate : colData);
+              this.onCellPressed(cell, colData, !isDate ? startDate : colData, showNotWorkingTimeAlert);
             }}
           >
             {index === 0 && isEmployeeException
@@ -248,10 +238,10 @@ export default class Column extends React.Component<ColumnProps, any> {
     const startTimeMoment = this.convertFromTimeToMoment(startTime);
     return colData.roomAssignments.map((room, i) => {
       const startTimeDifference = this.convertFromTimeToMoment(
-        room.fromTime
+        room.fromTime,
       ).diff(startTimeMoment, 'minutes');
       const endTimeDifference = this.convertFromTimeToMoment(
-        room.toTime
+        room.toTime,
       ).diff(startTimeMoment, 'minutes');
       const startPosition = startTimeDifference / apptGridSettings.step * 30;
       const endPosition = endTimeDifference / apptGridSettings.step * 30;
