@@ -63,7 +63,7 @@ class SalonCardDetailsSlide extends React.Component {
 
   setMinimumPosition = () => {
     this.slidingPanel.transitionTo(this.getDefaultPosition(true));
-  }
+  };
 
   setScrollHeight = (height) => {
     requestAnimationFrame(() => {
@@ -71,7 +71,7 @@ class SalonCardDetailsSlide extends React.Component {
         scrollHeight: height,
       });
     });
-  }
+  };
 
   getAuditInformation = () => {
     const { appointment } = this.state;
@@ -89,7 +89,7 @@ class SalonCardDetailsSlide extends React.Component {
         }
       });
     }
-  }
+  };
 
   getDefaultPosition = (shouldBeUpdatedForce) => {
     const forceUpdate = shouldBeUpdatedForce || false;
@@ -107,7 +107,7 @@ class SalonCardDetailsSlide extends React.Component {
       });
     }
     return height;
-  }
+  };
 
   get remarksMessage() {
     const {
@@ -141,7 +141,7 @@ class SalonCardDetailsSlide extends React.Component {
         this.setScrollHeight(nextHeight - this.state.headerHeight - headerPaddings);
       });
     }
-  }
+  };
 
   updateAppointmentState = (appointment) => {
     if (appointment) {
@@ -149,7 +149,7 @@ class SalonCardDetailsSlide extends React.Component {
         this.getAuditInformation();
       });
     }
-  }
+  };
 
   hidePanel = () => {
     if (this.state.appointmentHasBeenChanged) {
@@ -160,37 +160,37 @@ class SalonCardDetailsSlide extends React.Component {
 
   handleSlideChanged = (index) => {
     this.props.changeAppointment(this.props.crossedAppointments[index]);
-  }
+  };
 
   handleActionSheet = () => {
     if (this.actionSheet) {
       this.actionSheet.show();
     }
-  }
+  };
 
   handleCancel = () => {
     this.props.goToCancelAppt(this.state.appointment);
-  }
+  };
 
   handleCheckin = () => {
     this.props.handleCheckin(this.state.appointment.id, this.state.appointment.date);
-  }
+  };
 
   handleCheckout = () => {
     this.props.handleCheckout(this.state.appointment.id);
-  }
+  };
 
   handleModify = () => {
     this.props.handleModify(this.state.appointment.id);
-  }
+  };
 
   handleRebook = () => {
     this.props.handleRebook(this.state.appointment);
-  }
+  };
 
   handleNewAppt = () => {
     const { selectedFilter, selectedProvider } = this.props;
-    const { appointment } = this.state
+    const { appointment } = this.state;
     const startTime = moment(appointment.fromTime, 'HH:mm').format('HH:mm A');
     let data = null;
     if (
@@ -205,26 +205,26 @@ class SalonCardDetailsSlide extends React.Component {
       }
     }
     this.props.handleNewAppt(startTime, data);
-  }
+  };
 
   handleRecommendProductPress = () => {
     this.props.navigation.navigate('RecommendProduct', { client: this.state.appointment.client });
     this.hidePanel();
-  }
+  };
 
   handleOpenEditRemarks = () => {
     this.setState({ showEditRemarks: true });
-  }
+  };
 
-  handleOkInEditRemarks = (remarks) => {
+  handleOkInEditRemarks = async (remarks) => {
     Appointment.putAppointmentRemarks(this.props.appointment.id, remarks)
       .then((response) => {
         if (response.result === 1) {
           const { appointment } = this.state;
-          appointment.remarks = remarks;
+          const newAppointment = { ...appointment, remarks };
           this.setState({
             appointmentHasBeenChanged: true,
-            appointment,
+            appointment: newAppointment,
           }, () => {
             this.props.showToast({
               description: 'Remarks edited',
@@ -238,26 +238,26 @@ class SalonCardDetailsSlide extends React.Component {
     this.setState({
       showEditRemarks: false,
     });
-  }
+  };
 
   handleShowAppt = () => {
     this.props.goToShowAppt(this.state.appointment.client);
-  }
+  };
 
   handleCancelInEditRemarks = () => {
     this.setState({ showEditRemarks: false });
-  }
+  };
 
   handleHeaderOnLayout = ({ nativeEvent: { layout: { height } } }) => {
     if (!this.state.headerHeight || this.state.headerHeight !== height) {
       this.setState({ headerHeight: height }, () =>
         this.setScrollHeight(this.state.defaultPosition - height - headerPaddings));
     }
-  }
+  };
 
   assignActionSheet = (item) => {
     this.actionSheet = item;
-  }
+  };
 
   renderHeaderSlide = () => {
     const { crossedAppointments } = this.props;
@@ -267,7 +267,7 @@ class SalonCardDetailsSlide extends React.Component {
     if (crossedAppointments.length < 2) {
       return (
         <View style={[styles.slidePanelWrapper, {
-         zIndex: 9999, height: 20, position: 'absolute', top: 10,
+          zIndex: 9999, height: 20, position: 'absolute', top: 10,
         }]}
         >
           <View style={[styles.swipablePanelIconRight, { marginBottom: 0 }]}>
@@ -300,7 +300,7 @@ class SalonCardDetailsSlide extends React.Component {
               >
                 {crossedAppointments.map(() => (
                   <View style={styles.crossedAppointmentSliderItem} />
-            ))}
+                ))}
               </Swiper>
             </React.Fragment>
             <View style={styles.swipablePanelIconRight}>
@@ -315,7 +315,7 @@ class SalonCardDetailsSlide extends React.Component {
 
 
     );
-  }
+  };
 
   renderHeaderData = () => {
     const { appointment } = this.state;
@@ -328,9 +328,9 @@ class SalonCardDetailsSlide extends React.Component {
         appointment={appointment}
         appointments={this.props.appointments}
       />) : (
-        <BlockHeader appointment={appointment} />
+      <BlockHeader appointment={appointment} />
     );
-  }
+  };
 
   renderHeader = panHendler => (
     <View
@@ -380,12 +380,12 @@ class SalonCardDetailsSlide extends React.Component {
                       handleNewAppt={this.handleNewAppt}
                       handleCancel={this.handleCancel}
                     />) : (<ApptointmentBtn
-                      appointment={appointment}
-                      handleCheckin={this.handleCheckin}
-                      handleCheckout={this.handleCheckout}
-                      handleModify={this.handleModify}
-                      handleCancel={this.handleCancel}
-                    />)}
+                    appointment={appointment}
+                    handleCheckin={this.handleCheckin}
+                    handleCheckout={this.handleCheckout}
+                    handleModify={this.handleModify}
+                    handleCancel={this.handleCancel}
+                  />)}
                 </View>
                 <View style={styles.auditContainer}>
                   <AuditInformation
@@ -409,7 +409,7 @@ class SalonCardDetailsSlide extends React.Component {
         </View>
       </View>
     );
-  }
+  };
 
   render() {
     return (
@@ -421,7 +421,9 @@ class SalonCardDetailsSlide extends React.Component {
         renderDraggableHeader={this.renderHeader}
         onDragEnd={this.hanleOnDragEnd}
         defaultYPosition={this.state.defaultPosition}
-        ref={(slidingPanel) => { this.slidingPanel = slidingPanel }}
+        ref={(slidingPanel) => {
+          this.slidingPanel = slidingPanel;
+        }}
       >
         {this.state.appointment && this.renderContent()}
         {this.props.crossedAppointments.length > 0 && (
