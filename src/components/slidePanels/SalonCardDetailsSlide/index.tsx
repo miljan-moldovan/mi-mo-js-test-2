@@ -216,15 +216,15 @@ class SalonCardDetailsSlide extends React.Component {
     this.setState({ showEditRemarks: true });
   };
 
-  handleOkInEditRemarks = async (remarks) => {
+  handleOkInEditRemarks = (remarks) => {
     Appointment.putAppointmentRemarks(this.props.appointment.id, remarks)
       .then((response) => {
         if (response.result === 1) {
           const { appointment } = this.state;
-          const newAppointment = { ...appointment, remarks };
+          appointment.remarks = remarks;
           this.setState({
             appointmentHasBeenChanged: true,
-            appointment: newAppointment,
+            appointment,
           }, () => {
             this.props.showToast({
               description: 'Remarks edited',

@@ -317,6 +317,45 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
               style={styles.logo}
             />
           </AnimatedHideView>
+          {
+            __DEV__ &&
+            (
+              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
+                <Button
+                  bordered
+                  disabled={this.state.waitingLogin}
+                  // @ts-ignore problem with native base types
+                  style={[styles.loginButton, { width: 130, height: 50 }]}
+                  onPress={() => this.props.login(
+                    'nw.dev.sg.salondev.net',
+                    'frank@zonaprofessional.com',
+                    'SevenSlySnakes',
+                    () => {},
+                  )}
+                >
+                  <Text style={[styles.loginButtonText, { fontSize: 12 }]}>
+                    LOGIN AS DEVELOPER
+                  </Text>
+                </Button>
+                <Button
+                  bordered
+                  disabled={this.state.waitingLogin}
+                  // @ts-ignore problem with native base types
+                  style={[styles.loginButton, { width: 130, height: 50 }]}
+                  onPress={() => this.props.login(
+                    'nw.qa.sg.salondev.net',
+                    'olga.filippova@salonultimate.com',
+                    'qafirst',
+                    () => {},
+                  )}
+                >
+                  <Text style={[styles.loginButtonText, { fontSize: 12 }]}>
+                    LOGIN AS QA
+                  </Text>
+                </Button>
+              </View>
+            )
+          }
           <AnimatedHideView
             visible={!showLogo && !loggedIn}
             unmountOnHide={true}
