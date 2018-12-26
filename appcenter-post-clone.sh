@@ -1,3 +1,3 @@
 git clean -xdf
 git reset HEAD --hard
-npm install node
+brew install node
