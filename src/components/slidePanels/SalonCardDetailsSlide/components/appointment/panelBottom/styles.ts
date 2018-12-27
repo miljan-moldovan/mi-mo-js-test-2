@@ -50,4 +50,8 @@ export default {
     paddingVertical: 1,
     paddingHorizontal: 2,
   },
+  styleNewAppointmentPlus: {
+    position: 'absolute',
+    top: 17,
+  },
 };
