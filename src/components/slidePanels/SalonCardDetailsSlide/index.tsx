@@ -54,8 +54,7 @@ class SalonCardDetailsSlide extends React.Component {
     if (this.props.visible !== nextProps.visible && nextProps.visible) {
       this.updateAppointmentState(nextProps.appointment);
     } else if (this.props.visible && nextProps.visible &&
-      this.state.appointment && nextProps.appointment &&
-      this.state.appointment.id !== nextProps.appointment.id
+      this.state.appointment && nextProps.appointment
     ) {
       this.updateAppointmentState(nextProps.appointment);
     }
