@@ -1,12 +1,12 @@
 import debounce from 'lodash.debounce'; // 4.0.8
 import * as React from 'react';
-import { TouchableOpacity, ViewStyle, RegisteredStyle } from 'react-native';
+import { TouchableOpacity, ViewStyle, RegisteredStyle, StyleProp } from 'react-native';
 
 type IProps = {
   onPress: () => void,
   wait?: number,
   disabled?: boolean,
-  style?: RegisteredStyle<ViewStyle> | RegisteredStyle<ViewStyle>[],
+  style?: RegisteredStyle<ViewStyle> | RegisteredStyle<ViewStyle>[] | StyleProp<ViewStyle>,
 };
 
 const SalonTouchableOpacity = (WrappedComponent) => {
