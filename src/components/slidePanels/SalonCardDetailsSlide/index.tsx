@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Alert } from 'react-native';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import { connect } from 'react-redux';
@@ -24,11 +23,12 @@ import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
 import PanelbottomAppt from './components/appointment/panelBottom';
 
-const notImplemented = () => alert('Not implemented');
+const notImplemented = () => Alert.alert('Not implemented');
 
 const headerPaddings = 63;
 
-class SalonCardDetailsSlide extends React.Component {
+class SalonCardDetailsSlide extends React.Component<any, any> {
+  private slidingPanel: null;
   constructor(props) {
     super(props);
     this.state = {
@@ -91,7 +91,7 @@ class SalonCardDetailsSlide extends React.Component {
     }
   };
 
-  getDefaultPosition = (shouldBeUpdatedForce) => {
+  getDefaultPosition = (shouldBeUpdatedForce?) => {
     const forceUpdate = shouldBeUpdatedForce || false;
     const height = HeightHelper.setPositionToMinimalOption();
     if (this.state.defaultPosition === height && !forceUpdate) {

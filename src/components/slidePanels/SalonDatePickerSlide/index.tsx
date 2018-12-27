@@ -68,6 +68,7 @@ type IProps = {
   selectedDate: string,
   onHide: () => void,
   mode: string,
+  currentDate?: string,
   onDateSelected: (startDate, endDate) => void,
   markedDates: any,
   onPressArrowLeft: () => void,
@@ -101,6 +102,15 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
       visible: nextProps.visible,
       selected: nextProps.selectedDate,
     });
+  }
+
+  get current() {
+    const dateFromProps = moment(this.props.currentDate);
+    if (dateFromProps.isValid()) {
+      return dateFromProps.format();
+    }
+
+    return moment().format();
   }
 
   hidePanel = () => {
@@ -177,6 +187,7 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
                 ref={calendar => {
                   this.calendar = calendar;
                 }}
+                current={this.current}
                 onDayPress={this.onDayPress}
                 monthFormat="MMMM yyyy"
                 style={{ width: '95%' }}
