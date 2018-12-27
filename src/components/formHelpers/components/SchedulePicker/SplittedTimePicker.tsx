@@ -111,6 +111,7 @@ class SplittedTimePicker extends React.Component<IProps, IState> {
     ) : (
       <View style={styles.pickerContainer}>
         <DatePicker
+          locale="US"
           style={styles.picker}
           minuteInterval={this.state.interval}
           maximumDate={this.maximumDate.toDate()}
