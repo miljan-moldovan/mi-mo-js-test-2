@@ -70,7 +70,7 @@
     "rn-fetch-blob": "^0.10.14",
     "rn-sliding-up-panel": "git+https://github.com/igor-slotin/rn-sliding-up-panel.git#default-y-position",
     "shouldcomponentupdate-children": "1.1.0",
-    "typescript": "^3.1.6",
+    "typescript": "3.1.6",
     "url-parse": "^1.4.0",
     "uuid": "^3.2.1"
   },

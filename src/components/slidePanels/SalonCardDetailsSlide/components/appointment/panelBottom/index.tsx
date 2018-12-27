@@ -31,15 +31,19 @@ const apptPanelBottom = ({
           label="New Appointment"
         >
           <View style={styles.iconContainer}>
-            <Icon name="calendarO" size={18} color="#115ECD" type="solid" />
-            <View style={styles.plusIconContainer}>
-              <Icon
-                name="plus"
-                size={9}
-                color="#115ECD"
-                type="solid"
-              />
-            </View>
+            <Icon
+              name="calendarO"
+              type="regularFree"
+              color="#115ECD"
+              size={20}
+            />
+            <Icon
+              name="plus"
+              type="solid"
+              color="#115ECD"
+              size={10}
+              style={styles.styleNewAppointmentPlus}
+            />
           </View>
         </InputButton>
         <InputButton
