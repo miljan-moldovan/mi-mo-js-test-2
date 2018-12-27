@@ -20,10 +20,9 @@ import Colors from '../../../constants/Colors';
 import styles from '../styles';
 
 const SetExtras = ({ onPress }) => {
-  const marginRight = { marginRight: 12 };
   const textColor = { color: Colors.defaultBlue };
   return (
-    <View style={[styles.removeGuestContainer, marginRight]}>
+    <View style={[styles.removeGuestContainer]}>
       <SalonTouchableOpacity
         style={styles.flexRow}
         onPress={onPress}
@@ -95,83 +94,48 @@ const ServiceCard = (props) => {
       >
         <SalonCard
           key={props.id}
-          containerStyles={{ marginVertical: 0, marginBottom: 10 }}
-          bodyStyles={{ paddingTop: 7, paddingBottom: 13 }}
+          containerStyles={styles.containerStylesSalonCard}
+          bodyStyles={styles.bodyStylesSalonCard}
           backgroundColor="white"
           bodyChildren={
-            <View style={{ flex: 1, flexDirection: 'column' }}>
+            <View style={styles.rootViewInSalonCard}>
               <View style={{ flexDirection: 'row' }}>
                 {props.isAddon && (
                   <Icon
-                    style={{
-                      marginRight: 10,
-                      transform: [{ rotate: '90deg' }],
-                    }}
+                    style={styles.styleAddonIcon}
                     name="levelUp"
                     type="regular"
                     color="black"
                     size={12}
                   />
                 )}
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                  }}
-                >
+                <View style={styles.containerServiceTitle}>
                   <Text style={[styles.serviceTitle, props.conflicts.length > 0 ? { color: 'red' } : {}]}>
                     {serviceName}
                   </Text>
                   {props.isRequired && (
-                    <Text style={{
-                      fontSize: 10,
-                      marginLeft: 6,
-                      color: '#1DBF12',
-                    }}
-                    >
+                    <Text style={styles.textRequired}>
                       REQUIRED
                     </Text>
                   )}
                 </View>
-                <View style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  alignSelf: 'flex-end',
-                  alignItems: 'center',
-                }}
-                >
-                  <ServiceInfo price={data.service.price} waitTime={`${moment.duration(data.length).asMinutes()} min`} />
-                  <FontAwesome style={{
-                    color: '#115ECD',
-                    fontSize: 20,
-                    marginLeft: 15,
-                  }}
-                  >{Icons.angleRight}
-                  </FontAwesome>
+                <View style={styles.containerForServiceInfo}>
+                  <ServiceInfo
+                    price={data.service.price}
+                    waitTime={`${moment.duration(data.length).asMinutes()} min`}
+                  />
+                  <FontAwesome style={styles.styleIconAngleRight}>{Icons.angleRight}</FontAwesome>
                 </View>
               </View>
-              <View style={{
-                flexDirection: 'row', marginTop: 5, alignItems: 'center', justifyContent: 'flex-start',
-              }}
-              >
+              <View style={styles.containerAvatarWithText}>
                 <SalonAvatar
-                  wrapperStyle={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: 10,
-                  }}
+                  wrapperStyle={styles.salonAvatarWrapperStyle}
                   width={26}
                   borderWidth={1}
                   borderColor="transparent"
                   hasBadge={data.requested}
                   badgeComponent={
-                    <FontAwesome style={{
-                      color: '#1DBF12', fontSize: 10,
-                    }}
-                    >{Icons.lock}
-                    </FontAwesome>
+                    <FontAwesome style={styles.styleIconLock}>{Icons.lock}</FontAwesome>
                   }
                   image={getEmployeePhotoSource(employee)}
                   defaultComponent={(
@@ -190,11 +154,8 @@ const ServiceCard = (props) => {
                 >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
                 </Text>
               </View>
-              <View style={{
-                height: 1, alignSelf: 'stretch', backgroundColor: '#E0EAF7', marginVertical: 7,
-              }}
-              />
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={styles.separatorStyle}/>
+              <View style={styles.containerSalonAppointmentTime}>
                 <SalonAppointmentTime
                   from={moment(data.fromTime, 'hh:mm').format('hh:mm A')}
                   to={moment(data.toTime, 'hh:mm').format('hh:mm A')}
@@ -202,10 +163,14 @@ const ServiceCard = (props) => {
                 {showSelectExtras && (
                   <SetExtras onPress={props.onSetExtras} />
                 )}
-                <SalonTouchableOpacity disabled={props.isOnlyMainService} onPress={props.onPressDelete}>
+                <SalonTouchableOpacity
+                  style={styles.containerForTrashButton}
+                  disabled={props.isOnlyMainService}
+                  onPress={props.onPressDelete}
+                >
                   <Icon
                     name="trashAlt"
-                    size={12}
+                    size={16}
                     color="#D1242A"
                     type="regular"
                   />
@@ -217,11 +182,7 @@ const ServiceCard = (props) => {
       </SalonTouchableOpacity>
       {props.conflicts.length > 0 && !props.isGotAddon && (
         <ConflictBox
-          style={{
-            marginHorizontal: 10,
-            marginTop: 0,
-            marginBottom: 10,
-          }}
+          style={styles.conflictBox}
           onPress={() => props.onPressConflicts()}
         />
       )}

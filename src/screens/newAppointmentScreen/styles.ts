@@ -85,5 +85,77 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: 'white',
   },
+  containerForTrashButton: {
+    width: 22,
+    alignItems: 'flex-end',
+  },
+  containerForServiceInfo: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  textRequired: {
+    fontSize: 10,
+    marginLeft: 6,
+    color: '#1DBF12',
+  },
+  styleAddonIcon: {
+    marginRight: 10,
+    transform: [{ rotate: '90deg' }],
+  },
+  containerServiceTitle: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  styleIconAngleRight: {
+    color: '#115ECD',
+    fontSize: 20,
+    marginLeft: 15,
+  },
+  containerAvatarWithText: {
+    flexDirection: 'row',
+    marginTop: 5,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  salonAvatarWrapperStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  styleIconLock: {
+    color: '#1DBF12',
+    fontSize: 10,
+  },
+  separatorStyle: {
+    height: 1,
+    alignSelf: 'stretch',
+    backgroundColor: '#E0EAF7',
+    marginVertical: 7,
+  },
+  containerSalonAppointmentTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  conflictBox: {
+    marginHorizontal: 10,
+    marginTop: 0,
+    marginBottom: 10,
+  },
+  containerStylesSalonCard: {
+    marginVertical: 0,
+    marginBottom: 10,
+  },
+  bodyStylesSalonCard: {
+    paddingTop: 7,
+    paddingBottom: 13,
+  },
+  rootViewInSalonCard: {
+    flex: 1,
+    flexDirection: 'column',
+  },
 });
 export default styles;
