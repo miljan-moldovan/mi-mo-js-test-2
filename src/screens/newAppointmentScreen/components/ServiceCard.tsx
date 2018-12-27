@@ -10,8 +10,8 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 import {
   ConflictBox,
-} from '../../../components/slidePanels/SalonNewAppointmentSlide';
-import { DefaultAvatar } from '../../../components/formHelpers';
+} from '@/components/slidePanels/SalonNewAppointmentSlide';
+import { DefaultAvatar } from '@/components/formHelpers';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import SalonCard from '../../../components/SalonCard';
 import SalonAvatar from '../../../components/SalonAvatar';
