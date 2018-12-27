@@ -29,7 +29,7 @@ import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
 
-class AppointmentScreen extends React.Component {
+class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
     const currentFilter = navigation.getParam('currentFilter', false);
     const tabBarVisible = navigation.getParam('tabBarVisible', true);

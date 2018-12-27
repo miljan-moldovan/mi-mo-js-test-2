@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import moment from 'moment';
+import { View, StyleSheet } from 'react-native';
 
 import Column from './Column';
 import AvailabilityColumn from './availabilityColumn';
@@ -14,7 +13,8 @@ const styles = StyleSheet.create({
 
 export default class Board extends React.Component<BoardProps, any> {
   shouldComponentUpdate(nextProps, nexState) {
-    return nextProps.displayMode !== this.props.displayMode || (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading);
+    return nextProps.displayMode !== this.props.displayMode ||
+      (!nextProps.isLoading && nextProps.isLoading !== this.props.isLoading);
   }
 
   renderCol = (col, key) => {
@@ -62,6 +62,8 @@ export default class Board extends React.Component<BoardProps, any> {
       apptGridSettings,
       availability,
       showAvailability,
+      hideAlert,
+      createAlert,
       startDate,
     } = this.props;
     return (
@@ -69,6 +71,8 @@ export default class Board extends React.Component<BoardProps, any> {
         {showAvailability
           ? <AvailabilityColumn
             apptGridSettings={apptGridSettings}
+            createAlert={createAlert}
+            hideAlert={hideAlert}
             onPress={this.props.onPressAvailability}
             availability={availability}
             startDate={startDate}
