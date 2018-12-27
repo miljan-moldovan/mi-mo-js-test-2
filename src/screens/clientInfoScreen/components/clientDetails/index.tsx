@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import clientInfoActions from '../../../../redux/actions/clientInfo';
+import clientInfoActions from '@/redux/actions/clientInfo';
 import {
   appointmentCalendarActions,
 } from '@/redux/actions/appointmentBook';
 import ClientDetails from './clientDetails';
-import settingsActions from '../../../../redux/actions/settings';
+import settingsActions from '@/redux/actions/settings';
 
 const mapStateToProps = state => ({
   settingsState: state.settingsReducer,

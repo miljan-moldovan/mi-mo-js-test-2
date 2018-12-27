@@ -77,7 +77,6 @@ export default class NewClientScreen extends React.Component {
   }
 
   onClientCreated = (client) => {
-    console.log(client, 'client')
     const { onChangeClient } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params && onChangeClient) {
