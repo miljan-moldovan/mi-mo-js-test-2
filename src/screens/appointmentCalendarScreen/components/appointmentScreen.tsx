@@ -133,7 +133,7 @@ class AppointmentScreen extends React.Component {
                 onPress={onPressEllipsis}
                 style={headerStyles.btnElipsis}
               >
-                <Icon name="ellipsisH" type="solid" color="white" size={17} />
+                <Icon name="ellipsisH" type="solid" color="white" size={18} />
               </SalonTouchableOpacity>
               <SalonTouchableOpacity
                 onPress={onPressCalendar}
@@ -143,7 +143,7 @@ class AppointmentScreen extends React.Component {
                   name="calendarO"
                   type="regularFree"
                   color="white"
-                  size={19}
+                  size={20}
                 />
                 <Icon
                   name="search"
@@ -160,7 +160,7 @@ class AppointmentScreen extends React.Component {
               style={headerStyles.btn}
               onPress={onPressMenu}
             >
-              <Icon name="bars" type="solid" color="white" size={19} />
+              <Icon name="bars" type="solid" color="white" size={20} />
             </SalonTouchableOpacity>
           }
         />

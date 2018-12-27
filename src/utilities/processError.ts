@@ -2,14 +2,16 @@
 import e from '../constants/ErrorTypes';
 
 export default function processError(error: any): any {
-  let type,
-    message;
+  let type;
+  let message;
 
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
 
-    message = 'The server has returned an error. \n' + (error.response.data && error.response.data.message);
+    message = `The server has returned an error. ${
+      (error.response.data && error.response.data.message)
+    }`;
     type = e.SERVER;
   } else if (error.request) {
     // The request was made but no response was received

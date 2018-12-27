@@ -30,7 +30,7 @@ export default class CardGrid extends React.Component {
         card =>
           card.isBlockTime
             ? this.props.renderBlock(card, headerIndex, headerId)
-            : this.props.renderCard(card, headerIndex, headerId)
+            : this.props.renderCard(card, headerIndex, headerId),
       );
     }
     return null;
@@ -53,13 +53,13 @@ export default class CardGrid extends React.Component {
               get(
                 overlappingCardsMap,
                 [headerId, card.id, 'overlappingCardsLength'],
-                0
+                0,
               ),
-            'asc'
+            'asc',
           )
           .value(),
         index,
-        headerId
+        headerId,
       );
     });
     return <React.Fragment>{gridCard}</React.Fragment>;

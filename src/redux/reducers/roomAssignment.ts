@@ -31,50 +31,66 @@ const initialState: RoomAssignmentReducer = {
 
 const roomAssignmentReducer = (state: RoomAssignmentReducer = initialState, action): RoomAssignmentReducer => {
   const { type, data } = action;
-  const newState = cloneDeep(state);
   switch (type) {
     case GET_ROOMS:
-      newState.isLoading = true;
-      break;
+      return {
+        ...state,
+        isLoading: true,
+      };
     case GET_ROOMS_SUCCESS:
-      newState.isLoading = false;
-      newState.rooms = data.rooms;
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        rooms: data.rooms,
+      };
     case GET_ROOMS_FAILED:
-      newState.isLoading = false;
-      newState.rooms = [];
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        rooms: [],
+      };
     case GET_ASSIGNMENTS:
-      newState.isLoading = true;
-      newState.assignments = [];
-      break;
+      return {
+        ...state,
+        isLoading: true,
+        assignments: [],
+      };
     case GET_ASSIGNMENTS_SUCCESS:
-      newState.isLoading = false;
-      newState.assignments = data.assignments;
-      newState.rooms = data.rooms;
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        assignments: data.assignments,
+        rooms: data.rooms,
+      };
     case GET_ASSIGNMENTS_FAILED:
-      newState.isLoading = false;
-      newState.assignments = [];
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        assignments: [],
+      };
     case PUT_ASSIGNMENTS:
-      newState.isLoading = true;
-      newState.isUpdating = true;
-      newState.isError = false;
-      break;
+      return {
+        ...state,
+        isLoading: true,
+        isUpdating: true,
+        isError: false,
+      };
     case PUT_ASSIGNMENTS_SUCCESS:
-      newState.isUpdating = false;
-      newState.isLoading = false;
-      newState.isError = false;
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        isUpdating: false,
+        isError: false,
+      };
     case PUT_ASSIGNMENTS_FAILED:
-      newState.isUpdating = false;
-      newState.isLoading = false;
-      newState.isError = true;
-      break;
+      return {
+        ...state,
+        isLoading: false,
+        isUpdating: false,
+        isError: true,
+      };
     default:
-      break;
+      return state;
   }
-  return newState;
 };
 export default roomAssignmentReducer;

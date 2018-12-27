@@ -1,32 +1,60 @@
 import * as React from 'react';
-import {
-  View,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import { isNull } from 'lodash';
 import { CachedImage } from 'react-native-img-cache';
+import styles from './style';
 
-const styles = StyleSheet.create({
-  imageStyle: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  wrapperStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    // width: '100%',
-  },
-});
+type SalonAvatarType = {
+  image?: {
+    uri: string,
+  } | null,
+  width: number,
+  badgeColor?: string,
+  borderWidth?: number,
+  hasBadge?: boolean,
+  borderColor?: string,
+  wrapperStyle?: any,
+  imageStyle?: any,
+  badgeComponent?: any,
+  defaultComponent?: any,
+};
 
-export default class SalonAvatar extends React.Component {
+class SalonAvatar extends React.Component<SalonAvatarType> {
+
+  static propTypes = {
+    image: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      PropTypes.object,
+    ]),
+    width: PropTypes.number.isRequired,
+    badgeColor: PropTypes.string,
+    borderWidth: PropTypes.number,
+    badgeComponent: PropTypes.element,
+    defaultComponent: PropTypes.element,
+    hasBadge: PropTypes.bool,
+    borderColor: PropTypes.string,
+    wrapperStyle: PropTypes.any,
+    imageStyle: PropTypes.any,
+  };
+
+  static defaultProps = {
+    image: null,
+    badgeColor: 'white',
+    borderWidth: 0,
+    badgeComponent: null,
+    defaultComponent: null,
+    hasBadge: false,
+    wrapperStyle: {},
+    imageStyle: {},
+  };
+
   state = {
     isLoading: false,
     isError: false,
-  }
+  };
 
   render() {
     const {
@@ -41,56 +69,53 @@ export default class SalonAvatar extends React.Component {
       defaultComponent,
       imageStyle: imageStyleProp,
     } = this.props;
+
     const { isLoading, isError } = this.state;
     const badgeSize = width / 2;
     const badgeBorderRadius = badgeSize / 2;
     const badgeOffsetTop = badgeSize - (badgeSize / 5);
     const badgeOffsetRight = -(badgeSize / 1.5);
+
     const containerStyle = {
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'column',
       width,
       height: width,
       borderRadius: width / 2,
       borderWidth: isLoading ? 0 : borderWidth,
       borderColor: isLoading ? 'transparent' : borderColor,
     };
+
     const defaultComponentStyle = {
-      position: 'absolute',
-      zIndex: 999,
       width,
       height: width,
       borderRadius: width / 2,
     };
+
     const imageStyle = {
       zIndex: 9999,
       width,
       height: width,
       borderRadius: width / 2,
     };
+
     const badgeStyle = {
-      position: 'absolute',
       width: badgeSize,
       height: badgeSize,
       borderRadius: badgeBorderRadius,
       backgroundColor: badgeColor,
       top: badgeOffsetTop,
       right: badgeOffsetRight,
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 9999,
     };
+
     return (
       <View style={[styles.wrapperStyle, wrapperStyle]}>
-        <View style={containerStyle}>
+        <View style={[styles.containerStyle, containerStyle]}>
           {
             !defaultComponent && isLoading &&
             <ActivityIndicator />
           }
           {
             defaultComponent && (isNull(image) || !image.uri || isError) &&
-            <View style={defaultComponentStyle}>{defaultComponent}</View>
+            <View style={[styles.defaultComponentStyle, defaultComponentStyle]}>{defaultComponent}</View>
           }
           {
             !isNull(image) && image.uri && !isError &&
@@ -107,38 +132,12 @@ export default class SalonAvatar extends React.Component {
           }
           {
             hasBadge &&
-            <View style={badgeStyle}>{badgeComponent}</View>
+            <View style={[styles.badgeStyle, badgeStyle]}>{badgeComponent}</View>
           }
         </View>
       </View>
     );
   }
 }
-SalonAvatar.propTypes = {
-  image: PropTypes.oneOfType([
-    PropTypes.shape({
-      uri: PropTypes.string,
-    }),
-    null,
-  ]),
-  width: PropTypes.number.isRequired,
-  badgeColor: PropTypes.string,
-  borderWidth: PropTypes.number,
-  badgeComponent: PropTypes.element,
-  defaultComponent: PropTypes.element,
-  hasBadge: PropTypes.bool,
-  borderColor: PropTypes.string,
-  wrapperStyle: PropTypes.any,
-  imageStyle: PropTypes.any,
-};
-SalonAvatar.defaultProps = {
-  image: null,
-  badgeColor: 'white',
-  borderWidth: 0,
-  badgeComponent: null,
-  defaultComponent: null,
-  hasBadge: false,
-  wrapperStyle: {},
-  imageStyle: {},
-  borderColor: '',
-};
+
+export default SalonAvatar;

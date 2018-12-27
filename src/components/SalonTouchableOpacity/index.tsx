@@ -6,7 +6,7 @@ type IProps = {
   onPress: () => void,
   wait?: number,
   disabled?: boolean,
-  style?: RegisteredStyle<ViewStyle>,
+  style?: RegisteredStyle<ViewStyle> | RegisteredStyle<ViewStyle>[],
 };
 
 const SalonTouchableOpacity = (WrappedComponent) => {

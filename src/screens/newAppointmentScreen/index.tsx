@@ -31,16 +31,16 @@ const mapStateToProps = state => ({
 const mapActionsToProps = dispatch => ({
   newAppointmentActions: bindActionCreators(
     { ...newAppointmentActions },
-    dispatch
+    dispatch,
   ),
   apptBookActions: bindActionCreators(
     { ...appointmentCalendarActions },
-    dispatch
+    dispatch,
   ),
   formulaActions: bindActionCreators({ ...formulaActions }, dispatch),
   servicesActions: bindActionCreators({ ...serviceActions }, dispatch),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(
-  NewAppointmentScreen
+  NewAppointmentScreen,
 );

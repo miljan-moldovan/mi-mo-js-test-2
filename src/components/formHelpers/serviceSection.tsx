@@ -108,7 +108,7 @@ class ServiceSection extends React.Component {
 
   hideDateTimePicker = () => {
     this.setState({ isDateTimePickerVisible: false });
-  }
+  };
 
   showDateTimePicker = (date, service, index, type) => {
     this.setState({
@@ -118,20 +118,20 @@ class ServiceSection extends React.Component {
       index,
       type,
     });
-  }
+  };
 
   handleDateSelection = (date) => {
     const newService = this.state.service;
     newService[this.state.type] = moment(date.getTime());
     this.props.onUpdate(this.state.index, newService);
     this.hideDateTimePicker();
-  }
+  };
 
   handleProviderSelection = (provider, service, index) => {
     const newService = service;
     newService.provider = provider;
     this.props.onUpdate(index, newService);
-  }
+  };
 
   handlePressProvider = (service, index) => {
     this.props.navigate('Providers', {
@@ -139,13 +139,13 @@ class ServiceSection extends React.Component {
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider, service, index),
     });
-  }
+  };
 
   handleServiceSelection = (data, service, index) => {
     const newService = service;
     newService.service = data;
     this.props.onUpdate(index, newService);
-  }
+  };
 
   handlePressService = (service, index) => {
     this.props.navigate('Services', {
@@ -153,7 +153,7 @@ class ServiceSection extends React.Component {
       dismissOnSelect: true,
       onChangeService: data => this.handleServiceSelection(data, service, index),
     });
-  }
+  };
 
   renderProvider = (provider) => {
     if (provider) {
@@ -164,7 +164,7 @@ class ServiceSection extends React.Component {
     return (
       <Text style={styles.label}>Provider</Text>
     );
-  }
+  };
 
   renderServiceInfo = (service) => {
     if (service) {
@@ -175,7 +175,7 @@ class ServiceSection extends React.Component {
     return (
       <Text style={styles.label}>Service</Text>
     );
-  }
+  };
 
   renderService = (service, index) => (
     <View style={styles.serviceRow} key={index}>
@@ -222,7 +222,7 @@ class ServiceSection extends React.Component {
         </SalonTouchableOpacity>
       </View>
     </View>
-  )
+  );
 
   render() {
     return (

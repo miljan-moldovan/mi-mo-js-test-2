@@ -12,11 +12,11 @@ import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import { styles, DefaultAvatar } from '../index';
 import getEmployeePhotoSource from '../../../utilities/helpers/getEmployeePhotoSource';
 
-export default class ProviderInput extends React.Component {
+export default class ProviderInput extends React.Component<any, any> {
   handleProviderSelection = (provider) => {
     const { onChange = prov => prov } = this.props;
     onChange(provider);
-  }
+  };
 
   handlePress = () => {
     const {
@@ -36,7 +36,9 @@ export default class ProviderInput extends React.Component {
       checkProviderStatus = false,
       walkin = false,
     } = this.props;
-    if (isFunction(onPress)) { onPress(); }
+    if (isFunction(onPress)) {
+      onPress();
+    }
     const screenProviders = walkin ? 'ModalProviders' : 'Providers';
     const nav = walkin ? push : navigate;
     nav(apptBook ? 'ApptBookProvider' : screenProviders, {
@@ -53,7 +55,7 @@ export default class ProviderInput extends React.Component {
       dismissOnSelect: true,
       onChangeProvider: provider => this.handleProviderSelection(provider),
     });
-  }
+  };
 
   render() {
 
