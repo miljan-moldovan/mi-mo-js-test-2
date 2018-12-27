@@ -88,7 +88,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome5FreeRegular400.otf</string>
@@ -147,6 +147,6 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CodePushDeploymentKey</key>
-	<string>To9LoEAXE1CgV6XWrXsKcOXjnIWCHJaLCOGW4</string>
+	<string>$(CODEPUSH_KEY)</string>
 </dict>
 </plist>
