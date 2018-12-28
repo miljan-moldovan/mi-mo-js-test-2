@@ -66,7 +66,6 @@ export default class InputPicker extends React.Component {
     const labelStyle = this.props.required ? (this.props.isValid ? {} : { color: '#D1242A' }) : {};
     const noValueStyle = this.props.noValueStyle ? this.props.noValueStyle : {};
     const placeholder = this.props.placeholder !== undefined ? this.props.placeholder : 'Select';
-
     return (
       <React.Fragment>
         <InputButton
@@ -92,7 +91,7 @@ export default class InputPicker extends React.Component {
             // leftItem={<Icon name="chevronLeft" color="#D0021B" size={33} />}
             // rightItem={<Icon name="chevronRight" color="#D0021B" size={33} />}
             headerStyle={{ backgroundColor: '#FAFAF8', borderBottomColor: 'transparent' }}
-            defaultSelectedValue={this.state.selectedOption.key}
+            defaultSelectedValue={this.state && this.state.selectedOption && this.state.selectedOption.key || ''}
             style={{ justifyContent: 'flex-end', backgroundColor: '#FFF' }}
             lang="en-US"
             ref={ref => this.singlePicker = ref}
