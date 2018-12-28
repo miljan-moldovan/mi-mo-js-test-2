@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   RefreshControl,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -111,24 +110,19 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
 
     return {
       header: () => (
-        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
-          <SalonSearchHeader
-            title={title}
-            subTitle={subTitle}
-            leftButton={leftButton}
-            leftButtonOnPress={() => {
-              leftButtonOnPress(navigation);
-            }}
-            rightButton={rightButton}
-            rightButtonOnPress={() => {
-              rightButtonOnPress(navigation);
-            }}
-            hasFilter={false}
-            // containerStyle={{
-            //   paddingHorizontal: 20,
-            // }}
-          />
-        </SafeAreaView>
+        <SalonSearchHeader
+          title={title}
+          subTitle={subTitle}
+          leftButton={leftButton}
+          leftButtonOnPress={() => {
+            leftButtonOnPress(navigation);
+          }}
+          rightButton={rightButton}
+          rightButtonOnPress={() => {
+            rightButtonOnPress(navigation);
+          }}
+          hasFilter={false}
+        />
       ),
     };
   };

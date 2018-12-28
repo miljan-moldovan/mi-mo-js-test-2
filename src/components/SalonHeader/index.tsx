@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
+import { View, Text } from 'react-native';
 import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import styles from './style';
@@ -15,7 +15,6 @@ const SalonHeader = (props) => {
   const headerTitle = createHeaderTitle(title, subTitle);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.headerLeft}>
           {headerLeft}
@@ -27,7 +26,6 @@ const SalonHeader = (props) => {
           {headerRight}
         </View>
       </View>
-    </SafeAreaView>
   );
 };
 

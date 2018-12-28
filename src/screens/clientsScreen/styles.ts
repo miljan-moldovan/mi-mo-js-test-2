@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Colors from '@/constants/Colors';
 
 export default StyleSheet.create({
   container: {
@@ -89,6 +90,7 @@ export default StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: 20,
+    backgroundColor: Colors.defaultBlue,
   },
   safeAreaView: {
     justifyContent: 'space-between',
