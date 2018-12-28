@@ -5,6 +5,6 @@ export default {
     week: 'date', // picker mode value use this when selectedProvider !== all
   },
   deskStaff: 'employee.id', // slectedfilter vlaue
-  rooms: 'room.id', // slectedfilter vlaue
+  rooms: (item) => item.room && `${item.room.id}_${item.roomOrdinal}`,
   resources: 'resource.id', // slectedfilter vlaue
 };

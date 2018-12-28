@@ -28,6 +28,7 @@ import styles, { headerStyles } from './styles';
 import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
+import { getHeaderRoomsOrResources } from '@/screens/appointmentCalendarScreen/helpers';
 
 class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -889,7 +890,7 @@ class AppointmentScreen extends React.Component<any, any> {
 
     switch (selectedFilter) {
       case 'rooms': {
-        headerData = rooms;
+        headerData = getHeaderRoomsOrResources(rooms);
         dataSource = roomAppointments;
         break;
       }
