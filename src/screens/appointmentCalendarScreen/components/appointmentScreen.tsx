@@ -181,6 +181,7 @@ class AppointmentScreen extends React.Component<any, any> {
     goToAppointmentId: null,
     crossedAppointments: [],
     crossedAppointmentsIdAfter: [],
+    workHeight: 0,
   };
 
   componentDidMount() {
@@ -842,6 +843,11 @@ class AppointmentScreen extends React.Component<any, any> {
 
   clearGoToAppointment = () => this.setState({ goToAppointmentId: null });
 
+  calculateWorkHeight = (event) => {
+    const { height } = event.nativeEvent.layout;
+    this.setState({ workHeight: height });
+  };
+
   render() {
     const {
       dates,
@@ -923,7 +929,10 @@ class AppointmentScreen extends React.Component<any, any> {
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
 
     return (
-      <View style={styles.mainContainer}>
+      <View
+        onLayout={this.calculateWorkHeight}
+        style={styles.mainContainer}
+      >
         <BarsActionSheet
           ref={item => (this.BarsActionSheet = item)}
           onLogout={this.props.auth.logout}
@@ -1063,6 +1072,7 @@ class AppointmentScreen extends React.Component<any, any> {
           crossedAppointmentsIdAfter={this.state.crossedAppointmentsIdAfter}
           changeAppointment={this.onCardPressed}
           handleNewAppt={this.onCalendarCellPressed}
+          workHeight={this.state.workHeight}
         />
         {toast
           ? <SalonToast

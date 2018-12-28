@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert, Dimensions } from 'react-native';
 import { get } from 'lodash';
 import moment from 'moment';
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -25,7 +25,7 @@ import PanelbottomAppt from './components/appointment/panelBottom';
 
 const notImplemented = () => Alert.alert('Not implemented');
 
-const headerPaddings = 63;
+const { height } = Dimensions.get('window');
 
 class SalonCardDetailsSlide extends React.Component<any, any> {
   private slidingPanel: null;
@@ -47,7 +47,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   componentDidMount() {
     this.getAuditInformation();
-    this.getDefaultPosition();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,15 +61,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   }
 
   setMinimumPosition = () => {
-    this.slidingPanel.transitionTo(this.getDefaultPosition(true));
-  };
-
-  setScrollHeight = (height) => {
-    requestAnimationFrame(() => {
-      this.setState({
-        scrollHeight: height,
-      });
-    });
+    this.slidingPanel.transitionTo(300);
   };
 
   getAuditInformation = () => {
@@ -89,24 +80,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
         }
       });
     }
-  };
-
-  getDefaultPosition = (shouldBeUpdatedForce?) => {
-    const forceUpdate = shouldBeUpdatedForce || false;
-    const height = HeightHelper.setPositionToMinimalOption();
-    if (this.state.defaultPosition === height && !forceUpdate) {
-      return this.state.defaultPosition;
-    }
-
-    if (this.state.previousHeight !== height) {
-      this.setState({
-        defaultPosition: height,
-        previousHeight: height,
-      }, () => {
-        this.setScrollHeight(height - this.state.headerHeight - headerPaddings);
-      });
-    }
-    return height;
   };
 
   get remarksMessage() {
@@ -129,17 +102,18 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   hanleOnDragEnd = (params) => {
     const nextHeight = HeightHelper.getHeightPointFromDragHeight(params);
-    this.slidingPanel.transitionTo(nextHeight);
+    const diff = height - this.props.workHeight;
+
+    const config = {
+      toValue: nextHeight,
+      onAnimationEnd: () => this.setState({
+        previousHeight: nextHeight === 0 ? 0 : this.props.workHeight - (nextHeight - diff),
+      }),
+    };
+    this.slidingPanel.transitionTo(config);
+
     if (nextHeight === 0) {
       this.hidePanel();
-    }
-
-    if (this.state.previousHeight !== nextHeight) {
-      this.setState({
-        previousHeight: nextHeight,
-      }, () => {
-        this.setScrollHeight(nextHeight - this.state.headerHeight - headerPaddings);
-      });
     }
   };
 
@@ -249,14 +223,15 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   handleHeaderOnLayout = ({ nativeEvent: { layout: { height } } }) => {
-    if (!this.state.headerHeight || this.state.headerHeight !== height) {
-      this.setState({ headerHeight: height }, () =>
-        this.setScrollHeight(this.state.defaultPosition - height - headerPaddings));
-    }
+    this.setState({ headerHeight: height });
   };
 
   assignActionSheet = (item) => {
     this.actionSheet = item;
+  };
+
+  renderStart = () => {
+    this.setState({previousHeight: 0 });
   };
 
   renderHeaderSlide = () => {
@@ -278,7 +253,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
         </View>);
     }
     return (
-
       <React.Fragment>
         <View style={styles.slidePanel}>
           <View style={styles.slidePanelWrapper}>
@@ -312,8 +286,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
         </View>
         <View style={styles.topBorder} />
       </React.Fragment>
-
-
     );
   };
 
@@ -359,7 +331,39 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
     return (
-      <View style={{ flex: 1 }}>
+      <ScrollView style={{ backgroundColor: '#FFF' }}>
+        <View style={styles.panelMiddle}>
+          <View style={styles.panelIcons}>
+            {appointment.isBlockTime ? (
+              <BlockTimeBtn
+                handleModify={this.handleModify}
+                handleNewAppt={this.handleNewAppt}
+                handleCancel={this.handleCancel}
+              />) : (<ApptointmentBtn
+              appointment={appointment}
+              handleCheckin={this.handleCheckin}
+              handleCheckout={this.handleCheckout}
+              handleModify={this.handleModify}
+              handleCancel={this.handleCancel}
+            />)}
+          </View>
+          <View style={styles.auditContainer}>
+            <AuditInformation
+              audit={auditAppt}
+              isLoading={this.state.isLoadingAudits}
+            />
+          </View>
+        </View>
+        {!appointment.isBlockTime ?
+          <PanelbottomAppt
+            handleOpenEditRemarks={this.handleOpenEditRemarks}
+            handleShowAppt={this.handleShowAppt}
+            handleRecommendProductPress={this.handleRecommendProductPress}
+            handleNewAppt={this.handleNewAppt}
+            handleRebook={this.handleRebook}
+            handleEmailClient={notImplemented}
+            handleSMSClient={notImplemented}
+          /> : null}
         <InputModal
           visible={this.state.showEditRemarks}
           placeholder="Please enter remarks"
@@ -369,49 +373,12 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
           title="Edit Appointment Remarks"
           value={appointment.remarks}
         />
-        <View style={styles.panelContainer}>
-          <View style={{ height: this.state.scrollHeight }}>
-            <ScrollView>
-              <View style={styles.panelMiddle}>
-                <View style={styles.panelIcons}>
-                  {appointment.isBlockTime ? (
-                    <BlockTimeBtn
-                      handleModify={this.handleModify}
-                      handleNewAppt={this.handleNewAppt}
-                      handleCancel={this.handleCancel}
-                    />) : (<ApptointmentBtn
-                    appointment={appointment}
-                    handleCheckin={this.handleCheckin}
-                    handleCheckout={this.handleCheckout}
-                    handleModify={this.handleModify}
-                    handleCancel={this.handleCancel}
-                  />)}
-                </View>
-                <View style={styles.auditContainer}>
-                  <AuditInformation
-                    audit={auditAppt}
-                    isLoading={this.state.isLoadingAudits}
-                  />
-                </View>
-              </View>
-              {!appointment.isBlockTime ?
-                <PanelbottomAppt
-                  handleOpenEditRemarks={this.handleOpenEditRemarks}
-                  handleShowAppt={this.handleShowAppt}
-                  handleRecommendProductPress={this.handleRecommendProductPress}
-                  handleNewAppt={this.handleNewAppt}
-                  handleRebook={this.handleRebook}
-                  handleEmailClient={notImplemented}
-                  handleSMSClient={notImplemented}
-                /> : null}
-            </ScrollView>
-          </View>
-        </View>
-      </View>
+      </ScrollView>
     );
   };
 
   render() {
+    console.log(this.props.workHeight, this.state.previousHeight)
     return (
       <SlidingUpPanel
         visible={this.props.visible}
@@ -420,7 +387,9 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
         allowMomentum={false}
         renderDraggableHeader={this.renderHeader}
         onDragEnd={this.hanleOnDragEnd}
-        defaultYPosition={this.state.defaultPosition}
+        defaultYPosition={300}
+        onDragStart={this.renderStart}
+        height={this.props.workHeight - this.state.previousHeight}
         ref={(slidingPanel) => {
           this.slidingPanel = slidingPanel;
         }}
