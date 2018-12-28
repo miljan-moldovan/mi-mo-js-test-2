@@ -60,7 +60,7 @@ export interface RoomAssignmentScreenState {
   currentOpenAssignment: RoomItem,
 }
 
-export default class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, RoomAssignmentScreenState> {
+class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, RoomAssignmentScreenState> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const date = params.date || moment();
@@ -334,9 +334,6 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
         this.serializeAssignmentsForRequest(),
         () => {
           this.props.appointmentCalendarActions.setGridView();
-          this.props.appointmentCalendarActions.setFilterOptionRoomAssignments(
-            true,
-          );
           this.props.appointmentCalendarActions.setToast({
             description: 'Room Assignment Completed',
             type: 'green',
@@ -473,3 +470,5 @@ export default class RoomAssignmentScreen extends React.Component<RoomAssignment
     );
   }
 }
+
+export default RoomAssignmentScreen;
