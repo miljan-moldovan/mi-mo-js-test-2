@@ -1,8 +1,7 @@
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {appointmentCalendarActions} from '../../redux/actions/appointmentBook';
-import apptBookSetEmployeeOrderActions
-  from '../../redux/actions/apptBookSetEmployeeOrder';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { appointmentCalendarActions } from '@/redux/actions/appointmentBook';
+import apptBookSetEmployeeOrderActions from '@/redux/actions/apptBookSetEmployeeOrder';
 import ApptBookViewOptionScreen from './apptBookViewOptionsScreen';
 
 const mapStateToProps = state => ({
@@ -12,16 +11,14 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  apptBookActions: bindActionCreators (
-    {...appointmentCalendarActions},
-    dispatch
+  apptBookActions: bindActionCreators(
+    { ...appointmentCalendarActions },
+    dispatch,
   ),
-  employeeOrderActions: bindActionCreators (
-    {...apptBookSetEmployeeOrderActions},
-    dispatch
+  employeeOrderActions: bindActionCreators(
+    { ...apptBookSetEmployeeOrderActions },
+    dispatch,
   ),
 });
 
-export default connect (mapStateToProps, mapActionsToProps) (
-  ApptBookViewOptionScreen
-);
+export default connect(mapStateToProps, mapActionsToProps)(ApptBookViewOptionScreen);
