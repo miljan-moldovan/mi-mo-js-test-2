@@ -12,7 +12,6 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 
 import getEmployeePhotoSource from '../../utilities/helpers/getEmployeePhotoSource';
 import WordHighlighter from '../../components/wordHighlighter';
-import HeaderLateral from '../../components/HeaderLateral';
 import SalonSearchBar from '../../components/SalonSearchBar';
 import SalonFlatPicker from '../../components/SalonFlatPicker';
 import SalonAvatar from '../../components/SalonAvatar';
@@ -21,91 +20,41 @@ import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import OthersTab from './components/OthersTab';
 import DeskStaffTab from './components/DeskStaffTab';
 import { InputButton, DefaultAvatar } from '../../components/formHelpers';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
-
+import styles from './style';
 
 const TAB_PROVIDERS = 0;
 const TAB_DESK_STAFF = 1;
 const TAB_OTHERS = 2;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  fullSizeCenter: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  searchBarContainer: {
-    backgroundColor: '#F1F1F1',
-  },
-  row: {
-    height: 43,
-    paddingHorizontal: 16,
-    borderBottomColor: '#C0C1C6',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  rowText: {
-    fontSize: 14,
-    lineHeight: 44,
-    color: '#110A24',
-  },
-  boldText: {
-    fontFamily: 'Roboto-Medium',
-  },
-  itemRow: {
-    height: 43,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-    backgroundColor: 'white',
-    // borderBottomWidth: StyleSheet.hairlineWidth,
-    // borderBottomColor: '#C0C1C6',
-  },
-  inputRow: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  providerName: {
-    fontSize: 14,
-    marginLeft: 7,
-    color: '#110A24',
-  },
-  providerRound: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  greenColor: { color: '#1DBF12' },
-  viewAllButton: { paddingHorizontal: 14 },
-});
 
 const ViewAllProviders = ({
   icon, onPress, isSelected, separator,
 }) => (
   <React.Fragment>
     <InputButton
-        icon={icon}
-        style={styles.viewAllButton}
-        onPress={onPress}
-        label="View all providers"
-        labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
-      />
+      icon={icon}
+      style={styles.viewAllButton}
+      onPress={onPress}
+      label="View all providers"
+      labelStyle={isSelected ? [styles.rowText, styles.boldText] : styles.rowText}
+    />
     {separator}
   </React.Fragment>
 );
 
-export default class FilterOptionsScreen extends React.Component {
+export default class FilterOptionsScreen extends React.Component<any, any> {
   static navigationOptions = rootProps => ({
     header: (
       <SalonHeader
         title="Filter Options"
         headerLeft={
-          <SalonTouchableOpacity style={{ paddingLeft: 10 }} wait={3000} onPress={() => rootProps.navigation.state.params.handleReset()}>
-            <Text style={{ fontSize: 14, color: 'white', fontFamily: 'Roboto' }}>
-              Reset
+          <SalonTouchableOpacity
+            style={styles.styleForTouchable}
+            wait={3000}
+            onPress={() => rootProps.navigation.state.params.handleReset()}
+          >
+            <Text style={styles.textHeader}>
+              Back
             </Text>
           </SalonTouchableOpacity>
         }
@@ -146,7 +95,7 @@ export default class FilterOptionsScreen extends React.Component {
 
   onPressTab = (ev, index) => {
     this.setState({ activeTab: index });
-  }
+  };
 
   onRefresh = () => {
     this.props.providersActions.getProviders({
@@ -155,11 +104,11 @@ export default class FilterOptionsScreen extends React.Component {
       sortOrder: 1,
       sortField: 'FirstName,LastName',
     });
-  }
+  };
 
   handleReset = () => {
     this.handleChangeProvider('all');
-  }
+  };
 
   handleChangeProvider = (provider) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
@@ -168,7 +117,7 @@ export default class FilterOptionsScreen extends React.Component {
     const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter('providers', provider); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
-  }
+  };
 
   handleChangeDeskStaff = (provider) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
@@ -177,7 +126,7 @@ export default class FilterOptionsScreen extends React.Component {
     const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter('deskStaff', provider); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
-  }
+  };
 
   handleChangeOther = (filter) => {
     if (!this.props.navigation.state || !this.props.navigation.state.params) {
@@ -186,7 +135,7 @@ export default class FilterOptionsScreen extends React.Component {
     const { onChangeFilter, dismissOnSelect } = this.props.navigation.state.params;
     if (this.props.navigation.state.params && onChangeFilter) { onChangeFilter(filter); }
     if (dismissOnSelect) { this.props.navigation.goBack(); }
-  }
+  };
 
   filterProviders = (searchText) => {
     this.setState({ searchText });
@@ -195,7 +144,7 @@ export default class FilterOptionsScreen extends React.Component {
       item.fullName.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
 
     this.props.providersActions.setFilteredProviders(matches);
-  }
+  };
 
   renderActiveTab = () => {
     const { selectedFilter, selectedProvider } = this.props.apptScreenState;
@@ -259,12 +208,13 @@ export default class FilterOptionsScreen extends React.Component {
     }
 
     return null;
-  }
+  };
 
   renderItem = ({ item, index }) => {
     const { selectedFilter, selectedProvider } = this.props.apptScreenState;
     const isViewAllSelected = selectedFilter === 'providers' && selectedProvider === 'all';
-    const isSelected = (selectedFilter === 'providers' || selectedFilter === 'deskStaff') && get(selectedProvider, 'id', null) === item.id;
+    const isSelected = (selectedFilter === 'providers' || selectedFilter === 'deskStaff')
+      && get(selectedProvider, 'id', null) === item.id;
     const onPress = () => this.handleChangeProvider(item);
     return (
       <SalonTouchableOpacity
@@ -301,16 +251,7 @@ export default class FilterOptionsScreen extends React.Component {
     );
   };
 
-  renderSeparator = () => (
-    <View
-      style={{
-        height: StyleSheet.hairlineWidth,
-        width: '100%',
-        paddingLeft: 15,
-        backgroundColor: '#C0C1C6',
-      }}
-    />
-  );
+  renderSeparator = () => <View style={styles.styleSeparator}/>;
 
   render() {
     return (
@@ -321,7 +262,6 @@ export default class FilterOptionsScreen extends React.Component {
             iconsColor="#727A8F"
             fontColor="#727A8F"
             backgroundColor="rgba(142,142,147,0.24)"
-            // backgroundColor="#F1F1F1"
             borderColor="transparent"
             placeHolderText="Start typing to search"
             onChangeText={(text) => {
@@ -329,30 +269,18 @@ export default class FilterOptionsScreen extends React.Component {
             }}
           />
         </View>
-        <View style={{
-          // height: 26,
-          // flex: 1,
-          // overflow: 'hidden',
-          backgroundColor: '#F1F1F1',
-          borderBottomWidth: StyleSheet.hairlineWidth,
-          borderBottomColor: '#C0C1C6',
-        }}
-        >
+        <View style={styles.containerForFlatPicker}>
           <SalonFlatPicker
             selectedIndex={this.state.activeTab}
             onItemPress={this.onPressTab}
-            rootStyle={{
-              flex: 0,
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-            }}
+            rootStyle={styles.rootStyle}
             containerStyle={{ backgroundColor: 'white' }}
             selectedColor="#115ECD"
             unSelectedTextColor="#115ECD"
             dataSource={['Providers', 'Desk Staff', 'Others']}
           />
         </View>
-        <View style={{ flex: 1, flexDirection: 'column' }}>
+        <View style={styles.containerForTab}>
           {this.renderActiveTab()}
         </View>
       </View>
