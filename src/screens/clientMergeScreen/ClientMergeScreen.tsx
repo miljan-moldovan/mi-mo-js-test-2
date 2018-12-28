@@ -6,7 +6,6 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { ClientMerge } from './ClientMerge';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import styles from './styles';

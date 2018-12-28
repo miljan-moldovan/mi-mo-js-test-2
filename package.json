@@ -18,7 +18,7 @@
     "@types/react-native": "^0.57.7",
     "@types/react-native-calendars": "^1.20.5",
     "@types/react-native-tab-view": "^1.0.2",
-    "@types/react-navigation": "^2.13.1",
+    "@types/react-navigation": "^2.13.9",
     "@types/react-redux": "^6.0.9",
     "@types/react-test-renderer": "^16.0.3",
     "@yfuks/react-native-action-sheet": "0.0.4",

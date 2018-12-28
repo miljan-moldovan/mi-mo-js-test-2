@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
+import { View, Text } from 'react-native';
 import { get, isFunction } from 'lodash';
 import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
 
@@ -101,28 +101,26 @@ class ClientsScreen extends React.Component<Props, State> {
     }
     return {
       header: () => (
-        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
-          <SalonSearchHeader
-            focusOnMount
-            clearSearch={clearSearch}
-            title={title}
-            subTitle={subTitle}
-            leftButton={leftButton}
-            leftButtonOnPress={() => {
-              leftButtonOnPress(navigation);
-            }}
-            rightButton={
-              navigation.state.params && navigation.state.params.hideAddButton
-                ? null
-                : rightButton
-            }
-            rightButtonOnPress={() => {
-              rightButtonOnPress(navigation);
-            }}
-            hasFilter
-            containerStyle={styles.headerContainer}
-          />
-        </SafeAreaView>
+        <SalonSearchHeader
+          focusOnMount
+          clearSearch={clearSearch}
+          title={title}
+          subTitle={subTitle}
+          leftButton={leftButton}
+          leftButtonOnPress={() => {
+            leftButtonOnPress(navigation);
+          }}
+          rightButton={
+            navigation.state.params && navigation.state.params.hideAddButton
+              ? null
+              : rightButton
+          }
+          rightButtonOnPress={() => {
+            rightButtonOnPress(navigation);
+          }}
+          hasFilter
+          containerStyle={styles.headerContainer}
+        />
       ),
     };
   };
