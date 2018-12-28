@@ -92,7 +92,6 @@ const setGridAllViewSuccess = (
   const apptGridSettings = {
     step,
   };
-
   return {
     type: SET_GRID_ALL_VIEW_SUCCESS,
     data: {

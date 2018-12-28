@@ -81,15 +81,17 @@ appointmentButtons.propTypes = {
   handleCancel: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state, { appointment }) => ({
-  isCheckingIn: state.appointmentReducer.isCheckingIn,
-  isCheckingOut: state.appointmentReducer.isCheckingOut,
-  isGridLoading: state.appointmentBookReducer.isLoading,
-  isCheckInDisabled: state.appointmentReducer.isCheckingIn
-  || appointment.queueStatus !== ApptQueueStatus.NotInQueue || appointment.isNoShow,
-  isCheckOutDisabled: state.appointmentReducer.isCheckingOut ||
-    appointment.queueStatus === ApptQueueStatus.CheckedOut
-    || appointment.isNoShow || appointment.isFirstAvailable,
-});
+const mapStateToProps = (state, { appointment }) => {
+  return {
+    isCheckingIn: state.appointmentReducer.isCheckingIn,
+    isCheckingOut: state.appointmentReducer.isCheckingOut,
+    isGridLoading: state.appointmentBookReducer.isLoading,
+    isCheckInDisabled: state.appointmentReducer.isCheckingIn
+      || appointment.queueStatus !== ApptQueueStatus.NotInQueue || appointment.isNoShow,
+    isCheckOutDisabled: state.appointmentReducer.isCheckingOut ||
+      appointment.queueStatus === ApptQueueStatus.CheckedOut
+      || appointment.isNoShow || appointment.isFirstAvailable,
+  };
+};
 
 export default connect(mapStateToProps)(appointmentButtons);

@@ -132,10 +132,9 @@ const postAppointmentCheckinSuccess = () => ({
 const postAppointmentCheckin = appointmentId => (dispatch) => {
   dispatch({ type: POST_APPOINTMENT_CHECKIN });
   return Appointment.postCheckin(appointmentId)
-    .then(() => {
-      return dispatch(appointmentCalendarActions.setGridView())
-        .then(() => dispatch(postAppointmentCheckinSuccess()));
-    })
+    .then(() => dispatch(appointmentCalendarActions.setGridView())
+        .then(() => dispatch(postAppointmentCheckinSuccess())),
+    )
     .catch(error => dispatch(postAppointmentCheckinFailed(error)));
 };
 
