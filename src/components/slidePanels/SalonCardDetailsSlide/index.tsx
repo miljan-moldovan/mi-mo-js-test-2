@@ -231,7 +231,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   renderStart = () => {
-    this.setState({previousHeight: 0 });
+    this.setState({ previousHeight: 0 });
   };
 
   renderHeaderSlide = () => {
@@ -378,7 +378,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   render() {
-    console.log(this.props.workHeight, this.state.previousHeight)
     return (
       <SlidingUpPanel
         visible={this.props.visible}
