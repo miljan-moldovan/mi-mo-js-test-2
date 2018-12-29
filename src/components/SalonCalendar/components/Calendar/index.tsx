@@ -1904,6 +1904,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           style={styles.container}
           scrollEnabled={!activeCard && !activeBlock && !isLoading}
           onScroll={this.handleScroll}
+          onScrollBeginDrag={this.props.onScrollBeginDrag}
           ref={board => {
             this.board = board;
           }}
