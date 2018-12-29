@@ -127,29 +127,8 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
     };
   };
 
-  static flexFilter(list, info) {
-    const matches = [];
-
-    const flter = function match(item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n += 1) {
-        if (
-          item[info[n].Field] &&
-          item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1
-        ) {
-          count += 1;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i += 1) {
-      if (flter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
+  static flexFilter(list, value) {
+    return list.filter(item => item.name.toLowerCase().indexOf(value) !== -1);
   }
 
   constructor(props) {
@@ -250,9 +229,8 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         : filtered;
 
       if (searchText && searchText.length > 0) {
-        const criteria = [{ Field: 'name', Values: [searchText.toLowerCase()] }];
 
-        filtered = ServicesScreen.flexFilter(filtered, criteria);
+        filtered = ServicesScreen.flexFilter(filtered, searchText.toLowerCase());
       }
 
       return filtered;
@@ -342,19 +320,6 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
     } as ServicesScreenNavigationParams;
   }
 
-  getServicesById = ids => {
-    const { flatServices } = this.props;
-    const results = [];
-    const check = (service, index) => service.id === ids[index].id;
-    for (let i = 0; i < ids.length; i += 1) {
-      const service = flatServices.find(ser => check(ser, i));
-      if (service) {
-        results.push(service);
-      }
-    }
-    return results;
-  };
-
   handleOnChangeService = service => {
     const { navigation, servicesActions: { setSelectedService } } = this.props;
     const {
@@ -392,27 +357,20 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
   };
 
   filterServices = searchText => {
-    const servicesCategories = JSON.parse(
-      JSON.stringify(this.props.servicesState.services),
-    );
+    const servicesCategories = this.props.servicesState.services;
 
     if (searchText && searchText.length > 0) {
-      this.setHeaderData(this.state.headerProps);
-
-      const criteria = [{ Field: 'name', Values: [searchText.toLowerCase()] }];
 
       const filtered = [];
 
-      for (let i = 0; i < servicesCategories.length; i += 1) {
-        const servicesCategory = servicesCategories[i];
-        servicesCategory.services = ServicesScreen.flexFilter(
-          servicesCategory.services,
-          criteria,
-        );
-        if (servicesCategory.services.length > 0) {
-          filtered.push(servicesCategory);
+      servicesCategories.forEach(item => {
+        const filteredService = ServicesScreen.flexFilter(item.services, searchText.toLowerCase());
+        if (filteredService.length) {
+          const newItem = { ...item };
+          newItem.services = filteredService;
+          filtered.push(newItem);
         }
-      }
+      });
 
       this.props.servicesActions.setFilteredServices(filtered);
     } else {
@@ -426,7 +384,9 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
   };
 
   filterList = searchText => {
-    this.props.servicesActions.setShowCategoryServices(false);
+    if (this.props.servicesState.showCategoryServices) {
+      this.props.servicesActions.setShowCategoryServices(false);
+    }
     this.filterServices(searchText);
   };
 
@@ -475,7 +435,7 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
         services: [{ id: selectedService.id }],
       })[0]
       : {};
-    const isSelected = selectedCategory.id === item.id;
+    const isSelected = (selectedCategory && selectedCategory.id) === item.id;
     const textStyle = isSelected ? { color: Colors.selectedGreen } : {};
     const icons = isSelected ? [
       {
