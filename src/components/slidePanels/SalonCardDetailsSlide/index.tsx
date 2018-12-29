@@ -379,6 +379,8 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   render() {
+    this.props.setMinHeightRef(this.setMinimumPosition);
+
     return (
       <SlidingUpPanel
         visible={this.props.visible}

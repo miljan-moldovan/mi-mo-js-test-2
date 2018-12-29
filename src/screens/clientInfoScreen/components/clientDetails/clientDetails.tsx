@@ -213,7 +213,6 @@ class ClientDetails extends React.Component<Props, State> {
 
     this.props.clientInfoActions.getClientReferralTypes((result) => {
       if (result && this.props.actionType === 'update') {
-        console.log('update')
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       } else if (this.props.actionType === 'new') {
         this.setState({
@@ -617,7 +616,6 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
   handleDone = () => {
-    console.log('before', this.state.client)
     let phones = reject(this.state.client.phones, ['value', null]);
     phones = reject(phones, ['value', '']);
     const client = {
@@ -713,7 +711,6 @@ class ClientDetails extends React.Component<Props, State> {
   loadClientData = (result) => {
     if (result) {
       const { client } = this.props.clientInfoState;
-      console.log(client, 'client')
       const states = usStates;
       if (client.address) {
         if (typeof client.address === 'string' || client.address instanceof String) {
@@ -748,7 +745,6 @@ class ClientDetails extends React.Component<Props, State> {
         client.zipCode = '';
       }
 
-      console.log(client)
 
       this.props.setCanSave(false);
       this.props.setHandleDone(this.handleDone);
@@ -761,7 +757,6 @@ class ClientDetails extends React.Component<Props, State> {
       if (client.clientReferralType) {
         this.setReferredOptionOther();
       }
-      console.log('12342134', client)
       this.setState({
         client,
         initialClient: cloneDeep(client),

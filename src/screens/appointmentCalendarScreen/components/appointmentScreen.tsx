@@ -193,15 +193,15 @@ class AppointmentScreen extends React.Component<any, any> {
       onPressTitle: this.onPressTitle,
       currentFilter: this.props.appointmentScreenState.selectedProvider,
       filterOptions: this.props.apptGridSettings.filterOptions,
+      hideTabBar: false,
     });
-
-    this.props.navigation.setParams({ hideTabBar: false });
 
     this.props.appointmentCalendarActions.setGridView();
 
-    this.props.navigation.addListener('willFocus', () => {
-      this.loadRebookData();
-    });
+    this.props.navigation.addListener(
+      'willFocus',
+      this.loadRebookData,
+    );
   }
 
   loadRebookData = () => {
@@ -298,10 +298,11 @@ class AppointmentScreen extends React.Component<any, any> {
     }
     this.props.newAppointmentActions.setStartTime(startTime);
 
+
     this.setState({
       newApptActiveTab: 0,
       visibleNewAppointment: true,
-    });
+    }, this.hideApptSlide);
   };
 
   onCardPressed = appointment => {
@@ -428,7 +429,7 @@ class AppointmentScreen extends React.Component<any, any> {
       this.setState({
         newApptActiveTab: 0,
         visibleNewAppointment: true,
-      });
+      }, this.hideApptSlide);
     }
   };
 
@@ -928,7 +929,6 @@ class AppointmentScreen extends React.Component<any, any> {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
-
     return (
       <View
         onLayout={this.calculateWorkHeight}
@@ -962,6 +962,7 @@ class AppointmentScreen extends React.Component<any, any> {
           appointments={appointments}
           blockTimes={blockTimes}
           headerData={headerData}
+          onScrollBeginDrag={this.hideApptSlider}
           isDate={isDate}
           isRoom={selectedFilter === 'rooms'}
           isResource={selectedFilter === 'resources'}
@@ -1074,6 +1075,7 @@ class AppointmentScreen extends React.Component<any, any> {
           changeAppointment={this.onCardPressed}
           handleNewAppt={this.onCalendarCellPressed}
           workHeight={this.state.workHeight}
+          setMinHeightRef={(ref) => this.hideApptSlider = ref}
         />
         {toast
           ? <SalonToast
