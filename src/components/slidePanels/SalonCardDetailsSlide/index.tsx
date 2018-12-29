@@ -26,6 +26,7 @@ import PanelbottomAppt from './components/appointment/panelBottom';
 const notImplemented = () => Alert.alert('Not implemented');
 
 const { height } = Dimensions.get('window');
+const initialHeightOfHeader = 300;
 
 class SalonCardDetailsSlide extends React.Component<any, any> {
   private slidingPanel: null;
@@ -61,7 +62,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   }
 
   setMinimumPosition = () => {
-    this.slidingPanel.transitionTo(300);
+    this.slidingPanel.transitionTo(initialHeightOfHeader);
   };
 
   getAuditInformation = () => {
@@ -102,12 +103,13 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   hanleOnDragEnd = (params) => {
     const nextHeight = HeightHelper.getHeightPointFromDragHeight(params);
-    const diff = height - this.props.workHeight;
+    const diffBetweenScreenHeightAndWorkHeight = height - this.props.workHeight;
+    const newStatePreviousHeight = this.props.workHeight - (nextHeight - diffBetweenScreenHeightAndWorkHeight);
 
     const config = {
       toValue: nextHeight,
       onAnimationEnd: () => this.setState({
-        previousHeight: nextHeight === 0 ? 0 : this.props.workHeight - (nextHeight - diff),
+        previousHeight: nextHeight === 0 ? 0 : newStatePreviousHeight,
       }),
     };
     this.slidingPanel.transitionTo(config);
