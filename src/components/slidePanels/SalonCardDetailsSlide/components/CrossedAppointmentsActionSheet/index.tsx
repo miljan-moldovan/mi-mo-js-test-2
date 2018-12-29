@@ -35,7 +35,13 @@ class CrossedAppointmentsActionSheet extends React.Component {
   renderRow(textValue) {
     return (
       <View style={styles.actionItemContainer}>
-        <Text style={styles.actionItemTitle}>{textValue}</Text>
+        <Text
+          ellipsizeMode={'tail'}
+          numberOfLines={1}
+          style={styles.actionItemTitle}
+        >
+          {textValue}
+        </Text>
       </View>
     );
   }
