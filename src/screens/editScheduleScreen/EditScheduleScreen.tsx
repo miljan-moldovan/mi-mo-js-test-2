@@ -179,8 +179,9 @@ class EditScheduleScreen extends React.Component<any, any> {
 
     const params = this.props.navigation.state.params || {};
     const employee = params.employee || { name: 'First', lastName: 'Available' };
+    const date = params.date || moment();
 
-    const formatedDate = moment(this.props.date).format('YYYY-MM-DD');
+    const formatedDate = moment(date).format('YYYY-MM-DD');
 
     if (!this.state.hoursWorking) {
       startTimeScheduleOne = null;
@@ -437,7 +438,7 @@ class EditScheduleScreen extends React.Component<any, any> {
 
         {this.props.employeeScheduleState.isLoading ? (
           <View style={styles.activityIndicator}>
-            <ActivityIndicator/>
+            <ActivityIndicator />
           </View>
         ) : (
 
@@ -455,7 +456,7 @@ class EditScheduleScreen extends React.Component<any, any> {
 
             {this.state.hoursWorking &&
             <React.Fragment>
-              <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle}/>
+              <SectionTitle value="SCHEDULE 1" style={styles.sectionTitle} />
               <InputGroup>
                 <SchedulePicker
                   date={date}
@@ -468,7 +469,7 @@ class EditScheduleScreen extends React.Component<any, any> {
                   onChange={this.handleChangestartTimeScheduleOne}
                   toggle={this.pickerToogleStartTimeOne}
                 />
-                <InputDivider/>
+                <InputDivider />
                 <SchedulePicker
                   date={date}
                   format="hh:mm A"
@@ -482,7 +483,7 @@ class EditScheduleScreen extends React.Component<any, any> {
                   toggle={this.pickerToogleEndTimeOne}
                 />
               </InputGroup>
-              <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle}/>
+              <SectionTitle value="SCHEDULE 2" style={styles.sectionTitle} />
               <InputGroup>
                 <SchedulePicker
                   date={date}
@@ -496,7 +497,7 @@ class EditScheduleScreen extends React.Component<any, any> {
                   onChange={this.handleChangestartTimeScheduleTwo}
                   toggle={this.pickerToogleStartTimeTwo}
                 />
-                <InputDivider/>
+                <InputDivider />
                 <SchedulePicker
                   date={date}
                   format="hh:mm A"
@@ -513,7 +514,7 @@ class EditScheduleScreen extends React.Component<any, any> {
             </React.Fragment>
             }
 
-            <SectionTitle value="SCHEDULE EXCEPTION REASON" style={styles.sectionTitle}/>
+            <SectionTitle value="SCHEDULE EXCEPTION REASON" style={styles.sectionTitle} />
             <InputGroup>
               <InputRadioGroup
                 options={scheduleTypes}
