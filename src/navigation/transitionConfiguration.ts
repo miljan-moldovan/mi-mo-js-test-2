@@ -24,15 +24,14 @@ const SlideFromBottom = (thisSceneIndex, position, layout) => {
 
 const TransitionConfiguration = () => ({
   transitionSpec: {
-    duration: 700,
-    easing: Easing.out(Easing.poly(4)),
-    timing: Animated.timing,
+    duration: 400,
     useNativeDriver: true,
   },
   screenInterpolator: ({ layout, position, scene, scenes, index: toIndex }) => {
     // TODO: Interpolator is called 22 (!) times during a transition. Either rewrite navigation or optimize interpolator
-    const { index: thisSceneIndex, route: { transition } } = scene;
-    const transitionAnimation = (transition === 'SlideFromRight') ? SlideFromRight : SlideFromBottom;
+    const { index: thisSceneIndex, route } = scene;
+    const transition = route.params && route.params.transition || '';
+    const transitionAnimation = (transition === 'SlideFromBottom') ? SlideFromBottom : SlideFromRight;
 
     const lastSceneIndex = scenes[scenes.length - 1].index;
 
