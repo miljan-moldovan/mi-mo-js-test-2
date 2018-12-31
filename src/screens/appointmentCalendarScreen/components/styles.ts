@@ -1,7 +1,7 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import Colors from '../../../constants/Colors';
 
-export default StyleSheet.create ({
+export default StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
@@ -39,6 +39,7 @@ export default StyleSheet.create ({
   },
   dateTimeContainer: {
     borderWidth: 1,
+    borderRadius: 16,
     borderColor: '#1DBF12',
   },
   dateTimeText: {
@@ -61,7 +62,7 @@ export default StyleSheet.create ({
   },
 });
 
-export const headerStyles = StyleSheet.create ({
+export const headerStyles = StyleSheet.create({
   container: {
     height: 44,
     backgroundColor: '#115ECD',

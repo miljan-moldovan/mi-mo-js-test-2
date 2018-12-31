@@ -37,7 +37,7 @@ const getAssignments = (
     Store.getRooms(),
     Employees.getRoomAssignments(
       moment(date).format('YYYY-MM-DD'),
-      employeeId
+      employeeId,
     ),
   ])
     .then(([rooms, assignments]) => {
