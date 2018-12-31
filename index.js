@@ -5,6 +5,9 @@ const _XHR = GLOBAL.originalXMLHttpRequest
 XMLHttpRequest = _XHR;
 
 import {AppRegistry} from 'react-native';
+import codePush from "react-native-code-push";
 import App from './src/App';
 
-AppRegistry.registerComponent ('SalonUltimateRN', () => App);
+const codePushApp = codePush(App);
+
+AppRegistry.registerComponent ('SalonUltimateRN', () => codePushApp);

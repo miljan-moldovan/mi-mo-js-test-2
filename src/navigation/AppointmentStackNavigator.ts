@@ -46,9 +46,6 @@ import TransitionConfiguration from './transitionConfiguration';
 
 const AppointmentStackNavigator = createStackNavigator(
   {
-    Main: {
-      screen: AppointmentCalendarScreen,
-    },
     SalonCalendar: {
       screen: AppointmentCalendarScreen,
     },
@@ -66,97 +63,72 @@ const AppointmentStackNavigator = createStackNavigator(
     },
     EditSchedule: {
       screen: EditScheduleScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     RecommendProduct: {
       screen: RecommendProductScreen,
-      // navigationOptions: rootProps => ({
-      //   headerTitle: <RecommendProductHeader rootProps={rootProps} />,
-      //   tabBarVisible: false,
-      // }),
     },
     BlockTime: {
       screen: BlockTimeScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     BlockTimesReasons: {
       screen: BlockTimesReasonsScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     TurnAway: {
       screen: TurnAwayScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ModifyApptService: {
       screen: ModifyApptServiceScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     AddonServices: {
       screen: AddonServicesScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     RecommendedServices: {
       screen: RecommendedServicesScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     RequiredServices: {
       screen: RequiredServicesScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     RepeatsOn: {
       screen: RepeatsOnScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     FilterOptions: {
       screen: FilterOptionsScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     FilterByPosition: {
       screen: FilterByPositionScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     FilterByCompany: {
       screen: FilterByCompanyScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ServiceCheck: {
       screen: ServiceCheckScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ServiceCheckResult: {
       screen: ServiceCheckResultScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     RebookDialog: {
       screen: RebookDialogScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     NewAppointment: {
       screen: NewAppointmentScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     Conflicts: {
       screen: ConflictsScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ChangeNewApptDateTime: {
       screen: ChangeDateTimeScreen,
     },
     RoomAssignment: {
       screen: RoomAssignmentScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ApptBookClient: {
       screen: ClientsScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ApptBookService: {
       screen: ServicesScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ApptBookProvider: {
       screen: ProvidersScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     SelectRoom: {
       screen: SelectRoomScreen,
@@ -166,70 +138,48 @@ const AppointmentStackNavigator = createStackNavigator(
     },
     ClientNotes: {
       screen: ClientNotes,
-      // navigationOptions: { tabBarVisible: false },
     },
     ClientFormulas: {
       screen: ClientFormulas,
-      // navigationOptions: { tabBarVisible: false },
     },
     ClientNote: {
       screen: ClientNote,
-      // navigationOptions: { tabBarVisible: false },
     },
     ClientFormula: {
       screen: ClientFormula,
-      // navigationOptions: { tabBarVisible: false },
     },
     ClientCopyFormula: {
       screen: ClientCopyFormulaScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ClientInfo: {
       screen: ClientInfoScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ClientDetails: {
       screen: ClientDetailsScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     NewClient: {
       screen: NewClientScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     Services: {
       screen: ServicesScreen,
-      // navigationOptions: rootProps => ({
-      //   headerTitle: <WalkInStepHeader dataName="selectedService" rootProps={rootProps} />,
-      // }),
     },
     Providers: {
       screen: ProvidersScreen,
-      // navigationOptions: rootProps => ({
-      //   headerLeft: HeaderLeftText({ handlePress: () => rootProps.navigation.goBack() }),
-      //   headerStyle: {
-      //     backgroundColor: 'transparent',
-      //   },
-      //   headerTitle: <WalkInStepHeader dataName="selectedProvider" rootProps={rootProps} />,
-      //   header: props => (
-      //     <ImageHeader
-      //       {...props}
-      //     />),
-      // }),
     },
     ChangeClient: {
       screen: ClientsScreen,
     },
     CancelAppointmentScreen: {
       screen: CancelAppointmentScreen,
-      // navigationOptions: { tabBarVisible: false },
     },
     ShowApptScreen: {
       screen: ShowApptScreen,
     },
   },
   {
-    transitionConfig: TransitionConfiguration,
+    initialRouteName: 'SalonCalendar',
     headerMode: 'float',
+    transitionConfig: TransitionConfiguration,
   },
 );
 

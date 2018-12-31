@@ -5,8 +5,7 @@ import {
   Text,
   View,
   Dimensions,
-  Animated,
-  SafeAreaView,
+  Animated
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -89,15 +88,13 @@ class QueueScreen extends React.Component<Props, State> {
     } = params;
     return {
       header: (
-        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
-          <QueueHeader
-            navigation={navigation}
-            onChangeSearchMode={onChangeSearchMode}
-            onChangeSearchText={onChangeSearchText}
-            searchMode={searchMode}
-            searchText={searchText}
-          />
-        </SafeAreaView>
+        <QueueHeader
+          navigation={navigation}
+          onChangeSearchMode={onChangeSearchMode}
+          onChangeSearchText={onChangeSearchText}
+          searchMode={searchMode}
+          searchText={searchText}
+        />
       ),
       tabBarVisible: true,
     };
@@ -106,7 +103,7 @@ class QueueScreen extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super (props);
-  
+
     this.state = {
       styles: createStyleSheet(),
       index:0,
@@ -478,7 +475,7 @@ class QueueScreen extends React.Component<Props, State> {
     };
 
     return (
-      <View style={[this.state.styles.container, {backgroundColor: '#f1f1f1'}]}>
+      <View style={[this.state.styles.container, {backgroundColor: '#f1f1f1', flex: 1}]}>
         <KeyboardAwareScrollView>
           {!searchWaitingCount && !searchServiceCount
             ? <View style={this.state.styles.searchEmpty}>

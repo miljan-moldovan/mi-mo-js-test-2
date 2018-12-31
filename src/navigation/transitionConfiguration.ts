@@ -1,22 +1,25 @@
+import { Easing, Animated } from 'react-native';
 
-const SlideFromRight = (index, position, width) => {
+const SlideFromRight = (thisSceneIndex, position, layout) => {
+  const width = layout.initWidth;
   const translateX = position.interpolate({
-    inputRange: [index - 1, index, index + 1],
+    inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
     outputRange: [width, 0, 0],
   });
 
-  const slideFromRight = { transform: [{ translateX }] };
-  return slideFromRight;
+  return { transform: [{ translateX }] };
 };
 
-const SlideFromBottom = (index, position, height) => {
+const SlideFromBottom = (thisSceneIndex, position, layout) => {
+  const height = layout.initHeight;
+  const from = (thisSceneIndex === 0) ? -1 : 0;
+
   const translateY = position.interpolate({
-    inputRange: [index - 1, index, index + 1],
-    outputRange: [height, 0, 0],
+    inputRange: [from, thisSceneIndex],
+    outputRange: [height, 0],
   });
 
-  const slideFromBottom = { transform: [{ translateY }] };
-  return slideFromBottom;
+  return { transform: [{ translateY }] };
 };
 
 const TransitionConfiguration = () => ({
@@ -24,17 +27,25 @@ const TransitionConfiguration = () => ({
     duration: 400,
     useNativeDriver: true,
   },
-  screenInterpolator: (sceneProps) => {
-    const { layout, position, scene } = sceneProps;
-    const height = layout.initHeight;
-    const width = layout.initWidth;
-    const { index, route } = scene;
-    const params = route.params || {};
-    const transition = params.transition || 'default';
-    return {
-      SlideFromBottom: SlideFromBottom(index, position, height),
-      default: SlideFromRight(index, position, width),
-    }[transition];
+  screenInterpolator: ({ layout, position, scene, scenes, index: toIndex }) => {
+    // TODO: Interpolator is called 22 (!) times during a transition. Either rewrite navigation or optimize interpolator
+    const { index: thisSceneIndex, route } = scene;
+    const transition = route.params && route.params.transition || '';
+    const transitionAnimation = (transition === 'SlideFromBottom') ? SlideFromBottom : SlideFromRight;
+
+    const lastSceneIndex = scenes[scenes.length - 1].index;
+
+    if (lastSceneIndex - toIndex > 1) {
+      // don't animate after the transition is over
+      if (thisSceneIndex === toIndex) {
+        return;
+      }
+      // don't animate transitions in between
+      if (thisSceneIndex !== lastSceneIndex) {
+        return { opacity: 0 };
+      }
+    }
+    return transitionAnimation(thisSceneIndex, position, layout);
   },
 });
 

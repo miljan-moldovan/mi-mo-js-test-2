@@ -32,7 +32,31 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderItems = (item, index, apptGridSettings, onPress = null, startDate) => {
+
+const onLongPress = (startTime, startDate, onPress, createAlert, hideAlert) => {
+  const alert = {
+    title: 'Question',
+    description: 'The selected time is in the past. Do you want to book the appointment anyway?',
+    btnLeftText: 'No',
+    btnRightText: 'Yes',
+    onPressRight: () => {
+      onPress(startTime);
+      hideAlert();
+    },
+  };
+  const time = moment(
+    `${startDate.format('YYYY-MM-DD')} ${startTime}`,
+    'YYYY-MM-DD HH:mm',
+  );
+
+  const showBookingPastAlert = moment().isAfter(time, 'minute');
+  if (showBookingPastAlert) {
+    return createAlert(alert);
+  }
+  return onPress(startTime);
+};
+
+const renderItems = (item, index, apptGridSettings, onPress = null, startDate, createAlert, hideAlert) => {
   let startTime;
   let timeSplit;
   let minutesSplit;
@@ -43,11 +67,12 @@ const renderItems = (item, index, apptGridSettings, onPress = null, startDate) =
     timeSplit = startTime.split(':');
     [, minutesSplit] = timeSplit;
     style = minutesSplit === '00' ? [styles.cellStyle, styles.oClockBorder] : styles.cellStyle;
-    const availableText = item.availableSlots / item.totalSlots === 1 ? 'All available' : `${item.availableSlots} available`;
+    const availableText = item.availableSlots / item.totalSlots === 1 ?
+      'All available' : `${item.availableSlots} available`;
     return (
       <SalonTouchableOpacity
         wait={3000}
-        onPress={() => onPress(item.startTime)}
+        onLongPress={() => onLongPress(item.startTime, startDate, onPress, createAlert, hideAlert)}
         key={item.startTime}
         style={style}
         disabled={isCellDisabled}
@@ -73,11 +98,11 @@ const renderItems = (item, index, apptGridSettings, onPress = null, startDate) =
   );
 };
 
-const availabilityColumn = ({ availability, apptGridSettings, onPress, startDate }) => (
+const availabilityColumn = ({ availability, apptGridSettings, onPress, startDate, createAlert, hideAlert }) => (
   <View>
     {
       availability.length > 0 ? availability.map((item, index) =>
-        renderItems(item, index, apptGridSettings, onPress, startDate)) : null
+        renderItems(item, index, apptGridSettings, onPress, startDate, createAlert, hideAlert)) : null
     }
   </View>
 );

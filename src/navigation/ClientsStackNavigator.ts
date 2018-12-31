@@ -5,24 +5,18 @@ import ClientsScreen from '../screens/clientsScreen';
 import NewClientScreen from '../screens/newClientScreen';
 
 import ClientNotes from '../screens/clientInfoScreen/components/clientNotes';
-import ClientFormulas
-  from '../screens/clientInfoScreen/components/clientFormulas';
+import ClientFormulas from '../screens/clientInfoScreen/components/clientFormulas';
 import ClientNote from '../screens/clientInfoScreen/components/clientNote';
-import ClientFormula
-  from '../screens/clientInfoScreen/components/clientFormula';
-import ClientCopyFormulaScreen
-  from '../screens/clientInfoScreen/components/clientCopyFormula';
+import ClientFormula from '../screens/clientInfoScreen/components/clientFormula';
+import ClientCopyFormulaScreen from '../screens/clientInfoScreen/components/clientCopyFormula';
 import ClientInfoScreen from '../screens/clientInfoScreen';
-import ClientDetailsScreen
-  from '../screens/clientInfoScreen/components/clientDetails';
+import ClientDetailsScreen from '../screens/clientInfoScreen/components/clientDetails';
 import ProvidersScreen from '../screens/providersScreen';
 import ServicesScreen from '../screens/ServicesScreen';
+import TransitionConfiguration from './transitionConfiguration';
 
 const ClientsStackNavigator = StackNavigator(
   {
-    ClientsMain: {
-      screen: ClientsScreen,
-    },
     NewClient: {
       screen: NewClientScreen,
     },
@@ -61,7 +55,11 @@ const ClientsStackNavigator = StackNavigator(
       screen: ProvidersScreen,
     },
   },
-  {}
+  {
+    initialRouteName: 'ChangeClient',
+    headerMode: 'float',
+    transitionConfig: TransitionConfiguration,
+  },
 );
 ClientsStackNavigator.navigationOptions = ({ navigation }) => {
   const { state } = navigation;

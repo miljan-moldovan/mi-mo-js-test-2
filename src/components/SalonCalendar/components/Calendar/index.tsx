@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   View,
-  StyleSheet,
   Dimensions,
   Animated,
   PanResponder,
@@ -22,17 +21,16 @@ import {
   mergeWith,
 } from 'lodash';
 import moment from 'moment';
-
-import CardGrid from './cardGrid';
-import Board from './board';
-import Header from './header';
-import TimeColumn from './timeColumn';
-import Card from './card/index';
-import CurrentTime from './currentTime';
-import Buffer from './calendarBuffer';
+import CardGrid from '../cardGrid';
+import Board from '../board';
+import Header from '../header';
+import TimeColumn from '../timeColumn';
+import Card from '../card';
+import CurrentTime from '../currentTime';
+import Buffer from '../calendarBuffer';
 import SalonAlert from '@/components/SalonAlert';
-import BlockTime from './blockCard';
-import EmptyScreen from './EmptyScreen';
+import BlockTime from '../blockCard';
+import EmptyScreen from '../EmptyScreen';
 import {
   getHiddenAddons,
   sortCardsForBoard,
@@ -50,55 +48,11 @@ import {
 } from '@/redux/actions/appointment';
 import { CalendarProps, CalendarState } from '@/models/appointment-book/calendar';
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
+import styles from './styles';
+
+import { findOverlappingAppointments } from './helpers';
 
 const extendedMoment = getRangeExtendedMoment();
-
-// helper that return an array with the total number of cards overlapping de one sent by params.
-const findOverlappingAppointments = (cardId, intermediateResultDict) => {
-  const otherCardsOverlapping = intermediateResultDict[
-    cardId
-    ].overlappingCards.reduce(
-    (accumulator, item) => [
-      ...accumulator,
-      ...findOverlappingAppointments(item.id, intermediateResultDict),
-    ],
-    [],
-  );
-
-  return uniqBy(
-    [
-      ...intermediateResultDict[cardId].overlappingCards,
-      ...otherCardsOverlapping,
-    ],
-    'id',
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    height: 1000,
-    width: 1000,
-    borderColor: '#C0C1C6',
-  },
-  headerContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-  },
-  boardContainer: {
-    marginLeft: 36,
-  },
-  columnContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-  },
-});
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const dayWidth = screenWidth - 36;
@@ -193,7 +147,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   }
 
   componentDidMount() {
-    const { appointments, blockTimes } = this.props;
     // group block times and appointment filterOption
     this.setGroupedAppointments(this.props);
   }
@@ -1951,6 +1904,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           style={styles.container}
           scrollEnabled={!activeCard && !activeBlock && !isLoading}
           onScroll={this.handleScroll}
+          onScrollBeginDrag={this.props.onScrollBeginDrag}
           ref={board => {
             this.board = board;
           }}

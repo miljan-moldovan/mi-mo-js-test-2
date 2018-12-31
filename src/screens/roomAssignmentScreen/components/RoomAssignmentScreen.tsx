@@ -363,7 +363,6 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
             firstElement || itemMoment.diff(moment(prevItem, DateTime.time), 'm') > step;
           const isEndOfInterval =
             lastElement || moment(nextItem, DateTime.time).diff(itemMoment, 'm') > step;
-
           return [
             ...result,
             isEndOfInterval || isStartOfInterval ? item : null,

@@ -459,7 +459,7 @@ class Card extends React.Component {
                         this.renderAssistant({ height }) : null }
                     </View>
                   </TouchableOpacity>
-                  {activeCard && !isBufferCard && index === lastIndex ?
+                  {activeCard && !(isBufferCard || (activeCard && activeCard.isBuffer)) && index === lastIndex ?
                     <ResizeButton
                       onPress={this.props.onResize}
                       color={colors[color].dark}

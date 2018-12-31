@@ -19,8 +19,8 @@ export default StyleSheet.create({
     flex: 4,
   },
   actionItemTitle: {
-    fontSize: 21,
-    fontWeight: '500',
+    fontSize: 20,
+    fontWeight: 'normal',
     color: '#115ECD',
   },
 });

@@ -5,9 +5,6 @@ import { get } from 'lodash';
 import {
   View,
   Text,
-  ActivityIndicator,
-  SafeAreaView,
-  FlatList,
   AppState,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -41,7 +38,6 @@ class SelectStoreScreen extends React.Component {
     const rightButtonOnPress = () => { };
     return {
       header: () => (
-        <SafeAreaView style={{ backgroundColor: Colors.defaultBlue }}>
           <SalonSearchHeader
             title="Stores"
             leftButton={leftButton}
@@ -53,11 +49,7 @@ class SelectStoreScreen extends React.Component {
               rightButtonOnPress(navigation);
             }}
             hasFilter={false}
-          //     containerStyle={{
-          //   paddingHorizontal: 20,
-          // }}
           />
-        </SafeAreaView>
       ),
     };
   };

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, View, FlatList, SectionList, SafeAreaView} from 'react-native';
+import {Text, View, FlatList, SectionList } from 'react-native';
 import PropTypes from 'prop-types';
 import {get, sortBy, isFunction, isNumber, filter} from 'lodash';
 import FontAwesome, {Icons} from 'react-native-fontawesome';
@@ -31,15 +31,12 @@ class ProductsScreen extends React.Component {
       : navigation.goBack;
     return {
       header: props => (
-        <SafeAreaView style={{backgroundColor: Colors.defaultBlue}}>
-          <SalonSearchHeader
-            title={title}
-            hasFilter={false}
-            leftButton={leftButton}
-            leftButtonOnPress={leftButtonOnPress}
-            containerStyle={styles.headerContainer}
-          />
-        </SafeAreaView>
+        <SalonSearchHeader
+          title={title}
+          hasFilter={false}
+          leftButton={leftButton}
+          leftButtonOnPress={leftButtonOnPress}
+        />
       ),
     };
   };
