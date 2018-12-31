@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import moment from 'moment';
 import { get, isNumber, toNumber } from 'lodash';
 
@@ -16,27 +16,30 @@ import {
   InputDivider,
   RemoveButton,
   SchedulePicker,
-  LabeledTextInput,
 } from '../../components/formHelpers';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 
 import styles from './styles';
-import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
-import { ConflictBox } from "../../components/slidePanels/SalonNewAppointmentSlide";
-import LoadingOverlay from "../../components/LoadingOverlay";
+import { ConflictBox } from '../../components/slidePanels/SalonNewAppointmentSlide';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
-export default class ModifyApptServiceScreen extends React.Component {
+export default class ModifyApptServiceScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
     const handleSave = params.handleSave || (() => null);
     const handleCancel = params.handleCancel || (() => null);
     let title = 'New Service';
+    let subTitle = ';';
     if ('params' in navigation.state && navigation.state.params !== undefined) {
-      if ('item' in navigation.state.params) {
-        title = navigation.state.params.item.service.name;
+      if ('serviceItem' in navigation.state.params) {
+        title = 'Modify Service';
+        if ('service' in navigation.state.params.serviceItem &&
+          'service' in navigation.state.params.serviceItem.service) {
+          subTitle = navigation.state.params.serviceItem.service.service.description;
+        }
       }
     }
     const buttonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,.3)' };
@@ -45,6 +48,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       header: (
         <SalonHeader
           title={title}
+          subTitle={subTitle}
           headerLeft={
             <SalonTouchableOpacity
               style={{ paddingLeft: 10 }}
@@ -102,7 +106,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     const endTime = get(
       serviceItem.service,
       'toTime',
-      moment().add(15, 'm')
+      moment().add(15, 'm'),
     );
     const length = moment.duration(endTime.diff(startTime));
     const price = get(serviceItem.service.service || {}, 'price', '0');
@@ -168,7 +172,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     let endTime = null;
     if ('maxDuration' in selectedService) {
       endTime = moment(startTime).add(
-        moment.duration(selectedService.maxDuration)
+        moment.duration(selectedService.maxDuration),
       );
     }
     const length = moment.duration(endTime.diff(startTime));
@@ -183,13 +187,13 @@ export default class ModifyApptServiceScreen extends React.Component {
         gapTime: moment.duration(get(selectedService, 'gapDuration', 0)),
         afterTime: moment.duration(get(selectedService, 'afterDuration', 0)),
       },
-      this.checkConflicts
+      this.checkConflicts,
     );
   };
 
   conflictsForThisService = () => this.props.newAppointmentState.conflicts.filter(conf =>
-      conf.associativeKey ===  this.state.serviceId
-    );
+    conf.associativeKey === this.state.serviceId,
+  );
 
   getConflictsByProblem = () => {
     let listConflicts = {};
@@ -259,7 +263,7 @@ export default class ModifyApptServiceScreen extends React.Component {
       {
         selectedProvider,
       },
-      this.checkConflicts
+      this.checkConflicts,
     );
   };
 
@@ -273,7 +277,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     if (startTime.isAfter(endTime)) {
       return this.setState({
         toast: {
-          description: "Start time can't be after end time!",
+          description: 'Start time can\'t be after end time!',
           type: 'error',
           btnRight: 'OK',
         },
@@ -284,7 +288,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         endTime,
         length: moment.duration(endTime.diff(startTime)),
       },
-      this.checkConflicts
+      this.checkConflicts,
     );
   };
 
@@ -301,7 +305,7 @@ export default class ModifyApptServiceScreen extends React.Component {
         endTime,
         length: moment.duration(endTime.diff(startTime)),
       },
-      this.checkConflicts
+      this.checkConflicts,
     );
   };
 
@@ -314,7 +318,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     ) {
       return this.setState({
         toast: {
-          description: "Sum of after and gap durations\ncan't be more than service length",
+          description: 'Sum of after and gap durations\ncan\'t be more than service length',
           type: 'error',
           btnRight: 'OK',
         },
@@ -332,7 +336,7 @@ export default class ModifyApptServiceScreen extends React.Component {
     ) {
       return this.setState({
         toast: {
-          description: "Sum of after and gap durations\ncan't be more than service length",
+          description: 'Sum of after and gap durations\ncan\'t be more than service length',
           type: 'error',
           btnRight: 'OK',
         },
@@ -365,8 +369,8 @@ export default class ModifyApptServiceScreen extends React.Component {
       clientId: this.state.selectedClient.id,
       serviceId: this.state.selectedService.id,
       employeeId: isFirstAvailable
-         ? null
-         : get(this.state.selectedProvider, 'id', null),
+        ? null
+        : get(this.state.selectedProvider, 'id', null),
       fromTime: this.state.startTime.format('HH:mm:ss'),
       toTime: this.state.endTime.format('HH:mm:ss'),
       bookBetween: this.state.bookBetween,
@@ -413,7 +417,7 @@ export default class ModifyApptServiceScreen extends React.Component {
 
     return (
       <ScrollView style={styles.container}>
-        {this.props.newAppointmentState.isLoading ? <LoadingOverlay/> : null}
+        {this.props.newAppointmentState.isLoading ? <LoadingOverlay /> : null}
         <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
             apptBook
@@ -488,26 +492,26 @@ export default class ModifyApptServiceScreen extends React.Component {
               this.setState({ bookBetween: !bookBetween })}
           />
           {bookBetween &&
-            <View>
-              <InputDivider />
-              <InputNumber
-                value={gapTime.asMinutes()}
-                onChange={this.handleChangeGapTime}
-                step={this.props.apptGridSettings.step} // TODO should be apptgrid step
-                label="Gap Time"
-                singularText="min"
-                pluralText="min"
-              />
-              <InputDivider />
-              <InputNumber
-                value={afterTime.asMinutes()}
-                onChange={this.handleChangeAfterTime}
-                label="After"
-                step={this.props.apptGridSettings.step}
-                singularText="min"
-                pluralText="min"
-              />
-            </View>}
+          <View>
+            <InputDivider />
+            <InputNumber
+              value={gapTime.asMinutes()}
+              onChange={this.handleChangeGapTime}
+              step={this.props.apptGridSettings.step} // TODO should be apptgrid step
+              label="Gap Time"
+              singularText="min"
+              pluralText="min"
+            />
+            <InputDivider />
+            <InputNumber
+              value={afterTime.asMinutes()}
+              onChange={this.handleChangeAfterTime}
+              label="After"
+              step={this.props.apptGridSettings.step}
+              singularText="min"
+              pluralText="min"
+            />
+          </View>}
         </InputGroup>
         <SectionTitle value="Room & Resource" />
         <InputGroup>
@@ -534,15 +538,16 @@ export default class ModifyApptServiceScreen extends React.Component {
         </InputGroup>
         {this.renderConflictsBox()}
         {canRemove &&
-          <RemoveButton disabled={this.props.navigation.state.params.isOnlyMainService} title="Remove Service" onPress={this.onPressRemove} />}
+        <RemoveButton disabled={this.props.navigation.state.params.isOnlyMainService} title="Remove Service"
+                      onPress={this.onPressRemove} />}
         <SectionDivider />
         {toast &&
-          <SalonToast
-            description={toast.description}
-            type={toast.type}
-            btnRightText={toast.btnRight}
-            hide={this.hideToast}
-          />}
+        <SalonToast
+          description={toast.description}
+          type={toast.type}
+          btnRightText={toast.btnRight}
+          hide={this.hideToast}
+        />}
       </ScrollView>
     );
   }
