@@ -510,11 +510,11 @@ class AppointmentDetails extends React.Component {
   };
 
   removeServiceItem = (id, onSuccess, onFailed) => {
-    const serviceItems = cloneDeep (this.state.serviceItems);
-    const index = serviceItems.findIndex (itm => itm.itemId === id);
-    serviceItems.splice (index, 1);
-    this.setState ({serviceItems}, () =>
-      this.updateQueue (onSuccess, onFailed)
+    const serviceItems = cloneDeep(this.state.serviceItems);
+    const index = serviceItems.findIndex(itm => itm.itemId === id);
+    serviceItems.splice(index, 1);
+    this.setState({ serviceItems }, () =>
+      this.updateQueue(onSuccess, onFailed),
     );
   };
 
@@ -528,22 +528,21 @@ class AppointmentDetails extends React.Component {
   };
 
   updateQueue = (onSuccess = false, onFailed = false) => {
-    const {client, serviceItems, productItems} = this.state;
-    const clientId = get (client, 'id', null);
-    const services = serviceItems.map (itm => this.serializeServiceItem (itm));
-    const products = productItems.map (itm => this.serializeProductItem (itm));
-    this.props.queueDetailActions.updateAppointment (
+    const { client, serviceItems, productItems } = this.state;
+    const clientId = get(client, 'id', null);
+    const services = serviceItems.map(itm => this.serializeServiceItem(itm));
+    const products = productItems.map(itm => this.serializeProductItem(itm));
+    this.props.queueDetailActions.updateAppointment(
       clientId,
       services,
       products,
       onSuccess,
-      onFailed
+      onFailed,
     );
   };
 
   serializeServiceItem = serviceItem => {
     const {
-      // id = null,
       price: priceEntered,
       service,
       employee,
@@ -551,34 +550,29 @@ class AppointmentDetails extends React.Component {
       isFirstAvailable,
       isProviderRequested,
     } = serviceItem;
-    const promotionCode = get (promotion, 'promotionCode', null);
+    const promotionCode = get(promotion, 'promotionCode', null);
     return {
-      // id,
       priceEntered,
       promotionCode,
       isFirstAvailable,
       isProviderRequested: isFirstAvailable ? false : isProviderRequested,
-      serviceId: get (service, 'id', null),
-      employeeId: isFirstAvailable ? null : get (employee, 'id', null),
+      serviceId: get(service, 'id', null),
+      employeeId: isFirstAvailable ? null : get(employee, 'id', null),
     };
   };
 
   serializeProductItem = productItem => {
     const {
-      // id = null,
       product,
       employee,
       promotion,
     } = productItem;
-    const promotionCode = get (promotion, 'promotionCode', null);
+    const promotionCode = get(promotion, 'promotionCode', null);
     const item = {
-      inventoryItemId: get (product, 'id', null),
-      employeeId: get (employee, 'id', null),
+      inventoryItemId: get(product, 'id', null),
+      employeeId: get(employee, 'id', null),
       promotionCode,
     };
-    // if (id) {
-    //   item.id = id;
-    // }
     return item;
   };
 
