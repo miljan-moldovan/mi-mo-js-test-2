@@ -702,9 +702,10 @@ class NewAppointmentScreen extends React.Component<any, any> {
         const hasChanges = this.lookForChanges();
         if (hasChanges) {
           alertTitle = 'Discard Changes?';
+
           alertBody = serviceTitle
             ? `Are you sure you want to discard this appointment for service ${serviceTitle} w/ ${employeeName}?`
-            : `Are you sure you want to discard this appointment with ${employeeName}?`;
+            : `Are you sure you want to discard your changes to these appointments?`;
         }
         break;
       }
@@ -713,7 +714,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
         alertTitle = 'Discard New Appointment?';
         alertBody = serviceTitle
           ? `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?`
-          : `Are you sure you want to discard this new appointment with ${employeeName}?`;
+          : 'Are you sure you want to discard your changes to these appointments?';
         break;
     }
     if (alertTitle) {
