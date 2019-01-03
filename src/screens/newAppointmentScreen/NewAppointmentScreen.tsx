@@ -573,8 +573,8 @@ class NewAppointmentScreen extends React.Component<any, any> {
       dismissOnSelect: true,
       selectExtraServices: true,
       filterByProvider: true,
-      clientId: client.id,
-      selectedEmployee: mainEmployee,
+      client,
+      selectedProvider: mainEmployee,
       onChangeWithNavigation: (service, nav) => {
         nav.navigate('ApptBookProvider', {
           date,

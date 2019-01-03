@@ -247,16 +247,16 @@ class ServicesScreen extends React.Component<ServicesScreenProps, ServicesScreen
   getServices = () => {
     this.props.servicesActions.setShowCategoryServices(false);
     const params = this.props.navigation.state.params || {};
-    const clientId = params.clientId || false;
-    const employee = params.selectedEmployee || {};
+    const client = params.client || {};
+    const employee = params.selectedProvider || {};
     const queueItem = params.queueItem || {};
     const service = params.service || {};
     const {
       servicesActions: { getServices, getQueueServiceEmployeeServices },
     } = this.props;
     const opts: any = {};
-    if (clientId) {
-      opts.clientId = clientId;
+    if (client.id) {
+      opts.clientId = client.id;
     }
     if (employee.id) {
       opts.employeeId = employee.id;

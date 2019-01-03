@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import newAppointmentActions, { CHECK_CONFLICTS_SUCCESS } from '../../redux/actions/newAppointment';
 import ModifyApptServiceScreen from './ModifyService';
-import { appointmentLength, isValidAppointment } from "../../redux/selectors/newAppt";
+import { appointmentLength, isValidAppointment } from '../../redux/selectors/newAppt';
 
 const mapStateToProps = state => ({
   newAppointmentState: state.newAppointmentReducer,
