@@ -351,7 +351,6 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
     );
     newServiceItems.splice(extraIndex, 1);
   });
-  // const deletedId = get(removedAppt.service, 'id', null);
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
@@ -359,7 +358,10 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
   );
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems },
+    data: {
+      serviceItems: newServiceItems,
+      deletedIds: removedAppt && removedAppt.service && removedAppt.service.id || null,
+    },
   });
 };
 
@@ -865,8 +867,8 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
     startTime,
     serviceItems,
     existingApptIds,
+    deletedIds: idForDel,
   } = getState().newAppointmentReducer;
-
   dispatch({
     type: BOOK_NEW_APPT,
   });
@@ -878,7 +880,7 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
   const deletedIds = reject(existingApptIds, id =>
     existingServices.includes(id),
   );
-  requestBody.deletedIds = deletedIds;
+  requestBody.deletedIds = deletedIds.length || idForDel;
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
       return dispatch(bookNewApptSuccess(successCallback));
