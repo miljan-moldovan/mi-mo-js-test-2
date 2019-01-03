@@ -203,6 +203,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
     clientsNav.navigate('Services', {
       selectedService,
       selectedProvider,
+      client,
       dismissOnSelect: true,
       onChangeService: service => {
         this.props.newApptActions.setClient(client);
