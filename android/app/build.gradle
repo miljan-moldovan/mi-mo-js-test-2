@@ -139,7 +139,6 @@ android {
 
 dependencies {
     compile project(':rn-fetch-blob')
-    compile project(':react-native-vector-icons')
     compile project(':react-native-code-push')
     compile project(':react-native-wheel-picker')
     compile project(':react-native-text-input-mask')
