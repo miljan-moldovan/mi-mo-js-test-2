@@ -26,7 +26,7 @@ import {
   getBookedByEmployee,
 } from '../selectors/newAppt';
 import { showErrorAlert } from './utils';
-import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore } from '@/models';
+import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore, ShortProvider } from '@/models';
 import { NewAppointmentReducer } from '../reducers/newAppointment';
 import { ServiceItem } from '@/models/new-appointment';
 
@@ -524,7 +524,7 @@ const setBookedBy = (
     });
   };
 
-const setMainEmployee = (mainEmployee: Maybe<PureProvider>): any => ({
+const setMainEmployee = (mainEmployee: Maybe<PureProvider | ShortProvider>): any => ({
   type: SET_MAIN_EMPLOYEE,
   data: { mainEmployee },
 });
