@@ -250,9 +250,16 @@ export default function newAppointmentReducer(
         serviceItems: data.serviceItems.slice(),
       };
     case REMOVE_SERVICE_ITEM:
+      const previousDeletedIds = state.deletedIds || [];
+      let newDeletedIds = [...previousDeletedIds];
+      if (data.deletedIds) {
+        newDeletedIds = [...newDeletedIds, data.deletedIds];
+      }
+
       return {
         ...state,
         serviceItems: data.serviceItems.slice(),
+        deletedIds: newDeletedIds,
       };
     case ADD_SERVICE_ITEM_EXTRAS:
       return {
@@ -288,6 +295,7 @@ export default function newAppointmentReducer(
         ...state,
         isLoading: false,
         isBooking: false,
+        deletedIds: [],
       };
     case ADD_GUEST:
       return {

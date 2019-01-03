@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {View, StyleSheet, Text, Animated} from 'react-native';
+import { View, StyleSheet, Text, Animated } from 'react-native';
 
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     width: '100%',
     alignItems: 'center',
@@ -27,40 +27,40 @@ const styles = StyleSheet.create ({
 });
 
 class RebookAppointment extends React.Component {
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
     this.state = {
-      height: new Animated.Value (0),
+      height: new Animated.Value(0),
     };
   }
 
-  componentDidMount () {
-    Animated.timing (this.state.height, {
+  componentDidMount() {
+    Animated.timing(this.state.height, {
       toValue: 40,
       duration: 800,
-    }).start ();
+    }).start();
   }
 
   hide = () => {
     if (!this.ishidding) {
       this.ishidding = true;
-      Animated.timing (this.state.height, {
+      Animated.timing(this.state.height, {
         toValue: 0,
         duration: 200,
-      }).start (this.props.hide);
+      }).start(this.props.hide);
     }
   };
 
-  render () {
-    const {height} = this.state;
-    const {client} = this.props;
+  render() {
+    const { height } = this.state;
+    const { client } = this.props;
 
     const clientName = client
-      ? `${client.name.toUpperCase ()} ${client.lastName.toUpperCase ()}`
+      ? `${client.name.toUpperCase()} ${client.lastName.toUpperCase()}`
       : '';
     return (
-      <Animated.View style={[styles.container, {height}]}>
-        <View style={{flex: 1}}>
+      <Animated.View style={[styles.container, { height }]}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.title}>REBOOKING APPOINTMENT FOR</Text>
           <Text textTransform="uppercase" style={styles.clientText}>
             {clientName}

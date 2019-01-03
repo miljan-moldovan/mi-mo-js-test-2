@@ -1,4 +1,4 @@
-const ConfirmByTypes = {
+  const ConfirmByTypes = {
   Email: 1,
   Sms: 5,
   EmailandSms: 6,

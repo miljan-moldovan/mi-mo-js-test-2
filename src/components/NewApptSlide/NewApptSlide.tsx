@@ -28,6 +28,13 @@ import { ServicesActions } from '@/redux/actions/service';
 const TAB_BOOKING = 0;
 const TAB_OTHER = 1;
 
+const FIRST_AVAILABLE = {
+  id: 0,
+  isFirstAvailable: true,
+  name: 'First',
+  lastName: 'Available',
+};
+
 type IProps = {
   navigation: any;
   filterProviders: any;
@@ -45,6 +52,7 @@ type IProps = {
   servicesActions: ServicesActions;
   newApptActions: NewApptActions;
   newApptState: NewAppointmentReducer;
+  selectedFilter: string,
 };
 
 type IState = {
@@ -116,21 +124,42 @@ class NewApptSlide extends React.Component<IProps, IState> {
   });
 
   componentWillReceiveProps(newProps: IProps) {
+    this.setUpFirstAvailableProviderIfItNeed(this.props.visible, newProps.visible);
+    this.handelShouldSelectBookedBy(this.props, newProps);
+    this.handelVisiblePanel(this.props.visible, newProps.visible);
+  }
+
+  setUpFirstAvailableProviderIfItNeed = (previousVisibleProps, nextVisibleProps) => {
+    if (this.isNeedSetUpAvailableProvider(previousVisibleProps, nextVisibleProps)) {
+      this.props.newApptActions.setMainEmployee(FIRST_AVAILABLE);
+    }
+  };
+
+  isNeedSetUpAvailableProvider = (previousVisibleProps, nextVisibleProps) => {
+    return this.props.selectedFilter === 'rooms'
+      && !this.props.newApptState.mainEmployee
+      && !previousVisibleProps && nextVisibleProps;
+  };
+
+  handelShouldSelectBookedBy = (previousProps, nextProps) => {
     if (
-      this.props.userInfo.isLoading !== newProps.userInfo.isLoading
-      || this.props.userInfo.doneFetching !== newProps.userInfo.doneFetching
+      previousProps.userInfo.isLoading !== nextProps.userInfo.isLoading
+      || previousProps.userInfo.doneFetching !== nextProps.userInfo.doneFetching
     ) {
-      const bookedByEmployee = newProps.userInfo.currentEmployee;
+      const bookedByEmployee = nextProps.userInfo.currentEmployee;
       this.setState({
         shouldSelectBookedBy: isNull(bookedByEmployee),
       });
     }
-    if (!this.props.visible && newProps.visible) {
+  };
+
+  handelVisiblePanel = (previousVisibleProps, nextVisibleProps) => {
+    if (!previousVisibleProps && nextVisibleProps) {
       this.showPanel();
-    } else if (this.props.visible && !newProps.visible) {
+    } else if (previousVisibleProps && !nextVisibleProps) {
       this.hidePanel();
     }
-  }
+  };
 
   onPressAddons = () => {
     this.props.servicesActions.setSelectingExtras(true);
@@ -203,6 +232,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
     clientsNav.navigate('Services', {
       selectedService,
       selectedProvider,
+      client,
       dismissOnSelect: true,
       onChangeService: service => {
         this.props.newApptActions.setClient(client);
@@ -621,6 +651,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
   };
 
   renderOthersTab = () => {
+
     const { mainEmployee: employee } = this.props.newApptState;
 
     const isFirstAvailable = employee ? get(employee, 'isFirstAvailable', false) : true;
@@ -758,7 +789,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
   };
 
   renderBookingTab = () => {
-    const { navigation } = this.props;
+    const { navigation, selectedFilter } = this.props;
     const {
       date,
       startTime,
@@ -770,7 +801,6 @@ class NewApptSlide extends React.Component<IProps, IState> {
     } = this.props.newApptState;
     const { service = null, addons = [], recommended = [], required = null } = this.getService(true);
 
-    const contentStyle = { alignItems: 'flex-start', paddingLeft: 11 };
     const selectedStyle = {
       fontSize: 14,
       lineHeight: 22,
@@ -788,6 +818,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
       });
     };
     const onPressConflicts = () => this.hidePanel(conflictsCallback);
+
     return (
       <ScrollView
         onContentSizeChange={this.handleHeigth}
@@ -806,7 +837,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                 placeholder="Booked By"
                 placeholderStyle={styles.placeholderText}
                 selectedStyle={selectedStyle}
-                contentStyle={contentStyle}
+                contentStyle={styles.contentStyle}
                 iconStyle={styles.inputColor}
                 avatarSize={20}
                 onPress={this.hidePanel}
@@ -827,7 +858,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
             selectedClient={client}
             placeholder={client === null ? 'Select Client' : 'Client'}
             placeholderStyle={styles.placeholderText}
-            contentStyle={contentStyle}
+            contentStyle={styles.contentStyle}
             selectedStyle={selectedStyle}
             onPress={() => this.hidePanel()}
             navigate={navigation.navigate}
@@ -854,7 +885,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
             selectedStyle={selectedStyle}
             placeholder="Select a Service"
             placeholderStyle={styles.placeholderText}
-            contentStyle={contentStyle}
+            contentStyle={styles.contentStyle}
             onPress={this.hidePanel}
             navigate={navigation.navigate}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
@@ -874,7 +905,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
             placeholder="Select a Provider"
             placeholderStyle={styles.placeholderText}
             selectedStyle={selectedStyle}
-            contentStyle={contentStyle}
+            contentStyle={styles.contentStyle}
             iconStyle={styles.inputColor}
             avatarSize={20}
             onPress={this.hidePanel}

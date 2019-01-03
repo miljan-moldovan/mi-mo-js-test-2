@@ -26,7 +26,7 @@ import {
   getBookedByEmployee,
 } from '../selectors/newAppt';
 import { showErrorAlert } from './utils';
-import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore } from '@/models';
+import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore, ShortProvider } from '@/models';
 import { NewAppointmentReducer } from '../reducers/newAppointment';
 import { ServiceItem } from '@/models/new-appointment';
 
@@ -313,18 +313,38 @@ const updateServiceItem = (
     dispatch,
     getState: () => AppStore,
   ) => {
-    const newServiceItems: ServiceItem[] = cloneDeep(
-      getState().newAppointmentReducer.serviceItems,
+    const oldServiceItems = getState().newAppointmentReducer.serviceItems;
+    let newServiceItems: ServiceItem[] = cloneDeep(
+      oldServiceItems,
     );
     const serviceIndex = newServiceItems.findIndex(
       item => item.itemId === serviceId,
     );
+
     const serviceItemToUpdate = newServiceItems[serviceIndex];
     const serviceItem: ServiceItem = {
       ...serviceItemToUpdate,
       service: { ...updatedService },
     };
     newServiceItems.splice(serviceIndex, 1, serviceItem);
+
+    if ((serviceItemToUpdate &&
+      serviceItemToUpdate.service &&
+      serviceItemToUpdate.service.employee &&
+      serviceItemToUpdate.service.employee.id) !==
+    (
+      updatedService &&
+      updatedService.employee &&
+      updatedService.employee.id
+    )) {
+      newServiceItems = newServiceItems.map((item) => {
+        if (item.parentId === serviceId) {
+          return { ...item, service: { ...item.service, employee:  updatedService.employee } };
+        }
+        return item;
+      });
+
+    }
     resetTimeForServices(
       newServiceItems,
       serviceIndex - 1,
@@ -351,7 +371,6 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
     );
     newServiceItems.splice(extraIndex, 1);
   });
-  // const deletedId = get(removedAppt.service, 'id', null);
   resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
@@ -359,7 +378,10 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
   );
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems },
+    data: {
+      serviceItems: newServiceItems,
+      deletedIds: removedAppt && removedAppt.service && removedAppt.service.id || null,
+    },
   });
 };
 
@@ -524,7 +546,7 @@ const setBookedBy = (
     });
   };
 
-const setMainEmployee = (mainEmployee: Maybe<PureProvider>): any => ({
+const setMainEmployee = (mainEmployee: Maybe<PureProvider | ShortProvider>): any => ({
   type: SET_MAIN_EMPLOYEE,
   data: { mainEmployee },
 });
@@ -865,8 +887,8 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
     startTime,
     serviceItems,
     existingApptIds,
+    deletedIds: idForDel,
   } = getState().newAppointmentReducer;
-
   dispatch({
     type: BOOK_NEW_APPT,
   });
@@ -878,7 +900,7 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
   const deletedIds = reject(existingApptIds, id =>
     existingServices.includes(id),
   );
-  requestBody.deletedIds = deletedIds;
+  requestBody.deletedIds = deletedIds.length || idForDel;
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
       return dispatch(bookNewApptSuccess(successCallback));
