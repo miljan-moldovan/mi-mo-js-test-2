@@ -20,11 +20,6 @@ export default {
     fontFamily: 'Roboto-Medium',
     backgroundColor: 'transparent',
   },
-  infoIcon: {
-    fontSize: 18,
-    color: '#115ECD',
-    paddingLeft: 5,
-  },
   panelTopService: {
     color: '#111415',
     fontSize: 12,
@@ -45,5 +40,11 @@ export default {
     fontSize: 11,
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
+  },
+  containerForBadges: {
+    flexDirection: 'row',
+    marginLeft: -5,
+    marginRight: 5,
+    paddingTop: 2,
   },
 };

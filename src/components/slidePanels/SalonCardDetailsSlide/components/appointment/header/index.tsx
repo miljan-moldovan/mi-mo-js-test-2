@@ -9,63 +9,66 @@ import ShowMoreText from '@/components/ShowMoreText';
 
 const renderBadges = (appointment, appointments) => {
   const badges = getBadges(appointment, getHiddenAddons(appointments, appointment).length);
-  for (let i = 0; i < badges.length; i += 1) {
-    if (badges[i]) {
-      return (
-        <View style={{ padding: 5, flexDirection: 'row', backgroundColor: '#F1F1F1' }}>
-          {badges}
-        </View>
-      );
-    }
-  }
-  return null;
+  return badges.map(item => {
+    return (
+      <View style={styles.containerForBadges}>
+        {item}
+      </View>
+    );
+  });
 };
 
-const appointmentHeader = ({
-                             appointment, navigation, hidePanel, appointments,
-                           }) => (
-  <React.Fragment>
-    <View style={styles.panelTopLine}>
-      <View style={styles.panelTopLineLeft}>
-        <Text style={styles.panelTopName}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
-        <ClientInfoButton
-          client={appointment.client}
-          navigation={navigation}
-          onDonePress={hidePanel}
-          iconStyle={styles.infoIcon}
-          apptBook
-        />
-      </View>
-    </View>
-    {renderBadges(appointment, appointments)}
-    <View style={styles.panelTopLine}>
-      <View style={styles.panelTopLineLeft}>
-        <Text style={styles.panelTopService}>{appointment.service.description}</Text>
-      </View>
-    </View>
+const appointmentHeader = (props) => {
+  const {
+    appointment, navigation, hidePanel, appointments,
+  } = props;
 
-    <View style={styles.panelTopLine}>
-      <View style={styles.panelTopLineLeft}>
-        <AppointmentTime startTime={appointment.fromTime} endTime={appointment.toTime} />
+  return (
+    <React.Fragment>
+      <View style={styles.panelTopLine}>
+        <View style={styles.panelTopLineLeft}>
+          {renderBadges(appointment, appointments)}
+          <Text style={styles.panelTopName}>{`${appointment.client.name} ${appointment.client.lastName}`}</Text>
+          <ClientInfoButton
+            client={appointment.client}
+            navigation={navigation}
+            onDonePress={hidePanel}
+            apptBook
+          />
+        </View>
       </View>
-    </View>
+      <View style={[styles.panelTopLine, { marginTop: 5 }]}>
+        <View style={styles.panelTopLineLeft}>
+          <Text style={styles.panelTopService}>{appointment.service.description}</Text>
+        </View>
+      </View>
+      <View style={[styles.panelTopLine, { marginTop: 10 }]}>
+        <View style={styles.panelTopLineLeft}>
+          <AppointmentTime startTime={appointment.fromTime} endTime={appointment.toTime} />
+        </View>
+      </View>
+      {renderShowText(appointment.remarks)}
+    </React.Fragment>
+  );
+};
 
-    {
-      appointment.remarks ?
-        (
-          <React.Fragment>
-            <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
-              <View style={styles.panelTopLineLeft}>
-                <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
-              </View>
-            </View>
-            <ShowMoreText
-              text={appointment.remarks}
-            />
-          </React.Fragment>
-        ) : null
-    }
-  </React.Fragment>
-);
+const renderShowText = (remarks) => {
+  if (!remarks) {
+    return null;
+  }
+
+  return (
+    <React.Fragment>
+      <View style={[styles.panelTopLine, { alignItems: 'flex-end' }]}>
+        <View style={styles.panelTopLineLeft}>
+          <Text style={styles.panelTopRemarksTitle}>Remarks</Text>
+        </View>
+      </View>
+      <ShowMoreText
+        text={appointment.remarks}
+      />
+    </React.Fragment>
+  );
+};
 
 export default appointmentHeader;

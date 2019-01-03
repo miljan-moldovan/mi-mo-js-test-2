@@ -1,9 +1,12 @@
 import * as React from 'react';
+import { Image } from 'react-native';
 import PropTypes from 'prop-types';
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import SalonTouchableOpacity from './SalonTouchableOpacity';
+import styles from './style';
 
-class ClientInfoButton extends React.Component {
+const infoCircleImage = require('../assets/images/icons/icon_info_circle.png');
+
+class ClientInfoButton extends React.Component<any, any> {
   componentDidMount() {
 
   }
@@ -25,20 +28,16 @@ class ClientInfoButton extends React.Component {
       <React.Fragment>
         {client.id > 1 ? // is not walkin
           <SalonTouchableOpacity style={buttonStyle} onPress={this.goToClientInfo}>
-            <FontAwesome style={[{
-             fontSize: 18, color: '#115ECD', fontWeight: '100', fontFamily: 'FontAwesome5ProLight',
-            }, iconStyle]}
-            >
-              {Icons.infoCircle}
-            </FontAwesome>
-
+            <Image
+              style={[styles.infoIconStyle, iconStyle]}
+              source={infoCircleImage}
+            />
           </SalonTouchableOpacity>
         : null}
       </React.Fragment>
     );
   }
 }
-
 
 ClientInfoButton.defaultProps = {
   iconStyle: { },
