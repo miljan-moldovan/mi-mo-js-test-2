@@ -20,7 +20,7 @@ const mapActionsToProps = dispatch => ({
   servicesActions: bindActionCreators({ ...servicesActions }, dispatch),
   salonSearchHeaderActions: bindActionCreators(
     { ...salonSearchHeaderActions },
-    dispatch
+    dispatch,
   ),
 });
 

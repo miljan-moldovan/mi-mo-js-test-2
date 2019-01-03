@@ -198,7 +198,6 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
   getConflictsByProblem = () => {
     let listConflicts = {};
     const newListConflicts = this.conflictsForThisService().map(item => {
-      //if (item.promlem ===)
       return item;
     });
 
@@ -381,6 +380,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       associativeKey: this.state.serviceId,
     };
     this.props.newAppointmentActions.getConflictsForService(serviceState, () => this.validate());
+    this.validate();
   };
 
   renderConflictsBox() {
@@ -538,8 +538,11 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
         </InputGroup>
         {this.renderConflictsBox()}
         {canRemove &&
-        <RemoveButton disabled={this.props.navigation.state.params.isOnlyMainService} title="Remove Service"
-                      onPress={this.onPressRemove} />}
+        <RemoveButton
+          disabled={this.props.navigation.state.params.isOnlyMainService}
+          title="Remove Service"
+          onPress={this.onPressRemove}
+        />}
         <SectionDivider />
         {toast &&
         <SalonToast
