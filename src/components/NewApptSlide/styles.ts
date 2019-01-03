@@ -49,7 +49,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: Colors.mediumBlue,
   },
-  otherOptionsBtn: { height: 67, paddingRight: 0 },
+  otherOptionsBtn: {
+    height: 67,
+    paddingRight: 0,
+  },
   subIcon: {
     width: 10,
     height: 10,
@@ -150,7 +153,11 @@ const styles = StyleSheet.create({
     paddingLeft: 11,
     paddingRight: 6,
   },
-  addonInputInner: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  addonInputInner: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   addonIconButton: {
     padding: 10,
   },
@@ -221,8 +228,12 @@ const styles = StyleSheet.create({
     color: Colors.defaultRed,
     textDecorationLine: 'underline',
   },
-  flexStart: { justifyContent: 'flex-start' },
-  flexColumn: { flexDirection: 'column' },
+  flexStart: {
+    justifyContent: 'flex-start',
+  },
+  flexColumn: {
+    flexDirection: 'column',
+  },
   mainInputGroup: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -240,8 +251,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     backgroundColor: Colors.lightBlue,
   },
-  inputHeight: { height: 39 },
-  inputColor: { color: Colors.defaultBlue },
+  inputHeight: {
+    height: 39,
+  },
+  inputColor: {
+    color: Colors.defaultBlue,
+  },
   requestedContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,9 +324,15 @@ const styles = StyleSheet.create({
   headerStub: {
     flex: 1,
   },
-  justifyCenter: { justifyContent: 'center' },
+  justifyCenter: {
+    justifyContent: 'center',
+  },
   serviceLengthStyle: {
     fontStyle: 'italic',
+  },
+  contentStyle: {
+    alignItems: 'flex-start',
+    paddingLeft: 11,
   },
 });
 export default styles;

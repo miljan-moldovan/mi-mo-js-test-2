@@ -1024,6 +1024,7 @@ class AppointmentScreen extends React.Component<any, any> {
           handleBook={this.handleBook}
           activeTab={this.state.newApptActiveTab}
           onChangeTab={this.changeNewApptSlideTab}
+          selectedFilter={selectedFilter}
         />
         <SalonDatePickerSlide
           currentDate={this.props.appointmentScreenState && this.props.appointmentScreenState.startDate}
