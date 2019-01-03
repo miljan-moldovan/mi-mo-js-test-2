@@ -59,6 +59,7 @@ export default class ProviderInput extends React.Component<any, any> {
 
   render() {
 
+    const { selectedService } = this.props;
     const {
       label = 'Provider',
       selectedProvider = null,
@@ -76,7 +77,7 @@ export default class ProviderInput extends React.Component<any, any> {
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
         onPress={this.handlePress}
-        disabled={this.props.disabled || false}
+        disabled={this.props.disabled || selectedService && selectedService.isAddon}
       >
         {
           label && (

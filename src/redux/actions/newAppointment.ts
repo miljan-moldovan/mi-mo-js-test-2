@@ -313,18 +313,38 @@ const updateServiceItem = (
     dispatch,
     getState: () => AppStore,
   ) => {
-    const newServiceItems: ServiceItem[] = cloneDeep(
-      getState().newAppointmentReducer.serviceItems,
+    const oldServiceItems = getState().newAppointmentReducer.serviceItems;
+    let newServiceItems: ServiceItem[] = cloneDeep(
+      oldServiceItems,
     );
     const serviceIndex = newServiceItems.findIndex(
       item => item.itemId === serviceId,
     );
+
     const serviceItemToUpdate = newServiceItems[serviceIndex];
     const serviceItem: ServiceItem = {
       ...serviceItemToUpdate,
       service: { ...updatedService },
     };
     newServiceItems.splice(serviceIndex, 1, serviceItem);
+
+    if ((serviceItemToUpdate &&
+      serviceItemToUpdate.service &&
+      serviceItemToUpdate.service.employee &&
+      serviceItemToUpdate.service.employee.id) !==
+    (
+      updatedService &&
+      updatedService.employee &&
+      updatedService.employee.id
+    )) {
+      newServiceItems = newServiceItems.map((item) => {
+        if (item.parentId === serviceId) {
+          return { ...item, service: { ...item.service, employee:  updatedService.employee } };
+        }
+        return item;
+      });
+
+    }
     resetTimeForServices(
       newServiceItems,
       serviceIndex - 1,
