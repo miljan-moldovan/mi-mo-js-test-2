@@ -20,7 +20,7 @@ import SelectStoreStackNavigator from './SelectStoreStackNavigator';
 const RootBottomTabNavigator = createBottomTabNavigator(
   // RouteConfig
   {
-    Queue: { screen: QueueStackNavigator },
+    //Queue: { screen: QueueStackNavigator },
     ApptBook: {
       screen: AppointmentStackNavigator,
       navigationOptions: { title: 'Appt. Book' },
