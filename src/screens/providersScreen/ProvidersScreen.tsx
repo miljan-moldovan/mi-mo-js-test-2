@@ -147,7 +147,6 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
         leftButtonOnPress: props.navigation.goBack,
       },
     };
-
     this.props.settingsActions.getSettings();
   }
 
@@ -192,7 +191,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
         });
         break;
       case 'newAppointment':
-        getApptBookProvidersForDate(this.params.date);
+        getApptBookProvidersForDate(this.params.date, this.params.selectedService);
         break;
       case 'employees':
       default:

@@ -1,8 +1,8 @@
 import moment from 'moment';
-import { get, isFunction } from 'lodash';
+import { get, some, isFunction } from 'lodash';
 import { Services, AppointmentBook, Employees, Queue } from '../../utilities/apiWrapper';
 import { showErrorAlert } from './utils';
-import { Maybe, PureProvider, Service, AppStore } from '@/models';
+import { Maybe, PureProvider, Service, AppStore, EmployeeSchedule } from '@/models';
 import { dateTimeConstants } from '@/constants';
 
 const alphabeticFilter = (a, b) => {
@@ -111,7 +111,7 @@ const getQueueEmployees = (req: any): any => (dispatch, getState) => {
     const serviceId = get(
       getState().providersReducer.selectedService,
       'id',
-      null
+      null,
     );
     return Promise.all([
       Employees.getQueueEmployees(),
@@ -231,20 +231,34 @@ const getProviderStatus = (employeeId: number, callback: Maybe<Function>): any =
     });
 };
 
-const getApptBookProvidersForDate = (date: moment.Moment): any => (dispatch: Function, getState: Function) => {
-  const state: AppStore = getState();
-  const filterOptions = state.appointmentBookReducer.filterOptions;
-  const providers = state.providersReducer.apptBookDates.find(itm => itm.date.isSame(date));
-  if (!providers) {
-    dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE });
-    AppointmentBook.getAppointmentBookEmployees(date.format(dateTimeConstants.date), filterOptions)
-      .then(providers => dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS, data: { date, providers } }))
-      .catch(error => {
-        showErrorAlert(error);
-        dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED });
-      });
-  }
-};
+const getApptBookProvidersForDate = (date: moment.Moment, service?: Maybe<Service>): any =>
+  (dispatch: Function, getState: () => AppStore) => {
+    const state = getState();
+    const filterOptions = state.appointmentBookReducer.filterOptions;
+    const providers = state.providersReducer.apptBookDates.find(itm => itm.date.isSame(date));
+    if (!providers) {
+      dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE });
+      Promise.all([
+        AppointmentBook.getAppointmentBookEmployees(date.format(dateTimeConstants.date), filterOptions),
+        service ? Services.getEmployeesByService(get(service, 'id', 0), {}) : null,
+      ])
+        .then(([providers, byService]) => {
+
+          dispatch({
+            type: GET_APPT_BOOK_PROVIDERS_FOR_DATE_SUCCESS, data: {
+              date,
+              providers: service
+                ? providers.filter(itm => some(byService, { id: get(itm, 'id') }))
+                : providers,
+            },
+          });
+        })
+        .catch(error => {
+          showErrorAlert(error);
+          dispatch({ type: GET_APPT_BOOK_PROVIDERS_FOR_DATE_FAILED });
+        });
+    }
+  };
 
 const providersActions = {
   getProviders,
@@ -271,6 +285,6 @@ export interface ProvidersActions {
   getQueueEmployees: typeof getQueueEmployees;
   getReceptionists: typeof getReceptionists;
   getQuickQueueEmployees: typeof getQuickQueueEmployees;
-  getApptBookProvidersForDate: (date: string) => any;
+  getApptBookProvidersForDate: (date: moment.Moment, service?: Service) => any;
 }
 export default providersActions;
