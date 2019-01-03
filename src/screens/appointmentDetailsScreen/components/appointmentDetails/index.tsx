@@ -510,10 +510,10 @@ class AppointmentDetails extends React.Component {
   };
 
   removeServiceItem = (id, onSuccess, onFailed) => {
-    const serviceItems = cloneDeep(this.state.serviceItems);
-    const index = serviceItems.findIndex(itm => itm.itemId === id);
-    serviceItems.splice(index, 1);
-    this.setState({ serviceItems }, () =>
+    const newServiceItems = cloneDeep(this.state.serviceItems);
+    const index = newServiceItems.findIndex(itm => itm.itemId === id);
+    newServiceItems.splice(index, 1);
+    this.setState({ serviceItems: newServiceItems }, () =>
       this.updateQueue(onSuccess, onFailed),
     );
   };

@@ -251,7 +251,11 @@ export default function newAppointmentReducer(
       };
     case REMOVE_SERVICE_ITEM:
       const previousDeletedIds = state.deletedIds || [];
-      const newDeletedIds = [...previousDeletedIds, data.deletedIds];
+      let newDeletedIds = [...previousDeletedIds];
+      if (data.deletedIds) {
+        newDeletedIds = [...newDeletedIds, data.deletedIds];
+      }
+
       return {
         ...state,
         serviceItems: data.serviceItems.slice(),

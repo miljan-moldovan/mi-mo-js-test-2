@@ -360,7 +360,7 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
     type: REMOVE_SERVICE_ITEM,
     data: {
       serviceItems: newServiceItems,
-      deletedIds: removedAppt.service.id,
+      deletedIds: removedAppt && removedAppt.service && removedAppt.service.id || null,
     },
   });
 };
