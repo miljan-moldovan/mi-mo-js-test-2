@@ -1112,7 +1112,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
                     onChange={selectedClient =>
                       this.setGuest(selectedClient, guest.guestId)}
                   />
-                  {this.getGuestServicgetGuestServiceses(guest.guestId).map(item => {
+                  {this.getGuestServices(guest.guestId).map(item => {
                     const addonItems = this.getAddonsForService(item.itemId, serviceItems);
                     return (
                       <React.Fragment key={item.itemId}>
