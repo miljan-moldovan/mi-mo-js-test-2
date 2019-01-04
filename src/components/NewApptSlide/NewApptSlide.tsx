@@ -257,10 +257,9 @@ class NewApptSlide extends React.Component<IProps, IState> {
     });
   };
 
-  setServiceWithNavigation = async (service, navigate) => {
+  setServiceWithNavigation = async (service) => {
     const {
       newApptState: { mainEmployee: provider },
-      navigation,
     } = this.props;
 
     await this.setService(service, !provider);
