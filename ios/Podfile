@@ -16,7 +16,6 @@ target 'SalonUltimateRN' do
 
   # pod 'SentryReactNative', :path => '../node_modules/react-native-sentry'
 
-  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   target 'SalonUltimateRNTests' do
     inherit! :search_paths

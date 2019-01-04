@@ -157,6 +157,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 5,
   },
   addonIconButton: {
     padding: 10,
@@ -169,6 +171,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: Colors.defaultBlack,
+    width: '85%',
+    marginLeft: 3,
   },
   addonCount: {
     height: 24,
@@ -186,8 +190,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 22,
     color: '#F5A623',
-    marginLeft: 10,
     fontFamily: 'Roboto-Medium',
+    textAlign: 'left',
   },
   addonIconContainer: {
     flexDirection: 'row',
@@ -334,5 +338,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingLeft: 11,
   },
+  flexDirectionRow: {
+    flexDirection: 'row',
+    flex: 5,
+  },
+  containerRequired: {
+    flex: 2.2,
+    alignItems: 'flex-end',
+  },
+  containerNumber: {
+    flex: 1.5,
+    alignItems: 'flex-end',
+  },
 });
+
 export default styles;
