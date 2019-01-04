@@ -335,18 +335,26 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
       <ScrollView style={{ backgroundColor: '#FFF' }}>
         <View style={styles.panelMiddle}>
           <View style={styles.panelIcons}>
-            {appointment.isBlockTime ? (
-              <BlockTimeBtn
-                handleModify={this.handleModify}
-                handleNewAppt={this.handleNewAppt}
-                handleCancel={this.handleCancel}
-              />) : (<ApptointmentBtn
-              appointment={appointment}
-              handleCheckin={this.handleCheckin}
-              handleCheckout={this.handleCheckout}
-              handleModify={this.handleModify}
-              handleCancel={this.handleCancel}
-            />)}
+            {
+              appointment.isBlockTime
+                ? (
+                    <BlockTimeBtn
+                      handleModify={this.handleModify}
+                      handleNewAppt={this.handleNewAppt}
+                      handleCancel={this.handleCancel}
+                    />
+                )
+                : (
+                    <ApptointmentBtn
+                      appointment={appointment}
+                      handleCheckin={this.handleCheckin}
+                      handleCheckout={this.handleCheckout}
+                      handleModify={this.handleModify}
+                      handleCancel={this.handleCancel}
+                      isNoShow={appointment && appointment.badgeData && appointment.badgeData.isNoShow || false}
+                    />
+                )
+            }
           </View>
           <View style={styles.auditContainer}>
             <AuditInformation
@@ -380,7 +388,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   render() {
     this.props.setMinHeightRef(this.setMinimumPosition);
-
     return (
       <SlidingUpPanel
         visible={this.props.visible}
