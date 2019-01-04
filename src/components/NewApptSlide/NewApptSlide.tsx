@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Modal, ScrollView, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Modal, ScrollView, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import moment from 'moment';
 import { isNumber, get, isNull, isFunction } from 'lodash';
 
@@ -24,6 +24,9 @@ import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
 import { UserInfoReducer } from '@/redux/reducers/userInfo';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { ServicesActions } from '@/redux/actions/service';
+
+const { height: screenHeight } = Dimensions.get('window');
+const MAX_HEIGHT_FOR_CONTENT = screenHeight * 0.8;
 
 const TAB_BOOKING = 0;
 const TAB_OTHER = 1;
@@ -695,7 +698,126 @@ class NewApptSlide extends React.Component<IProps, IState> {
 
     const isFirstAvailable = employee ? get(employee, 'isFirstAvailable', false) : true;
 
-    const messageAllClientsButton = (
+    const height = this.state.otherHeight > MAX_HEIGHT_FOR_CONTENT ? MAX_HEIGHT_FOR_CONTENT : this.state.otherHeight;
+
+    return (
+      <View style={[styles.body, { height }]}>
+        {this.renderOtherContent(isFirstAvailable)}
+      </View>
+    );
+  };
+
+
+  renderOtherContent = (isFirstAvailable) => {
+    if (isFirstAvailable) {
+      return <React.Fragment>{this.messageAllClientsButton()}</React.Fragment>;
+    }
+
+    const { date, startTime, bookedByEmployee, mainEmployee: employee } = this.props.newApptState;
+
+    return (
+      <React.Fragment>
+        <InputButton
+          icon={false}
+          style={styles.otherOptionsBtn}
+          labelStyle={styles.otherOptionsLabels}
+          onPress={() => {
+            this.hidePanel();
+            this.props.navigation.navigate('BlockTime', {
+              date,
+              employee,
+              fromTime: startTime,
+              bookedByEmployee,
+            });
+          }}
+          label="Block Time"
+        >
+          <View style={styles.iconContainer}>
+            <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular"/>
+            <View style={styles.banIconContainer}>
+              <Icon style={styles.subIcon} name="ban" size={9} color={Colors.defaultBlue} type="solid"/>
+            </View>
+          </View>
+        </InputButton>
+
+        <InputButton
+          icon={false}
+          style={styles.otherOptionsBtn}
+          labelStyle={styles.otherOptionsLabels}
+          onPress={() => {
+            this.hidePanel();
+            this.props.navigation.navigate('EditSchedule', {
+              date,
+              employee,
+            });
+          }}
+          label="Edit Schedule"
+        >
+          <View style={styles.iconContainer}>
+            <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular"/>
+          </View>
+        </InputButton>
+
+        <InputButton
+          icon={false}
+          style={styles.otherOptionsBtn}
+          labelStyle={styles.otherOptionsLabels}
+          onPress={this.goToRoomAssignment}
+          label="Room Assignment"
+        >
+          <View style={styles.iconContainer}>
+            <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid"/>
+          </View>
+        </InputButton>
+
+        <InputButton
+          icon={false}
+          style={styles.otherOptionsBtn}
+          labelStyle={styles.otherOptionsLabels}
+          onPress={() => {
+            this.hidePanel();
+            this.props.navigation.navigate('TurnAway', {
+              date,
+              employee,
+              fromTime: startTime,
+              apptBook: true,
+            });
+          }}
+          label="Turn Away"
+        >
+          <View style={styles.iconContainer}>
+            <Icon name="ban" size={16} color={Colors.defaultBlue} type="solid"/>
+          </View>
+        </InputButton>
+
+        <InputButton
+          icon={false}
+          style={styles.otherOptionsBtn}
+          labelStyle={styles.otherOptionsLabels}
+          onPress={this.openMessageProvidersClients}
+          label="Message Provider's Clients"
+        >
+          <View style={styles.iconContainer}>
+            <Icon name="userAlt" size={16} color={Colors.defaultBlue} type="regular"/>
+          </View>
+        </InputButton>
+        <InputButton
+          icon={false}
+          style={styles.otherOptionsBtn}
+          labelStyle={styles.otherOptionsLabels}
+          onPress={this.openMessageAllClients}
+          label="Message All Clients"
+        >
+          <View style={styles.iconContainer}>
+            <Icon name="group" size={16} color={Colors.defaultBlue} type="regular"/>
+          </View>
+        </InputButton>
+      </React.Fragment>
+    );
+  };
+
+  messageAllClientsButton = () => {
+    return (
       <InputButton
         icon={false}
         style={styles.otherOptionsBtn}
@@ -707,115 +829,6 @@ class NewApptSlide extends React.Component<IProps, IState> {
           <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
         </View>
       </InputButton>
-    );
-
-    return (
-      <View style={[styles.body, { height: this.state.otherHeight }]}>
-        {isFirstAvailable ? (
-          <React.Fragment>{messageAllClientsButton}</React.Fragment>
-        ) : (
-          <React.Fragment>
-            <InputButton
-              icon={false}
-              style={styles.otherOptionsBtn}
-              labelStyle={styles.otherOptionsLabels}
-              onPress={() => {
-                this.hidePanel();
-                const { date, startTime, bookedByEmployee, mainEmployee: employee } = this.props.newApptState;
-                this.props.navigation.navigate('BlockTime', {
-                  date,
-                  employee,
-                  fromTime: startTime,
-                  bookedByEmployee,
-                });
-              }}
-              label="Block Time"
-            >
-              <View style={styles.iconContainer}>
-                <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular" />
-                <View style={styles.banIconContainer}>
-                  <Icon style={styles.subIcon} name="ban" size={9} color={Colors.defaultBlue} type="solid" />
-                </View>
-              </View>
-            </InputButton>
-
-            <InputButton
-              icon={false}
-              style={styles.otherOptionsBtn}
-              labelStyle={styles.otherOptionsLabels}
-              onPress={() => {
-                const { date, mainEmployee: employee } = this.props.newApptState;
-                this.hidePanel();
-                this.props.navigation.navigate('EditSchedule', {
-                  date,
-                  employee,
-                });
-              }}
-              label="Edit Schedule"
-            >
-              <View style={styles.iconContainer}>
-                <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
-              </View>
-            </InputButton>
-
-            <InputButton
-              icon={false}
-              style={styles.otherOptionsBtn}
-              labelStyle={styles.otherOptionsLabels}
-              onPress={this.goToRoomAssignment}
-              label="Room Assignment"
-            >
-              <View style={styles.iconContainer}>
-                <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
-              </View>
-            </InputButton>
-
-            <InputButton
-              icon={false}
-              style={styles.otherOptionsBtn}
-              labelStyle={styles.otherOptionsLabels}
-              onPress={() => {
-                this.hidePanel();
-                const { date, mainEmployee: employee, startTime } = this.props.newApptState;
-                this.props.navigation.navigate('TurnAway', {
-                  date,
-                  employee,
-                  fromTime: startTime,
-                  apptBook: true,
-                });
-              }}
-              label="Turn Away"
-            >
-              <View style={styles.iconContainer}>
-                <Icon name="ban" size={16} color={Colors.defaultBlue} type="solid" />
-              </View>
-            </InputButton>
-
-            <InputButton
-              icon={false}
-              style={styles.otherOptionsBtn}
-              labelStyle={styles.otherOptionsLabels}
-              onPress={this.openMessageProvidersClients}
-              label="Message Provider's Clients"
-            >
-              <View style={styles.iconContainer}>
-                <Icon name="userAlt" size={16} color={Colors.defaultBlue} type="regular" />
-              </View>
-            </InputButton>
-            <InputButton
-              icon={false}
-              style={styles.otherOptionsBtn}
-              labelStyle={styles.otherOptionsLabels}
-              onPress={this.openMessageAllClients}
-              label="Message All Clients"
-            >
-              <View style={styles.iconContainer}>
-                <Icon name="group" size={16} color={Colors.defaultBlue} type="regular" />
-              </View>
-            </InputButton>
-          </React.Fragment>
-        )}
-      </View>
     );
   };
 
@@ -860,6 +873,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
 
     return (
       <ScrollView
+        style={styles.maxHeightForContent}
         onContentSizeChange={this.handleHeigth}
         contentContainerStyle={styles.body}
       >
