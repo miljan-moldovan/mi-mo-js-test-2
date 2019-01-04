@@ -1,6 +1,8 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import Colors from '../../constants/Colors';
+
+const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -349,6 +351,9 @@ const styles = StyleSheet.create({
   containerNumber: {
     flex: 1.5,
     alignItems: 'flex-end',
+  },
+  maxHeightForContent: {
+    maxHeight: height * 0.8,
   },
 });
 
