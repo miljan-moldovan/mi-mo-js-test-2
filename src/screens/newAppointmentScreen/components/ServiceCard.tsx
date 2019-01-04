@@ -127,7 +127,7 @@ const ServiceCard = (props) => {
                   <FontAwesome style={styles.styleIconAngleRight}>{Icons.angleRight}</FontAwesome>
                 </View>
               </View>
-              <View style={styles.containerAvatarWithText}>
+              {employee && <View style={styles.containerAvatarWithText}>
                 <SalonAvatar
                   wrapperStyle={styles.salonAvatarWrapperStyle}
                   width={26}
@@ -153,7 +153,7 @@ const ServiceCard = (props) => {
                   }}
                 >{isFirstAvailable ? 'First Available' : `${employee.name} ${employee.lastName}`}
                 </Text>
-              </View>
+              </View>}
               <View style={styles.separatorStyle}/>
               <View style={styles.containerSalonAppointmentTime}>
                 <SalonAppointmentTime
