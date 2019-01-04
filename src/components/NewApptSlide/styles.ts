@@ -1,6 +1,8 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import Colors from '../../constants/Colors';
+
+const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -49,7 +51,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: Colors.mediumBlue,
   },
-  otherOptionsBtn: { height: 67, paddingRight: 0 },
+  otherOptionsBtn: {
+    height: 67,
+    paddingRight: 0,
+  },
   subIcon: {
     width: 10,
     height: 10,
@@ -150,7 +155,13 @@ const styles = StyleSheet.create({
     paddingLeft: 11,
     paddingRight: 6,
   },
-  addonInputInner: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  addonInputInner: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 5,
+  },
   addonIconButton: {
     padding: 10,
   },
@@ -162,6 +173,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: Colors.defaultBlack,
+    width: '85%',
+    marginLeft: 3,
   },
   addonCount: {
     height: 24,
@@ -179,8 +192,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 22,
     color: '#F5A623',
-    marginLeft: 10,
     fontFamily: 'Roboto-Medium',
+    textAlign: 'left',
   },
   addonIconContainer: {
     flexDirection: 'row',
@@ -221,8 +234,12 @@ const styles = StyleSheet.create({
     color: Colors.defaultRed,
     textDecorationLine: 'underline',
   },
-  flexStart: { justifyContent: 'flex-start' },
-  flexColumn: { flexDirection: 'column' },
+  flexStart: {
+    justifyContent: 'flex-start',
+  },
+  flexColumn: {
+    flexDirection: 'column',
+  },
   mainInputGroup: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -240,8 +257,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     backgroundColor: Colors.lightBlue,
   },
-  inputHeight: { height: 39 },
-  inputColor: { color: Colors.defaultBlue },
+  inputHeight: {
+    height: 39,
+  },
+  inputColor: {
+    color: Colors.defaultBlue,
+  },
   requestedContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,9 +330,31 @@ const styles = StyleSheet.create({
   headerStub: {
     flex: 1,
   },
-  justifyCenter: { justifyContent: 'center' },
+  justifyCenter: {
+    justifyContent: 'center',
+  },
   serviceLengthStyle: {
     fontStyle: 'italic',
   },
+  contentStyle: {
+    alignItems: 'flex-start',
+    paddingLeft: 11,
+  },
+  flexDirectionRow: {
+    flexDirection: 'row',
+    flex: 5,
+  },
+  containerRequired: {
+    flex: 2.2,
+    alignItems: 'flex-end',
+  },
+  containerNumber: {
+    flex: 1.5,
+    alignItems: 'flex-end',
+  },
+  maxHeightForContent: {
+    maxHeight: height * 0.8,
+  },
 });
+
 export default styles;

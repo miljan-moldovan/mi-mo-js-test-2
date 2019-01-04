@@ -56,7 +56,7 @@ export interface ProvidersScreenState {
 class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScreenState> {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params &&
-      navigation.state.params.defaultProps
+    navigation.state.params.defaultProps
       ? navigation.state.params.defaultProps
       : {
         title: 'Providers',
@@ -69,34 +69,34 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
       ? navigation.state.params.ignoreNav
       : false;
     const { leftButton } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { rightButtonOnPress: defaultProps.rightButtonOnPress };
 
     const { title } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-      navigation.state.params.headerProps &&
-      !ignoreNav
+    navigation.state.params.headerProps &&
+    !ignoreNav
       ? navigation.state.params.headerProps
       : { subTitle: defaultProps.subTitle };
     let customLeftButton = false;
@@ -237,7 +237,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
 
           const filteredIds = map(filtereQueueList, 'id');
           currentData = filter(quickQueueEmployees, p =>
-            includes(filteredIds, p.id)
+            includes(filteredIds, p.id),
           );
         } else {
           currentData = quickQueueEmployees;
@@ -351,7 +351,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
     } else if (isFunction(onChangeProvider)) {
       onChangeProvider(provider);
       if (dismissOnSelect) {
-        navigation.goBack();
+       navigation.goBack();
       }
     }
   };
@@ -435,10 +435,10 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
         />
 
         {showFirstAvailable &&
-          <React.Fragment>
-            <FirstAvailableRow onPress={this.handleOnChangeProvider} />
-            <InputDivider fullWidth={!this.currentData.length} />
-          </React.Fragment>}
+        <React.Fragment>
+          <FirstAvailableRow onPress={this.handleOnChangeProvider} />
+          <InputDivider fullWidth={!this.currentData.length} />
+        </React.Fragment>}
         <SalonFlatList
           data={this.currentData}
           renderItem={this.renderItem}
@@ -457,6 +457,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
     );
   }
 }
+
 ProviderScreen.propTypes = {
   queueList: PropTypes.node.isRequired,
   quickQueueEmployees: PropTypes.array.isRequired,

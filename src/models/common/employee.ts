@@ -67,6 +67,13 @@ export interface PureProvider {
   code: string;
 }
 
+export interface ShortProvider {
+  id: number;
+  isFirstAvailable: boolean,
+  name: string,
+  lastName: string,
+}
+
 export interface ProviderPosition {
   id: number;
   name: string;

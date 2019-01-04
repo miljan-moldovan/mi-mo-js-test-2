@@ -114,13 +114,13 @@ class SalonToast extends React.Component<SalonToastProps, SalonToastState> {
           <Text style={styles.description}>{description}</Text>
           <View style={styles.btnContainer}>
             {btnLeftText &&
-              <TouchableOpacity onPress={this.undo}>
-                <Text style={styles.btn}>{btnLeftText}</Text>
-              </TouchableOpacity>}
+            <TouchableOpacity onPress={this.undo}>
+              <Text style={styles.btn}>{btnLeftText}</Text>
+            </TouchableOpacity>}
             {btnRightText &&
-              <TouchableOpacity onPress={this.hide}>
-                <Text style={styles.btn}>{btnRightText}</Text>
-              </TouchableOpacity>}
+            <TouchableOpacity onPress={this.hide}>
+              <Text style={styles.btn}>{btnRightText}</Text>
+            </TouchableOpacity>}
           </View>
         </Animated.View>
       </View>

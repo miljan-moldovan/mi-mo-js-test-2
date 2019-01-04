@@ -66,7 +66,7 @@ type IState = {
 };
 type IProps = {
   visible: boolean,
-  selectedDate: string,
+  selectedDate: string | moment.Moment,
   onHide: () => void,
   mode: string,
   currentDate?: string,

@@ -16,6 +16,7 @@ target 'SalonUltimateRN' do
 
   # pod 'SentryReactNative', :path => '../node_modules/react-native-sentry'
 
+
   target 'SalonUltimateRNTests' do
     inherit! :search_paths
     # Pods for testing

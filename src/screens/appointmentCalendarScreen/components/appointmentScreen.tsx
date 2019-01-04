@@ -13,7 +13,6 @@ import SalonAppointmentSlide from '@/components/slidePanels/SalonCardDetailsSlid
 import SalonAvatar from '@/components/SalonAvatar';
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 import EditTypes from '@/constants/EditTypes';
-import ApptCalendarHeader from './ApptCalendarHeader';
 import SalonToast from './SalonToast';
 import NewApptSlide from '@/components/NewApptSlide';
 import { DefaultAvatar } from '@/components/formHelpers';
@@ -21,7 +20,6 @@ import BookAnother from './bookAnother';
 import RebookAppointment from './rebookAppointment';
 import SalonAlert from '@/components/SalonAlert';
 import BarsActionSheet from '@/components/BarsActionSheet';
-import Colors from '@/constants/Colors';
 import DateTime from '@/constants/DateTime';
 
 import styles, { headerStyles } from './styles';
@@ -108,13 +106,15 @@ class AppointmentScreen extends React.Component<any, any> {
       : [headerStyles.btnTitle, {}];
     const caretIcon = filterProvider
       ? null
-      : <Icon
-        style={headerStyles.iconCaretDown}
-        name="caretDown"
-        type="solid"
-        color="white"
-        size={17}
-      />;
+      : (
+        <Icon
+          style={headerStyles.iconCaretDown}
+          name="caretDown"
+          type="solid"
+          color="white"
+          size={17}
+        />
+      );
     const title = (
       <SalonTouchableOpacity style={titleStyle} onPress={onPressTitle}>
         {titleComponent}
@@ -184,6 +184,7 @@ class AppointmentScreen extends React.Component<any, any> {
     crossedAppointmentsIdAfter: [],
     workHeight: 0,
   };
+  private BarsActionSheet: any;
 
   componentDidMount() {
     this.props.navigation.setParams({
@@ -417,7 +418,7 @@ class AppointmentScreen extends React.Component<any, any> {
       this.props.navigation.navigate('NewAppointment', {
         rebook: true,
         onFinishRebook: () => {
-          this.setRebookAppointment(false);
+          this.setRebookAppointment();
           this.props.navigation.setParams({ hideTabBar: false });
 
           this.selectFilter('providers', rebookProviders[0]);
@@ -508,7 +509,7 @@ class AppointmentScreen extends React.Component<any, any> {
           appt.date === appointment.date,
       );
 
-      for (var i = 0; i < allAppointments.length; i++) {
+      for (let i = 0; i < allAppointments.length; i++) {
         const appointment = allAppointments[i];
         appointment.service.provider = appointment.provider;
         appointment.service.employee = appointment.employee;
@@ -761,7 +762,6 @@ class AppointmentScreen extends React.Component<any, any> {
       this.props.appointmentActions.postAppointmentCheckin(id);
       this.hideAlert();
     };
-    const onPressLeft = () => this.hide;
     const dateMoment = moment(date, 'YYYY-MM-DD');
     const today = moment();
     if (dateMoment.isAfter(today, 'day')) {
@@ -866,7 +866,6 @@ class AppointmentScreen extends React.Component<any, any> {
       rooms,
       roomAppointments,
       resources,
-      deskStaff,
       resourceAppointments,
       storeSchedule,
     } = this.props.appointmentScreenState;
@@ -897,12 +896,12 @@ class AppointmentScreen extends React.Component<any, any> {
 
     switch (selectedFilter) {
       case 'rooms': {
-        headerData = getHeaderRoomsOrResources(rooms);
+        headerData = getHeaderRoomsOrResources(rooms, 'room');
         dataSource = roomAppointments;
         break;
       }
       case 'resources': {
-        headerData = resources;
+        headerData = getHeaderRoomsOrResources(resources, 'resource');
         dataSource = resourceAppointments;
         break;
       }
@@ -929,6 +928,7 @@ class AppointmentScreen extends React.Component<any, any> {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
+
     return (
       <View
         onLayout={this.calculateWorkHeight}
@@ -1025,8 +1025,8 @@ class AppointmentScreen extends React.Component<any, any> {
           handleBook={this.handleBook}
           activeTab={this.state.newApptActiveTab}
           onChangeTab={this.changeNewApptSlideTab}
+          selectedFilter={selectedFilter}
         />
-
         <SalonDatePickerSlide
           currentDate={this.props.appointmentScreenState && this.props.appointmentScreenState.startDate}
           mode={pickerMode}

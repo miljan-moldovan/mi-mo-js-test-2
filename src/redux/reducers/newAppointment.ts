@@ -185,7 +185,8 @@ export default function newAppointmentReducer(
         ...state,
         mainEmployee: data.mainEmployee,
         serviceItems: newServiceItems.map(item => {
-          const employee = item.service.employee.id === state.mainEmployee.id
+          const employee = (item.service && item.service.employee && item.service.employee.id)
+          === (state.mainEmployee && state.mainEmployee.id)
             ? data.mainEmployee
             : item.service.employee;
           return {
@@ -250,9 +251,16 @@ export default function newAppointmentReducer(
         serviceItems: data.serviceItems.slice(),
       };
     case REMOVE_SERVICE_ITEM:
+      const previousDeletedIds = state.deletedIds || [];
+      let newDeletedIds = [...previousDeletedIds];
+      if (data.deletedIds) {
+        newDeletedIds = [...newDeletedIds, data.deletedIds];
+      }
+
       return {
         ...state,
         serviceItems: data.serviceItems.slice(),
+        deletedIds: newDeletedIds,
       };
     case ADD_SERVICE_ITEM_EXTRAS:
       return {
@@ -288,6 +296,7 @@ export default function newAppointmentReducer(
         ...state,
         isLoading: false,
         isBooking: false,
+        deletedIds: [],
       };
     case ADD_GUEST:
       return {

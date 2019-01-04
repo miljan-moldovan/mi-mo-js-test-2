@@ -202,6 +202,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
       itemId,
       this.props.newAppointmentState.serviceItems,
     );
+
     const addonIds = extras
       .filter(itm => itm.type === 'addon')
       .map(itm => itm.service.service.id);
@@ -283,8 +284,8 @@ class NewAppointmentScreen extends React.Component<any, any> {
       }
     });
 
-  showAddons = (service, selectedIds = []) =>
-    new Promise(resolve => {
+  showAddons = (service, selectedIds = []) => {
+    return new Promise(resolve => {
       try {
         const { navigation: { navigate } } = this.props;
         if (service && service.addons.length > 0) {
@@ -304,6 +305,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
         resolve([]);
       }
     });
+  };
 
   showRecommended = (service, selectedIds = []) =>
     new Promise(resolve => {
@@ -390,8 +392,19 @@ class NewAppointmentScreen extends React.Component<any, any> {
       client,
       serviceItem: this.getServiceItem(serviceId),
       isOnlyMainService,
-      onSaveService: service =>
-        this.updateService(serviceId, service, guestId),
+      onSaveService: service => {
+        if (isOnlyMainService &&
+          (item && item.service && item.service.service && item.service.service.id) !==
+          (service && service.service && service.service.id)) {
+          setTimeout(() => {
+            this.selectExtraServices({
+              itemId: serviceId,
+              service,
+            });
+          });
+        }
+        return this.updateService(serviceId, service, guestId);
+      },
       onRemoveService: () => this.removeServiceAlert(serviceId),
     });
   };
@@ -573,10 +586,23 @@ class NewAppointmentScreen extends React.Component<any, any> {
       dismissOnSelect: true,
       selectExtraServices: true,
       filterByProvider: true,
-      clientId: client.id,
-      selectedEmployee: mainEmployee,
-      onChangeService: service => {
-        this.addService(service);
+      client,
+      selectedProvider: mainEmployee,
+      onChangeWithNavigation: (service, nav) => {
+        nav.navigate('ApptBookProvider', {
+          date,
+          mode: 'newAppointment',
+          dismissOnSelect: true,
+          selectedService: service,
+          selectedProvider: mainEmployee,
+          onChangeProvider: provider => {
+            if (!mainEmployee) {
+              this.props.newAppointmentActions.setMainEmployee(provider);
+            }
+            this.addService(service, provider);
+            nav.goBack();
+          },
+        });
       },
     });
   };
@@ -676,9 +702,10 @@ class NewAppointmentScreen extends React.Component<any, any> {
         const hasChanges = this.lookForChanges();
         if (hasChanges) {
           alertTitle = 'Discard Changes?';
+
           alertBody = serviceTitle
             ? `Are you sure you want to discard this appointment for service ${serviceTitle} w/ ${employeeName}?`
-            : `Are you sure you want to discard this appointment with ${employeeName}?`;
+            : `Are you sure you want to discard your changes to these appointments?`;
         }
         break;
       }
@@ -687,7 +714,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
         alertTitle = 'Discard New Appointment?';
         alertBody = serviceTitle
           ? `Are you sure you want to discard this new appointment for service ${serviceTitle} w/ ${employeeName}?`
-          : `Are you sure you want to discard this new appointment with ${employeeName}?`;
+          : 'Are you sure you want to discard your changes to these appointments?';
         break;
     }
     if (alertTitle) {
@@ -1277,6 +1304,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
           </KeyboardAwareScrollView>
           {toast
             ? <SalonToast
+              timeout={5000}
               timeout={5000}
               type={toast.type}
               description={toast.text}

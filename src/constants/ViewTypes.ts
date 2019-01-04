@@ -6,5 +6,5 @@ export default {
   },
   deskStaff: 'employee.id', // slectedfilter vlaue
   rooms: (item) => item.room && `${item.room.id}_${item.roomOrdinal}`,
-  resources: 'resource.id', // slectedfilter vlaue
+  resources: (item) => item.resource && `${item.resource.id}_${item.resourceOrdinal}`, // slectedfilter vlaue
 };

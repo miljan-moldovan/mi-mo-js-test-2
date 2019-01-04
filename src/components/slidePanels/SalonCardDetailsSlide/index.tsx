@@ -235,6 +235,11 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
     this.setState({ previousHeight: 0 });
   };
 
+  modifyIsDisabled = (appointment) => {
+    return appointment && appointment.badgeData && appointment.badgeData.isNoShow ||
+      appointment && appointment.badgeData && appointment.badgeData.isCashedOut || false;
+  };
+
   renderHeaderSlide = () => {
     const { crossedAppointments } = this.props;
 
@@ -331,22 +336,32 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
+    const disabledModify = this.modifyIsDisabled(appointment);
+
     return (
       <ScrollView style={{ backgroundColor: '#FFF' }}>
         <View style={styles.panelMiddle}>
           <View style={styles.panelIcons}>
-            {appointment.isBlockTime ? (
-              <BlockTimeBtn
-                handleModify={this.handleModify}
-                handleNewAppt={this.handleNewAppt}
-                handleCancel={this.handleCancel}
-              />) : (<ApptointmentBtn
-              appointment={appointment}
-              handleCheckin={this.handleCheckin}
-              handleCheckout={this.handleCheckout}
-              handleModify={this.handleModify}
-              handleCancel={this.handleCancel}
-            />)}
+            {
+              appointment.isBlockTime
+                ? (
+                    <BlockTimeBtn
+                      handleModify={this.handleModify}
+                      handleNewAppt={this.handleNewAppt}
+                      handleCancel={this.handleCancel}
+                    />
+                )
+                : (
+                    <ApptointmentBtn
+                      appointment={appointment}
+                      handleCheckin={this.handleCheckin}
+                      handleCheckout={this.handleCheckout}
+                      handleModify={this.handleModify}
+                      handleCancel={this.handleCancel}
+                      disabledModify={disabledModify}
+                    />
+                )
+            }
           </View>
           <View style={styles.auditContainer}>
             <AuditInformation
@@ -380,7 +395,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   render() {
     this.props.setMinHeightRef(this.setMinimumPosition);
-
     return (
       <SlidingUpPanel
         visible={this.props.visible}
