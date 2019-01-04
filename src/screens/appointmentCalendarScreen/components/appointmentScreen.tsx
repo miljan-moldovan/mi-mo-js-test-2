@@ -928,6 +928,7 @@ class AppointmentScreen extends React.Component<any, any> {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
+
     return (
       <View
         onLayout={this.calculateWorkHeight}
