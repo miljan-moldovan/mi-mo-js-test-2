@@ -235,6 +235,11 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
     this.setState({ previousHeight: 0 });
   };
 
+  modifyIsDisabled = (appointment) => {
+    return appointment && appointment.badgeData && appointment.badgeData.isNoShow ||
+      appointment && appointment.badgeData && appointment.badgeData.isCashedOut || false;
+  };
+
   renderHeaderSlide = () => {
     const { crossedAppointments } = this.props;
 
@@ -331,6 +336,8 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
+    const disabledModify = this.modifyIsDisabled(appointment);
+
     return (
       <ScrollView style={{ backgroundColor: '#FFF' }}>
         <View style={styles.panelMiddle}>
@@ -351,7 +358,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
                       handleCheckout={this.handleCheckout}
                       handleModify={this.handleModify}
                       handleCancel={this.handleCancel}
-                      isNoShow={appointment && appointment.badgeData && appointment.badgeData.isNoShow || false}
+                      disabledModify={disabledModify}
                     />
                 )
             }
