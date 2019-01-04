@@ -237,17 +237,56 @@ class NewApptSlide extends React.Component<IProps, IState> {
       selectedProvider,
       client,
       dismissOnSelect: true,
-      onChangeService: service => {
+      onChangeWithNavigation: async (service, nav) => {
+        await this.setService(service, !selectedProvider);
         this.props.newApptActions.setClient(client);
-        clientsNav.goBack();
-        this.setService(service);
+        !selectedProvider ? nav.navigate('ApptBookProvider', {
+          mode: 'newAppointment',
+          date: moment(),
+          queueList: false,
+          filterList: false,
+          selectedService: service,
+          selectedProvider,
+          showFirstAvailable: true,
+          showEstimatedTime: true,
+          checkProviderStatus: false,
+          dismissOnSelect: true,
+          onChangeProvider: provider => {
+            this.setProvider(provider);
+            clientsNav.goBack();
+          },
+        }) : clientsNav.goBack();
       },
     });
   };
 
-  setService = service => {
+  setServiceWithNavigation = async (service) => {
+    const {
+      newApptState: { mainEmployee: provider },
+    } = this.props;
+
+    await this.setService(service, !provider);
+
+    !provider && this.props.navigation.navigate('ApptBookProvider', {
+      mode: 'newAppointment',
+      date: moment(),
+      queueList: false,
+      filterList: false,
+      selectedService: service,
+      selectedProvider: provider,
+      showFirstAvailable: true,
+      showEstimatedTime: true,
+      checkProviderStatus: false,
+      dismissOnSelect: true,
+      onChangeProvider: provider => {
+        this.setProvider(provider);
+      },
+    });
+  };
+
+  setService = (service, preventCheckConflicts = false) => {
     this.props.servicesActions.setSelectingExtras(true);
-    this.showAddons(service).then(selectedAddons => {
+    return this.showAddons(service).then(selectedAddons => {
       this.setState(
         {
           selectedAddons,
@@ -274,7 +313,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                         recommended,
                       });
                       this.props.servicesActions.setSelectingExtras(false);
-                      this.showPanel().checkConflicts();
+                      !preventCheckConflicts && this.showPanel().checkConflicts();
                     });
                   })
                   .catch(err => {
@@ -282,7 +321,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                       service,
                     } as ServiceWithAddons);
                     this.props.servicesActions.setSelectingExtras(false);
-                    this.showPanel().checkConflicts();
+                    !preventCheckConflicts && this.showPanel().checkConflicts();
                   });
               },
             );
@@ -297,7 +336,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
     return this.showPanel().checkConflicts();
   };
 
-  setBookedBy = provider => {
+  setBookedBy = (provider) => {
     this.props.newApptActions.setBookedBy(provider);
     return this.showPanel().checkConflicts();
   };
@@ -787,7 +826,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
         label="Message All Clients"
       >
         <View style={styles.iconContainer}>
-          <Icon name="users" size={18} color={Colors.defaultBlue} type="solid"/>
+          <Icon name="users" size={18} color={Colors.defaultBlue} type="solid" />
         </View>
       </InputButton>
     );
@@ -863,7 +902,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           ) : null
         }
         <Text style={styles.dateText}>{moment(date).format('ddd, MMM D')}</Text>
-        <AppointmentTime containerStyle={styles.flexStart} startTime={startTime} endTime={this.getEndTime()}/>
+        <AppointmentTime containerStyle={styles.flexStart} startTime={startTime} endTime={this.getEndTime()} />
         <View style={styles.mainInputGroup}>
           <ClientInput
             apptBook
@@ -880,7 +919,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
             iconStyle={styles.inputColor}
             onChangeWithNavigation={this.setClient}
           />
-          <InputDivider style={styles.middleSectionDivider}/>
+          <InputDivider style={styles.middleSectionDivider} />
           <ServiceInput
             apptBook
             label={false}
@@ -904,9 +943,9 @@ class NewApptSlide extends React.Component<IProps, IState> {
             navigate={navigation.navigate}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
             iconStyle={styles.inputColor}
-            onChange={this.setService}
+            onChange={this.setServiceWithNavigation}
           />
-          <InputDivider style={styles.middleSectionDivider}/>
+          <InputDivider style={styles.middleSectionDivider} />
           <ProviderInput
             apptBook
             label={false}
@@ -938,7 +977,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           onPressRequired={this.onPressRequired}
           onRemoveRequired={this.onPressRemoveRequired}
         />
-        {conflicts.length > 0 && <ConflictBox onPress={onPressConflicts}/>}
+        {conflicts.length > 0 && <ConflictBox onPress={onPressConflicts} />}
         <View style={styles.requestedContainer}>
           <View style={{ flex: 1 }}>
             {provider ? (
@@ -1022,7 +1061,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
             onPressOk={this.onPressOkInputModal}
           />
           <TouchableWithoutFeedback onPress={this.hidePanel}>
-            <View style={styles.backDrop}/>
+            <View style={styles.backDrop} />
           </TouchableWithoutFeedback>
           <View style={[styles.slideContainer, { maxHeight: height }]}>
             <View style={styles.header}>
@@ -1044,7 +1083,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                   selectedIndex={this.props.activeTab}
                 />
               </View>
-              <View style={styles.headerStub}/>
+              <View style={styles.headerStub} />
             </View>
             {this.renderActiveTab()}
           </View>
