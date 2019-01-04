@@ -10,13 +10,13 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import moment from 'moment';
-import {isFunction} from 'lodash';
+import { isFunction } from 'lodash';
 
 import SalonTouchableOpacity from '../SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
 import { Picker } from 'react-native-wheel-datepicker';
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,
@@ -48,49 +48,49 @@ const styles = StyleSheet.create ({
 export default class SalonModalPicker extends React.Component {
   state = {
     isAnimating: false,
-    height: new Animated.Value (0),
+    height: new Animated.Value(0),
   };
 
-  componentWillReceiveProps (newProps) {
+  componentWillReceiveProps(newProps) {
     if (!this.props.visible && newProps.visible) {
-      this.showPanel ();
+      this.showPanel();
     } else if (this.props.visible && !newProps.visible) {
-      this.hidePanel ();
+      this.hidePanel();
     }
   }
 
   animateHeight = value =>
-    Animated.timing (this.state.height, {
+    Animated.timing(this.state.height, {
       toValue: value,
       duration: 300,
     });
 
   plusOne = () => {
-    const {selectedValue, pickerData, onValueChange} = this.props;
-    const currentIndex = pickerData.findIndex (item => item === selectedValue);
+    const { selectedValue, pickerData, onValueChange } = this.props;
+    const currentIndex = pickerData.findIndex(item => item === selectedValue);
     if (currentIndex + 1 > pickerData.length) {
-      onValueChange (pickerData[0]);
+      onValueChange(pickerData[0]);
     } else {
-      onValueChange (pickerData[currentIndex + 1]);
+      onValueChange(pickerData[currentIndex + 1]);
     }
   };
 
   minusOne = () => {
-    const {selectedValue, pickerData, onValueChange} = this.props;
-    const currentIndex = pickerData.findIndex (item => item === selectedValue);
+    const { selectedValue, pickerData, onValueChange } = this.props;
+    const currentIndex = pickerData.findIndex(item => item === selectedValue);
     if (currentIndex - 1 < 0) {
-      onValueChange (pickerData[pickerData.length - 1]);
+      onValueChange(pickerData[pickerData.length - 1]);
     } else {
-      onValueChange (pickerData[currentIndex - 1]);
+      onValueChange(pickerData[currentIndex - 1]);
     }
   };
 
   showPanel = () => {
     if (!this.state.isAnimating) {
-      this.setState ({isAnimating: true}, () => {
-        this.animateHeight (580).start (() => {
-          this.props.show ();
-          this.setState ({isAnimating: false});
+      this.setState({ isAnimating: true }, () => {
+        this.animateHeight(580).start(() => {
+          this.props.show();
+          this.setState({ isAnimating: false });
         });
       });
     }
@@ -99,12 +99,12 @@ export default class SalonModalPicker extends React.Component {
 
   hidePanel = (callback = false) => {
     if (!this.state.isAnimating) {
-      this.setState ({isAnimating: true}, () => {
-        this.animateHeight (0).start (() => {
-          this.props.hide ();
-          this.setState (
-            {isAnimating: false},
-            () => (isFunction (callback) ? callback () : null)
+      this.setState({ isAnimating: true }, () => {
+        this.animateHeight(0).start(() => {
+          this.props.hide();
+          this.setState(
+            { isAnimating: false },
+            () => (isFunction(callback) ? callback() : null)
           );
         });
       });
@@ -113,27 +113,23 @@ export default class SalonModalPicker extends React.Component {
     return this;
   };
 
-  render () {
+  render() {
     return (
       <Modal
         visible={this.props.visible}
         transparent
-        style={{marginBottom: 60}}
+        style={{ marginBottom: 60 }}
       >
         <View style={[styles.container]}>
-          <TouchableWithoutFeedback onPress={() => this.hidePanel ()}>
-            <View style={{flex: 1, backgroundColor: 'transparent'}} />
+          <TouchableWithoutFeedback onPress={() => this.hidePanel()}>
+            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
           </TouchableWithoutFeedback>
-          <Animated.View
-            style={{
-              maxHeight: this.state.height,
-            }}
-          >
+          <Animated.View style={{ maxHeight: this.state.height }}>
             <View style={styles.header}>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <SalonTouchableOpacity
-                  onPress={() => this.minusOne ()}
-                  style={{marginLeft: 5}}
+                  onPress={() => this.minusOne()}
+                  style={{ marginLeft: 5 }}
                 >
                   <Icon
                     name="chevronLeft"
@@ -143,8 +139,8 @@ export default class SalonModalPicker extends React.Component {
                   />
                 </SalonTouchableOpacity>
                 <SalonTouchableOpacity
-                  onPress={() => this.plusOne ()}
-                  style={{marginLeft: 25}}
+                  onPress={() => this.plusOne()}
+                  style={{ marginLeft: 25 }}
                 >
                   <Icon
                     name="chevronRight"
@@ -154,7 +150,7 @@ export default class SalonModalPicker extends React.Component {
                   />
                 </SalonTouchableOpacity>
               </View>
-              <SalonTouchableOpacity onPress={() => this.hidePanel ()}>
+              <SalonTouchableOpacity onPress={() => this.hidePanel()}>
                 <Text
                   style={{
                     color: '#007AFF',
@@ -170,10 +166,10 @@ export default class SalonModalPicker extends React.Component {
             </View>
             <View style={styles.body}>
               <Picker
-                style={{height: 200, backgroundColor: 'white'}}
+                style={{ height: 200, backgroundColor: 'white' }}
                 pickerData={this.props.pickerData}
                 selectedValue={this.props.selectedValue}
-                onValueChange={value => this.props.onValueChange (value)}
+                onValueChange={value => this.props.onValueChange(value)}
               />
             </View>
           </Animated.View>

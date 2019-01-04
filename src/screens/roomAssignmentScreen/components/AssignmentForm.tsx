@@ -11,6 +11,12 @@ import { AssignmentFormProps } from '../interfaces';
 import { dateTimeConstants } from '@/constants';
 
 class AssignmentForm extends React.PureComponent<AssignmentFormProps> {
+  onPressRoom = () => this.props.onPressRoom(this.props.assignment.itemId);
+
+  onPressFromTime = () => this.props.onPressFromTime(this.props.assignment.itemId);
+
+  onPressToTime = () => this.props.onPressToTime(this.props.assignment.itemId);
+
   render() {
     const { assignment: { itemId, ...assignment } } = this.props;
     const labelStyle = assignment.isIncomplete
@@ -26,16 +32,13 @@ class AssignmentForm extends React.PureComponent<AssignmentFormProps> {
     const toTimeLabel = isMoment(assignment.toTime) && assignment.toTime.isValid()
       ? assignment.toTime.format(dateTimeConstants.displayTime)
       : '-';
-    const onPressRoom = () => this.props.onPressRoom(itemId);
-    const onPressFromTime = () => this.props.onPressFromTime(itemId);
-    const onPressToTime = () => this.props.onPressToTime(itemId);
     return (
       <InputGroup style={styles.marginBottom} key={`assignment_${itemId}`}>
         <InputButton
           label="Room"
           labelStyle={labelStyle}
           value={roomLabel}
-          onPress={onPressRoom}
+          onPress={this.onPressRoom}
         />
         <InputDivider style={dividerStyle} />
         <InputButton
@@ -44,7 +47,7 @@ class AssignmentForm extends React.PureComponent<AssignmentFormProps> {
           label="Start"
           labelStyle={labelStyle}
           value={fromTimeLabel}
-          onPress={onPressFromTime}
+          onPress={this.onPressFromTime}
         />
         <InputDivider style={dividerStyle} />
         <InputButton
@@ -53,7 +56,7 @@ class AssignmentForm extends React.PureComponent<AssignmentFormProps> {
           labelStyle={labelStyle}
           disabled={!assignment.room || (!isMoment(assignment.fromTime) || !assignment.fromTime.isValid())}
           value={toTimeLabel}
-          onPress={onPressToTime}
+          onPress={this.onPressToTime}
         />
       </InputGroup>
     );

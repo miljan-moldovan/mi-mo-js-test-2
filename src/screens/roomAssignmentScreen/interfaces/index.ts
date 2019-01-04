@@ -3,7 +3,7 @@ import { NavigationScreenProp } from 'react-navigation';
 import { RoomAssignmentActions } from '@/redux/actions/roomAssignment';
 import { RoomAssignmentReducer } from '@/redux/reducers/roomAssignment';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
-import { RoomFromApi, Employee, Room, EmployeeSchedule, Maybe } from '@/models';
+import { RoomFromApi, Employee, Room, EmployeeSchedule, Maybe, Dictionary } from '@/models';
 
 export interface RoomAssignmentScreenNavigationParams {
   dismissOnSelect?: boolean;
@@ -48,7 +48,7 @@ export interface RoomAssignmentScreenState {
   toast: any;
   pickerType: 'room' | 'fromTime' | 'toTime';
   roomItems: RoomItem[];
-  availableIntervals: Interval[];
+  availableIntervals: Dictionary<Interval[]>;
   isModalPickerVisible: boolean;
   currentOpenAssignment: string;
   employeeScheduledIntervals: Moment[];

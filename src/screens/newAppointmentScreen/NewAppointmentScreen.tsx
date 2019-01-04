@@ -271,7 +271,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
               showCancelButton: false,
               services: service.requiredServices,
               serviceTitle: service.name,
-              onNavigateBack: this.showPanel,
               onSave: selected => resolve(selected),
             });
           }
@@ -294,7 +293,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
             showCancelButton: false,
             services: service.addons,
             serviceTitle: service.name,
-            onNavigateBack: this.showPanel,
             onSave: services => resolve(services),
           });
         } else {
@@ -1162,14 +1160,14 @@ class NewAppointmentScreen extends React.Component<any, any> {
                           text: 'API Not implemented',
                         },
                       })}
-                    <AddButton
-                      style={{ marginVertical: 5 }}
+                  />
+                </InputGroup>
+                <AddButton
+                  style={{ marginVertical: 5 }}
                   onPress={() => this.handleAddGuestService(guest.guestId)}
                   iconStyle={{ marginLeft: 10, marginRight: 6 }}
                   title="add service"
                 />
-                  </View>
-                ))}
               </View>}
             {this.state.isRecurring &&
               <View>
@@ -1313,7 +1311,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
             />
             : null}
         </View>
-      </SwipeableComponent>
+      </SwipeableComponent >
     );
   }
 }

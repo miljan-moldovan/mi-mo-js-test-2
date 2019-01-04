@@ -4,25 +4,20 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import { get, chain, times, flatten, isString, zipObject, cloneDeep } from 'lodash';
-import moment, { Moment, isMoment } from 'moment';
+import * as _ from 'lodash';
+import { get, chain, times, flatten, isString, zipObject } from 'lodash';
+import moment, { isMoment } from 'moment';
 import uuid from 'uuid/v4';
 
-import Colors from '@/constants/Colors';
 import DateTime from '@/constants/DateTime';
 import SalonToast from '../../appointmentCalendarScreen/components/SalonToast';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import SalonModalPicker from '@/components/slidePanels/SalonModalPicker';
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
-import {
-  InputButton,
-  InputDivider,
-  InputGroup,
-  SectionTitle,
-} from '@/components/formHelpers';
+import { SectionTitle } from '@/components/formHelpers';
 import styles from '../styles';
 import SalonHeader from '@/components/SalonHeader';
-import { Room, RoomFromApi, Employee, PureProvider, EmployeeSchedule, TimeCell, TimeInterval } from '@/models';
+import { PureProvider, TimeInterval } from '@/models';
 import { Employees, Store } from '@/utilities/apiWrapper';
 import { showErrorAlert } from '@/redux/actions/utils';
 import extendedMoment from '@/utilities/helpers/getRangeExtendedMoment';
@@ -124,13 +119,6 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
               toTime: moment(assignment.toTime),
             });
           });
-          // assignments.map((item: RoomFromApi) => Object.assign({}, item, {
-          //   itemId: uuid(),
-          //   isIncomplete: false,
-          //   room: rooms.find(itm => itm.id === item.roomId),
-          //   fromTime: moment.duration(item.fromTime),
-          //   toTime: moment.duration(item.toTime),
-          // }));
           const employeeScheduledIntervals = flatten(schedule.scheduledIntervals.map(employeeInterval => {
             const momentEmployeeStart = moment(employeeInterval.start, DateTime.time);
             const momentEmployeeEnd = moment(employeeInterval.end, DateTime.time);
@@ -258,18 +246,27 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
       case 'fromTime': {
         const { step } = this.props;
         const roomItemIndex = roomItems.findIndex(itm => itm.itemId === currentOpenAssignment);
-        const roomItemIntervals = availableIntervals[roomItemIndex][0];
+        const roomItemIntervals = availableIntervals[roomItemIndex];
         if (!roomItemIntervals) {
           return ['Off'];
         }
-        const range = extendedMoment.range(
-          durationToMoment(roomItemIntervals.startsAt), durationToMoment(roomItemIntervals.endsAt),
-        );
-        const rangeInSteps = range.by('minutes', { step });
-        const times = Array.from(rangeInSteps);
+        // const times = [];
+        const ranges = chain(roomItemIntervals)
+          .map(interval => extendedMoment.range(
+            durationToMoment(get(interval, 'startsAt')), durationToMoment(get(interval, 'endsAt')),
+          ))
+          .map(range => range.by('minutes', { step }))
+          .map(range => Array.from(range))
+          .flatten()
+          .value();
+        // const range = extendedMoment.range(
+        //   durationToMoment(roomItemIntervals.startsAt), durationToMoment(roomItemIntervals.endsAt),
+        // );
+        // const rangeInSteps = range.by('minutes', { step });
+        // const times = Array.from(rangeInSteps);
         return [
           'Off',
-          ...times.map(time => time.format(DateTime.displayTime)),
+          ...ranges.map(time => time.format(DateTime.displayTime)),
         ];
       }
       case 'room':
@@ -318,13 +315,6 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
         return null;
     }
   }
-
-  getRoomById = id => {
-    const [room] = this.state.rooms.filter(
-      item => item.id === id,
-    );
-    return room;
-  };
 
   setAvailableTimeIntervals = () => {
     const { employeeScheduledIntervals, roomItems } = this.state;
