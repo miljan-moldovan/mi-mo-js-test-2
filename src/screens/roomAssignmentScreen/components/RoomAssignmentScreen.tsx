@@ -250,7 +250,6 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
         if (!roomItemIntervals) {
           return ['Off'];
         }
-        // const times = [];
         const ranges = chain(roomItemIntervals)
           .map(interval => extendedMoment.range(
             durationToMoment(get(interval, 'startsAt')), durationToMoment(get(interval, 'endsAt')),
@@ -259,11 +258,6 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
           .map(range => Array.from(range))
           .flatten()
           .value();
-        // const range = extendedMoment.range(
-        //   durationToMoment(roomItemIntervals.startsAt), durationToMoment(roomItemIntervals.endsAt),
-        // );
-        // const rangeInSteps = range.by('minutes', { step });
-        // const times = Array.from(rangeInSteps);
         return [
           'Off',
           ...ranges.map(time => time.format(DateTime.displayTime)),
