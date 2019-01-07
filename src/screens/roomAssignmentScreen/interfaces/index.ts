@@ -48,7 +48,7 @@ export interface RoomAssignmentScreenState {
   toast: any;
   pickerType: 'room' | 'fromTime' | 'toTime';
   roomItems: RoomItem[];
-  availableIntervals: Dictionary<Interval[]>;
+  availableIntervals: Interval[];
   isModalPickerVisible: boolean;
   currentOpenAssignment: string;
   employeeScheduledIntervals: Moment[];

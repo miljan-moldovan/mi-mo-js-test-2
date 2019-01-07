@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import * as _ from 'lodash';
 import { get, chain, times, flatten, isString, zipObject } from 'lodash';
 import moment, { isMoment } from 'moment';
 import uuid from 'uuid/v4';
@@ -115,8 +114,8 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
               itemId: uuid(),
               isIncomplete: false,
               room: rooms.find(itm => itm.id === assignment.roomId),
-              fromTime: moment(assignment.fromTime),
-              toTime: moment(assignment.toTime),
+              fromTime: moment(assignment.fromTime, DateTime.time),
+              toTime: moment(assignment.toTime, DateTime.time),
             });
           });
           const employeeScheduledIntervals = flatten(schedule.scheduledIntervals.map(employeeInterval => {
