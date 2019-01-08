@@ -186,6 +186,7 @@ class AppointmentScreen extends React.Component<any, any> {
     workHeight: 0,
   };
   private BarsActionSheet: any;
+  private refsSliderPanel: any;
 
   componentDidMount() {
     this.props.navigation.setParams({
@@ -855,6 +856,10 @@ class AppointmentScreen extends React.Component<any, any> {
     this.setState({ workHeight: height });
   };
 
+  getSlideRefs = (ref) => {
+    this.refsSliderPanel = ref;
+  };
+
   render() {
     const {
       dates,
@@ -971,7 +976,7 @@ class AppointmentScreen extends React.Component<any, any> {
           appointments={appointments}
           blockTimes={blockTimes}
           headerData={headerData}
-          onScrollBeginDrag={this.hideApptSlider}
+          refsSliderPanel={this.refsSliderPanel}
           isDate={isDate}
           isRoom={selectedFilter === 'rooms'}
           isResource={selectedFilter === 'resources'}
@@ -1083,7 +1088,7 @@ class AppointmentScreen extends React.Component<any, any> {
           changeAppointment={this.onCardPressed}
           handleNewAppt={this.onCalendarCellPressed}
           workHeight={this.state.workHeight}
-          setMinHeightRef={(ref) => this.hideApptSlider = ref}
+          getRefsSlidePanel={this.getSlideRefs}
         />
         {toast
           ? <SalonToast

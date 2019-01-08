@@ -61,6 +61,7 @@ const providerWidth = 130;
 const headerHeight = 40;
 const timeColumnWidth = 36;
 const cellHeight = 30;
+const initialHeightOfHeader = 300;
 
 export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor(props) {
@@ -169,6 +170,10 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       // if filters or appoinments changed grup appts again
       this.setGroupedAppointments(nextProps);
     }
+
+    if (!this.props.bufferVisible && nextProps.bufferVisible) {
+      this.handelHidePanel();
+    }
   }
 
   componentWillUpdate(nextProps) {
@@ -219,6 +224,14 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       }
     }
   }
+
+  handelScrollToDefault = () => {
+    this.props.refsSliderPanel && this.props.refsSliderPanel.transitionTo(initialHeightOfHeader);
+  };
+
+  handelHidePanel = () => {
+    this.props.refsSliderPanel && this.props.refsSliderPanel.transitionTo(0);
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     // only update when this props changes for better performance
@@ -1906,7 +1919,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           style={styles.container}
           scrollEnabled={!activeCard && !activeBlock && !isLoading}
           onScroll={this.handleScroll}
-          onScrollBeginDrag={this.props.onScrollBeginDrag}
+          onScrollBeginDrag={this.handelScrollToDefault}
           ref={board => {
             this.board = board;
           }}

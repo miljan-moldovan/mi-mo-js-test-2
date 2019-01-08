@@ -394,7 +394,6 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   render() {
-    this.props.setMinHeightRef(this.setMinimumPosition);
     return (
       <SlidingUpPanel
         visible={this.props.visible}
@@ -403,11 +402,12 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
         allowMomentum={false}
         renderDraggableHeader={this.renderHeader}
         onDragEnd={this.hanleOnDragEnd}
-        defaultYPosition={300}
+        defaultYPosition={initialHeightOfHeader}
         onDragStart={this.renderStart}
         height={this.props.workHeight - this.state.previousHeight}
         ref={(slidingPanel) => {
           this.slidingPanel = slidingPanel;
+          this.props.getRefsSlidePanel(slidingPanel);
         }}
       >
         {this.state.appointment && this.renderContent()}
