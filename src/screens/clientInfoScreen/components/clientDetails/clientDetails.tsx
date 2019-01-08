@@ -62,10 +62,10 @@ const defaultClient = {
   lastName: '',
   loyalty: null,
   birthday: '',
-  age: null,
+  age: ages[1],
   anniversary: null,
   clientId: null,
-  gender: null,
+  gender: genders[0],
   phones: [{ type: 0, value: '' }],
   email: '',
   confirmBy: null,
@@ -109,7 +109,7 @@ interface State {
   anniversary: any,
   clientId: number,
   gender: any,
-  phones: [{ type:number, value: string }],
+  phones: [{ type: number, value: string }],
   email: string,
   confirmBy: any,
   requireCard: any,
@@ -149,7 +149,7 @@ class ClientDetails extends React.Component<Props, State> {
 
     this.state = {
       pointerEvents: '',
-      client: {},
+      client: JSON.parse(JSON.stringify(defaultClient)),
       loadingClient: true,
       selectedReferredClient: SelectedReferredClientEnum.NotAssigned,
       requireCard: false,
@@ -173,8 +173,8 @@ class ClientDetails extends React.Component<Props, State> {
         address: true,
         city: true,
         email: true,
-        birthday: true,
-        gender: true,
+        birthday: false,
+        gender: false,
         zip: true,
         state: true,
         workPhone: true,
@@ -197,83 +197,38 @@ class ClientDetails extends React.Component<Props, State> {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
       } else if (this.props.actionType === 'new') {
         this.setState({
-          client: JSON.parse(JSON.stringify(defaultClient)),
           loadingClient: false,
         });
       }
     });
   }
 
-  onChangeClientField = (field: string, value: any, type? : any) => {
-    // TODO: refactor, 'cause this is an error-prone approach
-    const newClient = { ...this.state.client };
+  onChangeClientField = (field: string, value: any, type?: any) => {
+    let newClient;
 
-    switch (field) {
-      case 'name':
-        newClient.name = value;
-        break;
-      case 'lastName':
-        newClient.lastName = value;
-        break;
-      case 'middleName':
-        newClient.middleName = value;
-        break;
-      case 'loyalty':
-        newClient.loyalty = value;
-        break;
-      case 'street1':
-        newClient.street1 = value;
-        break;
-      case 'city':
-        newClient.city = value;
-        break;
-      case 'zipCode':
-        newClient.zipCode = value;
-        break;
-      case 'clientId':
-        newClient.clientId = value;
-        break;
-      case 'gender':
-        newClient.gender = value;
-        break;
-      case 'age':
-        newClient.age = value;
-        break;
-      case 'state':
-        newClient.state = value;
-        break;
-      case 'birthday':
-        newClient.birthday = value;
-        break;
-      case 'anniversary':
-        newClient.anniversary = value;
-        break;
-      case 'confirmBy':
-        newClient.confirmBy = value;
-        break;
-      case 'clientReferralType':
-        newClient.clientReferralType = value;
-        break;
-      case 'confirmationNote':
-        newClient.confirmationNote = value;
-        break;
-      case 'email':
-        newClient.email = value;
-        break;
-      case 'phone': {
-        const phone = find(newClient.phones, { type });
-        if (phone) {
-          phone.value = value;
-        } else {
-          newClient.phones.push({ type, value });
-        }
-
-        break;
-      }
-      default:
-      /* nothing */
+    if (field === 'phone') {
+      newClient = this.onChangePhones(value, type);
+    } else {
+      newClient = { ...this.state.client, [field]: value };
     }
     this.setState({ client: newClient }, this.checkValidation);
+  };
+
+  onChangePhones = (value, type) => {
+    let newPhones;
+    const phone = find(this.state.client.phones, { type });
+    if (phone) {
+      newPhones = this.state.client.phones.map((phone) => {
+        if (phone.type === type) {
+          return { type, value };
+        }
+        return phone;
+
+      });
+    } else {
+      newPhones = [...this.state.client.phones, ...[{ type, value }]];
+    }
+    return { ...this.state.client, phones: newPhones };
   };
 
   onChangeClientReferralTypes = (option) => {
@@ -339,7 +294,7 @@ class ClientDetails extends React.Component<Props, State> {
     });
   };
 
-  onValidatePhoneCell  = isValid => {
+  onValidatePhoneCell = isValid => {
 
     const phone = find(this.state.client.phones, { type: 2 });
 
@@ -512,7 +467,10 @@ class ClientDetails extends React.Component<Props, State> {
       'Delete client',
       message,
       [
-        { text: 'Cancel', onPress: () => { }, style: 'cancel' },
+        {
+          text: 'Cancel', onPress: () => {
+          }, style: 'cancel',
+        },
         {
           text: 'OK',
           onPress: this.onPressOkDelete,
@@ -717,7 +675,7 @@ class ClientDetails extends React.Component<Props, State> {
   pickerToogleBirthday = () => {
     if (this.state.birthdayPickerOpen) {
       if (moment(this.state.client.birthday).isAfter(moment())) {
-        return Alert.alert("Birthday can't be greater than today");
+        return Alert.alert('Birthday can\'t be greater than today');
       }
     }
 
@@ -728,7 +686,7 @@ class ClientDetails extends React.Component<Props, State> {
   pickerToogleAnniversary = () => {
     if (this.state.anniversaryPickerOpen) {
       if (moment(this.state.client.anniversary).isAfter(moment())) {
-        return Alert.alert("Anniversary can't be greater than today");
+        return Alert.alert('Anniversary can\'t be greater than today');
       }
     }
 
@@ -778,7 +736,9 @@ class ClientDetails extends React.Component<Props, State> {
             label={phoneType.name}
             value={phone.value}
             required={phoneType.required}
-            onChangeText={(text) => { this.onChangeClientField('phone', text, phone.type); }}
+            onChangeText={(text) => {
+              this.onChangeClientField('phone', text, phone.type);
+            }}
             placeholder=""
             inputStyle={phone.value ? {} : this.state.styles.inputStyle}
           />
@@ -833,7 +793,9 @@ class ClientDetails extends React.Component<Props, State> {
                   onValidated={this.onValidateName}
                   label="First Name"
                   value={this.state.client.name}
-                  onChangeText={(text) => { this.onChangeClientField('name', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('name', text);
+                  }}
                   placeholder=""
                   inputStyle={this.state.client.name ? {} : this.state.styles.inputStyle}
                 />
@@ -842,7 +804,9 @@ class ClientDetails extends React.Component<Props, State> {
                   inputStyle={this.state.client.middleName ? {} : this.state.styles.inputStyle}
                   label="Middle Name"
                   value={this.state.client.middleName}
-                  onChangeText={(text) => { this.onChangeClientField('middleName', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('middleName', text);
+                  }}
                   placeholder=""
                 />
                 <InputDivider />
@@ -854,7 +818,9 @@ class ClientDetails extends React.Component<Props, State> {
                   onValidated={this.onValidateLastName}
                   label="Last Name"
                   value={this.state.client.lastName}
-                  onChangeText={(text) => { this.onChangeClientField('lastName', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('lastName', text);
+                  }}
                   placeholder=""
                 />
               </InputGroup>
@@ -864,7 +830,9 @@ class ClientDetails extends React.Component<Props, State> {
                 <LabeledTextInput
                   label="Loyalty Number"
                   value={this.state.client.loyalty}
-                  onChangeText={(text) => { this.onChangeClientField('loyalty', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('loyalty', text);
+                  }}
                   placeholder=""
                   keyboardType="number-pad"
                   inputStyle={this.state.client.loyalty ? {} : this.state.styles.inputStyle}
@@ -879,7 +847,9 @@ class ClientDetails extends React.Component<Props, State> {
                   noIcon
                   value={this.state.client.birthday}
                   isOpen={this.state.birthdayPickerOpen}
-                  onChange={(selectedDate) => { this.onChangeClientField('birthday', selectedDate); }}
+                  onChange={(selectedDate) => {
+                    this.onChangeClientField('birthday', selectedDate);
+                  }}
                   toggle={this.pickerToogleBirthday}
                   valueStyle={!this.state.client.birthday ? this.state.styles.dateValueStyle : {}}
                   required={this.state.requiredFields.birthday}
@@ -894,9 +864,11 @@ class ClientDetails extends React.Component<Props, State> {
                   isValid={this.state.isValidAge}
                   onValidated={this.onValidateAge}
                   noValueStyle={!this.state.client.age ? this.state.styles.dateValueStyle : {}}
-                  value={this.state.client.age ? this.state.client.age : null}
-                  onChange={(option) => { this.onChangeClientField('age', option); }}
-                  defaultOption={this.state.client.age}
+                  value={this.state.client.age ? this.state.client.age : ages[1]}
+                  onChange={(option) => {
+                    this.onChangeClientField('age', option);
+                  }}
+                  defaultOption={this.state.client.age ? this.state.client.age : ages[1]}
                   options={ages}
                 />
                 <InputDivider />
@@ -909,7 +881,9 @@ class ClientDetails extends React.Component<Props, State> {
                   noIcon
                   value={this.state.client.anniversary}
                   isOpen={this.state.anniversaryPickerOpen}
-                  onChange={(selectedDate) => { this.onChangeClientField('anniversary', selectedDate); }}
+                  onChange={(selectedDate) => {
+                    this.onChangeClientField('anniversary', selectedDate);
+                  }}
                   toggle={this.pickerToogleAnniversary}
                   valueStyle={!this.state.client.anniversary ? this.state.styles.dateValueStyle : {}}
                 />
@@ -918,7 +892,9 @@ class ClientDetails extends React.Component<Props, State> {
                 <LabeledTextInput
                   label="Client ID"
                   value={this.state.client.clientId}
-                  onChangeText={(text) => { this.onChangeClientField('clientId', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('clientId', text);
+                  }}
                   placeholder=""
                   inputStyle={this.state.client.clientId ? {} : this.state.styles.inputStyle}
                 />
@@ -930,9 +906,11 @@ class ClientDetails extends React.Component<Props, State> {
                   isValid={this.state.isValidGender}
                   onValidated={this.onValidateGender}
                   noValueStyle={!this.state.client.gender ? this.state.styles.dateValueStyle : {}}
-                  value={this.state.client.gender ? this.state.client.gender : null}
-                  onChange={(option) => { this.onChangeClientField('gender', option); }}
-                  defaultOption={this.state.client.gender}
+                  value={this.state.client.gender ? this.state.client.gender : genders[0]}
+                  onChange={(option) => {
+                    this.onChangeClientField('gender', option);
+                  }}
+                  defaultOption={this.state.client.gender ? this.state.client.gender : genders[0]}
                   options={genders}
                 />
               </InputGroup>
@@ -945,7 +923,9 @@ class ClientDetails extends React.Component<Props, State> {
                   isValid={this.state.isValidEmail}
                   onValidated={this.onValidateEmail}
                   value={this.state.client.email}
-                  onChangeText={(text) => { this.onChangeClientField('email', text.toLowerCase()); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('email', text.toLowerCase());
+                  }}
                   placeholder=""
                   inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
                 />
@@ -966,7 +946,9 @@ class ClientDetails extends React.Component<Props, State> {
                 <InputPicker
                   label="Confirmation"
                   value={this.state.client.confirmBy ? this.state.client.confirmBy : confirmByTypes[0]}
-                  onChange={(option) => { this.onChangeClientField('confirmBy', option); }}
+                  onChange={(option) => {
+                    this.onChangeClientField('confirmBy', option);
+                  }}
                   defaultOption={this.state.client.confirmBy}
                   options={confirmByTypes}
                 />
@@ -982,7 +964,9 @@ class ClientDetails extends React.Component<Props, State> {
                 <LabeledTextarea
                   label="Notes"
                   placeholder=""
-                  onChangeText={(text) => { this.onChangeClientField('confirmationNote', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('confirmationNote', text);
+                  }}
                   value={this.state.client.confirmationNote}
                 />
               </InputGroup>
@@ -995,7 +979,9 @@ class ClientDetails extends React.Component<Props, State> {
                   onValidated={this.onValidateStreet1}
                   label="Address Line 1"
                   value={this.state.client.street1}
-                  onChangeText={(text) => { this.onChangeClientField('street1', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('street1', text);
+                  }}
                   placeholder=""
                   inputStyle={this.state.client.street1 ? {} : this.state.styles.inputStyle}
                 />
@@ -1007,7 +993,9 @@ class ClientDetails extends React.Component<Props, State> {
                   onValidated={this.onValidateCity}
                   label="City"
                   value={this.state.client.city}
-                  onChangeText={(text) => { this.onChangeClientField('city', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('city', text);
+                  }}
                   placeholder=""
                   inputStyle={this.state.client.city ? {} : this.state.styles.inputStyle}
                 />
@@ -1020,7 +1008,9 @@ class ClientDetails extends React.Component<Props, State> {
                   onValidated={this.onValidateState}
                   noValueStyle={!this.state.client.state ? this.state.styles.dateValueStyle : {}}
                   value={this.state.client.state ? this.state.client.state : null}
-                  onChange={(option) => { this.onChangeClientField('state', option); }}
+                  onChange={(option) => {
+                    this.onChangeClientField('state', option);
+                  }}
                   defaultOption={this.state.client.state}
                   options={usStates}
                 />
@@ -1034,7 +1024,9 @@ class ClientDetails extends React.Component<Props, State> {
                   onValidated={this.onValidateZipCode}
                   label="ZIP"
                   value={this.state.client.zipCode}
-                  onChangeText={(text) => { this.onChangeClientField('zipCode', text); }}
+                  onChangeText={(text) => {
+                    this.onChangeClientField('zipCode', text);
+                  }}
                   placeholder=""
                   inputStyle={
                     !this.props.clientInfoState.isLoadingZipCode && this.state.client.zipCode
@@ -1054,7 +1046,9 @@ class ClientDetails extends React.Component<Props, State> {
               <SectionTitle value="REFERRED BY" style={this.state.styles.sectionTitle} />
               <InputGroup>
                 <View style={this.state.styles.referredClientView}>
-                  <SalonTouchableOpacity onPress={() => { this.setReferredOptionClient(true); }}>
+                  <SalonTouchableOpacity onPress={() => {
+                    this.setReferredOptionClient(true);
+                  }}>
                     <FontAwesome
                       style={
                         this.state.selectedReferredClient === SelectedReferredClientEnum.Client
