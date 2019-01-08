@@ -38,12 +38,10 @@ export default class CardGrid extends React.Component {
 
   render() {
     const { cardsArray, headerData, selectedFilter, selectedProvider, overlappingCardsMap } = this.props;
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
     const gridCard = headerData.map((item, index) => {
       let headerId = item.id;
-      if (
-        selectedFilter === 'providers' &&
-        selectedProvider !== 'all'
-      ) {
+      if (isCanBeOnlyUser && selectedProvider !== 'all') {
         headerId = item.format(DateTime.date);
       }
       return this.renderCards(
