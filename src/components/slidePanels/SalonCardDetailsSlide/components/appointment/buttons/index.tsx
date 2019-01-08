@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, Alert } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -8,12 +8,21 @@ import Icon from '@/components/common/Icon';
 import ApptQueueStatus from '../../../../../../constants/apptQueueStatus';
 import styles from './styles';
 
+function alertStartServiceFirst() {  Alert.alert('You should first start service'); };
+
 const appointmentButtons = (props) => {
   const {
     isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
     isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
-    disabledModify,
+    disabledModify, appointment,
   } = props;
+
+  const { badgeData } = appointment;
+
+  const  { isWaiting } =  badgeData;
+
+  const checkOut = isWaiting ? alertStartServiceFirst : handleCheckout;
+
 
   return (
     <React.Fragment>
@@ -35,7 +44,7 @@ const appointmentButtons = (props) => {
         <SalonTouchableOpacity
           disabled={isCheckOutDisabled}
           style={isCheckOutDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
-          onPress={handleCheckout}
+          onPress={checkOut}
         >
           {
             isCheckingOut
@@ -94,9 +103,11 @@ const mapStateToProps = (state, { appointment }) => {
     isCheckingOut: state.appointmentReducer.isCheckingOut,
     isGridLoading: state.appointmentBookReducer.isLoading,
     isCheckInDisabled: state.appointmentReducer.isCheckingIn
-      || appointment.queueStatus !== ApptQueueStatus.NotInQueue || appointment.isNoShow,
+      || appointment.queueStatus !== ApptQueueStatus.NotInQueue 
+      || appointment.status !== ApptQueueStatus.NotInQueue || appointment.isNoShow,
     isCheckOutDisabled: state.appointmentReducer.isCheckingOut ||
-      appointment.queueStatus === ApptQueueStatus.CheckedOut
+      appointment.queueStatus === ApptQueueStatus.CheckedOut ||
+      appointment.status === ApptQueueStatus.CheckedOut
       || appointment.isNoShow || appointment.isFirstAvailable,
   };
 };
