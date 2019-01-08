@@ -42,6 +42,7 @@ export const SET_SELECTED_PROVIDERS =
 export const SET_SELECTED_FILTER = 'appointmentCalendar/SET_SELECTED_FILTER';
 export const SET_PROVIDER_DATES = 'appointmentCalendar/SET_PROVIDER_DATES';
 export const HIDE_TOAST = 'appointmentCalendar/HIDE_TOAST';
+export const HIDE_ALERT_ERROR = 'appointmentCalendar/HIDE_ALERT_ERROR';
 export const SET_TOAST = 'appointmentCalendar/SET_TOAST';
 export const CHANGE_FIRST_AVAILABLE =
   'appointmentCalendar/CHANGE_FIRST_AVAILABLE';
@@ -79,6 +80,10 @@ const setFilterOptionAssistantAssignments = showAssistantAssignments => ({
 const setFilterOptionShowMultiBlock = showMultiBlock => ({
   type: SET_FILTER_OPTION_MULTIBLOCK,
   data: { showMultiBlock },
+});
+
+const hideAlertError = () => ({
+  type: HIDE_ALERT_ERROR,
 });
 
 const setGridAllViewSuccess = (
@@ -467,6 +472,7 @@ export const appointmentCalendarActions = {
   setFilterOptionShowOffEmployees,
   hideToast,
   setToast,
+  hideAlertError,
 };
 
 export interface ApptBookActions {

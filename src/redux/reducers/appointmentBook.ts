@@ -44,6 +44,7 @@ import {
   HIDE_TOAST,
   SET_TOAST,
   CHANGE_FIRST_AVAILABLE,
+  HIDE_ALERT_ERROR,
 } from '../actions/appointmentBook';
 
 import DateTime from '../../constants/DateTime';
@@ -133,6 +134,11 @@ const initialState: ApptBookReducer = {
   toast: null,
   blockTimes: [],
   appointments: [],
+  alertError: {
+    show: false,
+    description: '',
+    title: 'Something went wrong',
+  },
 };
 
 export interface ApptBookReducer {
@@ -365,17 +371,16 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
     case PUT_BLOCKTIME_RESIZE_FAILED:
     case POST_APPOINTMENT_MOVE_FAILED:
     case POST_APPOINTMENT_RESIZE_FAILED:
-    case POST_APPOINTMENT_CHECKIN_FAILED:
     case POST_APPOINTMENT_CHECKOUT_FAILED:
+    case POST_APPOINTMENT_CHECKIN_FAILED:
     case CHECK_APPT_CONFLICTS_FAILED:
       return {
         ...state,
         isLoading: false,
         conflicts: [],
-        toast: {
+        alertError: {
+          show: true,
           description: data.error.response.data.userMessage,
-          type: 'error',
-          btnRightText: 'OK',
         },
       };
     case HIDE_TOAST:
@@ -422,6 +427,15 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
         ...state,
         isLoading: data.conflicts.length === 0,
         conflicts: data.conflicts,
+      };
+    }
+    case HIDE_ALERT_ERROR: {
+      return {
+        ...state,
+        alertError: {
+          show: false,
+          description: '',
+        },
       };
     }
     default:
