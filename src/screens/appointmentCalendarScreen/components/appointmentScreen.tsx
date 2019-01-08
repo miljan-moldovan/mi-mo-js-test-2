@@ -27,6 +27,7 @@ import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
 import { getHeaderRoomsOrResources } from '@/screens/appointmentCalendarScreen/helpers';
+import { appointmentCalendarActions } from '@/redux/actions/appointmentBook';
 
 class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -274,6 +275,10 @@ class AppointmentScreen extends React.Component<any, any> {
       headerProps,
       hideAddButton: true,
     });
+  };
+
+  hideAlertError = () => {
+    this.props.appointmentCalendarActions.hideAlertError();
   };
 
   onPressTitle = () =>
@@ -868,6 +873,7 @@ class AppointmentScreen extends React.Component<any, any> {
       resources,
       resourceAppointments,
       storeSchedule,
+      alertError,
     } = this.props.appointmentScreenState;
     const {
       storeScheduleExceptions,
@@ -928,6 +934,7 @@ class AppointmentScreen extends React.Component<any, any> {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
+
     return (
       <View
         onLayout={this.calculateWorkHeight}
@@ -1108,6 +1115,13 @@ class AppointmentScreen extends React.Component<any, any> {
           btnRightText={alert ? alert.btnRightText : ''}
           onPressLeft={alert ? alert.onPressLeft : null}
           onPressRight={alert ? alert.onPressRight : null}
+        />
+        <SalonAlert
+          visible={alertError && alertError.show}
+          title={alertError && alertError.title}
+          description={alertError && alertError.description}
+          btnRightText={'OK'}
+          onPressRight={this.hideAlertError}
         />
       </View>
     );

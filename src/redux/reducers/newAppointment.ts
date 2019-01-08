@@ -185,7 +185,8 @@ export default function newAppointmentReducer(
         ...state,
         mainEmployee: data.mainEmployee,
         serviceItems: newServiceItems.map(item => {
-          const employee = item.service.employee.id === state.mainEmployee.id
+          const employee = (item.service && item.service.employee && item.service.employee.id)
+          === (state.mainEmployee && state.mainEmployee.id)
             ? data.mainEmployee
             : item.service.employee;
           return {

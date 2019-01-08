@@ -8,67 +8,73 @@ import Icon from '@/components/common/Icon';
 import ApptQueueStatus from '../../../../../../constants/apptQueueStatus';
 import styles from './styles';
 
-const appointmentButtons = ({
-  isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
-  isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
-}) => (
-  <React.Fragment>
-    <View style={styles.panelIcon}>
-      <SalonTouchableOpacity
-        style={isCheckInDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
-        onPress={handleCheckin}
-        disabled={isCheckInDisabled}
-      >
-        {
-          isCheckingIn
-            ? <ActivityIndicator />
-            : <Icon name="check" size={18} color="#FFFFFF" type="solid" />
-        }
-      </SalonTouchableOpacity>
-      <Text style={styles.panelIconText}>Check-In</Text>
-    </View>
-    <View style={styles.panelIcon}>
-      <SalonTouchableOpacity
-        disabled={isCheckOutDisabled}
-        style={isCheckOutDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
-        onPress={handleCheckout}
-      >
-        {
-          isCheckingOut
-            ? <ActivityIndicator />
-            : <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
-        }
-      </SalonTouchableOpacity>
-      <Text style={styles.panelIconText}>Check-out</Text>
-    </View>
-    <View style={styles.panelIcon}>
-      <SalonTouchableOpacity
-        style={styles.panelIconBtn}
-        onPress={handleCancel}
-      >
-        <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
-        <View style={styles.plusIconContainer}>
-          <Icon
-            name="times"
-            size={9}
-            color="#FFFFFF"
-            type="solid"
-          />
-        </View>
-      </SalonTouchableOpacity>
-      <Text style={styles.panelIconText}>Cancel Appt.</Text>
-    </View>
-    <View style={styles.panelIcon}>
-      <SalonTouchableOpacity
-        style={styles.panelIconBtn}
-        onPress={handleModify}
-      >
-        <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
-      </SalonTouchableOpacity>
-      <Text style={styles.panelIconText}>Modifiy</Text>
-    </View>
-  </React.Fragment>
-);
+const appointmentButtons = (props) => {
+  const {
+    isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
+    isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
+    disabledModify,
+  } = props;
+
+  return (
+    <React.Fragment>
+      <View style={styles.panelIcon}>
+        <SalonTouchableOpacity
+          style={isCheckInDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
+          onPress={handleCheckin}
+          disabled={isCheckInDisabled}
+        >
+          {
+            isCheckingIn
+              ? <ActivityIndicator />
+              : <Icon name="check" size={18} color="#FFFFFF" type="solid" />
+          }
+        </SalonTouchableOpacity>
+        <Text style={styles.panelIconText}>Check-In</Text>
+      </View>
+      <View style={styles.panelIcon}>
+        <SalonTouchableOpacity
+          disabled={isCheckOutDisabled}
+          style={isCheckOutDisabled ? styles.panelIconBtnDisabled : styles.panelIconBtn}
+          onPress={handleCheckout}
+        >
+          {
+            isCheckingOut
+              ? <ActivityIndicator />
+              : <Icon name="dollar" size={18} color="#FFFFFF" type="solid" />
+          }
+        </SalonTouchableOpacity>
+        <Text style={styles.panelIconText}>Check-out</Text>
+      </View>
+      <View style={styles.panelIcon}>
+        <SalonTouchableOpacity
+          style={styles.panelIconBtn}
+          onPress={handleCancel}
+        >
+          <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+          <View style={styles.plusIconContainer}>
+            <Icon
+              name="times"
+              size={9}
+              color="#FFFFFF"
+              type="solid"
+            />
+          </View>
+        </SalonTouchableOpacity>
+        <Text style={styles.panelIconText}>Cancel Appt.</Text>
+      </View>
+      <View style={styles.panelIcon}>
+        <SalonTouchableOpacity
+          disabled={disabledModify}
+          style={disabledModify ? styles.panelIconBtnDisabled : styles.panelIconBtn}
+          onPress={handleModify}
+        >
+          <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+        </SalonTouchableOpacity>
+        <Text style={styles.panelIconText}>Modifiy</Text>
+      </View>
+    </React.Fragment>
+  );
+};
 
 appointmentButtons.propTypes = {
   isCheckInDisabled: PropTypes.bool.isRequired,
@@ -79,6 +85,7 @@ appointmentButtons.propTypes = {
   handleCheckout: PropTypes.func.isRequired,
   handleModify: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
+  disabledModify: PropTypes.bool,
 };
 
 const mapStateToProps = (state, { appointment }) => {

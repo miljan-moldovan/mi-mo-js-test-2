@@ -14,32 +14,27 @@ import styles from '../styles';
 const Addon = props => (
   <SalonTouchableOpacity style={styles.addonInput} onPress={props.onPress}>
     <View style={styles.addonInputInner}>
-      <Icon
-        style={styles.addonIcon}
-        name="levelUp"
-        type="regular"
-        color="black"
-        size={12}
-      />
-      <Text
-        style={styles.addonInputText}
-        numberOfLines={1}
-      >
-        {props.title.slice(0, 30)}{props.title.length > 30 ? '...' : ''}
-      </Text>
-      {props.number > 0 && (
-        <View style={styles.addonCount}>
-          <Text style={styles.addonCountText}>+{props.number}</Text>
-        </View>
-      )}
-      {props.required && (
-        <Text style={styles.addonRequiredText}>REQUIRED</Text>
-      )}
+      <View style={styles.flexDirectionRow}>
+        <Icon
+          style={styles.addonIcon}
+          name="levelUp"
+          type="regular"
+          color="black"
+          size={12}
+        />
+        <Text
+          style={styles.addonInputText}
+          numberOfLines={1}
+          ellipsizeMode={'tail'}
+        >
+          {props.title}
+        </Text>
+      </View>
+      {renderNumber(props.number)}
+      {renderRequired(props.required)}
     </View>
     <View style={styles.addonIconContainer}>
-      {props.length && (
-        <Text style={styles.addonLengthText}>{props.length}</Text>
-      )}
+      {renderLength(props.length)}
       <SalonTouchableOpacity style={styles.addonIconButton} onPress={props.onPressIcon || null}>
         <Icon
           name={props.required ? 'times' : 'angleRight'}
@@ -52,6 +47,40 @@ const Addon = props => (
   </SalonTouchableOpacity>
 );
 
+const renderRequired = (required) => {
+  if (!required) {
+    return null;
+  }
+
+  return (
+    <View style={styles.containerRequired}>
+      <Text style={styles.addonRequiredText}>REQUIRED</Text>
+    </View>
+  );
+};
+
+const renderNumber = (number) => {
+  if (!number) {
+    return null;
+  }
+
+  return (
+    <View style={styles.containerNumber}>
+      <View style={styles.addonCount}>
+        <Text style={styles.addonCountText}>+{number}</Text>
+      </View>
+    </View>
+  );
+};
+
+const renderLength = (length) => {
+  if (!length) {
+    return null;
+  }
+
+  return <Text style={styles.addonLengthText}>{length}</Text>;
+};
+
 const AddonsContainer = (props) => {
   const extrasArray = [...props.addons, ...props.recommended];
   const extrasLength = extrasArray.reduce((aggregator, current) => {
@@ -60,6 +89,11 @@ const AddonsContainer = (props) => {
     }
     return aggregator;
   }, moment.duration());
+
+  if (!props.required) {
+    return null;
+  }
+
   return props.visible ? (
     <Animated.View
       style={{
