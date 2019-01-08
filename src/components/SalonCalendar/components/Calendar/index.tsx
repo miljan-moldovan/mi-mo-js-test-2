@@ -245,7 +245,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
                             }) => {
 
     let groupByCondition = ViewTypes[selectedFilter];
-    if (selectedFilter === 'providers') {
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
+    if (isCanBeOnlyUser) {
       if (selectedProvider === 'all') {
         groupByCondition = groupByCondition[selectedProvider];
       } else {
@@ -1595,8 +1596,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       selectedFilter,
     } = this.props;
     const { activeBlock, isResizeing } = this.state;
-    const isAllProviderView =
-      selectedFilter === 'providers' && selectedProvider === 'all';
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
+    const isAllProviderView = isCanBeOnlyUser && selectedProvider === 'all';
     const provider = activeBlock && isAllProviderView
       ? providers.find(
         item => item.id === get(activeBlock.data.employee, 'id', false),
@@ -1791,8 +1792,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       selectedFilter,
     } = this.props;
     const { activeCard, isResizeing } = this.state;
-    const isAllProviderView =
-      selectedFilter === 'providers' && selectedProvider === 'all';
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
+    const isAllProviderView = isCanBeOnlyUser && selectedProvider === 'all';
     const provider = activeCard && isAllProviderView
       ? providers.find(
         item => item.id === get(activeCard.data.employee, 'id', false),
@@ -1858,7 +1859,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       rooms,
       isNeedShowCurrentTime,
     } = this.props;
-    const isDate = selectedProvider !== 'all' && selectedFilter === 'providers';
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
+    const isDate = selectedProvider !== 'all' && isCanBeOnlyUser;
     const showHeader =
       displayMode === 'week' ||
       selectedProvider === 'all' ||

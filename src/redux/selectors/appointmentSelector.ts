@@ -32,26 +32,24 @@ export const getVisibleAppointmentsDataSource = createSelector (
     getGridView,
   ],
   (groupedAppts, groupedAvailableProviders, filterOptions, gridView) => {
-    if (
-      gridView.selectedFilter === 'providers' &&
-      gridView.selectedProvider !== 'all'
-    ) {
+    const isCanBeOnlyUser = gridView.selectedFilter === 'providers' || gridView.selectedFilter === 'deskStaff';
+    if (isCanBeOnlyUser && gridView.selectedProvider !== 'all') {
       if (gridView.pickerMode === 'week') {
-        return filter (
-          flatten (groupedAppts[gridView.selectedProvider.id]),
+        return filter(
+          flatten(groupedAppts[gridView.selectedProvider.id]),
           appt => {
             if (!filterOptions.showFirstAvailable) {
               return !appt.isFirstAvailable ? appt : null;
             }
             return appt;
-          }
+          },
         );
       }
-      return filter (
-        flatten (groupedAppts[gridView.selectedProvider.id]),
+      return filter(
+        flatten(groupedAppts[gridView.selectedProvider.id]),
         appt => {
           if (
-            moment (appt.date, DateTime.date).isSame (gridView.startDate, 'day')
+            moment(appt.date, DateTime.date).isSame(gridView.startDate, 'day')
           ) {
             if (!filterOptions.showFirstAvailable) {
               return !appt.isFirstAvailable ? appt : null;
@@ -59,24 +57,24 @@ export const getVisibleAppointmentsDataSource = createSelector (
             return appt;
           }
           return null;
-        }
+        },
       );
     }
-    return filter (
-      flatten (
-        filter (
+    return filter(
+      flatten(
+        filter(
           groupedAppts,
-          (appts, index) => (groupedAvailableProviders[index] ? appts : null)
-        )
+          (appts, index) => (groupedAvailableProviders[index] ? appts : null),
+        ),
       ),
       appt => {
         if (!filterOptions.showFirstAvailable) {
           return !appt.isFirstAvailable ? appt : null;
         }
         return appt;
-      }
+      },
     );
-  }
+  },
 );
 
 export const getSelectedAppt = createSelector (

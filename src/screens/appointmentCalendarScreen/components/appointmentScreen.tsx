@@ -918,7 +918,8 @@ class AppointmentScreen extends React.Component<any, any> {
         break;
       }
       case 'deskStaff': {
-        headerData = providers;
+        isDate = selectedProvider !== 'all';
+        headerData = isDate ? dates : providers;
         dataSource = providerAppointments;
         break;
       }
@@ -934,6 +935,8 @@ class AppointmentScreen extends React.Component<any, any> {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
+
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
 
     return (
       <View
@@ -1000,8 +1003,7 @@ class AppointmentScreen extends React.Component<any, any> {
             <ActivityIndicator />
           </View>
           : null}
-        {selectedFilter === 'providers' &&
-        selectedProvider !== 'all' &&
+        {isCanBeOnlyUser && selectedProvider !== 'all' &&
         <ChangeViewFloatingButton
           bottomDistance={
             this.state.bookAnotherEnabled || rebookAppointment ? 60 : 16
