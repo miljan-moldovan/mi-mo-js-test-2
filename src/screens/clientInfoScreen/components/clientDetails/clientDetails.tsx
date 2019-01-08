@@ -5,7 +5,6 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import deepEqual from 'deep-equal';
 import moment from 'moment';
 import { find, reject, get, cloneDeep } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -125,7 +124,6 @@ interface State {
   clientReferralType: any,
   client: any,
   loadingClient: boolean,
-  hasChanged: boolean,
   isValidEmail: boolean,
   isValidZipCode: boolean,
   isValidPhoneHome: boolean,
@@ -151,31 +149,10 @@ class ClientDetails extends React.Component<Props, State> {
 
     this.state = {
       pointerEvents: '',
-      clientReferralType: '',
-      state: '',
-      city: '',
-      street1: '',
-      confirmationNote: '',
-      confirmBy: null,
-      email: '',
-      phones: null,
-      gender: null,
-      clientId: null,
-      anniversary: null,
-      age: null,
-      birthday: '',
-      loyalty: null,
-      lastName: '',
-      middleName: '',
-      name: '',
-      zipCode: '',
       client: {},
       loadingClient: true,
-      selectedClient: null,
       selectedReferredClient: SelectedReferredClientEnum.NotAssigned,
       requireCard: false,
-      decline: false,
-      hasChanged: false,
       isValidEmail: false,
       isValidZipCode: false,
       isValidPhoneHome: false,
@@ -192,12 +169,12 @@ class ClientDetails extends React.Component<Props, State> {
       birthdayPickerOpen: false,
       anniversaryPickerOpen: false,
       requiredFields: {
-        age: false,
+        age: true,
         address: true,
         city: true,
         email: true,
-        birthday: false,
-        gender: false,
+        birthday: true,
+        gender: true,
         zip: true,
         state: true,
         workPhone: true,
@@ -207,10 +184,14 @@ class ClientDetails extends React.Component<Props, State> {
       styles: createStyleSheet(),
     };
 
-    this.props.settingsActions.getSettings(this.calculateRequiredFields);
-
     this.handleClientSelection.bind(this);
 
+  }
+
+  componentDidMount() {
+    this.props.setHandleDone(this.handleDone);
+    this.props.setHandleBack(this.handleBack);
+    this.props.settingsActions.getSettings(this.calculateRequiredFields);
     this.props.clientInfoActions.getClientReferralTypes((result) => {
       if (result && this.props.actionType === 'update') {
         this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
@@ -219,45 +200,13 @@ class ClientDetails extends React.Component<Props, State> {
           client: JSON.parse(JSON.stringify(defaultClient)),
           loadingClient: false,
         });
-        this.props.setHandleDone(this.handleDone);
-        this.props.setHandleBack(this.handleBack);
       }
     });
   }
 
-  lookForChanges = (newClient) => {
-    const { initialClient } = this.state;
-    const nameHasChanged = newClient.name !== initialClient.name;
-    const lastNameHasChanged = newClient.lastName !== initialClient.lastName;
-    const middleNameHasChanged = newClient.middleName !== initialClient.middleName;
-    const loyaltyHasChanged = newClient.loyalty !== initialClient.loyalty;
-    const street1HasChanged = newClient.street1 !== initialClient.street1;
-    const cityHasChanged = newClient.city !== initialClient.city;
-    const zipCodeHasChanged = newClient.zipCode !== initialClient.zipCode;
-    const clientIdHasChanged = newClient.clientId !== initialClient.clientId;
-    const genderHasChanged = get(newClient, 'gender.key', -1) !== get(initialClient, 'gender.key', -1);
-    const ageHasChanged = get(newClient, 'age.key', -1) !== get(initialClient, 'age.key', -1);
-    const stateHasChanged = get(newClient, 'state.key', -1) !== get(initialClient, 'state.key', -1);
-    const birthdayHasChanged = newClient.birthday !== initialClient.birthday;
-    const anniversaryHasChanged = newClient.anniversary !== initialClient.anniversary;
-    const confirmByHasChanged = get(newClient, 'confirmBy.key', -1) !== get(initialClient, 'confirmBy.key', -1);
-    const clientReferralTypeHasChanged = get(newClient, 'clientReferralType.key', -1)
-      !== get(initialClient, 'clientReferralType.key', -1);
-    const confirmationNoteHasChanged = newClient.confirmationNote !== initialClient.confirmationNote;
-    const emailHasChanged = newClient.email !== initialClient.email;
-    const phoneHasChanged = !deepEqual(newClient.phones, initialClient.phones, { strict: true });
-
-    return nameHasChanged || lastNameHasChanged || middleNameHasChanged ||
-      loyaltyHasChanged || street1HasChanged || cityHasChanged ||
-      zipCodeHasChanged || clientIdHasChanged || genderHasChanged ||
-      ageHasChanged || birthdayHasChanged || anniversaryHasChanged ||
-      confirmByHasChanged || clientReferralTypeHasChanged || confirmationNoteHasChanged ||
-      emailHasChanged || phoneHasChanged;
-  };
-
   onChangeClientField = (field: string, value: any, type? : any) => {
-    const newClient = this.state.client;
-
+    // TODO: refactor, 'cause this is an error-prone approach
+    const newClient = { ...this.state.client };
 
     switch (field) {
       case 'name':
@@ -324,9 +273,7 @@ class ClientDetails extends React.Component<Props, State> {
       default:
       /* nothing */
     }
-    const hasChanged = this.lookForChanges(newClient);
-    this.props.navigation.setParams({ hasChanged });
-    this.setState({ client: newClient, hasChanged }, this.checkValidation);
+    this.setState({ client: newClient }, this.checkValidation);
   };
 
   onChangeClientReferralTypes = (option) => {
@@ -543,8 +490,7 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
   checkValidation = () => {
-    this.props.setCanSave(this.state.hasChanged
-      && this.state.isValidLastName
+    const canSave = this.state.isValidLastName
       && this.state.isValidName
       && this.state.isValidStreet1
       && this.state.isValidCity
@@ -556,7 +502,8 @@ class ClientDetails extends React.Component<Props, State> {
       && this.state.isValidBirth
       && this.state.isValidPhoneHome
       && this.state.isValidPhoneWork
-      && this.state.isValidPhoneCell);
+      && this.state.isValidPhoneCell;
+    this.props.setCanSave(canSave);
   };
 
   deleteClient = () => {
@@ -992,7 +939,6 @@ class ClientDetails extends React.Component<Props, State> {
               <SectionTitle value="CONTACTS" style={this.state.styles.sectionTitle} />
               <InputGroup>
                 <ValidatableInput
-                  // validateOnChange
                   keyboardType="email-address"
                   validation={this.isValidEmailRegExp}
                   label="Email"

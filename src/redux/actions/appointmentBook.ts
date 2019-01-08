@@ -200,7 +200,7 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
     case 'deskStaff':
     case 'rebookAppointment':
     case 'providers': {
-      if (selectedProvider === 'all' || pickerMode === 'day') {
+      if (selectedProvider === 'all') {
         return Promise.all([
           AppointmentBook.getAppointmentBookEmployees(date, filterOptions),
           Appointment.getAppointmentsByDate(date),
