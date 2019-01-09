@@ -184,6 +184,20 @@ class NewAppointmentScreen extends React.Component<any, any> {
       afterTime: moment.duration(get(service, 'afterDuration', 0)),
     };
 
+    // if (service.requireRoom) {
+    //   const room = await this.getRoomInfo(service.requireRoom);
+    //   if (room) {
+    //     newService.room = room;
+    //   }
+    // }
+
+    // if (service.requiredResourceId) {
+    //   const resource = await this.getResourceInfo(service.requiredResourceId);
+    //   if (resource) {
+    //     newService.resource = resource;
+    //   }
+    // }
+
     const newServiceItem = {
       itemId: uuid(),
       guestId,
@@ -195,6 +209,47 @@ class NewAppointmentScreen extends React.Component<any, any> {
       this.selectExtraServices(newServiceItem);
     });
   };
+
+  createPhonesArr = phones => {
+    const createPhone = type => {
+      const cell = phones.find(
+        itm => get(itm, 'type', null) === ClientPhoneTypes[type],
+      );
+      if (
+        !cell ||
+        !cell.value ||
+        !cell.value.trim() ||
+        !this.isValidPhoneNumberRegExp.test(cell.value)
+      ) {
+        return { type: ClientPhoneTypes[type], value: '' };
+      }
+      return cell;
+    };
+    return [createPhone('cell'), createPhone('home'), createPhone('work')];
+  };
+
+  selectMainEmployee = () =>
+    new Promise(resolve => {
+      const {
+        newAppointmentState: { date },
+        appointmentScreenState: { providers },
+      } = this.props;
+      this.props.navigation.navigate('ApptBookProvider', {
+        date,
+        mode: 'newAppointment',
+        headerProps: {
+          title: 'Providers',
+          leftButton: (
+            <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+          ),
+          leftButtonOnPress: navigation => navigation.goBack,
+        },
+        showFirstAvailable: true,
+        showEstimatedTime: true,
+        dismissOnSelect: true,
+        onChangeProvider: provider => resolve(provider),
+      });
+    });
 
   selectExtraServices = serviceItem => {
     const { service: { service = null }, itemId } = serviceItem;
@@ -315,7 +370,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
             showCancelButton: false,
             services: service.recommendedServices,
             serviceTitle: service.name,
-            onNavigateBack: this.showPanel,
             onSave: services => resolve(services),
           });
         } else {
@@ -332,6 +386,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
       clientPhone,
       isValidEmail: emailValid,
       isValidPhone: phoneValid,
+      clientPhoneType,
     } = this.state;
     const { client } = this.props.newAppointmentState;
     const currentPhone = client.phones.find(
@@ -457,6 +512,22 @@ class NewAppointmentScreen extends React.Component<any, any> {
     };
   };
 
+  getRoomInfo = roomId =>
+    new Promise((resolve, reject) => {
+      Store.getRooms()
+        .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+        .catch(err => reject(err));
+    });
+
+  getResourceInfo = resourceId =>
+    new Promise((resolve, reject) => {
+      Store.getResources()
+        .then(resources =>
+          resolve(resources.find(resource => resource.id === resourceId)),
+        )
+        .catch(err => reject(err));
+    });
+
   getMainServices = serviceItems =>
     serviceItems.filter(item => this.isMainService(item));
 
@@ -517,6 +588,8 @@ class NewAppointmentScreen extends React.Component<any, any> {
     this.checkConflicts();
   };
 
+  onChangeRecurring = isRecurring => isRecurring; // this.setState({ isRecurring: !isRecurring });
+
   onChangeBookedBy = employee => {
     this.props.newAppointmentActions.setBookedBy(employee);
   };
@@ -558,6 +631,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
   onChangeGuestNumber = (action, guestNumber) => {
     if (this.props.newAppointmentState.guests.length < guestNumber) {
       this.addGuest();
+      //this.props.newAppointmentActions.addGuest();
     } else {
       this.props.newAppointmentActions.removeGuest();
     }
@@ -626,8 +700,21 @@ class NewAppointmentScreen extends React.Component<any, any> {
         filterByProvider: true,
         clientId: get(client, 'id', null),
         employeeId: mainEmployee.id,
-        onChangeService: service => {
-          this.addService(service, mainEmployee, guestId);
+        onChangeWithNavigation: (service, nav) => {
+          nav.navigate('ApptBookProvider', {
+            date,
+            mode: 'newAppointment',
+            dismissOnSelect: true,
+            selectedService: service,
+            selectedProvider: mainEmployee,
+            onChangeProvider: provider => {
+              if (!mainEmployee) {
+                this.props.newAppointmentActions.setMainEmployee(provider);
+              }
+              this.addService(service, provider, guestId);
+              nav.goBack();
+            },
+          });
         },
       });
     }
@@ -859,12 +946,28 @@ class NewAppointmentScreen extends React.Component<any, any> {
 
   totalLength = () => this.props.appointmentLength;
 
+  resetTimeForServices = (items, index, initialFromTime) => {
+    items.forEach((item, i) => {
+      if (i > index) {
+        const prevItem = items[i - 1];
+        item.service.fromTime =
+          (prevItem && prevItem.service.toTime.clone()) || initialFromTime;
+        item.service.toTime = item.service.fromTime
+          .clone()
+          .add(moment.duration(item.service.toTime));
+      }
+    });
+    return items;
+  };
+
   renderExtraClientButtons = isDisabled => (
     <React.Fragment>
       <SalonTouchableOpacity
         disabled={isDisabled}
         key={Math.random().toString()}
         onPress={() => {
+          // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
+          // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
           this.props.navigation.navigate('ClientNotes', {
             forAppointment: true,
             forSales: false,
@@ -907,9 +1010,11 @@ class NewAppointmentScreen extends React.Component<any, any> {
       client,
       bookedByEmployee,
       startTime,
+      conflicts,
       guests,
       remarks,
       isBookedByFieldEnabled,
+      editType,
       serviceItems,
     } = this.props.newAppointmentState;
 
@@ -924,6 +1029,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
     const dividerWithErrorStyle = { backgroundColor: '#D1242A' };
+    // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const disabledLabelStyle = {
       fontSize: 14,
       lineHeight: 18,
@@ -942,6 +1048,9 @@ class NewAppointmentScreen extends React.Component<any, any> {
       .asMilliseconds() === 0
       ? '0 min'
       : `${moment.duration(totalDuration).asMinutes()} min`;
+    const guestsLabel = guests.length === 0 || guests.length > 1
+      ? `${guests.length} Guests`
+      : `${guests.length} Guest`;
 
     const mainServices = this.getMainServices(serviceItems);
     return (
@@ -1175,7 +1284,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
                   <InputSwitch
                     text="Recurring appt."
                     value={this.state.isRecurring}
-                    // onChange={this.onChangeRecurring}
                     onChange={() =>
                       this.setState({
                         toast: {
