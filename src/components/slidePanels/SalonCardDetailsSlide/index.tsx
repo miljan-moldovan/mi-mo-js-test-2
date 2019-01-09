@@ -236,8 +236,8 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   modifyIsDisabled = (appointment) => {
-    const isStarted = moment(appointment.fromTime, 'HH:mm').isBefore(new Date());
-    if (isStarted) return true;
+    const isStarted = moment(appointment.fromTime, 'HH:mm').isBefore(moment());
+    if (isStarted) { return true; }
     if (appointment && appointment.badgeData) {
       return appointment.badgeData.isNoShow || appointment.badgeData.isCashedOut || false;
     }
@@ -245,7 +245,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   cancelIsDisabled = appointment => {
-    return appointment && moment(appointment.date).isBefore(new Date(), 'day');
+    return appointment && moment(appointment.date).isBefore(moment(), 'day');
   };
 
   renderHeaderSlide = () => {
