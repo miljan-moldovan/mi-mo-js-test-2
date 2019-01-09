@@ -155,11 +155,13 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
   toggleStartTimePicker = () =>
     this.setState(({ startTimePickerOpen }) => ({
       startTimePickerOpen: !startTimePickerOpen,
+      endTimePickerOpen: false,
     }));
 
   toggleEndTimePicker = () =>
     this.setState(({ endTimePickerOpen }) => ({
       endTimePickerOpen: !endTimePickerOpen,
+      startTimePickerOpen: false,
     }));
 
   cancelButton = () => ({
