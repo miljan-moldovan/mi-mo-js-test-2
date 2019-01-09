@@ -41,7 +41,8 @@ import { Store, Client, Services } from '@/utilities/apiWrapper';
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
-import { NewAppointmentScreenProps, NewAppointmentScreenState } from '@/models';
+import { NewAppointmentScreenProps, NewAppointmentScreenState, Service, Room, ServiceItem, Maybe } from '@/models';
+import { shouldSelectRoom } from './helpers';
 
 export const SubTitle = (props: {
   title: string;
@@ -56,7 +57,7 @@ export const SubTitle = (props: {
     </View>
   );
 
-class NewAppointmentScreen extends React.Component<any, any> {
+class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, NewAppointmentScreenState> {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {};
     const editType = params.editType || 'new';
@@ -113,15 +114,16 @@ class NewAppointmentScreen extends React.Component<any, any> {
     });
     this.state = {
       toast: null,
-      isRecurring: false,
-      selectedAddons: [],
-      selectedRequired: [],
-      selectedRecommended: [],
       clientEmail,
       clientPhone,
       isValidEmail,
       isValidPhone,
       clientPhoneType,
+      isRecurring: false,
+      selectedAddons: [],
+      selectedRequired: [],
+      selectedRecommended: [],
+      recurringPickerOpen: false,
     };
 
     this.props.navigation.addListener('willFocus', () => {
@@ -160,7 +162,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
     }
   }
 
-  addService = (service, provider = null, guestId = false) => {
+  addService = async (service, provider = null, guestId: string = undefined) => {
     const {
       client,
       startTime,
@@ -170,9 +172,11 @@ class NewAppointmentScreen extends React.Component<any, any> {
     const serviceLength = moment.duration(service.maxDuration);
     const fromTime = moment(startTime).add(length);
     const toTime = moment(fromTime).add(serviceLength);
-
+    const { room, roomOrdinal } = await this.selectRoomForService(service);
     const newService = {
       service,
+      room,
+      roomOrdinal,
       length: serviceLength,
       client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
       requested: true,
@@ -182,7 +186,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
       bookBetween: get(service, 'bookBetween', false),
       gapTime: moment.duration(get(service, 'gapDuration', 0)),
       afterTime: moment.duration(get(service, 'afterDuration', 0)),
-    };
+    } as ServiceItem['service'];
 
     // if (service.requireRoom) {
     //   const room = await this.getRoomInfo(service.requireRoom);
@@ -203,6 +207,11 @@ class NewAppointmentScreen extends React.Component<any, any> {
       guestId,
       service: newService,
     };
+
+    // if (shouldSelectRoom(newServiceItem)) {
+    // newServiceItem.service.room = room;
+    // newServiceItem.service.roomOrdinal = roomOrdinal;
+    // }
 
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
     setTimeout(() => {
@@ -257,7 +266,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
       itemId,
       this.props.newAppointmentState.serviceItems,
     );
-
     const addonIds = extras
       .filter(itm => itm.type === 'addon')
       .map(itm => itm.service.service.id);
@@ -277,7 +285,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
           this.setState({ selectedRecommended }, () => {
             this.showRequired(service, requiredIds)
               .then(selectedRequired =>
-                this.setState({ selectedRequired }, () => {
+                this.setState({ selectedRequired }, async () => {
                   const {
                     selectedAddons: addons,
                     selectedRequired: required,
@@ -300,6 +308,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
                   );
                   this.props.servicesActions.setSelectingExtras(false);
                   return this.checkConflicts();
+                  // return this.shouldSelectRooms();
                 }),
               )
               .catch(() => {
@@ -311,7 +320,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
     );
   };
 
-  showRequired = (service, selectedIds = []) =>
+  showRequired = (service, selectedIds = []): Promise<Service[] | Service> =>
     new Promise(resolve => {
       try {
         const { navigation: { navigate } } = this.props;
@@ -326,7 +335,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
               showCancelButton: false,
               services: service.requiredServices,
               serviceTitle: service.name,
-              onSave: selected => resolve(selected),
+              onSave: (selected: Service[]) => resolve(selected),
             });
           }
         } else {
@@ -338,7 +347,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
       }
     });
 
-  showAddons = (service, selectedIds = []) => {
+  showAddons = (service, selectedIds = []): Promise<Service[]> => {
     return new Promise(resolve => {
       try {
         const { navigation: { navigate } } = this.props;
@@ -348,7 +357,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
             showCancelButton: false,
             services: service.addons,
             serviceTitle: service.name,
-            onSave: services => resolve(services),
+            onSave: (services: Service[]) => resolve(services),
           });
         } else {
           resolve([]);
@@ -360,7 +369,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
     });
   };
 
-  showRecommended = (service, selectedIds = []) =>
+  showRecommended = (service, selectedIds = []): Promise<Service[]> =>
     new Promise(resolve => {
       try {
         const { navigation: { navigate } } = this.props;
@@ -370,7 +379,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
             showCancelButton: false,
             services: service.recommendedServices,
             serviceTitle: service.name,
-            onSave: services => resolve(services),
+            onSave: (services: Service[]) => resolve(services),
           });
         } else {
           resolve([]);
@@ -379,6 +388,26 @@ class NewAppointmentScreen extends React.Component<any, any> {
         resolve([]);
       }
     });
+
+  selectRoomForService = (service: Service): Promise<{ room: Maybe<Room>, roomOrdinal: Maybe<number> }> => {
+    const { navigate } = this.props.navigation;
+    return new Promise(resolve => {
+      try {
+        const { name: serviceName, supportedRooms } = service;
+        if (supportedRooms && supportedRooms.length) {
+          navigate('SelectRoom', {
+            serviceName,
+            supportedRooms,
+            onChange: room => resolve(room),
+          });
+        } else {
+          resolve({ room: null, roomOrdinal: null });
+        }
+      } catch (err) {
+        resolve({ room: null, roomOrdinal: null });
+      }
+    });
+  }
 
   shouldUpdateClientInfo = async () => {
     const {
@@ -543,7 +572,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
 
   hideToast = () => this.setState({ toast: null });
 
-  updateService = (serviceId, updatedService, guestId = false) => {
+  updateService = (serviceId, updatedService, guestId?: string) => {
     this.props.newAppointmentActions.updateServiceItem(
       serviceId,
       updatedService,
@@ -779,7 +808,8 @@ class NewAppointmentScreen extends React.Component<any, any> {
       ? get(serviceItems[0].service, 'service', null)
       : null;
     const serviceTitle = get(firstService, 'name', null);
-    const employeeName = `${get(mainEmployee, 'name', get(mainEmployee, 'firstName', ''))} ${get(mainEmployee, 'lastName', '')[0]}.`;
+    const employeeName =
+      `${get(mainEmployee, 'name', get(mainEmployee, 'firstName', ''))} ${get(mainEmployee, 'lastName', '')[0]}.`;
     let alertBody = '';
     let alertTitle = '';
     switch (editType) {
@@ -790,7 +820,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
 
           alertBody = serviceTitle
             ? `Are you sure you want to discard this appointment for service ${serviceTitle} w/ ${employeeName}?`
-            : `Are you sure you want to discard your changes to these appointments?`;
+            : 'Are you sure you want to discard your changes to these appointments?';
         }
         break;
       }
@@ -841,42 +871,54 @@ class NewAppointmentScreen extends React.Component<any, any> {
 
   onValidateEmail = (isValid, isFirstValidation) =>
     this.setState(state => {
-      const newState = state;
       const { client } = this.props.newAppointmentState;
-      newState.isValidEmail = state.clientEmail === '' ? true : isValid;
+      const isValidEmail = state.clientEmail === '' ? true : isValid;
       if (
         !isValid &&
         state.clientEmail !== '' &&
         !!client &&
         !isFirstValidation
       ) {
-        newState.toast = {
-          text: 'The email you provided is invalid!',
-          type: 'error',
-          btnRightText: 'DISMISS',
+        return {
+          ...state,
+          isValidEmail,
+          toast: {
+            text: 'The email you provided is invalid!',
+            type: 'error',
+            btnRightText: 'DISMISS',
+          },
         };
       }
-      return newState;
+      return {
+        ...state,
+        isValidEmail,
+      };
     }, this.shouldUpdateClientInfo);
 
   onValidatePhone = (isValid, isFirstValidation) =>
     this.setState(state => {
-      const newState = state;
       const { client } = this.props.newAppointmentState;
-      newState.isValidPhone = newState.clientPhone === '' ? true : isValid;
+      const isValidPhone = state.clientPhone === '' ? true : isValid;
       if (
         !isValid &&
         state.clientPhone !== '' &&
         !!client &&
         !isFirstValidation
       ) {
-        newState.toast = {
-          text: 'The phone you provided is invalid!',
-          type: 'error',
-          btnRightText: 'DISMISS',
+        return {
+          ...state,
+          isValidPhone,
+          toast: {
+            text: 'The phone you provided is invalid!',
+            type: 'error',
+            btnRightText: 'DISMISS',
+          },
         };
       }
-      return newState;
+      return {
+        ...state,
+        isValidPhone,
+      };
     }, this.shouldUpdateClientInfo);
 
   lookForChanges = () => {
