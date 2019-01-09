@@ -91,61 +91,70 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
       // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
-      onMoveShouldSetPanResponder: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard),
+      onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder,
       // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard),
-      onPanResponderMove: (e, gesture) => {
-        const { dy, dx } = gesture;
-        if (this.state.activeBlock || this.state.activeCard) {
-          if (!this.state.isResizeing) {
-            this.moveX = dx;
-            this.moveY = dy;
-            return Animated.event([
-              null,
-              {
-                dx: this.state.pan.x,
-                dy: this.state.pan.y,
-              },
-              {
-                dx: this.state.pan2.x,
-                dy: this.state.pan2.y,
-              },
-            ])(e, gesture, gesture);
-          }
-          // calculate size every time card is draged for resize, this is done by calculating the difference between previoud dy and new dy
-          const size = this.moveY ? dy - this.moveY : dy;
-          // save current dy for calulating the size above
-          this.moveY = dy;
-          if (this.resizeCard) {
-            const lastIndex =
-              this.state.activeCard.verticalPositions.length - 1;
-            // call resizeCard function from card componet that calulate the hieght set it on the card and return it
-            const newHeight = this.resizeCard.resizeCard(size);
-            // updates height on the active card
-            // Update the hieght only in the last card component, in case the appoinment have a gap there will be 2 cards componets
-            this.state.activeCard.verticalPositions[
-              lastIndex
-              ].height = newHeight;
-            this.state.activeCard.height = newHeight;
-          } else if (this.resizeBlock) {
-            this.state.activeBlock.height = this.resizeBlock.resize(size);
-          }
-        }
-        return null;
-      },
-      onPanResponderRelease: (e, gesture) => {
-        if (this.state.activeCard || this.state.activeBlock) {
-          if (this.state.isResizeing) {
-            this.handleResizeCard();
-          } else if (this.moveX && this.moveY) {
-            this.handleCardDrop();
-          }
-        }
-      },
+      onMoveShouldSetPanResponderCapture: this.onMoveShouldSetPanResponderCapture,
+      onPanResponderMove: this.onPanResponderMove,
+      onPanResponderRelease: this.onPanResponderRelease,
     });
   }
+
+  onMoveShouldSetPanResponder = (e, gesture) => (this.state.activeBlock || this.state.activeCard);
+
+  onMoveShouldSetPanResponderCapture = (e, gesture) => (this.state.activeBlock || this.state.activeCard);
+
+  onPanResponderMove = (e, gesture) => {
+    const { dy, dx } = gesture;
+    if (this.state.activeBlock || this.state.activeCard) {
+      if (!this.state.isResizeing) {
+        this.moveX = dx;
+        this.moveY = dy;
+        return Animated.event([
+          null,
+          {
+            dx: this.state.pan.x,
+            dy: this.state.pan.y,
+          },
+          {
+            dx: this.state.pan2.x,
+            dy: this.state.pan2.y,
+          },
+        ])(e, gesture, gesture);
+      }
+      // calculate size every time card is draged for resize,
+      // this is done by calculating the difference between previoud dy and new dy
+      const size = this.moveY ? dy - this.moveY : dy;
+      // save current dy for calulating the size above
+      this.moveY = dy;
+      if (this.resizeCard) {
+        const lastIndex =
+          this.state.activeCard.verticalPositions.length - 1;
+        // call resizeCard function from card componet
+        // that calulate the hieght set it on the card and return it
+        const newHeight = this.resizeCard.resizeCard(size);
+        // updates height on the active card
+        // Update the hieght only in the last card component,
+        // in case the appoinment have a gap there will be 2 cards componets
+        this.state.activeCard.verticalPositions[
+          lastIndex
+          ].height = newHeight;
+        this.state.activeCard.height = newHeight;
+      } else if (this.resizeBlock) {
+        this.state.activeBlock.height = this.resizeBlock.resize(size);
+      }
+    }
+    return null;
+  };
+
+  onPanResponderRelease = (e, gesture) => {
+    if (this.state.activeCard || this.state.activeBlock) {
+      if (this.state.isResizeing) {
+        this.handleResizeCard();
+      } else if (this.moveX && this.moveY) {
+        this.handleCardDrop();
+      }
+    }
+  };
 
   componentDidMount() {
     // group block times and appointment filterOption
@@ -1104,6 +1113,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       if (top > height - bufferHeight) {
         if (!droppedCard.isBuffer) {
           this.addItemToMoveBar(data, [], addToBufferState.checkExistenceInMoveBar);
+        } else {
+          this.setState({
+            activeCard: null,
+            activeBlock: null,
+          });
         }
       } else {
         this.handleReleaseCard();
@@ -1463,26 +1477,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       lastName: 'Available',
     };
     this.props.onCellPressed(startTime, firstAvailableProvider);
-  };
-
-  convertFromTimeToMoment = time => moment(time, DateTime.timeOld);
-
-  renderCards = (cards, headerIndex, headerId) => {
-    const {
-      selectedFilter,
-      selectedProvider,
-      displayMode,
-      startDate,
-    } = this.props;
-    if (cards && cards.length) {
-      return cards.map(
-        card =>
-          card.isBlockTime
-            ? this.renderBlock(card, headerIndex, headerId)
-            : this.renderCard(card, headerIndex, headerId),
-      );
-    }
-    return null;
   };
 
   // render blocks inthe grid
