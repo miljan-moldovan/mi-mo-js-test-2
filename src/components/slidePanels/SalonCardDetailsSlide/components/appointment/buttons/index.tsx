@@ -12,7 +12,7 @@ const appointmentButtons = (props) => {
   const {
     isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
     isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
-    disabledModify,
+    disabledModify, disabledCancel,
   } = props;
 
   return (
@@ -47,7 +47,8 @@ const appointmentButtons = (props) => {
       </View>
       <View style={styles.panelIcon}>
         <SalonTouchableOpacity
-          style={styles.panelIconBtn}
+          disabled={disabledCancel}
+          style={disabledCancel ? styles.panelIconBtnDisabled : styles.panelIconBtn}
           onPress={handleCancel}
         >
           <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
@@ -86,6 +87,7 @@ appointmentButtons.propTypes = {
   handleModify: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   disabledModify: PropTypes.bool,
+  disabledCancel: PropTypes.bool,
 };
 
 const mapStateToProps = (state, { appointment }) => {
