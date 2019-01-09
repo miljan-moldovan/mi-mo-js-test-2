@@ -62,6 +62,7 @@ const headerHeight = 40;
 const timeColumnWidth = 36;
 const cellHeight = 30;
 const initialHeightOfHeader = 300;
+const defaultBufferHeight = 110;
 
 export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor(props) {
@@ -1099,32 +1100,42 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   handleCardDrop = () => {
     if (this.props.bufferVisible) {
-      const {
-        buffer,
-        activeCard,
-        activeBlock,
-        pan,
-        calendarMeasure: { height },
-      } = this.state;
-      const droppedCard = activeBlock || activeCard;
-      const { data } = droppedCard;
-      const top = pan.y._value + pan.y._offset;
-      const bufferHeight = 110;
-      if (top > height - bufferHeight) {
-        if (!droppedCard.isBuffer) {
-          this.addItemToMoveBar(data, [], addToBufferState.checkExistenceInMoveBar);
-        } else {
-          this.setState({
-            activeCard: null,
-            activeBlock: null,
-          });
-        }
-      } else {
-        this.handleReleaseCard();
-      }
+      this.addToBufferOrHandelRelease();
     } else {
       this.handleReleaseCard();
     }
+  };
+
+  addToBufferOrHandelRelease = () => {
+    const { pan, calendarMeasure: { height } } = this.state;
+
+    const top = pan.y._value + pan.y._offset;
+
+    if (this.isPositionIntersectBuffer(top, height)) {
+      this.addItemToBufferOrResetActiveCard();
+    } else {
+      this.handleReleaseCard();
+    }
+  };
+
+  addItemToBufferOrResetActiveCard = () => {
+    const { activeCard, activeBlock } = this.state;
+
+    const droppedCard = activeBlock || activeCard;
+    const { data } = droppedCard;
+
+    if (!droppedCard.isBuffer) {
+      this.addItemToMoveBar(data, [], addToBufferState.checkExistenceInMoveBar);
+    } else {
+      this.setState({
+        activeCard: null,
+        activeBlock: null,
+      });
+    }
+  };
+
+  isPositionIntersectBuffer = (top, height) => {
+    return top > height - defaultBufferHeight;
   };
 
   // logic after dropping the card
@@ -1324,10 +1335,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.moveY = null;
     const { pan, activeCard, activeBlock, buffer } = this.state;
     const {
-      cellWidth,
       headerData,
       apptGridSettings,
-      onDrop,
       selectedProvider,
       selectedFilter,
       startDate,
@@ -1560,15 +1569,13 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   // renders block being move if any
   renderActiveBlock = () => {
     const {
-      apptGridSettings,
-      headerData,
-      selectedProvider,
-      displayMode,
-      appointments,
-      filterOptions,
-      startDate,
+      apptGridSettings, startDate,
     } = this.props;
-    const { activeBlock, calendarMeasure, isResizeing, pan, pan2 } = this.state;
+
+    const {
+      activeBlock, isResizeing, pan,
+    } = this.state;
+
     if (activeBlock) {
       return (
         <BlockTime
@@ -1877,7 +1884,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       alert,
       activeCard,
       activeBlock,
-      overlappingCardsMap,
       cardsArray,
     } = this.state;
 
