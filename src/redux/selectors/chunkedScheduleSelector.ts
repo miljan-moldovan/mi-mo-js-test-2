@@ -21,6 +21,6 @@ const chunkedScheduleSelector = createSelector(
       return [...agg, ...chunked];
     }, []);
     return reduced;
-  }
+  },
 );
 export default chunkedScheduleSelector;

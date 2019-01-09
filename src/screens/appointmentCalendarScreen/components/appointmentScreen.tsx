@@ -1009,24 +1009,24 @@ class AppointmentScreen extends React.Component<any, any> {
           </View>
           : null}
         {isCanBeOnlyUser && selectedProvider !== 'all' &&
-        <ChangeViewFloatingButton
-          bottomDistance={
-            this.state.bookAnotherEnabled || rebookAppointment ? 60 : 16
-          }
-          pickerMode={pickerMode}
-          handlePress={() => {
-            const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
-            this.props.appointmentCalendarActions.setPickerMode(
-              newPickerMode,
-            );
-            if (
-              startDate.format('YYYY-MM-DD') ===
-              endDate.format('YYYY-MM-DD')
-            ) {
-              this.props.appointmentCalendarActions.setGridView();
+          <ChangeViewFloatingButton
+            bottomDistance={
+              this.state.bookAnotherEnabled || rebookAppointment ? 60 : 16
             }
-          }}
-        />}
+            pickerMode={pickerMode}
+            handlePress={() => {
+              const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
+              this.props.appointmentCalendarActions.setPickerMode(
+                newPickerMode,
+              );
+              if (
+                startDate.format('YYYY-MM-DD') ===
+                endDate.format('YYYY-MM-DD')
+              ) {
+                this.props.appointmentCalendarActions.setGridView();
+              }
+            }}
+          />}
         <NewApptSlide
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}

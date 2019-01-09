@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { cancelRequest } from '@/utilities/helpers/cancelRequest';
 import { getApiInstance } from '../../api';
-import { ResponseEmployeeSchedule } from '@/models';
+import { ResponseEmployeeSchedule, EmployeeSchedule } from '@/models';
 
 let cancellationToken = null;
 
-export default async (employeeId, date): Promise<ResponseEmployeeSchedule> => {
+export default async (employeeId, date): Promise<EmployeeSchedule> => {
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
   return apiInstance
