@@ -68,7 +68,7 @@ const styles = {
 
 export default class calendarBuffer extends React.Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = { bufferPosition: props.screenHeight };
   }
 
@@ -121,6 +121,7 @@ export default class calendarBuffer extends React.Component {
     const { panResponder, activeCard, startDate } = this.props;
     const isActive = activeCard && activeCard.data.id === item.id;
     const hasPanResponder = !activeCard || isActive ? panResponder : null;
+
     if (item.isBlockTime) {
       return (
         <BlockCard
@@ -203,6 +204,7 @@ export default class calendarBuffer extends React.Component {
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderCard}
                 ItemSeparatorComponent={this.renderSeparator}
+                scrollEnabled={!this.props.activeCard}
               />
             </View>
           </View>
