@@ -8,7 +8,7 @@ import Icon from '@/components/common/Icon';
 import ApptQueueStatus from '../../../../../../constants/apptQueueStatus';
 import styles from './styles';
 
-function alertStartServiceFirst() {  Alert.alert('You should first start service'); };
+const alertStartServiceFirst = () => Alert.alert('You should first start service');
 
 const appointmentButtons = (props) => {
   const {
