@@ -121,13 +121,11 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
   };
 
   onDayPress = day => {
+    const startDate = moment(day.dateString);
     this.setState({
       selected: day.dateString,
       markedWeekends: getCalendarMarksForWeekends(startDate),
     });
-
-    const startDate = moment(day.dateString);
-
     let endDate = startDate.clone();
     endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
 
