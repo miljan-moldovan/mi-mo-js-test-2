@@ -58,6 +58,7 @@ const getClients = (
     'NameFilter.SortOrder': 1,
     'NameFilter.SortField': 'FirstName,LastName',
   };
+
   return Client.getClients(newParams)
     .then(response => dispatch(getClientsSuccess(response)))
     .catch(error => dispatch(getClientsFailed(error)));

@@ -181,6 +181,7 @@ export default class ServiceCheckScreen extends React.Component {
             noPlaceholder
             filterByService
             navigate={navigate}
+            showAllProviders
             showFirstAvailable={false}
             selectedService={selectedService}
             selectedProvider={selectedProvider}

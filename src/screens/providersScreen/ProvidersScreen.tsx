@@ -44,6 +44,29 @@ const FirstAvailableRow = props => {
   );
 };
 
+const AllProvidersRow = props => {
+  const allProviders = {
+    id: -1,
+    isAllAvailable: true,
+    name: 'All',
+    lastName: 'Providers',
+  };
+  const style = { paddingLeft: 16 };
+  const onPress = () => props.onPress(allProviders);
+  return (
+    <SalonTouchableOpacity
+      onPress={onPress}
+      style={style}
+      key="allProvidersRow"
+    >
+      <View style={styles.inputRow}>
+        <DefaultAvatar size={22} fontSize={9} provider={allProviders} />
+        <Text style={styles.providerName}>All Providers</Text>
+      </View>
+    </SalonTouchableOpacity>
+  );
+};
+
 export interface ProvidersScreenProps {
   providersState: ProvidersReducer;
   providersActions: ProvidersActions;
@@ -289,6 +312,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
     const { navigation: { state } } = this.props;
     const params = state.params || {};
     const showFirstAvailable = get(params, 'showFirstAvailable', true);
+    const showAllProviders = get(params, 'showAllProviders', false);
     const checkProviderStatus = get(params, 'checkProviderStatus', false);
     const showEstimatedTime = get(params, 'showEstimatedTime', true);
     const selectedService = get(params, 'selectedService', null);
@@ -313,6 +337,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
       selectedProvider,
       showEstimatedTime,
       showFirstAvailable,
+      showAllProviders,
       checkProviderStatus,
       onChangeWithNavigation,
     };
@@ -418,7 +443,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
   renderSeparator = () => <InputDivider />;
 
   render() {
-    const { showFirstAvailable } = this.params;
+    const { showFirstAvailable, showAllProviders } = this.params;
     return (
       <View style={styles.container}>
         {this.props.providersState.isLoading && <LoadingOverlay />}
@@ -437,6 +462,11 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
         {showFirstAvailable &&
         <React.Fragment>
           <FirstAvailableRow onPress={this.handleOnChangeProvider} />
+          <InputDivider fullWidth={!this.currentData.length} />
+        </React.Fragment>}
+        {showAllProviders &&
+        <React.Fragment>
+          <AllProvidersRow onPress={this.handleOnChangeProvider} />
           <InputDivider fullWidth={!this.currentData.length} />
         </React.Fragment>}
         <SalonFlatList

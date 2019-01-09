@@ -27,6 +27,7 @@ import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
 import { getHeaderRoomsOrResources } from '@/screens/appointmentCalendarScreen/helpers';
+import { appointmentCalendarActions } from '@/redux/actions/appointmentBook';
 
 class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -185,6 +186,7 @@ class AppointmentScreen extends React.Component<any, any> {
     workHeight: 0,
   };
   private BarsActionSheet: any;
+  private refsSliderPanel: any;
 
   componentDidMount() {
     this.props.navigation.setParams({
@@ -274,6 +276,10 @@ class AppointmentScreen extends React.Component<any, any> {
       headerProps,
       hideAddButton: true,
     });
+  };
+
+  hideAlertError = () => {
+    this.props.appointmentCalendarActions.hideAlertError();
   };
 
   onPressTitle = () =>
@@ -850,6 +856,10 @@ class AppointmentScreen extends React.Component<any, any> {
     this.setState({ workHeight: height });
   };
 
+  getSlideRefs = (ref) => {
+    this.refsSliderPanel = ref;
+  };
+
   render() {
     const {
       dates,
@@ -868,6 +878,7 @@ class AppointmentScreen extends React.Component<any, any> {
       resources,
       resourceAppointments,
       storeSchedule,
+      alertError,
     } = this.props.appointmentScreenState;
     const {
       storeScheduleExceptions,
@@ -912,7 +923,8 @@ class AppointmentScreen extends React.Component<any, any> {
         break;
       }
       case 'deskStaff': {
-        headerData = providers;
+        isDate = selectedProvider !== 'all';
+        headerData = isDate ? dates : providers;
         dataSource = providerAppointments;
         break;
       }
@@ -928,6 +940,8 @@ class AppointmentScreen extends React.Component<any, any> {
 
     const isNeedShowCurrentTime = startDate.format(DateTime.dateWithMonthShort)
       === moment().format(DateTime.dateWithMonthShort) && pickerMode === 'day';
+
+    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
 
     return (
       <View
@@ -962,7 +976,7 @@ class AppointmentScreen extends React.Component<any, any> {
           appointments={appointments}
           blockTimes={blockTimes}
           headerData={headerData}
-          onScrollBeginDrag={this.hideApptSlider}
+          refsSliderPanel={this.refsSliderPanel}
           isDate={isDate}
           isRoom={selectedFilter === 'rooms'}
           isResource={selectedFilter === 'resources'}
@@ -994,8 +1008,7 @@ class AppointmentScreen extends React.Component<any, any> {
             <ActivityIndicator />
           </View>
           : null}
-        {selectedFilter === 'providers' &&
-          selectedProvider !== 'all' &&
+        {isCanBeOnlyUser && selectedProvider !== 'all' &&
           <ChangeViewFloatingButton
             bottomDistance={
               this.state.bookAnotherEnabled || rebookAppointment ? 60 : 16
@@ -1075,7 +1088,7 @@ class AppointmentScreen extends React.Component<any, any> {
           changeAppointment={this.onCardPressed}
           handleNewAppt={this.onCalendarCellPressed}
           workHeight={this.state.workHeight}
-          setMinHeightRef={(ref) => this.hideApptSlider = ref}
+          getRefsSlidePanel={this.getSlideRefs}
         />
         {toast
           ? <SalonToast
@@ -1109,6 +1122,13 @@ class AppointmentScreen extends React.Component<any, any> {
           btnRightText={alert ? alert.btnRightText : ''}
           onPressLeft={alert ? alert.onPressLeft : null}
           onPressRight={alert ? alert.onPressRight : null}
+        />
+        <SalonAlert
+          visible={alertError && alertError.show}
+          title={alertError && alertError.title}
+          description={alertError && alertError.description}
+          btnRightText={'OK'}
+          onPressRight={this.hideAlertError}
         />
       </View>
     );
