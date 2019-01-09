@@ -86,6 +86,7 @@ type IState = {
   shouldSelectBookedBy: boolean;
   toast: Maybe<SalonToastObject>;
   otherHeight: number;
+  createAniwayWithConflicts: boolean;
 };
 
 class NewApptSlide extends React.Component<IProps, IState> {
@@ -124,6 +125,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
     selectedRecommended: null,
     hasViewedAddons: null,
     hasViewedRecommended: null,
+    createAniwayWithConflicts: false,
   });
 
   componentWillReceiveProps(newProps: IProps) {
@@ -507,12 +509,13 @@ class NewApptSlide extends React.Component<IProps, IState> {
   canBook = () => {
     const { client, conflicts, isLoading, isBooking, mainEmployee, bookedByEmployee } = this.props.newApptState;
     const { service } = this.getService();
+    const { createAniwayWithConflicts } = this.state;
     if (
       service === null ||
       client === null ||
       mainEmployee === null ||
       bookedByEmployee === null ||
-      conflicts.length > 0 ||
+      (conflicts.length > 0 && !createAniwayWithConflicts) ||
       isLoading ||
       isBooking
     ) {
@@ -840,6 +843,13 @@ class NewApptSlide extends React.Component<IProps, IState> {
     }
   };
 
+  handleDoneConflicts = (canBeSkipped) => {
+    this.showPanel();
+    if (canBeSkipped) {
+      this.setState({ createAniwayWithConflicts : true });
+    }
+  }
+
   renderBookingTab = () => {
     const { navigation, selectedFilter } = this.props;
     const {
@@ -866,7 +876,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
         startTime,
         endTime: this.getEndTime(),
         handleGoBack: () => this.showPanel(),
-        handleDone: () => this.showPanel(),
+        handleDone: this.handleDoneConflicts,
       });
     };
     const onPressConflicts = () => this.hidePanel(conflictsCallback);
