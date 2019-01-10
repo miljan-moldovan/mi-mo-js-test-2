@@ -1002,6 +1002,7 @@ class AppointmentScreen extends React.Component<any, any> {
           clearGoToAppointment={this.clearGoToAppointment}
           crossedAppointmentAfter={crossedAppointmentsIdAfter}
           isNeedShowCurrentTime={isNeedShowCurrentTime}
+          workHeight={this.state.workHeight}
         />
         {isLoading
           ? <View style={styles.loadingContainer}>
