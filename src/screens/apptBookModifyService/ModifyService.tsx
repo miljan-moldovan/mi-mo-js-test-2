@@ -367,7 +367,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
     serviceState.service = {
       isFirstAvailable,
       appointmentId: this.state.id,
-      clientId: this.state.selectedClient.id,
+      clientId: this.state.selectedClient && this.state.selectedClient.id || null,
       serviceId: this.state.selectedService.id,
       employeeId: isFirstAvailable
         ? null
