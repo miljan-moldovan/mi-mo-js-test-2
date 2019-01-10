@@ -1551,7 +1551,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         return null;
       }
     }
-    if (blockTime) {
+
+    //Show blocktime only if they belong to the current provider - IP-1047
+    const blocktimeBelongsToEmployee = provider.id === get(blockTime.employee, 'id', false);
+
+    if (blockTime && blocktimeBelongsToEmployee) {
       const panResponder = (activeBlock &&
         activeBlock.data.id !== blockTime.id) ||
       isInBuffer ||
@@ -1574,6 +1578,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         left: delta,
         width: this.cellWidth - gap,
       };
+    
       return (
         <BlockTime
           left={overlap.left}
@@ -1627,6 +1632,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           isResizeing={this.state.isResizeing}
           startDate={startDate}
         />
+
       );
     }
     return null;
