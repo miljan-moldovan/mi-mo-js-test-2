@@ -60,8 +60,14 @@ export default class NewClientScreen extends React.Component {
     super(props);
   }
 
-  componentWillMount() {
+  state = {
+    firstName: '',
+    lastName: '',
+  };
 
+  componentDidMount() {
+    const { firstName, lastName } = this.props.navigation.state.params;
+    this.setState({ firstName, lastName });
   }
 
   setCanSave = (canSave) => {
@@ -94,7 +100,10 @@ export default class NewClientScreen extends React.Component {
           setCanSave={this.setCanSave}
           editionMode
           actionType="new"
-          client={null}
+          client={{
+            name: this.state.firstName,
+            lastName: this.state.lastName,
+          }}
           onDismiss={this.onClientCreated}
           navigation={this.props.navigation}
           {...this.props}
