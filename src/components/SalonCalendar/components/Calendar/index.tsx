@@ -1521,7 +1521,9 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     }
 
     //Show blocktime only if they belong to the current provider - IP-1047
-    if (blockTime && blockTime.employee.id === provider.id) {
+    const blocktimeBelongsToEmployee = provider.id === get(blockTime.employee, 'id', false);
+
+    if (blockTime && blocktimeBelongsToEmployee) {
       const panResponder = (activeBlock &&
         activeBlock.data.id !== blockTime.id) ||
       isInBuffer ||
