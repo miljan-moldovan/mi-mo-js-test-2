@@ -49,6 +49,7 @@ import {
 import { CalendarProps, CalendarState } from '@/models/appointment-book/calendar';
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 import styles from './styles';
+import { isIphoneX } from 'react-native-iphone-x-helper'
 
 import { findOverlappingAppointments } from './helpers';
 
@@ -704,14 +705,45 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   };
 
   centerCard = (left, top, slideHieght) => {
+    const x = this.calculateXPositionScrollView(left);
+    const y = this.calculateYPositionScrollView(top, slideHieght);
+    this.board.scrollTo({ x, y });
+  };
+
+  calculateXPositionScrollView = (left) => {
     const { calendarMeasure } = this.state;
-    let x = left + (this.cellWidth - calendarMeasure.width) / 2;
-    x = x > 0 ? x : 0;
-    let y = top - (calendarMeasure.height - slideHieght) / 2 - headerHeight;
-    this.board.scrollTo({
-      x,
-      y,
-    });
+    const x = left + (this.cellWidth - calendarMeasure.width) / 2;
+    if (this.isLastRow(left)) {
+      return this.size.width - this.cellWidth * (screenWidth / this.cellWidth);
+    }
+    return this.checkEdgeOfScree(x);
+  };
+
+  isLastRow = (left) => {
+    return left + this.cellWidth + timeColumnWidth === this.size.width;
+  };
+
+  calculateYPositionScrollView = (top, slideHieght) => {
+    const { calendarMeasure } = this.state;
+    const y = top - (calendarMeasure.height - slideHieght) / 2 - headerHeight;
+    if (this.isElementInEndOfList(top)) {
+      return top - (this.props.workHeight  - (isIphoneX() ? 255 : 315));
+    }
+    return this.checkEdgeOfScree(y);
+  };
+
+  isElementInEndOfList = (top) => {
+    const { numOfRow } = this.props.apptGridSettings;
+    return top > numOfRow * cellHeight - 390;
+  };
+
+  checkEdgeOfScree = (position) => {
+
+    if (position < 0) {
+      return 0;
+    }
+
+    return position;
   };
 
   handleCardPressed = (appt, left, top) => {
