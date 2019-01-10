@@ -188,10 +188,10 @@ class ClientDetails extends React.Component<Props, State> {
 
   }
 
-  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
-    if (prevProps.client.name !== this.props.client.name) {
+  componentWillReceiveProps(nextProps: Readonly<Props>, nextContext: any) {
+    if (this.props.client.name !== nextProps.client.name) {
       this.setState({
-        client: JSON.parse(JSON.stringify({ defaultClient, ...this.props.client })),
+        client: JSON.parse(JSON.stringify({ defaultClient, ...nextProps.client })),
       });
     }
   }
