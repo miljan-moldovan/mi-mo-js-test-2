@@ -1376,7 +1376,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     } = this.props;
     const active = activeBlock || activeCard;
     const { data } = active;
-    const { toTime, fromTime, id } = data;
+    const { toTime, fromTime, id, employee } = data;
     const headerOffset = selectedProvider !== 'all' && displayMode === 'day'
       ? 0
       : 40;
@@ -1409,6 +1409,12 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       const newToTime = newToTimeMoment.format('h:mma');
       const newTime = newTimeMoment.format('HH:mm');
       const date = dateMoment.format('YYYY-MM-DD');
+      if (employeeId === employee.id && oldDate === dateMoment.format('MMM DD')
+        && oldFromTime.format('h:mma') === newTimeMoment.format('h:mma')
+        && oldToTime.format('h:mma') === newToTime) {
+        this.setState({ activeCard: null });
+        return
+      }
       if (activeCard) {
         const clientName = `${data.client.name} ${data.client.lastName}`;
         this.setState({
