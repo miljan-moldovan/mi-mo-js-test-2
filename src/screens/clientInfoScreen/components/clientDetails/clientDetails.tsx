@@ -205,6 +205,14 @@ class ClientDetails extends React.Component<Props, State> {
 
   }
 
+  componentWillReceiveProps(nextProps: Readonly<Props>, nextContext: any) {
+    if (this.props.client.name !== nextProps.client.name) {
+      this.setState({
+        client: JSON.parse(JSON.stringify({ defaultClient, ...nextProps.client })),
+      });
+    }
+  }
+
   componentDidMount() {
     
     this.props.setHandleDone(this.handleDone);

@@ -140,6 +140,7 @@ class ClientsScreen extends React.Component<Props, State> {
   }
 
   state = {
+    filterText: '',
     headerProps: {
       title: 'Clients',
       subTitle: null,
@@ -174,6 +175,11 @@ class ClientsScreen extends React.Component<Props, State> {
         };
         this.props.clientsActions.getClients(params);
       }
+    }
+    if (this.props.salonSearchHeaderState.searchText.length === 0 && this.state.filterText.length > 0) {
+      this.setState({
+        filterText: '',
+      });
     }
   }
 
@@ -238,6 +244,7 @@ class ClientsScreen extends React.Component<Props, State> {
   };
 
   filterClients = searchText => {
+    this.setState({ filterText: searchText });
     if (searchText && searchText.length > 0) {
       const params = {
         ...query,
@@ -328,6 +335,7 @@ class ClientsScreen extends React.Component<Props, State> {
                 ? this.props.navigation.state.params.hideAddButton
                 : true
             }
+            fullName={this.state.filterText}
           />
         </View>
       </View>

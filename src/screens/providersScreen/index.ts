@@ -6,6 +6,7 @@ import queueListSelector from '../../redux/selectors/providers/queueListSelector
 import receptionistListSelector from '../../redux/selectors/providers/receptionistListSelector';
 import groupedSettingsSelector from '../../redux/selectors/settingsSelector';
 import settingsActions from '../../redux/actions/settings';
+import getAvailabilityWithGaps from '@/redux/selectors/availabilitySelector';
 
 
 const mapStateToProps = state => ({
@@ -14,6 +15,7 @@ const mapStateToProps = state => ({
   receptionistList: receptionistListSelector(state),
   quickQueueEmployees: state.providersReducer.quickQueueEmployees,
   providersState: state.providersReducer,
+  availability: getAvailabilityWithGaps(state),
   salonSearchHeaderState: state.salonSearchHeaderReducer,
   groupedSettings: groupedSettingsSelector(state),
 });
