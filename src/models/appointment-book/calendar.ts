@@ -37,6 +37,7 @@ export interface CalendarProps {
   setSelectedProvider: Function,
   startDate: string | moment.Moment,
   storeScheduleExceptions: ProviderSchedule[],
+  refsSliderPanel: any,
 }
 
 export interface CalendarState {
@@ -49,4 +50,5 @@ export interface CalendarState {
   overlappingCardsMap: any[], //TO DO,
   pan: any, //TO DO,
   pan2: any, //TO DO
+  alert: any,
 }

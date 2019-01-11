@@ -11,7 +11,6 @@ import uuid from 'uuid/v4';
 import { get, debounce, isNull } from 'lodash';
 import deepEqual from 'deep-equal';
 import { NavigationEvents } from 'react-navigation';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Picker } from 'react-native-wheel-datepicker';
 import ClientInfoButton from '@/components/ClientInfoButton';
 import ClientPhoneTypes from '@/constants/ClientPhoneTypes';
@@ -48,13 +47,13 @@ export const SubTitle = (props: {
   style?: StyleProp<ViewStyle>;
   children?: React.ReactChildren;
 }) => (
-  <View style={[styles.subTitleContainer, props.style || {}]}>
-    <View style={styles.subTitleTextContainer}>
-      <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
+    <View style={[styles.subTitleContainer, props.style || {}]}>
+      <View style={styles.subTitleTextContainer}>
+        <Text style={styles.subTitleText}>{props.title.toUpperCase()}</Text>
+      </View>
+      {props.children}
     </View>
-    {props.children}
-  </View>
-);
+  );
 
 class NewAppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation, screenProps }) => {
@@ -184,6 +183,20 @@ class NewAppointmentScreen extends React.Component<any, any> {
       afterTime: moment.duration(get(service, 'afterDuration', 0)),
     };
 
+    // if (service.requireRoom) {
+    //   const room = await this.getRoomInfo(service.requireRoom);
+    //   if (room) {
+    //     newService.room = room;
+    //   }
+    // }
+
+    // if (service.requiredResourceId) {
+    //   const resource = await this.getResourceInfo(service.requiredResourceId);
+    //   if (resource) {
+    //     newService.resource = resource;
+    //   }
+    // }
+
     const newServiceItem = {
       itemId: uuid(),
       guestId,
@@ -195,6 +208,47 @@ class NewAppointmentScreen extends React.Component<any, any> {
       this.selectExtraServices(newServiceItem);
     });
   };
+
+  createPhonesArr = phones => {
+    const createPhone = type => {
+      const cell = phones.find(
+        itm => get(itm, 'type', null) === ClientPhoneTypes[type],
+      );
+      if (
+        !cell ||
+        !cell.value ||
+        !cell.value.trim() ||
+        !this.isValidPhoneNumberRegExp.test(cell.value)
+      ) {
+        return { type: ClientPhoneTypes[type], value: '' };
+      }
+      return cell;
+    };
+    return [createPhone('cell'), createPhone('home'), createPhone('work')];
+  };
+
+  selectMainEmployee = () =>
+    new Promise(resolve => {
+      const {
+        newAppointmentState: { date },
+        appointmentScreenState: { providers },
+      } = this.props;
+      this.props.navigation.navigate('ApptBookProvider', {
+        date,
+        mode: 'newAppointment',
+        headerProps: {
+          title: 'Providers',
+          leftButton: (
+            <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+          ),
+          leftButtonOnPress: navigation => navigation.goBack,
+        },
+        showFirstAvailable: true,
+        showEstimatedTime: true,
+        dismissOnSelect: true,
+        onChangeProvider: provider => resolve(provider),
+      });
+    });
 
   selectExtraServices = serviceItem => {
     const { service: { service = null }, itemId } = serviceItem;
@@ -271,7 +325,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
               showCancelButton: false,
               services: service.requiredServices,
               serviceTitle: service.name,
-              onNavigateBack: this.showPanel,
               onSave: selected => resolve(selected),
             });
           }
@@ -294,7 +347,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
             showCancelButton: false,
             services: service.addons,
             serviceTitle: service.name,
-            onNavigateBack: this.showPanel,
             onSave: services => resolve(services),
           });
         } else {
@@ -317,7 +369,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
             showCancelButton: false,
             services: service.recommendedServices,
             serviceTitle: service.name,
-            onNavigateBack: this.showPanel,
             onSave: services => resolve(services),
           });
         } else {
@@ -334,6 +385,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
       clientPhone,
       isValidEmail: emailValid,
       isValidPhone: phoneValid,
+      clientPhoneType,
     } = this.state;
     const { client } = this.props.newAppointmentState;
     const currentPhone = client.phones.find(
@@ -459,6 +511,22 @@ class NewAppointmentScreen extends React.Component<any, any> {
     };
   };
 
+  getRoomInfo = roomId =>
+    new Promise((resolve, reject) => {
+      Store.getRooms()
+        .then(rooms => resolve(rooms.find(room => room.id === roomId)))
+        .catch(err => reject(err));
+    });
+
+  getResourceInfo = resourceId =>
+    new Promise((resolve, reject) => {
+      Store.getResources()
+        .then(resources =>
+          resolve(resources.find(resource => resource.id === resourceId)),
+        )
+        .catch(err => reject(err));
+    });
+
   getMainServices = serviceItems =>
     serviceItems.filter(item => this.isMainService(item));
 
@@ -519,6 +587,8 @@ class NewAppointmentScreen extends React.Component<any, any> {
     this.checkConflicts();
   };
 
+  onChangeRecurring = isRecurring => isRecurring; // this.setState({ isRecurring: !isRecurring });
+
   onChangeBookedBy = employee => {
     this.props.newAppointmentActions.setBookedBy(employee);
   };
@@ -560,6 +630,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
   onChangeGuestNumber = (action, guestNumber) => {
     if (this.props.newAppointmentState.guests.length < guestNumber) {
       this.addGuest();
+      //this.props.newAppointmentActions.addGuest();
     } else {
       this.props.newAppointmentActions.removeGuest();
     }
@@ -874,12 +945,28 @@ class NewAppointmentScreen extends React.Component<any, any> {
 
   totalLength = () => this.props.appointmentLength;
 
+  resetTimeForServices = (items, index, initialFromTime) => {
+    items.forEach((item, i) => {
+      if (i > index) {
+        const prevItem = items[i - 1];
+        item.service.fromTime =
+          (prevItem && prevItem.service.toTime.clone()) || initialFromTime;
+        item.service.toTime = item.service.fromTime
+          .clone()
+          .add(moment.duration(item.service.toTime));
+      }
+    });
+    return items;
+  };
+
   renderExtraClientButtons = isDisabled => (
     <React.Fragment>
       <SalonTouchableOpacity
         disabled={isDisabled}
         key={Math.random().toString()}
         onPress={() => {
+          // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
+          // const url = isFormulas ? 'ClientFormulas' : 'ClientNotes';
           this.props.navigation.navigate('ClientNotes', {
             forAppointment: true,
             forSales: false,
@@ -922,9 +1009,11 @@ class NewAppointmentScreen extends React.Component<any, any> {
       client,
       bookedByEmployee,
       startTime,
+      conflicts,
       guests,
       remarks,
       isBookedByFieldEnabled,
+      editType,
       serviceItems,
     } = this.props.newAppointmentState;
 
@@ -939,6 +1028,7 @@ class NewAppointmentScreen extends React.Component<any, any> {
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
     const dividerWithErrorStyle = { backgroundColor: '#D1242A' };
+    // const isFormulas = this.props.settingState.data.PrintToTicket === 'Formulas';
     const disabledLabelStyle = {
       fontSize: 14,
       lineHeight: 18,
@@ -957,150 +1047,150 @@ class NewAppointmentScreen extends React.Component<any, any> {
       .asMilliseconds() === 0
       ? '0 min'
       : `${moment.duration(totalDuration).asMinutes()} min`;
+    const guestsLabel = guests.length === 0 || guests.length > 1
+      ? `${guests.length} Guests`
+      : `${guests.length} Guest`;
 
     const mainServices = this.getMainServices(serviceItems);
     return (
-      <SwipeableComponent onSwipeRight={this.handleCancel}>
-        <View style={styles.container}>
-          <NavigationEvents onDidFocus={this.validate} />
-          {isLoading || isBooking || isLoadingNotes ? <LoadingOverlay /> : null}
-          <KeyboardAwareScrollView style={styles.container}>
-            <InputGroup style={{ marginTop: 15 }}>
-              <ProviderInput
-                apptBook
-                noAvatar
-                label="Booked by"
-                placeholder={false}
-                showFirstAvailable={false}
-                icon={isBookedByFieldEnabled ? 'default' : false}
-                selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
-                selectedProvider={bookedByEmployee}
-                disabled={!isBookedByFieldEnabled}
-                onChange={this.onChangeBookedBy}
-                navigate={this.props.navigation.navigate}
-                headerProps={{
-                  title: 'Providers',
-                  leftButton: (
-                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-                  ),
-                  leftButtonOnPress: navigation => {
-                    navigation.goBack();
-                  },
-                }}
-              />
-              <InputDivider />
-              <InputButton
-                label="Date"
-                value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('hh:mm A')}`}
-                onPress={this.changeDateTime}
-              />
-            </InputGroup>
-            <SectionTitle style={{ height: 46 }} value="Client" />
-            <InputGroup>
-              <ClientInput
-                apptBook
-                navigate={this.props.navigation.navigate}
-                label={client === null ? 'Select Client' : 'Client'}
-                headerProps={{
-                  title: 'Clients',
-                  leftButton: (
-                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-                  ),
-                  leftButtonOnPress: navigation => {
-                    navigation.goBack();
-                  },
-                }}
-                selectedClient={client}
-                onChange={this.onChangeClient}
-                extraComponents={
-                  client !== null && this.renderExtraClientButtons(isDisabled)
-                }
-              />
-              <InputDivider />
-              <ValidatableInput
-                label="Email"
-                value={clientEmail}
-                isValid={isValidEmail || !client}
-                validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
-                onValidated={this.onValidateEmail}
-                onChangeText={this.onChangeEmail}
-              />
-              <InputDivider
-                style={isValidEmail || !client ? {} : dividerWithErrorStyle}
-              />
-              <ValidatableInput
-                label="Phone"
-                mask="[000]-[000]-[0000]"
-                isValid={isValidPhone || !client}
-                value={clientPhone}
-                validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
-                onValidated={this.onValidatePhone}
-                onChangeText={this.onChangePhone}
-              />
-              <InputDivider
-                style={isValidPhone || !client ? {} : dividerWithErrorStyle}
-              />
-              <InputNumber
-                value={guests.length}
-                onChange={this.onChangeGuestNumber}
-                label="Multiple Guests"
-                singularText="guest"
-                pluralText="guests"
-              />
-            </InputGroup>
-            <View>
-              <SubTitle
-                title={guests.length > 0 ? 'Main Client' : 'Services'}
-              />
-              {mainServices.map(item => {
-                const addonItems = this.getAddonsForService(item.itemId, serviceItems);
-                return (
-                  <React.Fragment key={item.itemId}>
-                    <ServiceCard
-                      key={`service_card_${item.itemId}`}
-                      data={item.service}
-                      isOnlyMainService={this.isOnlyMainService(item)}
-                      addons={this.getAddonsForService(item.itemId, serviceItems)}
-                      onPress={() => this.onPressService(item.itemId)}
-                      onSetExtras={() => this.selectExtraServices(item)}
-                      conflicts={this.getConflictsForService(item.itemId)}
-                      onPressDelete={() => this.removeServiceAlert(item.itemId)}
-                      onPressConflicts={() => this.onPressConflicts(item.itemId)}
-                      isGotAddon={addonItems.length}
-                    />
-                    {
-                      addonItems.map(addon => {
-                        const addonOnPress = () => this.onPressService(addon.itemId);
-                        const addonDelete = () => this.removeServiceAlert(addon.itemId);
-                        const addonConflicts = () =>
-                          this.onPressConflicts(addon.itemId);
-                        return (
-                          <ServiceCard
-                            isAddon
-                            key={`addon_card_${addon.itemId}`}
-                            data={addon.service}
-                            isRequired={addon.isRequired}
-                            onPress={addonOnPress}
-                            conflicts={this.getConflictsForService(addon.itemId)}
-                            onPressDelete={addonDelete}
-                            onPressConflicts={addonConflicts}
-                          />
-                        );
-                      })
-                    }
-                  </React.Fragment>);
-              })}
-              <AddButton
-                style={{
-                  marginVertical: 5,
-                  paddingTop: 0,
-                }}
-                onPress={this.handleAddMainService}
-                iconStyle={{ marginLeft: 10, marginRight: 4 }}
-                title="add service"
-              />
-            </View>
-            {guests.length > 0 &&
+      <View style={styles.container}>
+        <NavigationEvents onDidFocus={this.validate} />
+        {isLoading || isBooking || isLoadingNotes ? <LoadingOverlay /> : null}
+        <SwipeableComponent onSwipeRight={this.handleCancel}>
+          <InputGroup style={{ marginTop: 15 }}>
+            <ProviderInput
+              apptBook
+              noAvatar
+              label="Booked by"
+              placeholder={false}
+              showFirstAvailable={false}
+              icon={isBookedByFieldEnabled ? 'default' : false}
+              selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
+              selectedProvider={bookedByEmployee}
+              disabled={!isBookedByFieldEnabled}
+              onChange={this.onChangeBookedBy}
+              navigate={this.props.navigation.navigate}
+              headerProps={{
+                title: 'Providers',
+                leftButton: (
+                  <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+                ),
+                leftButtonOnPress: navigation => {
+                  navigation.goBack();
+                },
+              }}
+            />
+            <InputDivider />
+            <InputButton
+              label="Date"
+              value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('hh:mm A')}`}
+              onPress={this.changeDateTime}
+            />
+          </InputGroup>
+          <SectionTitle style={{ height: 46 }} value="Client" />
+          <InputGroup>
+            <ClientInput
+              apptBook
+              navigate={this.props.navigation.navigate}
+              label={client === null ? 'Select Client' : 'Client'}
+              headerProps={{
+                title: 'Clients',
+                leftButton: (
+                  <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+                ),
+                leftButtonOnPress: navigation => {
+                  navigation.goBack();
+                },
+              }}
+              selectedClient={client}
+              onChange={this.onChangeClient}
+              extraComponents={
+                client !== null && this.renderExtraClientButtons(isDisabled)
+              }
+            />
+            <InputDivider />
+            <ValidatableInput
+              label="Email"
+              value={clientEmail}
+              isValid={isValidEmail || !client}
+              validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
+              onValidated={this.onValidateEmail}
+              onChangeText={this.onChangeEmail}
+            />
+            <InputDivider
+              style={isValidEmail || !client ? {} : dividerWithErrorStyle}
+            />
+            <ValidatableInput
+              label="Phone"
+              mask="[000]-[000]-[0000]"
+              isValid={isValidPhone || !client}
+              value={clientPhone}
+              validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
+              onValidated={this.onValidatePhone}
+              onChangeText={this.onChangePhone}
+            />
+            <InputDivider
+              style={isValidPhone || !client ? {} : dividerWithErrorStyle}
+            />
+            <InputNumber
+              value={guests.length}
+              onChange={this.onChangeGuestNumber}
+              label="Multiple Guests"
+              singularText="guest"
+              pluralText="guests"
+            />
+          </InputGroup>
+          <View>
+            <SubTitle
+              title={guests.length > 0 ? 'Main Client' : 'Services'}
+            />
+            {mainServices.map(item => {
+              const addonItems = this.getAddonsForService(item.itemId, serviceItems);
+              return (
+                <React.Fragment key={item.itemId}>
+                  <ServiceCard
+                    key={`service_card_${item.itemId}`}
+                    data={item.service}
+                    isOnlyMainService={this.isOnlyMainService(item)}
+                    addons={this.getAddonsForService(item.itemId, serviceItems)}
+                    onPress={() => this.onPressService(item.itemId)}
+                    onSetExtras={() => this.selectExtraServices(item)}
+                    conflicts={this.getConflictsForService(item.itemId)}
+                    onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                    onPressConflicts={() => this.onPressConflicts(item.itemId)}
+                    isGotAddon={addonItems.length}
+                  />
+                  {
+                    addonItems.map(addon => {
+                      const addonOnPress = () => this.onPressService(addon.itemId);
+                      const addonDelete = () => this.removeServiceAlert(addon.itemId);
+                      const addonConflicts = () =>
+                        this.onPressConflicts(addon.itemId);
+                      return (
+                        <ServiceCard
+                          isAddon
+                          key={`addon_card_${addon.itemId}`}
+                          data={addon.service}
+                          isRequired={addon.isRequired}
+                          onPress={addonOnPress}
+                          conflicts={this.getConflictsForService(addon.itemId)}
+                          onPressDelete={addonDelete}
+                          onPressConflicts={addonConflicts}
+                        />
+                      );
+                    })
+                  }
+                </React.Fragment>
+              );
+            })}
+            <AddButton
+              style={{ marginVertical: 5, paddingTop: 0 }}
+              onPress={this.handleAddMainService}
+              iconStyle={{ marginLeft: 10, marginRight: 4 }}
+              title="add service"
+            />
+          </View>
+          {guests.length > 0 &&
             <View>
               {guests.map((guest, guestIndex) => (
                 <View>
@@ -1161,8 +1251,32 @@ class NewAppointmentScreen extends React.Component<any, any> {
                   />
                 </View>
               ))}
-            </View>}
-            {this.state.isRecurring &&
+            </View>
+          }
+          {this.state.isRecurring &&
+            <View>
+              <InputGroup style={{ marginVertical: 20 }}>
+                <InputSwitch
+                  text="Recurring appt."
+                  value={this.state.isRecurring}
+                  onChange={() =>
+                    this.setState({
+                      toast: {
+                        type: 'info',
+                        text: 'API Not implemented',
+                      },
+                    })}
+                />
+              </InputGroup>
+              <AddButton
+                style={{ marginVertical: 5 }}
+                onPress={() => this.handleAddGuestService(guest.guestId)}
+                iconStyle={{ marginLeft: 10, marginRight: 6 }}
+                title="add service"
+              />
+            </View>
+          }
+          {this.state.isRecurring &&
             <View>
               <InputGroup style={{ marginVertical: 20 }}>
                 <InputSwitch
@@ -1189,32 +1303,33 @@ class NewAppointmentScreen extends React.Component<any, any> {
                   style={{ paddingLeft: 0 }}
                 />
                 {this.state.recurringPickerOpen &&
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignSelf: 'stretch',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <Picker
-                    style={{ flex: 1 }}
-                    itemStyle={{ backgroundColor: 'white' }}
-                    selectedValue={this.state.recurringNumber}
-                    pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-                    onValueChange={recurringNumber =>
-                      this.setState({ recurringNumber })}
-                  />
-                  <Picker
-                    style={{ flex: 1 }}
-                    itemStyle={{ backgroundColor: 'white' }}
-                    selectedValue={this.state.recurringType}
-                    pickerData={['Weeks', 'Months']}
-                    onValueChange={recurringType =>
-                      this.setState({ recurringType })}
-                  />
-                </View>}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignSelf: 'stretch',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Picker
+                      style={{ flex: 1 }}
+                      itemStyle={{ backgroundColor: 'white' }}
+                      selectedValue={this.state.recurringNumber}
+                      pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+                      onValueChange={recurringNumber =>
+                        this.setState({ recurringNumber })}
+                    />
+                    <Picker
+                      style={{ flex: 1 }}
+                      itemStyle={{ backgroundColor: 'white' }}
+                      selectedValue={this.state.recurringType}
+                      pickerData={['Weeks', 'Months']}
+                      onValueChange={recurringType =>
+                        this.setState({ recurringType })}
+                    />
+                  </View>
+                }
                 <InputDivider />
                 <InputButton
                   label="On"
@@ -1241,69 +1356,70 @@ class NewAppointmentScreen extends React.Component<any, any> {
               >
                 Event will occur every month on the same day each month
               </Text>
-            </View>}
-            <View style={{ paddingHorizontal: 8, marginVertical: 10 }}>
-              <View
-                style={{
-                  height: 2,
-                  alignSelf: 'stretch',
-                  backgroundColor: '#c2c2c2',
-                }}
-              />
             </View>
+          }
+          <View style={{ paddingHorizontal: 8, marginVertical: 10 }}>
             <View
               style={{
-                flexDirection: 'row',
-                paddingHorizontal: 22,
-                justifyContent: 'space-between',
+                height: 2,
+                alignSelf: 'stretch',
+                backgroundColor: '#c2c2c2',
               }}
-            >
-              <Text
-                style={{
-                  color: '#C0C1C6',
-                  fontSize: 11,
-                }}
-              >
-                TOTAL
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  lineHeight: 19,
-                  fontFamily: 'Roboto-Medium',
-                  color: '#4D5067',
-                }}
-              >
-                {`${displayDuration} / $ ${totalPrice}`}
-              </Text>
-            </View>
-            <InputGroup
-              style={{
-                marginVertical: 30,
-                paddingVertical: 10,
-              }}
-            >
-              <LabeledTextarea
-                label="Remarks"
-                isEditable
-                placeholder="Please specify"
-                value={remarks}
-                onChangeText={this.onChangeRemarks}
-              />
-            </InputGroup>
-          </KeyboardAwareScrollView>
-          {toast
-            ? <SalonToast
-              timeout={5000}
-              timeout={5000}
-              type={toast.type}
-              description={toast.text}
-              hide={this.hideToast}
-              btnRightText={toast.btnRightText}
             />
-            : null}
-        </View>
-      </SwipeableComponent>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 22,
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={{
+                color: '#C0C1C6',
+                fontSize: 11,
+              }}
+            >
+              TOTAL
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: 19,
+                fontFamily: 'Roboto-Medium',
+                color: '#4D5067',
+              }}
+            >
+              {`${displayDuration} / $ ${totalPrice}`}
+            </Text>
+          </View>
+          <InputGroup
+            style={{
+              marginVertical: 30,
+              paddingVertical: 10,
+            }}
+          >
+            <LabeledTextarea
+              label="Remarks"
+              isEditable
+              placeholder="Please specify"
+              value={remarks}
+              onChangeText={this.onChangeRemarks}
+            />
+          </InputGroup>
+        </SwipeableComponent>
+        {toast
+          ? <SalonToast
+            timeout={5000}
+            timeout={5000}
+            type={toast.type}
+            description={toast.text}
+            hide={this.hideToast}
+            btnRightText={toast.btnRightText}
+          />
+          : null
+        }
+      </View>
     );
   }
 }

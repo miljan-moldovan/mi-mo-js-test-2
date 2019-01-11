@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
 import { Dictionary } from '@/models';
+import store from '../../redux/store';
+import { showCustomAlert } from '../../redux/actions/utils';
+import { logout } from '../../redux/actions/login';
 
 export const URLKEY = '@APISettings:url';
 export const STOREKEY = '@APISettings:store';
@@ -33,12 +36,28 @@ const getApiInstance = async () => {
       }
     } catch (error) {
       // Error retrieving data, keep default settings
-
     }
     axiosInstance = axios.create({
       baseURL: BASEURL,
       timeout: 90000,
       headers,
+    });
+    axiosInstance.interceptors.response.use(undefined, (error) => {
+      const sessionExpired =
+        error.response &&
+        error.response.status === 401;
+
+      if (sessionExpired && store.getState().auth.loggedIn) {
+        const onPress = () => store.dispatch(logout());
+        const text = {
+          title: 'Session expired',
+          button: 'Ok',
+          message: 'You need to reauthenticate',
+        };
+
+        showCustomAlert(text, onPress);
+      }
+      return Promise.reject(error);
     });
   }
   return axiosInstance;

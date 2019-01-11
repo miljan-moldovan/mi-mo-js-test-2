@@ -90,10 +90,6 @@ const AddonsContainer = (props) => {
     return aggregator;
   }, moment.duration());
 
-  if (!props.required) {
-    return null;
-  }
-
   return props.visible ? (
     <Animated.View
       style={{

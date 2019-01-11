@@ -49,6 +49,7 @@ import {
 import { CalendarProps, CalendarState } from '@/models/appointment-book/calendar';
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 import styles from './styles';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { findOverlappingAppointments } from './helpers';
 
@@ -61,6 +62,8 @@ const providerWidth = 130;
 const headerHeight = 40;
 const timeColumnWidth = 36;
 const cellHeight = 30;
+const initialHeightOfHeader = 300;
+const defaultBufferHeight = 110;
 
 export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor(props) {
@@ -90,61 +93,70 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.panResponder = PanResponder.create({
       onPanResponderTerminationRequest: () => false,
       // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
-      onMoveShouldSetPanResponder: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard),
+      onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder,
       // pan reponder only captures gestures when there is an active blocktime or appoitnemnt
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) =>
-        (this.state.activeBlock || this.state.activeCard),
-      onPanResponderMove: (e, gesture) => {
-        const { dy, dx } = gesture;
-        if (this.state.activeBlock || this.state.activeCard) {
-          if (!this.state.isResizeing) {
-            this.moveX = dx;
-            this.moveY = dy;
-            return Animated.event([
-              null,
-              {
-                dx: this.state.pan.x,
-                dy: this.state.pan.y,
-              },
-              {
-                dx: this.state.pan2.x,
-                dy: this.state.pan2.y,
-              },
-            ])(e, gesture, gesture);
-          }
-          // calculate size every time card is draged for resize, this is done by calculating the difference between previoud dy and new dy
-          const size = this.moveY ? dy - this.moveY : dy;
-          // save current dy for calulating the size above
-          this.moveY = dy;
-          if (this.resizeCard) {
-            const lastIndex =
-              this.state.activeCard.verticalPositions.length - 1;
-            // call resizeCard function from card componet that calulate the hieght set it on the card and return it
-            const newHeight = this.resizeCard.resizeCard(size);
-            // updates height on the active card
-            // Update the hieght only in the last card component, in case the appoinment have a gap there will be 2 cards componets
-            this.state.activeCard.verticalPositions[
-              lastIndex
-              ].height = newHeight;
-            this.state.activeCard.height = newHeight;
-          } else if (this.resizeBlock) {
-            this.state.activeBlock.height = this.resizeBlock.resize(size);
-          }
-        }
-        return null;
-      },
-      onPanResponderRelease: (e, gesture) => {
-        if (this.state.activeCard || this.state.activeBlock) {
-          if (this.state.isResizeing) {
-            this.handleResizeCard();
-          } else if (this.moveX && this.moveY) {
-            this.handleCardDrop();
-          }
-        }
-      },
+      onMoveShouldSetPanResponderCapture: this.onMoveShouldSetPanResponderCapture,
+      onPanResponderMove: this.onPanResponderMove,
+      onPanResponderRelease: this.onPanResponderRelease,
     });
   }
+
+  onMoveShouldSetPanResponder = (e, gesture) => (this.state.activeBlock || this.state.activeCard);
+
+  onMoveShouldSetPanResponderCapture = (e, gesture) => (this.state.activeBlock || this.state.activeCard);
+
+  onPanResponderMove = (e, gesture) => {
+    const { dy, dx } = gesture;
+    if (this.state.activeBlock || this.state.activeCard) {
+      if (!this.state.isResizeing) {
+        this.moveX = dx;
+        this.moveY = dy;
+        return Animated.event([
+          null,
+          {
+            dx: this.state.pan.x,
+            dy: this.state.pan.y,
+          },
+          {
+            dx: this.state.pan2.x,
+            dy: this.state.pan2.y,
+          },
+        ])(e, gesture, gesture);
+      }
+      // calculate size every time card is draged for resize,
+      // this is done by calculating the difference between previoud dy and new dy
+      const size = this.moveY ? dy - this.moveY : dy;
+      // save current dy for calulating the size above
+      this.moveY = dy;
+      if (this.resizeCard) {
+        const lastIndex =
+          this.state.activeCard.verticalPositions.length - 1;
+        // call resizeCard function from card componet
+        // that calulate the hieght set it on the card and return it
+        const newHeight = this.resizeCard.resizeCard(size);
+        // updates height on the active card
+        // Update the hieght only in the last card component,
+        // in case the appoinment have a gap there will be 2 cards componets
+        this.state.activeCard.verticalPositions[
+          lastIndex
+          ].height = newHeight;
+        this.state.activeCard.height = newHeight;
+      } else if (this.resizeBlock) {
+        this.state.activeBlock.height = this.resizeBlock.resize(size);
+      }
+    }
+    return null;
+  };
+
+  onPanResponderRelease = (e, gesture) => {
+    if (this.state.activeCard || this.state.activeBlock) {
+      if (this.state.isResizeing) {
+        this.handleResizeCard();
+      } else if (this.moveX && this.moveY) {
+        this.handleCardDrop();
+      }
+    }
+  };
 
   componentDidMount() {
     // group block times and appointment filterOption
@@ -168,6 +180,10 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     ) {
       // if filters or appoinments changed grup appts again
       this.setGroupedAppointments(nextProps);
+    }
+
+    if (!this.props.bufferVisible && nextProps.bufferVisible) {
+      this.handelHidePanel();
     }
   }
 
@@ -219,6 +235,14 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       }
     }
   }
+
+  handelScrollToDefault = () => {
+    this.props.refsSliderPanel && this.props.refsSliderPanel.transitionTo(initialHeightOfHeader);
+  };
+
+  handelHidePanel = () => {
+    this.props.refsSliderPanel && this.props.refsSliderPanel.transitionTo(0);
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     // only update when this props changes for better performance
@@ -681,14 +705,45 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   };
 
   centerCard = (left, top, slideHieght) => {
+    const x = this.calculateXPositionScrollView(left);
+    const y = this.calculateYPositionScrollView(top, slideHieght);
+    this.board.scrollTo({ x, y });
+  };
+
+  calculateXPositionScrollView = (left) => {
     const { calendarMeasure } = this.state;
-    let x = left + (this.cellWidth - calendarMeasure.width) / 2;
-    x = x > 0 ? x : 0;
-    let y = top - (calendarMeasure.height - slideHieght) / 2 - headerHeight;
-    this.board.scrollTo({
-      x,
-      y,
-    });
+    const x = left + (this.cellWidth - calendarMeasure.width) / 2;
+    if (this.isLastRow(left)) {
+      return this.size.width - this.cellWidth * (screenWidth / this.cellWidth);
+    }
+    return this.checkEdgeOfScree(x);
+  };
+
+  isLastRow = (left) => {
+    return left + this.cellWidth + timeColumnWidth === this.size.width;
+  };
+
+  calculateYPositionScrollView = (top, slideHieght) => {
+    const { calendarMeasure } = this.state;
+    const y = top - (calendarMeasure.height - slideHieght) / 2 - headerHeight;
+    if (this.isElementInEndOfList(top)) {
+      return top - (this.props.workHeight - (isIphoneX() ? 255 : 315));
+    }
+    return this.checkEdgeOfScree(y);
+  };
+
+  isElementInEndOfList = (top) => {
+    const { numOfRow } = this.props.apptGridSettings;
+    return top > numOfRow * cellHeight - 390;
+  };
+
+  checkEdgeOfScree = (position) => {
+
+    if (position < 0) {
+      return 0;
+    }
+
+    return position;
   };
 
   handleCardPressed = (appt, left, top) => {
@@ -1077,27 +1132,42 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   handleCardDrop = () => {
     if (this.props.bufferVisible) {
-      const {
-        buffer,
-        activeCard,
-        activeBlock,
-        pan,
-        calendarMeasure: { height },
-      } = this.state;
-      const droppedCard = activeBlock || activeCard;
-      const { data } = droppedCard;
-      const top = pan.y._value + pan.y._offset;
-      const bufferHeight = 110;
-      if (top > height - bufferHeight) {
-        if (!droppedCard.isBuffer) {
-          this.addItemToMoveBar(data, [], addToBufferState.checkExistenceInMoveBar);
-        }
-      } else {
-        this.handleReleaseCard();
-      }
+      this.addToBufferOrHandelRelease();
     } else {
       this.handleReleaseCard();
     }
+  };
+
+  addToBufferOrHandelRelease = () => {
+    const { pan, calendarMeasure: { height } } = this.state;
+
+    const top = pan.y._value + pan.y._offset;
+
+    if (this.isPositionIntersectBuffer(top, height)) {
+      this.addItemToBufferOrResetActiveCard();
+    } else {
+      this.handleReleaseCard();
+    }
+  };
+
+  addItemToBufferOrResetActiveCard = () => {
+    const { activeCard, activeBlock } = this.state;
+
+    const droppedCard = activeBlock || activeCard;
+    const { data } = droppedCard;
+
+    if (!droppedCard.isBuffer) {
+      this.addItemToMoveBar(data, [], addToBufferState.checkExistenceInMoveBar);
+    } else {
+      this.setState({
+        activeCard: null,
+        activeBlock: null,
+      });
+    }
+  };
+
+  isPositionIntersectBuffer = (top, height) => {
+    return top > height - defaultBufferHeight;
   };
 
   // logic after dropping the card
@@ -1293,93 +1363,158 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   // calculation of the new position of the card. Here we calculate new time, new column and new height.
   handleReleaseCard = () => {
-    this.moveX = null;
-    this.moveY = null;
-    const { pan, activeCard, activeBlock, buffer } = this.state;
-    const {
-      cellWidth,
-      headerData,
-      apptGridSettings,
-      onDrop,
-      selectedProvider,
-      selectedFilter,
-      startDate,
-      displayMode,
-    } = this.props;
-    const active = activeBlock || activeCard;
-    const { data } = active;
-    const { toTime, fromTime, id } = data;
-    const headerOffset = selectedProvider !== 'all' && displayMode === 'day'
-      ? 0
-      : 40;
-    const dx = pan.x._value + pan.x._offset + this.offset.x;
-    const dy = pan.y._value + pan.y._offset + this.offset.y - headerOffset;
-    const xIndex = (dx / this.cellWidth).toFixed() - 1;
-    const yIndex = (dy / cellHeight).toFixed();
-    const isOutOfBounds =
-      xIndex < 0 ||
-      xIndex >= headerData.length ||
-      yIndex < 0 ||
-      yIndex >= apptGridSettings.schedule.length;
-    if (!isOutOfBounds) {
-      const employeeId = selectedFilter === 'providers' &&
-      selectedProvider === 'all'
-        ? headerData[xIndex].id
-        : selectedProvider.id;
-      const dateMoment = selectedProvider === 'all' || displayMode === 'day'
-        ? startDate
-        : moment(headerData[xIndex], 'YYYY-MM-DD');
-      const newTimeMoment = moment(
-        apptGridSettings.schedule[yIndex],
-        'h:mm A',
-      );
-      const oldDate = moment(data.date, 'YYYY-MM-DD').format('MMM DD');
-      const oldFromTime = moment(fromTime, 'HH:mm');
-      const oldToTime = moment(toTime, 'HH:mm');
-      const duration = oldToTime.diff(oldFromTime, 'minutes');
-      const newToTimeMoment = moment(newTimeMoment).add(duration, 'm');
-      const newToTime = newToTimeMoment.format('h:mma');
-      const newTime = newTimeMoment.format('HH:mm');
-      const date = dateMoment.format('YYYY-MM-DD');
-      if (activeCard) {
-        const clientName = `${data.client.name} ${data.client.lastName}`;
-        this.setState({
-          alert: {
-            title: 'Move Appointment',
-            description: `Move ${clientName} Appt. from ${oldDate} ${oldFromTime.format('h:mma')}-${oldToTime.format('h:mma')} to ${dateMoment.format('MMM DD')} ${newTimeMoment.format('h:mma')}-${newToTime}?`,
-            btnLeftText: 'Cancel',
-            btnRightText: 'Move',
-            onPressRight: () =>
-              this.handleMove({
-                date,
-                newTime,
-                employeeId,
-                id,
-                newToTime: newToTimeMoment.format(DateTime.timeOld),
-              }),
-          },
-        });
-      } else {
-        this.setState({
-          alert: {
-            title: 'Move Block Time',
-            description: `Move Block Appt. from ${oldDate} ${oldFromTime.format('h:mma')}-${oldToTime.format('h:mma')} to ${dateMoment.format('MMM DD')} ${newTimeMoment.format('h:mma')}-${newToTime}?`,
-            btnLeftText: 'Cancel',
-            btnRightText: 'Move',
-            onPressRight: () =>
-              this.handleMoveBlock({
-                date,
-                newTime,
-                employeeId,
-                id,
-                newToTime: newToTimeMoment.format(DateTime.timeOld),
-              }),
-          },
-        });
-      }
+    this.resetMove();
+    const { xIndex, yIndex } = this.calculateIndex();
+
+    if (this.isInOfBounds(xIndex, yIndex)) {
+      this.handelDrop(xIndex, yIndex);
     } else {
       this.setState({ activeCard: null });
     }
+  };
+
+  resetMove = () => {
+    this.moveX = null;
+    this.moveY = null;
+  };
+
+  calculateIndex = () => {
+    const { pan } = this.state;
+
+    const dx = pan.x._value + pan.x._offset + this.offset.x;
+    const dy = pan.y._value + pan.y._offset + this.offset.y - this.calculateHeaderOffset();
+
+    return {
+      xIndex: (dx / this.cellWidth).toFixed() - 1,
+      yIndex: (dy / cellHeight).toFixed(),
+    };
+  };
+
+  calculateHeaderOffset = () => {
+    const { selectedProvider, displayMode } = this.props;
+    return selectedProvider !== 'all' && displayMode === 'day' ? 0 : 40;
+  };
+
+  isInOfBounds = (xIndex, yIndex) => {
+    const { headerData, apptGridSettings } = this.props;
+    return !(xIndex < 0 || xIndex >= headerData.length || yIndex < 0 || yIndex >= apptGridSettings.schedule.length);
+  };
+
+  handelDrop = (xIndex, yIndex) => {
+
+    const { activeCard } = this.state;
+
+    const {
+      id, employee, newToTimeMoment, newTime,
+      date, clientName, employeeId, newAndLodDateObject,
+    } = this.generationDateForHandelDrop(xIndex, yIndex);
+
+    if (this.isTheSamePlace(newAndLodDateObject, employee.id, employeeId)) {
+      return this.setState({ activeCard: null });
+    }
+
+    if (activeCard) {
+      this.setState({
+        alert: {
+          title: 'Move Appointment',
+          description: `Move ${clientName} Appt. from ${this.generateDescription(newAndLodDateObject)}`,
+          btnLeftText: 'Cancel',
+          btnRightText: 'Move',
+          onPressRight: () =>
+            this.handleMove({
+              date,
+              newTime,
+              employeeId,
+              id,
+              newToTime: newToTimeMoment.format(DateTime.timeOld),
+            }),
+        },
+      });
+    } else {
+      this.setState({
+        alert: {
+          title: 'Move Block Time',
+          description: `Move Block Appt. from ${this.generateDescription(newAndLodDateObject)}`,
+          btnLeftText: 'Cancel',
+          btnRightText: 'Move',
+          onPressRight: () =>
+            this.handleMoveBlock({
+              date,
+              newTime,
+              employeeId,
+              id,
+              newToTime: newToTimeMoment.format(DateTime.timeOld),
+            }),
+        },
+      });
+    }
+  };
+
+  generationDateForHandelDrop = (xIndex, yIndex) => {
+    const { activeCard, activeBlock } = this.state;
+    const { startDate, displayMode, apptGridSettings, headerData, selectedProvider, selectedFilter } = this.props;
+
+    const active = activeBlock || activeCard;
+    const { data } = active;
+    const { toTime, fromTime, id, employee } = data;
+
+    const dateMoment = selectedProvider === 'all' || displayMode === 'day'
+      ? startDate
+      : moment(headerData[xIndex], 'YYYY-MM-DD');
+
+    const employeeId = selectedFilter === 'providers' && selectedProvider === 'all'
+      ? headerData[xIndex].id
+      : selectedProvider.id;
+
+    const newTimeMoment = moment(
+      apptGridSettings.schedule[yIndex],
+      'h:mm A',
+    );
+
+    const oldDate = moment(data.date, 'YYYY-MM-DD').format('MMM DD');
+    const oldFromTime = moment(fromTime, 'HH:mm');
+    const oldToTime = moment(toTime, 'HH:mm');
+    const duration = oldToTime.diff(oldFromTime, 'minutes');
+    const newToTimeMoment = moment(newTimeMoment).add(duration, 'm');
+    const newToTime = newToTimeMoment.format('h:mma');
+    const newTime = newTimeMoment.format('HH:mm');
+    const date = dateMoment.format('YYYY-MM-DD');
+    const clientName = `${data.client.name} ${data.client.lastName}`;
+
+    return {
+      id,
+      employee,
+      newToTimeMoment,
+      newTime,
+      date,
+      clientName,
+      employeeId,
+      newAndLodDateObject: {
+        oldDate,
+        oldFromTime: oldFromTime.format('h:mma'),
+        oldToTime: oldToTime.format('h:mma'),
+        dateMoment: dateMoment.format('MMM DD'),
+        newTimeMoment: newTimeMoment.format('h:mma'),
+        newToTime,
+      },
+    };
+  };
+
+  isTheSamePlace = (dateObject, oldEmployeeId, newEmployeeId) => {
+    const { oldDate, dateMoment, oldFromTime, newTimeMoment, oldToTime, newToTime } = dateObject;
+
+    return oldEmployeeId === newEmployeeId && oldDate === dateMoment
+      && oldFromTime === newTimeMoment
+      && oldToTime === newToTime;
+  };
+
+  generateDescription = (dateObject) => {
+    const {
+      oldDate, oldFromTime, oldToTime,
+      dateMoment, newTimeMoment, newToTime,
+    } = dateObject;
+
+    return `${oldDate} ${oldFromTime}-${oldToTime} to ${dateMoment} ${newTimeMoment}-${newToTime}?`;
   };
 
   hideAlert = () => {
@@ -1452,26 +1587,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     this.props.onCellPressed(startTime, firstAvailableProvider);
   };
 
-  convertFromTimeToMoment = time => moment(time, DateTime.timeOld);
-
-  renderCards = (cards, headerIndex, headerId) => {
-    const {
-      selectedFilter,
-      selectedProvider,
-      displayMode,
-      startDate,
-    } = this.props;
-    if (cards && cards.length) {
-      return cards.map(
-        card =>
-          card.isBlockTime
-            ? this.renderBlock(card, headerIndex, headerId)
-            : this.renderCard(card, headerIndex, headerId),
-      );
-    }
-    return null;
-  };
-
   // render blocks inthe grid
   renderBlock = (blockTime, headerIndex, headerId) => {
     const {
@@ -1503,7 +1618,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         return null;
       }
     }
-    if (blockTime) {
+
+    //Show blocktime only if they belong to the current provider - IP-1047
+    const blocktimeBelongsToEmployee = provider.id === get(blockTime.employee, 'id', false);
+
+    if (blockTime && blocktimeBelongsToEmployee) {
       const panResponder = (activeBlock &&
         activeBlock.data.id !== blockTime.id) ||
       isInBuffer ||
@@ -1526,6 +1645,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         left: delta,
         width: this.cellWidth - gap,
       };
+
       return (
         <BlockTime
           left={overlap.left}
@@ -1553,15 +1673,13 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   // renders block being move if any
   renderActiveBlock = () => {
     const {
-      apptGridSettings,
-      headerData,
-      selectedProvider,
-      displayMode,
-      appointments,
-      filterOptions,
-      startDate,
+      apptGridSettings, startDate,
     } = this.props;
-    const { activeBlock, calendarMeasure, isResizeing, pan, pan2 } = this.state;
+
+    const {
+      activeBlock, isResizeing, pan,
+    } = this.state;
+
     if (activeBlock) {
       return (
         <BlockTime
@@ -1581,6 +1699,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           isResizeing={this.state.isResizeing}
           startDate={startDate}
         />
+
       );
     }
     return null;
@@ -1650,6 +1769,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       providers,
       goToAppointmentId,
       startDate,
+      availability,
       crossedAppointmentAfter,
     } = this.props;
     const {
@@ -1687,7 +1807,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       ? null
       : this.panResponder;
     if (appointment.employee) {
-      const firstCellWidth = isAllProviderView ? 130 : 0;
+      const firstCellWidth = isAllProviderView && availability ? 130 : 0;
 
       const gap =
         get(
@@ -1870,7 +1990,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       alert,
       activeCard,
       activeBlock,
-      overlappingCardsMap,
       cardsArray,
     } = this.state;
 
@@ -1906,7 +2025,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           style={styles.container}
           scrollEnabled={!activeCard && !activeBlock && !isLoading}
           onScroll={this.handleScroll}
-          onScrollBeginDrag={this.props.onScrollBeginDrag}
+          onScrollBeginDrag={this.handelScrollToDefault}
           ref={board => {
             this.board = board;
           }}

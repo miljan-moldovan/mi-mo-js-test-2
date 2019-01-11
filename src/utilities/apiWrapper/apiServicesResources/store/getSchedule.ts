@@ -5,7 +5,7 @@ import { StoreSchedule } from '@/models';
 
 let cancellationToken = null;
 
-export default async (date): Promise<StoreSchedule> => {
+export default async (date: string): Promise<StoreSchedule> => {
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
   return apiInstance

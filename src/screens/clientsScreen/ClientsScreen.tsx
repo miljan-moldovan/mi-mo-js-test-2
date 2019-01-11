@@ -8,7 +8,6 @@ import SalonSearchHeader from '../../components/SalonSearchHeader';
 import Icon from '@/components/common/Icon';
 import styles from './styles';
 import BarsActionSheet from '../../components/BarsActionSheet';
-import Colors from '../../constants/Colors';
 import { Client } from '@/models';
 import { SalonSearchHeaderActions, SalonSearchHeaderReducer } from '@/redux/reducers/searchHeader';
 
@@ -125,30 +124,6 @@ class ClientsScreen extends React.Component<Props, State> {
     };
   };
 
-  static flexFilter(list, info) {
-    const matches = [];
-    const matchesFilter = function match(item) {
-      let count = 0;
-      for (let n = 0; n < info.length; n += 1) {
-        if (
-          item[info[n].Field] &&
-          item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1
-        ) {
-          count += 1;
-        }
-      }
-      return count > 0;
-    };
-
-    for (let i = 0; i < list.length; i += 1) {
-      if (matchesFilter(list[i])) {
-        matches.push(list[i]);
-      }
-    }
-
-    return matches;
-  }
-
   constructor(props) {
     super(props);
     this.clearSearch();
@@ -165,6 +140,7 @@ class ClientsScreen extends React.Component<Props, State> {
   }
 
   state = {
+    filterText: '',
     headerProps: {
       title: 'Clients',
       subTitle: null,
@@ -200,6 +176,11 @@ class ClientsScreen extends React.Component<Props, State> {
         this.props.clientsActions.getClients(params);
       }
     }
+    if (this.props.salonSearchHeaderState.searchText.length === 0 && this.state.filterText.length > 0) {
+      this.setState({
+        filterText: '',
+      });
+    }
   }
 
   get params() {
@@ -229,30 +210,6 @@ class ClientsScreen extends React.Component<Props, State> {
       clearSearch,
     } as NavigationParams;
   }
-
-  getSuggestionsList = clients => {
-    let suggestions = [];
-
-    for (let i = 0; i < clients.length; i += 1) {
-      const client = clients[i];
-      if (suggestions.indexOf(client.name) === -1 && client.name) {
-        suggestions.push(client.name);
-      } else if (
-        suggestions.indexOf(client.lastName) === -1 &&
-        client.lastName
-      ) {
-        suggestions.push(client.lastName);
-      }
-    }
-
-    suggestions = suggestions.sort((a, b) => {
-      if (a < b) return -1;
-      else if (a > b) return 1;
-      return 0;
-    });
-
-    return suggestions;
-  };
 
   handleLeftButton = () => {
     if (this.BarsActionSheet) {
@@ -287,10 +244,11 @@ class ClientsScreen extends React.Component<Props, State> {
   };
 
   filterClients = searchText => {
+    this.setState({ filterText: searchText });
     if (searchText && searchText.length > 0) {
       const params = {
         ...query,
-        'nameFilter.FilterValue': searchText,
+        'nameFilter.FilterValue': searchText.trim(),
         fromAllStores: !!this.props.salonSearchHeaderState.selectedFilter,
       };
       this.props.clientsActions.getClients(params);
@@ -366,7 +324,7 @@ class ClientsScreen extends React.Component<Props, State> {
             isLoadingMore={this.props.isLoadingMore}
             fetchMore={this.fetchMore}
             navigate={this.props.navigation.navigate}
-            boldWords={this.props.salonSearchHeaderState.searchText}
+            boldWords={this.props.salonSearchHeaderState.searchText.trim()}
             style={styles.clientListContainer}
             clients={this.props.clientsSectionDataSource}
             onChangeClient={onChange}
@@ -377,6 +335,7 @@ class ClientsScreen extends React.Component<Props, State> {
                 ? this.props.navigation.state.params.hideAddButton
                 : true
             }
+            fullName={this.state.filterText}
           />
         </View>
       </View>

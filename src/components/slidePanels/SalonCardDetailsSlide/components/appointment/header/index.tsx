@@ -9,9 +9,12 @@ import ShowMoreText from '@/components/ShowMoreText';
 
 const renderBadges = (appointment, appointments) => {
   const badges = getBadges(appointment, getHiddenAddons(appointments, appointment).length);
-  return badges.map(item => {
+  return badges.map((item, index) => {
     return (
-      <View style={styles.containerForBadges}>
+      <View
+        key={index}
+        style={styles.containerForBadges}
+      >
         {item}
       </View>
     );
@@ -65,7 +68,7 @@ const renderShowText = (remarks) => {
         </View>
       </View>
       <ShowMoreText
-        text={appointment.remarks}
+        text={remarks}
       />
     </React.Fragment>
   );

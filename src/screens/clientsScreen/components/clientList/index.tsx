@@ -243,6 +243,7 @@ class ClientList extends React.Component {
           hideAddButton={this.props.hideAddButton}
           isWalkin={this.props.isWalkin}
           onWalkinPress={this.props.onChangeClient}
+          fullName={this.props.fullName}
         />
       );
     }

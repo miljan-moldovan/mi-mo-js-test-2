@@ -11,6 +11,7 @@ import moment from 'moment';
 import ModalBox from '../ModalBox';
 import SalonTouchableOpacity from '../../SalonTouchableOpacity';
 import Icon from '@/components/common/Icon';
+import getCalendarMarksForWeekends from '@/utilities/helpers/getCalendarMarksForWeekends';
 import styles from './styles';
 
 
@@ -95,6 +96,7 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
   state: {
     visible: false,
     selected: '',
+    markedWeekends: {},
   };
 
   componentWillReceiveProps(nextProps) {
@@ -119,12 +121,11 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
   };
 
   onDayPress = day => {
+    const startDate = moment(day.dateString);
     this.setState({
       selected: day.dateString,
+      markedWeekends: getCalendarMarksForWeekends(startDate),
     });
-
-    const startDate = moment(day.dateString);
-
     let endDate = startDate.clone();
     endDate = this.props.mode === 'week' ? endDate.add(6, 'day') : startDate;
 
@@ -141,6 +142,7 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
       .format('YYYY-MM-DD');
     this.setState({
       selected: day,
+      markedWeekends: getCalendarMarksForWeekends(moment(day)),
     });
 
     const startDate = moment(day);
@@ -193,6 +195,7 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
                 style={{ width: '95%' }}
                 markingType="custom"
                 markedDates={{
+                  ...this.state.markedWeekends,
                   ...this.props.markedDates,
                   [moment(this.state.selected).format('YYYY-MM-DD')]: {
                     customStyles: {
@@ -236,6 +239,11 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
                 }}
                 renderArrow={this.renderArrow}
                 hideExtraDays
+                onMonthChange={month => {
+                  this.setState({
+                    markedWeekends: getCalendarMarksForWeekends(moment(month.dateString)),
+                  });
+                }}
                 onPressArrowLeft={this.props.onPressArrowLeft}
                 onPressArrowRight={this.props.onPressArrowRight}
               />

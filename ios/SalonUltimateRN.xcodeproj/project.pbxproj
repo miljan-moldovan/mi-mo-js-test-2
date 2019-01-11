@@ -777,7 +777,7 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
-		6991AB5B2086450700D9FD1A = {
+		6991AB5B2086450700D9FD1A /*  */ = {
 			isa = PBXGroup;
 			children = (
 				6991AB652086450700D9FD1A /* libRCTDirectedScrollView.a */,
@@ -1105,7 +1105,7 @@
 					ProjectRef = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
 				},
 				{
-					ProductGroup = 6991AB5B2086450700D9FD1A;
+					ProductGroup = 6991AB5B2086450700D9FD1A /*  */;
 					ProjectRef = 6991AB5A2086450700D9FD1A /* RCTDirectedScrollView.xcodeproj */;
 				},
 				{
