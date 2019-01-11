@@ -76,6 +76,7 @@ export interface EmptyClientListProps {
   navigate: Function;
   onWalkinPress: (walkInClient: any) => void;
   onChangeClient: (client: Client) => void;
+  fullName: string;
 }
 
 export interface EmptyClientListState {
@@ -99,8 +100,12 @@ class emptyClientList extends React.Component<EmptyClientListProps, EmptyClientL
   }
 
   addNewClient = () => {
+    const fullName = this.props.fullName;
+    const names = fullName.length > 1 ? fullName.split(' ') : ['', ''];
     this.props.navigate('NewClient', {
       onChangeClient: this.props.onChangeClient,
+      firstName: names[0],
+      lastName: names[1],
     });
   };
 

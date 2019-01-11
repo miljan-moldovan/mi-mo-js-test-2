@@ -1,4 +1,12 @@
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
+
+let AlertIsAlreadyShown = false;
+
+type AlertText = {
+  title?: string,
+  button?: string,
+  message?: string,
+};
 
 export const showErrorAlert = error => {
   if (error.response) {
@@ -7,7 +15,7 @@ export const showErrorAlert = error => {
       error.response.data.systemMessage ||
       error.response.data.systemErrorMessage ||
       'Unknown error';
-    Alert.alert (
+    Alert.alert(
       'Something went wrong',
       message,
       [
@@ -16,9 +24,40 @@ export const showErrorAlert = error => {
           onPress: () => {},
         },
       ],
-      {cancelable: false}
+      { cancelable: false },
     );
   }
+};
+
+export const showCustomAlert = (text?: AlertText, callback?: () => void) => {
+  if (AlertIsAlreadyShown) {
+    return;
+  }
+
+  AlertIsAlreadyShown = true;
+
+  const button = text.button || 'Ok, got it';
+  const title = text.title || 'Something went wrong';
+  const message = text.message || 'Unknown error';
+
+  const onPress = () => {
+    AlertIsAlreadyShown = false;
+    if (callback && typeof callback === 'function') {
+      return callback();
+    }
+  };
+
+  Alert.alert(
+    title,
+    message,
+    [
+      {
+        text: button,
+        onPress,
+      },
+    ],
+    { cancelable: false },
+    );
 };
 
 export const executeAllPromises = promises => {

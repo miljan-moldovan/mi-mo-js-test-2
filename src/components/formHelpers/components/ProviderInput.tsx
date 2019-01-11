@@ -62,6 +62,7 @@ export default class ProviderInput extends React.Component<any, any> {
   render() {
 
     const { selectedService } = this.props;
+    const disabled = this.props.disabled || selectedService && selectedService.isAddon;
     const {
       label = 'Provider',
       selectedProvider = null,
@@ -75,11 +76,20 @@ export default class ProviderInput extends React.Component<any, any> {
         value = 'First Available';
       }
     }
+
+    const disabledAvatarStyles = {
+      opacity: disabled ? 0.3 : 1,
+    };
+
+    const disabledTextStyle = {
+      color: disabled ? '#727A8F' : '#110A24',
+    };
+
     return (
       <SalonTouchableOpacity
         style={[styles.inputRow, { justifyContent: 'center' }, this.props.rootStyle]}
         onPress={this.handlePress}
-        disabled={this.props.disabled || selectedService && selectedService.isAddon}
+        disabled={disabled}
       >
         {
           label && (
@@ -95,7 +105,7 @@ export default class ProviderInput extends React.Component<any, any> {
             <View style={{ flexDirection: 'row' }}>
               {!this.props.noAvatar && (
                 <SalonAvatar
-                  wrapperStyle={styles.providerRound}
+                  wrapperStyle={[styles.providerRound, disabledAvatarStyles]}
                   width={'avatarSize' in this.props ? this.props.avatarSize : 20}
                   borderWidth={1}
                   borderColor="transparent"
@@ -117,7 +127,12 @@ export default class ProviderInput extends React.Component<any, any> {
                   )}
                 />
               )}
-              <Text numberOfLines={1} style={[styles.inputText, this.props.selectedStyle]}>{value}</Text>
+              <Text
+                numberOfLines={1}
+                style={[styles.inputText, this.props.selectedStyle, disabledTextStyle]}
+              >
+                {value}
+              </Text>
             </View>
           )}
           {
@@ -133,6 +148,7 @@ export default class ProviderInput extends React.Component<any, any> {
         </View>
         {
           !this.props.noIcon &&
+          !disabled &&
           <FontAwesome style={[styles.iconStyle, this.props.iconStyle]}>{Icons.angleRight}</FontAwesome>
         }
       </SalonTouchableOpacity>

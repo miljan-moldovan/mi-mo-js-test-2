@@ -12,3 +12,7 @@ jest.mock('react-native-img-cache', () => {
     CachedImage: mockComponent('Image'),
   };
 });
+
+jest.mock('@/redux/store', () => {
+  return {};
+});

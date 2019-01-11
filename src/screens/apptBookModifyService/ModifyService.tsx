@@ -70,6 +70,9 @@ interface ModifyApptServiceScreenState {
   initialConflicts: NewAppointmentReducer['conflicts'];
 }
 
+const durationToFormat = (duration) => {
+  return moment.utc(duration.as('milliseconds')).format('HH:mm:ss');
+};
 class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenProps, ModifyApptServiceScreenState> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
@@ -415,10 +418,11 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
   checkConflicts = () => {
     const isFirstAvailable = get(this.state.selectedProvider, 'id', 0) === 0;
     const serviceState = {};
+
     serviceState.service = {
       isFirstAvailable,
       appointmentId: this.state.id,
-      clientId: this.state.selectedClient.id,
+      clientId: this.state.selectedClient && this.state.selectedClient.id || null,
       serviceId: this.state.selectedService.id,
       employeeId: isFirstAvailable
         ? null
@@ -431,6 +435,8 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       resourceId: get(get(this.state, 'resource', null), 'id', null),
       resourceOrdinal: get(this.state, 'resourceOrdinal', null),
       associativeKey: this.state.serviceId,
+      gapTime: this.state.bookBetween && this.state.gapTime && durationToFormat(this.state.gapTime),
+      afterTime: this.state.bookBetween && this.state.afterTime && durationToFormat(this.state.afterTime),
     };
     this.props.newAppointmentActions.getConflictsForService(serviceState, () => this.validate());
     this.validate();

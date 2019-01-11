@@ -109,9 +109,12 @@ export default class ConflictsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     const hasheaderProps = params && params.headerProps;
+
+    const canPerformAction = !find(navigation.state.params.conflicts, ['canBeSkipped', false]);
+    
     const onRightPress = () => {
       if (navigation.state.params.handleDone) {
-        navigation.state.params.handleDone();
+        navigation.state.params.handleDone(canPerformAction);
       }
       navigation.goBack();
     };
@@ -122,7 +125,7 @@ export default class ConflictsScreen extends React.Component {
       navigation.goBack();
     };
     const btnRightText = (hasheaderProps && params.headerProps.btnRightText) || 'Done';
-    const canPerformAction = !find(navigation.state.params.conflicts, ['canBeSkipped', false]);
+    
     return {
       header: (
         <SalonHeader

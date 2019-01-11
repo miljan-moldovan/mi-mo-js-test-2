@@ -39,6 +39,8 @@ const initialLayout = {
   width: Dimensions.get ('window').width,
 };
 
+let timerID = null;
+
 
 interface Props {
   settingsActions: any;
@@ -125,7 +127,7 @@ class QueueScreen extends React.Component<Props, State> {
       ],
       colorAnimActive: new Animated.Value (0),
       colorAnimInactive: new Animated.Value (0),
-      receiveQueueRetries: 0,
+      receiveQueueRetries: 3,
     };
 
     this.animateText ();
@@ -133,10 +135,10 @@ class QueueScreen extends React.Component<Props, State> {
 
 
   componentWillMount () {
-    this.loadQueueData ();
+    this.loadQueueData();
 
     // this.props.actions.getQueueEmployees();
-    this.props.settingsActions.getSettings ();
+    this.props.settingsActions.getSettings();
   }
 
   componentDidMount () {
@@ -146,6 +148,11 @@ class QueueScreen extends React.Component<Props, State> {
       searchMode: this.state.searchMode,
       searchText: this.state.searchText,
     });
+  }
+
+  componentWillUnmount () {
+    clearTimeout(timerID);
+    timerID = null;
   }
 
   onChangeSearchMode = searchMode => {
@@ -169,21 +176,19 @@ class QueueScreen extends React.Component<Props, State> {
   };
 
   loadQueueData = (showError = false) => {
-    this.props.actions.getQueueState ();
-    this.props.actions.receiveQueue (this.receiveQueueFinished, showError);
+    this.props.actions.getQueueState();
+    this.props.actions.receiveQueue(this.receiveQueueFinished, showError);
   };
 
   receiveQueueFinished = (result, error) => {
-    if (!result && error) {
-      setTimeout (() => {
-        const showError = this.state.receiveQueueRetries > 1;
-        this.loadQueueData (showError);
-        this.setState ({
-          receiveQueueRetries: this.state.receiveQueueRetries + 1,
+    if (!result && error && this.state.receiveQueueRetries > 0) {
+      timerID = setTimeout(() => {
+        const showError = this.state.receiveQueueRetries === 1;
+        this.loadQueueData(showError);
+        this.setState((state) => {
+          return { receiveQueueRetries: state.receiveQueueRetries - 1 };
         });
-      }, 300);
-    } else {
-      this.setState ({receiveQueueRetries: 0});
+      }, 1000);
     }
   };
 
