@@ -195,13 +195,13 @@ class Card extends React.Component<any, any> {
     const { isBufferCard } = this.props;
 
     if (isBufferCard) {
-      this.handelOnPressCardInBuffer(width);
+      this.handelOnLongPressCardInBuffer(width);
     } else {
       this.handelOnLongPressOutOfBuffer(verticalPositions, left, width);
     }
   };
 
-  handelOnPressCardInBuffer = (width) => {
+  handelOnLongPressCardInBuffer = (width) => {
     const { onDrag, height, appointment } = this.props;
 
     this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
