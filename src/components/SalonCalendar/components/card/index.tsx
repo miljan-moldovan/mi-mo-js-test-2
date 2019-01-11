@@ -200,26 +200,23 @@ class Card extends React.Component {
     const {
       appointment, isBufferCard, onDrag, startDate
     } = this.props;
-    const today = moment();
-    if (startDate.isSameOrAfter(today, 'day')) {
-      if (isBufferCard) {
-        this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
-          const { height } = this.props;
-          const newVerticalPositions = [{ top: y, height }];
-          onDrag(false, appointment, x, width, newVerticalPositions, true);
-        });
-      } else {
-        const newVerticalPositions = [];
-        for (let i = 0; i < verticalPositions.length; i += 1) {
-          const item = verticalPositions[i];
-          const newItem = { ...item, top: item.top };
-          newVerticalPositions.push(newItem);
-        }
-        const newLeft = left;
-        this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
+    if (isBufferCard) {
+      this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
+        const { height } = this.props;
+        const newVerticalPositions = [{ top: y, height }];
+        onDrag(false, appointment, x, width, newVerticalPositions, true);
+      });
+    } else {
+      const newVerticalPositions = [];
+      for (let i = 0; i < verticalPositions.length; i += 1) {
+        const item = verticalPositions[i];
+        const newItem = { ...item, top: item.top };
+        newVerticalPositions.push(newItem);
       }
+      const newLeft = left;
+      this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
     }
-  }
+  };
 
   highlightGoTo = () => {
     Animated.timing(
