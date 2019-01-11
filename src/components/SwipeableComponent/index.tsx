@@ -1,5 +1,7 @@
 import * as React from 'react';
-import {PanResponder, View} from 'react-native';
+import { PanResponder } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import styles from './style';
 
 export const swipeDirections = {
   SWIPE_UP: 'SWIPE_UP',
@@ -17,7 +19,7 @@ function isValidSwipe(
   velocity,
   velocityThreshold,
   directionalOffset,
-  directionalOffsetThreshold
+  directionalOffsetThreshold,
 ) {
   return (
     Math.abs(velocity) > velocityThreshold &&
@@ -26,12 +28,16 @@ function isValidSwipe(
 }
 
 export default class extends React.PureComponent {
-  componentWillMount() {
+  private panResponder: any;
+
+  constructor(props) {
+    super(props);
+
     this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: this.handleShouldSetPanResponder,
+      onPanResponderTerminationRequest: (evt, gestureState) => true,
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetPanResponder: this.handleShouldSetPanResponder,
       onPanResponderRelease: this.handlePanResponderEnd,
-      onPanResponderTerminate: this.handlePanResponderEnd,
     });
   }
 
@@ -109,9 +115,9 @@ export default class extends React.PureComponent {
 
   render () {
     return (
-      <View style={{ flex: 1 }} { ...this.panResponder.panHandlers }>
+      <KeyboardAwareScrollView style={styles.container} { ...this.panResponder.panHandlers }>
         {this.props.children}
-      </View>
+      </KeyboardAwareScrollView>
     );
   }
 }
