@@ -1,5 +1,5 @@
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import salonSearchHeaderActions from '../../redux/reducers/searchHeader';
 import SalonSearchHeader from './SalonSearchHeader';
 
@@ -8,10 +8,10 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  salonSearchHeaderActions: bindActionCreators (
-    {...salonSearchHeaderActions},
-    dispatch
+  salonSearchHeaderActions: bindActionCreators(
+    { ...salonSearchHeaderActions },
+    dispatch,
   ),
 });
 
-export default connect (mapStateToProps, mapActionsToProps) (SalonSearchHeader);
+export default connect(mapStateToProps, mapActionsToProps)(SalonSearchHeader);

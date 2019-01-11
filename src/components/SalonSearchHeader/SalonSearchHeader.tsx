@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {View, ViewPropTypes, Text, LayoutAnimation} from 'react-native';
-import {debounce} from 'lodash';
+import { View, ViewPropTypes, Text, LayoutAnimation } from 'react-native';
+import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import SalonSearchBar from '../SalonSearchBar';
 import SalonFlatPicker from '../SalonFlatPicker';
@@ -22,13 +22,13 @@ const CustomLayoutAnimation = {
 
 class SalonSearchHeader extends React.Component {
   constructor (props) {
-    super (props);
-    this.debouncedOnChange = debounce (this.onChangeText, 500);
+    super(props);
+    this.debouncedOnChange = debounce(this.onChangeText, 500);
   }
 
   componentWillUnmount () {
-    const {salonSearchHeaderActions: {setSearchText}} = this.props;
-    setSearchText ('');
+    const { salonSearchHeaderActions: { setSearchText } } = this.props;
+    setSearchText('');
   }
 
   onChangeText = searchText => {
@@ -36,11 +36,11 @@ class SalonSearchHeader extends React.Component {
       searchText.length >
       this.props.salonSearchHeaderState.ignoredNumberOfLetters
     ) {
-      this.props.salonSearchHeaderActions.setSearchText (searchText);
-      this.props.salonSearchHeaderState.filterList (searchText);
+      this.props.salonSearchHeaderActions.setSearchText(searchText);
+      this.props.salonSearchHeaderState.filterList(searchText);
     }
     if (searchText && searchText.length > 0) {
-      this.props.salonSearchHeaderActions.setShowFilter (true);
+      this.props.salonSearchHeaderActions.setShowFilter(true);
     } else {
       // if (this.searchBar) {
       //   this.searchBar.blurInput();
@@ -55,32 +55,32 @@ class SalonSearchHeader extends React.Component {
 
   onInputBlur = () => {
     const {
-      salonSearchHeaderState: {searchText, showFilter},
-      salonSearchHeaderActions: {setShowFilter},
+      salonSearchHeaderState: { searchText, showFilter },
+      salonSearchHeaderActions: { setShowFilter },
     } = this.props;
     if (showFilter) {
-      LayoutAnimation.configureNext (LayoutAnimation.Presets.easeInEaseOut);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }
     if (searchText.length === 0 && showFilter) {
-      setShowFilter (false);
+      setShowFilter(false);
     }
   };
 
   handleTypeChange = (ev, selectedIndex) => {
-    this.props.salonSearchHeaderActions.setSelectedFilter (selectedIndex);
+    this.props.salonSearchHeaderActions.setSelectedFilter(selectedIndex);
   };
 
   showSuggestions = () => {
-    LayoutAnimation.configureNext (LayoutAnimation.Presets.easeInEaseOut);
-    this.props.salonSearchHeaderActions.setShowFilter (true);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.props.salonSearchHeaderActions.setShowFilter(true);
   };
 
   handleCancel = () => {
-    LayoutAnimation.configureNext (LayoutAnimation.Presets.easeInEaseOut);
-    this.props.salonSearchHeaderActions.setShowFilter (false);
-    this.props.salonSearchHeaderActions.setSearchText ('');
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.props.salonSearchHeaderActions.setShowFilter(false);
+    this.props.salonSearchHeaderActions.setSearchText('');
     if (this.props.clearSearch) {
-      this.props.clearSearch ();
+      this.props.clearSearch();
     }
     // if (this.props.leftButtonOnPress) {
     //   this.props.leftButtonOnPress();
@@ -93,7 +93,7 @@ class SalonSearchHeader extends React.Component {
         {!this.props.salonSearchHeaderState.showFilter &&
           <View style={styles.header}>
             <SalonTouchableOpacity
-              style={{flex: 1, paddingLeft: 10}}
+              style={{ flex: 1, paddingLeft: 10 }}
               onPress={this.props.leftButtonOnPress}
             >
               {this.props.leftButton}
@@ -106,7 +106,7 @@ class SalonSearchHeader extends React.Component {
             <View style={styles.rightButton}>
               {this.props.rightButton
                 ? <SalonTouchableOpacity
-                    style={{flex: 1, paddingRight: 10}}
+                    style={{ flex: 1, paddingRight: 10 }}
                     onPress={this.props.rightButtonOnPress}
                   >
                     {this.props.rightButton}
@@ -178,9 +178,6 @@ class SalonSearchHeader extends React.Component {
             handleCancel={this.handleCancel}
             onClear={this.onInputBlur}
             focusOnMount={this.props.focusOnMount}
-            ref={ref => {
-              this.searchBar = ref;
-            }}
           />
         </View>
 
@@ -214,12 +211,12 @@ SalonSearchHeader.defaultProps = {
 SalonSearchHeader.propTypes = {
   hasFilter: PropTypes.bool,
   headerContainerStyle: ViewPropTypes.style,
-  salonSearchHeaderState: PropTypes.shape ({
+  salonSearchHeaderState: PropTypes.shape({
     showFilter: PropTypes.bool.isRequired,
     filterList: PropTypes.func.isRequired,
     ignoredNumberOfLetters: PropTypes.number.isRequired,
   }).isRequired,
-  salonSearchHeaderActions: PropTypes.shape ({
+  salonSearchHeaderActions: PropTypes.shape({
     setShowFilter: PropTypes.func.isRequired,
     setSelectedFilter: PropTypes.func.isRequired,
     setSearchText: PropTypes.func.isRequired,
