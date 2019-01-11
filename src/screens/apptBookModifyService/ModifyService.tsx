@@ -161,6 +161,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       'toTime',
       moment().add(15, 'm'),
     );
+    const roomAndResource = this.resolveResourceAndRoomForService(serviceItem.service);
     const length = moment.duration(endTime.diff(startTime));
     const price = get(serviceItem.service.service || {}, 'price', '0');
     const state = {
@@ -187,13 +188,57 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       room: get(serviceItem.service, 'room', null),
       roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
       resource: get(serviceItem.service, 'resource', null),
+      roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
+      resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', 1),
       serviceId: serviceItem && serviceItem.itemId || null,
+      supportedRooms: get(serviceItem.service.service, 'supportedRooms', []),
+      supportedResource: get(serviceItem.service.service, 'supportedResource', {}),
+      ...roomAndResource,
     };
-
     state.length = moment.duration(state.endTime.diff(state.startTime));
     state.initialConflicts = this.props.newAppointmentState.conflicts;
 
     return state;
+  };
+
+  resolveResourceAndRoomForService = serviceWrapper => {
+    const room = get(serviceWrapper, 'room', false);
+    const resource = get(serviceWrapper, 'resource', false);
+    if (room || resource) {
+      return {
+        room: room || null,
+        resource: resource || null,
+      };
+    }
+    const service = serviceWrapper.service;
+    const requireRoom = get(service, 'requireRoom', -1);
+    const requireResource = get(service, 'requireResource', false);
+    const supportedRooms = get(service, 'supportedRooms', []);
+    const supportedResource = get(service, 'supportedResource', []);
+    let roomToSet = null;
+    let resourceToSet = null;
+    if (requireRoom > -1) {
+      if (supportedRooms.length > 0) {
+        roomToSet = supportedRooms.find(room => room.id === requireRoom);
+        if (roomToSet === undefined) {
+          roomToSet = supportedRooms[0];
+        }
+      }
+    }
+    if (requireResource) {
+      resourceToSet = {
+        ...supportedResource,
+        name: `${supportedResource.name}#1`,
+      };
+    }
+    roomToSet = {
+      ...roomToSet,
+      name: `${roomToSet.name}#1`,
+    };
+    return {
+      resource: resourceToSet,
+      room: roomToSet,
+    };
   };
 
   validate = () => {
@@ -277,6 +322,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       resource,
       length,
       id,
+      roomOrdinal,
     } = this.state;
 
     if (canSave) {
@@ -296,6 +342,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
         gapTime,
         afterTime,
         room,
+        roomOrdinal,
         resource,
         length,
       };
@@ -417,8 +464,9 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
 
   checkConflicts = () => {
     const isFirstAvailable = get(this.state.selectedProvider, 'id', 0) === 0;
-    const serviceState = {};
-
+    const serviceState = {
+      service: {},
+    };
     serviceState.service = {
       isFirstAvailable,
       appointmentId: this.state.id,

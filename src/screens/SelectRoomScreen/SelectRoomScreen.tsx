@@ -146,13 +146,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         });
       }),
     );
-    return this.params.serviceItem
-      ? [{
-        name: 'None',
-        room: null,
-        roomOrdinal: null,
-      }, ...roomOptions]
-      : roomOptions;
+    return roomOptions;
   }
 
   get params() {
@@ -191,6 +185,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     const services = [...this.state.services];
     const currentIndex = services.findIndex(itm => itm.serviceItem.itemId === currentOpenService);
     const nextService = services[currentIndex + 1];
+    services[currentIndex].serviceItem.hasSelectedRoom = true;
     services[currentIndex].serviceItem.service.room = item.room;
     services[currentIndex].serviceItem.service.roomOrdinal = item.roomOrdinal;
     this.setState({

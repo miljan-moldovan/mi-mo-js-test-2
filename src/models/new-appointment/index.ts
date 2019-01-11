@@ -56,6 +56,8 @@ export type ServiceItem = {
   parentId?: string;
   type?: string;
   guestId?: string;
+  hasSelectedRoom?: boolean;
+  hasSelectedResource?: boolean;
   service: {
     service: Service;
     employee: PureProvider;
@@ -66,6 +68,6 @@ export type ServiceItem = {
     gapTime: moment.Duration;
     afterTime: moment.Duration;
     room: Maybe<Room>;
-    roomOrdinal: number;
+    roomOrdinal: Maybe<number>;
   };
 };

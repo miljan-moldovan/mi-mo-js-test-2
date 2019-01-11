@@ -29,9 +29,9 @@ export default class SelectRoomScreen extends React.Component {
           >
             <Text
               style={{
-            fontSize: 14,
-            color: 'white',
-          }}
+                fontSize: 14,
+                color: 'white',
+              }}
             >
           Cancel
             </Text>
@@ -40,15 +40,34 @@ export default class SelectRoomScreen extends React.Component {
       />
     ),
   })
+
+  constructor(props) {
+    super(props);
+    this.state.supportedResource = props.navigation.state.params.supportedResource;
+  }
+
   state = {
     isLoading: false,
     resources: [],
-  }
+    supportedResource: false,
+  };
 
   componentDidMount() {
     this.setState({ isLoading: true }, () => {
       Store.getResources()
-        .then(resources => this.setState({ isLoading: false, resources }))
+        .then(resources => {
+          if (!this.state.supportedResource) { return; }
+          const finalResourcesArray = [];
+          const resource = resources.find(res => res.id === this.state.supportedResource.id);
+          for (let i = 1; i <= resource.resourceCount; i++) {
+            finalResourcesArray.push({
+              name: `${resource.name}#${i}`,
+              id: resource.id,
+              resourceOrdinal: i,
+            });
+          }
+          return this.setState({ isLoading: false, resources: finalResourcesArray });
+        })
         .catch(err => this.setState({ isLoading: false }));
     });
   }
