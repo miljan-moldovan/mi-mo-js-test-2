@@ -108,6 +108,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       'toTime',
       moment().add(15, 'm'),
     );
+    const roomAndResource = this.resolveResourceAndRoomForService(serviceItem.service);
     const length = moment.duration(endTime.diff(startTime));
     const price = get(serviceItem.service.service || {}, 'price', '0');
     const state = {
@@ -133,13 +134,57 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       afterTime: moment.duration(get(serviceItem.service, 'afterTime', 0)),
       room: get(serviceItem.service, 'room', null),
       resource: get(serviceItem.service, 'resource', null),
+      roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
+      resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', 1),
       serviceId: serviceItem && serviceItem.itemId || null,
+      supportedRooms: get(serviceItem.service.service, 'supportedRooms', []),
+      supportedResource: get(serviceItem.service.service, 'supportedResource', {}),
+      ...roomAndResource,
     };
-
     state.length = moment.duration(state.endTime.diff(state.startTime));
     state.initialConflicts = this.props.newAppointmentState.conflicts;
 
     return state;
+  };
+
+  resolveResourceAndRoomForService = serviceWrapper => {
+    const room = get(serviceWrapper, 'room', false);
+    const resource = get(serviceWrapper, 'resource', false);
+    if (room || resource) {
+      return {
+        room: room || null,
+        resource: resource || null,
+      };
+    }
+    const service = serviceWrapper.service;
+    const requireRoom = get(service, 'requireRoom', -1);
+    const requireResource = get(service, 'requireResource', false);
+    const supportedRooms = get(service, 'supportedRooms', []);
+    const supportedResource = get(service, 'supportedResource', []);
+    let roomToSet = null;
+    let resourceToSet = null;
+    if (requireRoom > -1) {
+      if (supportedRooms.length > 0) {
+        roomToSet = supportedRooms.find(room => room.id === requireRoom);
+        if (roomToSet === undefined) {
+          roomToSet = supportedRooms[0];
+        }
+      }
+    }
+    if (requireResource) {
+      resourceToSet = {
+        ...supportedResource,
+        name: `${supportedResource.name}#1`,
+      };
+    }
+    roomToSet = {
+      ...roomToSet,
+      name: `${roomToSet.name}#1`,
+    };
+    return {
+      resource: resourceToSet,
+      room: roomToSet,
+    };
   };
 
   validate = () => {
@@ -363,7 +408,9 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
 
   checkConflicts = () => {
     const isFirstAvailable = get(this.state.selectedProvider, 'id', 0) === 0;
-    const serviceState = {};
+    const serviceState = {
+      service: {}
+    };
     serviceState.service = {
       isFirstAvailable,
       appointmentId: this.state.id,
@@ -415,6 +462,8 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       resource,
       toast,
       date,
+      supportedRooms,
+      supportedResource,
     } = this.state;
 
     return (
@@ -520,7 +569,11 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
           <InputButton
             onPress={() => {
               this.props.navigation.navigate('SelectRoom', {
-                onSelect: selectedRoom => this.setState({ room: selectedRoom }),
+                onSelect: selectedRoom => this.setState({
+                  room: selectedRoom,
+                  roomOrdinal: selectedRoom ? selectedRoom.roomOrdinal : null,
+                }, this.checkConflicts),
+                supportedRooms,
               });
             }}
             label="Assigned Room"
@@ -531,7 +584,11 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
             onPress={() => {
               this.props.navigation.navigate('SelectResource', {
                 onSelect: selectedResource =>
-                  this.setState({ resource: selectedResource }),
+                  this.setState({
+                    resource: selectedResource,
+                    resourceOrdinal: selectedResource ? selectedResource.resourceOrdinal : null,
+                  }, this.checkConflicts),
+                supportedResource,
               });
             }}
             label="Assigned Resource"
