@@ -16,16 +16,61 @@ import {
   InputDivider,
   RemoveButton,
   SchedulePicker,
-} from '../../components/formHelpers';
-import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
-import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
+} from '@/components/formHelpers';
+import SalonToast, { SalonToastObject } from '../appointmentCalendarScreen/components/SalonToast';
+import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 
 import styles from './styles';
-import SalonHeader from '../../components/SalonHeader';
-import { ConflictBox } from '../../components/slidePanels/SalonNewAppointmentSlide';
-import LoadingOverlay from '../../components/LoadingOverlay';
+import SalonHeader from '@/components/SalonHeader';
+import { ConflictBox } from '@/components/slidePanels/SalonNewAppointmentSlide';
+import LoadingOverlay from '@/components/LoadingOverlay';
+import { NavigationScreenProp } from 'react-navigation';
+import { Maybe, Client, ServiceItem, Provider, Service, PureProvider, StoreRoom, StoreResource } from '@/models';
+import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
+import { shouldSelectRoom } from '../newAppointmentScreen/helpers';
 
-export default class ModifyApptServiceScreen extends React.Component<any, any> {
+interface ModifyApptServiceScreenNavigationParams {
+  date: Maybe<moment.Moment>;
+  client: Maybe<Client>;
+  canSave: boolean;
+  serviceItem: Maybe<ServiceItem>;
+  handleSave: () => void;
+  handleCancel: () => void;
+  onRemoveService: () => void;
+}
+
+interface ModifyApptServiceScreenProps {
+  navigation: NavigationScreenProp<ModifyApptServiceScreenNavigationParams>;
+  newAppointmentState: NewAppointmentReducer;
+}
+
+interface ModifyApptServiceScreenState {
+  date: moment.Moment;
+  price: number | string;
+  startTime: moment.Moment;
+  endTime: moment.Moment;
+  length: moment.Duration;
+  toast: Maybe<SalonToastObject>;
+  canSave: boolean;
+  endTimePickerOpen: boolean;
+  startTimePickerOpen: boolean;
+  canRemove: boolean;
+  id: number;
+  selectedClient: Maybe<Client>;
+  selectedProvider: Maybe<PureProvider>;
+  selectedService: Maybe<Service>;
+  requested: boolean;
+  bookBetween: boolean;
+  gapTime: moment.Duration;
+  afterTime: moment.Duration;
+  room: Maybe<StoreRoom>;
+  roomOrdinal: Maybe<number>;
+  resource: Maybe<StoreResource>;
+  serviceId: string;
+  initialConflicts: NewAppointmentReducer['conflicts'];
+}
+
+class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenProps, ModifyApptServiceScreenState> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
     const canSave = params.canSave || false;
@@ -85,6 +130,10 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
     this.checkConflicts();
   }
 
+  get serviceItem() {
+    return this.props.navigation.getParam('serviceItem');
+  }
+
   onPressRemove = () => {
     const params = this.props.navigation.state.params || {};
     if (params.onRemoveService) {
@@ -98,10 +147,11 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
   };
 
   getStateFromParams = () => {
-    const params = this.props.navigation.state.params || {};
-    const serviceItem = params.serviceItem || false;
-    const client = params.client || null;
-    const date = params.date || moment();
+    const { getParam } = this.props.navigation;
+    const serviceItem = getParam('serviceItem', null);
+    const client = getParam('client', null);
+    const date = getParam('date', moment());
+    const onRemoveService = getParam('onRemoveService');
     const startTime = get(serviceItem.service, 'fromTime', moment());
     const endTime = get(
       serviceItem.service,
@@ -120,7 +170,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       canSave: false,
       endTimePickerOpen: false,
       startTimePickerOpen: false,
-      canRemove: !!params.onRemoveService,
+      canRemove: !!onRemoveService,
       id: get(serviceItem.service, 'id', null),
       selectedClient: serviceItem.guestId
         ? get(serviceItem.service, 'client', null)
@@ -132,6 +182,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       gapTime: moment.duration(get(serviceItem.service, 'gapTime', 0)),
       afterTime: moment.duration(get(serviceItem.service, 'afterTime', 0)),
       room: get(serviceItem.service, 'room', null),
+      roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
       resource: get(serviceItem.service, 'resource', null),
       serviceId: serviceItem && serviceItem.itemId || null,
     };
@@ -194,7 +245,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
   };
 
   conflictsForThisService = () => this.props.newAppointmentState.conflicts.filter(conf =>
-    conf.associativeKey === this.state.serviceId,
+    conf.associativeKey === this.state.serviceId && !conf.canBeSkipped,
   );
 
   getConflictsByProblem = () => {
@@ -398,6 +449,20 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
     );
   }
 
+  selectRoom = () => {
+    this.props.navigation.navigate('SelectRoom', {
+      serviceItem: this.props.navigation.getParam('serviceItem', undefined),
+      onChange: ({ room, roomOrdinal }) => this.setState({ room, roomOrdinal }, this.checkConflicts),
+    });
+  }
+
+  selectResource = () => {
+    this.props.navigation.navigate('SelectResource', {
+      onSelect: selectedResource =>
+        this.setState({ resource: selectedResource }, this.checkConflicts),
+    });
+  }
+
   render() {
     const {
       canRemove,
@@ -415,8 +480,10 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       resource,
       toast,
       date,
+      roomOrdinal,
     } = this.state;
-
+    const supportsRooms = get(selectedService, 'supportedRooms.length', false);
+    const supportsResource = get(selectedService, 'supportedResource', false);
     return (
       <ScrollView style={styles.container}>
         {this.props.newAppointmentState.isLoading ? <LoadingOverlay /> : null}
@@ -493,67 +560,77 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
             onChange={bookBetween =>
               this.setState({ bookBetween: !bookBetween })}
           />
-          {bookBetween &&
-          <View>
-            <InputDivider />
-            <InputNumber
-              value={gapTime.asMinutes()}
-              onChange={this.handleChangeGapTime}
-              step={this.props.apptGridSettings.step} // TODO should be apptgrid step
-              label="Gap Time"
-              singularText="min"
-              pluralText="min"
-            />
-            <InputDivider />
-            <InputNumber
-              value={afterTime.asMinutes()}
-              onChange={this.handleChangeAfterTime}
-              label="After"
-              step={this.props.apptGridSettings.step}
-              singularText="min"
-              pluralText="min"
-            />
-          </View>}
+          {
+            bookBetween &&
+            <View>
+              <InputDivider />
+              <InputNumber
+                value={gapTime.asMinutes()}
+                onChange={this.handleChangeGapTime}
+                step={this.props.apptGridSettings.step} // TODO should be apptgrid step
+                label="Gap Time"
+                singularText="min"
+                pluralText="min"
+              />
+              <InputDivider />
+              <InputNumber
+                value={afterTime.asMinutes()}
+                onChange={this.handleChangeAfterTime}
+                label="After"
+                step={this.props.apptGridSettings.step}
+                singularText="min"
+                pluralText="min"
+              />
+            </View>
+          }
         </InputGroup>
-        <SectionTitle value="Room & Resource" />
-        <InputGroup>
-          <InputButton
-            onPress={() => {
-              this.props.navigation.navigate('SelectRoom', {
-                onSelect: selectedRoom => this.setState({ room: selectedRoom }),
-              });
-            }}
-            label="Assigned Room"
-            value={room ? room.name : 'None'}
-          />
-          <InputDivider />
-          <InputButton
-            onPress={() => {
-              this.props.navigation.navigate('SelectResource', {
-                onSelect: selectedResource =>
-                  this.setState({ resource: selectedResource }),
-              });
-            }}
-            label="Assigned Resource"
-            value={resource ? resource.name : 'None'}
-          />
-        </InputGroup>
+        {
+          supportsResource || supportsRooms &&
+          (
+            <React.Fragment>
+              <SectionTitle value="Room & Resource" />
+              <InputGroup>
+                {
+                  supportsRooms && (
+                    <React.Fragment>
+                      <InputButton
+                        onPress={this.selectRoom}
+                        label="Assigned Room"
+                        value={room ? `${room.name} #${roomOrdinal}` : 'None'}
+                      />
+                      <InputDivider />
+                    </React.Fragment>
+                  )
+                }
+                {
+                  supportsResource &&
+                  <InputButton
+                    onPress={this.selectResource}
+                    label="Assigned Resource"
+                    value={resource ? resource.name : 'None'}
+                  />
+                }
+              </InputGroup>
+            </React.Fragment>
+          )
+        }
         {this.renderConflictsBox()}
         {canRemove &&
-        <RemoveButton
-          disabled={this.props.navigation.state.params.isOnlyMainService}
-          title="Remove Service"
-          onPress={this.onPressRemove}
-        />}
+          <RemoveButton
+            disabled={this.props.navigation.state.params.isOnlyMainService}
+            title="Remove Service"
+            onPress={this.onPressRemove}
+          />}
         <SectionDivider />
         {toast &&
-        <SalonToast
-          description={toast.description}
-          type={toast.type}
-          btnRightText={toast.btnRight}
-          hide={this.hideToast}
-        />}
+          <SalonToast
+            description={toast.description}
+            type={toast.type}
+            btnRightText={toast.btnRight}
+            hide={this.hideToast}
+          />}
       </ScrollView>
     );
   }
 }
+export default ModifyApptServiceScreen;

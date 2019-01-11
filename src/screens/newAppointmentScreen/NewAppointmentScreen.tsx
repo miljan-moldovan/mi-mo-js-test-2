@@ -42,7 +42,7 @@ import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
 import { NewAppointmentScreenProps, NewAppointmentScreenState, Service, Room, ServiceItem, Maybe } from '@/models';
-import { shouldSelectRoom } from './helpers';
+import { shouldSelectRoom, shouldSelectResource } from './helpers';
 
 export const SubTitle = (props: {
   title: string;
@@ -125,7 +125,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       selectedRecommended: [],
       recurringPickerOpen: false,
     };
-
     this.props.navigation.addListener('willFocus', () => {
       const { client, editType } = this.props.newAppointmentState;
       if (editType !== 'new') {
@@ -162,7 +161,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     }
   }
 
-  addService = async (service, provider = null, guestId: string = undefined) => {
+  addService = (service, provider = null, guestId: string = undefined) => {
     const {
       client,
       startTime,
@@ -172,11 +171,10 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const serviceLength = moment.duration(service.maxDuration);
     const fromTime = moment(startTime).add(length);
     const toTime = moment(fromTime).add(serviceLength);
-    const { room, roomOrdinal } = await this.selectRoomForService(service);
     const newService = {
       service,
-      room,
-      roomOrdinal,
+      room: null,
+      roomOrdinal: null,
       length: serviceLength,
       client: guestId ? get(this.getGuest(guestId), 'client', null) : client,
       requested: true,
@@ -214,9 +212,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     // }
 
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
-    setTimeout(() => {
-      this.selectExtraServices(newServiceItem);
-    });
+    setTimeout(() => this.selectExtraServices(newServiceItem));
   };
 
   createPhonesArr = phones => {
@@ -308,7 +304,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
                   );
                   this.props.servicesActions.setSelectingExtras(false);
                   return this.checkConflicts();
-                  // return this.shouldSelectRooms();
                 }),
               )
               .catch(() => {
@@ -389,24 +384,24 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       }
     });
 
-  selectRoomForService = (service: Service): Promise<{ room: Maybe<Room>, roomOrdinal: Maybe<number> }> => {
-    const { navigate } = this.props.navigation;
-    return new Promise(resolve => {
-      try {
-        const { name: serviceName, supportedRooms } = service;
-        if (supportedRooms && supportedRooms.length) {
-          navigate('SelectRoom', {
-            serviceName,
-            supportedRooms,
-            onChange: room => resolve(room),
-          });
-        } else {
-          resolve({ room: null, roomOrdinal: null });
-        }
-      } catch (err) {
-        resolve({ room: null, roomOrdinal: null });
-      }
-    });
+  shouldSelectRooms = () => {
+    const { newAppointmentState: { serviceItems } } = this.props;
+    const shouldNavigate = serviceItems.reduce((agg, itm) => agg || shouldSelectRoom(itm), false);
+    if (shouldNavigate) {
+      this.props.navigation.navigate('SelectRoom', { onNavigateBack: () => this.checkConflicts() });
+    } else {
+      return false;
+    }
+  }
+
+  shouldSelectResources = () => {
+    const { newAppointmentState: { serviceItems } } = this.props;
+    const shouldNavigate = serviceItems.reduce((agg, itm) => agg || shouldSelectResource(itm), false);
+    if (shouldNavigate) {
+      this.props.navigation.navigate('SelectResource', { onNavigateBack: () => this.checkConflicts() });
+    } else {
+      return false;
+    }
   }
 
   shouldUpdateClientInfo = async () => {
@@ -462,7 +457,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     return updated;
   };
 
-  onPressService = (serviceId, guestId = false) => {
+  onPressService = (serviceId, guestId?) => {
     const item = this.getServiceItem(serviceId);
     const isOnlyMainService = this.isOnlyMainService(item);
     const { date, client: mainClient } = this.props.newAppointmentState;
@@ -711,11 +706,17 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   changeDateTime = () =>
     this.props.navigation.navigate('ChangeNewApptDateTime');
 
-  checkConflicts = () =>
-    this.props.newAppointmentActions.getConflicts(() => {
-      this.validate();
-      this.shouldUpdateClientInfo();
-    });
+  checkConflicts = () => {
+    if (
+      !this.shouldSelectRooms() ||
+      !this.shouldSelectResources()
+    ) {
+      this.props.newAppointmentActions.getConflicts(() => {
+        this.validate();
+        this.shouldUpdateClientInfo();
+      });
+    }
+  }
 
   handleAddGuestService = guestId => {
     const { date, mainEmployee } = this.props.newAppointmentState;
