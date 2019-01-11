@@ -25,6 +25,9 @@ import SalonHeader from '../../components/SalonHeader';
 import { ConflictBox } from '../../components/slidePanels/SalonNewAppointmentSlide';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
+const durationToFormat = (duration) => {
+  return moment.utc(duration.as('milliseconds')).format('HH:mm:ss');
+};
 export default class ModifyApptServiceScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
@@ -364,6 +367,7 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
   checkConflicts = () => {
     const isFirstAvailable = get(this.state.selectedProvider, 'id', 0) === 0;
     const serviceState = {};
+
     serviceState.service = {
       isFirstAvailable,
       appointmentId: this.state.id,
@@ -380,6 +384,8 @@ export default class ModifyApptServiceScreen extends React.Component<any, any> {
       resourceId: get(get(this.state, 'resource', null), 'id', null),
       resourceOrdinal: get(this.state, 'resourceOrdinal', null),
       associativeKey: this.state.serviceId,
+      gapTime: this.state.bookBetween && this.state.gapTime && durationToFormat(this.state.gapTime),
+      afterTime: this.state.bookBetween && this.state.afterTime && durationToFormat(this.state.afterTime),
     };
     this.props.newAppointmentActions.getConflictsForService(serviceState, () => this.validate());
     this.validate();
