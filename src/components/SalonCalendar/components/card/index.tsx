@@ -8,20 +8,15 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 import { get, times } from 'lodash';
-import SvgUri from 'react-native-svg-uri';
 import PropTypes from 'prop-types';
 
 import colors from '@/constants/appointmentColors';
-import multiProviderUri from '@/assets/svg/multi-provider-icon.svg';
-import Icon from '@/components/common/Icon';
-import Badge from '.@/components/SalonBadge/index';
 import ResizeButton from '../resizeButtons';
-import GroupBadge from '@/components/SalonGroupBadge/index';
 import { isCardWithGap, getBadges, getLighterColor } from '@/utilities/helpers';
 
 import styles from './styles';
 
-class Card extends React.Component {
+class Card extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.cards = [];
@@ -197,25 +192,34 @@ class Card extends React.Component {
   }
 
   handleOnLongPress = ({ verticalPositions, left, width }) => {
-    const {
-      appointment, isBufferCard, onDrag, startDate
-    } = this.props;
+    const { isBufferCard } = this.props;
+
     if (isBufferCard) {
-      this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
-        const { height } = this.props;
-        const newVerticalPositions = [{ top: y, height }];
-        onDrag(false, appointment, x, width, newVerticalPositions, true);
-      });
+      this.handelOnPressCardInBuffer(width);
     } else {
-      const newVerticalPositions = [];
-      for (let i = 0; i < verticalPositions.length; i += 1) {
-        const item = verticalPositions[i];
-        const newItem = { ...item, top: item.top };
-        newVerticalPositions.push(newItem);
-      }
-      const newLeft = left;
-      this.props.onDrag(false, appointment, newLeft, width, newVerticalPositions);
+      this.handelOnLongPressOutOfBuffer(verticalPositions, left, width);
     }
+  };
+
+  handelOnPressCardInBuffer = (width) => {
+    const { onDrag, height, appointment } = this.props;
+
+    this.cards[0]._propsAnimated._animatedView.measureInWindow((x, y) => {
+      const newVerticalPositions = [{ top: y, height }];
+      onDrag(false, appointment, x, width, newVerticalPositions, true);
+    });
+  };
+
+  handelOnLongPressOutOfBuffer = (verticalPositions, left, width) => {
+    const { onDrag, appointment } = this.props;
+    const newVerticalPositions = [];
+    for (let i = 0; i < verticalPositions.length; i += 1) {
+      const item = verticalPositions[i];
+      const newItem = { ...item, top: item.top };
+      newVerticalPositions.push(newItem);
+    }
+    const newLeft = left;
+    onDrag(false, appointment, newLeft, width, newVerticalPositions);
   };
 
   highlightGoTo = () => {
@@ -226,7 +230,7 @@ class Card extends React.Component {
         duration: 300,
       },
     ).start(this.hideHighlightGoTo);
-  }
+  };
 
   hideHighlightGoTo = () => {
     Animated.timing(
@@ -237,7 +241,7 @@ class Card extends React.Component {
         duration: 300,
       },
     ).start();
-  }
+  };
 
   // render assitants on card when setting is enable
   renderAssistant = ({ height }) => (
@@ -260,7 +264,7 @@ class Card extends React.Component {
         { badges.slice(0, 1) }
       </View>
     );
-  }
+  };
 
   // render stripes when card from or to time is out of bounds
   renderStripes = ({ height, width, backgroundColor }) => {
@@ -283,15 +287,15 @@ class Card extends React.Component {
           >
             {
              times(50).map((index) => {
-              gap = countGap2;
-              countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
-              if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
-                countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
-                return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={backgroundColor} stopOpacity="0.4" />);
-              }
-              countOpacity2 += 1;
-                return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={backgroundColor} />);
-            })
+               gap = countGap2;
+               countGap2 = index % 2 === 0 ? countGap2 + 2 : countGap2;
+               if (countOpacity2 > 0 && countOpacity2 % 2 === 0) {
+                 countOpacity2 = index % 2 === 0 ? countOpacity2 : 0;
+                 return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={backgroundColor} stopOpacity="0.4" />);
+               }
+               countOpacity2 += 1;
+               return (<Stop key={`${index}${width}`} offset={`${index + gap}%`} stopColor={backgroundColor} />);
+              })
             }
           </LinearGradient>
         </Defs>
@@ -303,7 +307,7 @@ class Card extends React.Component {
         />
       </Svg>
     );
-  }
+  };
 
   render() {
     const {
@@ -382,9 +386,9 @@ class Card extends React.Component {
     return (
       <React.Fragment>
         {
-            verticalPositions.map(({ height, top }, index) => {
-              const usedBlocks = isMultiBlock ? (height + 1) / 30 : 1;
-              return (
+          verticalPositions.map(({ height, top }, index) => {
+            const usedBlocks = isMultiBlock ? (height + 1) / 30 : 1;
+            return (
                 <Animated.View
                   {...panHandlers}
                   ref={(view) => { this.cards.push(view); }}
