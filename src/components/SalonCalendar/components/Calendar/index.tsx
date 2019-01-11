@@ -49,7 +49,7 @@ import {
 import { CalendarProps, CalendarState } from '@/models/appointment-book/calendar';
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 import styles from './styles';
-import { isIphoneX } from 'react-native-iphone-x-helper'
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { findOverlappingAppointments } from './helpers';
 
@@ -727,7 +727,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     const { calendarMeasure } = this.state;
     const y = top - (calendarMeasure.height - slideHieght) / 2 - headerHeight;
     if (this.isElementInEndOfList(top)) {
-      return top - (this.props.workHeight  - (isIphoneX() ? 255 : 315));
+      return top - (this.props.workHeight - (isIphoneX() ? 255 : 315));
     }
     return this.checkEdgeOfScree(y);
   };
@@ -1645,7 +1645,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         left: delta,
         width: this.cellWidth - gap,
       };
-    
+
       return (
         <BlockTime
           left={overlap.left}
@@ -1769,6 +1769,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       providers,
       goToAppointmentId,
       startDate,
+      availability,
       crossedAppointmentAfter,
     } = this.props;
     const {
@@ -1806,7 +1807,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       ? null
       : this.panResponder;
     if (appointment.employee) {
-      const firstCellWidth = isAllProviderView ? 130 : 0;
+      const firstCellWidth = isAllProviderView && availability ? 130 : 0;
 
       const gap =
         get(

@@ -1,15 +1,15 @@
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { View, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import {
   appointmentCalendarActions,
 } from '../../../redux/actions/appointmentBook';
 
-import {InputSwitch} from '../../formHelpers';
+import { InputSwitch } from '../../formHelpers';
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -25,16 +25,16 @@ const styles = StyleSheet.create ({
     fontWeight: '500',
   },
   switchStyle: {
-    transform: [{scaleX: 0.6}, {scaleY: 0.6}],
+    transform: [{ scaleX: 0.6 }, { scaleY: 0.6 }],
   },
 });
 
 const firstAvailableBtn = ({
-  rootStyles,
-  switchStyle,
-  showFirstAvailable,
-  appointmentBookAction,
-}) => (
+                             rootStyles,
+                             switchStyle,
+                             showFirstAvailable,
+                             appointmentBookAction,
+                           }) => (
   <View style={[styles.container, rootStyles]}>
     <InputSwitch
       text="First Available"
@@ -53,10 +53,10 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  appointmentBookAction: bindActionCreators (
-    {...appointmentCalendarActions},
-    dispatch
+  appointmentBookAction: bindActionCreators(
+    { ...appointmentCalendarActions },
+    dispatch,
   ),
 });
 
-export default connect (mapStateToProps, mapActionsToProps) (firstAvailableBtn);
+export default connect(mapStateToProps, mapActionsToProps)(firstAvailableBtn);
