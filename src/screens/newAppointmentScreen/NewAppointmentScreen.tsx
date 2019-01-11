@@ -11,7 +11,6 @@ import uuid from 'uuid/v4';
 import { get, debounce, isNull } from 'lodash';
 import deepEqual from 'deep-equal';
 import { NavigationEvents } from 'react-navigation';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Picker } from 'react-native-wheel-datepicker';
 import ClientInfoButton from '@/components/ClientInfoButton';
 import ClientPhoneTypes from '@/constants/ClientPhoneTypes';
@@ -1054,372 +1053,373 @@ class NewAppointmentScreen extends React.Component<any, any> {
 
     const mainServices = this.getMainServices(serviceItems);
     return (
-      <SwipeableComponent onSwipeRight={this.handleCancel}>
-        <View style={styles.container}>
-          <NavigationEvents onDidFocus={this.validate} />
-          {isLoading || isBooking || isLoadingNotes ? <LoadingOverlay /> : null}
-          <KeyboardAwareScrollView style={styles.container}>
-            <InputGroup style={{ marginTop: 15 }}>
-              <ProviderInput
-                apptBook
-                noAvatar
-                label="Booked by"
-                placeholder={false}
-                showFirstAvailable={false}
-                icon={isBookedByFieldEnabled ? 'default' : false}
-                selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
-                selectedProvider={bookedByEmployee}
-                disabled={!isBookedByFieldEnabled}
-                onChange={this.onChangeBookedBy}
-                navigate={this.props.navigation.navigate}
-                headerProps={{
-                  title: 'Providers',
-                  leftButton: (
-                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-                  ),
-                  leftButtonOnPress: navigation => {
-                    navigation.goBack();
-                  },
-                }}
-              />
-              <InputDivider />
-              <InputButton
-                label="Date"
-                value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('hh:mm A')}`}
-                onPress={this.changeDateTime}
-              />
-            </InputGroup>
-            <SectionTitle style={{ height: 46 }} value="Client" />
-            <InputGroup>
-              <ClientInput
-                apptBook
-                navigate={this.props.navigation.navigate}
-                label={client === null ? 'Select Client' : 'Client'}
-                headerProps={{
-                  title: 'Clients',
-                  leftButton: (
-                    <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-                  ),
-                  leftButtonOnPress: navigation => {
-                    navigation.goBack();
-                  },
-                }}
-                selectedClient={client}
-                onChange={this.onChangeClient}
-                extraComponents={
-                  client !== null && this.renderExtraClientButtons(isDisabled)
-                }
-              />
-              <InputDivider />
-              <ValidatableInput
-                label="Email"
-                value={clientEmail}
-                isValid={isValidEmail || !client}
-                validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
-                onValidated={this.onValidateEmail}
-                onChangeText={this.onChangeEmail}
-              />
-              <InputDivider
-                style={isValidEmail || !client ? {} : dividerWithErrorStyle}
-              />
-              <ValidatableInput
-                label="Phone"
-                mask="[000]-[000]-[0000]"
-                isValid={isValidPhone || !client}
-                value={clientPhone}
-                validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
-                onValidated={this.onValidatePhone}
-                onChangeText={this.onChangePhone}
-              />
-              <InputDivider
-                style={isValidPhone || !client ? {} : dividerWithErrorStyle}
-              />
-              <InputNumber
-                value={guests.length}
-                onChange={this.onChangeGuestNumber}
-                label="Multiple Guests"
-                singularText="guest"
-                pluralText="guests"
-              />
-            </InputGroup>
+      <View style={styles.container}>
+        <NavigationEvents onDidFocus={this.validate} />
+        {isLoading || isBooking || isLoadingNotes ? <LoadingOverlay /> : null}
+        <SwipeableComponent onSwipeRight={this.handleCancel}>
+          <InputGroup style={{ marginTop: 15 }}>
+            <ProviderInput
+              apptBook
+              noAvatar
+              label="Booked by"
+              placeholder={false}
+              showFirstAvailable={false}
+              icon={isBookedByFieldEnabled ? 'default' : false}
+              selectedStyle={isBookedByFieldEnabled ? {} : disabledLabelStyle}
+              selectedProvider={bookedByEmployee}
+              disabled={!isBookedByFieldEnabled}
+              onChange={this.onChangeBookedBy}
+              navigate={this.props.navigation.navigate}
+              headerProps={{
+                title: 'Providers',
+                leftButton: (
+                  <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+                ),
+                leftButtonOnPress: navigation => {
+                  navigation.goBack();
+                },
+              }}
+            />
+            <InputDivider />
+            <InputButton
+              label="Date"
+              value={`${date.format('ddd, MM/DD/YYYY')}, ${startTime.format('hh:mm A')}`}
+              onPress={this.changeDateTime}
+            />
+          </InputGroup>
+          <SectionTitle style={{ height: 46 }} value="Client" />
+          <InputGroup>
+            <ClientInput
+              apptBook
+              navigate={this.props.navigation.navigate}
+              label={client === null ? 'Select Client' : 'Client'}
+              headerProps={{
+                title: 'Clients',
+                leftButton: (
+                  <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
+                ),
+                leftButtonOnPress: navigation => {
+                  navigation.goBack();
+                },
+              }}
+              selectedClient={client}
+              onChange={this.onChangeClient}
+              extraComponents={
+                client !== null && this.renderExtraClientButtons(isDisabled)
+              }
+            />
+            <InputDivider />
+            <ValidatableInput
+              label="Email"
+              value={clientEmail}
+              isValid={isValidEmail || !client}
+              validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
+              onValidated={this.onValidateEmail}
+              onChangeText={this.onChangeEmail}
+            />
+            <InputDivider
+              style={isValidEmail || !client ? {} : dividerWithErrorStyle}
+            />
+            <ValidatableInput
+              label="Phone"
+              mask="[000]-[000]-[0000]"
+              isValid={isValidPhone || !client}
+              value={clientPhone}
+              validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
+              onValidated={this.onValidatePhone}
+              onChangeText={this.onChangePhone}
+            />
+            <InputDivider
+              style={isValidPhone || !client ? {} : dividerWithErrorStyle}
+            />
+            <InputNumber
+              value={guests.length}
+              onChange={this.onChangeGuestNumber}
+              label="Multiple Guests"
+              singularText="guest"
+              pluralText="guests"
+            />
+          </InputGroup>
+          <View>
+            <SubTitle
+              title={guests.length > 0 ? 'Main Client' : 'Services'}
+            />
+            {mainServices.map(item => {
+              const addonItems = this.getAddonsForService(item.itemId, serviceItems);
+              return (
+                <React.Fragment key={item.itemId}>
+                  <ServiceCard
+                    key={`service_card_${item.itemId}`}
+                    data={item.service}
+                    isOnlyMainService={this.isOnlyMainService(item)}
+                    addons={this.getAddonsForService(item.itemId, serviceItems)}
+                    onPress={() => this.onPressService(item.itemId)}
+                    onSetExtras={() => this.selectExtraServices(item)}
+                    conflicts={this.getConflictsForService(item.itemId)}
+                    onPressDelete={() => this.removeServiceAlert(item.itemId)}
+                    onPressConflicts={() => this.onPressConflicts(item.itemId)}
+                    isGotAddon={addonItems.length}
+                  />
+                  {
+                    addonItems.map(addon => {
+                      const addonOnPress = () => this.onPressService(addon.itemId);
+                      const addonDelete = () => this.removeServiceAlert(addon.itemId);
+                      const addonConflicts = () =>
+                        this.onPressConflicts(addon.itemId);
+                      return (
+                        <ServiceCard
+                          isAddon
+                          key={`addon_card_${addon.itemId}`}
+                          data={addon.service}
+                          isRequired={addon.isRequired}
+                          onPress={addonOnPress}
+                          conflicts={this.getConflictsForService(addon.itemId)}
+                          onPressDelete={addonDelete}
+                          onPressConflicts={addonConflicts}
+                        />
+                      );
+                    })
+                  }
+                </React.Fragment>
+              );
+            })}
+            <AddButton
+              style={{ marginVertical: 5, paddingTop: 0 }}
+              onPress={this.handleAddMainService}
+              iconStyle={{ marginLeft: 10, marginRight: 4 }}
+              title="add service"
+            />
+          </View>
+          {guests.length > 0 &&
             <View>
-              <SubTitle
-                title={guests.length > 0 ? 'Main Client' : 'Services'}
-              />
-              {mainServices.map(item => {
-                const addonItems = this.getAddonsForService(item.itemId, serviceItems);
-                return (
-                  <React.Fragment key={item.itemId}>
-                    <ServiceCard
-                      key={`service_card_${item.itemId}`}
-                      data={item.service}
-                      isOnlyMainService={this.isOnlyMainService(item)}
-                      addons={this.getAddonsForService(item.itemId, serviceItems)}
-                      onPress={() => this.onPressService(item.itemId)}
-                      onSetExtras={() => this.selectExtraServices(item)}
-                      conflicts={this.getConflictsForService(item.itemId)}
-                      onPressDelete={() => this.removeServiceAlert(item.itemId)}
-                      onPressConflicts={() => this.onPressConflicts(item.itemId)}
-                      isGotAddon={addonItems.length}
-                    />
-                    {
-                      addonItems.map(addon => {
-                        const addonOnPress = () => this.onPressService(addon.itemId);
-                        const addonDelete = () => this.removeServiceAlert(addon.itemId);
-                        const addonConflicts = () =>
-                          this.onPressConflicts(addon.itemId);
-                        return (
-                          <ServiceCard
-                            isAddon
-                            key={`addon_card_${addon.itemId}`}
-                            data={addon.service}
-                            isRequired={addon.isRequired}
-                            onPress={addonOnPress}
-                            conflicts={this.getConflictsForService(addon.itemId)}
-                            onPressDelete={addonDelete}
-                            onPressConflicts={addonConflicts}
-                          />
-                        );
-                      })
-                    }
-                  </React.Fragment>);
-              })}
+              {guests.map((guest, guestIndex) => (
+                <View>
+                  <Guest
+                    index={guestIndex}
+                    navigate={this.props.navigation.navigate}
+                    selectedClient={guest.client || null}
+                    onRemove={() => this.removeGuest(guest.guestId)}
+                    onChange={selectedClient =>
+                      this.setGuest(selectedClient, guest.guestId)}
+                  />
+                  {this.getGuestServices(guest.guestId).map(item => {
+                    const addonItems = this.getAddonsForService(item.itemId, serviceItems);
+                    return (
+                      <React.Fragment key={item.itemId}>
+                        <ServiceCard
+                          key={item.itemId}
+                          data={item.service}
+                          addons={this.getAddonsForService(
+                            item.itemId,
+                            serviceItems,
+                          )}
+                          onSetExtras={() => this.selectExtraServices(item)}
+                          conflicts={this.getConflictsForService(item.itemId)}
+                          onPressDelete={() =>
+                            this.removeServiceAlert(item.itemId)}
+                          onPressConflicts={() =>
+                            this.onPressConflicts(item.itemId)}
+                          onPress={() =>
+                            this.onPressService(item.itemId, guest.guestId)}
+                          isGotAddon={addonItems.length}
+                        />
+                        {
+                          addonItems.map(addon => (
+                            <ServiceCard
+                              isAddon
+                              key={addon.itemId}
+                              data={addon.service}
+                              isRequired={addon.isRequired}
+                              conflicts={this.getConflictsForService(addon.itemId)}
+                              onPressDelete={() =>
+                                this.removeServiceAlert(addon.itemId)}
+                              onPressConflicts={() =>
+                                this.onPressConflicts(addon.itemId)}
+                              onPress={() =>
+                                this.onPressService(addon.itemId, guest.guestId)}
+                            />
+                          ))
+                        }
+                      </React.Fragment>
+                    );
+                  })}
+                  <AddButton
+                    style={{ marginVertical: 5 }}
+                    onPress={() => this.handleAddGuestService(guest.guestId)}
+                    iconStyle={{ marginLeft: 10, marginRight: 6 }}
+                    title="add service"
+                  />
+                </View>
+              ))}
+            </View>
+          }
+          {this.state.isRecurring &&
+            <View>
+              <InputGroup style={{ marginVertical: 20 }}>
+                <InputSwitch
+                  text="Recurring appt."
+                  value={this.state.isRecurring}
+                  onChange={() =>
+                    this.setState({
+                      toast: {
+                        type: 'info',
+                        text: 'API Not implemented',
+                      },
+                    })}
+                />
+              </InputGroup>
               <AddButton
-                style={{
-                  marginVertical: 5,
-                  paddingTop: 0,
-                }}
-                onPress={this.handleAddMainService}
-                iconStyle={{ marginLeft: 10, marginRight: 4 }}
+                style={{ marginVertical: 5 }}
+                onPress={() => this.handleAddGuestService(guest.guestId)}
+                iconStyle={{ marginLeft: 10, marginRight: 6 }}
                 title="add service"
               />
             </View>
-            {guests.length > 0 &&
-              <View>
-                {guests.map((guest, guestIndex) => (
-                  <View>
-                    <Guest
-                      index={guestIndex}
-                      navigate={this.props.navigation.navigate}
-                      selectedClient={guest.client || null}
-                      onRemove={() => this.removeGuest(guest.guestId)}
-                      onChange={selectedClient =>
-                        this.setGuest(selectedClient, guest.guestId)}
-                    />
-                    {this.getGuestServices(guest.guestId).map(item => {
-                      const addonItems = this.getAddonsForService(item.itemId, serviceItems);
-                      return (
-                        <React.Fragment key={item.itemId}>
-                          <ServiceCard
-                            key={item.itemId}
-                            data={item.service}
-                            addons={this.getAddonsForService(
-                              item.itemId,
-                              serviceItems,
-                            )}
-                            onSetExtras={() => this.selectExtraServices(item)}
-                            conflicts={this.getConflictsForService(item.itemId)}
-                            onPressDelete={() =>
-                              this.removeServiceAlert(item.itemId)}
-                            onPressConflicts={() =>
-                              this.onPressConflicts(item.itemId)}
-                            onPress={() =>
-                              this.onPressService(item.itemId, guest.guestId)}
-                            isGotAddon={addonItems.length}
-                          />
-                          {
-                            addonItems.map(addon => (
-                              <ServiceCard
-                                isAddon
-                                key={addon.itemId}
-                                data={addon.service}
-                                isRequired={addon.isRequired}
-                                conflicts={this.getConflictsForService(addon.itemId)}
-                                onPressDelete={() =>
-                                  this.removeServiceAlert(addon.itemId)}
-                                onPressConflicts={() =>
-                                  this.onPressConflicts(addon.itemId)}
-                                onPress={() =>
-                                  this.onPressService(addon.itemId, guest.guestId)}
-                              />
-                            ))
-                          }
-                        </React.Fragment>
-                      );
+          }
+          {this.state.isRecurring &&
+            <View>
+              <InputGroup style={{ marginVertical: 20 }}>
+                <InputSwitch
+                  text="Recurring appt."
+                  value={this.state.isRecurring}
+                  onChange={() =>
+                    this.setState({
+                      toast: {
+                        type: 'info',
+                        text: 'API Not implemented',
+                      },
                     })}
-                    <AddButton
-                      style={{ marginVertical: 5 }}
-                      onPress={() => this.handleAddGuestService(guest.guestId)}
-                      iconStyle={{ marginLeft: 10, marginRight: 6 }}
-                      title="add service"
+                />
+              </InputGroup>
+              <SectionTitle
+                style={{ marginTop: 0, paddingBottom: 12, height: 26 }}
+                value="Repeat Every"
+              />
+              <InputGroup>
+                <InputButton
+                  label="Repeats every"
+                  value={`${this.state.recurringNumber} ${this.state.recurringType}`}
+                  onPress={this.toggleRecurringPicker}
+                  style={{ paddingLeft: 0 }}
+                />
+                {this.state.recurringPickerOpen &&
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignSelf: 'stretch',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Picker
+                      style={{ flex: 1 }}
+                      itemStyle={{ backgroundColor: 'white' }}
+                      selectedValue={this.state.recurringNumber}
+                      pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+                      onValueChange={recurringNumber =>
+                        this.setState({ recurringNumber })}
+                    />
+                    <Picker
+                      style={{ flex: 1 }}
+                      itemStyle={{ backgroundColor: 'white' }}
+                      selectedValue={this.state.recurringType}
+                      pickerData={['Weeks', 'Months']}
+                      onValueChange={recurringType =>
+                        this.setState({ recurringType })}
                     />
                   </View>
-                ))}
-              </View>}
-            {this.state.isRecurring &&
-              <View>
-                <InputGroup style={{ marginVertical: 20 }}>
-                  <InputSwitch
-                    text="Recurring appt."
-                    value={this.state.isRecurring}
-                    onChange={() =>
-                      this.setState({
-                        toast: {
-                          type: 'info',
-                          text: 'API Not implemented',
-                        },
-                      })}
-                  />
-                </InputGroup>
-                <AddButton
-                  style={{ marginVertical: 5 }}
-                  onPress={() => this.handleAddGuestService(guest.guestId)}
-                  iconStyle={{ marginLeft: 10, marginRight: 6 }}
-                  title="add service"
+                }
+                <InputDivider />
+                <InputButton
+                  label="On"
+                  value="The same day each month"
+                  onPress={() => this.props.navigation.navigate('RepeatsOn')}
+                  style={{ paddingLeft: 0 }}
                 />
-              </View>}
-            {this.state.isRecurring &&
-              <View>
-                <InputGroup style={{ marginVertical: 20 }}>
-                  <InputSwitch
-                    text="Recurring appt."
-                    value={this.state.isRecurring}
-                    onChange={() =>
-                      this.setState({
-                        toast: {
-                          type: 'info',
-                          text: 'API Not implemented',
-                        },
-                      })}
-                  />
-                </InputGroup>
-                <SectionTitle
-                  style={{ marginTop: 0, paddingBottom: 12, height: 26 }}
-                  value="Repeat Every"
+                <InputDivider />
+                <InputButton
+                  label="Ends"
+                  value="After 5 ocurrences"
+                  onPress={() => this.props.navigation.navigate('EndsOn')}
+                  style={{ paddingLeft: 0 }}
                 />
-                <InputGroup>
-                  <InputButton
-                    label="Repeats every"
-                    value={`${this.state.recurringNumber} ${this.state.recurringType}`}
-                    onPress={this.toggleRecurringPicker}
-                    style={{ paddingLeft: 0 }}
-                  />
-                  {this.state.recurringPickerOpen &&
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignSelf: 'stretch',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <Picker
-                        style={{ flex: 1 }}
-                        itemStyle={{ backgroundColor: 'white' }}
-                        selectedValue={this.state.recurringNumber}
-                        pickerData={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-                        onValueChange={recurringNumber =>
-                          this.setState({ recurringNumber })}
-                      />
-                      <Picker
-                        style={{ flex: 1 }}
-                        itemStyle={{ backgroundColor: 'white' }}
-                        selectedValue={this.state.recurringType}
-                        pickerData={['Weeks', 'Months']}
-                        onValueChange={recurringType =>
-                          this.setState({ recurringType })}
-                      />
-                    </View>}
-                  <InputDivider />
-                  <InputButton
-                    label="On"
-                    value="The same day each month"
-                    onPress={() => this.props.navigation.navigate('RepeatsOn')}
-                    style={{ paddingLeft: 0 }}
-                  />
-                  <InputDivider />
-                  <InputButton
-                    label="Ends"
-                    value="After 5 ocurrences"
-                    onPress={() => this.props.navigation.navigate('EndsOn')}
-                    style={{ paddingLeft: 0 }}
-                  />
-                </InputGroup>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    lineHeight: 14,
-                    color: '#727A8F',
-                    marginLeft: 16,
-                    marginTop: 5,
-                  }}
-                >
-                  Event will occur every month on the same day each month
-              </Text>
-              </View>}
-            <View style={{ paddingHorizontal: 8, marginVertical: 10 }}>
-              <View
+              </InputGroup>
+              <Text
                 style={{
-                  height: 2,
-                  alignSelf: 'stretch',
-                  backgroundColor: '#c2c2c2',
+                  fontSize: 12,
+                  lineHeight: 14,
+                  color: '#727A8F',
+                  marginLeft: 16,
+                  marginTop: 5,
                 }}
-              />
+              >
+                Event will occur every month on the same day each month
+              </Text>
             </View>
+          }
+          <View style={{ paddingHorizontal: 8, marginVertical: 10 }}>
             <View
               style={{
-                flexDirection: 'row',
-                paddingHorizontal: 22,
-                justifyContent: 'space-between',
+                height: 2,
+                alignSelf: 'stretch',
+                backgroundColor: '#c2c2c2',
               }}
-            >
-              <Text
-                style={{
-                  color: '#C0C1C6',
-                  fontSize: 11,
-                }}
-              >
-                TOTAL
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  lineHeight: 19,
-                  fontFamily: 'Roboto-Medium',
-                  color: '#4D5067',
-                }}
-              >
-                {`${displayDuration} / $ ${totalPrice}`}
-              </Text>
-            </View>
-            <InputGroup
-              style={{
-                marginVertical: 30,
-                paddingVertical: 10,
-              }}
-            >
-              <LabeledTextarea
-                label="Remarks"
-                isEditable
-                placeholder="Please specify"
-                value={remarks}
-                onChangeText={this.onChangeRemarks}
-              />
-            </InputGroup>
-          </KeyboardAwareScrollView>
-          {toast
-            ? <SalonToast
-              timeout={5000}
-              timeout={5000}
-              type={toast.type}
-              description={toast.text}
-              hide={this.hideToast}
-              btnRightText={toast.btnRightText}
             />
-            : null}
-        </View>
-      </SwipeableComponent >
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 22,
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={{
+                color: '#C0C1C6',
+                fontSize: 11,
+              }}
+            >
+              TOTAL
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: 19,
+                fontFamily: 'Roboto-Medium',
+                color: '#4D5067',
+              }}
+            >
+              {`${displayDuration} / $ ${totalPrice}`}
+            </Text>
+          </View>
+          <InputGroup
+            style={{
+              marginVertical: 30,
+              paddingVertical: 10,
+            }}
+          >
+            <LabeledTextarea
+              label="Remarks"
+              isEditable
+              placeholder="Please specify"
+              value={remarks}
+              onChangeText={this.onChangeRemarks}
+            />
+          </InputGroup>
+        </SwipeableComponent>
+        {toast
+          ? <SalonToast
+            timeout={5000}
+            timeout={5000}
+            type={toast.type}
+            description={toast.text}
+            hide={this.hideToast}
+            btnRightText={toast.btnRightText}
+          />
+          : null
+        }
+      </View>
     );
   }
 }
