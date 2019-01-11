@@ -7,8 +7,7 @@ import {
   isArray,
   isNull,
   isNumber,
-  chain,
-  groupBy,
+  includes,
   reject,
 } from 'lodash';
 import uuid from 'uuid/v4';
@@ -19,16 +18,17 @@ import {
   Appointment,
 } from '@/utilities/apiWrapper';
 import { isBookedByEditEnabled } from '@/utilities/helpers';
-import { ADD_APPOINTMENT } from './appointmentBook';
 import {
   appointmentLength,
   serializeApptToRequestData,
   getBookedByEmployee,
 } from '../selectors/newAppt';
 import { showErrorAlert } from './utils';
-import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore, ShortProvider } from '@/models';
+import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore, ShortProvider, StoreRoom } from '@/models';
 import { NewAppointmentReducer } from '../reducers/newAppointment';
 import { ServiceItem } from '@/models/new-appointment';
+import { RoomServiceItem } from '@/screens/SelectRoomScreen/SelectRoomScreen';
+import { SET_GRID_ROOM_VIEW_SUCCESS } from './appointmentBook';
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
 export const POPULATE_STATE_FROM_APPT =
@@ -50,6 +50,7 @@ export const CLEAR_SERVICE_ITEMS = 'newAppointment/CLEAR_SERVICE_ITEMS';
 export const ADD_QUICK_SERVICE_ITEM = 'newAppointment/ADD_QUICK_SERVICE_ITEM';
 export const ADD_SERVICE_ITEM = 'newAppointment/ADD_SERVICE_ITEM';
 export const UPDATE_SERVICE_ITEM = 'newAppointment/UPDATE_SERVICE_ITEM';
+export const UPDATE_SERVICE_ITEMS = 'newAppointment/UPDATE_SERVICE_ITEMS';
 export const REMOVE_SERVICE_ITEM = 'newAppointment/REMOVE_SERVICE_ITEM';
 export const ADD_SERVICE_ITEM_EXTRAS = 'newAppointment/ADD_SERVICE_ITEM_EXTRAS';
 
@@ -332,14 +333,14 @@ const updateServiceItem = (
       serviceItemToUpdate.service &&
       serviceItemToUpdate.service.employee &&
       serviceItemToUpdate.service.employee.id) !==
-    (
-      updatedService &&
-      updatedService.employee &&
-      updatedService.employee.id
-    )) {
+      (
+        updatedService &&
+        updatedService.employee &&
+        updatedService.employee.id
+      )) {
       newServiceItems = newServiceItems.map((item) => {
         if (item.parentId === serviceId) {
-          return { ...item, service: { ...item.service, employee:  updatedService.employee } };
+          return { ...item, service: { ...item.service, employee: updatedService.employee } };
         }
         return item;
       });
@@ -381,6 +382,21 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
     data: {
       serviceItems: newServiceItems,
       deletedIds: removedAppt && removedAppt.service && removedAppt.service.id || null,
+    },
+  });
+};
+
+const updateServiceItems = (items: ServiceItem[]) => (dispatch, getState: () => AppStore) => {
+  const serviceItems = [...getState().newAppointmentReducer.serviceItems];
+  const itemIds = items.map(itm => itm.itemId);
+  dispatch({
+    type: UPDATE_SERVICE_ITEMS,
+    data: {
+      serviceItems: serviceItems.map(itm => {
+        return includes(itemIds, itm.itemId)
+          ? items.find(srv => srv.itemId === itm.itemId)
+          : itm;
+      }),
     },
   });
 };
@@ -946,6 +962,7 @@ const newAppointmentActions = {
   setMainEmployee,
   getConflictsForService,
   checkIsBookedByFieldEnabled,
+  updateServiceItems,
 };
 
 export interface NewApptActions {
@@ -977,6 +994,7 @@ export interface NewApptActions {
   setMainEmployee: typeof newAppointmentActions.setMainEmployee;
   getConflictsForService: typeof newAppointmentActions.getConflictsForService;
   checkIsBookedByFieldEnabled: typeof newAppointmentActions.checkIsBookedByFieldEnabled;
+  updateServiceItems: (serviceItems: ServiceItem[]) => any;
 }
 
 export default newAppointmentActions;
