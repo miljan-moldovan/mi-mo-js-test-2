@@ -416,7 +416,6 @@ class ClientDetails extends React.Component<Props, State> {
     const isValidAge = this.state.requiredFields.age ? isValid : true;
 
     
-
     this.setState({
       isValidAge,
     }, this.checkValidation);
@@ -454,11 +453,11 @@ class ClientDetails extends React.Component<Props, State> {
       const ageSector = get(this.state.client, 'age', {}).key;
       let settingMaxAge = 999;
   
-      if (this.state.requiredFields.forceChildBirthday && ageSector === agesEnum.Child) {
+      if (this.state.requiredFields.forceChildBirthday && ageSector === agesEnum.Child && this.state.maxChildAge) {
         settingMaxAge = this.state.maxChildAge;
       }
   
-      if (this.state.requiredFields.forceAdultBirthday && ageSector === agesEnum.Adult) {
+      if (this.state.requiredFields.forceAdultBirthday && ageSector === agesEnum.Adult && this.state.maxAdultAge) {
         settingMaxAge = this.state.maxAdultAge;
       }
 
@@ -508,11 +507,9 @@ class ClientDetails extends React.Component<Props, State> {
       requiredFields.cellPhone = false;
       requiredFields.referred = forceClientReferralQuestion;
 
-      
       this.setState({
         isValidGender: !requiredFields.gender,
         isValidBirth: !requiredFields.birthday,
-        isValidAge: !requiredFields.age,
         isValidPhoneWork: !requiredFields.workPhone,
         isValidPhoneHome: !requiredFields.homePhone,
         isValidPhoneCell: !requiredFields.cellPhone,
@@ -902,7 +899,7 @@ class ClientDetails extends React.Component<Props, State> {
 
     const newClient = set(this.state.client, 'birthday', selectedDate);
 
-    if (this.state.updateClientAge) {
+    if (this.state.updateClientAge && (this.state.maxAdultAge || this.state.maxChildAge)) {
 
       const age = moment().diff(selectedDate, 'years', false);
 
