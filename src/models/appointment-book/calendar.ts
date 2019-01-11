@@ -50,4 +50,5 @@ export interface CalendarState {
   overlappingCardsMap: any[], //TO DO,
   pan: any, //TO DO,
   pan2: any, //TO DO
+  alert: any,
 }
