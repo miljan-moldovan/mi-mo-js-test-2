@@ -29,6 +29,11 @@ interface IReduxProps {
   auth: IAuth,
 };
 
+const errorWithUndefiend = 'The server has returned an error. undefined';
+const errorPasswordIsRequired = 'The server has returned an error. The Password field is required.';
+const errorUserNaameIsRequired = 'The server has returned an error. The Username field is required.';
+const commonErrorMessage = 'Something went wrong. Check your credentials';
+
 interface IProps extends IReduxProps {
   disableFingerprintLogin: () => void,
   logout: () => void,
@@ -179,13 +184,7 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
         this.state.password,
         (success, err) => {
           if (!success) {
-            this.setState({
-              waitingLogin: false,
-              error: err.message,
-              urlError: err.error.response.data.urlError,
-              loginError: err.error.response.data.loginError,
-              errors: err.error.response.data.errors,
-            });
+            this.handleErrorAfterLogin(err);
           }
           // in case of success, action/reducer sets auth.loggedIn to true,
           // which triggers a re-render that now routes the app to RootStackNavigator
@@ -193,6 +192,32 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
       ),
     );
   };
+
+  handleErrorAfterLogin = (err) => {
+    if (this.isItCommonError(err)) {
+      this.setState({
+        waitingLogin: false,
+        error: commonErrorMessage,
+        urlError: err.error.response.data.urlError,
+        loginError: err.error.response.data.loginError,
+        errors: [],
+      });
+    } else {
+      this.setState({
+        waitingLogin: false,
+        error: err.message,
+        urlError: err.error.response.data.urlError,
+        loginError: err.error.response.data.loginError,
+        errors: err.error.response.data.errors,
+      });
+    }
+  };
+
+  isItCommonError = (err) => {
+    return err && (err.message !== errorWithUndefiend
+    || err.message !== errorPasswordIsRequired || err.message !== errorUserNaameIsRequired);
+  };
+
   handleModalConfirmFingerprint = () => {
     this.props.enableFingerprintLogin();
     this.setState({ fingerprintModalVisible: false }, () => {
@@ -401,11 +426,13 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
               username={username}
             />}
             {!loggedIn && this.renderPasswordInput()}
-            {this.state.loginError &&
-            <ErrorsView
-              errors={this.state.errors}
-              error={this.state.error}
-            />}
+            {
+              this.state.loginError && this.state.error &&
+                <ErrorsView
+                  errors={this.state.errors}
+                  error={this.state.error}
+                />
+            }
             <Button
               bordered
               disabled={this.state.waitingLogin}
