@@ -38,7 +38,9 @@ class SalonTimePicker extends React.Component<any, any> {
 
 
   validate = (selectedDate, isFirstValidation = false) => {
-    const isValid = moment(selectedDate).isValid();
+    
+    let isValid = moment(selectedDate).isValid();
+    isValid = isValid && this.props.validate ? this.props.validate(selectedDate) : isValid;
     this.props.onValidated(isValid, isFirstValidation);
   };
 
