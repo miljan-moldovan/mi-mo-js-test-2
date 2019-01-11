@@ -303,7 +303,9 @@ class ClientsScreen extends React.Component<Props, State> {
     const { onChangeClient, onChangeWithNavigation } = this.params;
     const onChange = !onChangeClient && !onChangeWithNavigation ? null : this.onChangeClient;
     return (
-      <View style={styles.container}>
+      <View
+        onLayout={(event) => console.log(event.nativeEvent.layout)}
+        style={styles.container}>
         <NavigationEvents
           onWillFocus={() => {
             this.props.salonSearchHeaderActions.setShowFilter(true);
