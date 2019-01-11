@@ -36,6 +36,10 @@ export default class InputPicker extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({ selectedOption: nextProps.value ? nextProps.value : null, options: nextProps.options });
+
+    if(nextProps.tooglePicker){
+      this.pickerToogle();
+    }
   }
 
 

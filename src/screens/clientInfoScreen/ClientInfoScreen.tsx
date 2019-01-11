@@ -208,7 +208,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
       editionMode={this.state.editionMode}
       client={this.state.client}
       navigation={this.props.navigation}
-      onDismiss={()=>{}}
+      //onDismiss={()=>{}}
       {...this.props}
     />),
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
