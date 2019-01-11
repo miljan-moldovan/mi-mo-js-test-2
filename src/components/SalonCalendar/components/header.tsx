@@ -169,11 +169,7 @@ export default class Header extends React.Component {
 
   render() {
     const {
-      isDate,
-      selectedFilter,
-      showFirstAvailable,
-      handleShowfirstAvailalble,
-      showAvailability
+      showAvailability,
     } = this.props;
     const width = showAvailability ? 166 : 36;
 
@@ -185,7 +181,7 @@ export default class Header extends React.Component {
             : null}
         </View>
         {this.props.dataSource.map((data, index) =>
-          this.renderColumnLabel(data, index)
+          this.renderColumnLabel(data, index),
         )}
       </View>
     );
