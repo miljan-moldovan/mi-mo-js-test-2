@@ -238,6 +238,7 @@ class ClientDetails extends React.Component<Props, State> {
       newClient = set(this.state.client, field, value);
     }
 
+    
     this.props.navigation.setParams({ hasChanged: true });
 
     this.setState({ client: newClient }, this.checkValidation);
@@ -271,9 +272,7 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
   onValidateReferred = isValid => {
-    
     const isValidReferred  = get(this.state.requiredFields, 'referred', true) ? isValid : true;
-   // this.checkValidation();
     this.setState({
       isValidReferred,
     }, this.checkValidation);
@@ -283,23 +282,21 @@ class ClientDetails extends React.Component<Props, State> {
 
     const isValidEmail = this.state.requiredFields.email ? isValid : true;
 
-   // this.checkValidation();
-
     this.setState({
       isValidEmail,
     }, this.checkValidation);
   };
 
-  onValidateZipCode = isValid => {
+  onValidateZipCode = (isValid, isFirstValidation) => {
+
     const isValidZipCode = this.state.requiredFields.zip ? isValid : true;
 
-    if (isValid && this.state.client.zipCode && this.state.client.zipCode.length === 5
+    if (isValid && !isFirstValidation && this.state.client.zipCode && this.state.client.zipCode.length === 5
       && this.state.client.zipCode !== '00000') {
       this.props.clientInfoActions.getZipCode(this.state.client.zipCode, this.loadDataFromZipCode);
     }
 
     
-
     this.setState({
       isValidZipCode,
     }, this.checkValidation);
@@ -544,6 +541,7 @@ class ClientDetails extends React.Component<Props, State> {
     
 
     this.props.navigation.setParams({ canSave });
+    
     this.props.setCanSave(canSave);
   };
 
@@ -616,7 +614,7 @@ class ClientDetails extends React.Component<Props, State> {
       birthday: moment(this.state.client.birthday).isValid()
         ? moment(this.state.client.birthday).format('YYYY-MM-DD')
         : null,
-      age: this.state.trackClientAge && this.state.client.age ? this.state.client.age.key : null,
+      age: this.state.client.age ? this.state.client.age.key : null,
       email: this.state.client.email,
       phones,
       address: {
@@ -625,7 +623,7 @@ class ClientDetails extends React.Component<Props, State> {
         state: this.state.client.state ? this.state.client.state.value : null,
         zipCode: this.state.client.zipCode ? this.state.client.zipCode : null,
       },
-      gender: this.state.trackClientAge && this.state.client.gender ? this.state.client.gender.value : null,
+      gender: this.state.client.gender ? this.state.client.gender.value : null,
       loyaltyNumber: this.state.client.loyalty,
       confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy.key : null,
       referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
@@ -634,7 +632,7 @@ class ClientDetails extends React.Component<Props, State> {
       confirmationNote: this.state.client.confirmationNote ? this.state.client.confirmationNote : null,
       clientPreferenceProviderType: 1,
       preferredProviderId: null,
-      clientCode: this.state.client.clientCode ? this.state.client.clientCode :  null,
+      clientCode: this.state.client.clientCode ? parseInt(this.state.client.clientCode) :  null,
       receivesEmail: true,
       occupationId: null,
       profilePhotoUuid: null,
@@ -704,6 +702,8 @@ class ClientDetails extends React.Component<Props, State> {
     
     const isValid = this.state.selectedReferredClient === SelectedReferredClientEnum.Other ?
     isOtherValid !== null : isClientValid  !== null;
+
+    
     
     this.onValidateReferred(isValid);
   }
@@ -713,6 +713,7 @@ class ClientDetails extends React.Component<Props, State> {
       const { client } = this.props.clientInfoState;
       const states = usStates;
       let declineAddress = false;
+      let isValidZipCode = false;
 
       if (client.address) {
         if (typeof client.address === 'string' || client.address instanceof String) {
@@ -740,15 +741,11 @@ class ClientDetails extends React.Component<Props, State> {
           client.zipCode = client.address.zipCode;
           declineAddress = true;
 
-          
-
           this.onValidateState(true);
           this.onValidateCity(true);
           this.onValidateStreet1(true);
-          this.onValidateZipCode(true);
+          isValidZipCode = true;
 
-          
-        
         } else {
           const state = find(states, { value: client.address.state && client.address.state.toUpperCase() });
 
@@ -768,7 +765,7 @@ class ClientDetails extends React.Component<Props, State> {
         client.zipCode = '';
       }
 
-
+      
       this.props.setCanSave(false);
       this.props.setHandleDone(this.handleDone);
       this.props.setHandleBack(this.handleBack);
@@ -790,6 +787,7 @@ class ClientDetails extends React.Component<Props, State> {
         declineAddress,
         initialClient: cloneDeep(client),
         loadingClient: false,
+        isValidZipCode,
         pointerEvents: this.props.editionMode ? 'auto' : 'none',
       });
     }
@@ -865,7 +863,6 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
   loadDataFromZipCode = () => {
-    
     if ('state' in this.props.clientInfoState.zipCode) {
       const states = usStates;
       const state = find(states, { value: this.props.clientInfoState.zipCode.state.toUpperCase() });
@@ -884,6 +881,7 @@ class ClientDetails extends React.Component<Props, State> {
 
 
   onChangeDeclineAddressInputSwitch = () => {
+
     this.onChangeClientField('state', this.state.declineAddress ? null: declineState);
     this.onChangeClientField('city', this.state.declineAddress ? '' : 'None');
     this.onChangeClientField('zipCode', this.state.declineAddress ? '' : '00000');
@@ -891,6 +889,9 @@ class ClientDetails extends React.Component<Props, State> {
     this.onValidateState(!this.state.declineAddress);
     this.onValidateCity(!this.state.declineAddress);
     this.onValidateStreet1(!this.state.declineAddress);
+
+    
+    
     this.onValidateZipCode(!this.state.declineAddress);
     this.setState({ declineAddress: !this.state.declineAddress });
   };
