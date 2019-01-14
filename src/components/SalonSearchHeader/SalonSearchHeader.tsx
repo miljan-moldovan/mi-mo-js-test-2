@@ -111,7 +111,7 @@ class SalonSearchHeader extends React.Component<any, any> {
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>{this.props.title}</Text>
                 {
-                  this.props.subTitle && <Text style={styles.subTitleText}>{this.props.subTitle}</Text>
+                  this.props.subTitle ? <Text style={styles.subTitleText}>{this.props.subTitle}</Text> : null
                 }
               </View>
               <View style={styles.rightButton}>
