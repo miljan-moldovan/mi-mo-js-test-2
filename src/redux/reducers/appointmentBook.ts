@@ -64,6 +64,7 @@ import {
   StoreResource,
   EmployeeSchedule,
 } from '@/models';
+import { SET_SETTINGS_SUCCESS, SETTINGS_SUCCESS } from '@/redux/actions/settings';
 
 const processBlockTime = item => {
   const fromTime = moment(item.fromTime, DateTime.time);
@@ -184,6 +185,21 @@ export default function appointmentBookReducer(state: ApptBookReducer = initialS
   const { type, data } = action;
   const { appointments, filterOptions } = state;
   switch (type) {
+    case SETTINGS_SUCCESS:
+    case SET_SETTINGS_SUCCESS: {
+      const newTimeBlockSize = data && data.settings
+        && data.settings.find((item) => item.settingName === 'TimeBlockSize').settingValue;
+      if (newTimeBlockSize) {
+        return {
+          ...state,
+          apptGridSettings: {
+            ...state.apptGridSettings,
+            step: newTimeBlockSize,
+          },
+        };
+      }
+      return state;
+    };
     case SET_FILTER_OPTION_COMPANY:
       filterOptions.company = data.company;
       return {
