@@ -267,7 +267,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
                               selectedProvider,
                               displayMode,
                             }) => {
-
     let groupByCondition = ViewTypes[selectedFilter];
     const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
     if (isCanBeOnlyUser) {
@@ -284,6 +283,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         ? groupByCondition
         : item => moment(item.date).format(DateTime.date),
     );
+
     const groupedBlocks = groupBy(
       blockTimes,
       groupByCondition !== 'date'

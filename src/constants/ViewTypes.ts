@@ -8,5 +8,8 @@ export default {
   providers: dataForProvidersAndDeskStaff, // slectedfilter vlaue
   deskStaff: dataForProvidersAndDeskStaff, // slectedfilter vlaue
   rooms: (item) => item.room && `${item.room.id}_${item.roomOrdinal}`,
-  resources: (item) => item.resource && `${item.resource.id}_${item.resourceOrdinal}`, // slectedfilter vlaue
+  resources: (item) => {
+    console.log(item.resource)
+    return item.resource && `${item.resource.id}_${item.resourceOrdinal}`
+  },
 };
